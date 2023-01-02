@@ -339,6 +339,9 @@ fast_hostchk: soup/hostchk.sh
 bug_report: bug_report.sh
 	@-./bug_report.sh -v 1
 
+bug_report-tx: bug_report.sh
+	@-./bug_report.sh -t -x
+
 # slower more verbose build environment sanity check
 #
 hostchk: soup/hostchk.sh
@@ -385,7 +388,7 @@ hostchk_warning:
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
-	prep build release pull reset_min_timestamp load_json_ref build_man \
+	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
 	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
 
 

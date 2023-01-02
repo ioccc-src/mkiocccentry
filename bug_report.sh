@@ -63,14 +63,16 @@ export WARNING_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
 export T_FLAG=""
+export X_FLAG=""
 export EXIT_CODE=0
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: $V_FLAG)
     -D level		    set verbosity level for tests (def: $DBG_LEVEL)
     -t			    disable make actions (def: run make actions)
+    -x			    remove bug report if no problems detected
 
 Exit codes:
      0   all is well
@@ -84,7 +86,7 @@ $0 version: $BUG_REPORT_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:t flag; do
+while getopts :hVv:D:tx flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -96,7 +98,9 @@ while getopts :hVv:D:t flag; do
 	;;
     D)  DBG_LEVEL="$OPTARG";
 	;;
-    t)  T_FLAG="1"
+    t)  T_FLAG="-t"
+	;;
+    x)	X_FLAG="-x"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -1323,6 +1327,8 @@ if [[ ! -z "$WARNING_SUMMARY" ]]; then
     echo  | tee -a -- "$LOG_FILE"
     echo "$WARNING_SUMMARY" | tee -a -- "$LOG_FILE"
     echo  | tee -a -- "$LOG_FILE"
+    # make it so log file is not deleted even if -x specified
+    X_FLAG=""
 fi
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo 1>&2
@@ -1339,7 +1345,7 @@ if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
     echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
     echo "the Judges." | tee -a -- "$LOG_FILE"
-else
+elif [[ -z "$X_FLAG" ]]; then
     echo "All tests PASSED" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     echo "A log of the above tests was saved to $LOG_FILE." | tee -a -- "$LOG_FILE"
@@ -1353,15 +1359,19 @@ else
     echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
     echo "the Judges." | tee -a -- "$LOG_FILE"
 fi
-echo 1>&2
-echo "NOTE: $LOG_FILE contains various information about" 1>&2
-echo "your environment including things such as hostname, login name, operating system" 1>&2
-echo "information, paths and versions of various tools. Although not encouraged," 1>&2
-echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
-echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
-echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
-echo "code." 1>&2
 
+if [[ -z "$X_FLAG" ]]; then
+    echo 1>&2
+    echo "NOTE: $LOG_FILE contains various information about" 1>&2
+    echo "your environment including things such as hostname, login name, operating system" 1>&2
+    echo "information, paths and versions of various tools. Although not encouraged," 1>&2
+    echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
+    echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
+    echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
+    echo "code." 1>&2
+else
+    rm -f "$LOG_FILE"
+fi
 # All Done!!! -- Jessica Noll, Age 2
 #
 if [[ "$V_FLAG" -gt 1 ]]; then
