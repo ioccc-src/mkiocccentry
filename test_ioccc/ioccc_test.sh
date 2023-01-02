@@ -473,26 +473,92 @@ else
     echo "PASSED: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
 fi
 
-# jparse_test.sh
+# jparse_test.sh for test_jparse/test_JSON
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON non-zero exit code: $status"
+    EXIT_CODE="27"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
+else
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
+fi
+
+# jparse_test.sh for general.json
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
 echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
 jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jparse_test.sh non-zero exit code: $status"
-    EXIT_CODE="27"
+    jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status"
+    EXIT_CODE="28"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
+fi
+
+# jparse_test.sh for info.json
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s info.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s info.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for info.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    jparse/test_jparse/jparse_test.sh for info.json non-zero exit code: $status"
+    EXIT_CODE="29"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
+else
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
+fi
+
+# jparse_test.sh for auth.json
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s auth.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s auth.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for auth.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    jparse/test_jparse/jparse_test.sh for auth.json non-zero exit code: $status"
+    EXIT_CODE="30"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
+else
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
 fi
 
 # txzchk_test.sh
@@ -512,7 +578,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/txzchk_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/txzchk_test.sh non-zero exit code: $status"
-    EXIT_CODE="28"
+    EXIT_CODE="31"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
@@ -534,7 +600,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/chkentry_test.sh non-zero exit code: $status"
-    EXIT_CODE="29"
+    EXIT_CODE="32"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
