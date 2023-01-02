@@ -1234,13 +1234,13 @@ done
 # will not be as useful. This is why we don't mark it as an error.
 #
 echo "## Checking limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-if [[ -e "./limit_ioccc.sh" ]]; then
-    if [[ -r "./limit_ioccc.sh" ]]; then
+if [[ -e "./soup/limit_ioccc.sh" ]]; then
+    if [[ -r "./soup/limit_ioccc.sh" ]]; then
 	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
-	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-	# tee -a -- "$LOG_FILE" < ./limit_ioccc.sh
-	< limit_ioccc.sh tee -a -- "$LOG_FILE"
+	echo "cat ./soup/limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+	# tee -a -- "$LOG_FILE" < ./soup/limit_ioccc.sh
+	< ./soup/limit_ioccc.sh tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
     else
 	echo "### NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
