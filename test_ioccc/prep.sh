@@ -28,8 +28,9 @@
 
 # setup
 #
+export LOG_FILE=
 export PREP_VERSION="0.1 2022-04-19"
-export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
+export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
     -h              print help and exit
     -v level        flag ignored
@@ -39,13 +40,14 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
     -o		    do NOT use backup files, fail if bison or flex cannot be used (def: use)
     -m make	    make command (def: make)
     -M Makefile	    path to Makefile (def: ./Makefile)
+    -l logfile      write details of actions to logfile (def: send to stdout)
 
 Exit codes:
      0   all is OK for both bison and flex
      1   -h and help string printed or -V and version string printed
      2	 command line error
      3	 Makefile not a readable file that exists
-     4	 Internal function error
+     4	 Could not make writable log file
  >= 10   some make action exited non-zero
 
 $0 version: $PREP_VERSION"
@@ -58,32 +60,34 @@ export O_FLAG=
 
 # parse args
 #
-while getopts :hv:Veom:M: flag; do
+while getopts :hv:Veom:M:l: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 1
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    V) echo "$PREP_VERSION"
-       exit 1
-       ;;
-    m) MAKE="$OPTARG";
-       ;;
-    M) MAKEFILE="$OPTARG";
-       ;;
-    e) E_FLAG="-e"
-       ;;
-    o) O_FLAG="-o"
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 1
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$PREP_VERSION"
+	exit 1
+	;;
+    m)	MAKE="$OPTARG";
+	;;
+    M)	MAKEFILE="$OPTARG";
+	;;
+    e)	E_FLAG="-e"
+	;;
+    o)	O_FLAG="-o"
+	;;
+    l)	LOG_FILE="$OPTARG"
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 2
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 2
-       ;;
-   *)
-       ;;
+	exit 2
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 2
+	;;
+    *)
+	;;
     esac
 done
 
@@ -110,6 +114,21 @@ if [[ ! -r $MAKEFILE ]]; then
     exit 3
 fi
 
+# if -l logfile was specified, remove it and recreate it to start out empty
+#
+if [[ -n "$LOGFILE" ]]; then
+    rm -f "$LOGFILE"
+    touch "$LOGFILE"
+    if [[ ! -f "${LOGFILE}" ]]; then
+	echo "$0: ERROR: couldn't create log file" 1>&2
+	exit 4
+    fi
+    if [[ ! -w "${LOGFILE}" ]]; then
+	echo "$0: ERROR: log file not writable" 1>&2
+	exit 4
+    fi
+fi
+
 # make action
 #
 # usage:
@@ -131,6 +150,7 @@ make_action() {
 
     # announce pre-action
     #
+
     echo "=-=-= Start: $MAKE $RULE =-=-="
     echo
 
@@ -192,7 +212,7 @@ make_action 20 load_json_ref
 make_action 21 use_json_ref
 make_action 22 clean_generated_obj
 make_action 23 all
-# make_action 24 bug_report-t
+make_action 24 bug_report-tx
 make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky
