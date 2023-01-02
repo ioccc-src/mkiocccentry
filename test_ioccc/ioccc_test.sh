@@ -517,49 +517,11 @@ else
     echo "PASSED: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
 fi
 
-# jparse_test.sh for info.json
-#
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s info.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s info.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for info.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jparse_test.sh for info.json non-zero exit code: $status"
-    EXIT_CODE="29"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jparse_test.sh for info.json" | tee -a -- "$LOGFILE"
-fi
+# NOTE: do NOT test the test_ioccc/test_JSON/{auth,info}.json/ files with
+# jparse_test.sh because these files are valid JSON files. The bad files are
+# meant to be valid JSON but invalid per the chkentry rules. Thus the
+# chkentry_test.sh later in this file addresses these files.
 
-# jparse_test.sh for auth.json
-#
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s auth.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s auth.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for auth.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jparse_test.sh for auth.json non-zero exit code: $status"
-    EXIT_CODE="30"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jparse_test.sh for auth.json" | tee -a -- "$LOGFILE"
-fi
 
 # txzchk_test.sh
 #
