@@ -13,7 +13,7 @@
 .SH NAME
 bug_report.sh \- run a series of tests, collecting system information in the process, to help report bugs and issues
 .SH SYNOPSIS
-\fBbug_report.sh\fP [\-h] [\-V] [\-v level] [\-D level] [\-t] [\-x]
+\fBbug_report.sh\fP [\-h] [\-V] [\-v level] [\-D level] [\-t] [\-x] [\-l]
 .SH DESCRIPTION
 \fBbug_report.sh\fP runs a series of tests and scripts to gather as much information about your system as possible in order to help with reporting bugs.
 If any step fails it will let you know and recommend that you file an issue at the GitHub issue page, reminding you to attach the log file that the script creates.
@@ -35,6 +35,9 @@ Disable make actions.
 .TP
 \fB\-x\fP
 Delete log file if no warnings and no errors were detected.
+.TP
+\fB\-l\fP
+Only write to log file: don't write to stdout.
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
 In this case it will tell you that all should be okay and you can safely delete the log file.

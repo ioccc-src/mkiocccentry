@@ -64,8 +64,9 @@ export DBG_LEVEL="0"
 export V_FLAG="0"
 export T_FLAG=""
 export X_FLAG=""
+export L_FLAG=""
 export EXIT_CODE=0
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l]
 
     -h			    print help and exit
     -V			    print version and exit
@@ -73,6 +74,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x]
     -D level		    set verbosity level for tests (def: $DBG_LEVEL)
     -t			    disable make actions (def: run make actions)
     -x			    remove bug report if no problems detected
+    -l			    only write to log file
 
 Exit codes:
      0   all is well
@@ -86,7 +88,7 @@ $0 version: $BUG_REPORT_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:tx flag; do
+while getopts :hVv:D:txl flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -101,6 +103,8 @@ while getopts :hVv:D:tx flag; do
     t)  T_FLAG="-t"
 	;;
     x)	X_FLAG="-x"
+	;;
+    l)	L_FLAG="-l"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -134,6 +138,27 @@ if [[ ! -w "$LOG_FILE" ]]; then
     exit 1
 fi
 
+# write_echo - write a message to either the log file or both the log file and
+# stdout
+#
+write_echo()
+{
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: expected 1 arg to write_echo, found $#" | tee -a -- "$LOG_FILE"
+	return 1
+    fi
+
+    if [[ -z "$L_FLAG" ]]; then
+	echo "$1" | tee -a -- "$LOG_FILE"
+    else
+	echo "$1" >> "$LOG_FILE"
+    fi
+}
+# write_command - invoke command redirecting output only to the log file or to
+# both stdout and the log file
+write_command()
+{
+}
 # is_exec   - determine if arg exists, is a regular file and is executable
 #
 is_exec()
@@ -144,15 +169,15 @@ is_exec()
     else
 	declare f="$1"
 	if [[ ! -e "$f" ]]; then
-	    echo "$0: ERROR: $1 does not exist" | tee -a -- "$LOG_FILE"
+	    write_echo "$0: ERROR: $1 does not exist"
 	    return 1
 	fi
 	if [[ ! -f "$f" ]]; then
-	    echo "$0: ERROR: $1 is not a regular file" | tee -a -- "$LOG_FILE"
+	    write_echo "$0: ERROR: $1 is not a regular file"
 	    return 1
 	fi
 	if [[ ! -x "$f" ]]; then
-	    echo "$0: ERROR: $1 is not executable" | tee -a -- "$LOG_FILE"
+	    write_echo "$0: ERROR: $1 is not executable"
 	    return 1
 	fi
 	return 0
@@ -213,7 +238,7 @@ get_version_optional() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local COMMAND
@@ -223,7 +248,7 @@ get_version_optional() {
 	return
     fi
 
-    echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
+    write_echo "## VERSION CHECK FOR: $1"
 
     # try --version
     #
@@ -231,8 +256,8 @@ get_version_optional() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
-	echo "## $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## $COMMAND --version ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -242,8 +267,8 @@ get_version_optional() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
-	echo "## $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## $COMMAND -v ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -253,8 +278,8 @@ get_version_optional() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
-	echo "## $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## $COMMAND -V ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -289,8 +314,8 @@ get_version_optional() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF what $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -305,8 +330,8 @@ get_version_optional() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF ident $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -330,25 +355,25 @@ get_version_optional() {
     # strings fails do we report positively that the version is unknown.
     #
     if [[ ! -z "$STRINGS" ]]; then
-	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
+	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	WARNING_SUMMARY="$WARNING_SUMMARY
 	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
 	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF strings $COMMAND ABOVE"
+	    write_echo ""
 	    return
 	fi
     fi
 
     # report unknown version
     #
-    echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
+    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND"
     WARNING_SUMMARY="$WARNING_SUMMARY
     WARNING: $COMMAND VERSION UNKNOWN"
-    echo | tee -a -- "$LOG_FILE"
+    write_echo ""
     return 0;
 }
 
@@ -367,7 +392,7 @@ get_version() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local COMMAND
@@ -385,7 +410,7 @@ get_version() {
 	# below might be all that's necessary.
 	COMMAND="$1"
     fi
-    echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
+    write_echo "## VERSION CHECK FOR: $1"
 
     # try --version
     #
@@ -393,8 +418,8 @@ get_version() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
-	echo "## OUTPUT OF $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -404,8 +429,8 @@ get_version() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
-	echo "## OUTPUT OF $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## OUTPUT OF $COMMAND -v ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -415,8 +440,8 @@ get_version() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
-	echo "## OUTPUT OF $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## OUTPUT OF $COMMAND -V ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -450,8 +475,8 @@ get_version() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF what $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -466,8 +491,8 @@ get_version() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF ident $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -491,25 +516,25 @@ get_version() {
     # strings fails do we report positively that the version is unknown.
     #
     if [[ ! -z "$STRINGS" ]]; then
-	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
+	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	WARNING_SUMMARY="$WARNING_SUMMARY
 	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
 	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
-	    echo "## strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## strings $COMMAND ABOVE"
+	    write_echo ""
 	    return
 	fi
     fi
 
     # report unknown version
     #
-    echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
+    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND"
     WARNING_SUMMARY="$WARNING_SUMMARY
     WARNING: $COMMAND VERSION UNKNOWN"
-    echo | tee -a -- "$LOG_FILE"
+    write_echo ""
     return 0;
 }
 
@@ -530,7 +555,7 @@ get_version_minimal() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local COMMAND
@@ -548,7 +573,7 @@ get_version_minimal() {
 	# below might be all that's necessary.
 	COMMAND="$1"
     fi
-    echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
+    write_echo "## VERSION CHECK FOR: $1"
 
     # try --version
     #
@@ -556,8 +581,8 @@ get_version_minimal() {
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
-	echo "## OUTPUT OF $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
+	write_echo ""
 	return
     fi
 
@@ -591,8 +616,8 @@ get_version_minimal() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF what $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -607,8 +632,8 @@ get_version_minimal() {
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
 	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
-	    echo "## OUTPUT OF ident $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
-	    echo | tee -a -- "$LOG_FILE"
+	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+	    write_echo ""
 	    EXIT=1
 	fi
     fi
@@ -634,12 +659,12 @@ run_check_optional() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local COMMAND="$1"
 
-    echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    write_echo "## RUNNING: $COMMAND"
 
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
@@ -649,12 +674,12 @@ run_check_optional() {
 
     status=${PIPESTATUS[0]}
     if [[ "$status" -ne 0 ]]; then
-	echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status" | tee -a -- "$LOG_FILE"
+	write_echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status"
     else
-	echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
+	write_echo "## OUTPUT OF ${COMMAND} ABOVE"
     fi
 
-    echo | tee -a -- "$LOG_FILE"
+    write_echo ""
     return 0;
 }
 
@@ -670,11 +695,11 @@ run_check_warn() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local COMMAND="$1"
-    echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    write_echo "## RUNNING: $COMMAND"
 
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
@@ -684,26 +709,26 @@ run_check_warn() {
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
     status=${PIPESTATUS[0]}
     if [[ "$status" -ne 0 ]]; then
-	echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status" | tee -a -- "$LOG_FILE"
+	write_echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status"
 	WARNING_SUMMARY="$WARNING_SUMMARY
 	$COMMAND non-zero exit code: $status"
-	echo "### POSSIBLE ISSUE DETECTED: $COMMAND returned $status" | tee -a -- "$LOG_FILE"
+	write_echo "### POSSIBLE ISSUE DETECTED: $COMMAND returned $status"
     fi
 
     # report result
     #
-    echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
+    write_echo "## OUTPUT OF ${COMMAND} ABOVE"
+    write_echo ""
     return 0;
 }
 
 # get_shell - get the user shell :-)
 #
 get_shell() {
-    echo "## RUNNING: echo \$SHELL" | tee -a -- "$LOG_FILE"
-    echo "Default shell: $SHELL" | tee -a -- "$LOG_FILE"
-    echo "## DEFAULT SHELL ABOVE" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
+    write_echo "## RUNNING: echo \$SHELL"
+    write_echo "Default shell: $SHELL"
+    write_echo "## DEFAULT SHELL ABOVE"
+    write_echo ""
 }
 
 # run_check
@@ -719,12 +744,12 @@ run_check() {
     # parse args
     #
     if [[ $# -ne 2 ]]; then
-	echo "$0: ERROR: function expects 2 args, found $#" 1>&2
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
     local CODE="$1"
     local COMMAND="$2"
-    echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    write_echo "## RUNNING: $COMMAND"
 
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
@@ -749,13 +774,13 @@ run_check() {
     status=${PIPESTATUS[0]}
     if [[ "$status" -ne 0 ]]; then
 	EXIT_CODE="$CODE"
-	echo "$0: ERROR: $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+	write_echo "$0: ERROR: $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$COMMAND non-zero exit code: $status"
-	echo "### ISSUE DETECTED: $COMMAND returned $status" | tee -a -- "$LOG_FILE"
+	write_echo "### ISSUE DETECTED: $COMMAND returned $status"
     fi
-    echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
+    write_echo "## OUTPUT OF ${COMMAND} ABOVE"
+    write_echo ""
     return 0;
 }
 
@@ -764,20 +789,20 @@ run_check() {
 #############################
 
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "Will write contents to $LOG_FILE" 1>&2
+    write_echo "Will write contents to $LOG_FILE"
 fi
-echo "# TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
-echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
+write_echo "# TIME OF REPORT: $(date)"
+write_echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION"
 
 #################################################
 # Section 0: environment and system information #
 #################################################
 
-echo | tee -a -- "$LOG_FILE"
-echo "#################################################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION #" | tee -a -- "$LOG_FILE"
-echo "#################################################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "#################################################"
+write_echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION #"
+write_echo "#################################################"
+write_echo ""
 
 # Required tool checks
 #
@@ -968,19 +993,19 @@ run_check 36 "which yes"
 # don't try getting version of yes because it will just try printing the args
 # over and over again as it is designed to do
 
-echo "#-----------------------------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION #" | tee -a -- "$LOG_FILE"
-echo "#-----------------------------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#-----------------------------------------------------#"
+write_echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION #"
+write_echo "#-----------------------------------------------------#"
 
 #############################
 # Section 1: optional tools #
 #############################
 
-echo | tee -a -- "$LOG_FILE"
-echo "#############################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 1: OPTIONAL TOOLS #" | tee -a -- "$LOG_FILE"
-echo "#############################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "#############################"
+write_echo "# SECTION 1: OPTIONAL TOOLS #"
+write_echo "#############################"
+write_echo ""
 
 # optional tool checks
 #
@@ -1058,19 +1083,19 @@ run_check_optional "which shellcheck"
 # try getting version of shellcheck
 get_version_optional "shellcheck"
 
-echo "#---------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 1 ABOVE: OPTIONAL TOOLS #" | tee -a -- "$LOG_FILE"
-echo "#---------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#---------------------------------#"
+write_echo "# SECTION 1 ABOVE: OPTIONAL TOOLS #"
+write_echo "#---------------------------------#"
 
 ############################
 # Section 2: C environment #
 ############################
 
-echo | tee -a -- "$LOG_FILE"
-echo "############################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 2: C ENVIRONMENT #" | tee -a -- "$LOG_FILE"
-echo "############################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "############################"
+write_echo "# SECTION 2: C ENVIRONMENT #"
+write_echo "############################"
+write_echo ""
 
 # which cc: get all paths for cc
 run_check 37 "which cc"
@@ -1087,19 +1112,19 @@ get_version "make"
 # cpp -dM /dev/null: get predefined macros
 run_check 40 "cpp -dM /dev/null"
 
-echo "#--------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 2 ABOVE: C ENVIRONMENT #" | tee -a -- "$LOG_FILE"
-echo "#--------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#--------------------------------#"
+write_echo "# SECTION 2 ABOVE: C ENVIRONMENT #"
+write_echo "#--------------------------------#"
 
 #################################
 # Section 3: compilation checks #
 #################################
 
-echo | tee -a -- "$LOG_FILE"
-echo "#################################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 3: COMPILATION CHECKS #" | tee -a -- "$LOG_FILE"
-echo "#################################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "#################################"
+write_echo "# SECTION 3: COMPILATION CHECKS #"
+write_echo "#################################"
+write_echo ""
 
 if [[ -z "$T_FLAG" ]]; then
     # make clobber: start clean
@@ -1137,19 +1162,19 @@ fi
 # compile things and so on
 run_check 44 "./soup/hostchk.sh -v 3"
 
-echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 3 ABOVE: COMPILATION CHECKS $" | tee -a -- "$LOG_FILE"
-echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#-------------------------------------#"
+write_echo "# SECTION 3 ABOVE: COMPILATION CHECKS $"
+write_echo "#-------------------------------------#"
 
 #############################################
 # Section 4: JSON scanner and parser checks #
 #############################################
 
-echo | tee -a -- "$LOG_FILE"
-echo "####################################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 4: BISON AND FLEX CHECKS #" | tee -a -- "$LOG_FILE"
-echo "####################################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "####################################"
+write_echo "# SECTION 4: BISON AND FLEX CHECKS #"
+write_echo "####################################"
+write_echo ""
 
 # pre-clean
 rm -f lex.yy.c
@@ -1179,44 +1204,44 @@ run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/ve
 if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
     # recompilation
-    echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
+    write_echo "## RUNNING make all a second time"
     run_check 47 "make all"
 fi
 
 # post-clean
 rm -f lex.yy.c
 
-echo "#----------------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 4 ABOVE: BISON AND FLEX CHECKS #" | tee -a -- "$LOG_FILE"
-echo "#----------------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#----------------------------------------#"
+write_echo "# SECTION 4 ABOVE: BISON AND FLEX CHECKS #"
+write_echo "#----------------------------------------#"
 
 ####################################################################
 # Section 5: IOCCC environment like version info executable checks #
 ####################################################################
 
-echo | tee -a -- "$LOG_FILE"
-echo "################################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 5: IOCCC ENVIRONMENT #" | tee -a -- "$LOG_FILE"
-echo "################################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "################################"
+write_echo "# SECTION 5: IOCCC ENVIRONMENT #"
+write_echo "################################"
+write_echo ""
 
 # See that every tool is executable and run -V on each one that is.
 #
 # If any tool is not executable the exit code will be set to 48.
 #
 for f in $TOOLS; do
-    echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
+    write_echo "## Checking if $f is executable"
     if is_exec "$f"; then
-	echo "## $f IS EXECUTABLE" | tee -a -- "$LOG_FILE"
-	echo "## RUNNING: $f -V" | tee -a -- "$LOG_FILE"
-	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	write_echo "## $f IS EXECUTABLE"
+	write_echo "## RUNNING: $f -V"
+	write_echo "$f version $($f -V)"
+	write_echo ""
     else
 	EXIT_CODE=48
-	echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+	write_echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
-	echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced" | tee -a -- "$LOG_FILE"
+	write_echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced"
     fi
 done
 
@@ -1233,36 +1258,36 @@ done
 # the user would have these tools but if one or both are not available this file
 # will not be as useful. This is why we don't mark it as an error.
 #
-echo "## Checking limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+write_echo "## Checking limit_ioccc.sh"
 if [[ -e "./soup/limit_ioccc.sh" ]]; then
     if [[ -r "./soup/limit_ioccc.sh" ]]; then
-	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
-	echo "cat ./soup/limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+	write_echo "## NOTICE: Found limit_ioccc.sh file:"
+	write_echo "--"
+	write_echo "cat ./soup/limit_ioccc.sh"
 	# tee -a -- "$LOG_FILE" < ./soup/limit_ioccc.sh
 	< ./soup/limit_ioccc.sh tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
+	write_echo "--" | tee -a -- "$LOG_FILE"
     else
-	echo "### NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+	write_echo "### NOTICE: Found unreadable limit_ioccc.sh"
     fi
 else
-    echo "### No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
+    write_echo "### No limit_ioccc.sh file found"
 fi
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
 
-echo "#------------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 5 ABOVE: IOCCC ENVIRONMENT #" | tee -a -- "$LOG_FILE"
-echo "#------------------------------------#" | tee -a -- "$LOG_FILE"
+write_echo "#------------------------------------#"
+write_echo "# SECTION 5 ABOVE: IOCCC ENVIRONMENT #"
+write_echo "#------------------------------------#"
 
 ############################################################
 # Section 6: check for any user modifications to the tools #
 ############################################################
 
-echo | tee -a -- "$LOG_FILE"
-echo "################################################" | tee -a -- "$LOG_FILE"
-echo "# SECTION 6: USER MODIFICATIONS TO IOCCC TOOLS #" | tee -a -- "$LOG_FILE"
-echo "################################################" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "################################################"
+write_echo "# SECTION 6: USER MODIFICATIONS TO IOCCC TOOLS #"
+write_echo "################################################"
+write_echo ""
 
 # check for makefile.local to see if user is overriding any rules.
 #
@@ -1270,22 +1295,22 @@ echo | tee -a -- "$LOG_FILE"
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
 #
-echo "## CHECKING: if makefile.local exists" | tee -a -- "$LOG_FILE"
+write_echo "## CHECKING: if makefile.local exists"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
-	echo "### WARNING: Found Makefile overriding file makefile.local:" | tee -a -- "$LOG_FILE"
-	echo "cat ./makefile.local" | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
+	write_echo "### WARNING: Found Makefile overriding file makefile.local:"
+	write_echo "cat ./makefile.local"
+	write_echo "--"
 	# tee -a -- "$LOG_FILE" < makefile.local
 	< makefile.local tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
+	write_echo "--"
     else
-	echo "### NOTICE: Found unreadable makefile.local" | tee -a -- "$LOG_FILE"
+	write_echo "### NOTICE: Found unreadable makefile.local"
     fi
 else
-    echo "### NOTICE: Makefile has no overriding makefile.local" | tee -a -- "$LOG_FILE"
+    write_echo "### NOTICE: Makefile has no overriding makefile.local"
 fi
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
 
 # check if there are any local modifications to the code
 #
@@ -1296,85 +1321,85 @@ echo | tee -a -- "$LOG_FILE"
 # it's not in a git repo but we don't explicitly check for this. All we care
 # about is whether or not the user has changes that might be causing a problem.
 
-echo "## RUNNING: git status on the code" | tee -a -- "$LOG_FILE"
+write_echo "## RUNNING: git status on the code"
 git --no-pager status | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
-echo "## git status ABOVE" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo ""
+write_echo "## git status ABOVE"
+write_echo ""
 
-echo "## RUNNING: git diff to check for local modifications to the code" | tee -a -- "$LOG_FILE"
+write_echo "## RUNNING: git diff to check for local modifications to the code"
 git --no-pager diff | tee -a -- "$LOG_FILE"
-echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo "## git diff ABOVE"
+write_echo ""
 
-echo "## RUNNING: git diff --staged to check for local modifications to the code" | tee -a -- "$LOG_FILE"
+write_echo "## RUNNING: git diff --staged to check for local modifications to the code"
 git --no-pager diff --staged | tee -a -- "$LOG_FILE"
-echo "## git diff --staged ABOVE" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo "## git diff --staged ABOVE"
+write_echo ""
 
-echo "#----------------------------------------------------#" | tee -a -- "$LOG_FILE"
-echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO IOCCC TOOLS #" | tee -a -- "$LOG_FILE"
-echo "#----------------------------------------------------#" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+write_echo "#----------------------------------------------------#"
+write_echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO IOCCC TOOLS #"
+write_echo "#----------------------------------------------------#"
+write_echo ""
 
 ################
 # final report #
 ################
 
 if [[ ! -z "$WARNING_SUMMARY" ]]; then
-    echo 1>&2
-    echo "One or more POSSIBLE issues detected:" | tee -a -- "$LOG_FILE"
-    echo  | tee -a -- "$LOG_FILE"
-    echo "$WARNING_SUMMARY" | tee -a -- "$LOG_FILE"
-    echo  | tee -a -- "$LOG_FILE"
+    write_echo 1>&2
+    write_echo "One or more POSSIBLE issues detected:"
+    write_echo ""
+    write_echo "$WARNING_SUMMARY"
+    write_echo ""
     # make it so log file is not deleted even if -x specified
     X_FLAG=""
 fi
 if [[ "$EXIT_CODE" -ne 0 ]]; then
-    echo 1>&2
-    echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
-    echo "$FAILURE_SUMMARY" | tee -a -- "$LOG_FILE"
-    echo  | tee -a -- "$LOG_FILE"
-    echo "Final exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
-    echo "Please file an issue on the GitHub issues page:" | tee -a -- "$LOG_FILE"
-    echo  | tee -a -- "$LOG_FILE"
-    echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
-    echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
-    echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
-    echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
-    echo "the Judges." | tee -a -- "$LOG_FILE"
+    write_echo 1>&2
+    write_echo "One or more problems occurred:"
+    write_echo "$FAILURE_SUMMARY"
+    write_echo ""
+    write_echo "Final exit code: $EXIT_CODE"
+    write_echo ""
+    write_echo "Please file an issue on the GitHub issues page:"
+    write_echo ""
+    write_echo "	https://github.com/ioccc-src/mkiocccentry/issues"
+    write_echo ""
+    write_echo "making sure to attach $LOG_FILE with your report. You may"
+    write_echo "instead email the Judges but you're encouraged to file a"
+    write_echo "report instead. This is because not all tools were written by"
+    write_echo "the Judges."
 elif [[ -z "$X_FLAG" ]]; then
-    echo "All tests PASSED" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
-    echo "A log of the above tests was saved to $LOG_FILE." | tee -a -- "$LOG_FILE"
-    echo "If you feel everything is in order you may safely delete that file." | tee -a -- "$LOG_FILE"
-    echo "Otherwise you may report the issue at the GitHub issue page:" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
-    echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
-    echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
-    echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
-    echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
-    echo "the Judges." | tee -a -- "$LOG_FILE"
+    write_echo "All tests PASSED"
+    write_echo ""
+    write_echo "A log of the above tests was saved to $LOG_FILE."
+    write_echo "If you feel everything is in order you may safely delete that file."
+    write_echo "Otherwise you may report the issue at the GitHub issue page:"
+    write_echo ""
+    write_echo "	https://github.com/ioccc-src/mkiocccentry/issues"
+    write_echo ""
+    write_echo "making sure to attach $LOG_FILE with your report. You may"
+    write_echo "instead email the Judges but you're encouraged to file a"
+    write_echo "report instead. This is because not all tools were written by"
+    write_echo "the Judges."
 fi
 
 if [[ -z "$X_FLAG" ]]; then
-    echo 1>&2
-    echo "NOTE: $LOG_FILE contains various information about" 1>&2
-    echo "your environment including things such as hostname, login name, operating system" 1>&2
-    echo "information, paths and versions of various tools. Although not encouraged," 1>&2
-    echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
-    echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
-    echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
-    echo "code." 1>&2
+    write_echo 1>&2
+    write_echo "NOTE: $LOG_FILE contains various information about" 1>&2
+    write_echo "your environment including things such as hostname, login name, operating system" 1>&2
+    write_echo "information, paths and versions of various tools. Although not encouraged," 1>&2
+    write_echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
+    write_echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
+    write_echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
+    write_echo "code." 1>&2
 else
     rm -f "$LOG_FILE"
 fi
 # All Done!!! -- Jessica Noll, Age 2
 #
 if [[ "$V_FLAG" -gt 1 ]]; then
-    echo "About to exit with exit code: $EXIT_CODE" 1>&2
+    write_echo "About to exit with exit code: $EXIT_CODE" 1>&2
 fi
 exit "$EXIT_CODE"
