@@ -2,7 +2,7 @@
 #
 # test_ioccc - mkiocccentry test tools
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -116,9 +116,9 @@ LDFLAGS=
 #
 #	^^ the line is above :-)
 #
-# TODO - ###################################################################### - TODO #
-# TODO - In 2023 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
-# TODO - ###################################################################### - TODO #
+# TODO - ############################################################################### - TODO #
+# TODO - Sometime in 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - ############################################################################### - TODO #
 #
 C_STD= -std=gnu11
 #C_STD= -std=gnu17

@@ -2,7 +2,7 @@
 #
 # ioccc_test.sh - perform the complete suite of tests for the mkiocccentry repo
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,

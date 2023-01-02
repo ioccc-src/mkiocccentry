@@ -106,9 +106,9 @@ LDFLAGS=
 #
 #	^^ the line is above :-)
 #
-# TODO - ###################################################################### - TODO #
-# TODO - In 2023 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
-# TODO - ###################################################################### - TODO #
+# TODO - ############################################################################### - TODO #
+# TODO - Sometime in 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - ############################################################################### - TODO #
 #
 C_STD= -std=gnu11
 #C_STD= -std=gnu17

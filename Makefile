@@ -4,7 +4,7 @@
 #
 # For the mkiocccentry utility:
 #
-# Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -30,42 +30,9 @@
 ####
 
 ####
-# For the iocccsize utility:
+# See also, the following files for additional Copyright information:
 #
-# This IOCCC size tool source file.  See below for the VERSION string.
-#
-# "You are not expected to understand this" :-)
-#
-# Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
-# With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
-####
-
-####
-# For the dbg facility:
-#
-# Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
-#
-# Permission to use, copy, modify, and distribute this software and
-# its documentation for any purpose and without fee is hereby granted,
-# provided that the above copyright, this permission notice and text
-# this comment, and the disclaimer below appear in all of the following:
-#
-#       supporting documentation
-#       source copies
-#       source works derived from this source
-#       binaries derived from this source or from derived source
-#
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
-#
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-#
-# Share and enjoy! :-)
+# iocccsize.c iocccsize.h soup/rule_count.c dbg/* dyn_alloc/*
 ####
 
 
@@ -164,9 +131,9 @@ LDFLAGS=
 #
 #	^^ the line is above :-)
 #
-# TODO - ###################################################################### - TODO #
-# TODO - In 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
-# TODO - ###################################################################### - TODO #
+# TODO - ############################################################################### - TODO #
+# TODO - Sometime in 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - ############################################################################### - TODO #
 #
 C_STD= -std=gnu11
 #C_STD= -std=gnu17

@@ -2,7 +2,7 @@
 #
 # dbg - info, debug, warning, error and usage message facilities
 #
-# Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 1989,1997,2018-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -114,9 +114,9 @@ MAKE_CD_Q= --no-print-directory
 #
 #       ^^ the line is above :-)
 #
-# TODO - ###################################################################### - TODO #
-# TODO - In 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
-# TODO - ###################################################################### - TODO #
+# TODO - ############################################################################### - TODO #
+# TODO - Sometime in 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - ############################################################################### - TODO #
 #
 C_STD= -std=gnu11
 #C_STD= -std=gnu17
