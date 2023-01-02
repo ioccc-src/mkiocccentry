@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH bug_report.sh 1 "08 November 2022" "bug_report.sh" "IOCCC tools"
+.TH bug_report.sh 1 "02 January 2023" "bug_report.sh" "IOCCC tools"
 .SH NAME
 bug_report.sh \- run a series of tests, collecting system information in the process, to help report bugs and issues
 .SH SYNOPSIS
-\fBbug_report.sh\fP [\-h] [\-V] [\-v level] [\-D level]
+\fBbug_report.sh\fP [\-h] [\-V] [\-v level] [\-D level] [\-t]
 .SH DESCRIPTION
 \fBbug_report.sh\fP runs a series of tests and scripts to gather as much information about your system as possible in order to help with reporting bugs.
 If any step fails it will let you know and recommend that you file an issue at the GitHub issue page, reminding you to attach the log file that the script creates.
@@ -28,6 +28,9 @@ Set verbosity level to level.
 .TP
 \fB\-V\fP
 Show version and exit.
+.TP
+\fB\-t\fP
+Disable make actions.
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
 In this case it will tell you that all should be okay and you can safely delete the log file.

@@ -20,7 +20,7 @@
 #
 # Maintain this list towards the top of file, in sorted order.
 #
-# Do NOT put this tool (bug-report.sh) in the list, it you will
+# Do NOT put this tool (bug_report.sh) in the list, it you will
 # cause an infinite loop.
 #
 export TOOLS="
@@ -62,13 +62,15 @@ export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
+export T_FLAG=""
 export EXIT_CODE=0
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: $V_FLAG)
     -D level		    set verbosity level for tests (def: $DBG_LEVEL)
+    -t			    disable make actions (def: run make actions)
 
 Exit codes:
      0   all is well
@@ -82,7 +84,7 @@ $0 version: $BUG_REPORT_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D: flag; do
+while getopts :hVv:D:t flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -93,6 +95,8 @@ while getopts :hVv:D: flag; do
     v)	V_FLAG="$OPTARG";
 	;;
     D)  DBG_LEVEL="$OPTARG";
+	;;
+    t)  T_FLAG="1"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -1093,35 +1097,37 @@ echo "# SECTION 3: COMPILATION CHECKS #" | tee -a -- "$LOG_FILE"
 echo "#################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# make clobber: start clean
-run_check 41 "make clobber"
+if [[ -z "$T_FLAG" ]]; then
+    # make clobber: start clean
+    run_check 41 "make clobber"
 
-# make all: compile everything before we do anything else
-#
-# NOTE: This will indirectly call make fast_hostchk which, if it reports an
-# issue, will be reported here. However we also directly invoke hostchk.sh later
-# which will also report an issue so that one would likely see the warning more
-# than once. If you only see the warning once then there probably is also a
-# problem. The warning issued will suggest that you can file the issue with
-# this script and it also suggests that you can get more information with
-# running hostchk.sh directly.
-#
-# Obviously one needn't run this script a second or third time just because it
-# runs hostchk.sh which suggests that you run this script each time it exits
-# non-zero! :-) Sorry in advance if this (to make use of an American English
-# phrase which I will happily use for a pun for a pun not made is a wasted
-# opportunity :-) ) throws you for a loop! :-) But now that you're in the loop
-# it shouldn't even matter. :-)
-#
-# This might seem extra verbose or overkill but we feel that if there's an issue
-# with hostchk.sh it really is an issue that will likely prevent a successful
-# use of this repo so each time the script fails we report the issue for that
-# very reason.
-#
-run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
+    # make all: compile everything before we do anything else
+    #
+    # NOTE: This will indirectly call make fast_hostchk which, if it reports an
+    # issue, will be reported here. However we also directly invoke hostchk.sh later
+    # which will also report an issue so that one would likely see the warning more
+    # than once. If you only see the warning once then there probably is also a
+    # problem. The warning issued will suggest that you can file the issue with
+    # this script and it also suggests that you can get more information with
+    # running hostchk.sh directly.
+    #
+    # Obviously one needn't run this script a second or third time just because it
+    # runs hostchk.sh which suggests that you run this script each time it exits
+    # non-zero! :-) Sorry in advance if this (to make use of an American English
+    # phrase which I will happily use for a pun for a pun not made is a wasted
+    # opportunity :-) ) throws you for a loop! :-) But now that you're in the loop
+    # it shouldn't even matter. :-)
+    #
+    # This might seem extra verbose or overkill but we feel that if there's an issue
+    # with hostchk.sh it really is an issue that will likely prevent a successful
+    # use of this repo so each time the script fails we report the issue for that
+    # very reason.
+    #
+    run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
 
-# make test: run the IOCCC toolkit test suite
-run_check 43 "make test"
+    # make test: run the IOCCC toolkit test suite
+    run_check 43 "make test"
+fi
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
@@ -1166,10 +1172,12 @@ run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/v
 # run_flex.sh -v 7: check if flex will work
 run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./soup/limit_ioccc.sh -D ./jparse"
 
-# run make all again: run_bison.sh and run_flex.sh will likely cause a need for
-# recompilation
-echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
-run_check 47 "make all"
+if [[ -z "$T_FLAG" ]]; then
+    # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
+    # recompilation
+    echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
+    run_check 47 "make all"
+fi
 
 # post-clean
 rm -f lex.yy.c
