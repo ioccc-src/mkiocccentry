@@ -421,17 +421,11 @@ chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-all_dbg: dbg/Makefile
-	@${MAKE} -C dbg all
-
 all_dyn_array: dyn_array/Makefile
 	@${MAKE} -C dyn_array all
 
 all_jparse: jparse/Makefile
 	@${MAKE} -C jparse all
-
-all_man: man/Makefile
-	@${MAKE} -C man all
 
 all_soup: soup/Makefile
 	@${MAKE} -C soup all
@@ -445,9 +439,6 @@ dbg/dbg.h: dbg/Makefile
 dbg/dbg.a: dbg/Makefile
 	@${MAKE} -C dbg extern_liba
 
-dbg/man/man3/dbg.3: dbg/Makefile
-	@${MAKE} -C dbg extern_man
-
 dbg/dbg_test: dbg/Makefile
 	@${MAKE} -C dbg dbg_test
 
@@ -457,9 +448,6 @@ dyn_array/dyn_array.h: dyn_array/Makefile
 dyn_array/dyn_array.a: dyn_array/Makefile
 	@${MAKE} -C dyn_array extern_liba
 
-dyn_array/man/man3/dyn_array.3: dyn_array/Makefile
-	@${MAKE} -C dyn_array extern_man
-
 jparse/jparse.h: jparse/Makefile
 	@${MAKE} -C jparse extern_include
 
@@ -468,12 +456,6 @@ jparse/jparse.a: jparse/Makefile
 
 jparse/jparse: jparse/Makefile
 	@${MAKE} -C jparse extern_prog
-
-jparse/man/man1/jparse.1: jparse/Makefile
-	@${MAKE} -C jparse extern_man
-
-jparse/man/man8/jparse_test.8: jparse/Makefile
-	@${MAKE} -C jparse extern_man
 
 jparse/jsemtblgen: jparse/Makefile
 	@${MAKE} -C jparse extern_prog
@@ -615,7 +597,7 @@ all_sem_ref_ptch: soup/Makefile
 
 # sequence exit codes
 #
-seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -623,7 +605,6 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefi
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
@@ -642,7 +623,7 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -650,7 +631,6 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
@@ -683,7 +663,7 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
 
 # inspect and verify shell scripts
 #
-shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -691,7 +671,6 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
@@ -718,17 +697,7 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 
 # inspect and verify man pages
 #
-check_man: man/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} -C man check_man
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-# vi/vim tags
-#
-tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -736,7 +705,21 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile ma
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
+
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
+	soup/Makefile test_ioccc/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C jparse $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
@@ -746,7 +729,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile ma
 
 # perform all of the mkiocccentry repo required tests
 #
-test: all soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+test: all soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -754,7 +737,6 @@ test: all soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile ma
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	@echo
@@ -782,7 +764,7 @@ mkchk_sem: soup/Makefile
 
 # rule used by make clean
 #
-prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -790,7 +772,6 @@ prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Mak
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	@echo
@@ -798,7 +779,7 @@ prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Mak
 
 # rule used by prep.sh and make clobber
 #
-prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -806,7 +787,6 @@ prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/M
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	${RM} -f ${TARGETS}
@@ -820,7 +800,7 @@ prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/M
 
 # clean legacy code and files - files that are no longer needed
 #
-legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -828,7 +808,6 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	${RM} -f jint.o jint_gen.o
@@ -844,7 +823,7 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
 
 # clobber legacy code and files - files that are no longer needed
 #
-legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -852,7 +831,6 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C jparse $@
-	${MAKE} -C man $@
 	${MAKE} -C soup $@
 	${MAKE} -C test_ioccc $@
 	${RM} -f jint jfloat
@@ -1024,7 +1002,7 @@ all.status: dbg.status dyn_array.status jparse.status
 configure:
 	@echo nothing to configure
 
-clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -1033,7 +1011,6 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${MAKE} -C dyn_array $@
 	${MAKE} -C test_ioccc $@
 	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
 	@echo
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
@@ -1041,7 +1018,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -1050,7 +1027,6 @@ clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/
 	${MAKE} -C dyn_array $@
 	${MAKE} -C test_ioccc $@
 	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
 	@echo
 	${RM} -f limit_ioccc.sh
@@ -1061,7 +1037,7 @@ clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all dbg/Makefile man/Makefile
+install: all dbg/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -1069,7 +1045,6 @@ install: all dbg/Makefile man/Makefile
 	@# we have to first make sure the directories exist!
 	${INSTALL} -v -d -m 0755 ${DEST_DIR}
 	${INSTALL} -v -m 0555 ${TARGETS} ${DEST_DIR}
-	${MAKE} -C man install
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -1086,7 +1061,6 @@ depend: ${ALL_CSRC}
 	@${MAKE} -C dyn_array $@
 	@${MAKE} -C test_ioccc $@
 	@${MAKE} -C soup $@
-	@${MAKE} -C man $@
 	@${MAKE} -C jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"

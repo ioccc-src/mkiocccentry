@@ -37,16 +37,7 @@ jstrdecode
 jstrencode
 limit_ioccc.sh
 makefile.local
-man/man3/dbg.3
-man/man3/dyn_array.3
-man/man3/err.3
-man/man1/jparse.1
-man/man8/jparse_test.8
-man/man3/msg.3
-man/man3/printf_usage.3
-man/man3/warn.3
-man/man3/warn_or_err.3
-man/man3/werr.3
+man
 mkiocccentry
 NOTES
 oebxergfB.txt

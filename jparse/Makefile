@@ -658,11 +658,10 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} test_jparse/Makefile
+check_man: ${ALL_MAN_TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all $@
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \

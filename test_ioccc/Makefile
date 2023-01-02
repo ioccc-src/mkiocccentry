@@ -36,6 +36,7 @@
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
 #
+CHECKNR= checknr
 CC= cc
 CMP= cmp
 GREP= grep
@@ -142,9 +143,10 @@ SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh 
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES=
+MAN1_PAGES= man/man1/fnamchk.1
 MAN3_PAGES=
-MAN8_PAGES=
+MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
+	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -417,11 +419,27 @@ shellcheck: ${SH_FILES} .shellcheckrc
 
 # inspect and verify man pages
 #
-check_man:
+check_man: ${ALL_MAN_TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@echo "${OUR_NAME}: nothing to do"
+	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	    echo 'The checknr command could not be found.' 1>&2; \
+	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/checknr' 1>&2; \
+	    echo ''; 1>&2; \
+	else \
+	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
+	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
+		exit 23; \
+	    fi; \
+	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
