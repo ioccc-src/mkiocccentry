@@ -273,7 +273,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	test prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install depend \
+	configure clean clobber install depend tags \
 	test_JSON/info.json/good/info.reference.json \
 	test_JSON/auth.json/good/auth.reference.json
 

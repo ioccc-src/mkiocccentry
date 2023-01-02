@@ -312,7 +312,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install depend \
+	configure clean clobber install depend tags \
 	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
 	hostchk.sh limit_ioccc.sh all_sem_ref all_sem_ref_ptch
 
