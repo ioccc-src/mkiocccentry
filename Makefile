@@ -523,6 +523,7 @@ reset_min_timestamp: soup/Makefile
 prep: test_ioccc/prep.sh
 	${RM} -f ${BUILD_LOG}
 	@echo "./test_ioccc/prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
+	@#-./test_ioccc/prep.sh -l "${BUILD_LOG}"
 	@-./test_ioccc/prep.sh 2>&1 | ${TEE} "${BUILD_LOG}"; \
 	    EXIT_CODE="$${PIPESTATUS[0]}"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \

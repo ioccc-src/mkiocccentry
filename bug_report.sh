@@ -1319,8 +1319,12 @@ if [[ -e "./makefile.local" ]]; then
 	write_echo "### WARNING: Found Makefile overriding file makefile.local:"
 	write_echo "cat ./makefile.local"
 	write_echo "--"
-	# tee -a -- "$LOG_FILE" < makefile.local
-	< makefile.local tee -a -- "$LOG_FILE"
+	if [[ -z "$L_FLAG" ]]; then
+	    # tee -a -- "$LOG_FILE" < makefile.local
+	    < makefile.local tee -a -- "$LOG_FILE"
+	else
+	    cat makefile.local >> "$LOG_FILE"
+	fi
 	write_echo "--"
     else
 	write_echo "### NOTICE: Found unreadable makefile.local"
