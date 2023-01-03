@@ -143,22 +143,43 @@ fi
 #
 write_echo()
 {
-    if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: expected 1 arg to write_echo, found $#" | tee -a -- "$LOG_FILE"
-	return 1
-    fi
+    local MSG="$*"
 
     if [[ -z "$L_FLAG" ]]; then
-	echo "$1" | tee -a -- "$LOG_FILE"
+	echo "$MSG" | tee -a -- "$LOG_FILE"
     else
-	echo "$1" >> "$LOG_FILE"
+	echo "$MSG" >> "$LOG_FILE"
     fi
 }
-# write_command - invoke command redirecting output only to the log file or to
+# exec_command - invoke command redirecting output only to the log file or to
 # both stdout and the log file
-write_command()
+exec_command()
 {
+    local COMMAND=$*
+    if [[ -z "$L_FLAG" ]]; then
+	command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
+	return "${PIPESTATUS[0]}"
+    else
+	command ${COMMAND} >> "$LOG_FILE" 2>&1
+	return $?
+    fi
+
 }
+# exec_command_lines - invoke command redirecting output only to the log file or
+# to both stdout and the log file but filter through head to show only N lines.
+exec_command_lines()
+{
+    local LINES="$1"
+    local COMMAND="${*:2}"
+    if [[ -z "$L_FLAG" ]]; then
+	command ${COMMAND} 2>&1 | head -n "$LINES" | tee -a -- "$LOG_FILE"
+	return "${PIPESTATUS[0]}"
+    else
+	command ${COMMAND} | head -n "$LINES" >> "$LOG_FILE" 2>&1
+	return "${PIPESTATUS[0]}"
+    fi
+}
+
 # is_exec   - determine if arg exists, is a regular file and is executable
 #
 is_exec()
@@ -255,7 +276,7 @@ get_version_optional() {
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" --version
 	write_echo "## $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -266,7 +287,7 @@ get_version_optional() {
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" -v
 	write_echo "## $COMMAND -v ABOVE"
 	write_echo ""
 	return
@@ -277,7 +298,7 @@ get_version_optional() {
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" -V
 	write_echo "## $COMMAND -V ABOVE"
 	write_echo ""
 	return
@@ -313,7 +334,7 @@ get_version_optional() {
 	$WHAT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$WHAT" "${COMMAND}"
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -329,7 +350,7 @@ get_version_optional() {
 	$IDENT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$IDENT" "${COMMAND}"
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -361,7 +382,7 @@ get_version_optional() {
 	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
-	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
+	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
 	    write_echo "## OUTPUT OF strings $COMMAND ABOVE"
 	    write_echo ""
 	    return
@@ -417,7 +438,7 @@ get_version() {
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" --version
 	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -428,7 +449,7 @@ get_version() {
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" -v
 	write_echo "## OUTPUT OF $COMMAND -v ABOVE"
 	write_echo ""
 	return
@@ -439,7 +460,7 @@ get_version() {
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}" -V
 	write_echo "## OUTPUT OF $COMMAND -V ABOVE"
 	write_echo ""
 	return
@@ -474,7 +495,7 @@ get_version() {
 	$WHAT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$WHAT" "${COMMAND}"
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -490,7 +511,7 @@ get_version() {
 	$IDENT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$IDENT" "${COMMAND}"
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -522,7 +543,7 @@ get_version() {
 	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
-	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
+	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
 	    write_echo "## strings $COMMAND ABOVE"
 	    write_echo ""
 	    return
@@ -580,7 +601,7 @@ get_version_minimal() {
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
+	exec_command "${COMMAND}"
 	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -612,10 +633,10 @@ get_version_minimal() {
     # well even if this succeeds. If either succeeds we will not try strings(1).
     #
     if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1
+	$WHAT "${COMMAND}" >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$WHAT" "${COMMAND}"
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -631,7 +652,7 @@ get_version_minimal() {
 	$IDENT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    exec_command "$IDENT" "${COMMAND}"
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -662,7 +683,7 @@ run_check_optional() {
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
-    local COMMAND="$1"
+    local COMMAND=$1
 
     write_echo "## RUNNING: $COMMAND"
 
@@ -670,9 +691,8 @@ run_check_optional() {
     # wrong about quoting this. If one does quote the below variable COMMAND it
     # will cause the command to fail making sure that the script is worthless.
     # shellcheck disable=SC2086
-    command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
-
-    status=${PIPESTATUS[0]}
+    exec_command ${COMMAND}
+    status=$?
     if [[ "$status" -ne 0 ]]; then
 	write_echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status"
     else
@@ -698,16 +718,11 @@ run_check_warn() {
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 3
     fi
-    local COMMAND="$1"
+    local COMMAND=$1
     write_echo "## RUNNING: $COMMAND"
 
-    # We have to disable the warning to quote COMMAND: shellcheck is totally
-    # wrong about quoting this. If one does quote the below variable COMMAND it
-    # will cause the command to fail making sure that the script is worthless.
-    # shellcheck disable=SC2086
-    #
-    command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
-    status=${PIPESTATUS[0]}
+    exec_command "${COMMAND}"
+    status=$?
     if [[ "$status" -ne 0 ]]; then
 	write_echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status"
 	WARNING_SUMMARY="$WARNING_SUMMARY
@@ -748,21 +763,17 @@ run_check() {
 	exit 3
     fi
     local CODE="$1"
-    local COMMAND="$2"
+    local COMMAND=$2
     write_echo "## RUNNING: $COMMAND"
 
-    # We have to disable the warning to quote COMMAND: shellcheck is totally
-    # wrong about quoting this. If one does quote the below variable COMMAND it
-    # will cause the command to fail making sure that the script is worthless.
-    # shellcheck disable=SC2086
-    #
-    command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
+    exec_command "${COMMAND}"
 
-    # The below reference to PIPESTATUS (instead of $?) fixes the bug introduced
-    # in commit 8343c4b8cb97e52df64fe8973e68f0d83c6090e1 where the exit status
-    # of each command was not checked properly which meant that even if a test
-    # failed it would not be reported as an issue which rather defeated the
-    # purpose of this script.
+    # Once upon a time there was a bug in this script in this function.
+    # PIPESTATUS was needed to fix a bug introduced in commit
+    # 8343c4b8cb97e52df64fe8973e68f0d83c6090e1 where the exit status of each
+    # command was not checked properly which meant that even if a test failed it
+    # would not be reported as an issue which rather defeated the purpose of
+    # this script.
     #
     # As amusing as the thought is that there's a bug in a script to help report
     # bugs and issues, this bug was not in fact intentional. :-) I had thought of it
@@ -771,7 +782,10 @@ run_check() {
     # laugh I'm keeping this comment here for the sake of humour and the irony that
     # I caused. You're welcome! :-)
     #
-    status=${PIPESTATUS[0]}
+    # But this function now actually does need to use '$?' so it makes this less
+    # fun. :-(
+    #
+    status=$?
     if [[ "$status" -ne 0 ]]; then
 	EXIT_CODE="$CODE"
 	write_echo "$0: ERROR: $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
@@ -1265,7 +1279,11 @@ if [[ -e "./soup/limit_ioccc.sh" ]]; then
 	write_echo "--"
 	write_echo "cat ./soup/limit_ioccc.sh"
 	# tee -a -- "$LOG_FILE" < ./soup/limit_ioccc.sh
-	< ./soup/limit_ioccc.sh tee -a -- "$LOG_FILE"
+	if [[ -z "$L_FLAG" ]]; then
+	    < ./soup/limit_ioccc.sh tee -a -- "$LOG_FILE"
+	else
+	    cat ./soup/limit_ioccc.sh >> "$LOG_FILE"
+	fi
 	write_echo "--" | tee -a -- "$LOG_FILE"
     else
 	write_echo "### NOTICE: Found unreadable limit_ioccc.sh"
@@ -1322,18 +1340,18 @@ write_echo ""
 # about is whether or not the user has changes that might be causing a problem.
 
 write_echo "## RUNNING: git status on the code"
-git --no-pager status | tee -a -- "$LOG_FILE"
+exec_command git --no-pager status
 write_echo ""
 write_echo "## git status ABOVE"
 write_echo ""
 
 write_echo "## RUNNING: git diff to check for local modifications to the code"
-git --no-pager diff | tee -a -- "$LOG_FILE"
+exec_command git --no-pager diff
 write_echo "## git diff ABOVE"
 write_echo ""
 
 write_echo "## RUNNING: git diff --staged to check for local modifications to the code"
-git --no-pager diff --staged | tee -a -- "$LOG_FILE"
+exec_command git --no-pager diff --staged
 write_echo "## git diff --staged ABOVE"
 write_echo ""
 
@@ -1386,20 +1404,20 @@ elif [[ -z "$X_FLAG" ]]; then
 fi
 
 if [[ -z "$X_FLAG" ]]; then
-    write_echo 1>&2
-    write_echo "NOTE: $LOG_FILE contains various information about" 1>&2
-    write_echo "your environment including things such as hostname, login name, operating system" 1>&2
-    write_echo "information, paths and versions of various tools. Although not encouraged," 1>&2
-    write_echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
-    write_echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
-    write_echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
-    write_echo "code." 1>&2
+    write_echo ""
+    write_echo "NOTE: $LOG_FILE contains various information about"
+    write_echo "your environment including things such as hostname, login name, operating system"
+    write_echo "information, paths and versions of various tools. Although not encouraged,"
+    write_echo "you are free to edit this file if you feel so inclined. This information is"
+    write_echo "added to the file in case it proves useful in debugging a problem, and therefore"
+    write_echo "we kindly request that you please provide it to us when you report a problem with this"
+    write_echo "code."
 else
     rm -f "$LOG_FILE"
 fi
 # All Done!!! -- Jessica Noll, Age 2
 #
 if [[ "$V_FLAG" -gt 1 ]]; then
-    write_echo "About to exit with exit code: $EXIT_CODE" 1>&2
+    write_echo "About to exit with exit code: $EXIT_CODE"
 fi
 exit "$EXIT_CODE"

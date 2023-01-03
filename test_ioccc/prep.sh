@@ -116,14 +116,14 @@ fi
 
 # if -l logfile was specified, remove it and recreate it to start out empty
 #
-if [[ -n "$LOGFILE" ]]; then
-    rm -f "$LOGFILE"
-    touch "$LOGFILE"
-    if [[ ! -f "${LOGFILE}" ]]; then
+if [[ -n "$LOG_FILE" ]]; then
+    rm -f "$LOG_FILE"
+    touch "$LOG_FILE"
+    if [[ ! -f "${LOG_FILE}" ]]; then
 	echo "$0: ERROR: couldn't create log file" 1>&2
 	exit 4
     fi
-    if [[ ! -w "${LOGFILE}" ]]; then
+    if [[ ! -w "${LOG_FILE}" ]]; then
 	echo "$0: ERROR: log file not writable" 1>&2
 	exit 4
     fi
@@ -212,7 +212,7 @@ make_action 20 load_json_ref
 make_action 21 use_json_ref
 make_action 22 clean_generated_obj
 make_action 23 all
-make_action 24 bug_report-tx
+make_action 24 bug_report-txl
 make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky

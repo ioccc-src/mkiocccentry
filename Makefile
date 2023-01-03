@@ -342,6 +342,9 @@ bug_report: bug_report.sh
 bug_report-tx: bug_report.sh
 	@-./bug_report.sh -t -x
 
+bug_report-txl: bug_report.sh
+	@-./bug_report.sh -t -x -l
+
 # slower more verbose build environment sanity check
 #
 hostchk: soup/hostchk.sh
