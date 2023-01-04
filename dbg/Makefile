@@ -530,20 +530,20 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${V} echo "${OUR_NAME}: nothing to do"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${V} echo "${OUR_NAME}: nothing to do"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################

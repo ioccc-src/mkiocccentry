@@ -751,21 +751,21 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean: test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jstr_test.out jstr_test2.out
-	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${RM} -f jstr_test.out jstr_test2.out
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################

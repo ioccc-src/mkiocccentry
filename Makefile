@@ -809,67 +809,67 @@ mkchk_sem: soup/Makefile
 #
 legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${MAKE} ${MAKE_CD_Q} -C soup $@
-	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${RM} -f jint.o jint_gen.o
-	${RM} -f jfloat.o jfloat_gen.o
-	${RM} -f jauthchk.o jinfochk.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o verge.o
-	${RM} -f chkentry.o entry_time.o entry_util.o fnamchk.o foo.o jparse.o json_sem.o
-	${RM} -f json_util.o location.o rule_count.o sanity.o utf8_posix_map.o util.o
-	${RM} -f sanity.o utf8_posix_map.o util.o
-	${RM} -f dbg.o dbg_test.o dyn_array.o dyn_test.o jnum_chk.o jnum_test.o json_chk.o
-	${RM} -f json_entry.o json.o utf8_test.o
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${Q} ${RM} -f jint.o jint_gen.o
+	${Q} ${RM} -f jfloat.o jfloat_gen.o
+	${Q} ${RM} -f jauthchk.o jinfochk.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o verge.o
+	${Q} ${RM} -f chkentry.o entry_time.o entry_util.o fnamchk.o foo.o jparse.o json_sem.o
+	${Q} ${RM} -f json_util.o location.o rule_count.o sanity.o utf8_posix_map.o util.o
+	${Q} ${RM} -f sanity.o utf8_posix_map.o util.o
+	${Q} ${RM} -f dbg.o dbg_test.o dyn_array.o dyn_test.o jnum_chk.o jnum_test.o json_chk.o
+	${Q} ${RM} -f json_entry.o json.o utf8_test.o
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${MAKE} ${MAKE_CD_Q} -C soup $@
-	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${RM} -f jint jfloat
-	${RM} -f jint.set.tmp jint_gen
-	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
-	${RM} -f jnumber
-	${RM} -rf jnumber.dSYM
-	${RM} -f jauthchk
-	${RM} -rf jauthchk.dSYM
-	${RM} -f jinfochk
-	${RM} -rf jinfochk.dSYM
-	${RM} -rf ref
-	${RM} -f chk.{auth,info}.{head,tail,ptch}.{c,h}
-	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
-	${RM} -rf test_iocccsize test_src test_work
-	${RM} -f dbg_test.c dbg_test.out
-	${RM} -rf dyn_test.dSYM
-	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	${RM} -f jnum_chk
-	${RM} -rf jnum_chk.dSYM
-	${RM} -rf test_iocccsize test_src test_work
-	${RM} -f .exit_code.*
-	${RM} -f .all_ref.*
-	${RM} -f dbg.out
-	${RM} -rf ioccc_test test
-	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
-	${RM} -f fnamchk jnum_gen jsemtblgen jstrdecode jstrencode verge
-	${RM} -f hostchk.sh prep.sh reset_tstamp.sh run_usage.sh vermod.sh
-	${RM} -f utf8_test
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${Q} ${RM} -f jint jfloat
+	${Q} ${RM} -f jint.set.tmp jint_gen
+	${Q} ${RM} -f jfloat.set.tmp jfloat_gen
+	${Q} ${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
+	${Q} ${RM} -f jnumber
+	${Q} ${RM} -rf jnumber.dSYM
+	${Q} ${RM} -f jauthchk
+	${Q} ${RM} -rf jauthchk.dSYM
+	${Q} ${RM} -f jinfochk
+	${Q} ${RM} -rf jinfochk.dSYM
+	${Q} ${RM} -rf ref
+	${Q} ${RM} -f chk.{auth,info}.{head,tail,ptch}.{c,h}
+	${Q} ${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
+	${Q} ${RM} -rf test_iocccsize test_src test_work
+	${Q} ${RM} -f dbg_test.c dbg_test.out
+	${Q} ${RM} -rf dyn_test.dSYM
+	${Q} ${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${Q} ${RM} -f jnum_chk
+	${Q} ${RM} -rf jnum_chk.dSYM
+	${Q} ${RM} -rf test_iocccsize test_src test_work
+	${Q} ${RM} -f .exit_code.*
+	${Q} ${RM} -f .all_ref.*
+	${Q} ${RM} -f dbg.out
+	${Q} ${RM} -rf ioccc_test test
+	${Q} ${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
+	${Q} ${RM} -f fnamchk jnum_gen jsemtblgen jstrdecode jstrencode verge
+	${Q} ${RM} -f hostchk.sh prep.sh reset_tstamp.sh run_usage.sh vermod.sh
+	${Q} ${RM} -f utf8_test
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 
 ########################################################################

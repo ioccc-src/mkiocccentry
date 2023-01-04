@@ -505,20 +505,20 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jint.test.o jfloat.test.o
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${RM} -f jint.test.o jfloat.test.o
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jparse_test.log jint.test jfloat.test
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${RM} -f jparse_test.log jint.test jfloat.test
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 
 
