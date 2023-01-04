@@ -401,33 +401,42 @@ man/man3/printf_usage.3:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: dbg_test check_man
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f dbg_test.out
-	@echo "RUNNING: dbg_test"
-	@echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
-	@-./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \
+test:
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${RM} -f dbg_test.out
+	${V} echo "RUNNING: dbg_test"
+	${V} echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
+	${Q} if [[ ! -x ./dbg_test ]]; then \
+	    echo "${OUR_NAME}: executable not found: ./dbg_test" 1>&2; \
+	    echo "${OUR_NAME}: trying to make dbg_test" 1>&2; \
+	    ${MAKE} dbg_test; \
+	fi
+	${Q} if [[ ! -x ./dbg_test ]]; then \
+	    echo "${OUR_NAME}: ERROR: unable to create excutable: ./dbg_test" 1>&2; \
+	    exit 20; \
+	fi
+	-${Q} ./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \
 	  EXIT_CODE="$$?"; \
 	  if [[ $$EXIT_CODE -ne 5 ]]; then \
-	    echo "exit status of dbg_test: $$EXIT_CODE != 5"; \
+	    echo "${OUR_NAME}: exit status of dbg_test: $$EXIT_CODE != 5"; \
 	    exit 21; \
 	  else \
 	      ${GREP} -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$$' dbg_test.out; \
 	      EXIT_CODE="$$?"; \
 	      if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "ERROR: did not find the correct dbg_test error message" 1>&2; \
-		echo "ERROR: beginning dbg_test.out contents" 1>&2; \
+		echo "${OUR_NAME}: ERROR: did not find the correct dbg_test error message" 1>&2; \
+		echo "${OUR_NAME}: ERROR: beginning dbg_test.out contents" 1>&2; \
 		${CAT} dbg_test.out 1>&2; \
-		echo "ERROR: dbg_test.out contents complete" 1>&2; \
+		echo "${OUR_NAME}: ERROR: dbg_test.out contents complete" 1>&2; \
 		exit 22; \
 	      else \
-		echo "PASSED: dbg_test"; \
+		echo "${OUR_NAME}: PASSED: dbg_test"; \
 	      fi; \
 	  fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #

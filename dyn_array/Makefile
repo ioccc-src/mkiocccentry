@@ -373,19 +373,28 @@ man/man3/dyn_array.3:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: check_man dyn_test
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@-./dyn_test; \
+test:
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} if [[ ! -x ./dyn_test ]]; then \
+	    echo "${OUR_NAME}: executable not found: ./dyn_test" 1>&2; \
+	    echo "${OUR_NAME}: trying to make dyn_test" 1>&2; \
+	    ${MAKE} dyn_test; \
+	fi
+	${Q} if [[ ! -x ./dyn_test ]]; then \
+	    echo "${OUR_NAME}: ERROR: unable to create excutable: ./dyn_test" 1>&2; \
+	    exit 20; \
+	fi
+	-${Q} ./dyn_test; \
 	EXIT_CODE="$$?"; \
 	if [[ $$EXIT_CODE -ne 0 ]]; then \
-	    echo 'ERROR: dyn_test failed, error code: $$EXIT_CODE'; \
+	    echo '${OUR_NAME}: ERROR: dyn_test failed, error code: $$EXIT_CODE'; \
 	else \
-	    echo "PASSED: dyn_test"; \
+	    echo ${OUR_NAME}: "PASSED: dyn_test"; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #

@@ -330,13 +330,13 @@ test_JSON/auth.json/good/auth.reference.json:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: all jparse_test.sh
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	 ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+test: jparse_test.sh
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #

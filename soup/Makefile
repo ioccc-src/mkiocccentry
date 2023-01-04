@@ -465,13 +465,13 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: all
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+test:
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${V} echo "${OUR_NAME}: nothing to do"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #

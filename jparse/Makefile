@@ -604,13 +604,22 @@ bison: jparse.tab.c jparse.tab.h
 flex: jparse.c jparse.lex.h
 	@:
 
-test: check_man test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse all test
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+test: test_jparse/Makefile
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} if [[ ! -x ./jparse ]]; then \
+	    echo "${OUR_NAME}: executable not found: ./jparse" 1>&2; \
+	    echo "${OUR_NAME}: trying to make jparse" 1>&2; \
+	    ${MAKE} jparse; \
+	fi
+	${Q} if [[ ! -x ./jparse ]]; then \
+	    echo "${OUR_NAME}: ERROR: unable to create excutable: ./jparse" 1>&2; \
+	    exit 20; \
+	fi
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse all test
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # rule used by prep.sh and make clean
 #

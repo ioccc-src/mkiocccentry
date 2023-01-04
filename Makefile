@@ -772,18 +772,18 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 
 # perform all of the mkiocccentry repo required tests
 #
-test: all soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile \
+test: soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${MAKE} ${MAKE_CD_Q} -C soup $@
-	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	@echo
-	@echo 'All tests PASSED'
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${V} echo
+	${V} echo 'All tests PASSED'
 
 # run test-chkentry on test_JSON files
 #

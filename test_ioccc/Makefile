@@ -370,13 +370,13 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: all ioccc_test.sh
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	 ./ioccc_test.sh
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+test: ioccc_test.sh
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ./ioccc_test.sh
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
