@@ -308,6 +308,8 @@ else
 	    write_echo "One or more tests failed:"
 	    write_echo "$FAILURE_SUMMARY"
 	    write_echo ""
+	else
+	    write_echo "One or more tests failed."
 	fi
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
