@@ -340,7 +340,16 @@ bug_report: bug_report.sh
 	@-./bug_report.sh -v 1
 
 bug_report-tx: bug_report.sh
+	@echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x"
+	@echo
 	@-./bug_report.sh -t -x
+	@echo
+	@echo "${OUR_NAME}: finished test of bug_report.sh -t -x"
+
+bug_report-txl: bug_report.sh
+	@echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x -l"
+	@-./bug_report.sh -t -x -l
+	@echo "${OUR_NAME}: finished test of bug_report.sh -t -x -l"
 
 # slower more verbose build environment sanity check
 #
@@ -514,6 +523,7 @@ reset_min_timestamp: soup/Makefile
 prep: test_ioccc/prep.sh
 	${RM} -f ${BUILD_LOG}
 	@echo "./test_ioccc/prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
+	@#-./test_ioccc/prep.sh -l "${BUILD_LOG}"
 	@-./test_ioccc/prep.sh 2>&1 | ${TEE} "${BUILD_LOG}"; \
 	    EXIT_CODE="$${PIPESTATUS[0]}"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \

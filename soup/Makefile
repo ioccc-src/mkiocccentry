@@ -54,7 +54,7 @@ SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP= sleep
 TOUCH= touch
-
+TR= tr
 
 ####################
 # Makefile control #
