@@ -180,7 +180,7 @@ make_action() {
     # announce pre-action
     #
 
-    write_echo "=-=-= Start: $MAKE $RULE =-=-="
+    write_echo "=-=-= START: $MAKE $RULE =-=-="
     write_echo
 
     # perform action
@@ -222,7 +222,7 @@ make_action() {
 
 # perform make actions
 #
-write_echo "=-=-=-=-= Start: $0 =-=-=-=-="
+write_echo "=-=-=-=-= START: $0 =-=-=-=-="
 write_echo
 make_action 10 clobber
 make_action 11 all
