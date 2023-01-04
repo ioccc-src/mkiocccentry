@@ -72,6 +72,15 @@ OUR_NAME= dbg
 #Q=
 Q= @
 
+# Q= implies -v 0
+# else -v 1
+#
+ifeq ($(strip ${Q}),@)
+Q_V_OPTION="0"
+else
+Q_V_OPTION="1"
+endif
+
 # V= @:  				do not echo debug statements (quiet mode)
 # V= @   				echo debug statements (debug / verbose mode)
 #
@@ -597,9 +606,9 @@ install: all install_man
 ###############
 
 depend: ${ALL_CSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -621,8 +630,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dbg.o: dbg.c dbg.h

@@ -491,17 +491,27 @@ use_flex_backup() {
 
     # copy backup flex C file in place
     #
-    echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
-    echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
-    cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
+	echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
+	cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
+	status="$?"
+    else
+	cp -f "$FLEX_BACKUP_C" "$FLEX_C"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: failed to copy $FLEX_BACKUP_C to $FLEX_C exit code: $status" 1>&2
 	exit 5
     fi
-    echo "cp -f -v $FLEX_BACKUP_H $FLEX_H"
-    cp -f -v "$FLEX_BACKUP_H" "$FLEX_H"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "cp -f -v $FLEX_BACKUP_H $FLEX_H"
+	cp -f -v "$FLEX_BACKUP_H" "$FLEX_H"
+	status="$?"
+    else
+	cp -f "$FLEX_BACKUP_H" "$FLEX_H"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: failed to copy $FLEX_BACKUP_H to $FLEX_H exit code: $status" 1>&2
 	exit 5
@@ -554,8 +564,10 @@ add_sorry() {
 
     # form the file with the apology
     #
-    echo "# prepending comment and line number reset to $FILE"
-    echo "cat $SORRY_H > $TMP_FILE"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "# prepending comment and line number reset to $FILE"
+	echo "cat $SORRY_H > $TMP_FILE"
+    fi
     cat "$SORRY_H" > "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -578,14 +590,21 @@ add_sorry() {
 
     # move the modified file into place
     #
-    echo "mv -v -f $TMP_FILE $FILE"
-    mv -v -f "$TMP_FILE" "$FILE"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "mv -v -f $TMP_FILE $FILE"
+	mv -v -f "$TMP_FILE" "$FILE"
+	status="$?"
+    else
+	mv -f "$TMP_FILE" "$FILE"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mv -v -f $TMP_FILE $FILE failed, exit code: $status" 1>&2
 	exit 22
     fi
-    echo "# completed update of $FILE"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "# completed update of $FILE"
+    fi
     return 0
 }
 
@@ -649,7 +668,9 @@ fi
 
 # execute flex
 #
-echo "$FLEX_PATH $* $PREFIX.l"
+if [[ $V_FLAG -ge 1 ]]; then
+    echo "$FLEX_PATH $* $PREFIX.l"
+fi
 "$FLEX_PATH" "$@" "$PREFIX.l"
 status="$?"
 if [[ $status -ne 0 ]]; then

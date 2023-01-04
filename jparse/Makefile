@@ -61,6 +61,15 @@ OUR_NAME= jparse
 #Q=
 Q= @
 
+# Q= implies -v 0
+# else -v 1
+#
+ifeq ($(strip ${Q}),@)
+Q_V_OPTION="0"
+else
+Q_V_OPTION="1"
+endif
+
 # V= @:  				do not echo debug statements (quiet mode)
 # V= @   				echo debug statements (debug / verbose mode)
 #
@@ -443,8 +452,8 @@ json_sem.o: json_sem.c
 # XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum bison version
 jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../soup/limit_ioccc.sh \
 	verge jparse.tab.ref.c jparse.tab.ref.h
-	./run_bison.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
-	    -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS}
+	${Q} ./run_bison.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
+	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
 # How to create jparse.c and jparse.lex.h
 #
@@ -457,8 +466,8 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../soup/
 # XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum flex version
 jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../soup/limit_ioccc.sh \
 	verge jparse.ref.c jparse.lex.ref.h
-	./run_flex.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
-	    -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
+	${Q} ./run_flex.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
+	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
 util.o: util.c util.h
 	${CC} ${CFLAGS} util.c -c
@@ -823,10 +832,10 @@ install: all test_jparse/Makefile install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -848,8 +857,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_gen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \

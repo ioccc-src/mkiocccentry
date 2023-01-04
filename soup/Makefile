@@ -37,6 +37,7 @@
 #	      Keep the list in alphabetical order.
 #
 AR= ar
+AWK= awk
 CC= cc
 CHECKNR= checknr
 CMP= cmp
@@ -74,6 +75,15 @@ OUR_NAME= soup
 #
 #Q=
 Q= @
+
+# Q= implies -v 0
+# else -v 1
+#
+ifeq ($(strip ${Q}),@)
+Q_V_OPTION="0"
+else
+Q_V_OPTION="1"
+endif
 
 # V= @:  				do not echo debug statements (quiet mode)
 # V= @   				echo debug statements (debug / verbose mode)
@@ -409,24 +419,24 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 ####################################
 
 limit_ioccc.sh: limit_ioccc.h version.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h
-	${RM} -f $@
-	@echo '#!/usr/bin/env bash' > $@
-	@echo '#' >> $@
-	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
-	@echo '#' >> $@
-	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
+	${Q} ${RM} -f $@
+	${V} echo '#!/usr/bin/env bash' > $@
+	${V} echo '#' >> $@
+	${V} echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
+	${V} echo '#' >> $@
+	${Q} ${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
-	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
+	${Q} ${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
 		     version.h limit_ioccc.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
-	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
+	-${Q} if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
 	    echo "export DIGRAPHS='yes'"; \
 	else \
 	    echo "export DIGRAPHS="; \
 	fi >> $@
-	-if ${GREP} -q '^#define TRIGRAPHS' limit_ioccc.h; then \
+	-${Q} if ${GREP} -q '^#define TRIGRAPHS' limit_ioccc.h; then \
 	    echo "export TRIGRAPHS='yes'"; \
 	else \
 	    echo "export TRIGRAPHS="; \
@@ -744,9 +754,9 @@ install: all install_man
 ###############
 
 depend: ${ALL_CSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -768,8 +778,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chk_sem_auth.o: ../jparse/../dyn_array/../dbg/dbg.h \

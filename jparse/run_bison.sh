@@ -498,17 +498,27 @@ use_bison_backup() {
 
     # copy bison backup C files in place
     #
-    echo "Warning: We are forced to use $BISON_BASENAME backup files instead of $BISON_BASENAME C output!" 1>&2
-    echo "cp -f -v $BISON_BACKUP_C $BISON_C"
-    cp -f -v "$BISON_BACKUP_C" "$BISON_C"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "Warning: We are forced to use $BISON_BASENAME backup files instead of $BISON_BASENAME C output!" 1>&2
+	echo "cp -f -v $BISON_BACKUP_C $BISON_C"
+	cp -f -v "$BISON_BACKUP_C" "$BISON_C"
+	status="$?"
+    else
+	cp -f "$BISON_BACKUP_C" "$BISON_C"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: failed to copy $BISON_BACKUP_C to $BISON_C exit code: $status" 1>&2
 	exit 5
     fi
-    echo "cp -f -v $BISON_BACKUP_H $BISON_H"
-    cp -f -v "$BISON_BACKUP_H" "$BISON_H"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "cp -f -v $BISON_BACKUP_H $BISON_H"
+	cp -f -v "$BISON_BACKUP_H" "$BISON_H"
+	status="$?"
+    else
+	cp -f "$BISON_BACKUP_H" "$BISON_H"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: failed to copy $BISON_BACKUP_H to $BISON_H exit code: $status" 1>&2
 	exit 5
@@ -560,8 +570,10 @@ add_sorry() {
 
     # form the file with the apology
     #
-    echo "# prepending comment and line number reset to $FILE"
-    echo "cat $SORRY_H > $TMP_FILE"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "# prepending comment and line number reset to $FILE"
+	echo "cat $SORRY_H > $TMP_FILE"
+    fi
     cat "$SORRY_H" > "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -574,7 +586,9 @@ add_sorry() {
 	echo "$0: ERROR: appending line number reset failed, exit code: $status" 1>&2
 	exit 20
     fi
-    echo "cat $FILE >> $TMP_FILE"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "cat $FILE >> $TMP_FILE"
+    fi
     cat "$FILE" >> "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -584,14 +598,21 @@ add_sorry() {
 
     # move the modified file into place
     #
-    echo "mv -v -f $TMP_FILE $FILE"
-    mv -v -f "$TMP_FILE" "$FILE"
-    status="$?"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "mv -v -f $TMP_FILE $FILE"
+	mv -v -f "$TMP_FILE" "$FILE"
+	status="$?"
+    else
+	mv -f "$TMP_FILE" "$FILE"
+	status="$?"
+    fi
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mv -v -f $TMP_FILE $FILE failed, exit code: $status" 1>&2
 	exit 22
     fi
-    echo "# completed update of $FILE"
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "# completed update of $FILE"
+    fi
     return 0
 }
 
@@ -637,7 +658,9 @@ fi
 # case: no usable bison found
 #
 if [[ -z $BISON_PATH ]]; then
-    echo "$0: Warning: failed to discover the path for an up to date bison as: $BISON_BASENAME" 1>&2
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: Warning: failed to discover the path for an up to date bison as: $BISON_BASENAME" 1>&2
+    fi
     use_bison_backup
     exit 0
 fi
@@ -655,7 +678,9 @@ fi
 
 # execute bison
 #
-echo "$BISON_PATH $* $PREFIX.y"
+if [[ $V_FLAG -ge 1 ]]; then
+    echo "$BISON_PATH $* $PREFIX.y"
+fi
 "$BISON_PATH" "$@" "$PREFIX.y"
 status="$?"
 if [[ $status -ne 0 ]]; then

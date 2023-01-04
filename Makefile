@@ -85,6 +85,15 @@ OUR_NAME= mkiocccentry
 #Q=
 Q= @
 
+# Q= implies -v 0
+# else -v 1
+#
+ifeq ($(strip ${Q}),@)
+Q_V_OPTION="0"
+else
+Q_V_OPTION="1"
+endif
+
 # V= @:  				do not echo debug statements (quiet mode)
 # V= @   				echo debug statements (debug / verbose mode)
 #
@@ -728,9 +737,9 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 #
 build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
-	${V} @echo
-	${V} @echo "${OUR_NAME}: make $@ starting"
-	${V} @echo
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
@@ -741,8 +750,8 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
-	${V} @echo
-	${V} @echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
@@ -1094,17 +1103,17 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 ###############
 
 depend: ${ALL_CSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C dbg $@
-	@${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	@${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	@${MAKE} ${MAKE_CD_Q} -C soup $@
-	@${MAKE} ${MAKE_CD_Q} -C jparse $@
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ starting"
+	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -1126,8 +1135,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${V} echo
+	${V} echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
