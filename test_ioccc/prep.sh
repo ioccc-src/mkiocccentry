@@ -28,6 +28,7 @@
 
 # setup
 #
+export FAILURE_SUMMARY=
 export LOG_FILE=
 export PREP_VERSION="0.1 2022-04-19"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
@@ -143,13 +144,26 @@ write_echo()
     fi
 }
 
+# write_echo_n - write a message to either the log file or both the log file and
+# stdout but without a trailing newline
+write_echo_n()
+{
+    local MSG="$*"
+
+    if [[ -n "$LOG_FILE" ]]; then
+	echo -n "$MSG" | tee -a -- "$LOG_FILE"
+    else
+	echo -n "$MSG" 1>&2
+    fi
+}
+
 # exec_command - invoke command redirecting output only to the log file or to
 # both stdout and the log file
 exec_command()
 {
     local COMMAND=$*
     if [[ -n "$LOG_FILE" ]]; then
-	command ${COMMAND} >> "$LOG_FILE"
+	command ${COMMAND} >> "$LOG_FILE" 2>&1
 	return $?
     else
 	command ${COMMAND} 2>&1
@@ -179,13 +193,15 @@ make_action() {
 
     # announce pre-action
     #
-
-    write_echo "=-=-= START: $MAKE $RULE =-=-="
-    write_echo
+    if [[ -z "$LOG_FILE" ]]; then
+	write_echo "=-=-= START: $MAKE $RULE =-=-="
+	write_echo "$MAKE" -f "$MAKEFILE" "$RULE"
+    else
+	write_echo_n "make_action $CODE $RULE "
+    fi
 
     # perform action
     #
-    write_echo "$MAKE" -f "$MAKEFILE" "$RULE"
     exec_command "$MAKE" -f "$MAKEFILE" "$RULE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -193,37 +209,55 @@ make_action() {
 	# process a make action failure
 	#
 	EXIT_CODE="$CODE"
-	write_echo
-	write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
+
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	$MAKE -f $MAKEFILE non-zero exit code: $status"
+	if [[ -z "$LOG_FILE" ]]; then
+	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
+	fi
 	if [[ -n $E_FLAG ]]; then
-	    write_echo
-	    write_echo "$0: ERROR: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
-	    write_echo
-	    write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
-	    write_echo
+	    if [[ -z "$LOG_FILE" ]]; then
+		write_echo
+		write_echo "$0: ERROR: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
+		write_echo
+		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "ERROR exit code $status"
+	    fi
 	    exit "$EXIT_CODE"
 	else
-	    write_echo
-	    write_echo "$0: Warning: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
-	    write_echo
-	    write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
-	    write_echo
+	    if [[ -z "$LOG_FILE" ]]; then
+		write_echo
+		write_echo "$0: Warning: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
+		write_echo
+		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "ERROR exit code $status"
+	    fi
 	fi
 
     # announce post-action
     #
     else
-	write_echo
-	write_echo "=-=-= PASS: $MAKE $RULE =-=-="
-	write_echo
+	if [[ -z "$LOG_FILE" ]]; then
+	    write_echo
+	    write_echo "=-=-= PASS: $MAKE $RULE =-=-="
+	    write_echo
+	else
+	    write_echo "OK"
+	fi
     fi
     return 0;
 }
 
 # perform make actions
 #
-write_echo "=-=-=-=-= START: $0 =-=-=-=-="
-write_echo
+if [[ -z "$LOG_FILE" ]]; then
+    write_echo "=-=-=-=-= START: $0 =-=-=-=-="
+    write_echo
+fi
 make_action 10 clobber
 make_action 11 all
 make_action 12 depend
@@ -247,14 +281,36 @@ make_action 26 seqcexit
 make_action 27 picky
 make_action 28 tags
 make_action 29 test
+
 if [[ $EXIT_CODE -eq 0 ]]; then
-    write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
-    write_echo
+    if [[ -z "$LOG_FILE" ]]; then
+	write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
+	write_echo
+    else
+	write_echo "All tests PASSED."
+	write_echo ""
+	write_echo "See test_ioccc/test_ioccc.log for more details."
+    fi
 else
-    write_echo "=-=-=-=-= FAIL: $0 =-=-=-=-="
-    write_echo
-    write_echo "=-=-=-=-= Will exit: $EXIT_CODE =-=-=-=-="
-    write_echo
+    if [[ -z "$LOG_FILE" ]]; then
+	write_echo "=-=-=-=-= FAIL: $0 =-=-=-=-="
+	write_echo
+	write_echo "=-=-=-=-= Will exit: $EXIT_CODE =-=-=-=-="
+	write_echo
+	if [[ -n "$FAILURE_SUMMARY" ]]; then
+	    write_echo "One or more tests failed:"
+	    write_echo "$FAILURE_SUMMARY"
+	    write_echo ""
+	fi
+	write_echo "See test_ioccc/test_ioccc.log for more details."
+    else
+	if [[ -n "$FAILURE_SUMMARY" ]]; then
+	    write_echo "One or more tests failed:"
+	    write_echo "$FAILURE_SUMMARY"
+	    write_echo ""
+	fi
+	write_echo "See test_ioccc/test_ioccc.log for more details."
+    fi 
 fi
 
 # All Done!!! -- Jessica Noll, Age 2

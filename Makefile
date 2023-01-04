@@ -536,15 +536,8 @@ reset_min_timestamp: soup/Makefile
 # rule instead.
 #
 prep: test_ioccc/prep.sh
-	${RM} -f ${BUILD_LOG}
-	@echo "./test_ioccc/prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
-	@-./test_ioccc/prep.sh -l "${BUILD_LOG}"
-	    EXIT_CODE="$${PIPESTATUS[0]}"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "=-=-=-=-= Warning: test_ioccc/prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
-		echo 1>&2; \
-	    fi
-	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
+	@${RM} -f ${BUILD_LOG}
+	@-./test_ioccc/prep.sh -l "${BUILD_LOG}";
 
 # make build release pull
 #
@@ -562,18 +555,7 @@ build: release
 pull: release
 release: test_ioccc/prep.sh
 	${RM} -f ${BUILD_LOG}
-	@echo "./test_ioccc/prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}"
-	@./test_ioccc/prep.sh -e -o 2>&1 | ${TEE} "${BUILD_LOG}"; \
-	    EXIT_CODE="$${PIPESTATUS[0]}"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "=-=-=-=-= Warning: test_ioccc/prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
-		echo 1>&2; \
-		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
-		echo 1>&2; \
-		exit 1; \
-	    else \
-		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
-	    fi
+	@./test_ioccc/prep.sh -e -o -l ${BUILD_LOG} 2>&1
 
 # make parser
 #
