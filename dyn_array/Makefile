@@ -528,7 +528,7 @@ clean:
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-clobber: clean
+clobber: legacy_clobber clean
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo

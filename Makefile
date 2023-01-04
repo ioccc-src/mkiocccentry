@@ -856,7 +856,6 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} ${RM} -rf test_iocccsize test_src test_work
 	${Q} ${RM} -f dbg_test.c dbg_test.out
 	${Q} ${RM} -rf dyn_test.dSYM
-	${Q} ${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	${Q} ${RM} -f jnum_chk
 	${Q} ${RM} -rf jnum_chk.dSYM
 	${Q} ${RM} -rf test_iocccsize test_src test_work
@@ -1025,7 +1024,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-clobber: clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
+clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -1042,6 +1041,7 @@ clobber: clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f .sorry.*
 	${RM} -f ${TARGETS}
 	${RM} -rf man
+	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
