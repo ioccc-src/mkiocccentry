@@ -66,7 +66,8 @@ export T_FLAG=""
 export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l]
+export MAKE_FLAGS="Q= V=@ MAKE_CD_Q= -w"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_flags]
 
     -h			    print help and exit
     -V			    print version and exit
@@ -75,6 +76,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l]
     -t			    disable make actions (def: run make actions)
     -x			    remove bug report if no problems detected
     -l			    only write to log file
+    -M make_flags	    set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
      0   all is well
@@ -88,7 +90,7 @@ $0 version: $BUG_REPORT_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:txl flag; do
+while getopts :hVv:D:txlM: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -105,6 +107,8 @@ while getopts :hVv:D:txl flag; do
     x)	X_FLAG="-x"
 	;;
     l)	L_FLAG="-l"
+	;;
+    M)  MAKE_FLAGS="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -1142,7 +1146,7 @@ write_echo ""
 
 if [[ -z "$T_FLAG" ]]; then
     # make clobber: start clean
-    run_check 41 "make clobber"
+    run_check 41 "make $MAKE_FLAGS clobber"
 
     # make all: compile everything before we do anything else
     #
@@ -1166,10 +1170,10 @@ if [[ -z "$T_FLAG" ]]; then
     # use of this repo so each time the script fails we report the issue for that
     # very reason.
     #
-    run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
+    run_check 42 "make $MAKE_FLAGS all" # the answer to life, the universe and everything conveniently makes all :-)
 
     # make test: run the IOCCC toolkit test suite
-    run_check 43 "make test"
+    run_check 43 "make $MAKE_FLAGS test"
 fi
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
@@ -1219,7 +1223,7 @@ if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
     # recompilation
     write_echo "## RUNNING make all a second time"
-    run_check 47 "make all"
+    run_check 47 "make $MAKE_FLAGS all"
 fi
 
 # post-clean
