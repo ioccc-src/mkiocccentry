@@ -537,7 +537,7 @@ reset_min_timestamp: soup/Makefile
 #
 prep: test_ioccc/prep.sh
 	@${RM} -f ${BUILD_LOG}
-	@-./test_ioccc/prep.sh -l "${BUILD_LOG}";
+	@./test_ioccc/prep.sh -l "${BUILD_LOG}"
 
 # make build release pull
 #
@@ -554,8 +554,8 @@ prep: test_ioccc/prep.sh
 build: release
 pull: release
 release: test_ioccc/prep.sh
-	${RM} -f ${BUILD_LOG}
-	@./test_ioccc/prep.sh -e -o -l ${BUILD_LOG} 2>&1
+	@${RM} -f ${BUILD_LOG}
+	@./test_ioccc/prep.sh -e -o -l "${BUILD_LOG}"
 
 # make parser
 #
