@@ -310,7 +310,7 @@ else
 	    write_echo ""
 	fi
 	write_echo "See test_ioccc/test_ioccc.log for more details."
-    fi 
+    fi
 fi
 
 # All Done!!! -- Jessica Noll, Age 2
