@@ -241,8 +241,7 @@ make_action 20 load_json_ref
 make_action 21 use_json_ref
 make_action 22 clean_generated_obj
 make_action 23 all
-# disable bug_report -t -x -l until make all works properly
-# make_action 24 bug_report-txl
+make_action 24 bug_report-txl
 make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky
