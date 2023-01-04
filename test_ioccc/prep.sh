@@ -30,7 +30,7 @@
 #
 export FAILURE_SUMMARY=
 export LOG_FILE=
-export PREP_VERSION="0.1 2022-04-19"
+export PREP_VERSION="0.2 2023-01-04"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
     -h              print help and exit

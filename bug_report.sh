@@ -57,7 +57,7 @@ export TOOLS="
     ./soup/vermod.sh
     "
 
-export BUG_REPORT_VERSION="0.7 2022-11-10"
+export BUG_REPORT_VERSION="0.8 2023-01-04"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
