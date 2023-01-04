@@ -297,7 +297,7 @@ BUILD_LOG= build.log
 # NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
 # with the arguments and options you want.
 
-ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc
+ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc
 
 # what to make by all but NOT to removed by clobber
 #
@@ -407,7 +407,7 @@ hostchk_warning:
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep \
         pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
-	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
+	all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc depend
 
 
 ####################################
@@ -443,11 +443,17 @@ chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
+all_dbg: dbg/Makefile
+	@${MAKE} ${MAKE_CD_Q} -C dbg all
+
 all_dyn_array: dyn_array/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C dyn_array all
 
 all_jparse: jparse/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C jparse all
+
+all_jparse_test: jparse/test_jparse/Makefile
+	@${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
 
 all_soup: soup/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C soup all
@@ -831,13 +837,14 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${Q} ${RM} -f jint jfloat
@@ -1025,7 +1032,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -1034,6 +1041,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${MAKE} ${MAKE_CD_Q} -C soup $@
 	${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
 	@echo
 	${RM} -f limit_ioccc.sh
 	${RM} -rf .hostchk.work.*
