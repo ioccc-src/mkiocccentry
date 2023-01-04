@@ -317,7 +317,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 #################################################
 
 .PHONY: all \
-	test prep_clean prep_clobber legacy_clean legacy_clobber install_man \
+	test legacy_clean legacy_clobber install_man \
 	configure clean clobber install depend
 
 
@@ -501,23 +501,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clean: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -rf test_iocccsize test_src test_work
-	${RM} -f ${TXZCHK_LOG}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

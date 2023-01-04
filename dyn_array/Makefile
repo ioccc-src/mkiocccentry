@@ -312,7 +312,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS}
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dyn_array.3 \
-	test check_man tags prep_clean prep_clobber legacy_clean legacy_clobber install_man \
+	test check_man tags legacy_clean legacy_clobber install_man \
 	configure clean clobber install depend
 
 
@@ -484,22 +484,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clean: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f dyn_test
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

@@ -281,7 +281,7 @@ all: ${TARGETS}
 #################################################
 
 .PHONY: all \
-	test prep_clean prep_clobber legacy_clean legacy_clobber \
+	test legacy_clean legacy_clobber \
 	configure clean clobber install depend tags \
 	test_JSON/info.json/good/info.reference.json \
 	test_JSON/auth.json/good/auth.reference.json
@@ -438,25 +438,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clean: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jnum_chk.o jnum_gen.o
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jstr_test.out jstr_test2.out
-	${RM} -f jnum_chk jnum_gen
-	${RM} -rf jnum_chk.dSYM
-	${RM} -rf jnum_gen.dSYM
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

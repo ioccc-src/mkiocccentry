@@ -321,7 +321,7 @@ all: ${TARGETS}
 #################################################
 
 .PHONY: all \
-	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
+	depend soup eat eating eat_soup eating_soup legacy_clean legacy_clobber \
 	configure clean clobber install depend tags \
 	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
 	hostchk.sh limit_ioccc.sh all_sem_ref all_sem_ref_ptch
@@ -677,22 +677,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 clean_mkchk_sem:
 	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
 	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
-
-prep_clean: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -rf ref
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
 	@echo

@@ -404,7 +404,7 @@ hostchk_warning:
 
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
-	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
+	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep \
         pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
 	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
@@ -805,42 +805,6 @@ clean_mkchk_sem: soup/Makefile
 mkchk_sem: soup/Makefile
 	${MAKE} ${MAKE_CD_Q} -C soup $@
 
-# rule used by make clean
-#
-prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${MAKE} ${MAKE_CD_Q} -C soup $@
-	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-# rule used by prep.sh and make clobber
-#
-prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${MAKE} ${MAKE_CD_Q} -C soup $@
-	${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${RM} -f ${TARGETS}
-	${RM} -f answers.txt
-	${RM} -f tags
-	${RM} -f jparse.output
-	${RM} -f legacy_os
-	${RM} -rf legacy_os.dSYM
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
 # clean legacy code and files - files that are no longer needed
 #
 legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
@@ -1061,7 +1025,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile \
+clobber: clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"

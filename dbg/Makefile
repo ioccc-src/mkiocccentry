@@ -315,7 +315,7 @@ all: ${TARGETS}
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dbg.3 \
 	man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 man/man3/printf_usage.3 man/man3/warn_or_err.3 \
-	test check_man prep_clean prep_clobber legacy_clean legacy_clobber install_man \
+	test check_man legacy_clean legacy_clobber install_man \
 	configure clean clobber install depend tags
 
 
@@ -526,22 +526,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clean: legacy_clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f dbg_test
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

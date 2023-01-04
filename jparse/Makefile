@@ -386,7 +386,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_json_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
+	parser parser-o use_json_ref bison flex test tags check_man legacy_clean legacy_clobber \
 	load_json_ref install_man \
 	configure clean clobber install depend
 
@@ -747,24 +747,6 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clean: legacy_clean test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
-
-prep_clobber: prep_clean legacy_clobber
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${RM} -f jnum_gen
-	${RM} -rf jnum_gen.dSYM
-	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
