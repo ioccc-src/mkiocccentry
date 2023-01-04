@@ -41,6 +41,10 @@ Only write to log file: don't write to stdout.
 .TP
 \fB\-M \fImake_flags\fP\fP
 Set make flags for the make actions.
+If you specify more than one option do not forget to quote it to prevent the shell from causing problems.
+We recommend you to \fBNOT\fP use this when actually reporting bugs.
+This is because it will provide us some very useful information.
+Nevertheless it is there for the cases where it's useful.
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
 In this case it will tell you that all should be okay and you can safely delete the log file.
