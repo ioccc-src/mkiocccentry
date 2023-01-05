@@ -1,11 +1,36 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 0.9.9 2022-12-31
+## Release 0.9.9 2022-12-31-2023-XX-XX
 
 Release just prior to version 1.0: the "public comment version".
 
-XXX - add more details
+Fix the system of multiple Makefiles (more work might need to be done like
+installing man pages with `make install` as well as other possible issues -
+several have been discovered and fixed since this issue was 'closed'). Other
+miscellany fixes have been made in the Makefiles.
+
+Improve `bug_report.sh`: with `-l` (only write to log file) it is completely
+silent and with `-t` fewer tests are run (don't invoke any of the make checks)
+making it faster (note though if our programs are not compiled it will cause
+some tests to fail: using via `make prep` will solve this problem). The `-x`
+option will cause it to delete the report if no issues are found.
+
+Improve `prep.sh`: make it much quieter if `-l logfile` (write to log file and
+write less information to stdout) is used. Now calls `bug_report.sh` with
+options `-t -x -l` via Makefile rule `bug_report-txl`. This allows for the
+`bug_report.sh -t` to work without causing any problems. For reporting bugs one
+should call `make bug_report`: `prep.sh` is for the maintainers of the repo.
+
+Work on decreasing verbosity of Makefiles (more is being done).
+
+Updated copyright to include 2023 (and a 'Happy New Year' to one and all!).
+
+Add separate man pages for dbg(3) functions. Improve several of the man pages
+more generally. TODO: make all man pages installed via `make install`.
+
+XXX - add more details here as more is done or remembered (what has already been
+done).
 
 
 ## Release 0.8.1 2022-11-19

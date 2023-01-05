@@ -1,0 +1,95 @@
+.\" section 8 man page for prep
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2023.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH prep.sh 8 "05 January 2023" "prep.sh" "IOCCC tools"
+.SH NAME
+prep.sh \- prepare for a release - actions for make prep and make release
+.SH SYNOPSIS
+\fBprep.sh\fP [\-h] [\-v level] [\-V] [\-e] [\-o] [\-m make] [\-M Makefile] [\-l logfile]
+.SH DESCRIPTION
+\fBprep.sh\fP runs a series of make actions to test the state of any changes prior to making a commit and pull request.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-e\fP
+Exit on first make action error.
+.TP
+\fB\-o\fP
+Do not use backup files for flex or bison if either of those tools cannot be used.
+Specifically if this option is used the make rule \fBparser\-o\fP is used instead of \fBparser\fP.
+.TP
+\fB\-m \fImake\fP\fP
+Specify path to \fBmake(1)\fP command.
+.TP
+\fB\-M \fIMakefile\fP\fP
+Path to the Makefile to use.
+.TP
+\fB\-l \fIlogfile\fP\fP
+Write all details to a log file and write less information to stdout.
+.SH EXIT STATUS
+.TP
+0
+all tests passed
+.TQ
+1
+\fB\-h\fP and help string printed or \fB\-V\fP and version string printed
+.TQ
+2
+command line error
+.TQ
+3
+Makefile not readable file that exists
+.TQ
+4
+could not make writable log file
+.TQ
+>= 10
+some make action exited non-zero
+.SH NOTES
+.PP
+There are two ways that this script should be invoked in order of preference:
+.TP
+.B make release
+run the script with the \fB\-e\fP and \fB\-o\fP options.
+.TQ
+.B make prep
+run the script without exiting on the first error and allowing flex or bison backup files
+.PP
+Although the \fBmake release\fP should be used first it is okay to use \fBmake prep\fP to get a summary of all issues to fix.
+However the \fBmake release\fP generally should pass before a commit (if one does not modify the jparse files then one can probably get away with not using \fBmake release\fP).
+.PP
+This script is only needed for the repo maintainers prior to a commit and pull request.
+.PP
+.SH EXAMPLES
+.PP
+.nf
+Run the script in a way that aborts on the first error including the inability to use \fBbison\fP or \fBflex\fP.
+.RS
+\fB
+ make release
+.RE
+.PP
+.nf
+Run the script in a more lenient way, specifying a log file to reduce output on stdout:
+.RS
+\fB
+ make prep\fP
+.RE
+.SH SEE ALSO
+\fBbison(1)\fP, \fBflex(1)\fP, \fBmake(1)\fP
