@@ -762,6 +762,14 @@ get_shell() {
     write_echo ""
 }
 
+# get_path - get the user PATH :-)
+#
+get_path() {
+    write_echo "## RUNNING: echo \$PATH"
+    write_echo "\$PATH: $PATH"
+    write_echo "## echo \$PATH ABOVE"
+    write_echo ""
+}
 # run_check
 #
 # usage:
@@ -846,6 +854,9 @@ write_echo ""
 #
 # echo $SHELL: we need to know their default shell
 get_shell
+
+# echo $PATH: we need to know the user $PATH
+get_path
 
 # uname -a: get system information
 run_check 10 "uname -a"
