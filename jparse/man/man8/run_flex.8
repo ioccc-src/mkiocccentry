@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_flex.sh 1 "20 November 2022" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 8 "05 January 2023" "run_flex.sh" "IOCCC tools"
 .SH NAME
 run_flex.sh \- run
 .B flex
@@ -17,11 +17,11 @@ to generate C code from a
 .I *.l
 file or use backup files if error
 .SH SYNOPSIS
-\fBrun_flex.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-f flex] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-S] [\-F dir] [\-D dir] \-\- [flex_flags]
+\fBrun_flex.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-f flex] [\-g verge] [\-p prefix] [\-s sorry.h] [\-S] [\-F dir] [\-D dir] \-\- [flex_flags]
 .SH DESCRIPTION
 \fBrun_flex.sh\fP attempts to find a recent enough version of
 .B flex
-(minimum version defined in \fIlimit_ioccc.sh\fP or file specified by \fB\-l\fP option) and use it to generate code from the \fBprefix.l\fP file.
+(minimum version defined in \fIrun_flex.sh\fP) and use it to generate code from the \fBprefix.l\fP file.
 The default prefix is \fIjparse\fP but this script can be used for other scanners as well.
 If a recent enough version is not found or
 .B flex
@@ -47,9 +47,6 @@ cannot be used or fails to generate the files the script will fail.
 Set
 .B flex
 basename to \fIflex\fP.
-.TP
-\fB\-l \fIlimit_ioccc.sh\fP\fP
-Set path of version file to \fIlimit_ioccc.sh\fP.
 .TP
 \fB\-g \fIverge\fP\fP
 Set path to the \fBverge\fP tool to \fIverge\fP.
@@ -120,17 +117,11 @@ failed to use backup files to form the
 C output files
 .TQ
 6
-.I limit_ioccc.sh
-or
 .I sorry.h
 file missing/not readable or
 .B verge
 missing/not executable
 .TQ
-7
-.B MIN_FLEX_VERSION
-missing or empty from
-.I limit_ioccc.sh
 .TQ
 8
 \-h and help string printed or \-V and version string printed

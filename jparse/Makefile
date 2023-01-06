@@ -170,11 +170,11 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/run_bison.1 \
-	man/man1/run_flex.1
+MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/jnum_chk.8 man/man8/jnum_gen.8 man/man8/jparse_test.8 man/man8/jsemcgen.8 \
-	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/utf8_test.8 man/man8/verge.8
+	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/utf8_test.8 man/man8/verge.8 \
+	man/man8/run_bison.8 man/man8/run_flex.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -222,7 +222,7 @@ BISON_BASENAME= bison
 # Where run_bison.sh will search for bison with a recent enough version
 #
 # The -B arguments specify where to look for bison with a version,
-# that is >= the minimum version (see MIN_BISON_VERSION in ../soup/limit_ioccc.sh),
+# that is >= the minimum version (see MIN_BISON_VERSION in run_bison.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
@@ -263,7 +263,7 @@ FLEX_BASENAME= flex
 # Where run_flex.sh will search for flex with a recent enough version
 #
 # The -F arguments specify where to look for flex with a version,
-# that is >= the minimum version (see MIN_FLEX_VERSION in ../soup/limit_ioccc.sh),
+# that is >= the minimum version (see MIN_FLEX_VERSION in run_flex.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
@@ -449,10 +449,8 @@ json_sem.o: json_sem.c
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
-# XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum bison version
-jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../soup/limit_ioccc.sh \
-	verge jparse.tab.ref.c jparse.tab.ref.h
-	${Q} ./run_bison.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh verge jparse.tab.ref.c jparse.tab.ref.h
+	${Q} ./run_bison.sh -g ./verge -s sorry.tm.ca.h -b ${BISON_BASENAME} ${BISON_DIRS} \
 	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
 # How to create jparse.c and jparse.lex.h
@@ -463,10 +461,9 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../soup/
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
-# XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum flex version
-jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../soup/limit_ioccc.sh \
+jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh \
 	verge jparse.ref.c jparse.lex.ref.h
-	${Q} ./run_flex.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
+	${Q} ./run_flex.sh -g ./verge -s sorry.tm.ca.h -f ${FLEX_BASENAME} ${FLEX_DIRS} \
 	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
 util.o: util.c util.h
@@ -499,9 +496,6 @@ test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json
-
-../soup/limit_ioccc.sh: ../soup/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../soup limit_ioccc.sh
 
 
 ####################################
@@ -884,4 +878,4 @@ jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../soup/limit_ioccc.h ../soup/version.h util.h verge.c verge.h
+    util.h verge.c verge.h

@@ -32,11 +32,6 @@
  */
 #include "util.h"
 
-/*
- * limit_ioccc - IOCCC size and rule related limitations
- */
-#include "../soup/limit_ioccc.h"
-
 
 /*
  * usage message

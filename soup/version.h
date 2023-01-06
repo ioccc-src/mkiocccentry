@@ -96,21 +96,6 @@
  */
 #define CHKENTRY_VERSION "0.4 2022-11-30"	/* format: major.minor YYYY-MM-DD */
 
-/*
- * minimum bison version needed to build the JSON parser
- */
-#define MIN_BISON_VERSION "3.8.2"		/* from: bison -V 2>&1 | head -n 1 | awk '{print $NF}' */
-
-/*
- * minimum flex version needed to build the JSON parser
- */
-#define MIN_FLEX_VERSION "2.6.4"		/* from: flex -V 2>&1 | head -n 1 | awk '{print $NF}' */
-
-/*
- * official verge tool version
- */
-#define VERGE_VERSION "0.1 2022-04-02"		/* format: major.minor YYYY-MM-DD */
-
 
 /*
  * debug version

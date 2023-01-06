@@ -40,6 +40,11 @@
  */
 #define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
 
+/*
+ * official verge tool version
+ */
+#define VERGE_VERSION "0.1 2022-04-02"		/* format: major.minor YYYY-MM-DD */
+
 
 int
 main(int argc, char *argv[])

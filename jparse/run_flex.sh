@@ -2,7 +2,7 @@
 #
 # run_flex.sh - try to run flex but use backup output file if needed
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -29,18 +29,21 @@
 
 # setup
 #
-export RUN_FLEX_VERSION="0.4 2022-11-08"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
+export RUN_FLEX_VERSION="0.5 2023-01-05"
+export FLEX_BASENAME="flex"
+export PREFIX="jparse"
+export SORRY_H="sorry.tm.ca.h"
+export VERGE="./verge"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex]
 		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-F dir] [-D dir] -- [flex_flags]
 
     -h              print help and exit
     -V              print version and exit
     -v level        set debug level (def: 0)
     -o		    do NOT use backup file, fail if flex cannot be used (def: use)
-    -f flex	    flex tool basename (def: flex)
-    -l limit.sh	    version info file (def: limit_ioccc.sh)
+    -f flex	    flex tool basename (def: $FLEX_BASENAME)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    the prefix of the files to be used (def: jparse)
+    -p prefix	    the prefix of the files to be used (def: $PREFIX)
 			NOTE: The flex input file will be prefix.l
 			NOTE: If flex cannot be used, these backup
 			NOTE: files are used:
@@ -48,7 +51,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
 			NOTE:		prefix.ref.c
 			NOTE		prefix.lex.ref.h
 			NOTE:
-    -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
+    -s sorry.h	    file to prepend to C output (def: $SORRY_H)
     -S		    suppress prepending apology file
     -F dir          first look for flex in dir (def: look just along \$PATH)
 		        NOTE: Multiple -F dir are allowed.
@@ -66,8 +69,7 @@ Exit codes:
      3   flex input file missing or not readable: backup file had to be used
      4   backup file is missing, or are not readable
      5   failed to use backup file to form the flex C output file
-     6   limit_ioccc.sh or sorry.h file missing/not readable or verge missing/not executable
-     7   MIN_FLEX_VERSION missing or empty from limit_ioccc.sh
+     6   sorry.h file missing/not readable or verge missing/not executable
      8   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
@@ -75,19 +77,15 @@ Exit codes:
 $0 version: $RUN_FLEX_VERSION"
 
 export D_FLAG="."
-export PREFIX="jparse"
 export V_FLAG="0"
-export FLEX_BASENAME="flex"
-export LIMIT_IOCCC_SH="limit_ioccc.sh"
-export VERGE="./verge"
-export MIN_FLEX_VERSION=
+export MIN_FLEX_VERSION="2.6.4"		# minimum flex version needed to build the JSON parser
 declare -a FLEX_DIRS=()
-export SORRY_H="sorry.tm.ca.h"
+export O_FLAG=
 export S_FLAG=
 
 # parse args
 #
-while getopts :hv:Vof:l:g:p:s:SF:D: flag; do
+while getopts :hv:Vof:g:p:s:SF:D: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 8
@@ -100,8 +98,6 @@ while getopts :hv:Vof:l:g:p:s:SF:D: flag; do
     o)	O_FLAG="-o"
 	;;
     f)	FLEX_BASENAME="$OPTARG";
-	;;
-    l)	LIMIT_IOCCC_SH="$OPTARG";
 	;;
     g)	VERGE="$OPTARG";
 	;;
@@ -153,18 +149,6 @@ fi
 
 # firewall
 #
-if [[ ! -e $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh file not found: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
-if [[ ! -f $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh not a regular file: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
-if [[ ! -r $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh not a readable file: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
 if [[ ! -e $VERGE ]]; then
     echo "$0: ERROR: verge file not found: $VERGE" 1>&2
     exit 6
@@ -190,32 +174,16 @@ if [[ ! -r $SORRY_H && -z "$S_FLAG" ]]; then
     exit 6
 fi
 
-# source the limit_ioccc.sh file
-#
-# We have to disable this check because we can't use the shellcheck directive
-# source="$LIMIT_IOCCC_SH" as this requires the -x option and not all shellcheck
-# versions support -x:
-#
-# warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
-# shellcheck disable=SC1090
-#
-source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
-if [[ -z $MIN_FLEX_VERSION ]]; then
-    echo "$0: ERROR: MIN_FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
-    exit 7
-fi
-
 # debug
 #
 if [[ $V_FLAG -ge 5 ]]; then
-    echo "$0: debug[5]: RUN_FLEX_VERSION=$RUN_FLEX_VERSION" 1>&2
-    echo "$0: debug[5]: PREFIX=$PREFIX" 1>&2
-    echo "$0: debug[5]: V_FLAG=$V_FLAG" 1>&2
     echo "$0: debug[5]: FLEX_BASENAME=$FLEX_BASENAME" 1>&2
-    echo "$0: debug[5]: LIMIT_IOCCC_SH=$LIMIT_IOCCC_SH" 1>&2
-    echo "$0: debug[5]: VERGE=$VERGE" 1>&2
     echo "$0: debug[5]: MIN_FLEX_VERSION=$MIN_FLEX_VERSION" 1>&2
+    echo "$0: debug[5]: PREFIX=$PREFIX" 1>&2
+    echo "$0: debug[5]: RUN_FLEX_VERSION=$RUN_FLEX_VERSION" 1>&2
     echo "$0: debug[5]: SORRY_H=$SORRY_H" 1>&2
+    echo "$0: debug[5]: VERGE=$VERGE" 1>&2
+    echo "$0: debug[5]: V_FLAG=$V_FLAG" 1>&2
     for dir in "${FLEX_DIRS[@]}"; do
 	echo "$0: debug[5]: FLEX_DIRS=$dir" 1>&2
     done

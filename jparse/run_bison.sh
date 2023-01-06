@@ -2,7 +2,7 @@
 #
 # run_bison.sh - try to run bison but use backup output files if needed
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -29,25 +29,28 @@
 
 # setup
 #
-export RUN_BISON_VERSION="0.3 2022-04-22"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
+export RUN_BISON_VERSION="0.4 2023-01-05"
+export BISON_BASENAME="bison"
+export PREFIX="jparse"
+export SORRY_H="sorry.tm.ca.h"
+export VERGE="./verge"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison]
 		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-B dir] [-D dir] -- [bison_flags]
 
     -h		    print help and exit
     -V		    print version and exit
     -v level	    set debug level (def: 0)
     -o		    do NOT use backup files, fail if bison cannot be used (def: use)
-    -b bison	    bison tool basename (def: bison)
-    -l limit.sh	    version info file (def: limit_ioccc.sh)
-    -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    the prefix of files to be used (def: jparse)
+    -b bison	    bison tool basename (def: $BISON_BASENAME)
+    -g verge	    path to verge tool (def: $VERGE)
+    -p prefix	    the prefix of files to be used (def: $PREFIX)
 			NOTE: The bison input file will be prefix.y
 			NOTE: If bison cannot be used, these backup
 			NOTE: files are used:
 			NOTE:
 			NOTE:	 prefix.tab.ref.c prefix.tab.ref.h
 			NOTE:
-    -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
+    -s sorry.h	    file to prepend to C output (def: $SORRY_H)
     -S		    suppress prepending apology file
     -B dir          first look for bison in dir (def: look just along \$PATH)
 		        NOTE: Multiple -B dir are allowed.
@@ -65,28 +68,22 @@ Exit codes:
      3   bison input file missing or not readable: backup file(s) had to be used
      4   backup file(s) are missing, or are not readable
      5   failed to use backup file(s) to form the bison C output file(s)
-     6   limit_ioccc.sh or sorry.h file missing/not readable or verge missing/not executable
-     7   MIN_BISON_VERSION Missing or empty from limit_ioccc.sh
+     6   sorry.h file missing/not readable or verge missing/not executable
      8   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
 
 $0 version: $RUN_BISON_VERSION"
 export D_FLAG="."
-export PREFIX="jparse"
 export V_FLAG="0"
-export BISON_BASENAME="bison"
-export LIMIT_IOCCC_SH="limit_ioccc.sh"
-export VERGE="./verge"
-export MIN_BISON_VERSION=
+export MIN_BISON_VERSION="3.8.2"		# minimum bison version needed to build the JSON parser
 declare -a BISON_DIRS=()
-export SORRY_H="sorry.tm.ca.h"
 export O_FLAG=
 export S_FLAG=
 
 # parse args
 #
-while getopts :hv:Vob:l:g:p:s:SB:D: flag; do
+while getopts :hv:Vob:g:p:s:SB:D: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 8
@@ -99,8 +96,6 @@ while getopts :hv:Vob:l:g:p:s:SB:D: flag; do
     o)	O_FLAG="-o"
 	;;
     b)	BISON_BASENAME="$OPTARG";
-	;;
-    l)	LIMIT_IOCCC_SH="$OPTARG";
 	;;
     g)	VERGE="$OPTARG";
 	;;
@@ -153,18 +148,6 @@ fi
 
 # firewall
 #
-if [[ ! -e $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh file not found: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
-if [[ ! -f $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh not a regular file: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
-if [[ ! -r $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh not a readable file: $LIMIT_IOCCC_SH" 1>&2
-    exit 6
-fi
 if [[ ! -e $VERGE ]]; then
     echo "$0: ERROR: verge file not found: $VERGE" 1>&2
     exit 6
@@ -190,32 +173,16 @@ if [[ ! -r $SORRY_H && -z "$S_FLAG" ]]; then
     exit 6
 fi
 
-# source the limit_ioccc.sh file
-#
-# We have to disable this check because we can't use the shellcheck directive
-# source="$LIMIT_IOCCC_SH" as this requires the -x option and not all shellcheck
-# versions support -x:
-#
-# warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
-# shellcheck disable=SC1090
-#
-source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
-if [[ -z $MIN_BISON_VERSION ]]; then
-    echo "$0: ERROR: MIN_BISON_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
-    exit 7
-fi
-
 # debug
 #
 if [[ $V_FLAG -ge 5 ]]; then
-    echo "$0: debug[5]: RUN_BISON_VERSION=$RUN_BISON_VERSION" 1>&2
-    echo "$0: debug[5]: PREFIX=$PREFIX" 1>&2
-    echo "$0: debug[5]: V_FLAG=$V_FLAG" 1>&2
     echo "$0: debug[5]: BISON_BASENAME=$BISON_BASENAME" 1>&2
-    echo "$0: debug[5]: LIMIT_IOCCC_SH=$LIMIT_IOCCC_SH" 1>&2
-    echo "$0: debug[5]: VERGE=$VERGE" 1>&2
     echo "$0: debug[5]: MIN_BISON_VERSION=$MIN_BISON_VERSION" 1>&2
+    echo "$0: debug[5]: PREFIX=$PREFIX" 1>&2
+    echo "$0: debug[5]: RUN_BISON_VERSION=$RUN_BISON_VERSION" 1>&2
     echo "$0: debug[5]: SORRY_H=$SORRY_H" 1>&2
+    echo "$0: debug[5]: VERGE=$VERGE" 1>&2
+    echo "$0: debug[5]: V_FLAG=$V_FLAG" 1>&2
     for dir in "${BISON_DIRS[@]}"; do
 	echo "$0: debug[5]: BISON_DIRS=$dir" 1>&2
     done

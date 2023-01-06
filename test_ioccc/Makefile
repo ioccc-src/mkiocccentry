@@ -326,10 +326,10 @@ all: ${TARGETS} ${EXTERN_PROG}
 ####################################
 
 utf8_test.o: utf8_test.c
-	${CC} ${CFLAGS} -I.. utf8_test.c -c
+	${CC} ${CFLAGS} utf8_test.c -c
 
 utf8_test: utf8_test.o ../soup/soup.a ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} -I.. $^ -o $@
+	${CC} ${CFLAGS} $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 	@:
@@ -356,9 +356,6 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile
 	@${MAKE} ${MAKE_CD_Q} -C ../dyn_array dyn_test
-
-../soup/soup.a: ../soup/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../soup extern_liba
 
 
 ####################################
