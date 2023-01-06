@@ -189,7 +189,7 @@ if [[ -n $F_FLAG ]]; then
     #
     # NOTE: if your grep does not have -o this will fail. If this happens please
     # submit a bug report and we'll add a workaround.
-    printf "%s\n%s\n" "$(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)" "int main(void) { return 0; }" |
+    printf "%s\\n%s\\n" "$(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -232,7 +232,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	    echo "Compiling code with $h" 1>&2
 	fi
 	rm -f "$PROG_FILE"
-	printf "%s\n%s\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
+	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
 
 	# test compile
 	#
@@ -367,7 +367,7 @@ main(void)
 {
     errno = ENOENT;
 
-    (void) printf("errno: %d\n", errno);
+    (void) printf("errno: %d\\n", errno);
     return 0;
 }
 EOF
@@ -419,7 +419,7 @@ cat <<EOF >"$WORK_DIR/hello.c"
 int
 main(void)
 {
-    (void) printf("Hello, world\n");
+    (void) printf("Hello, world\\n");
     return 0;
 }
 EOF
