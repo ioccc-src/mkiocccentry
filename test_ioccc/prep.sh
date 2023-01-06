@@ -286,7 +286,8 @@ make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky
 make_action 28 tags
-make_action 29 test
+make_action 29 check_man
+make_action 30 test
 
 if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ -z "$LOG_FILE" ]]; then

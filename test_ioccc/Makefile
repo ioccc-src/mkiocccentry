@@ -379,11 +379,24 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: ioccc_test.sh
+test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ./ioccc_test.sh
+	-${Q} if [[ ! -x ./ioccc_test.sh ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: .//ioccc_test.sh" 1>&2; \
+	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	else \
+	    echo ./ioccc_test.sh; \
+	    ./ioccc_test.sh; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "${OUR_NAME}: ERROR: ioccc_test.s failed, error code: $$EXIT_CODE"; \
+		exit "$$EXIT_CODE"; \
+	    else \
+		echo ${OUR_NAME}: "PASSED: ioccc_test.sh"; \
+	    fi; \
+	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

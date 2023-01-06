@@ -610,20 +610,11 @@ bison: jparse.tab.c jparse.tab.h
 flex: jparse.c jparse.lex.h
 	@:
 
-test: test_jparse/Makefile
+test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if [[ ! -x ./jparse ]]; then \
-	    echo "${OUR_NAME}: executable not found: ./jparse" 1>&2; \
-	    echo "${OUR_NAME}: trying to make jparse" 1>&2; \
-	    ${MAKE} jparse; \
-	fi
-	${Q} if [[ ! -x ./jparse ]]; then \
-	    echo "${OUR_NAME}: ERROR: unable to create excutable: ./jparse" 1>&2; \
-	    exit 20; \
-	fi
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all test
+	-${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

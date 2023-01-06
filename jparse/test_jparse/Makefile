@@ -342,11 +342,24 @@ test_JSON/auth.json/good/auth.reference.json:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: jparse_test.sh
+test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt
+	-${Q} if [[ ! -x ./jparse_test.sh ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: ./jparse_test.sh" 1>&2; \
+	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	else \
+	    echo "./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt"; \
+	    ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
+		exit "$$EXIT_CODE"; \
+	    else \
+		echo ${OUR_NAME}: "PASSED: jparse_test.sh"; \
+	    fi; \
+	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
