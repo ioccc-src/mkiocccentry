@@ -161,9 +161,15 @@ exec_command()
 {
     local COMMAND=$*
     if [[ -z "$L_FLAG" ]]; then
+	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
+	#
+	# shellcheck disable=SC2086
 	command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 	return "${PIPESTATUS[0]}"
     else
+	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
+	#
+	# shellcheck disable=SC2086
 	command ${COMMAND} >> "$LOG_FILE" 2>&1
 	return $?
     fi
@@ -176,9 +182,15 @@ exec_command_lines()
     local LINES="$1"
     local COMMAND="${*:2}"
     if [[ -z "$L_FLAG" ]]; then
+	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
+	#
+	# shellcheck disable=SC2086
 	command ${COMMAND} 2>&1 | head -n "$LINES" | tee -a -- "$LOG_FILE"
 	return "${PIPESTATUS[0]}"
     else
+	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
+	#
+	# shellcheck disable=SC2086
 	command ${COMMAND} | head -n "$LINES" >> "$LOG_FILE" 2>&1
 	return "${PIPESTATUS[0]}"
     fi
