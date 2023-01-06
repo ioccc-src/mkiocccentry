@@ -1,9 +1,49 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 0.9.9 2022-12-31-2023-XX-XX
+## Release 1.0.0 2023-01-06
+
+XXX - add more details here as more is done or remembered (what has already been done).
+
+
+## Release 0.9.9 2022-12-31
 
 Release just prior to version 1.0: the "public comment version".
+
+The `make prep` and `make release` rules were made much less verbose.
+
+Updated and fixed .gitignore file.
+
+The jparse/ directory only uses and depends on dbg/ and dyn_alloc/.
+
+Made changes to version.h so that the JSON parser code under
+jparse/ does not have to use it.
+
+Tuned the verbosity of Makefiles with various Makefile variables such as
+${Q}, ${V}, ${S}, ${M}, ${INSTALL_Q} ${INSTALL_V}, and ${MAKE_CD_Q}.
+
+Moved all man pages under their respective sub-directories.  The build_man
+rule create a man sub-directory with copies of all other man pages.
+
+Numerous updates and fixes to the man page set.  Improved how man page
+macros are used.
+
+Added man symlinks in place where commands are in a given man page.
+
+Change IOCCC use of twitter to mastodon.  The mkiocccentry tool now asks for
+an optional mastodon account.  The .auth.json file contains entries for
+an optional mastodon instead of twitter.
+
+The Makefile set, and the way they call each other has been improved.
+Programs link to one or more libraries such as dbg.a, dyn+array.a,
+jparse.a and soup.a.
+
+Make the Makefile set reasonably consistent in terms of style and comments.
+
+Removed use of man2html.  No longer are html files made from man pages.
+
+Removed the checknr rule form Makefiles.  Instead, the check_man rule
+tests man pages.
 
 Fix the system of multiple Makefiles (more work might need to be done like
 installing man pages with `make install` as well as other possible issues -
@@ -22,15 +62,23 @@ options `-t -x -l` via Makefile rule `bug_report-txl`. This allows for the
 `bug_report.sh -t` to work without causing any problems. For reporting bugs one
 should call `make bug_report`: `prep.sh` is for the maintainers of the repo.
 
-Work on decreasing verbosity of Makefiles (more is being done).
+The JSON test files used to test the chkentry tool were moved to the
+test_ioccc/test_JSON directory.
 
 Updated copyright to include 2023 (and a 'Happy New Year' to one and all!).
 
 Add separate man pages for dbg(3) functions. Improve several of the man pages
 more generally. TODO: make all man pages installed via `make install`.
 
-XXX - add more details here as more is done or remembered (what has already been
-done).
+Moved jparse to subdirectory.
+
+Removed jparse.md and dbg.md in favor or README.md files in sub-directories.
+
+Fixed dyn_array bug.
+
+Moved dyn_array code to dyn_array/ subdirectory.
+
+Fixed obscure bug with bool typedef.
 
 
 ## Release 0.8.1 2022-11-19
