@@ -794,7 +794,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # perform all of the mkiocccentry repo required tests
 #
 test: soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile check_man
+	soup/Makefile test_ioccc/Makefile check_man all
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1058,7 +1058,6 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${M} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
 	${V} echo
-	${RM} -f limit_ioccc.sh
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
