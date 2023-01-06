@@ -277,10 +277,10 @@ get_version_optional() {
 
     # try --version
     #
-    command "${COMMAND}" --version >/dev/null 2>&1
+    command "${COMMAND}" --version >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" --version
+	exec_command "${COMMAND}" --version </dev/null
 	write_echo "## $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -288,10 +288,10 @@ get_version_optional() {
 
     # try -v
     #
-    command "${COMMAND}" -v >/dev/null 2>&1
+    command "${COMMAND}" -v >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" -v
+	exec_command "${COMMAND}" -v </dev/null
 	write_echo "## $COMMAND -v ABOVE"
 	write_echo ""
 	return
@@ -299,10 +299,10 @@ get_version_optional() {
 
     # try -V
     #
-    command "${COMMAND}" -V >/dev/null 2>&1
+    command "${COMMAND}" -V >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" -V
+	exec_command "${COMMAND}" -V </dev/null
 	write_echo "## $COMMAND -V ABOVE"
 	write_echo ""
 	return
@@ -335,10 +335,10 @@ get_version_optional() {
     # strings(1).
     #
     if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1
+	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}"
+	    exec_command "$WHAT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -351,10 +351,10 @@ get_version_optional() {
     # way to test this.
     #
     if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1
+	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}"
+	    exec_command "$IDENT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -439,10 +439,10 @@ get_version() {
 
     # try --version
     #
-    command "${COMMAND}" --version >/dev/null 2>&1
+    command "${COMMAND}" --version >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" --version
+	exec_command "${COMMAND}" --version </dev/null
 	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -450,10 +450,10 @@ get_version() {
 
     # try -v
     #
-    command "${COMMAND}" -v >/dev/null 2>&1
+    command "${COMMAND}" -v >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" -v
+	exec_command "${COMMAND}" -v </dev/null
 	write_echo "## OUTPUT OF $COMMAND -v ABOVE"
 	write_echo ""
 	return
@@ -461,10 +461,10 @@ get_version() {
 
     # try -V
     #
-    command "${COMMAND}" -V >/dev/null 2>&1
+    command "${COMMAND}" -V >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}" -V
+	exec_command "${COMMAND}" -V </dev/null
 	write_echo "## OUTPUT OF $COMMAND -V ABOVE"
 	write_echo ""
 	return
@@ -496,10 +496,10 @@ get_version() {
     # well even if this succeeds. If either succeeds we will not try strings(1).
     #
     if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1
+	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}"
+	    exec_command "$WHAT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -512,10 +512,10 @@ get_version() {
     # way to test this.
     #
     if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1
+	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}"
+	    exec_command "$IDENT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -602,10 +602,10 @@ get_version_minimal() {
 
     # try --version
     #
-    command "${COMMAND}" --version >/dev/null 2>&1
+    command "${COMMAND}" --version >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}"
+	exec_command "${COMMAND}" </dev/null
 	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
 	write_echo ""
 	return
@@ -637,10 +637,10 @@ get_version_minimal() {
     # well even if this succeeds. If either succeeds we will not try strings(1).
     #
     if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}" >/dev/null 2>&1
+	$WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}"
+	    exec_command "$WHAT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -653,10 +653,10 @@ get_version_minimal() {
     # way to test this.
     #
     if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1
+	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	status=$?
 	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}"
+	    exec_command "$IDENT" "${COMMAND}" </dev/null
 	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
 	    write_echo ""
 	    EXIT=1
@@ -695,7 +695,7 @@ run_check_optional() {
     # wrong about quoting this. If one does quote the below variable COMMAND it
     # will cause the command to fail making sure that the script is worthless.
     # shellcheck disable=SC2086
-    exec_command ${COMMAND}
+    exec_command ${COMMAND} </dev/null
     status=$?
     if [[ "$status" -ne 0 ]]; then
 	write_echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status"
