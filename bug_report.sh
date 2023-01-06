@@ -684,14 +684,14 @@ get_version_minimal() {
 }
 
 
-# run_check_optional    -   run check but don't report any problems
+# run_optional_check    -   run check but don't report any problems
 #
 # usage:
-#	run_check_optional command
+#	run_optional_check command
 #
 #	command	    - check to run
 #
-run_check_optional() {
+run_optional_check() {
 
     # parse args
     #
@@ -1047,43 +1047,43 @@ write_echo ""
 # there are workarounds for not having these tools.
 
 # which checknr: determine if checknr is installed
-run_check_optional "which checknr"
+run_optional_check "which checknr"
 
 # try getting version of checknr
 get_version_optional "checknr"
 
 # which ctags: get ctags path
-run_check_optional "which ctags"
+run_optional_check "which ctags"
 
 # try getting version of ctags
 get_version_optional "ctags"
 
 # which fmt: determine if fmt is installed
-run_check_optional "which fmt"
+run_optional_check "which fmt"
 
 # try getting version of fmt
 get_version_optional "fmt"
 
 # which gdate: try getting path to gdate
-run_check_optional "which gdate"
+run_optional_check "which gdate"
 
 # try getting version of gdate
 get_version_optional "gdate"
 
 # which install: which install are we using ? :-) (that is find the path to install :-) )
-run_check_optional "which install"
+run_optional_check "which install"
 
 # try getting version of install
 get_version_optional "install"
 
 # which man: which man are you ? :-) (that is find the path to the man :-) )
-run_check_optional "which man"
+run_optional_check "which man"
 
 # try getting version of man (is that the age ? :-) )
 get_version_optional "man"
 
 # which man2html: try getting path to man2html
-run_check_optional "which man2html"
+run_optional_check "which man2html"
 
 # don't try getting version of man2html because some implementations will print
 # all the help string if an invalid option is given and this is unnecessary
@@ -1091,24 +1091,24 @@ run_check_optional "which man2html"
 # does not seem to even work right).
 
 # which picky: try getting path to picky tool
-run_check_optional "which picky"
+run_optional_check "which picky"
 
 # don't try getting version of picky as it'll block
 
 # which rpl: get path to rpl
-run_check_optional "which rpl"
+run_optional_check "which rpl"
 
 # try getting version of rpl
 get_version_optional "rpl"
 
 # which seqcexit: get path to seqcexit
-run_check_optional "which seqcexit"
+run_optional_check "which seqcexit"
 
 # try getting version of seqcexit
 get_version_optional "seqcexit"
 
 # which shellcheck: get path to shellcheck
-run_check_optional "which shellcheck"
+run_optional_check "which shellcheck"
 
 # try getting version of shellcheck
 get_version_optional "shellcheck"
@@ -1210,13 +1210,13 @@ write_echo ""
 rm -f lex.yy.c
 
 # which bison: get path to bison (be careful it doesn't ram you :- ) )
-run_check_optional "which bison"
+run_optional_check "which bison"
 
 # try getting version of bison
 get_version_optional "bison"
 
 # which flex: get path to flex without flexing your system's resources :-)
-run_check_optional "which flex"
+run_optional_check "which flex"
 
 # try getting version of flex
 get_version_optional "flex"
@@ -1226,10 +1226,10 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./soup/limit_ioccc.sh -D ./jparse"
+run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -D ./jparse"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./soup/limit_ioccc.sh -D ./jparse"
+run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -D ./jparse"
 
 if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
@@ -1288,7 +1288,8 @@ done
 # the user would have these tools but if one or both are not available this file
 # will not be as useful. This is why we don't mark it as an error.
 #
-write_echo "## Checking limit_ioccc.sh"
+run_optional_check "make -C soup ${MAKE_FLAGS} limit_ioccc.sh"
+write_echo "## Checking for limit_ioccc.sh"
 if [[ -e "./soup/limit_ioccc.sh" ]]; then
     if [[ -r "./soup/limit_ioccc.sh" ]]; then
 	write_echo "## NOTICE: Found limit_ioccc.sh file:"

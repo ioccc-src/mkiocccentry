@@ -100,7 +100,7 @@ code for you to try.  If so, we will add additional comments to the issue.
 In some cases we might need to delay fixing the problem because we are working on a larger
 more general issue that will eventually and hopefully resolve your issue.
 
-Once you are ready, *please* re-check:
+Once you are ready, *please* recheck:
 
 
 * The issue title at the top
@@ -122,4 +122,4 @@ You should see a line of the form:
 \[Untitled.txt\]\(https://github.com/ioccc-src/mkiocccentry/files/some_digits/bug-report.YYYYMMDD.HHMMSS.txt\)
 ```
 
-Once you have re-checked the above, please click the *green* ((Submit new issue)) button vvvvvvvvvvvvvvvvvvvvvvvvv
+Once you have rechecked the above, please click the *green* ((Submit new issue)) button vvvvvvvvvvvvvvvvvvvvvvvvv

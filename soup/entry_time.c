@@ -239,7 +239,7 @@ get_now(void)
     }
 
     /*
-     * now return :-)
+     * now return now :-)
      */
     return now;
 }
