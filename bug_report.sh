@@ -224,9 +224,9 @@ is_exec()
 # get path to tools we might need for get_version and get_version_optional
 # functions below
 #
-WHAT="$(which what)"
-IDENT="$(which ident)"
-STRINGS="$(which strings)" # this should always exist but we check anyway
+WHAT="$(command -v what)"
+IDENT="$(command -v ident)"
+STRINGS="$(command -v strings)" # this should always exist but we check anyway
 
 # get_version_optional    -	try and get version of an optional tool
 #
@@ -280,7 +280,7 @@ get_version_optional() {
     fi
     local COMMAND
     local EXIT=0
-    COMMAND="$(which "$1")"
+    COMMAND="$(command -v "$1")"
     if ! is_exec "$COMMAND"; then
 	return
     fi
@@ -434,7 +434,7 @@ get_version() {
     fi
     local COMMAND
     local EXIT=0
-    COMMAND="$(which "$1")"
+    COMMAND="$(command -v "$1")"
     if ! is_exec "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
@@ -597,7 +597,7 @@ get_version_minimal() {
     fi
     local COMMAND
     local EXIT=0
-    COMMAND="$(which "$1")"
+    COMMAND="$(command -v "$1")"
     if ! is_exec "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
@@ -852,7 +852,7 @@ run_check 10 "uname -a"
 
 # sw_vers: if this exists on the system we should use it. This is a BSD/macOS
 # thing
-SW_VERS=$(which sw_vers)
+SW_VERS=$(command -v sw_vers)
 if [[ -n "$SW_VERS" ]]; then
     run_check 11 "sw_vers"
 fi
