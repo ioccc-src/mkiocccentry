@@ -605,7 +605,7 @@ get_version_minimal() {
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	exec_command "${COMMAND}"
+	exec_command "${COMMAND}" --version
 	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
 	write_echo ""
 	return
