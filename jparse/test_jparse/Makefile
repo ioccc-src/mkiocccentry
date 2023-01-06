@@ -55,11 +55,29 @@ SHELLCHECK= shellcheck
 #
 OUR_NAME= test_jparse
 
-# Q= @   				do not echo internal Makefile actions (quiet mode)
-# Q=    				echo internal Makefile actions (debug / verbose mode)
+# Q= @					do not echo internal Makefile actions (quiet mode)
+# Q=					echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:					do not echo debug statements (quiet mode)
+# V= @					echo debug statements (debug / verbose mode)
+#
+V= @:
+#V= @
+
+# S= @:					do not echo start or end of a make rule (quiet mode)
+# S= @					echo start or end of a make rule (debug / verbose mode)
+#
+#S= @:
+S= @
+
+# M= @:					do not echo calling make in another directory (quiet mode)
+# M= @					echo calling make in another directory (debug / verbose mode)
+#
+M=
+#M= @
 
 # Q= implies -v 0
 # else -v 1
@@ -69,12 +87,6 @@ Q_V_OPTION="0"
 else
 Q_V_OPTION="1"
 endif
-
-# V= @:  				do not echo debug statements (quiet mode)
-# V= @   				echo debug statements (debug / verbose mode)
-#
-V= @:
-#V= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -89,7 +101,7 @@ INSTALL_Q=
 INSTALL_V= -v
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
-# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+# MAKE_CD_Q=				silence make cd messages (quiet mode)
 #
 MAKE_CD_Q= --no-print-directory
 #MAKE_CD_Q=
@@ -306,13 +318,13 @@ jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.a ../../d
 #########################################################
 
 ../../dbg/dbg.a: ../../dbg/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../../dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dbg extern_liba
 
 ../../dyn_array/dyn_array.a: ../../dyn_array/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../../dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dyn_array extern_liba
 
 ../jparse.a: ../Makefile
-	@${MAKE} ${MAKE_CD_Q} -C .. extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C .. extern_liba
 
 
 ####################################
@@ -331,20 +343,20 @@ test_JSON/auth.json/good/auth.reference.json:
 ###########################################################
 
 test: jparse_test.sh
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${Q} ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -357,14 +369,14 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
@@ -389,16 +401,16 @@ picky: ${ALL_SRC}
 		exit 2; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -417,29 +429,29 @@ shellcheck: ${SH_FILES} .shellcheckrc
 		exit 1; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify man pages
 #
 check_man:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@echo "${OUR_NAME}: nothing to do"
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} echo "${OUR_NAME}: nothing to do"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean:
 	${V} echo
@@ -447,7 +459,7 @@ legacy_clean:
 	${V} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
 	${V} echo
@@ -455,7 +467,7 @@ legacy_clobber: legacy_clean
 	${V} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
@@ -466,31 +478,31 @@ configure:
 	@echo nothing to $@
 
 clean:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 	${RM} -f tags
 
 install: all
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###############
@@ -498,8 +510,8 @@ install: all
 ###############
 
 depend: ${ALL_CSRC}
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
@@ -526,8 +538,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \

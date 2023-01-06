@@ -70,11 +70,29 @@ TR= tr
 #
 OUR_NAME= soup
 
-# Q= @   				do not echo internal Makefile actions (quiet mode)
-# Q=    				echo internal Makefile actions (debug / verbose mode)
+# Q= @					do not echo internal Makefile actions (quiet mode)
+# Q=					echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:					do not echo debug statements (quiet mode)
+# V= @					echo debug statements (debug / verbose mode)
+#
+V= @:
+#V= @
+
+# S= @:					do not echo start or end of a make rule (quiet mode)
+# S= @					echo start or end of a make rule (debug / verbose mode)
+#
+#S= @:
+S= @
+
+# M= @:					do not echo calling make in another directory (quiet mode)
+# M= @					echo calling make in another directory (debug / verbose mode)
+#
+M=
+#M= @
 
 # Q= implies -v 0
 # else -v 1
@@ -84,12 +102,6 @@ Q_V_OPTION="0"
 else
 Q_V_OPTION="1"
 endif
-
-# V= @:  				do not echo debug statements (quiet mode)
-# V= @   				echo debug statements (debug / verbose mode)
-#
-V= @:
-#V= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -104,7 +116,7 @@ INSTALL_Q=
 INSTALL_V= -v
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
-# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+# MAKE_CD_Q=				silence make cd messages (quiet mode)
 #
 MAKE_CD_Q= --no-print-directory
 #MAKE_CD_Q=
@@ -403,16 +415,17 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 #########################################################
 
 ../jparse/jsemtblgen:
-	@${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
 
 ../jparse/jsemcgen.sh:
-	@${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
 
 ../test_ioccc/test_JSON/info.json/good/info.reference.json:
-	@${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
 
 ../test_ioccc/test_JSON/auth.json/good/auth.reference.json:
-	@${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
+
 
 ####################################
 # rules for use by other Makefiles #
@@ -466,12 +479,12 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 ###########################################################
 
 test:
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
@@ -515,7 +528,7 @@ mkchk_sem: chk_sem_info.c chk_sem_info.h chk_sem_auth.c chk_sem_auth.h
 	@:
 
 soup:
-	@-if [[ -r .soup ]]; then \
+	-${Q} if [[ -r .soup ]]; then \
 	    echo "Soup already cooked. Don't forget to eat it before it goes cold!"; \
         else \
 	    echo "Mixing the ingredients..."; \
@@ -526,7 +539,7 @@ soup:
 	fi
 
 eat eating eat_soup eating_soup: all
-	@-if [[ -r .soup ]]; then \
+	-${Q} if [[ -r .soup ]]; then \
 	    echo "That was mighty delicous soup but now you feel bloated! :-("; \
 	    ${RM} -f .soup; \
 	else \
@@ -550,10 +563,10 @@ reset_min_timestamp: reset_tstamp.sh
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -566,14 +579,14 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
@@ -598,16 +611,16 @@ picky: ${ALL_SRC}
 		exit 2; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -626,16 +639,16 @@ shellcheck: ${SH_FILES} .shellcheckrc
 		exit 1; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-${Q} HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
@@ -652,8 +665,8 @@ check_man: ${ALL_MAN_TARGETS}
 		exit 23; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # install man pages
 #
@@ -666,13 +679,13 @@ install_man: ${ALL_MAN_TARGETS}
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clean_mkchk_sem:
 	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
@@ -684,7 +697,7 @@ legacy_clean:
 	${V} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
 	${V} echo
@@ -692,7 +705,7 @@ legacy_clobber: legacy_clean
 	${V} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
@@ -703,34 +716,34 @@ configure:
 	@echo "nothing to $@. Try making soup instead."
 
 clean:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f .soup
 	${RM} -f tags
 	${RM} -f .all_ref.*
 	${RM} -f ${TARGETS}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 install: all install_man
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###############
@@ -738,8 +751,8 @@ install: all install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
@@ -762,8 +775,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chk_sem_auth.o: ../jparse/../dyn_array/../dbg/dbg.h \

@@ -55,11 +55,29 @@ SHELLCHECK= shellcheck
 #
 OUR_NAME= jparse
 
-# Q= @   				do not echo internal Makefile actions (quiet mode)
-# Q=    				echo internal Makefile actions (debug / verbose mode)
+# Q= @					do not echo internal Makefile actions (quiet mode)
+# Q=					echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:					do not echo debug statements (quiet mode)
+# V= @					echo debug statements (debug / verbose mode)
+#
+V= @:
+#V= @
+
+# S= @:					do not echo start or end of a make rule (quiet mode)
+# S= @					echo start or end of a make rule (debug / verbose mode)
+#
+#S= @:
+S= @
+
+# M= @:					do not echo calling make in another directory (quiet mode)
+# M= @					echo calling make in another directory (debug / verbose mode)
+#
+M=
+#M= @
 
 # Q= implies -v 0
 # else -v 1
@@ -69,12 +87,6 @@ Q_V_OPTION="0"
 else
 Q_V_OPTION="1"
 endif
-
-# V= @:  				do not echo debug statements (quiet mode)
-# V= @   				echo debug statements (debug / verbose mode)
-#
-V= @:
-#V= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -89,7 +101,7 @@ INSTALL_Q=
 INSTALL_V= -v
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
-# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+# MAKE_CD_Q=				silence make cd messages (quiet mode)
 #
 MAKE_CD_Q= --no-print-directory
 #MAKE_CD_Q=
@@ -486,16 +498,16 @@ jparse.a: ${LIB_OBJS}
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -538,11 +550,11 @@ man/man8/jparse_test.8:
 #
 parser: jparse.y jparse.l
 	${RM} -f jparse.tab.c jparse.tab.h
-	${MAKE} jparse.tab.c jparse.tab.h
-	${MAKE} jparse.tab.o
+	${M} ${MAKE} jparse.tab.c jparse.tab.h
+	${M} ${MAKE} jparse.tab.o
 	${RM} -f jparse.c jparse.lex.h
-	${MAKE} jparse.c jparse.lex.h
-	${MAKE} jparse.o
+	${M} ${MAKE} jparse.c jparse.lex.h
+	${M} ${MAKE} jparse.o
 	${RM} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
 	${RM} -f jparse.tab.ref.h
@@ -557,7 +569,7 @@ parser: jparse.y jparse.l
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse.y jparse.l
-	${MAKE} parser RUN_O_FLAG='-o'
+	${M} ${MAKE} parser RUN_O_FLAG='-o'
 
 # load reference code from the previous successful make parser
 #
@@ -599,9 +611,9 @@ flex: jparse.c jparse.lex.h
 	@:
 
 test: test_jparse/Makefile
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${Q} if [[ ! -x ./jparse ]]; then \
 	    echo "${OUR_NAME}: executable not found: ./jparse" 1>&2; \
 	    echo "${OUR_NAME}: trying to make jparse" 1>&2; \
@@ -611,9 +623,9 @@ test: test_jparse/Makefile
 	    echo "${OUR_NAME}: ERROR: unable to create excutable: ./jparse" 1>&2; \
 	    exit 20; \
 	fi
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse all test
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all test
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # rule used by prep.sh and make clean
 #
@@ -623,11 +635,11 @@ clean_generated_obj:
 # sequence exit codes
 #
 seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${Q} HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -642,15 +654,15 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC} test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
@@ -675,17 +687,17 @@ picky: ${ALL_SRC} test_jparse/Makefile
 		exit 2; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${Q} HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -704,16 +716,16 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 		exit 1; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS}
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-${Q} HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
@@ -730,8 +742,8 @@ check_man: ${ALL_MAN_TARGETS}
 		exit 23; \
 	    fi; \
 	fi
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # install man pages
 #
@@ -744,14 +756,14 @@ install_man: ${ALL_MAN_TARGETS}
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean: test_jparse/Makefile
 	${V} echo
@@ -759,7 +771,7 @@ legacy_clean: test_jparse/Makefile
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean test_jparse/Makefile
 	${V} echo
@@ -768,7 +780,7 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 	${Q} ${RM} -f jstr_test.out jstr_test2.out
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${V} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
@@ -779,37 +791,37 @@ configure:
 	@echo nothing to $@
 
 clean:
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 install: all test_jparse/Makefile install_man
-	@echo
-	@echo "${OUR_NAME}: make $@ starting"
-	@echo
-	${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
-	@echo
-	@echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###############
@@ -817,9 +829,9 @@ install: all test_jparse/Makefile install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
+	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
 	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
@@ -842,8 +854,8 @@ depend: ${ALL_CSRC}
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	    fi; \
 	fi
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ complete"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_gen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
