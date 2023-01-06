@@ -513,7 +513,8 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} | \
+	      ${SED} 's;../../jparse/../dyn_array;../../dyn_array;g' >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
@@ -527,9 +528,9 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../../jparse/../dyn_array/dyn_array.h \
-    ../../jparse/json_parse.h ../../jparse/json_util.h ../../jparse/util.h \
-    ../util.h jnum_chk.c jnum_chk.h
-jnum_test.o: ../../jparse/../dyn_array/../dbg/dbg.h \
-    ../../jparse/../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../jparse/json_util.h ../json_parse.h ../util.h jnum_chk.c \
+    jnum_chk.h
+jnum_test.o: ../../dyn_array/../dbg/dbg.h \
+    ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
     ../../jparse/util.h jnum_test.c
