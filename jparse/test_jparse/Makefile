@@ -491,9 +491,9 @@ clobber: legacy_clobber clean
 	${S} echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${RM} -f tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
-	${RM} -f tags
 
 install: all
 	${S} echo

@@ -1043,6 +1043,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f ${TARGETS}
 	${RM} -rf man
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${RM} -f tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
