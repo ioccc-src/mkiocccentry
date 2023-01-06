@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3  "27 November 2022" "dyn_array"
+.TH dyn_array 3  "05 January 2023" "dyn_array"
 .SH NAME
 .BR dyn_array_value(),
 .BR dyn_array_addr(),
@@ -32,7 +32,7 @@
 .BI "#define dyn_array_value(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))[(index)])"
 .br
 .BI "#define dyn_array_addr(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))+(index))"
-.br
+.sp
 .BI "#define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)"
 .br
 .BI "#define dyn_array_beyond(array_p, type) (dyn_array_addr(array_p, type, dyn_array_tell(array_p)))"
@@ -45,17 +45,17 @@
 .sp
 .BI "extern struct dyn_array *dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize);"
 .br
+.BI "extern void dyn_array_free(struct dyn_array *array);"
+.sp
 .BI "extern bool dyn_array_append_value(struct dyn_array *array, void *value_to_add);"
 .br
 .BI "extern bool dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);"
 .br
 .BI "extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other);"
-.br
+.sp
 .BI "extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);"
 .br
 .BI "extern void dyn_array_clear(struct dyn_array *array);"
-.sp
-.BI "extern void dyn_array_free(struct dyn_array *array);"
 .SH DESCRIPTION
 These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
 .PP
@@ -108,6 +108,7 @@ offset from the current element in use.
 \fBSEEK_END\fP
 offset from the end of the allocated elements.
 .RE
+.sp 1
 The function will return true if the address of the array of elements moved during \fBrealloc()\fP and false otherwise.
 Attempting to seek to or before the beginning of the array will have the effect of calling \fBdyn_array_clear()\fP as described below.
 .PP
@@ -192,3 +193,5 @@ and
 return void.
 .SH EXAMPLE
 For an example program that uses the dynamic array facility see the files \fIdyn_test.h\fP and \fIdyn_test.c\fP.
+.SH HISTORY
+The dyn_array facility was first written by Landon Curt Noll in 2014 for use in tools such as STS (see the https://github.com/arcetri/STS GitHub repo).

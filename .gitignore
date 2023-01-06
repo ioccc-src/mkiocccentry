@@ -37,7 +37,7 @@ jstrdecode
 jstrencode
 limit_ioccc.sh
 makefile.local
-man
+/man/
 mkiocccentry
 NOTES
 oebxergfB.txt
