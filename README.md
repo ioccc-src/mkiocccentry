@@ -3,17 +3,88 @@
 *NOTE*: This code is currently under alpha-test.
 
 
-## `mkiocccentry`
+## HOW TO ENTER THE IOCCC
+
+0) check to see of the IOCCC is open
+
+Check the [status.json](https://www.ioccc.org/status.json) URL and
+check the [IOCCC news}(https://www.ioccc.org/index.html#news) to
+see of the IOCCC is open.
+
+1) register for the IOCCC
+
+```
+XXX - instructions TBD - XXX
+```
+
+2) obtain the latest mkiocccentry tool set
+
+If you do not have an mkiocccentry tool directory:
+
+```sh
+cd some_directory
+git clone git@github.com:ioccc-src/mkiocccentry.git
+cd mkiocccentry
+```
+
+If you already have an mkiocccentry tool directory:
+
+```sh
+cd mkiocccentry
+git fetch
+git rebase
+```
+
+3) Make the mkiocccentry tool set
+
+```sh
+make clobber all
+```
+
+4) run the mkiocccentry tool to form your entry tarball
+
+```sh
+./mkiocccentry work_dir prog.c Makefile remarks.md [file ...]
+```
+
+where:
+
+```
+work_dir	directory where the entry directory and tarball are formed
+prog.c		path to the C source for your entry
+
+
+Makefile	Makefile to build (make all) and cleanup (make clean & make clobber)
+
+remarks.md	Remarks about your entry in markdown format
+		NOTE: See the [markdown syntax[(https://www.markdownguide.org/basic-syntax) guide.
+
+[file ...]	extra data files to include with your entry
+```
+
+5) uplaod your entry to the IOCCC submit server
+
+```
+XXX - instructions TBD - XXX
+```
+
+
+## The mkiocccentry tool set
+
+
+### `mkiocccentry`
 
 Form an **IOCCC** entry as an XZ compressed tarball file.
 
 For examples and more information, try:
 
 
-	    man ./man/mkiocccentry.1
+```sh
+man ./soup/man/man1/mkiocccentry.1
+```
 
 
-## `iocccsize`
+### `iocccsize`
 
 The official **IOCCC** entry Rule 2b size tool.
 
@@ -23,11 +94,12 @@ This code is based on code by *@SirWumpus* (**Anthony Howe**):
 
 For more information and examples, try:
 
+```sh
+man ./soup/man/man1/iocccsize.1
+```
 
-	    man ./man/iocccsize.1
 
-
-## `txzchk`
+### `txzchk`
 
 The official **IOCCC** tarball validation tool.
 
@@ -47,21 +119,23 @@ used and there was no screwing around with the resultant tarball.
 
 For more information and examples, try:
 
+```sh
+man ./soup/man/man1/txzchk.1
+```
 
-	    man ./man/txzchk.1
 
-
-##  `fnamchk`
+###  `fnamchk`
 
 The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 
 For more information and examples, try:
 
+```sh
+man ./test_ioccc/man/man1/fnamchk.1
+```
 
-	    man ./man/fnamchk.1
 
-
-##  `chkentry`
+###  `chkentry`
 
 The official **IOCCC** `.info.json` and `.auth.json` sanity checker tool.
 Invoked by `mkiocccentry` after the `.info.json` and `.auth.json` files have
@@ -83,12 +157,12 @@ and:
 
 For more information and examples, try:
 
+```sh
+man ./soup/man/man1/chkentry.1
+```
 
-	    man ./man/chkentry.1
 
-
-
-##  `jparse`
+###  `jparse`
 
 The official **IOCCC** `JSON` parser written in C via `flex(1)` and `bison(1)`.
 
@@ -107,11 +181,12 @@ and:
 
 For more information and examples, try:
 
+```sh
+man ./jparse/man/man1/jparse.1
+```
 
-	    man ./man/jparse.1
 
-
-## `run_bison.sh`
+### `run_bison.sh`
 
 This script attempts to find a recent enough version of `bison(1)` to generate
 code from the `*.y` files in the repo. If it fails and `-o` is passed to the
@@ -122,10 +197,13 @@ This script is part of the creation of the JSON parser `jparse`.
 
 For more information and examples, try:
 
-	    man ./man/run_bison.1
+```sh
+man ./jparse/man/man8/run_bison.8
+```
 
 
-## `run_flex.sh`
+### `run_flex.sh`
+
 
 This script attempts to find a recent enough version of `flex(1)` to generate
 code from the `*.l` files in the repo. If it fails and `-o` is passed to the
@@ -136,4 +214,6 @@ This script is part of the creation of the JSON parser `jparse`.
 
 For more information and examples, try:
 
-	    man ./man/run_flex.1
+```sh
+man ./jparse/man/man8/run_flex.8
+```
