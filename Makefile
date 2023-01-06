@@ -54,6 +54,7 @@ GREP= grep
 INDEPEND= independ
 INSTALL= install
 MAKE= make
+MV= mv
 PICKY= picky
 RM= rm
 RSYNC= rsync
@@ -299,6 +300,7 @@ PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
 #
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
 
+TMP_BUILD_LOG= .build.log
 BUILD_LOG= build.log
 
 # NOTE: For valgrind, run with:
@@ -548,8 +550,18 @@ reset_min_timestamp: soup/Makefile
 # rule instead.
 #
 prep: test_ioccc/prep.sh
-	@${RM} -f ${BUILD_LOG}
-	@./test_ioccc/prep.sh -l "${BUILD_LOG}"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_ioccc/prep.sh -l "${TMP_BUILD_LOG}"; \
+	    EXIT_CODE="$$?"; \
+	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
+		echo; \
+		echo "make $@: see ${BUILD_LOG} for build details"; \
+		echo; \
+		exit $$EXIT_CODE; \
+	    fi
 
 # make build release pull
 #
@@ -566,8 +578,18 @@ prep: test_ioccc/prep.sh
 build: release
 pull: release
 release: test_ioccc/prep.sh
-	@${RM} -f ${BUILD_LOG}
-	@./test_ioccc/prep.sh -e -o -l "${BUILD_LOG}"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_ioccc/prep.sh -e -o -l "${TMP_BUILD_LOG}"; \
+	    EXIT_CODE="$$?"; \
+	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
+		echo; \
+		echo "make $@: see ${BUILD_LOG} for build details"; \
+		echo; \
+		exit $$EXIT_CODE; \
+	    fi
 
 # make parser
 #
@@ -1042,7 +1064,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f .sorry.*
 	${RM} -f ${TARGETS}
 	${RM} -rf man
-	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log ${BUILD_LOG}
 	${RM} -f tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
