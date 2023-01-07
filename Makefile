@@ -66,6 +66,12 @@ SLEEP= sleep
 TEE= tee
 TR= tr
 
+######################
+# URLs for utilities #
+######################
+CHECKNR_URL = https://github.com/lcn2/checknr
+PICKY_URL= https://github.com/xexyl/picky
+SEQCEXIT_URL= https://github.com/lcn2/seqcexit
 
 ####################
 # Makefile control #
@@ -646,18 +652,18 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${M} ${MAKE} ${MAKE_CD_Q} SEQCEXIT_URL="${SEQCEXIT_URL}" -C dbg $@
+	${M} ${MAKE} ${MAKE_CD_Q} SEQCEXIT_URL="${SEQCEXIT_URL}" -C dyn_array $@
+	${M} ${MAKE} ${MAKE_CD_Q} SEQCEXIT_URL="${SEQCEXIT_URL}" -C jparse $@
+	${M} ${MAKE} ${MAKE_CD_Q} SEQCEXIT_URL="${SEQCEXIT_URL}" -C soup $@
+	${M} ${MAKE} ${MAKE_CD_Q} SEQCEXIT_URL="${SEQCEXIT_URL}" -C test_ioccc $@
 	${Q} HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo '    ${SEQCEXIT_URL}'; 1>&2; \
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
@@ -672,18 +678,17 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${M} ${MAKE} ${MAKE_CD_Q} PICKY_URL="${PICKY_URL}" -C dbg $@
+	${M} ${MAKE} ${MAKE_CD_Q} PICKY_URL="${PICKY_URL}" -C dyn_array $@
+	${M} ${MAKE} ${MAKE_CD_Q} PICKY_URL="${PICKY_URL}" -C jparse $@
+	${M} ${MAKE} ${MAKE_CD_Q} PICKY_URL="${PICKY_URL}" -C soup $@
+	${M} ${MAKE} ${MAKE_CD_Q} PICKY_URL="${PICKY_URL}" -C test_ioccc $@
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo "The picky tool could not be found." 1>&2; \
-	    echo "The picky tool is required for this rule." 1>&2; \
-	    echo "We recommend you install picky v2.6 or later" 1>&2; \
-	    echo "from this URL:" 1>&2; \
+	    echo 'The picky tool could not be found.' 1>&2; \
+	    echo 'The picky tool is required for this rule.' 1>&2; \
+	    echo 'See the following GitHub repo for picky:'; 1>&2; \
 	    echo 1>&2; \
-	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo '    ${PICKY_URL}' 1>&2; \
 	    echo 1>&2; \
 	    exit 1; \
 	else \
@@ -746,11 +751,11 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${M} ${MAKE} ${MAKE_CD_Q} CHECKNR_URL="${CHECKNR_URL}" -C dbg $@
+	${M} ${MAKE} ${MAKE_CD_Q} CHECKNR_URL="${CHECKNR_URL}" -C dyn_array $@
+	${M} ${MAKE} ${MAKE_CD_Q} CHECKNR_URL="${CHECKNR_URL}" -C jparse $@
+	${M} ${MAKE} ${MAKE_CD_Q} CHECKNR_URL="${CHECKNR_URL}" -C soup $@
+	${M} ${MAKE} ${MAKE_CD_Q} CHECKNR_URL="${CHECKNR_URL}" -C test_ioccc $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

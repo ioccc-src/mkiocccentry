@@ -51,6 +51,14 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 
+######################
+# URLs for utilities #
+######################
+CHECKNR_URL = https://github.com/lcn2/checknr
+PICKY_URL= https://github.com/xexyl/picky
+SEQCEXIT_URL= https://github.com/lcn2/seqcexit
+
+
 
 ####################
 # Makefile control #
@@ -423,7 +431,7 @@ seqcexit: ${ALL_CSRC}
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo '    ${SEQCEXIT_URL}'; 1>&2; \
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
@@ -438,12 +446,11 @@ picky: ${ALL_SRC}
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo "The picky tool could not be found." 1>&2; \
-	    echo "The picky tool is required for this rule." 1>&2; \
-	    echo "We recommend you install picky v2.6 or later" 1>&2; \
-	    echo "from this URL:" 1>&2; \
+	    echo 'The picky tool could not be found.' 1>&2; \
+	    echo 'The picky tool is required for this rule.' 1>&2; \
+	    echo 'See the following GitHub repo for picky:'; 1>&2; \
 	    echo 1>&2; \
-	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo '    ${PICKY_URL}' 1>&2; \
 	    echo 1>&2; \
 	    exit 1; \
 	else \
@@ -477,10 +484,10 @@ check_man: ${ALL_MAN_TARGETS}
 	-${Q} HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
+	    echo 'See the following GitHub repo for checknr:'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
 	    echo ''; 1>&2; \
-	    echo '    https://github.com/lcn2/checknr' 1>&2; \
+	    echo '    ${CHECKNR_URL}' 1>&2; \
 	    echo ''; 1>&2; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
