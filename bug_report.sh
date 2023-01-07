@@ -57,7 +57,7 @@ export TOOLS="
     ./soup/vermod.sh
     "
 
-export BUG_REPORT_VERSION="0.8 2023-01-04"
+export BUG_REPORT_VERSION="0.9 2023-01-07"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
@@ -83,6 +83,7 @@ Exit codes:
      1   failed to create a bug report file
      2   help mode exit or print version mode exit
      3   invalid command line
+     4	 error in function call
  >= 10   internal error
 
 $0 version: $BUG_REPORT_VERSION"
@@ -221,6 +222,90 @@ is_exec()
     fi
 }
 
+# is_exec_quiet   - determine if arg exists, is a regular file and is executable
+#
+is_exec_quiet()
+{
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: expected 1 arg to is_exec_quiet, found $#" | tee -a -- "$LOG_FILE"
+	exit 4
+    else
+	declare f="$1"
+	if [[ ! -e "$f" ]]; then
+	    return 1
+	fi
+	if [[ ! -f "$f" ]]; then
+	    return 1
+	fi
+	if [[ ! -x "$f" ]]; then
+	    return 1
+	fi
+	return 0
+    fi
+}
+
+
+# type_of - determine if a name is an alias, a path or a built-in
+#
+# NOTE: an alias is highly unlikely to be found in a script but if it something
+# is aliased by some chance we'll know from this function.
+type_of()
+{
+    # parse args
+    #
+    if [[ $# -ne 2 ]]; then
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
+	exit 4
+    fi
+
+    local CODE="$1"
+    local COMMAND=$2
+
+    write_echo
+    write_echo "## CHECKING TYPE OF: $COMMAND"
+    TYPE_OF="$(type -a "$COMMAND" 2>/dev/null)"
+    status=$?
+    if [[ -n "$TYPE_OF" ]]; then
+	write_echo "$TYPE_OF"
+    elif [[ "$status" -ne 0 ]]; then
+	EXIT_CODE="$CODE"
+	write_echo "$0: ERROR: type -a $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	$COMMAND non-zero exit code: $status"
+	write_echo "### ISSUE DETECTED: $COMMAND returned $status"
+    fi
+    write_echo "## TYPE OF $COMMAND ABOVE"
+}
+
+# type_of_optional - determine if a name is an alias, a path or a built-in
+#
+# NOTE: an alias is highly unlikely to be found in a script but if it something
+# is aliased by some chance we'll know from this function.
+type_of_optional()
+{
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
+	exit 4
+    fi
+
+    local COMMAND=$1
+
+    write_echo
+    write_echo "## CHECKING TYPE OF: $COMMAND"
+    TYPE_OF="$(type -a "$COMMAND" 2>/dev/null)"
+    status=$?
+
+    if [[ -n "$TYPE_OF" ]]; then
+	write_echo "$TYPE_OF"
+    elif [[ "$status" -ne 0 ]]; then
+	write_echo "$0: OPTIONAL COMMAND $COMMAND NOT FOUND: type -a returned $status"
+    fi
+    write_echo "## TYPE OF $COMMAND ABOVE"
+}
+
+
 # get path to tools we might need for get_version and get_version_optional
 # functions below
 #
@@ -276,13 +361,24 @@ get_version_optional() {
     #
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local COMMAND
     local EXIT=0
+    local IS_EXEC=1
     COMMAND="$(command -v "$1")"
-    if ! is_exec "$COMMAND"; then
-	return
+    if ! is_exec_quiet "$COMMAND"; then
+	# if not executable we can try doing it as a built-in. This might or
+	# might not need to be a better check. Although some of the tools are
+	# built-ins in say zsh it does not appear to be in bash so it's possibly
+	# not a problem (since we use /usr/bin/env bash).
+	#
+	# Additionally trying to run command on a built-in in zsh (for example:
+	# true) will work because it's also a file. Also if it fails to run we
+	# will know there's a problem and likely due to something missing so the
+	# below might be all that's necessary.
+	COMMAND="$1"
+	IS_EXEC=0
     fi
 
     write_echo "## VERSION CHECK FOR: $1"
@@ -320,88 +416,90 @@ get_version_optional() {
 	return
     fi
 
-    # try what(1) if available
-    #
-    # An important note is that what(1) might not get the correct information.
-    # For instance running it on bmake(1) I see:
-    #
-    #	$ what ./bmake
-    #   ./bmake:
-    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
-    #
-    # which(1) is entirely useless.
-    #
-    # The question is should ident(1) come first but the trouble is I don't
-    # actually know what it looks like. Also if the tool in question does not
-    # have the appropriate string it won't give us anything useful either.
-    # Here's what what(1) looks like on cut(1) which as can be seen is useful:
-    #
-    #	$ what /usr/bin/cut
-    #	/usr/bin/cut:
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #
-    # Looking at the Apple website this is indeed the version. Thus because it's
-    # not something that will work in all cases instead we will try ident(1) as
-    # well even if what(1) succeeds. If either succeeds we will not try
-    # strings(1).
-    #
-    if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+    if [[ "$IS_EXEC" -eq 1 ]]; then
+	# try what(1) if available
+	#
+	# An important note is that what(1) might not get the correct information.
+	# For instance running it on bmake(1) I see:
+	#
+	#	$ what ./bmake
+	#   ./bmake:
+	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#
+	# which(1) is entirely useless.
+	#
+	# The question is should ident(1) come first but the trouble is I don't
+	# actually know what it looks like. Also if the tool in question does not
+	# have the appropriate string it won't give us anything useful either.
+	# Here's what what(1) looks like on cut(1) which as can be seen is useful:
+	#
+	#	$ what /usr/bin/cut
+	#	/usr/bin/cut:
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#
+	# Looking at the Apple website this is indeed the version. Thus because it's
+	# not something that will work in all cases instead we will try ident(1) as
+	# well even if what(1) succeeds. If either succeeds we will not try
+	# strings(1).
+	#
+	if [[ ! -z "$WHAT" ]]; then
+	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$WHAT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # try ident(1) if available
-    #
-    # The same or similar caveats for what(1) might apply here too but I have no
-    # way to test this.
-    #
-    if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+	# try ident(1) if available
+	#
+	# The same or similar caveats for what(1) might apply here too but I have no
+	# way to test this.
+	#
+	if [[ ! -z "$IDENT" ]]; then
+	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$IDENT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # if we got output from either what(1) or ident(1) then skip strings(1)
-    #
-    if [[ -n "$EXIT" ]]; then
-	return
-    fi
-
-    # try strings(1) if available. The filter is arbitrarily selected. For some
-    # tools it might not be enough lines but if we get here it's probably not
-    # going to be what we want anyway.
-    #
-    # Now a question to be answered is should we even use strings? The reason to
-    # ask such a question is it's likely to work which means that we might never
-    # reach the unknown version and strings(1) probably won't actually give us
-    # the version.
-    #
-    # This is why we warn that there's a possible unknown version and only if
-    # strings fails do we report positively that the version is unknown.
-    #
-    if [[ ! -z "$STRINGS" ]]; then
-	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	WARNING_SUMMARY="$WARNING_SUMMARY
-	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
-	status=${PIPESTATUS[0]}
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
-	    write_echo "## OUTPUT OF strings $COMMAND ABOVE"
-	    write_echo ""
+	# if we got output from either what(1) or ident(1) then skip strings(1)
+	#
+	if [[ -n "$EXIT" ]]; then
 	    return
+	fi
+
+	# try strings(1) if available. The filter is arbitrarily selected. For some
+	# tools it might not be enough lines but if we get here it's probably not
+	# going to be what we want anyway.
+	#
+	# Now a question to be answered is should we even use strings? The reason to
+	# ask such a question is it's likely to work which means that we might never
+	# reach the unknown version and strings(1) probably won't actually give us
+	# the version.
+	#
+	# This is why we warn that there's a possible unknown version and only if
+	# strings fails do we report positively that the version is unknown.
+	#
+	if [[ ! -z "$STRINGS" ]]; then
+	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    WARNING_SUMMARY="$WARNING_SUMMARY
+	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
+	    status=${PIPESTATUS[0]}
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command_lines 15 "$STRINGS" "${COMMAND}"
+		write_echo "## OUTPUT OF strings $COMMAND ABOVE"
+		write_echo ""
+		return
+	    fi
 	fi
     fi
 
@@ -430,12 +528,13 @@ get_version() {
     #
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local COMMAND
     local EXIT=0
+    local IS_EXEC=1
     COMMAND="$(command -v "$1")"
-    if ! is_exec "$COMMAND"; then
+    if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
 	# built-ins in say zsh it does not appear to be in bash so it's possibly
@@ -446,6 +545,7 @@ get_version() {
 	# will know there's a problem and likely due to something missing so the
 	# below might be all that's necessary.
 	COMMAND="$1"
+	IS_EXEC=0
     fi
     write_echo "## VERSION CHECK FOR: $1"
 
@@ -482,87 +582,89 @@ get_version() {
 	return
     fi
 
-    # try what(1) if available
-    #
-    # An important note is that what(1) might not get the correct information.
-    # For instance running it on bmake(1) I see:
-    #
-    #	$ what ./bmake
-    #   ./bmake:
-    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
-    #
-    # which(1) is entirely useless.
-    #
-    # The question is should ident(1) come first but the trouble is I don't
-    # actually know what it looks like. Also if the tool in question does not
-    # have the appropriate string it won't give us anything useful either.
-    # Here's what what looks like on cut(1) which as can be seen is useful:
-    #
-    #	$ what /usr/bin/cut
-    #	/usr/bin/cut:
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #
-    # Looking at the Apple website this is indeed the version. Thus because it's
-    # not something that will work in all cases instead we will try ident(1) as
-    # well even if this succeeds. If either succeeds we will not try strings(1).
-    #
-    if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+    if [[ "$IS_EXEC" -eq 1 ]]; then
+	# try what(1) if available
+	#
+	# An important note is that what(1) might not get the correct information.
+	# For instance running it on bmake(1) I see:
+	#
+	#	$ what ./bmake
+	#   ./bmake:
+	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#
+	# which(1) is entirely useless.
+	#
+	# The question is should ident(1) come first but the trouble is I don't
+	# actually know what it looks like. Also if the tool in question does not
+	# have the appropriate string it won't give us anything useful either.
+	# Here's what what looks like on cut(1) which as can be seen is useful:
+	#
+	#	$ what /usr/bin/cut
+	#	/usr/bin/cut:
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#
+	# Looking at the Apple website this is indeed the version. Thus because it's
+	# not something that will work in all cases instead we will try ident(1) as
+	# well even if this succeeds. If either succeeds we will not try strings(1).
+	#
+	if [[ ! -z "$WHAT" ]]; then
+	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$WHAT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # try ident(1) if available
-    #
-    # The same or similar caveats for what(1) might apply here too but I have no
-    # way to test this.
-    #
-    if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+	# try ident(1) if available
+	#
+	# The same or similar caveats for what(1) might apply here too but I have no
+	# way to test this.
+	#
+	if [[ ! -z "$IDENT" ]]; then
+	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$IDENT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # if we got output from either what(1) or ident(1) then skip strings(1)
-    #
-    if [[ -n "$EXIT" ]]; then
-	return
-    fi
-
-    # try strings(1) if available. The filter is arbitrarily selected. For some
-    # tools it might not be enough lines but if we get here it's probably not
-    # going to be what we want anyway.
-    #
-    # Now a question to be answered is should we even use strings? The reason to
-    # ask such a question is it's likely to work which means that we might never
-    # reach the unknown version and strings(1) probably won't actually give us
-    # the version.
-    #
-    # This is why we warn that there's a possible unknown version and only if
-    # strings fails do we report positively that the version is unknown.
-    #
-    if [[ ! -z "$STRINGS" ]]; then
-	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	WARNING_SUMMARY="$WARNING_SUMMARY
-	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
-	status=${PIPESTATUS[0]}
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
-	    write_echo "## strings $COMMAND ABOVE"
-	    write_echo ""
+	# if we got output from either what(1) or ident(1) then skip strings(1)
+	#
+	if [[ -n "$EXIT" ]]; then
 	    return
+	fi
+
+	# try strings(1) if available. The filter is arbitrarily selected. For some
+	# tools it might not be enough lines but if we get here it's probably not
+	# going to be what we want anyway.
+	#
+	# Now a question to be answered is should we even use strings? The reason to
+	# ask such a question is it's likely to work which means that we might never
+	# reach the unknown version and strings(1) probably won't actually give us
+	# the version.
+	#
+	# This is why we warn that there's a possible unknown version and only if
+	# strings fails do we report positively that the version is unknown.
+	#
+	if [[ ! -z "$STRINGS" ]]; then
+	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    WARNING_SUMMARY="$WARNING_SUMMARY
+	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
+	    status=${PIPESTATUS[0]}
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command_lines 15 "$STRINGS" "${COMMAND}"
+		write_echo "## strings $COMMAND ABOVE"
+		write_echo ""
+		return
+	    fi
 	fi
     fi
 
@@ -593,7 +695,7 @@ get_version_minimal() {
     #
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local COMMAND
     local EXIT=0
@@ -697,7 +799,7 @@ run_optional_check() {
     #
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local COMMAND=$1
 
@@ -732,7 +834,7 @@ run_check_warn() {
     #
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local COMMAND=$1
     write_echo "## RUNNING: $COMMAND"
@@ -757,19 +859,21 @@ run_check_warn() {
 #
 get_shell() {
     write_echo "## RUNNING: echo \$SHELL"
-    write_echo "Default shell: $SHELL"
+    write_echo "$SHELL"
     write_echo "## DEFAULT SHELL ABOVE"
     write_echo ""
 }
 
-# get_path - get the user PATH :-)
+# get_path - get the user path :-)
 #
 get_path() {
     write_echo "## RUNNING: echo \$PATH"
-    write_echo "\$PATH: $PATH"
-    write_echo "## echo \$PATH ABOVE"
+    write_echo "$PATH"
+    write_echo "## DEFAULT PATH ABOVE"
     write_echo ""
 }
+
+
 # run_check
 #
 # usage:
@@ -778,13 +882,13 @@ get_path() {
 #	exit_code   - new exit code of rule fails
 #	command	    - check to run
 #
-run_check() {
-
+run_check()
+{
     # parse args
     #
     if [[ $# -ne 2 ]]; then
 	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
-	exit 3
+	exit 4
     fi
     local CODE="$1"
     local COMMAND=$2
@@ -855,7 +959,7 @@ write_echo ""
 # echo $SHELL: we need to know their default shell
 get_shell
 
-# echo $PATH: we need to know the user $PATH
+# echo $PATH: we need to know their default path
 get_path
 
 # uname -a: get system information
@@ -868,56 +972,58 @@ if [[ -n "$SW_VERS" ]]; then
     run_check 11 "sw_vers"
 fi
 
-# which awk: get awk path
-run_check 12 "which awk"
+# type -a awk: get all types of awk
+type_of 12 "awk"
 
 # awk --version | head -n 1: get awk version
 get_version "awk"
 
-# which basename: get path to basename tool
-run_check 13 "which basename"
+# type -a basename: get all types of basename
+type_of 13 "basename"
 
 # try getting basename version
 get_version "basename"
 
-# which bash: find the party :-) (okay - path to bash)
-run_check 14 "which bash"
+# type -a bash: find which party to bash (okay - all types of bash)
+type_of 14 "bash"
 
 # bash --version: get bash version
 get_version "bash"
 
-# which cat: find which cat the user owns :-) (okay - path to cat tool)
-run_check 15 "which cat"
+# type -a cat: find which cat the user owns :-) (okay - types of cats)
+type_of 15 "cat"
+
 # try getting version of cat but in a limited way so that it does not block.
 # Don't warn if version cannot be found.
 get_version_minimal "cat"
 
-# which cmp: get path to cmp
-run_check 16 "which cmp"
+# type -a cmp: get all types of cmp
+type_of 16 "cmp"
 
 # try getting version of cmp
 get_version "cmp"
 
-# which cp: get path to cp
-run_check 17 "which cp"
+# type -a cp: get all types of cp
+type_of 17 "cp"
 
 # try getting version of cp
 get_version "cp"
 
-# which cut: get path to cut tool
-run_check 18 "which cut"
+# type -a cut: get all types of cut
+type_of 18 "cut"
 
 # try getting cut version
 get_version "cut"
 
-# which date: find the bug reporter a date :-) (okay - path to date tool)
-run_check 19 "which date"
+# type -a date: find the bug reporter a date :-) (okay - get all types of date
+# command)
+type_of 19 "date"
 
 # try getting version of date
 get_version "date"
 
-# which echo: try getting path to echo
-run_check 20 "which echo"
+# type -a echo: get all types of echo
+type_of 20 "echo"
 
 # NOTE: we don't try getting version of echo because in some implementations
 # (all I've tested in fact) it'll just echo the --version etc. despite the fact
@@ -933,94 +1039,100 @@ run_check 20 "which echo"
 # :-)
 #
 
-# which find: what kind of find did the user find ? :-) (or actually just find find :-) )
-run_check 21 "which find"
+# type -a find: what kind of find did the user find ? :-) (or actually just find
+# all types of find :-) )
+type_of 21 "find"
 
 # try getting version of find
 get_version "find"
 
-# which getopts: get the path to getopts
+# type -a getopts: get all types of getopts
 #
 # NOTE: this might not be necessary but it was suggested anyway. I might be
-# wrong but I suspect in shell scripts it would use the built-in but using which
-# will give the path under both linux and macOS. The same
-run_check 22 "which getopts"
+# wrong but I suspect in shell scripts it would use the built-in unless given
+# the command command or a path but using type -a should give us everything.
+# will give the path under both linux and macOS.
+type_of 22 "getopts"
 
 # NOTE: no need to try and get version as it's a built-in under both macOS and
 # linux and neither have even a --version option.
 
-# which grep: get path to grep tool
-run_check 23 "which grep"
+# type -a grep: get all types of grep
+type_of 23 "grep"
 
 # try getting grep version
 get_version "grep"
 
-# which head: determine if the user has a head :-) (on my behalf I hope they do:
-# I lost my head years ago and it's a real problem I can tell you! :-) )
-run_check 24 "which head"
+# type -a head: determine if the user has a head :-) (on my behalf I hope they do:
+# I lost my head years ago and it's a real problem I can tell you! :-) ) Okay,
+# actually we just want to find all types of heads (or head) :-)
+type_of 24 "head"
 
 # try getting version of head
 get_version "head"
 
-# which mktemp: get path to mktemp
-run_check 25 "which mktemp"
+# type -a mktemp: get all types of mktemp (well not the C library :-) )
+type_of 25 "mktemp"
 
 # try getting version of mktemp
 get_version "mktemp"
 
-# which mv: find where user will be moving :-) (or actually just path to mv :-))
-run_check 26 "which mv"
+# type -a mv: find where user will be moving :-) (or actually just all types of mv :-) )
+type_of 26 "mv"
 
 # try getting version of mv
 get_version "mv"
 
-# which printf: get path to printf tool
-run_check 27 "which printf"
+# type -a printf: get all types of printf (well not the C library :-) )
+type_of 27 "printf"
 
 # try getting printf version
 get_version "printf"
 
-# which rm: get path to rm tool
-run_check 28 "which rm"
+# type -a rm: get all types of rm
+type_of 28 "rm"
 
 # try getting version of rm
 get_version "rm"
 
-# which sed: get sed path
-run_check 29 "which sed"
+# type -a sed: get all types of sed
+type_of 29 "sed"
 
 # try getting sed version
 get_version "sed"
 
-# which tar: find the path to tar
+# type -a tar: get all types of tar (okay - actually tar in the system .. we
+# don't about the dark, flammable liquid :-) )
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
-# because txzchk_test.sh will do that later on.
-run_check 30  "which tar"
+# because hostchk.sh will do that later on.
+type_of 30  "tar"
 
 # tar --version: find out what version tar is
 get_version "tar"
 
-# which tee: get path to tee (I don't mind if I have a cup of tea either :-) )
-run_check 31 "which tee"
+# type -a tee: get all types of tee (none of it will be as good as a cup of
+# black tea but we still need to find the tees here :-) )
+type_of 31 "tee"
 
 # try getting version of tee
 get_version "tee"
 
-# which touch: get path to touch
-run_check 32 "which touch"
+# type -a touch: get all types of touch (not counting physical or mental or
+# emotional touch of humans, other animals and things :-) )
+type_of 32 "touch"
 
 # try getting version of touch
 get_version "touch"
 
-# which tr: get path to tr
-run_check 33 "which tr"
+# type -a tr: get all types of tr
+type_of 33 "tr"
 
 # try getting version of tr
 get_version "tr"
 
-# which true: try getting path to true
-run_check 34 "which true"
+# type -a true: get all types of true (this is not false :-) )
+type_of 34 "true"
 
 # make sure true is true :-)
 run_check 35 "true"
@@ -1028,8 +1140,8 @@ run_check 35 "true"
 # try getting version of true
 get_version "true"
 
-# which yes: get path to yes
-run_check 36 "which yes"
+# type -a yes: get all yesses (yes yesses is a valid spelling just as yeses is :-) )
+type_of 36 "yes"
 
 # don't try getting version of yes because it will just try printing the args
 # over and over again as it is designed to do
@@ -1057,69 +1169,62 @@ write_echo ""
 # These optional tools are used by the maintainers and/or
 # there are workarounds for not having these tools.
 
-# which checknr: determine if checknr is installed
-run_optional_check "which checknr"
+# type -a checknr: get all types of checknr
+type_of_optional "checknr"
 
 # try getting version of checknr
 get_version_optional "checknr"
 
-# which ctags: get ctags path
-run_optional_check "which ctags"
+# type -a ctags: get all types of ctags
+type_of_optional "ctags"
 
 # try getting version of ctags
 get_version_optional "ctags"
 
-# which fmt: determine if fmt is installed
-run_optional_check "which fmt"
+# type -a fmt: get all types of fmt
+type_of_optional "fmt"
 
 # try getting version of fmt
 get_version_optional "fmt"
 
-# which gdate: try getting path to gdate
-run_optional_check "which gdate"
+# type -a gdate: get all types of gdate
+type_of_optional "gdate"
 
 # try getting version of gdate
 get_version_optional "gdate"
 
-# which install: which install are we using ? :-) (that is find the path to install :-) )
-run_optional_check "which install"
+# type -a install: which install are we using ? :-) (that is find all types of install :-) )
+type_of_optional "install"
 
 # try getting version of install
 get_version_optional "install"
 
-# which man: which man are you ? :-) (that is find the path to the man :-) )
-run_optional_check "which man"
+# type -a man: find all types of men (okay man :-) )
+type_of_optional "man"
 
 # try getting version of man (is that the age ? :-) )
 get_version_optional "man"
 
-# which man2html: try getting path to man2html
-run_optional_check "which man2html"
-
-# don't try getting version of man2html because some implementations will print
-# all the help string if an invalid option is given and this is unnecessary
-# clutter especially for an optional tool (that we have discovered is actually
-# does not seem to even work right).
-
-# which picky: try getting path to picky tool
-run_optional_check "which picky"
+# type -a picky: find how picky the bug reporter is (or is that how picky we are ? :) - actually
+# just find all types of picky)
+type_of_optional "picky"
 
 # don't try getting version of picky as it'll block
 
-# which rpl: get path to rpl
-run_optional_check "which rpl"
+# type -a rpl: get all types of rpl
+type_of_optional "rpl"
 
 # try getting version of rpl
 get_version_optional "rpl"
 
-# which seqcexit: get path to seqcexit
-run_optional_check "which seqcexit"
+# type -a seqcexit: get all types of seqcexit
+type_of_optional "seqcexit"
 
 # try getting version of seqcexit
 get_version_optional "seqcexit"
 
-# which shellcheck: get path to shellcheck
-run_optional_check "which shellcheck"
+# type -a shellcheck: get all types of shellcheck(s)
+type_of_optional "shellcheck"
 
 # try getting version of shellcheck
 get_version_optional "shellcheck"
@@ -1138,14 +1243,14 @@ write_echo "# SECTION 2: C ENVIRONMENT #"
 write_echo "############################"
 write_echo ""
 
-# which cc: get all paths for cc
-run_check 37 "which cc"
+# type -a cc: get all types of cc
+type_of 37 "cc"
 
 # cc -v: get compiler version
 run_check 38 "cc -v"
 
-# which make: get path to make tool
-run_check 39 "which -a make"
+# type -a make: get all make types :-)
+type_of 39 "make"
 
 # try and get version of make
 get_version "make"
@@ -1220,14 +1325,14 @@ write_echo ""
 # pre-clean
 rm -f lex.yy.c
 
-# which bison: get path to bison (be careful it doesn't ram you :- ) )
-run_optional_check "which bison"
+# type -a bison: get all types of bison (be careful it doesn't ram you :- ) )
+type_of_optional "bison"
 
 # try getting version of bison
 get_version_optional "bison"
 
-# which flex: get path to flex without flexing your system's resources :-)
-run_optional_check "which flex"
+# type -a flex: get all types of flexes :-) (okay - flex)
+type_of_optional "flex"
 
 # try getting version of flex
 get_version_optional "flex"
