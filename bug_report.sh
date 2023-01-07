@@ -365,6 +365,7 @@ get_version_optional() {
     fi
     local COMMAND
     local EXIT=0
+    local IS_EXEC=1
     COMMAND="$(command -v "$1")"
     if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
@@ -377,6 +378,7 @@ get_version_optional() {
 	# will know there's a problem and likely due to something missing so the
 	# below might be all that's necessary.
 	COMMAND="$1"
+	IS_EXEC=0
     fi
 
     write_echo "## VERSION CHECK FOR: $1"
@@ -414,88 +416,90 @@ get_version_optional() {
 	return
     fi
 
-    # try what(1) if available
-    #
-    # An important note is that what(1) might not get the correct information.
-    # For instance running it on bmake(1) I see:
-    #
-    #	$ what ./bmake
-    #   ./bmake:
-    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
-    #
-    # which(1) is entirely useless.
-    #
-    # The question is should ident(1) come first but the trouble is I don't
-    # actually know what it looks like. Also if the tool in question does not
-    # have the appropriate string it won't give us anything useful either.
-    # Here's what what(1) looks like on cut(1) which as can be seen is useful:
-    #
-    #	$ what /usr/bin/cut
-    #	/usr/bin/cut:
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #
-    # Looking at the Apple website this is indeed the version. Thus because it's
-    # not something that will work in all cases instead we will try ident(1) as
-    # well even if what(1) succeeds. If either succeeds we will not try
-    # strings(1).
-    #
-    if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+    if [[ "$IS_EXEC" -eq 1 ]]; then
+	# try what(1) if available
+	#
+	# An important note is that what(1) might not get the correct information.
+	# For instance running it on bmake(1) I see:
+	#
+	#	$ what ./bmake
+	#   ./bmake:
+	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#
+	# which(1) is entirely useless.
+	#
+	# The question is should ident(1) come first but the trouble is I don't
+	# actually know what it looks like. Also if the tool in question does not
+	# have the appropriate string it won't give us anything useful either.
+	# Here's what what(1) looks like on cut(1) which as can be seen is useful:
+	#
+	#	$ what /usr/bin/cut
+	#	/usr/bin/cut:
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#
+	# Looking at the Apple website this is indeed the version. Thus because it's
+	# not something that will work in all cases instead we will try ident(1) as
+	# well even if what(1) succeeds. If either succeeds we will not try
+	# strings(1).
+	#
+	if [[ ! -z "$WHAT" ]]; then
+	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$WHAT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # try ident(1) if available
-    #
-    # The same or similar caveats for what(1) might apply here too but I have no
-    # way to test this.
-    #
-    if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+	# try ident(1) if available
+	#
+	# The same or similar caveats for what(1) might apply here too but I have no
+	# way to test this.
+	#
+	if [[ ! -z "$IDENT" ]]; then
+	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$IDENT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # if we got output from either what(1) or ident(1) then skip strings(1)
-    #
-    if [[ -n "$EXIT" ]]; then
-	return
-    fi
-
-    # try strings(1) if available. The filter is arbitrarily selected. For some
-    # tools it might not be enough lines but if we get here it's probably not
-    # going to be what we want anyway.
-    #
-    # Now a question to be answered is should we even use strings? The reason to
-    # ask such a question is it's likely to work which means that we might never
-    # reach the unknown version and strings(1) probably won't actually give us
-    # the version.
-    #
-    # This is why we warn that there's a possible unknown version and only if
-    # strings fails do we report positively that the version is unknown.
-    #
-    if [[ ! -z "$STRINGS" ]]; then
-	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	WARNING_SUMMARY="$WARNING_SUMMARY
-	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
-	status=${PIPESTATUS[0]}
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
-	    write_echo "## OUTPUT OF strings $COMMAND ABOVE"
-	    write_echo ""
+	# if we got output from either what(1) or ident(1) then skip strings(1)
+	#
+	if [[ -n "$EXIT" ]]; then
 	    return
+	fi
+
+	# try strings(1) if available. The filter is arbitrarily selected. For some
+	# tools it might not be enough lines but if we get here it's probably not
+	# going to be what we want anyway.
+	#
+	# Now a question to be answered is should we even use strings? The reason to
+	# ask such a question is it's likely to work which means that we might never
+	# reach the unknown version and strings(1) probably won't actually give us
+	# the version.
+	#
+	# This is why we warn that there's a possible unknown version and only if
+	# strings fails do we report positively that the version is unknown.
+	#
+	if [[ ! -z "$STRINGS" ]]; then
+	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    WARNING_SUMMARY="$WARNING_SUMMARY
+	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
+	    status=${PIPESTATUS[0]}
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command_lines 15 "$STRINGS" "${COMMAND}"
+		write_echo "## OUTPUT OF strings $COMMAND ABOVE"
+		write_echo ""
+		return
+	    fi
 	fi
     fi
 
@@ -528,6 +532,7 @@ get_version() {
     fi
     local COMMAND
     local EXIT=0
+    local IS_EXEC=1
     COMMAND="$(command -v "$1")"
     if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
@@ -540,6 +545,7 @@ get_version() {
 	# will know there's a problem and likely due to something missing so the
 	# below might be all that's necessary.
 	COMMAND="$1"
+	IS_EXEC=0
     fi
     write_echo "## VERSION CHECK FOR: $1"
 
@@ -576,87 +582,89 @@ get_version() {
 	return
     fi
 
-    # try what(1) if available
-    #
-    # An important note is that what(1) might not get the correct information.
-    # For instance running it on bmake(1) I see:
-    #
-    #	$ what ./bmake
-    #   ./bmake:
-    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
-    #
-    # which(1) is entirely useless.
-    #
-    # The question is should ident(1) come first but the trouble is I don't
-    # actually know what it looks like. Also if the tool in question does not
-    # have the appropriate string it won't give us anything useful either.
-    # Here's what what looks like on cut(1) which as can be seen is useful:
-    #
-    #	$ what /usr/bin/cut
-    #	/usr/bin/cut:
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #
-    # Looking at the Apple website this is indeed the version. Thus because it's
-    # not something that will work in all cases instead we will try ident(1) as
-    # well even if this succeeds. If either succeeds we will not try strings(1).
-    #
-    if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+    if [[ "$IS_EXEC" -eq 1 ]]; then
+	# try what(1) if available
+	#
+	# An important note is that what(1) might not get the correct information.
+	# For instance running it on bmake(1) I see:
+	#
+	#	$ what ./bmake
+	#   ./bmake:
+	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#
+	# which(1) is entirely useless.
+	#
+	# The question is should ident(1) come first but the trouble is I don't
+	# actually know what it looks like. Also if the tool in question does not
+	# have the appropriate string it won't give us anything useful either.
+	# Here's what what looks like on cut(1) which as can be seen is useful:
+	#
+	#	$ what /usr/bin/cut
+	#	/usr/bin/cut:
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#
+	# Looking at the Apple website this is indeed the version. Thus because it's
+	# not something that will work in all cases instead we will try ident(1) as
+	# well even if this succeeds. If either succeeds we will not try strings(1).
+	#
+	if [[ ! -z "$WHAT" ]]; then
+	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$WHAT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # try ident(1) if available
-    #
-    # The same or similar caveats for what(1) might apply here too but I have no
-    # way to test this.
-    #
-    if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+	# try ident(1) if available
+	#
+	# The same or similar caveats for what(1) might apply here too but I have no
+	# way to test this.
+	#
+	if [[ ! -z "$IDENT" ]]; then
+	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$IDENT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # if we got output from either what(1) or ident(1) then skip strings(1)
-    #
-    if [[ -n "$EXIT" ]]; then
-	return
-    fi
-
-    # try strings(1) if available. The filter is arbitrarily selected. For some
-    # tools it might not be enough lines but if we get here it's probably not
-    # going to be what we want anyway.
-    #
-    # Now a question to be answered is should we even use strings? The reason to
-    # ask such a question is it's likely to work which means that we might never
-    # reach the unknown version and strings(1) probably won't actually give us
-    # the version.
-    #
-    # This is why we warn that there's a possible unknown version and only if
-    # strings fails do we report positively that the version is unknown.
-    #
-    if [[ ! -z "$STRINGS" ]]; then
-	write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	WARNING_SUMMARY="$WARNING_SUMMARY
-	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
-	status=${PIPESTATUS[0]}
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command_lines 15 "$STRINGS" "${COMMAND}"
-	    write_echo "## strings $COMMAND ABOVE"
-	    write_echo ""
+	# if we got output from either what(1) or ident(1) then skip strings(1)
+	#
+	if [[ -n "$EXIT" ]]; then
 	    return
+	fi
+
+	# try strings(1) if available. The filter is arbitrarily selected. For some
+	# tools it might not be enough lines but if we get here it's probably not
+	# going to be what we want anyway.
+	#
+	# Now a question to be answered is should we even use strings? The reason to
+	# ask such a question is it's likely to work which means that we might never
+	# reach the unknown version and strings(1) probably won't actually give us
+	# the version.
+	#
+	# This is why we warn that there's a possible unknown version and only if
+	# strings fails do we report positively that the version is unknown.
+	#
+	if [[ ! -z "$STRINGS" ]]; then
+	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    WARNING_SUMMARY="$WARNING_SUMMARY
+	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
+	    status=${PIPESTATUS[0]}
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command_lines 15 "$STRINGS" "${COMMAND}"
+		write_echo "## strings $COMMAND ABOVE"
+		write_echo ""
+		return
+	    fi
 	fi
     fi
 
