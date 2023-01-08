@@ -761,15 +761,15 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
-	${V} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
-	${V} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
-	${V} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
-	${V} ${MAKE} ${MAKE_CD_Q} -C soup install_man \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
-	${V} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
 		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
