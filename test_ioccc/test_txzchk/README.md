@@ -58,7 +58,7 @@ Whenever a new bad test file is added one must generate the proper err file. To
 simplify it you can from the top level directory where the mkiocccentry.c source
 file is located:
 
-    for i in ./test_ioccc/test_txzchk/bad/*.txt; do ./txzchk -q -v 0 -w -T -E txt -F ./fnamchk "$i" 2>"$i.err" ; done
+    for i in ./test_ioccc/test_txzchk/bad/*.txt; do ./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk "$i" 2>"$i.err" ; done
 
 then do:
 
