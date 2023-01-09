@@ -38,7 +38,7 @@
 
 #if !defined(SEM_AUTH_LEN)
 
-#define SEM_AUTH_LEN (40)
+#define SEM_AUTH_LEN (41)
 
 extern struct json_sem sem_auth[SEM_AUTH_LEN+1];
 
@@ -65,6 +65,8 @@ extern bool chk_name(struct json const *node,
 extern bool chk_past_winner(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_url(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_alt_url(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_IOCCC_auth_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

@@ -543,11 +543,19 @@ main(int argc, char *argv[])
 	for (i = 0; i < author_count; i++) {
 	    errno = 0;			/* pre-clear errno for warnp() */
 	    ret = fprintf(answerp,
-		"%s\n" "%s\n" "%s\n" "%s\n" "%s\n" "%s\n" "%s\n",
+		"%s\n"	/* name */
+		"%s\n"	/* location code */
+		"%s\n"	/* email */
+		"%s\n"	/* url */
+		"%s\n"	/* alt_url */
+		"%s\n"	/* mastodon handle */
+		"%s\n"	/* GitHub */
+		"%s\n",	/* affiliation */
 		author_set[i].name,
 		author_set[i].location_code,
 		author_set[i].email,
 		author_set[i].url,
+		author_set[i].alt_url,
 		author_set[i].mastodon,
 		author_set[i].github,
 		author_set[i].affiliation);
@@ -3816,7 +3824,7 @@ get_author_info(struct author **author_set_p)
 	dbg(DBG_MED, "Author #%d Email: %s", i, author_set[i].email);
 
 	/*
-	 * ask for home URL
+	 * ask for main URL
 	 */
 	do {
 
@@ -3899,6 +3907,92 @@ get_author_info(struct author **author_set_p)
 	} while (author_set[i].url == NULL);
 
 	dbg(DBG_MED, "Author #%d URL: %s", i, author_set[i].url);
+
+	/*
+	 * ask for alt URL
+	 */
+	do {
+
+	    /*
+	     * request URL
+	     */
+	    author_set[i].alt_url = NULL;
+	    author_set[i].alt_url =
+		prompt(need_hints ?
+		    "Enter author home page URL (starting with http:// or https://), or press return to skip" :
+		    "Enter author home page URL", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "URL withheld");
+	    } else {
+		dbg(DBG_VHIGH, "URL: %s", author_set[i].alt_url);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_URL_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters\n\n", MAX_URL_LEN);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf error while printing URL length limit");
+		}
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].alt_url != NULL) {
+		    free(author_set[i].alt_url);
+		    author_set[i].alt_url = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * if it starts with http:// or https:// and has more characters, it is OK
+	     */
+	    if (len > 0) {
+		if (((strncmp(author_set[i].alt_url, "http://", LITLEN("http://")) == 0) &&
+		     (author_set[i].alt_url[LITLEN("http://")] != '\0')) ||
+		    ((strncmp(author_set[i].alt_url, "https://", LITLEN("https://")) == 0) &&
+		     (author_set[i].alt_url[LITLEN("https://")] != '\0'))) {
+
+		    /*
+		     * URL appears to in valid form
+		     */
+		    break;
+
+		/*
+		 * reject if it does not start with http:// or https://
+		 */
+		} else if (len > 0) {
+
+		    /*
+		     * issue rejection message
+		     */
+		    fpara(stderr,
+			  "",
+			  "url addresses must begin with http:// or https:// followed by the rest of the home page URL",
+			  "",
+			  NULL);
+
+		    /*
+		     * free storage
+		     */
+		    if (author_set[i].alt_url != NULL) {
+			free(author_set[i].alt_url);
+			author_set[i].alt_url = NULL;
+		    }
+		    continue;
+		}
+	    }
+	} while (author_set[i].alt_url == NULL);
+
+	dbg(DBG_MED, "Author #%d alt URL: %s", i, author_set[i].alt_url);
+
 
 	/*
 	 * ask for mastodon handle
@@ -4274,6 +4368,8 @@ get_author_info(struct author **author_set_p)
 						printf("Email: %s\n", author_set[i].email)) <= 0 ||
 	    ((author_set[i].url[0] == '\0') ? printf("URL not given\n") :
 					      printf("URL: %s\n", author_set[i].url)) <= 0 ||
+	    ((author_set[i].alt_url[0] == '\0') ? printf("Alt URL not given\n") :
+					      printf("Alt URL: %s\n", author_set[i].alt_url)) <= 0 ||
 	    ((author_set[i].mastodon[0] == '\0') ? printf("Mastodon handle not given\n") :
 						  printf("Mastodon handle: %s\n", author_set[i].mastodon)) <= 0 ||
 	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") :
@@ -4864,6 +4960,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	    json_fprintf_value_string(author_stream, "\t\t\t", "location_name", " : ", ap->location_name, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
+	    json_fprintf_value_string(author_stream, "\t\t\t", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&

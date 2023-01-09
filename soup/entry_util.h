@@ -45,8 +45,8 @@
 /*
  * IOCCC author information
  *
- * Information we will collect for each author of an IOCCC entry to fill out the authors JSON array
- * within the .auth.json file.
+ * Information we will collect for each author of an IOCCC entry to fill out the
+ * authors JSON array within the .auth.json file.
  */
 struct author
 {
@@ -55,6 +55,7 @@ struct author
     char const *location_name;	/* name of author location/country (compiled in from loc[]) */
     char *email;		/* Email address of author or empty string ==> not provided */
     char *url;			/* home URL of author or empty string ==> not provided */
+    char *alt_url;		/* alt URL of author or empty string ==> not provided */
     char *mastodon;		/* author mastodon handle or empty string ==> not provided */
     char *github;		/* author GitHub username or empty string ==> not provided */
     char *affiliation;		/* author affiliation or empty string ==> not provided */
@@ -271,6 +272,7 @@ extern bool test_mastodon(char const *str);
 extern bool test_txzchk_version(char const *str);
 extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);
+extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
 
 
