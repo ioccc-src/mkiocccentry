@@ -19,6 +19,7 @@ dbg/dbg_test.c
 dyn_array/dyn_test
 fnamchk
 have_timegm
+*.html
 iocccsize
 jnum_chk
 jnum_gen

@@ -309,9 +309,9 @@ type_of_optional()
 # get path to tools we might need for get_version and get_version_optional
 # functions below
 #
-WHAT="$(command -v what)"
-IDENT="$(command -v ident)"
-STRINGS="$(command -v strings)" # this should always exist but we check anyway
+WHAT="$(type -P what)"
+IDENT="$(type -P ident)"
+STRINGS="$(type -P strings)" # this should always exist but we check anyway
 
 # get_version_optional    -	try and get version of an optional tool
 #
@@ -366,7 +366,7 @@ get_version_optional() {
     local COMMAND
     local EXIT=0
     local IS_EXEC=1
-    COMMAND="$(command -v "$1")"
+    COMMAND="$(type -P "$1")"
     if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
@@ -533,7 +533,7 @@ get_version() {
     local COMMAND
     local EXIT=0
     local IS_EXEC=1
-    COMMAND="$(command -v "$1")"
+    COMMAND="$(type -P "$1")"
     if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
@@ -699,8 +699,9 @@ get_version_minimal() {
     fi
     local COMMAND
     local EXIT=0
-    COMMAND="$(command -v "$1")"
-    if ! is_exec "$COMMAND"; then
+    local IS_EXEC=1
+    COMMAND="$(type -P "$1")"
+    if ! is_exec_quiet "$COMMAND"; then
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
 	# built-ins in say zsh it does not appear to be in bash so it's possibly
@@ -711,6 +712,7 @@ get_version_minimal() {
 	# will know there's a problem and likely due to something missing so the
 	# below might be all that's necessary.
 	COMMAND="$1"
+	IS_EXEC=0
     fi
     write_echo "## VERSION CHECK FOR: $1"
 
@@ -725,64 +727,66 @@ get_version_minimal() {
 	return
     fi
 
-    # try what(1) if available
-    #
-    # An important note is that what(1) might not get the correct information.
-    # For instance running it on bmake(1) I see:
-    #
-    #	$ what ./bmake
-    #   ./bmake:
-    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
-    #
-    # which(1) is entirely useless.
-    #
-    # The question is should ident(1) come first but the trouble is I don't
-    # actually know what it looks like. Also if the tool in question does not
-    # have the appropriate string it won't give us anything useful either.
-    # Here's what what looks like on cut(1) which as can be seen is useful:
-    #
-    #	$ what /usr/bin/cut
-    #	/usr/bin/cut:
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #	PROGRAM:cut  PROJECT:text_cmds-154
-    #
-    # Looking at the Apple website this is indeed the version. Thus because it's
-    # not something that will work in all cases instead we will try ident(1) as
-    # well even if this succeeds. If either succeeds we will not try strings(1).
-    #
-    if [[ ! -z "$WHAT" ]]; then
-	$WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$WHAT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF what $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+    if [[ "$IS_EXEC" -eq 1 ]]; then
+	# try what(1) if available
+	#
+	# An important note is that what(1) might not get the correct information.
+	# For instance running it on bmake(1) I see:
+	#
+	#	$ what ./bmake
+	#   ./bmake:
+	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#
+	# which(1) is entirely useless.
+	#
+	# The question is should ident(1) come first but the trouble is I don't
+	# actually know what it looks like. Also if the tool in question does not
+	# have the appropriate string it won't give us anything useful either.
+	# Here's what what looks like on cut(1) which as can be seen is useful:
+	#
+	#	$ what /usr/bin/cut
+	#	/usr/bin/cut:
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#	PROGRAM:cut  PROJECT:text_cmds-154
+	#
+	# Looking at the Apple website this is indeed the version. Thus because it's
+	# not something that will work in all cases instead we will try ident(1) as
+	# well even if this succeeds. If either succeeds we will not try strings(1).
+	#
+	if [[ ! -z "$WHAT" ]]; then
+	    $WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$WHAT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
-    fi
 
-    # try ident(1) if available
-    #
-    # The same or similar caveats for what(1) might apply here too but I have no
-    # way to test this.
-    #
-    if [[ ! -z "$IDENT" ]]; then
-	$IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
-	status=$?
-	if [[ "$status" -eq 0 ]]; then
-	    exec_command "$IDENT" "${COMMAND}" </dev/null
-	    write_echo "## OUTPUT OF ident $COMMAND ABOVE"
-	    write_echo ""
-	    EXIT=1
+	# try ident(1) if available
+	#
+	# The same or similar caveats for what(1) might apply here too but I have no
+	# way to test this.
+	#
+	if [[ ! -z "$IDENT" ]]; then
+	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
+	    status=$?
+	    if [[ "$status" -eq 0 ]]; then
+		exec_command "$IDENT" "${COMMAND}" </dev/null
+		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo ""
+		EXIT=1
+	    fi
 	fi
+
+	# don't try strings as this will clutter up the bug reports as there are
+	# some commands that we simply cannot rely on having versions and we
+	# probably don't even need the version of these tools.
+
+	# We also don't report that the version is unknown because this might
+	# lead to false warnings.
     fi
-
-    # don't try strings as this will clutter up the bug reports as there are
-    # some commands that we simply cannot rely on having versions and we
-    # probably don't even need the version of these tools.
-
-    # We also don't report that the version is unknown because this might lead
-    # tend to lead to false warnings.
 }
 
 
@@ -967,7 +971,7 @@ run_check 10 "uname -a"
 
 # sw_vers: if this exists on the system we should use it. This is a BSD/macOS
 # thing
-SW_VERS=$(command -v sw_vers)
+SW_VERS=$(type -P sw_vers)
 if [[ -n "$SW_VERS" ]]; then
     run_check 11 "sw_vers"
 fi

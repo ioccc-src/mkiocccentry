@@ -945,11 +945,6 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
 	    errp(115, __func__, "error calling system(%s)", cmd);
@@ -957,6 +952,11 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling system(%s)", name, cmd);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
+	    /* free allocated command storage */
+	    if (cmd != NULL) {
+		free(cmd);
+		cmd = NULL;
+	    }
 	    return SYSTEM_FAILED_EXIT;
 	}
 
@@ -964,11 +964,6 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
      * case: exit code 127 usually means the fork/exec was unable to invoke the shell
      */
     } else if (exit_code == 127) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
 	    errp(116, __func__, "execution of the shell failed for system(%s)", cmd);
@@ -976,6 +971,11 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(%s)", name, cmd);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
+	    /* free allocated command storage */
+	    if (cmd != NULL) {
+		free(cmd);
+		cmd = NULL;
+	    }
 	    return SYSTEM_FAILED_EXIT;
 	}
     }
@@ -1130,11 +1130,6 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     stream = popen(cmd, "r");
     if (stream == NULL) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
 	    errp(122, name, "error calling popen(%s, \"r\")", cmd);
@@ -1142,6 +1137,11 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"r\"): %s", name, cmd, strerror(errno));
 	    va_end(ap);		/* stdarg variable argument list cleanup */
+	    /* free allocated command storage */
+	    if (cmd != NULL) {
+		free(cmd);
+		cmd = NULL;
+	    }
 	    return NULL;
 	}
     }

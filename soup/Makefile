@@ -569,11 +569,11 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
-	    echo 'The seqcexit tool could not be found.' 1>&2; \
-	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
+	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
+	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
+	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo 'See the following GitHub repo for ${SEQCEXIT}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -590,12 +590,12 @@ picky: ${ALL_SRC}
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo 'The picky tool could not be found.' 1>&2; \
-	    echo 'The picky tool is required for this rule.' 1>&2; \
+	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
+	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
 	    echo 1>&2; \
-	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo 'See the following GitHub repo for ${PICKY}:'; 1>&2; \
 	    echo 1>&2; \
-	    echo "https://github.com/xexyl/picky" 1>&2; \
+	    echo '    https://github.com/xexyl/picky' 1>&2; \
 	    echo 1>&2; \
 	    exit 1; \
 	else \
@@ -623,11 +623,11 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
-	    echo 'The shellcheck command could not be found.' 1>&2; \
-	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
+	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
+	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
+	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
+	    echo 'See the following GitHub repo for ${SHELLCHECK}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -651,25 +651,27 @@ check_man: ${ALL_MAN_TARGETS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
-	    echo 'The checknr command could not be found.' 1>&2; \
-	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
+	-${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
+	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
+	    echo 'The ${CHECKNR} command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
+	    echo 'See the following GitHub repo for ${CHECKNR}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/checknr' 1>&2; \
 	    echo ''; 1>&2; \
+	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
+		echo 'ERROR: check_man: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
 		exit 23; \
 	    fi; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
+
 
 # install man pages
 #
@@ -756,11 +758,11 @@ install: all install_man
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
-	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
-	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
+	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'See the following GitHub repo for where to obtain independ:'; 1>&2; \
+	    echo 'See the following GitHub repo for ${INDEPEND}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/independ'; 1>&2; \
 	else \

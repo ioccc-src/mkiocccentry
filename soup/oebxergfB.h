@@ -4295,5 +4295,4 @@ NULL
 /*
  * This is the third to last line of comments.
  * The next line is the bottom line of comments.
- * The funny thing about bottom lines is they're usually literally the bottom line (just like this one :-) ).
- */
+ * The funny thing about bottom lines is they're usually literally the bottom line (just like this one :-) ).  */
