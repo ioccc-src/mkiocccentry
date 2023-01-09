@@ -17,6 +17,7 @@
 			"location_code" : "AU",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
+			"alt_url" : "https:\/\/host0.example.com\/index.html",
 			"mastodon" : "@mastodon0@example.com",
 			"github" : "@github0",
 			"affiliation" : "an affiliation for #0 author",
