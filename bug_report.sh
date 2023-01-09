@@ -751,7 +751,7 @@ get_version_minimal() {
 	#
 	# Looking at the Apple website this is indeed the version. Thus because it's
 	# not something that will work in all cases instead we will try ident(1) as
-	# well even if this succeeds. If either succeeds we will not try strings(1).
+	# well even if this succeeds.
 	#
 	if [[ ! -z "$WHAT" ]]; then
 	    $WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null

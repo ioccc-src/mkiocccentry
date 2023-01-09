@@ -147,7 +147,8 @@ abstract for entry #0
 author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://a.host0.example.com/index.html
+https://b.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
@@ -155,6 +156,7 @@ n
 
 author1 middle1a middle1b last1
 UK
+
 
 
 
@@ -168,7 +170,8 @@ printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc
 cat <<"EOF"
 US
 user2@example.com
-http://host2.example.com/index.html
+http://c.host2.example.com/index.html
+http://d.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
@@ -177,7 +180,8 @@ y
 author3 middle3 last3
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://e.host0.example.com/index.html
+https://f.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
@@ -186,7 +190,8 @@ author3-last3
 @#$%^
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://g.host0.example.com/index.html
+
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
@@ -248,7 +253,8 @@ abstract for entry #0
 author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://h.host0.example.com/index.html
+https://i.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
@@ -256,6 +262,7 @@ n
 
 author1 middle1a middle1b last1
 UK
+
 
 
 
@@ -269,7 +276,8 @@ printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc
 cat <<"EOF"
 US
 user2@example.com
-http://host2.example.com/index.html
+http://j.host2.example.com/index.html
+http://k.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
@@ -278,7 +286,8 @@ y
 author3 middle3 last3
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://l.host0.example.com/index.html
+
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
@@ -287,7 +296,8 @@ author3-last3
 @#$%^
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://m.host0.example.com/index.html
+
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
@@ -327,7 +337,8 @@ abstract for entry #0
 author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://n.host0.example.com/index.html
+https://o.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
@@ -335,6 +346,7 @@ n
 
 author1 middle1a middle1b last1
 UK
+
 
 
 
@@ -348,7 +360,8 @@ printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc
 cat <<"EOF"
 US
 user2@example.com
-http://host2.example.com/index.html
+
+http://p.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
@@ -357,7 +370,8 @@ y
 author3 middle3 last3
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://q.host0.example.com/index.html
+https://r.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
@@ -366,7 +380,8 @@ author3-last3
 @#$%^
 AU
 user0@example.com
-https://host0.example.com/index.html
+https://s.host0.example.com/index.html
+https://t.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author

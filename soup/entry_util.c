@@ -466,8 +466,11 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     bool found_email = false;		/* true ==> found email in node */
     bool email_withheld = false;	/* true ==> Email address withheld */
     char *url = NULL;			/* home URL of author or NULL ==> not provided */
+    char *alt_url = NULL;		/* alt URL of author or NULL ==> not provided */
     bool found_url = false;		/* true ==> found url in node */
+    bool found_alt_url = false;		/* true ==> found alt_url in node */
     bool url_withheld = false;		/* true ==> home URL of author withheld */
+    bool alt_url_withheld = false;	/* true ==> alt URL of author withheld */
     char *mastodon = NULL;		/* author mastodon handle or NULL ==> not provided */
     bool found_mastodon = false;		/* true ==> found mastodon in node */
     bool mastodon_withheld = false;	/* true ==> author mastodon handle withheld */
@@ -694,13 +697,45 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		url_withheld = false;
 	    }
 
+	/* case: IOCCC author alt url */
+	} else if (strcmp(name, "alt_url") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_alt_url == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(67, e, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
+					    author_num, i, name);
+		}
+		return false;
+	    }
+	    found_alt_url = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(68, e, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    author_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == true) {
+		alt_url = NULL;
+		alt_url_withheld = true;
+	    } else {
+		alt_url = val_or_null.str;
+		alt_url_withheld = false;
+	    }
+
 	/* case: IOCCC author mastodon */
 	} else if (strcmp(name, "mastodon") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_mastodon == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(67, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(69, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		    }
@@ -712,7 +747,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
 	    if (val_or_null.valid == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(68, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(70, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
 					    author_num, i);
 		}
@@ -732,7 +767,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_github == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(69, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(71, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -744,7 +779,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
 	    if (val_or_null.valid == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(70, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(72, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
 					    author_num, i);
 		}
@@ -764,7 +799,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_affiliation == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(71, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(73, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -776,7 +811,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
 	    if (val_or_null.valid == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(72, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(74, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
 					    author_num, i);
 		}
@@ -796,7 +831,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_past_winner == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(73, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(75, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -808,7 +843,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    bool_val = sem_member_value_bool(e, depth+2, sem, __func__, NULL);
 	    if (bool_val == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(74, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(76, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid JSON boolean",
 					    author_num, i);
 		}
@@ -822,7 +857,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_default_handle == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(75, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(77, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -834,7 +869,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    bool_val = sem_member_value_bool(e, depth+2, sem, __func__, NULL);
 	    if (bool_val == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(76, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(78, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid JSON boolean",
 					    author_num, i);
 		}
@@ -848,7 +883,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_author_handle == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(77, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(79, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -866,7 +901,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_author_number == true) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(78, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(80, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    author_num, i, name);
 		}
@@ -878,7 +913,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    int_val = sem_member_value_int(e, depth+2, sem, __func__, NULL);
 	    if (int_val == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(79, e, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(81, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] invalid author number",
 					    author_num, i);
 		}
@@ -889,7 +924,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	/* case: invalid JTYPE_MEMBER - not part of an IOCCC author's JTYPE_OBJECT */
 	} else {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(80, e, depth+2, sem, __func__,
+		*val_err = werr_sem_val(82, e, depth+2, sem, __func__,
 					"author array index[%d] JTYPE_OBJECT has invalid JTYPE_MEMBER name: <%s>",
 					i, name);
 	    }
@@ -902,84 +937,92 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (found_name == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(81, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(83, node, depth, sem, __func__,
 				    "author array index[%d]: missing __func__", author_num);
 	}
 	return false;
     }
     if (found_location_code == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(82, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(84, node, depth, sem, __func__,
 				    "author array index[%d]: missing location_code", author_num);
 	}
 	return false;
     }
     if (found_location_name == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(83, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(85, node, depth, sem, __func__,
 				    "author array index[%d]: missing location_name", author_num);
 	}
 	return false;
     }
     if (found_email == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(84, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(86, node, depth, sem, __func__,
 				    "author array index[%d]: missing email", author_num);
 	}
 	return false;
     }
     if (found_url == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(85, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(87, node, depth, sem, __func__,
 				    "author array index[%d]: missing url", author_num);
 	}
 	return false;
     }
+    if (found_alt_url == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(88, node, depth, sem, __func__,
+				    "author array index[%d]: missing alt_url", author_num);
+	}
+	return false;
+    }
+
     if (found_mastodon == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(86, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(89, node, depth, sem, __func__,
 				    "author array index[%d]: missing mastodon", author_num);
 	}
 	return false;
     }
     if (found_github == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(87, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(90, node, depth, sem, __func__,
 				    "author array index[%d]: missing github", author_num);
 	}
 	return false;
     }
     if (found_affiliation == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(88, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(91, node, depth, sem, __func__,
 				    "author array index[%d]: missing affiliation", author_num);
 	}
 	return false;
     }
     if (found_past_winner == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(89, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(92, node, depth, sem, __func__,
 				    "author array index[%d]: missing past_winner", author_num);
 	}
 	return false;
     }
     if (found_default_handle == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(90, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(93, node, depth, sem, __func__,
 				    "author array index[%d]: missing default_handle", author_num);
 	}
 	return false;
     }
     if (found_author_handle == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(91, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(94, node, depth, sem, __func__,
 				    "author array index[%d]: missing author_handle", author_num);
 	}
 	return false;
     }
     if (found_author_number == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(92, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(95, node, depth, sem, __func__,
 				    "author array index[%d]: missing author_number", author_num);
 	}
 	return false;
@@ -994,21 +1037,21 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (auth_name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(93, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(96, node, depth, sem, __func__,
 				    "author array index[%d]: __func__ is NULL", author_num);
 	}
 	return false;
     }
     if (location_code == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(94, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(97, node, depth, sem, __func__,
 				    "author array index[%d]: location_code is NULL", author_num);
 	}
 	return false;
     }
     if (location_name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(95, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(98, node, depth, sem, __func__,
 				    "author array index[%d]: location_name is NULL", author_num);
 	}
 	return false;
@@ -1018,6 +1061,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (url == NULL) {
 	url = "";
+    }
+    if (alt_url == NULL) {
+	alt_url = "";
     }
     if (mastodon == NULL) {
 	mastodon = "";
@@ -1030,7 +1076,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (author_handle == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(96, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(99, node, depth, sem, __func__,
 				    "author array index[%d]: author_handle is NULL", author_num);
 	}
 	return false;
@@ -1041,28 +1087,28 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (test_name(auth_name) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(97, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(100, node, depth, sem, __func__,
 				    "author array index[%d]: auth_name is invalid", author_num);
 	}
 	return false;
     }
     if (test_location_code(location_code) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(98, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(101, node, depth, sem, __func__,
 				    "author array index[%d]: location_code is invalid", author_num);
 	}
 	return false;
     }
     if (test_location_name(location_name) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(99, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(102, node, depth, sem, __func__,
 				    "author array index[%d]: location_name is invalid", author_num);
 	}
 	return false;
     }
     if (email_withheld == false && test_email(email) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(100, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(103, node, depth, sem, __func__,
 				    "author array index[%d]: location_name is invalid", author_num);
 	}
 	return false;
@@ -1070,57 +1116,65 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 
     if (url_withheld == false && test_url(url) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(101, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(104, node, depth, sem, __func__,
 				    "author array index[%d]: url is invalid", author_num);
 	}
 	return false;
     }
+    if (alt_url_withheld == false && test_alt_url(alt_url) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(105, node, depth, sem, __func__,
+				    "author array index[%d]: alt_url is invalid", author_num);
+	}
+	return false;
+    }
+
 
     if (mastodon_withheld == false && test_mastodon(mastodon) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(102, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
 				    "author array index[%d]: mastodon is invalid", author_num);
 	}
 	return false;
     }
     if (github_withheld == false && test_github(github) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(103, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(107, node, depth, sem, __func__,
 				    "author array index[%d]: github is invalid", author_num);
 	}
 	return false;
     }
     if (affiliation_withheld == false && test_affiliation(affiliation) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(104, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(108, node, depth, sem, __func__,
 				    "author array index[%d]: affiliation is invalid", author_num);
 	}
 	return false;
     }
     if (test_past_winner(past_winner) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(105, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(109, node, depth, sem, __func__,
 				    "author array index[%d]: past_winner is invalid", author_num);
 	}
 	return false;
     }
     if (test_default_handle(default_handle) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(110, node, depth, sem, __func__,
 				    "author array index[%d]: default_handle is invalid", author_num);
 	}
 	return false;
     }
     if (test_author_handle(author_handle) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(107, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(111, node, depth, sem, __func__,
 				    "author array index[%d]: author_handle is invalid", author_num);
 	}
 	return false;
     }
     if (test_author_number(author_number) == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(108, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(112, node, depth, sem, __func__,
 				    "author array index[%d]: author_number is invalid", author_num);
 	}
 	return false;
@@ -1135,7 +1189,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->name = strdup(auth_name);
     if (auth->name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(109, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(113, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of name failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1145,7 +1199,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->location_code = strdup(location_code);
     if (auth->location_code == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(110, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(114, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of location_code failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1155,7 +1209,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->location_name = strdup(location_name);
     if (auth->location_name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(111, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(115, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of location_name failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1165,7 +1219,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->email = strdup(email);
     if (auth->email == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(112, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(116, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of email failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1175,17 +1229,27 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->url = strdup(url);
     if (auth->url == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(113, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(117, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of url failed", author_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for werrp_sem_val() */
-    auth->mastodon = strdup(mastodon);
-    if (auth->url == NULL) {
+    auth->alt_url = strdup(alt_url);
+    if (auth->alt_url == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(114, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(118, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of alt_url failed", author_num);
+	}
+	free_author_array(auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
+    auth->mastodon = strdup(mastodon);
+    if (auth->mastodon == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werrp_sem_val(119, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of mastodon failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1193,9 +1257,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->github = strdup(github);
-    if (auth->url == NULL) {
+    if (auth->github == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(115, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(120, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of github failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1205,7 +1269,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->affiliation = strdup(affiliation);
     if (auth->affiliation == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(116, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(121, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of affiliation failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1217,7 +1281,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     auth->author_handle = strdup(author_handle);
     if (auth->location_code == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werrp_sem_val(117, node, depth, sem, __func__,
+	    *val_err = werrp_sem_val(122, node, depth, sem, __func__,
 				     "author array index[%d]: strdup of author_handle failed", author_num);
 	}
 	free_author_array(auth, 1);
@@ -1303,7 +1367,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (manp == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(118, node, depth, sem, name,
+	    *val_err = werr_sem_val(123, node, depth, sem, name,
 				    "manp is NULL");
 	}
 	return false;
@@ -1319,7 +1383,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (node->type != JTYPE_ARRAY) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(119, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(124, node, depth, sem, __func__,
 				    "manifest type %s != JTYPE_ARRAY",
 				    json_type_name(node->type));
 	}
@@ -1329,14 +1393,14 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     array_len = array->len;
     if (array_len <= 0) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(120, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(125, node, depth, sem, __func__,
 				    "manifest length: %d <= 0", array_len);
 	}
 	return false;
     }
     if (array->set == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(121, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(126, node, depth, sem, __func__,
 				    "manifest set is NULL");
 	}
 	return false;
@@ -1349,7 +1413,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     man.extra = dyn_array_create(sizeof(char *), JSON_CHUNK, JSON_CHUNK, false);
     if (man.extra == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(122, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(128, node, depth, sem, __func__,
 				    "dyn_array_create failed to create man.extra");
 	}
 	return false;
@@ -1376,7 +1440,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	if (e->type != JTYPE_OBJECT) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(123, e, depth+1, sem, __func__,
+		*val_err = werr_sem_val(129, e, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] type %s != JTYPE_OBJECT",
 					i, json_type_name(e->type));
 	    }
@@ -1393,7 +1457,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 */
 	if (o->len != 1) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(124, e, depth+1, sem, __func__,
+		*val_err = werr_sem_val(130, e, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] JTYPE_OBJECT len: %d != 1",
 					i, o->len);
 	    }
@@ -1413,7 +1477,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	if (jo->type != JTYPE_MEMBER) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(125, jo, depth+1, sem, __func__,
+		*val_err = werr_sem_val(131, jo, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT type %s != JTYPE_MEMBER",
 					i, json_type_name(jo->type));
 	    }
@@ -1447,7 +1511,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_info_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(126, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(132, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "info_JSON filename is invalid", i);
 		}
@@ -1461,7 +1525,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_info_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(128, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(133, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one info_JSON filename", i);
 		}
@@ -1476,7 +1540,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_auth_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(129, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(134, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "auth_JSON filename is invalid", i);
 		}
@@ -1490,7 +1554,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_auth_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(130, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(135, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one auth_JSON filename", i);
 		}
@@ -1505,7 +1569,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_c_src(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(131, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(136, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "c_src filename is invalid", i);
 		}
@@ -1519,7 +1583,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_c_src != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(132, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one c_src filename", i);
 		}
@@ -1534,7 +1598,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_Makefile(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(133, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "Makefile filename is invalid", i);
 		}
@@ -1548,7 +1612,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_Makefile != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(134, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(139, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one Makefile filename", i);
 		}
@@ -1563,7 +1627,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_remarks(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(135, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(140, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "remarks filename is invalid", i);
 		}
@@ -1577,7 +1641,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_remarks != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(136, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(141, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one remarks filename", i);
 		}
@@ -1594,7 +1658,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_extra_file(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(142, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "extra_file #%jd filename is invalid", i, man.count_extra_file);
 		}
@@ -1613,7 +1677,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 */
 	} else {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
+		*val_err = werr_sem_val(143, jo, depth+2, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT "
 					"has invalid JTYPE_MEMBER name: <%s>", i, name);
 	    }
@@ -1627,7 +1691,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_info_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(139, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid info_JSON, found: %jd",
 				    man.count_info_JSON);
 	}
@@ -1636,7 +1700,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_auth_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(145, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid auth_JSON, found: %jd",
 				    man.count_auth_JSON);
 	}
@@ -1645,7 +1709,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_c_src != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid c_src, found: %jd",
 				    man.count_c_src);
 	}
@@ -1654,7 +1718,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_Makefile != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(142, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid Makefile, found: %jd",
 				    man.count_Makefile);
 	}
@@ -1663,7 +1727,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_remarks != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(143, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(148, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid remarks, found: %jd",
 				    man.count_remarks);
 	}
@@ -1676,7 +1740,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(149, node, depth+2, sem, __func__,
 				    "manifest: man.count_extra_file: %jd just be >=0 and < %d",
 				    man.count_extra_file, MAX_FILE_COUNT-MANDATORY_FILE_COUNT);
 	}
@@ -1695,7 +1759,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	extra_filename = dyn_array_value(man.extra, char *, i);
 	if (extra_filename == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(145, node, depth+2, sem, __func__,
+		*val_err = werr_sem_val(150, node, depth+2, sem, __func__,
 					"manifest extra[i = %jd] is NULL", i);
 	    }
 	    dyn_array_free(man.extra);
@@ -1711,7 +1775,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    extra_filename2 = dyn_array_value(man.extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(151, node, depth+2, sem, __func__,
 					    "manifest extra[j = %jd] is NULL", j);
 		}
 		dyn_array_free(man.extra);
@@ -1723,7 +1787,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(152, node, depth+2, sem, __func__,
 					    "manifest extra[%jd] filename: matches manifest extra[%jd] filename",
 					    i, j);
 		}
@@ -4483,6 +4547,114 @@ bool
 test_ungetc_warning(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_alt_url - test if URL is valid
+ *
+ * Determine if alt_url length is <= MAX_URL_LEN, and that it starts with either
+ * https:// or http:// followed by more characters and starts with neither
+ * https:/// nor http:///.
+ *
+ * While this URL test is naive, it does a good enough job for our purposes.
+ * We do not want to write a generalized URI/URL checker, nor do we need to
+ * do so.  All we want is for the URL to begin with something that looks sane.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_alt_url(char const *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty alt_url is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_URL_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: alt_url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+
+    /*
+     * case: https://
+     */
+    if (strncmp(str, "https://", LITLEN("https://")) == 0) {
+
+	/* detect lack of a hostname in the URL */
+	if (str[LITLEN("https://")] == '\0') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: alt_url does not have more characters after https://");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: alt_url: <%s> is invalid", str);
+	    return false;
+
+	/* do not allow https:/// */
+	} else if (str[LITLEN("https://")] == '/') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: alt_url cannot start with https:///");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: alt_url: <%s> is invalid", str);
+	    return false;
+	}
+
+    /*
+     * case: http://
+     */
+    } else if (strncmp(str, "http://", LITLEN("http://")) == 0) {
+
+	/* detect lack of a hostname in the URL */
+	if (str[LITLEN("http://")] == '\0') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: alt_url does not have more characters after http://");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: alt_url: <%s> is invalid", str);
+	    return false;
+
+	/* do not allow http:/// */
+	} else if (str[LITLEN("http://")] == '/') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: alt_url cannot start with http:///");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: alt_url: <%s> is invalid", str);
+	    return false;
+	}
+
+    /*
+     * case: invalid URL start
+     */
+    } else {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: alt_url starts with neither https:// nor http://");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: alt_url: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "alt_url is valid");
     return true;
 }
 

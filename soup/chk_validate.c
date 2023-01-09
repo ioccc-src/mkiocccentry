@@ -3439,9 +3439,8 @@ chk_ungetc_warning(struct json const *node,
     return true;
 }
 
-
 /*
- * chk_url - JSON semantic check for url
+ * chk_alt_url - JSON semantic check for url
  *
  * given:
  *	node	JSON parse node being checked
@@ -3455,7 +3454,7 @@ chk_ungetc_warning(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_url(struct json const *node,
+chk_alt_url(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
@@ -3507,6 +3506,72 @@ chk_url(struct json const *node,
 
 
 /*
+ * chk_url - JSON semantic check for url
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_url(struct json const *node,
+			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and decoded string or JSON null check
+     */
+    val = sem_member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
+	/* sem_member_value_str_or_null() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * case: affiliation is null
+     */
+    if (val.is_null == true) {
+	return true;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(181, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_url(val.str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(182, node, depth, sem, __func__, "invalid url");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
  * chk_wordbuf_warning - JSON semantic check for wordbuf_warning
  *
  * given:
@@ -3542,7 +3607,7 @@ chk_wordbuf_warning(struct json const *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(181, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(183, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
