@@ -3230,7 +3230,7 @@ test_github(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: github length %ju > max %d: <%s>", (uintmax_t)length, MAX_GITHUB_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
+		 "invalid: github: <%s> is invalid", str);
 	return false;
     }
     /* check for valid github account chars */
@@ -4438,7 +4438,7 @@ test_mastodon(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: mastodon length %ju > max %d: <%s>", (uintmax_t)length, MAX_MASTODON_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
+		 "invalid: mastodon: <%s> is invalid", str);
 	return false;
     }
     /* check for valid mastodon account chars */
@@ -4595,7 +4595,7 @@ test_alt_url(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: alt_url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
+		 "invalid: alt_url: <%s> is invalid", str);
 	return false;
     }
 
@@ -4704,7 +4704,7 @@ test_url(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
+		 "invalid: url: <%s> is invalid", str);
 	return false;
     }
 

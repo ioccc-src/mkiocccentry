@@ -18,6 +18,7 @@
 			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
+			"alt_url" : "https:\/\/host0.example.com\/index.html",
 			"mastodon" : "@mastodon0@example.com",
 			"affiliation" : "an affiliation for #0 author",
 			"past_winner" : false,
