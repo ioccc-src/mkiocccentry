@@ -500,9 +500,9 @@ test:
 # rule used by ../test_ioccc/prep.sh
 #
 all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good ../test_ioccc/test_JSON/auth.json/good all_sem_ref.sh
-	rm -rf ref
-	mkdir -p ref
-	./all_sem_ref.sh -v 1 -j ../jparse/jsemtblgen -J ../jparse/jsemcgen.sh -- \
+	${E} rm -rf ref
+	${E} mkdir -p ref
+	${E} ./all_sem_ref.sh -v 1 -j ../jparse/jsemtblgen -J ../jparse/jsemcgen.sh -- \
 	    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \
 	    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \
 	    ../test_ioccc/test_JSON/info.json/good \
@@ -520,14 +520,14 @@ all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/
 #
 all_sem_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 	      ref/auth.reference.json.c ref/auth.reference.json.h
-	rm -f chk.info.ptch.c
-	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
-	rm -f chk.info.ptch.h
-	-diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
-	rm -f chk.auth.ptch.c
-	-diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
-	rm -f chk.auth.ptch.h
-	-diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
+	${E} rm -f chk.info.ptch.c
+	-${E} diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
+	${E} rm -f chk.info.ptch.h
+	-${E} diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
+	${E} rm -f chk.auth.ptch.c
+	-${E} diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
+	${E} rm -f chk.auth.ptch.h
+	-${E} diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
 
 # Form the chk_sem_????.{c,h} files
 #

@@ -359,31 +359,31 @@ just_all: ${ALL_SUBDIRS} ${TARGETS} build_man
 # fast build environment sanity check
 #
 fast_hostchk: soup/hostchk.sh
-	@-./soup/hostchk.sh -f -v 0; \
+	-${Q} ./soup/hostchk.sh -f -v 0; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
 	fi
 
 bug_report: bug_report.sh
-	@-./bug_report.sh -v 1
+	-${Q} ./bug_report.sh -v 1
 
 bug_report-tx: bug_report.sh
-	@echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x"
-	@echo
-	@-./bug_report.sh -t -x
-	@echo
-	@echo "${OUR_NAME}: finished test of bug_report.sh -t -x"
+	${S} echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x"
+	${S} echo
+	-${Q} ./bug_report.sh -t -x
+	${S} echo
+	${S} echo "${OUR_NAME}: ending test of bug_report.sh -t -x"
 
 bug_report-txl: bug_report.sh
-	@echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x -l"
-	@-./bug_report.sh -t -x -l
-	@echo "${OUR_NAME}: finished test of bug_report.sh -t -x -l"
+	${S} echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x -l"
+	-${Q} ./bug_report.sh -t -x -l
+	${S} echo "${OUR_NAME}: ending test of bug_report.sh -t -x -l"
 
 # slower more verbose build environment sanity check
 #
 hostchk: soup/hostchk.sh
-	@-./soup/hostchk.sh -v 1; \
+	-${Q} ./soup/hostchk.sh -v 1; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
@@ -408,7 +408,7 @@ hostchk_warning:
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2
 	@echo 1>&2
-	@echo '    bash ./bug_report.sh' 1>&2
+	@echo '    ./bug_report.sh' 1>&2
 	@echo 1>&2
 	@echo '=-= about to sleep 10 seconds =-=' 1>&2
 	@echo 1>&2
@@ -464,70 +464,70 @@ chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 #########################################################
 
 all_dbg: dbg/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all
 
 all_dyn_array: dyn_array/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all
 
 all_jparse: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all
 
 all_jparse_test: jparse/test_jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
 
 all_soup: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all
 
 all_test_ioccc: test_ioccc/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all
 
 dbg/dbg.h: dbg/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include
 
 dbg/dbg.a: dbg/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba
 
 dbg/dbg_test: dbg/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test
 
 dyn_array/dyn_array.h: dyn_array/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include
 
 dyn_array/dyn_array.a: dyn_array/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba
 
 jparse/jparse.h: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include
 
 jparse/jparse.a: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba
 
 jparse/jparse: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 jparse/jsemtblgen: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 jparse/jsemcgen.sh: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 soup/soup.a: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba
 
 soup/chk_sem_info.h: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/chk_sem_auth.h: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/soup.h: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/limit_ioccc.sh: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog
 
 reset_min_timestamp: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp
 
 
 ####################################
@@ -792,7 +792,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	-${V} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -814,7 +814,7 @@ test:
 # run test-chkentry on test_JSON files
 #
 test-chkentry: all chkentry test_ioccc/test-chkentry.sh
-	./test_ioccc/test-chkentry.sh -v 1
+	${E} ./test_ioccc/test-chkentry.sh -v 1
 
 # rule used by prep.sh and make clean
 #
@@ -925,90 +925,90 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # dbg external repo
 #
 dbg.clone:
-	${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
+	${E} ${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
 
 dbg.diff: dbg.clone/ dbg/ .exclude
-	${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
+	${E} ${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
 
 dbg.fetch: dbg.clone/
-	cd dbg.clone && ${GIT} fetch
-	cd dbg.clone && ${GIT} fetch --prune --tags
-	cd dbg.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	${GIT} status dbg.clone
+	${E} cd dbg.clone && ${GIT} fetch
+	${E} cd dbg.clone && ${GIT} fetch --prune --tags
+	${E} cd dbg.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	${E} ${GIT} status dbg.clone
 
 dbg.reclone:
-	${RM} -rf dbg.clone
+	${E} ${RM} -rf dbg.clone
 	${E} ${MAKE} dbg.clone
 
 dbg.reload: dbg.clone/
-	${RM} -rf dbg
+	${E} ${RM} -rf dbg
 	${E} ${MAKE} dbg.rsync
 
 dbg.rsync: dbg.clone/ .exclude
-	${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dbg.clone/ dbg
+	${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dbg.clone/ dbg
 
 dbg.status: dbg.clone/
-	${GIT} status dbg.clone
+	${E} ${GIT} status dbg.clone
 
 # dyn_array external repo
 #
 dyn_array/dyn_array.clone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
+	@#${E} ${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
 
 dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/ .exclude
-	@#${DIFF} -u -r --exclude-from=.exclude dyn_array/dyn_array.clone dyn_array
+	@#${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array/dyn_array.clone dyn_array
 
 dyn_array.fetch: dyn_array/dyn_array.clone/
-	@#cd dyn_array/dyn_array.clone && ${GIT} fetch
-	@#cd dyn_array/dyn_array.clone && ${GIT} fetch --prune --tags
-	@#cd dyn_array/dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	@#${GIT} status dyn_array/dyn_array.clone
+	@#${E} cd dyn_array/dyn_array.clone && ${GIT} fetch
+	@#${E} cd dyn_array/dyn_array.clone && ${GIT} fetch --prune --tags
+	@#${E} cd dyn_array/dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	@#${E} ${GIT} status dyn_array/dyn_array.clone
 
 dyn_array.reclone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${RM} -rf dyn_array/dyn_array.clone
+	@#${E} ${RM} -rf dyn_array/dyn_array.clone
 	@#${E} ${MAKE} dyn_array/dyn_array.clone
 
 dyn_array.reload: dyn_array/dyn_array.clone/
-	@#${RM} -rf dyn_array
+	@#${E} ${RM} -rf dyn_array
 	@#${E} ${MAKE} dyn_array.rsync
 
 dyn_array.rsync: dyn_array/dyn_array.clone/ .exclude
-	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dyn_array/dyn_array.clone/ dyn_array
+	@#${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dyn_array/dyn_array.clone/ dyn_array
 
 dyn_array.status: dyn_array/dyn_array.clone/
-	@#${GIT} status dyn_array/dyn_array.clone
+	@#${E} ${GIT} status dyn_array/dyn_array.clone
 
 # jparse external repo
 #
 jparse.clone:
 	@echo 'rule disabled, enable once jparse repo exists'
-	@#${GIT} clone https://github.com/xexyl/jparse.git jparse.clone
+	@#${E} ${GIT} clone https://github.com/xexyl/jparse.git jparse.clone
 
 jparse.diff: jparse.clone/ jparse/ .exclude
-	@#${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
+	@#${E} ${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
 
 jparse.fetch: jparse.clone/
-	@#cd jparse.clone && ${GIT} fetch
-	@#cd jparse.clone && ${GIT} fetch --prune --tags
-	@#cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	@#${GIT} status jparse.clone
+	@#${E} cd jparse.clone && ${GIT} fetch
+	@#${E} cd jparse.clone && ${GIT} fetch --prune --tags
+	@#${E} cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	@#${E} ${GIT} status jparse.clone
 
 jparse.reclone:
 	@echo 'rule disabled, enable once jparse repo exists'
-	@#${RM} -rf jparse.clone
+	@#${E} ${RM} -rf jparse.clone
 	@#${E} ${MAKE} jparse.clone
 
 jparse.reload: jparse.clone/
-	@#${RM} -rf jparse
+	@#${E} ${RM} -rf jparse
 	@#${E} ${MAKE} jparse.rsync
 
 jparse.rsync: jparse.clone/ .exclude
-	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v jparse.clone/ jparse
+	@#${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v jparse.clone/ jparse
 
 jparse.status: jparse.clone/
-	@#${GIT} status jparse.clone
+	@#${E} ${GIT} status jparse.clone
 
 
 # rules to operate on all external repositories
