@@ -108,11 +108,11 @@ Q= @
 E=
 #E= @
 
-# INSTALL_Q= @				do not echo install commands (quiet mode)
-# INSTALL_Q=				echo install commands (debug / verbose mode
+# I= @					do not echo install commands (quiet mode)
+# I=					echo install commands (debug / verbose mode
 #
-INSTALL_Q=
-#INSTALL_Q= @
+I=
+#I= @
 
 # other Makefile control related actions
 
@@ -768,15 +768,15 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
 
@@ -1084,8 +1084,8 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${V} echo
-	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
-	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

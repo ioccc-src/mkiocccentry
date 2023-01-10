@@ -83,11 +83,11 @@ Q= @
 E=
 #E= @
 
-# INSTALL_Q= @				do not echo install commands (quiet mode)
-# INSTALL_Q=				echo install commands (debug / verbose mode
+# I= @					do not echo install commands (quiet mode)
+# I=					echo install commands (debug / verbose mode
 #
-INSTALL_Q=
-#INSTALL_Q= @
+I=
+#I= @
 
 # other Makefile control related actions
 
@@ -518,8 +518,8 @@ install: all
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
-	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
