@@ -26,8 +26,7 @@
 export TOOLS="
     ./chkentry
     ./dbg/dbg_test
-    ./test_ioccc/fnamchk
-    ./test_ioccc/hostchk.sh
+    ./dyn_array/dyn_test
     ./iocccsize
     ./jparse/jnum_gen
     ./jparse/jparse
@@ -35,26 +34,27 @@ export TOOLS="
     ./jparse/jsemtblgen
     ./jparse/jstrdecode
     ./jparse/jstrencode
-    ./mkiocccentry
-    ./test_ioccc/prep.sh
-    ./soup/reset_tstamp.sh
     ./jparse/run_bison.sh
     ./jparse/run_flex.sh
-    ./soup/run_usage.sh
-    ./soup/all_sem_ref.sh
-    ./test_ioccc/chkentry_test.sh
-    ./dyn_array/dyn_test
-    ./test_ioccc/ioccc_test.sh
-    ./test_ioccc/iocccsize_test.sh
     ./jparse/test_jparse/jnum_chk
     ./jparse/test_jparse/jparse_test.sh
     ./jparse/test_jparse/jstr_test.sh
+    ./jparse/verge
+    ./mkiocccentry
+    ./soup/all_sem_ref.sh
+    ./soup/reset_tstamp.sh
+    ./soup/run_usage.sh
+    ./soup/vermod.sh
+    ./test_ioccc/chkentry_test.sh
+    ./test_ioccc/fnamchk
+    ./test_ioccc/hostchk.sh
+    ./test_ioccc/ioccc_test.sh
+    ./test_ioccc/iocccsize_test.sh
     ./test_ioccc/mkiocccentry_test.sh
+    ./test_ioccc/prep.sh
     ./test_ioccc/txzchk_test.sh
     ./test_ioccc/utf8_test
     ./txzchk
-    ./jparse/verge
-    ./soup/vermod.sh
     "
 
 export BUG_REPORT_VERSION="0.10 2023-01-09"
