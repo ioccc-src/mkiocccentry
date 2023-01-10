@@ -218,7 +218,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= fnamchk.o
+OTHER_OBJS= utf8_test.o fnamchk.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -374,6 +374,9 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array dyn_test
+
+../soup/soup.a: ../soup/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../soup extern_liba
 
 
 ####################################
@@ -563,7 +566,7 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f utf8_test.o
+	${RM} -f ${OTHER_OBJS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

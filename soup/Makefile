@@ -730,7 +730,7 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
+	${RM} -f ${ALL_OBJS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

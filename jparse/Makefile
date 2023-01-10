@@ -212,7 +212,7 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= verge.o
+OTHER_OBJS= verge.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o
 
 # all intermediate files and removed by make clean
 #
