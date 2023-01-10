@@ -611,7 +611,15 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	      ${SED} -e 's;\.\./soup/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./soup/\.\./jparse/\.\./dyn_array/;../dyn_array/;g' \
+	             -e 's;\.\./soup/\.\./jparse/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./soup/\.\./jparse/;../jparse/;g' \
+	             -e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./jparse/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' | \
+	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
@@ -624,16 +632,11 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-fnamchk.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    ../soup/../dbg/dbg.h ../soup/../jparse/jparse.h ../soup/limit_ioccc.h \
+fnamchk.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h ../soup/limit_ioccc.h \
     ../soup/utf8_posix_map.h ../soup/version.h fnamchk.c fnamchk.h
-utf8_test.o: ../soup/../dbg/dbg.h ../soup/../jparse/../dbg/dbg.h \
-    ../soup/../jparse/../dyn_array/../dbg/dbg.h \
-    ../soup/../jparse/../dyn_array/dyn_array.h ../soup/../jparse/jparse.h \
-    ../soup/../jparse/jparse.tab.h ../soup/../jparse/json_parse.h \
-    ../soup/../jparse/json_sem.h ../soup/../jparse/json_util.h \
-    ../soup/../jparse/util.h ../soup/limit_ioccc.h ../soup/utf8_posix_map.h \
-    ../soup/version.h utf8_test.c
+utf8_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h ../soup/limit_ioccc.h \
+    ../soup/utf8_posix_map.h ../soup/version.h utf8_test.c

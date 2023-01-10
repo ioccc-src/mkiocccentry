@@ -845,7 +845,9 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	      ${SED} -e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' | \
+	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
@@ -858,36 +860,31 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_gen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    jnum_gen.c jnum_gen.h json_parse.h json_util.h util.h
-jnum_header.o: ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    jnum_header.c json_parse.h util.h
-jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.ref.c jparse.tab.h \
-    json_parse.h json_sem.h json_util.h util.h
-jparse.tab.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.c \
+jnum_gen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_gen.c jnum_gen.h \
+    json_parse.h json_util.h util.h
+jnum_header.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_header.c \
+    json_parse.h util.h
+jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
     jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.h \
-    jparse.tab.ref.c json_parse.h json_sem.h json_util.h util.h
-jparse_main.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h jparse_main.c \
-    jparse_main.h json_parse.h json_sem.h json_util.h util.h
-jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../iocccsize.h jparse.h jparse.tab.h \
-    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
-json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.c json_parse.h json_util.h util.h
-json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    json_parse.h json_sem.c json_sem.h json_util.h util.h
-json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h json_util.c json_util.h util.h
-jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h jstrdecode.c jstrdecode.h util.h
-jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h jstrencode.c jstrencode.h util.h
-util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    util.c util.h
-verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    util.h verge.c verge.h
+jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \
+    jparse.tab.c jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
+    jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h \
+    json_util.h util.h
+jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
+jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
+    jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
+    json_util.h util.h
+json_parse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.c \
+    json_parse.h json_util.h util.h
+json_sem.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_sem.c \
+    json_sem.h json_util.h util.h
+json_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_util.c \
+    json_util.h util.h
+jstrdecode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
+    jstrdecode.c jstrdecode.h util.h
+jstrencode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
+    jstrencode.c jstrencode.h util.h
+util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.c util.h
+verge.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.h verge.c verge.h

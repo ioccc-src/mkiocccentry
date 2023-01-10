@@ -777,7 +777,11 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	      ${SED} -e 's;\.\./jparse/\.\./dyn_array/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./jparse/\.\./dbg/;../dbg/;g' \
+	             -e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' | \
+	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
@@ -790,46 +794,35 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chk_sem_auth.o: ../jparse/../dyn_array/../dbg/dbg.h \
-    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    chk_sem_auth.c chk_sem_auth.h
-chk_sem_info.o: ../jparse/../dyn_array/../dbg/dbg.h \
-    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    chk_sem_info.c chk_sem_info.h
-chk_validate.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
-    entry_time.h entry_util.h location.h
-entry_time.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    entry_time.c entry_time.h limit_ioccc.h version.h
-entry_util.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    entry_time.h entry_util.c entry_util.h limit_ioccc.h location.h \
-    version.h
+chk_sem_auth.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_util.h \
+    ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
+chk_sem_info.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_util.h \
+    ../jparse/util.h chk_sem_info.c chk_sem_info.h
+chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.h chk_sem_info.h \
+    chk_validate.c chk_validate.h entry_time.h entry_util.h location.h
+entry_time.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h entry_time.c entry_time.h \
+    limit_ioccc.h version.h
+entry_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h entry_time.h entry_util.c \
+    entry_util.h limit_ioccc.h location.h version.h
 foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
-location.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h location.c \
-    location.h
+location.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h location.c location.h
 rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
-sanity.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    limit_ioccc.h location.h sanity.c sanity.h utf8_posix_map.h version.h
-utf8_posix_map.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
-    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    limit_ioccc.h utf8_posix_map.c utf8_posix_map.h version.h
+sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h limit_ioccc.h location.h \
+    sanity.c sanity.h utf8_posix_map.h version.h
+utf8_posix_map.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h limit_ioccc.h utf8_posix_map.c \
+    utf8_posix_map.h version.h

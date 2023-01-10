@@ -543,11 +543,11 @@ depend: ${ALL_CSRC}
 	        echo "${OUR_NAME}: make $@ aborting, Makefile missing: ### DO NOT CHANGE MANUALLY BEYOND THIS LINE" 1>&2; \
 		exit 1; \
 	    fi; \
-	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
-	      ${SED} -e 's;../../jparse/../dyn_array/;../../dyn_array/;g' \
-	             -e 's;../../dyn_array/../dbg/;../../dbg/;g' \
-	             -e 's;../../jparse/;../;g' | \
+	    ${SED} -i\.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
+	    ${CC} ${CFLAGS} -MM -I\. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	      ${SED} -e 's;\.\./\.\./jparse/\.\./dyn_array/;../../dyn_array/;g' \
+	             -e 's;\.\./\.\./dyn_array/\.\./dbg/;../../dbg/;g' \
+	             -e 's;\.\./\.\./jparse/;../;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
