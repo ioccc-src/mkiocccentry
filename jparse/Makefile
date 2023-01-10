@@ -77,11 +77,11 @@ S= @
 #Q=
 Q= @
 
-# M= @					do not echo calling make in another directory (quiet mode)
-# M=					echo calling make in another directory (debug / verbose mode)
+# E= @					do not echo calling make in another directory (quiet mode)
+# E=					echo calling make in another directory (debug / verbose mode)
 #
-M=
-#M= @
+E=
+#E= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -556,11 +556,11 @@ man/man8/jparse_test.8:
 #
 parser: jparse.y jparse.l
 	${RM} -f jparse.tab.c jparse.tab.h
-	${M} ${MAKE} jparse.tab.c jparse.tab.h
-	${M} ${MAKE} jparse.tab.o
+	${E} ${MAKE} jparse.tab.c jparse.tab.h
+	${E} ${MAKE} jparse.tab.o
 	${RM} -f jparse.c jparse.lex.h
-	${M} ${MAKE} jparse.c jparse.lex.h
-	${M} ${MAKE} jparse.o
+	${E} ${MAKE} jparse.c jparse.lex.h
+	${E} ${MAKE} jparse.o
 	${RM} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
 	${RM} -f jparse.tab.ref.h
@@ -575,7 +575,7 @@ parser: jparse.y jparse.l
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse.y jparse.l
-	${M} ${MAKE} parser RUN_O_FLAG='-o'
+	${E} ${MAKE} parser RUN_O_FLAG='-o'
 
 # load reference code from the previous successful make parser
 #
@@ -620,7 +620,7 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -635,7 +635,7 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -658,7 +658,7 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -693,7 +693,7 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -759,7 +759,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
@@ -813,7 +813,7 @@ install: all test_jparse/Makefile install_man
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
@@ -829,7 +829,7 @@ install: all test_jparse/Makefile install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \

@@ -102,11 +102,11 @@ S= @
 #Q=
 Q= @
 
-# M= @					do not echo calling make in another directory (quiet mode)
-# M=					echo calling make in another directory (debug / verbose mode)
+# E= @					do not echo calling make in another directory (quiet mode)
+# E=					echo calling make in another directory (debug / verbose mode)
 #
-M=
-#M= @
+E=
+#E= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -464,70 +464,70 @@ chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 #########################################################
 
 all_dbg: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg all
 
 all_dyn_array: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array all
 
 all_jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse all
 
 all_jparse_test: jparse/test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
 
 all_soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup all
 
 all_test_ioccc: test_ioccc/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all
 
 dbg/dbg.h: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include
 
 dbg/dbg.a: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba
 
 dbg/dbg_test: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test
 
 dyn_array/dyn_array.h: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include
 
 dyn_array/dyn_array.a: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba
 
 jparse/jparse.h: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include
 
 jparse/jparse.a: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba
 
 jparse/jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 jparse/jsemtblgen: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 jparse/jsemcgen.sh: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
 
 soup/soup.a: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba
 
 soup/chk_sem_info.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/chk_sem_auth.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/soup.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
 
 soup/limit_ioccc.sh: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog
 
 reset_min_timestamp: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp
 
 
 ####################################
@@ -603,7 +603,7 @@ release: test_ioccc/prep.sh
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -611,26 +611,26 @@ parser: jparse/Makefile
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 
 # load bison/flex reference code from the previous successful make parser
 #
 load_json_ref: jparse/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 
 # restore bison/flex reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
 use_json_ref: jparse/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
 # rule used by ../test_ioccc/prep.sh
 #
 all_sem_ref: soup/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 
 # form chk.????.ptch.{c,h} files
 #
@@ -643,7 +643,7 @@ all_sem_ref: soup/Makefile
 # are updated by hand.
 #
 all_sem_ref_ptch: soup/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 
 # sequence exit codes
 #
@@ -652,11 +652,11 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -678,11 +678,11 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -718,11 +718,11 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -752,11 +752,11 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -787,11 +787,11 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
@@ -803,11 +803,11 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	-${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	-${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	-${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	-${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	-${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -819,17 +819,17 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh
 # rule used by prep.sh and make clean
 #
 clean_generated_obj: jparse/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj
 
 # rule used by prep.sh
 #
 clean_mkchk_sem: soup/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 
 # rule used by prep.sh
 #
 mkchk_sem: soup/Makefile
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 
 # clean legacy code and files - files that are no longer needed
 #
@@ -938,11 +938,11 @@ dbg.fetch: dbg.clone/
 
 dbg.reclone:
 	${RM} -rf dbg.clone
-	${M} ${MAKE} dbg.clone
+	${E} ${MAKE} dbg.clone
 
 dbg.reload: dbg.clone/
 	${RM} -rf dbg
-	${M} ${MAKE} dbg.rsync
+	${E} ${MAKE} dbg.rsync
 
 dbg.rsync: dbg.clone/ .exclude
 	${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dbg.clone/ dbg
@@ -968,11 +968,11 @@ dyn_array.fetch: dyn_array/dyn_array.clone/
 dyn_array.reclone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
 	@#${RM} -rf dyn_array/dyn_array.clone
-	@#${M} ${MAKE} dyn_array/dyn_array.clone
+	@#${E} ${MAKE} dyn_array/dyn_array.clone
 
 dyn_array.reload: dyn_array/dyn_array.clone/
 	@#${RM} -rf dyn_array
-	@#${M} ${MAKE} dyn_array.rsync
+	@#${E} ${MAKE} dyn_array.rsync
 
 dyn_array.rsync: dyn_array/dyn_array.clone/ .exclude
 	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dyn_array/dyn_array.clone/ dyn_array
@@ -998,11 +998,11 @@ jparse.fetch: jparse.clone/
 jparse.reclone:
 	@echo 'rule disabled, enable once jparse repo exists'
 	@#${RM} -rf jparse.clone
-	@#${M} ${MAKE} jparse.clone
+	@#${E} ${MAKE} jparse.clone
 
 jparse.reload: jparse.clone/
 	@#${RM} -rf jparse
-	@#${M} ${MAKE} jparse.rsync
+	@#${E} ${MAKE} jparse.rsync
 
 jparse.rsync: jparse.clone/ .exclude
 	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v jparse.clone/ jparse
@@ -1040,11 +1040,11 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${V} echo
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
@@ -1056,12 +1056,12 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
 	${V} echo
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
@@ -1078,11 +1078,11 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${V} echo
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
@@ -1097,11 +1097,11 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${M} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${M} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \

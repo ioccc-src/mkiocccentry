@@ -84,11 +84,11 @@ V= @:
 #S= @:
 S= @
 
-# M= @:					do not echo calling make in another directory (quiet mode)
-# M= @					echo calling make in another directory (debug / verbose mode)
+# E= @:					do not echo calling make in another directory (quiet mode)
+# E= @					echo calling make in another directory (debug / verbose mode)
 #
-M=
-#M= @
+E=
+#E= @
 
 # Q= implies -v 0
 # else -v 1

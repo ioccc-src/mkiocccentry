@@ -77,11 +77,11 @@ S= @
 #Q=
 Q= @
 
-# M= @					do not echo calling make in another directory (quiet mode)
-# M=					echo calling make in another directory (debug / verbose mode)
+# E= @					do not echo calling make in another directory (quiet mode)
+# E=					echo calling make in another directory (debug / verbose mode)
 #
-M=
-#M= @
+E=
+#E= @
 
 # INSTALL_Q= @				do not echo install commands (quiet mode)
 # INSTALL_Q=				echo install commands (debug / verbose mode
@@ -457,7 +457,7 @@ check_man:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} echo "${OUR_NAME}: nothing to do"
+	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
