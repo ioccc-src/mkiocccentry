@@ -57,7 +57,7 @@ export TOOLS="
     ./soup/vermod.sh
     "
 
-export BUG_REPORT_VERSION="0.9 2023-01-07"
+export BUG_REPORT_VERSION="0.10 2023-01-09"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
@@ -66,7 +66,7 @@ export T_FLAG=""
 export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
-export MAKE_FLAGS="Q= V=@ MAKE_CD_Q= -w"
+export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_flags]
 
     -h			    print help and exit
@@ -840,7 +840,7 @@ run_check_warn() {
 	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
 	exit 4
     fi
-    local COMMAND=$1
+    local COMMAND="$1"
     write_echo "## RUNNING: $COMMAND"
 
     exec_command "${COMMAND}"
