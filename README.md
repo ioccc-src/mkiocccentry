@@ -17,7 +17,7 @@ see of the IOCCC is open.
 XXX - instructions TBD - XXX
 ```
 
-2) obtain the latest mkiocccentry tool set
+2) obtain the latest mkiocccentry toolkit
 
 If you do not have an mkiocccentry tool directory:
 
@@ -35,7 +35,7 @@ git fetch
 git rebase
 ```
 
-3) Make the mkiocccentry tool set
+3) Make the mkiocccentry toolkit
 
 ```sh
 make clobber all
@@ -72,7 +72,7 @@ XXX - instructions TBD - XXX
 ```
 
 
-## The mkiocccentry tool set
+## The mkiocccentry toolkit
 
 
 ### `mkiocccentry`
