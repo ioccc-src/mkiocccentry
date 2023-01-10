@@ -65,11 +65,7 @@ SHELL= bash
 #
 OUR_NAME= dyn_array
 
-# Q= @					do not echo internal Makefile actions (quiet mode)
-# Q=					echo internal Makefile actions (debug / verbose mode)
-#
-#Q=
-Q= @
+# echo-only action commands
 
 # V= @:					do not echo debug statements (quiet mode)
 # V= @					echo debug statements (debug / verbose mode)
@@ -83,11 +79,27 @@ V= @:
 #S= @:
 S= @
 
-# M= @:					do not echo calling make in another directory (quiet mode)
-# M= @					echo calling make in another directory (debug / verbose mode)
+# action commands that are NOT echo
+
+# Q= @					do not echo internal Makefile actions (quiet mode)
+# Q=					echo internal Makefile actions (debug / verbose mode)
+#
+#Q=
+Q= @
+
+# M= @					do not echo calling make in another directory (quiet mode)
+# M=					echo calling make in another directory (debug / verbose mode)
 #
 M=
 #M= @
+
+# INSTALL_Q= @				do not echo install commands (quiet mode)
+# INSTALL_Q=				echo install commands (debug / verbose mode
+#
+INSTALL_Q=
+#INSTALL_Q= @
+
+# other Makefile control related actions
 
 # Q= implies -v 0
 # else -v 1
@@ -97,12 +109,6 @@ Q_V_OPTION="0"
 else
 Q_V_OPTION="1"
 endif
-
-# INSTALL_Q= @				do not echo install commands (quiet mode)
-# INSTALL_Q=				echo install commands (debug / verbose mode
-#
-INSTALL_Q=
-#INSTALL_Q= @
 
 # INSTALL_V=				install w/o -v flag (quiet mode)
 # INSTALL_V= -v				install with -v (debug / verbose mode
