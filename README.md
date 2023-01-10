@@ -62,6 +62,9 @@ remarks.md	Remarks about your entry in markdown format
 [file ...]	extra data files to include with your entry
 ```
 
+NOTE: It is *NOT* necessary to install to use these tools as you can run
+these tools from the top of the _mkiocccentry repo_ directory just fine.
+
 5) upload your entry to the IOCCC submit server
 
 ```
@@ -98,6 +101,8 @@ For more information and examples, try:
 man ./soup/man/man1/iocccsize.1
 ```
 
+NOTE: After doing a `make all`, this tool may be found as: `./iocccsize`.
+
 
 ### `txzchk`
 
@@ -123,6 +128,8 @@ For more information and examples, try:
 man ./soup/man/man1/txzchk.1
 ```
 
+NOTE: After doing a `make all`, this tool may be found as: `./txzchk`.
+
 
 ###  `fnamchk`
 
@@ -133,6 +140,8 @@ For more information and examples, try:
 ```sh
 man ./test_ioccc/man/man1/fnamchk.1
 ```
+
+NOTE: After doing a `make all`, this tool may be found as: `./test_ioccc/fnamchk`.
 
 
 ###  `chkentry`
@@ -161,6 +170,8 @@ For more information and examples, try:
 man ./soup/man/man1/chkentry.1
 ```
 
+NOTE: After doing a `make all`, this tool may be found as: `./chkentry`.
+
 
 ###  `jparse`
 
@@ -185,35 +196,79 @@ For more information and examples, try:
 man ./jparse/man/man1/jparse.1
 ```
 
-
-### `run_bison.sh`
-
-This script attempts to find a recent enough version of `bison(1)` to generate
-code from the `*.y` files in the repo. If it fails and `-o` is passed to the
-script then it is an error; else if it fails and `-o` is not passed to the
-script the backup files will be used instead.
-
-This script is part of the creation of the JSON parser `jparse`.
-
-For more information and examples, try:
-
-```sh
-man ./jparse/man/man8/run_bison.8
-```
+NOTE: After doing a `make all`, this tool may be found as: `./jparse/jparse`.
 
 
-### `run_flex.sh`
+### `jstrencode`
 
+Encode data.  This tool can converts data into JSON encoded strings according to the so-called
+[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
 
-This script attempts to find a recent enough version of `flex(1)` to generate
-code from the `*.l` files in the repo. If it fails and `-o` is passed to the
-script then it is an error; else if it fails and `-o` is not passed to the
-script the backup files will be used instead.
+This tool was co-developed in 2022 by:
 
-This script is part of the creation of the JSON parser `jparse`.
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 For more information and examples, try:
 
 ```sh
-man ./jparse/man/man8/run_flex.8
+man ./jparse/man/man1/jstrencode.1
 ```
+
+NOTE: After doing a `make all`, this tool may be found as: `./jparse/jstrencode`.
+
+
+### `jstrdecode`
+
+Decode JSON encoded strings.  This tool converts JSON encoded strings to their original data according to the so-called
+[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+
+This tool was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+For more information and examples, try:
+
+```sh
+man ./jparse/man/man1/jstrdecode.1
+```
+
+NOTE: After doing a `make all`, this tool may be found as: `./jparse/jstrdecode`.
+
+
+### `bug_report.sh`
+
+Run a series of tests, collecting system information in the process, to help report bugs and issues.
+Without any arguments, this tool produces a bug report file of the form:
+
+```
+bug-report.YYYYMMDD.HHMMSS.txt
+```
+
+This bug report file is intended to be uploaded to a [mkiocccentry repo related bug report](https://github.com/ioccc-src/mkiocccentry/issues).
+
+This tool was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+For more information and examples, try:
+
+```sh
+man ./soup/man/man1/bug_report.1
+```
+
+NOTE: This tool may be found as: `./bug_report.sh`.
