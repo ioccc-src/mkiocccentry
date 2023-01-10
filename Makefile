@@ -358,8 +358,8 @@ just_all: ${ALL_SUBDIRS} ${TARGETS} build_man
 
 # fast build environment sanity check
 #
-fast_hostchk: soup/hostchk.sh
-	-${Q} ./soup/hostchk.sh -f -v 0; \
+fast_hostchk: test_ioccc/hostchk.sh
+	-${Q} ./test_ioccc/hostchk.sh -f -v 0; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
@@ -382,8 +382,8 @@ bug_report-txl: bug_report.sh
 
 # slower more verbose build environment sanity check
 #
-hostchk: soup/hostchk.sh
-	-${Q} ./soup/hostchk.sh -v 1; \
+hostchk: test_ioccc/hostchk.sh
+	-${Q} ./test_ioccc/hostchk.sh -v 1; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
@@ -403,7 +403,7 @@ hostchk_warning:
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= For hints as to what might be wrong try running:' 1>&2
 	@echo 1>&2
-	@echo '    ./soup/hostchk.sh -v 1' 1>&2
+	@echo '    ./test_ioccc/hostchk.sh -v 1' 1>&2
 	@echo 1>&2
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2

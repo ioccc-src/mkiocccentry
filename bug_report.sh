@@ -27,7 +27,7 @@ export TOOLS="
     ./chkentry
     ./dbg/dbg_test
     ./test_ioccc/fnamchk
-    ./soup/hostchk.sh
+    ./test_ioccc/hostchk.sh
     ./iocccsize
     ./jparse/jnum_gen
     ./jparse/jparse
@@ -1310,7 +1310,7 @@ fi
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 44 "./soup/hostchk.sh -v 3"
+run_check 44 "./test_ioccc/hostchk.sh -v 3"
 
 write_echo "#-------------------------------------#"
 write_echo "# SECTION 3 ABOVE: COMPILATION CHECKS $"

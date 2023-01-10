@@ -193,12 +193,12 @@ LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts
 #
-SH_FILES= all_sem_ref.sh hostchk.sh run_usage.sh vermod.sh \
+SH_FILES= all_sem_ref.sh run_usage.sh vermod.sh \
 	reset_tstamp.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/bug_report.1 man/man1/chkentry.1 man/man1/hostchk.1 man/man1/iocccsize.1 \
+MAN1_PAGES= man/man1/bug_report.1 man/man1/chkentry.1 man/man1/iocccsize.1 \
 	man/man1/mkiocccentry.1 man/man1/txzchk.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/reset_tstamp.8 man/man8/run_usage.8 man/man8/vermod.8 man/man8/prep.8
@@ -266,7 +266,7 @@ EXTERN_H= chk_sem_info.h chk_sem_auth.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= soup.a
-EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
+EXTERN_PROG= run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -294,7 +294,7 @@ H_SRC_TARGETS=
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
+SH_TARGETS= run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
 
 # program targets to make by all, installed by install, and removed by clobber
 #
@@ -342,7 +342,7 @@ all: ${TARGETS}
 	depend soup eat eating eat_soup eating_soup legacy_clean legacy_clobber \
 	configure clean clobber install depend tags \
 	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
-	hostchk.sh limit_ioccc.sh all_sem_ref all_sem_ref_ptch
+	limit_ioccc.sh all_sem_ref all_sem_ref_ptch
 
 
 ####################################

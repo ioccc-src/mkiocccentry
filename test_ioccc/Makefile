@@ -197,14 +197,15 @@ LESS_PICKY_HSRC=
 # all shell scripts
 #
 SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh txzchk_test.sh \
-	prep.sh
+	prep.sh hostchk.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES= man/man1/fnamchk.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
-	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8
+	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8 \
+	man/man8/hostchk.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -270,7 +271,7 @@ EXTERN_H=
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA=
-EXTERN_PROG= prep.sh fnamchk
+EXTERN_PROG= prep.sh fnamchk hostchk.sh
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -290,7 +291,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS= prep.sh
+SH_TARGETS= prep.sh hostchk.sh
 
 # program targets to make by all, installed by install, and removed by clobber
 #
@@ -335,7 +336,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 #################################################
 
 .PHONY: all \
-	test legacy_clean legacy_clobber install_man \
+	test legacy_clean legacy_clobber install_man hostchk.sh \
 	configure clean clobber install depend
 
 
