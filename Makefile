@@ -408,7 +408,7 @@ hostchk_warning:
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2
 	@echo 1>&2
-	@echo '    ./bug_report.sh' 1>&2
+	@echo '    bash ./bug_report.sh' 1>&2
 	@echo 1>&2
 	@echo '=-= about to sleep 10 seconds =-=' 1>&2
 	@echo 1>&2
