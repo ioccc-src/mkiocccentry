@@ -8,7 +8,7 @@
 0) check to see of the IOCCC is open
 
 Check the [status.json](https://www.ioccc.org/status.json) URL and
-check the [IOCCC news}(https://www.ioccc.org/index.html#news) to
+check the [IOCCC news](https://www.ioccc.org/index.html#news) to
 see of the IOCCC is open.
 
 1) register for the IOCCC
@@ -62,7 +62,7 @@ remarks.md	Remarks about your entry in markdown format
 [file ...]	extra data files to include with your entry
 ```
 
-5) uplaod your entry to the IOCCC submit server
+5) upload your entry to the IOCCC submit server
 
 ```
 XXX - instructions TBD - XXX
