@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH hostchk.sh 8 "09 January 2023" "hostchk.sh" "IOCCC tools"
+.TH hostchk.sh 8 "11 January 2023" "hostchk.sh" "IOCCC tools"
 .SH NAME
 hostchk.sh \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
 .SH SYNOPSIS
-\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-c cc] [\-w work_dir] [\-f]
+\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-c cc] [\-w work_dir] [\-f] [\-Z topdir]
 .SH DESCRIPTION
 \fBhostchk.sh\fP runs a series of checks to determine if you will be able to create an acceptable IOCCC entry tarball.
 If any step fails we recommend you use the \fBbug_report(1)\fP script to create a log file for filing a bug.
@@ -43,6 +43,21 @@ The \fIwork_dir\fP must not exist.
 Fast compile mode.
 Instead of testing one required system header file at a time it does it all at once.
 The default is not to use \fB\-f\fP because it will give more information to help identify the problem (and also let you know which files work).
+.TP
+\fB\-Z\fP \fItopdir\fP
+Declare the top level directory of this repository.
+The \fBtopdir\fP directory must contain the source file \fImkiocccentry.c\fP.
+By default, the source file \fImkiocccentry.c\fP is searched for in the current directory,
+and then the parent of current directory.
+.sp 1
+If \fB\-Z\fP \fItopdir\fP is used on the command line, then the source file \fImkiocccentry.c\fP need not exist
+in the \fBtopdir\fP directory.
+If \fB\-Z\fP \fItopdir\fP is not used on the command line, and the source file \fImkiocccentry.c\fP
+is not found in the current directory not the parent of current directory,
+then this command exits as if there was a command line error.
+.sp 1
+Once the \fBtopdir\fP directory is established,
+this command moves to that directory.
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
 Otherwise it will exit non\-zero.

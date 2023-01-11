@@ -401,7 +401,7 @@ test:
 	    ./ioccc_test.sh; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: ioccc_test.s failed, error code: $$EXIT_CODE"; \
+		echo "${OUR_NAME}: ERROR: ioccc_test.sh failed, error code: $$EXIT_CODE"; \
 		exit "$$EXIT_CODE"; \
 	    else \
 		echo ${OUR_NAME}: "PASSED: ioccc_test.sh"; \

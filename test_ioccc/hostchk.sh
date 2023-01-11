@@ -62,7 +62,7 @@ if [[ -z $CC ]]; then
     CC="/usr/bin/cc"
 fi
 export HOSTCHK_VERSION="0.3 2022-10-27"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f] [-Z topdir]
 
     -h			    print help and exit
     -V			    print version and exit
@@ -72,6 +72,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir
     -w work_dir		    use an explicit work directory (def: use a temporary directory)
 				NOTE: The work_dir cannot exist
     -f			    faster check (def: run slower for better diagnostics)
+    -Z topdir		    top level build directory (def: try . or ..)
 
 Exit codes:
      0   all is well
@@ -82,6 +83,7 @@ Exit codes:
 
 $0 version: $HOSTCHK_VERSION"
 export EXIT_CODE=0
+export TOPDIR=
 
 # parse args
 #
@@ -89,7 +91,7 @@ export V_FLAG="0"
 export DBG_LEVEL="0"
 export F_FLAG=
 export W_FLAG=
-while getopts :hv:VD:c:w:f flag; do
+while getopts :hv:VD:c:w:fZ: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -108,6 +110,8 @@ while getopts :hv:VD:c:w:f flag; do
 	;;
     f)	F_FLAG="true"
 	;;
+    Z)  TOPDIR="$OPTARG";
+        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
 	;;
@@ -134,6 +138,45 @@ fi
 if [[ ! -x $CC ]]; then
     echo "$0: ERROR: cc not executable: $CC" 1>&2
     exit 12
+fi
+
+# change to the top level directory as needed
+#
+if [[ -n $TOPDIR ]]; then
+    if [[ ! -d $TOPDIR ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: not a directory: $TOPDIR" 1>&2
+	exit 3
+    fi
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
+    fi
+    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # shellcheck disable=SC2164
+    cd "$TOPDIR"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
+	exit 3
+    fi
+elif [[ -f mkiocccentry.c ]]; then
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is .: $TOPDIR" 1>&2
+    fi
+elif [[ -f ../mkiocccentry.c ]]; then
+    cd ..
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: cd .. exit code: $status" 1>&2
+	exit 3
+    fi
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" 1>&2
+    fi
+else
+    echo "$0: ERROR: cannot determine TOPDIR, use -Z topdir" 1>&2
+    exit 3
 fi
 
 # setup a working directory unless -w was given
@@ -189,7 +232,9 @@ if [[ -n $F_FLAG ]]; then
     #
     # NOTE: if your grep does not have -o this will fail. If this happens please
     # submit a bug report and we'll add a workaround.
-    printf "%s\\n%s\\n" "$(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)" "int main(void) { return 0; }" |
+    printf "%s\\n%s\\n" "$(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
+	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
+	"$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -265,7 +310,8 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 
     # NOTE: if your grep does not have -o this will fail. If this happens please
     # submit a bug report and we'll add a workaround.
-    done < <(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)
+    done < <(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
+	"$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)
 
 # case: neither -f nor run include tests one at a time
 #

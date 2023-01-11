@@ -32,11 +32,6 @@
 /* exit code change of order - use new value in sequencing - coo */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
 /*
  * dyn_array - dynamic array facility
  */
