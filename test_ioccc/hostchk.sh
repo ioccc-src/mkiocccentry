@@ -233,8 +233,8 @@ if [[ -n $F_FLAG ]]; then
     # NOTE: if your grep does not have -o this will fail. If this happens please
     # submit a bug report and we'll add a workaround.
     printf "%s\\n%s\\n" "$(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
-	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hc] \
-	|sort -u)" "int main(void) { return 0; }" |
+	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
+	"$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -311,7 +311,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
     # NOTE: if your grep does not have -o this will fail. If this happens please
     # submit a bug report and we'll add a workaround.
     done < <(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
-	"$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hc] |sort -u)
+	"$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)
 
 # case: neither -f nor run include tests one at a time
 #
