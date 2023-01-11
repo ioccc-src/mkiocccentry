@@ -144,7 +144,7 @@ C_OPT= -O3 -g3
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unneeded-internal-declaration
+WARN_FLAGS= -pedantic -Wall -Wextra
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
 # linker options
@@ -414,16 +414,16 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ####################################
 
 json_util.o: json_util.c json_util.h
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
+	${CC} ${CFLAGS} json_util.c -c
 
 jparse.tab.o: jparse.tab.c
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
+	${CC} ${CFLAGS} jparse.tab.c -c
 
 jparse_main.o: jparse_main.c
 	${CC} ${CFLAGS} jparse_main.c -c
 
 jparse.o: jparse.c jparse.h
-	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
