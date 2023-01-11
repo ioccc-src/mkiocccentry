@@ -57,7 +57,7 @@ export TOOLS="
     ./txzchk
     "
 
-export BUG_REPORT_VERSION="0.10 2023-01-09"
+export BUG_REPORT_VERSION="0.11 2023-01-11"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
@@ -355,7 +355,8 @@ STRINGS="$(type -P strings)" # this should always exist but we check anyway
 # NOTE: we don't want the path to the tool in this function as we try
 # determining that instead.
 #
-get_version_optional() {
+get_version_optional()
+{
 
     # parse args
     #
@@ -522,7 +523,8 @@ get_version_optional() {
 # NOTE: we don't want the path to the tool in this function as we try
 # determining that instead.
 #
-get_version() {
+get_version()
+{
 
     # parse args
     #
@@ -548,6 +550,49 @@ get_version() {
 	IS_EXEC=0
     fi
     write_echo "## VERSION CHECK FOR: $1"
+
+    # First check if this is bash. If it is we can do something special for
+    # version information.
+
+    if [[ "$(basename "${COMMAND}")" = "bash" ]]; then
+	write_echo "## RUNNING: echo \$BASH_VERSION"
+	exec_command "echo $BASH_VERSION"
+	write_echo "## \$BASH_VERSION ABOVE"
+	# get bash MAJOR version
+	write_echo "## RUNNING: echo \${BASH_VERSINFO[0]}"
+	exec_command "echo ${BASH_VERSINFO[0]}"
+	write_echo "## BASH MAJOR VERSION ABOVE"
+	# get bash MINOR version
+	write_echo "## RUNNING: echo \${BASH_VERSINFO[1]}"
+	exec_command "echo ${BASH_VERSINFO[1]}"
+	write_echo "## BASH MINOR VERSION ABOVE"
+	# get bash PATCH LEVEL
+	write_echo "## RUNNING: echo \${BASH_VERSINFO[2]}"
+	exec_command "echo ${BASH_VERSINFO[2]}"
+	write_echo "## BASH PATCH LEVEL ABOVE"
+	# get bash BUILD version
+	write_echo "## RUNNING: echo \${BASH_VERSINFO[3]}"
+	exec_command "echo ${BASH_VERSINFO[3]}"
+	write_echo "## BASH BUILD VERSION ABOVE"
+	# get bash RELEASE STATUS (e.g. beta)
+	write_echo "## RUNNING: echo \${BASH_VERSINFO[4]}"
+	exec_command "echo ${BASH_VERSINFO[4]}"
+	write_echo "## BASH RELEASE STATUS ABOVE"
+	# get MACHTYPE
+	#
+	# We use $MACHTYPE instead of ${BASH_VERSINFO[5]}. Why? Just in case
+	# some versions of bash do not have it and since it's meant to be the
+	# same value the name here can serve as additional documentation. Of
+	# course we could get that elsewhere but this is a bash variable so it
+	# seems fitting that it is put here.
+	write_echo "## RUNNING: echo \$MACHTYPE"
+	exec_command "echo $MACHTYPE"
+	write_echo "## \$MACHTYPE ABOVE: BASH SYSTEM TYPE"
+
+	# Don't return from this function even after all this because trying
+	# --version on bash might prove useful in some way even though we should
+	# have got the information above.
+    fi
 
     # try --version
     #
@@ -689,8 +734,8 @@ get_version() {
 #
 # NOTE: don't warn if we cannot get the version and don't use strings(1) either.
 #
-get_version_minimal() {
-
+get_version_minimal()
+{
     # parse args
     #
     if [[ $# -ne 1 ]]; then
@@ -797,8 +842,8 @@ get_version_minimal() {
 #
 #	command	    - check to run
 #
-run_optional_check() {
-
+run_optional_check()
+{
     # parse args
     #
     if [[ $# -ne 1 ]]; then
@@ -832,8 +877,8 @@ run_optional_check() {
 #
 #	command	    - check to run
 #
-run_check_warn() {
-
+run_check_warn()
+{
     # parse args
     #
     if [[ $# -ne 1 ]]; then
@@ -861,22 +906,23 @@ run_check_warn() {
 
 # get_shell - get the user shell :-)
 #
-get_shell() {
+get_shell()
+{
     write_echo "## RUNNING: echo \$SHELL"
     write_echo "$SHELL"
-    write_echo "## DEFAULT SHELL ABOVE"
+    write_echo "## USER SHELL ABOVE"
     write_echo ""
 }
 
 # get_path - get the user path :-)
 #
-get_path() {
+get_path()
+{
     write_echo "## RUNNING: echo \$PATH"
     write_echo "$PATH"
-    write_echo "## DEFAULT PATH ABOVE"
+    write_echo "## USER PATH ABOVE"
     write_echo ""
 }
-
 
 # run_check
 #
@@ -965,6 +1011,9 @@ get_shell
 
 # echo $PATH: we need to know their default path
 get_path
+
+# shopt -s: get shell options
+run_optional_check "shopt -s"
 
 # uname -a: get system information
 run_check 10 "uname -a"
