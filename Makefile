@@ -359,7 +359,7 @@ just_all: ${ALL_SUBDIRS} ${TARGETS} build_man
 # fast build environment sanity check
 #
 fast_hostchk: test_ioccc/hostchk.sh
-	-${Q} ./test_ioccc/hostchk.sh -f -v 0; \
+	-${Q} ./test_ioccc/hostchk.sh -f -v 0 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
@@ -383,7 +383,7 @@ bug_report-txl: bug_report.sh
 # slower more verbose build environment sanity check
 #
 hostchk: test_ioccc/hostchk.sh
-	-${Q} ./test_ioccc/hostchk.sh -v 1; \
+	-${Q} ./test_ioccc/hostchk.sh -v 1 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
