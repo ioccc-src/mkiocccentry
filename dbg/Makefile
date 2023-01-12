@@ -158,9 +158,6 @@ LDFLAGS=
 
 # how to compile
 #
-# NOTE: If you use ASAN, set this environment var:
-#       ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
@@ -220,7 +217,7 @@ BUILT_C_SRC= dbg_test.c
 BUILT_H_SRC=
 ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
-# all intermediate files and removed by make clean
+# all intermediate files which are also removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 

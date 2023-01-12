@@ -184,12 +184,6 @@ WARN_FLAGS= -Wall -Wextra -Werror
 CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 
-# NOTE: If you use ASAN, set this environment var:
-#	ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
-#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
-
-
 ###############
 # source code #
 ###############
@@ -230,11 +224,11 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 #
 LIB_OBJS=
 
-# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
 OTHER_OBJS= mkiocccentry.o iocccsize.o txzchk.o chkentry.o
 
-# all intermediate files and removed by make clean
+# all intermediate files which are also removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
@@ -306,16 +300,9 @@ PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
 #
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
 
+# logs for testing
 TMP_BUILD_LOG= .build.log
 BUILD_LOG= build.log
-
-# NOTE: For valgrind, run with:
-#
-#	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
-#           --leak-check=full --show-leak-kinds=all ./mkiocccentry ...
-#
-# NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
-# with the arguments and options you want.
 
 ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc
 

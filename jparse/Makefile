@@ -152,10 +152,6 @@ WARN_FLAGS= -pedantic -Wall -Wextra
 LDFLAGS=
 
 # how to compile
-#
-# NOTE: If you use ASAN, set this environment var:
-#       ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= -O3 -g3 -pedantic -Wall -Werror
 
@@ -210,11 +206,11 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 #
 LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.o util.o
 
-# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
 OTHER_OBJS= verge.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o
 
-# all intermediate files and removed by make clean
+# all intermediate files which are also removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 

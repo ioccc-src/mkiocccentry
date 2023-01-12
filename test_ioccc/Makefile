@@ -166,19 +166,6 @@ WARN_FLAGS= -Wall -Wextra -Werror
 #
 CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
-# NOTE: If you use ASAN, set this environment var:
-#	ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
-#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
-
-# NOTE: For valgrind, run with:
-#
-#	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
-#           --leak-check=full --show-leak-kinds=all ./mkiocccentry ...
-#
-# NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
-# with the arguments and options you want.
-
 
 ###############
 # source code #
@@ -227,7 +214,7 @@ BUILT_C_SRC=
 BUILT_H_SRC=
 ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
-# all intermediate files and removed by make clean
+# all intermediate files which are also removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
