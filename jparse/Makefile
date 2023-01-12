@@ -730,11 +730,6 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo 'ERROR: check_man: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
-		exit 23; \
-	    fi; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
