@@ -612,3 +612,23 @@ foo.c:220:58: warning: cast from function call of type 'double' to non-matching 
 
 As discussed earlier you should ignore these because of the file it's in. If you
 encounter this warning in another file please report it.
+
+
+
+## Issue: warning: warning: 'foo' is not defined, evaluates to 0
+### Status: fixed
+### Example
+
+```c
+foo.c:294:5: warning: 'you_got_here' is not defined, evaluates to 0 [-Wundef]
+#if you_got_here
+    ^
+```
+
+### Solution
+
+This should be ignored. It's one of many jokes in the file but since we don't
+want to spoil that's all we'll say. We won't even answer if your guess is right
+or wrong.
+
+Should this be found in another file please do report it.
