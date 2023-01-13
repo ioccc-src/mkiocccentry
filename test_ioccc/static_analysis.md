@@ -98,6 +98,9 @@ identify the sign conversion warnings.
     int32_t as_int32;           /* JSON integer value in int32_t form, if int32_sized == true */
 ```
 
+
+### Solution
+
 This warning can be safely ignored so we can add to the `WARN_FLAGS`
 `-Wno-padded` to prevent us from being bothered by it further.
 
@@ -111,6 +114,8 @@ jparse.tab.c:230:11: warning: macro is not used [-Wunused-macros]
 #  define YYPTRDIFF_MAXIMUM __PTRDIFF_MAX__
           ^
 ```
+
+### Solution
 
 When it comes to flex and bison generated code one can ignore this warning
 without any problems. If however it's somewhere else it might or might not want
@@ -147,6 +152,8 @@ jstrencode.c:181:6: warning: 'break' will never be executed [-Wunreachable-code-
             ^~~~~
 ```
 
+### Solution
+
 If you look at the code you will see:
 
 ```c
@@ -169,3 +176,44 @@ code (that was obsoleted by the json parser) that had a return prior to a break.
 Later on this actually happened as the return was removed and moved to the end
 of the file. But if there was another case in the switch block it would have
 fallen through and caused an error.
+
+
+## Issue: warning: no previous prototype for function 'find_matching_quote'
+### Status: fixed
+### Examples
+
+The first example is due to a function that is no longer used.
+
+```c
+find_matching_quote(char *q)
+^
+util.c:2964:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+char *
+^
+static 
+```
+
+### Solution
+
+In this case we can safely get rid of this function.
+
+### Another example
+
+```c
+clang -std=gnu11 -O3 -g3 -pedantic -Wall -Wextra -ferror-limit=0 -Wno-sign-conversion -Wno-error -Wno-padded -Wno-unreachable-code-break -Wno-unused-macros -Wno-poison-system-directories -Wno-float-equal -Wmissing-prototypes  entry_time.c -c
+entry_time.c:67:1: warning: no previous prototype for function 'timestr_eq_tstamp' [-Wmissing-prototypes]
+timestr_eq_tstamp(char const *timestr, time_t timestamp)
+^
+entry_time.c:66:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+bool
+^
+static
+```
+
+In this case the prototype was missing so we add it to the approprate file and
+recompile and, assuming no compilation errors, run `make clobber all test` to
+make sure everything is okay.
+
+### See also
+
+This was fixed in commit cd991fae57ad4ac358c899ec2967aca8f2f2f224.
