@@ -1037,7 +1037,7 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
 	not_reached();
     } else if (sum == NULL) {
 	err(30, __func__, "sum is NULL");
-	return;
+	not_reached();
     } else if (count == NULL) {
 	err(31, __func__, "count is NULL");
 	not_reached();

@@ -405,3 +405,23 @@ Now running from the main directory `make clobber all` will work.
 ### See also
 
 These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc.
+
+
+## Issue: warning: 'return' will never be executed
+### Status: fixed
+### Example
+
+```c
+txzchk.c:1040:2: warning: 'return' will never be executed [-Wunreachable-code-return]
+        return;
+        ^~~~~~
+1 warning generated.
+```
+
+This was likely a typo though how I do not know. In any event it should have
+been `not_reached()` which it now is.
+
+
+### See also
+
+Fixed in commit e217a44d892759a82b683f465db482df4ab790d8.
