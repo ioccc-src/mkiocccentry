@@ -265,3 +265,143 @@ extern void verr(int exitcode, char const *name, char const *fmt, va_list ap) \
 ### See also
 
 This was fixed in commit 5971613375469005ed252dc9bb2b63fe1ad1891d.
+
+
+## Issue: warning: no previous extern declaration for non-static variable
+### Status: fixed
+### Examples
+
+```c
+./jparse.l:49:17: warning: no previous extern declaration for non-static variable 'bs' [-Wmissing-variable-declarations]
+YY_BUFFER_STATE bs;
+                ^
+./jparse.l:49:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+YY_BUFFER_STATE bs;
+^
+```
+
+### Solution
+
+In this case we can make the variable static:
+
+
+```c
+static YY_BUFFER_STATE bs;
+```
+
+but in this case we must do a bit more to make sure this is okay. Instead of
+just running `make all` we must do `make parser-o all`. This will force it to
+not use the backup files which means the generated code must be regenerated. If
+`make parser-o` fails (for instance because you do not have an up to date flex
+version) then it will fail.
+
+### Example
+
+```c
+./jparse.y:63:10: warning: no previous extern declaration for non-static variable 'num_errors' [-Wmissing-variable-declarations]
+unsigned num_errors = 0;                /* > 0 number of errors encountered */
+         ^
+./jparse.y:63:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+unsigned num_errors = 0;                /* > 0 number of errors encountered */
+^
+```
+
+### Solution
+
+In this case the `num_errors` is no longer used so we can delete it. But here
+too we must use `make parser-o`.
+
+
+### Example
+
+```c
+./jparse.y:64:13: warning: no previous extern declaration for non-static variable 'filename' [-Wmissing-variable-declarations]
+char const *filename = NULL;            /* if != NULL this is the filename we're parsing */
+            ^
+./jparse.y:64:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char const *filename = NULL;            /* if != NULL this is the filename we're parsing */
+^
+```
+
+### Solution
+
+When we add `static` we discover something else: it's actually not used. Thus we
+can also delete this variable and once more run `make parser-o`.
+
+### A non-JSON example
+
+```
+In file included from txzchk.c:55:
+./txzchk.h:77:6: warning: no previous extern declaration for non-static variable 'quiet' [-Wmissing-variable-declarations]
+bool quiet = false;                             /* true ==> quiet mode */
+     ^
+./txzchk.h:77:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+bool quiet = false;                             /* true ==> quiet mode */
+^
+```
+
+### Solution
+
+We simply add `static` to the variable as it's not needed outside `txzchk`. The
+same holds for `chkentry` and various others.
+
+
+### A slightly more complicated example
+
+
+```c
+jnum_test.c:42:11: warning: no previous extern declaration for non-static variable 'test_count' [-Wmissing-variable-declarations]
+int const test_count = TEST_COUNT;
+          ^
+jnum_test.c:42:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int const test_count = TEST_COUNT;
+^
+jnum_test.c:44:7: warning: no previous extern declaration for non-static variable 'test_set' [-Wmissing-variable-declarations]
+char *test_set[TEST_COUNT+1] = {
+      ^
+jnum_test.c:44:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *test_set[TEST_COUNT+1] = {
+^
+jnum_test.c:493:20: warning: no previous extern declaration for non-static variable 'test_result' [-Wmissing-variable-declarations]
+struct json_number test_result[TEST_COUNT+1] = {
+                   ^
+jnum_test.c:493:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+struct json_number test_result[TEST_COUNT+1] = {
+^
+```
+
+### Solution
+
+At first glance it would appear we could just declare it static but if we do
+this we will find that `jnum_chk` will fail to compile. The solution here is,
+because these variables are declared in `jnum_chk.h`, `#include "jnum_chk.h"`
+and run `make depend`. But this in turn will create another warning:
+
+
+```c
+./jnum_chk.h:95:13: warning: unused function 'chk_test' [-Wunused-function]
+static bool chk_test(int testnum, struct json_number *item, struct json_number *test, size_t len, bool strict);
+            ^
+./jnum_chk.h:96:13: warning: unused function 'check_val' [-Wunused-function]
+static void check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b);
+            ^
+./jnum_chk.h:97:13: warning: unused function 'check_uval' [-Wunused-function]
+static void check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
+            ^
+./jnum_chk.h:98:13: warning: unused function 'check_fval' [-Wunused-function]
+static void check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
+            ^
+./jnum_chk.h:100:13: warning: unused function 'usage' [-Wunused-function]
+static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
+            ^
+```
+
+The solution is to add an include guard to the file. It would not be a good
+solution to create a header file for `jnum_test` because even if this would not
+be unnecessary overkill these variables are also used in jnum_chk.c as well.
+
+Now running from the main directory `make clobber all` will work.
+
+### See also
+
+These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc.

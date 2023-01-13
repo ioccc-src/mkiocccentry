@@ -1,5 +1,5 @@
 /*
- * jnum_test - convert JSON integer strings
+ * jnum_test - test convert JSON integer strings
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -17,6 +17,7 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
+#define JNUM_TEST
 
 /* special comments for the seqcexit tool */
 /* exit code out of numerical order - ignore in sequencing - ooo */
@@ -30,6 +31,10 @@
  */
 #include "../../jparse/json_parse.h"
 
+/*
+ * jnum_chk - tool to check JSON number string conversions
+ */
+#include "jnum_chk.h"
 
 /*
  * NOTE: The file jnum_header.c contains the header for jnum_test.c

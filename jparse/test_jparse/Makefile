@@ -551,4 +551,4 @@ depend: ${ALL_CSRC}
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
     ../json_util.h ../util.h jnum_chk.c jnum_chk.h
 jnum_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
-    ../util.h jnum_test.c
+    ../json_util.h ../util.h jnum_chk.h jnum_test.c

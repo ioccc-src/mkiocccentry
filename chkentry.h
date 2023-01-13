@@ -79,7 +79,7 @@ static const char * const usage_msg =
 /*
  * globals
  */
-bool quiet = false;				/* true ==> quiet mode */
+static bool quiet = false;				/* true ==> quiet mode */
 
 
 /*

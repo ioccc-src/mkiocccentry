@@ -38,7 +38,7 @@
 
 #define filename "foo.bar"
 
-long length = 7;
+static long length = 7;
 
 int
 main(void)
