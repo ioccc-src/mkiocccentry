@@ -17,7 +17,7 @@ importantly these files are **NOT** tarballs: they are text files that
 would have the output of the tar command. This is to make it much easier to add
 test cases and it also prevents having the need to have tarballs in the repo (as
 well as constructing said tarballs with invalid input that might be submitted
-due to abuse). Over time more text files have been and will be added.
+due to abuse). Over time more text files have been and might be added.
 
 Here's an example good file:
 
@@ -48,9 +48,6 @@ $ ./txzchk -T -E txt entry.test-0.1924260612.txt 2>&1 >/dev/null || echo invalid
 
 This will not show anything as the tarball is actually valid.
 
-However for the script you will see some output. Perhaps this should be directed
-to a log file (as some of the output is also added to the log file) but for now
-this will do as other things have to be done.
 
 ## Important note for adding files to the bad subdirectory
 
