@@ -185,7 +185,6 @@ fallen through and caused an error.
 The first example is due to a function that is no longer used.
 
 ```c
-clang -std=gnu11 -O3 -g3 -pedantic -Wall -Wextra -ferror-limit=0 -Wno-sign-conversion -Wno-error -Wno-padded -Weverything -Wno-unreachable-code-break -Wno-unused-macros  util.c -c
 util.c:2965:1: warning: no previous prototype for function 'find_matching_quote' [-Wmissing-prototypes]
 find_matching_quote(char *q)
 ^
@@ -202,7 +201,6 @@ In this case we can safely get rid of this function.
 ### Another example
 
 ```c
-clang -std=gnu11 -O3 -g3 -pedantic -Wall -Wextra -ferror-limit=0 -Wno-sign-conversion -Wno-error -Wno-padded -Wno-unreachable-code-break -Wno-unused-macros -Wno-poison-system-directories -Wno-float-equal -Wmissing-prototypes  entry_time.c -c
 entry_time.c:67:1: warning: no previous prototype for function 'timestr_eq_tstamp' [-Wmissing-prototypes]
 timestr_eq_tstamp(char const *timestr, time_t timestamp)
 ^
@@ -212,6 +210,8 @@ bool
 static
 ```
 
+### Solution
+
 In this case the prototype was missing so we add it to the approprate file and
 recompile and, assuming no compilation errors, run `make clobber all test` to
 make sure everything is okay.
@@ -219,3 +219,24 @@ make sure everything is okay.
 ### See also
 
 This was fixed in commit cd991fae57ad4ac358c899ec2967aca8f2f2f224.
+
+
+## Issue: warning: format string is not a string literal
+### Status: ignored (see discussion below)
+### Example
+
+```c
+dbg.c:220:28: warning: format string is not a string literal [-Wformat-nonliteral]
+    ret = vfprintf(stream, fmt, ap);
+                           ^~~
+```
+
+
+### Solution
+
+While normally a cause for concern, in this case the format string is passed as
+a literal to the debug function (or actually `fmsg_write()` from the `msg()`
+functions) where in turn the variable triggers the warning.
+
+In our case there is no place in the code that this is triggered that is a
+problem as it's all like the above example.
