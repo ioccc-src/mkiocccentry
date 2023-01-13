@@ -41,7 +41,8 @@
 /*
  * static functions
  */
-static void usage(int exitcode, char const *str, char const *prog);
+static void usage(int exitcode, char const *str, char const *prog) \
+		__attribute__((noreturn));
 
 /*
  * usage message

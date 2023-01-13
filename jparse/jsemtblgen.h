@@ -77,7 +77,8 @@ static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
 static int sem_cmp(void const *a, void const *b);
 static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
-static void usage(int exitcode, char const *str, char const *prog);
+static void usage(int exitcode, char const *str, char const *prog) \
+		__attribute__((noreturn));
 
 
 /*

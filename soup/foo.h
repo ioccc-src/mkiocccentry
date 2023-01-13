@@ -77,7 +77,8 @@ static int peqtanfwxaqG[] = {
 /*
  * externals
  */
-extern void vrergfB(int i, int r);
+extern void vrergfB(int i, int r) \
+	   __attribute__((noreturn));
 
 
 #endif /* INCLUDE_FOO_H */

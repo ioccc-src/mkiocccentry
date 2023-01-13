@@ -240,3 +240,28 @@ functions) where in turn the variable triggers the warning.
 
 In our case there is no place in the code that this is triggered that is a
 problem as it's all like the above example.
+
+
+## Issue: warning: function 'foo' could be declared with attribute 'noreturn'
+### Status: fixed
+### Example
+
+```c
+dbg.c:3123:1: warning: function 'verr' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
+{
+^
+```
+
+### Solution
+
+Add the `noreturn` attribute, changing the declaration to be:
+
+
+```c
+extern void verr(int exitcode, char const *name, char const *fmt, va_list ap) \
+           __attribute__((noreturn));
+```
+
+### See also
+
+This was fixed in commit 5971613375469005ed252dc9bb2b63fe1ad1891d.

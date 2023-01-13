@@ -193,7 +193,8 @@ static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program);
+static void usage(int exitcode, char const *str, char const *program) \
+		__attribute__((noreturn));
 static void warn_empty_prog(char const *prog_c);
 static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);
