@@ -615,7 +615,7 @@ encounter this warning in another file please report it.
 
 
 
-## Issue: warning: warning: 'foo' is not defined, evaluates to 0
+## Issue: warning: 'foo' is not defined, evaluates to 0
 ### Status: fixed
 ### Example
 
