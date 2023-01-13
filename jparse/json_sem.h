@@ -148,6 +148,9 @@ extern struct str_or_null sem_member_value_str_or_null(struct json const *node, 
 						       char const *name, struct json_sem_val_err **val_err);
 extern int *sem_member_value_int(struct json const *node, unsigned int depth, struct json_sem *sem,
 			         char const *name, struct json_sem_val_err **val_err);
+
+extern size_t *sem_member_value_size_t(struct json const *node, unsigned int depth, struct json_sem *sem,
+			         char const *name, struct json_sem_val_err **val_err);
 extern time_t *sem_member_value_time_t(struct json const *node, unsigned int depth, struct json_sem *sem,
 				       char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
