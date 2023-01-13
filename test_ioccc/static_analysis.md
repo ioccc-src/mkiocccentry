@@ -439,3 +439,70 @@ be 2.
 Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note comit
 ab5579e0473199fc676b37e37e68b032338caf5b which is the commit for the
 `dbg_example.c` example above.
+
+
+## Issue: warning: declaration shadows a local variable
+### Status: fixed
+### Example
+
+```c
+entry_util.c:551:8: warning: declaration shadows a local variable [-Wshadow]
+        char *name = NULL;                      /* name string of name part of JTYPE_MEMBER */
+              ^
+entry_util.c:456:20: note: previous declaration is here
+              char const *name, struct json_sem_val_err **val_err,
+                          ^
+```
+
+### Solution
+
+In this example we simply rename the inner variable `name` (we chose `obj_name`
+because it's iterating through an object).
+
+### Examples which we ignore
+
+There are two variables where we ignore this warning which are:
+
+
+```c
+jsemtblgen.c:783:46: warning: declaration shadows a variable in the global scope [-Wshadow]
+print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
+                                             ^
+jsemtblgen.c:51:14: note: previous declaration is here
+static char *tbl_name = "sem_tbl";      /* -N name - name of the semantic table */
+             ^
+jsemtblgen.c:947:46: warning: declaration shadows a variable in the global scope [-Wshadow]
+print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
+                                             ^
+jsemtblgen.c:51:14: note: previous declaration is here
+static char *tbl_name = "sem_tbl";      /* -N name - name of the semantic table */
+             ^
+```
+
+and
+
+```c
+txzchk.c:212:27: warning: declaration shadows a variable in the global scope [-Wshadow]
+show_txz_info(char const *txzpath)
+                          ^
+./txzchk.h:79:20: note: previous declaration is here
+static char const *txzpath = NULL;              /* the current tarball being checked */
+                   ^
+txzchk.c:509:28: warning: declaration shadows a variable in the global scope [-Wshadow]
+check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
+                           ^
+[...]
+```
+
+### Solution
+
+We ignore these because they are the same variable and serve to document the
+functions. In both tools the global variable is assigned in `main()` and then
+passed into other functions. Thus one can safely ignore this warning for both
+`tbl_name` in jsemtblgen.c and `txzpath` in `txzchk.c`.
+
+
+### See also
+
+Fixed in commit 
+### See also

@@ -548,7 +548,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     for (i=0; i < obj_len; ++i) {
 	struct json *e = obj->set[i];		/* next item in the JTYPE_OBJECT */
-	char *name = NULL;			/* name string of name part of JTYPE_MEMBER */
+	char *obj_name = NULL;			/* name string of name part of JTYPE_MEMBER */
 
 	/*
 	 * firewall - validate JTYPE_MEMBER item in the JTYPE_OBJECT
@@ -566,8 +566,8 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 	    return false;
 	}
-	name = sem_member_name_decoded_str(e, depth+2, sem, __func__, val_err);
-	if (name == NULL) {
+	obj_name = sem_member_name_decoded_str(e, depth+2, sem, __func__, val_err);
+	if (obj_name == NULL) {
 	    /* sem_member_name_decoded_str() will have set *val_err */
 	    return false;
 	}
@@ -580,14 +580,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	 *	 string later on in this function.
 	 */
 	/* case: IOCCC author name */
-	if (strcmp(name, "name") == 0) {
+	if (strcmp(obj_name, "name") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_name == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(60, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -598,14 +598,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we will deal with NULL auth_name later in this function */
 
 	/* case: IOCCC author location_code */
-	} else if (strcmp(name, "location_code") == 0) {
+	} else if (strcmp(obj_name, "location_code") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_location_code == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(61, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -616,14 +616,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we will deal with NULL location_code later in this function */
 
 	/* case: IOCCC author location_name */
-	} else if (strcmp(name, "location_name") == 0) {
+	} else if (strcmp(obj_name, "location_name") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_location_name == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(62, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -634,14 +634,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we will deal with NULL location_name later in this function */
 
 	/* case: IOCCC author email */
-	} else if (strcmp(name, "email") == 0) {
+	} else if (strcmp(obj_name, "email") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_email == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(63, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -666,14 +666,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author url */
-	} else if (strcmp(name, "url") == 0) {
+	} else if (strcmp(obj_name, "url") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_url == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(65, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -698,14 +698,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author alt url */
-	} else if (strcmp(name, "alt_url") == 0) {
+	} else if (strcmp(obj_name, "alt_url") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_alt_url == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(67, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -730,14 +730,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author mastodon */
-	} else if (strcmp(name, "mastodon") == 0) {
+	} else if (strcmp(obj_name, "mastodon") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_mastodon == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(69, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		    }
 		return false;
 	    }
@@ -762,14 +762,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author github */
-	} else if (strcmp(name, "github") == 0) {
+	} else if (strcmp(obj_name, "github") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_github == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(71, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -794,14 +794,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author affiliation */
-	} else if (strcmp(name, "affiliation") == 0) {
+	} else if (strcmp(obj_name, "affiliation") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_affiliation == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(73, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -826,14 +826,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: IOCCC author past_winner */
-	} else if (strcmp(name, "past_winner") == 0) {
+	} else if (strcmp(obj_name, "past_winner") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_past_winner == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(75, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -852,14 +852,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    past_winner = *bool_val;
 
 	/* case: IOCCC author default_handle */
-	} else if (strcmp(name, "default_handle") == 0) {
+	} else if (strcmp(obj_name, "default_handle") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_default_handle == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(77, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -878,14 +878,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    default_handle = *bool_val;
 
 	/* case: IOCCC author author_handle */
-	} else if (strcmp(name, "author_handle") == 0) {
+	} else if (strcmp(obj_name, "author_handle") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_author_handle == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(79, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -896,14 +896,14 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we will deal with NULL author_handle later in this function */
 
 	/* case: IOCCC author author_number */
-	} else if (strcmp(name, "author_number") == 0) {
+	} else if (strcmp(obj_name, "author_number") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
 	    if (found_author_number == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(80, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
-					    author_num, i, name);
+					    author_num, i, obj_name);
 		}
 		return false;
 	    }
@@ -926,7 +926,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (val_err != NULL) {
 		*val_err = werr_sem_val(82, e, depth+2, sem, __func__,
 					"author array index[%d] JTYPE_OBJECT has invalid JTYPE_MEMBER name: <%s>",
-					i, name);
+					i, obj_name);
 	    }
 	    return false;
 	}
@@ -1424,7 +1424,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     for (i=0; i < array_len; ++i) {
 	struct json *e = array->set[i];		/* next item in the JTYPE_ARRAY */
-	char *name = NULL;			/* name string of name part of JTYPE_MEMBER */
+	char *arr_name = NULL;			/* name string of name part of JTYPE_MEMBER */
 	char *value = NULL;			/* value string of name part of JTYPE_MEMBER */
 	struct json_object *o = NULL;		/* current JTYPE_OBJECT of the manifest JTYPE_ARRAY to examine */
 	struct json *jo = NULL;			/* JSON element of JTYPE_OBJECT of the manifest JTYPE_ARRAY to examine */
@@ -1488,8 +1488,8 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * obtain JTYPE_MEMBER name and value as decoded JSON strings
 	 */
-	name = sem_member_name_decoded_str(jo, depth+2, sem, __func__, val_err);
-	if (name == NULL) {
+	arr_name = sem_member_name_decoded_str(jo, depth+2, sem, __func__, val_err);
+	if (arr_name == NULL) {
 	    /* sem_member_name_decoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
@@ -1505,7 +1505,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 * count mandatory manifest filenames
 	 */
 	/* case: info_JSON */
-	if (strcmp(name, "info_JSON") == 0) {
+	if (strcmp(arr_name, "info_JSON") == 0) {
 
 	    /* validate info_JSON filename */
 	    test = test_info_JSON(value);
@@ -1534,7 +1534,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: auth_JSON */
-	} else if (strcmp(name, "auth_JSON") == 0) {
+	} else if (strcmp(arr_name, "auth_JSON") == 0) {
 
 	    /* validate auth_JSON filename */
 	    test = test_auth_JSON(value);
@@ -1563,7 +1563,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: c_src */
-	} else if (strcmp(name, "c_src") == 0) {
+	} else if (strcmp(arr_name, "c_src") == 0) {
 
 	    /* validate c_src filename */
 	    test = test_c_src(value);
@@ -1592,7 +1592,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: Makefile */
-	} else if (strcmp(name, "Makefile") == 0) {
+	} else if (strcmp(arr_name, "Makefile") == 0) {
 
 	    /* validate Makefile filename */
 	    test = test_Makefile(value);
@@ -1621,7 +1621,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	/* case: remarks */
-	} else if (strcmp(name, "remarks") == 0) {
+	} else if (strcmp(arr_name, "remarks") == 0) {
 
 	    /* validate remarks filename */
 	    test = test_remarks(value);
@@ -1652,7 +1652,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * case: optional extra_file
 	 */
-	} else if (strcmp(name, "extra_file") == 0) {
+	} else if (strcmp(arr_name, "extra_file") == 0) {
 
 	    /* validate extra_file filename */
 	    test = test_extra_file(value);
@@ -1679,7 +1679,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (val_err != NULL) {
 		*val_err = werr_sem_val(143, jo, depth+2, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT "
-					"has invalid JTYPE_MEMBER name: <%s>", i, name);
+					"has invalid JTYPE_MEMBER name: <%s>", i, arr_name);
 	    }
 	    dyn_array_free(man.extra);
 	    return false;
