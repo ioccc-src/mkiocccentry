@@ -29,7 +29,7 @@
 /*
  * json_parse - JSON parser support code
  */
-#include "../../jparse/json_parse.h"
+#include "../json_parse.h"
 
 /*
  * jnum_chk - tool to check JSON number string conversions
