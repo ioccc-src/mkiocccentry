@@ -593,3 +593,22 @@ No commit was needed to fix this issue as it's not actually an issue. If however
 you feel like you have found another case of this warning not documented please
 report it. Nevertheless for a brief summary of this issue see commit
 1f4a123f7cca400bd9192dd34c43bb08a0d85ca1.
+
+
+## Issue: warning: cast from function call of type 'double' to non-matching type 'int'
+### Status: fixed
+### Example:
+
+```c
+foo.c:217:8: warning: cast from function call of type 'double' to non-matching type 'int' [-Wbad-function-cast]
+                (int)fabs(0x3BF261*sin((double)((*p-0141+((42*3-42*2)-(1<<4)))%
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+foo.c:220:58: warning: cast from function call of type 'double' to non-matching type 'int' [-Wbad-function-cast]
+                "NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(
+                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+As discussed earlier you should ignore these because of the file it's in. If you
+encounter this warning in another file please report it.
