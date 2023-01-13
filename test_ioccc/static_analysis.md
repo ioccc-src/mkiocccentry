@@ -408,7 +408,7 @@ These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc.
 
 
 ## Issue: warning: 'return' will never be executed
-### Status: fixed
+### Status: varies (see discussion below)
 ### Example
 
 ```c
@@ -421,7 +421,21 @@ txzchk.c:1040:2: warning: 'return' will never be executed [-Wunreachable-code-re
 This was likely a typo though how I do not know. In any event it should have
 been `not_reached()` which it now is.
 
+### An example that we ignore
+
+
+```c
+dbg_example.c:87:12: warning: 'return' will never be executed [-Wunreachable-code-return]
+    return 2; /* this return is never reached */
+           ^
+```
+
+We ignore this as it serves as a demonstration to show that the exit code should
+be 2.
+
 
 ### See also
 
-Fixed in commit e217a44d892759a82b683f465db482df4ab790d8.
+Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note comit
+ab5579e0473199fc676b37e37e68b032338caf5b which is the commit for the
+`dbg_example.c` example above.
