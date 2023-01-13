@@ -178,13 +178,15 @@ of the file. But if there was another case in the switch block it would have
 fallen through and caused an error.
 
 
-## Issue: warning: no previous prototype for function 'find_matching_quote'
+## Issue: warning: no previous prototype for function
 ### Status: fixed
 ### Examples
 
 The first example is due to a function that is no longer used.
 
 ```c
+clang -std=gnu11 -O3 -g3 -pedantic -Wall -Wextra -ferror-limit=0 -Wno-sign-conversion -Wno-error -Wno-padded -Weverything -Wno-unreachable-code-break -Wno-unused-macros  util.c -c
+util.c:2965:1: warning: no previous prototype for function 'find_matching_quote' [-Wmissing-prototypes]
 find_matching_quote(char *q)
 ^
 util.c:2964:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
