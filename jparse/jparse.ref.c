@@ -594,7 +594,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
 #include "jparse.h"
 
 
-YY_BUFFER_STATE bs;
+static YY_BUFFER_STATE bs;
 
 /*
  * locations in the file / json block

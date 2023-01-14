@@ -60,9 +60,6 @@
  */
 #include "jparse.lex.h"
 
-unsigned num_errors = 0;		/* > 0 number of errors encountered */
-char const *filename = NULL;		/* if != NULL this is the filename we're parsing */
-
 /*
  * bison debug information for development
  */

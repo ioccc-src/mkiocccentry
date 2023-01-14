@@ -373,7 +373,7 @@ json_encode_str(char const *str, size_t *retlen, bool skip_quote)
 void
 jencchk(void)
 {
-    unsigned int hexval;/* hex value from xxxx part of \uxxxx */
+    unsigned int int_hexval;/* hex value from xxxx part of \uxxxx */
     char guard;		/* scanf guard to catch excess amount of input */
     int indx;		/* test index */
     char const *encstr;	/* encoding string */
@@ -444,12 +444,12 @@ jencchk(void)
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
-	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
+	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
 	    err(106, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
-	if (i != hexval) {
+	if (i != int_hexval) {
 	    err(107, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}
@@ -561,12 +561,12 @@ jencchk(void)
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
-	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
+	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
 	    err(121, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
-	if (i != hexval) {
+	if (i != int_hexval) {
 	    err(122, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}
@@ -783,12 +783,12 @@ jencchk(void)
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
-	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
+	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
 	    err(151, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
-	if (i != hexval) {
+	if (i != int_hexval) {
 	    err(152, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}

@@ -167,10 +167,6 @@ WARN_FLAGS= -pedantic -Wall -Wextra
 LDFLAGS=
 
 # how to compile
-#
-# NOTE: If you use ASAN, set this environment var:
-#       ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
@@ -224,7 +220,7 @@ BUILT_C_SRC= chk_sem_info.c chk_sem_auth.c
 BUILT_H_SRC= chk_sem_info.h chk_sem_auth.h
 ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
-# all intermediate files and removed by make clean
+# all intermediate files which are also removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
@@ -669,11 +665,6 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo 'ERROR: check_man: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
-		exit 23; \
-	    fi; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

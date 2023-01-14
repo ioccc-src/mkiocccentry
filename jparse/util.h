@@ -143,10 +143,10 @@ typedef unsigned char bool;
 /*
  * invalid exit codes (values < 0) that may be returned by shell_cmd()
  */
-#define CALLOC_FAILED_EXIT (-2)		/* invalid exit code - calloc() failure */
-#define SYSTEM_FAILED_EXIT (-3)		/* invalid exit code - system() failed - returned exit 127 */
-#define FLUSH_FAILED_EXIT (-4)		/* invalid exit code - fflush() failed */
-#define NULL_ARGS_EXIT (-5)		/* invalid exit code - function called with a NULL arg */
+#define EXIT_CALLOC_FAILED (-2)		/* invalid exit code - calloc() failure */
+#define EXIT_SYSTEM_FAILED (-3)		/* invalid exit code - system() failed - returned exit 127 */
+#define EXIT_FFLUSH_FAILED (-4)		/* invalid exit code - fflush() failed */
+#define EXIT_NULL_ARGS (-5)		/* invalid exit code - function called with a NULL arg */
 
 
 /*

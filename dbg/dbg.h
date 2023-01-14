@@ -196,17 +196,21 @@ extern void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, 
 
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
-extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void verr(int exitcode, char const *name, char const *fmt, va_list ap) \
+	   __attribute__((noreturn));
 extern void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 4, 5))); /* 4=format 5=params */
-extern void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap) \
+	   __attribute__((noreturn));
 
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
-extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap) \
+	   __attribute__((noreturn));
 extern void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 4, 5))); /* 4=format 5=params */
-extern void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap) \
+	   __attribute__((noreturn));
 
 extern void werr(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */

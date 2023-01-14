@@ -148,6 +148,9 @@ extern struct str_or_null sem_member_value_str_or_null(struct json const *node, 
 						       char const *name, struct json_sem_val_err **val_err);
 extern int *sem_member_value_int(struct json const *node, unsigned int depth, struct json_sem *sem,
 			         char const *name, struct json_sem_val_err **val_err);
+
+extern size_t *sem_member_value_size_t(struct json const *node, unsigned int depth, struct json_sem *sem,
+			         char const *name, struct json_sem_val_err **val_err);
 extern time_t *sem_member_value_time_t(struct json const *node, unsigned int depth, struct json_sem *sem,
 				       char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -157,6 +160,7 @@ extern struct json *sem_object_find_name(struct json const *node, unsigned int d
 				         char const *memname);
 extern void json_sem_zero_count(struct json_sem *sem);
 extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
+extern void json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err);
 extern uintmax_t json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 				struct dyn_array **pcount_err, struct dyn_array **pval_err);
 extern void free_count_err(struct dyn_array *count_err);

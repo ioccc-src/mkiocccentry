@@ -80,7 +80,7 @@ static const char * const usage_msg =
 /*
  * globals
  */
-bool quiet = false;				/* true ==> quiet mode */
+static bool quiet = false;				/* true ==> quiet mode */
 
 /*
  * externals
@@ -92,12 +92,13 @@ extern struct json_number test_result[];	/* struct integer conversions of test s
 /*
  * function prototypes
  */
+#if !defined(JNUM_TEST)
 static bool chk_test(int testnum, struct json_number *item, struct json_number *test, size_t len, bool strict);
 static void check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b);
 static void check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
 static void check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 		       long double val_a, long double val_b, bool int_a, bool int_b, bool strict);
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
-
+#endif
 
 #endif /* INCLUDE_JNUM_CHK_H */

@@ -74,7 +74,7 @@
 #define singular_or_plural(x) ((x)==1?"":"s")
 
 /* globals */
-bool quiet = false;				/* true ==> quiet mode */
+static bool quiet = false;				/* true ==> quiet mode */
 /* globals specific to txzchk */
 static char const *txzpath = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */

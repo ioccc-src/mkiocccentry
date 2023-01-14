@@ -46,7 +46,7 @@
 #include "jparse.h"
 
 
-YY_BUFFER_STATE bs;
+static YY_BUFFER_STATE bs;
 
 /*
  * locations in the file / json block

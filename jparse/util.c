@@ -816,10 +816,10 @@ vcmdprintf(char const *fmt, va_list ap)
  * given:
  *	name		- name of the calling function
  *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
- *			    return CALLOC_FAILED_EXIT malloc() failure,
- *			    return FLUSH_FAILED_EXIT on fflush failure,
- *			    return SYSTEM_FAILED_EXIT if system() failed,
- *			    return NULL_ARGS_EXIT if NULL pointers were passed
+ *			    return EXIT_CALLOC_FAILED malloc() failure,
+ *			    return EXIT_FFLUSH_FAILED on fflush failure,
+ *			    return EXIT_SYSTEM_FAILED if system() failed,
+ *			    return EXIT_NULL_ARGS if NULL pointers were passed
  *			  true ==> return exit code if able to successfully call system(), or
  *			   call errp() (and thus exit) if unsuccessful
  *      format		- The format string, any % on this string inserts the
@@ -854,8 +854,8 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    err(110, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called with NULL name, returning: %d < 0", NULL_ARGS_EXIT);
-	    return NULL_ARGS_EXIT;
+	    dbg(DBG_MED, "called with NULL name, returning: %d < 0", EXIT_NULL_ARGS);
+	    return EXIT_NULL_ARGS;
 	}
     }
     if (format == NULL) {
@@ -864,8 +864,8 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    err(111, name, "called NULL format");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", NULL_ARGS_EXIT);
-	    return NULL_ARGS_EXIT;
+	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
+	    return EXIT_NULL_ARGS;
 	}
     }
 
@@ -886,9 +886,9 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
-			 name, strerror(errno), CALLOC_FAILED_EXIT);
+			 name, strerror(errno), EXIT_CALLOC_FAILED);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return CALLOC_FAILED_EXIT;
+	    return EXIT_CALLOC_FAILED;
 	}
     }
 
@@ -911,7 +911,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
 	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return FLUSH_FAILED_EXIT;
+	    return EXIT_FFLUSH_FAILED;
 	}
     }
 
@@ -934,7 +934,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stderr) failed", name);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return FLUSH_FAILED_EXIT;
+	    return EXIT_FFLUSH_FAILED;
 	}
     }
 
@@ -957,7 +957,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 		free(cmd);
 		cmd = NULL;
 	    }
-	    return SYSTEM_FAILED_EXIT;
+	    return EXIT_SYSTEM_FAILED;
 	}
 
     /*
@@ -976,7 +976,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 		free(cmd);
 		cmd = NULL;
 	    }
-	    return SYSTEM_FAILED_EXIT;
+	    return EXIT_SYSTEM_FAILED;
 	}
     }
 
@@ -1071,7 +1071,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
-			 name, strerror(errno), CALLOC_FAILED_EXIT);
+			 name, strerror(errno), EXIT_CALLOC_FAILED);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
 	}
@@ -2948,39 +2948,6 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     return;
 }
 
-
-/*
- * find_matching_quote	find the next unescaped '"'
- *
- * Assuming *q == '"' find the matching (closing) '"' (i.e. the next unescaped
- * '"') and return a pointer to it (or NULL if not found). If *q != '"' && *q !=
- * '\0' it will return 'q'; else it'll return q updated to either the end of the
- * string (which means NULL return value) or the matching unescaped '"'.
- *
- * NOTE: This function does not return on NULL pointer passed in but it can
- * return a NULL pointer: this happens if no matching '"' is found (or the
- * string was empty in the first place).
- */
-char *
-find_matching_quote(char *q)
-{
-    /*
-     * firewall
-     */
-    if (q == NULL) {
-	err(179, __func__, "passed NULL pointer");
-	not_reached();
-    }
-
-    for (++q; *q && *q != '"'; ++q)
-	if (*q == '\\')
-	    ++q;
-
-    if (!*q)
-	return NULL;
-
-    return q;
-}
 
 
 /*

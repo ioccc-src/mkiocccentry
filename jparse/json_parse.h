@@ -109,7 +109,7 @@ struct json_number
     bool is_negative;		/* true ==> value < 0 */
 
     bool is_floating;		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-    bool is_e_notation;		/* true ==> e notation used such as 1e10, no e notation found */
+    bool is_e_notation;		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
     /* integer values */
 
