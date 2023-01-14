@@ -446,33 +446,35 @@ make_action 20 load_json_ref OK
 make_action 21 use_json_ref OK
 make_action 22 clean_generated_obj OK
 make_action 23 all ERROR exit code 2
-make_action 24 bug_report-txl OK
+make_action 24 bug_report-txl ERROR exit code 2
 make_action 25 shellcheck ERROR exit code 2
 make_action 26 seqcexit ERROR exit code 2
 make_action 27 picky ERROR exit code 2
 make_action 28 tags ERROR exit code 2
 make_action 29 check_man OK
 make_action 30 all ERROR exit code 2
-make_action 31 test OK
+make_action 31 test ERROR exit code 2
 One or more tests failed:
 
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
-	make -f ./Makefile non-zero exit code: 2
+	make_action 11: make -f ./Makefile all: non-zero exit code: 2
+	make_action 16: make -f ./Makefile all: non-zero exit code: 2
+	make_action 19: make -f ./Makefile all: non-zero exit code: 2
+	make_action 23: make -f ./Makefile all: non-zero exit code: 2
+	make_action 24: make -f ./Makefile bug_report-txl: non-zero exit code: 2
+	make_action 25: make -f ./Makefile shellcheck: non-zero exit code: 2
+	make_action 26: make -f ./Makefile seqcexit: non-zero exit code: 2
+	make_action 27: make -f ./Makefile picky: non-zero exit code: 2
+	make_action 28: make -f ./Makefile tags: non-zero exit code: 2
+	make_action 30: make -f ./Makefile all: non-zero exit code: 2
+	make_action 31: make -f ./Makefile test: non-zero exit code: 2
 
 See test_ioccc/test_ioccc.log for more details.
 
-make prep: ERROR: prep.sh exit code: 30
+make prep: ERROR: prep.sh exit code: 31
 
 make prep: see build.log for build details
 
-make: *** [prep] Error 30
+make: *** [prep] Error 31
 ```
 
 Now as one can see `make all` fails so running it manually we see:
