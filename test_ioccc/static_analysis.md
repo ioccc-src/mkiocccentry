@@ -532,7 +532,7 @@ be 2.
 
 ### See also
 
-Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note comit
+Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note commit
 ab5579e0473199fc676b37e37e68b032338caf5b which is the commit for the
 `dbg_example.c` example above.
 
