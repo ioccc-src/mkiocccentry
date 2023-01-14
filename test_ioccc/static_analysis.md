@@ -792,3 +792,33 @@ and rerun `make clobber all test`.
 
 With the exception of the one noted that we cannot change all of these were
 fixed in commit c94bd325bb1f97dce57f636b17a1309426e4d697.
+
+
+## Issue: warning: enumeration value not explicitly handled in switch
+### Status: ignore
+
+### Example
+
+
+```c
+json_sem.c:1138:13: warning: 7 enumeration values not explicitly handled in switch: 'JTYPE_UNSET', 'JTYPE_NUMBER', 'JTYPE_BOOL'... [-Wswitch-enum]
+    switch (value->type) {
+            ^~~~~~~~~~~
+json_sem.c:1138:13: note: add missing switch cases
+    switch (value->type) {
+            ^
+```
+
+
+### Solution
+
+There is no need to add these to the switch because those values that are not
+specified are not supposed to be there and if they are it is an error.
+Since only those explicitly checked are valid the `default` will be sufficient
+to handle the errors and in a way that even if another was added to the enum we
+would not have to worry about it.
+
+
+### See also
+
+This issue is noted in commit 1124e12ac68be62af9bb613652396f7055b7a3d7.
