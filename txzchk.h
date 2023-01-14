@@ -68,7 +68,10 @@
 
 
 /*
- * macros
+ * utility macros
+ *
+ * These will work for our purposes but the singular or plural one is in truth
+ * much more complicated than what we're making it seem like.
  */
 #define has_does_not_have(b) ((b)?"has":"does not have")
 #define singular_or_plural(x) ((x)==1?"":"s")
