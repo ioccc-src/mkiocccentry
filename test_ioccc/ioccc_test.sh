@@ -43,7 +43,8 @@ Exit codes:
      0   all tests are OK
      2   -h and help string printed or -V and version string printed
      3   command line usage error
-  4-19   something not found, not a file, or not executable
+     4	 could not create a writable log file
+     5   something not found, not the right file type, or not executable
  >= 20   some test failed
 
 $0 version: $IOCCC_TEST_VERSION"
@@ -131,178 +132,6 @@ if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" 1>&2
 fi
 
-# firewall - verify we have the required executables and needed data file(s)
-#
-# iocccsize_test.sh
-if [[ ! -e test_ioccc/iocccsize_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/iocccsize_test.sh file not found" 1>&2
-    exit 4
-fi
-if [[ ! -f test_ioccc/iocccsize_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/iocccsize_test.sh is not a regular file" 1>&2
-    exit 4
-fi
-if [[ ! -x test_ioccc/iocccsize_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/iocccsize_test.sh is not executable" 1>&2
-    exit 4
-fi
-# dbg_test
-if [[ ! -e dbg/dbg_test ]]; then
-    echo "$0: ERROR: dbg_test file not found" 1>&2
-    exit 5
-fi
-if [[ ! -f dbg/dbg_test ]]; then
-    echo "$0: ERROR: dbg_test is not a regular file" 1>&2
-    exit 5
-fi
-if [[ ! -x dbg/dbg_test ]]; then
-    echo "$0: ERROR: dbg_test is not executable" 1>&2
-    exit 5
-fi
-# mkiocccentry_test.sh
-if [[ ! -e test_ioccc/mkiocccentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh file not found" 1>&2
-    exit 6
-fi
-if [[ ! -f test_ioccc/mkiocccentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh is not a regular file" 1>&2
-    exit 6
-fi
-if [[ ! -x test_ioccc/mkiocccentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh is not executable" 1>&2
-    exit 6
-fi
-# jstr_test.sh
-if [[ ! -e jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh file not found" 1>&2
-    exit 7
-fi
-if [[ ! -f jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not a regular file" 1>&2
-    exit 7
-fi
-if [[ ! -x jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not executable" 1>&2
-    exit 7
-fi
-# jnum_chk
-if [[ ! -e jparse/test_jparse/jnum_chk ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jnum_chk file not found" 1>&2
-    exit 8
-fi
-if [[ ! -f jparse/test_jparse/jnum_chk ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not a regular file" 1>&2
-    exit 8
-fi
-if [[ ! -x jparse/test_jparse/jnum_chk ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not executable" 1>&2
-    exit 8
-fi
-# dyn_test
-if [[ ! -e dyn_array/dyn_test ]]; then
-    echo "$0: ERROR: dyn_array/dyn_test file not found" 1>&2
-    exit 9
-fi
-if [[ ! -f dyn_array/dyn_test ]]; then
-    echo "$0: ERROR: dyn_array/dyn_test is not a regular file" 1>&2
-    exit 9
-fi
-if [[ ! -x dyn_array/dyn_test ]]; then
-    echo "$0: ERROR: dyn_array/dyn_test is not executable" 1>&2
-    exit 9
-fi
-# jparse_test.sh
-if [[ ! -e jparse/test_jparse/jparse_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh file not found" 1>&2
-    exit 10
-fi
-if [[ ! -f jparse/test_jparse/jparse_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" 1>&2
-    exit 10
-fi
-if [[ ! -x jparse/test_jparse/jparse_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not executable" 1>&2
-    exit 10
-fi
-# json_teststr.txt: for jparse_test.sh
-if [[ ! -e jparse/test_jparse/json_teststr.txt ]]; then
-    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt file not found" 1>&2
-    exit 11
-fi
-if [[ ! -f jparse/test_jparse/json_teststr.txt ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" 1>&2
-    exit 11
-fi
-if [[ ! -r jparse/test_jparse/json_teststr.txt ]]; then
-    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt is not readable" 1>&2
-    exit 11
-fi
-# txzchk
-if [[ ! -e txzchk ]]; then
-    echo "$0: ERROR: txzchk file not found" 1>&2
-    exit 12
-fi
-if [[ ! -f txzchk ]]; then
-    echo "$0: ERROR: txzchk is not a regular file" 1>&2
-    exit 12
-fi
-if [[ ! -x txzchk ]]; then
-    echo "$0: ERROR: txzchk is not executable" 1>&2
-    exit 12
-fi
-# chkentry_test.sh
-if [[ ! -e test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh file not found" 1>&2
-    exit 13
-fi
-if [[ ! -f test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not a regular file" 1>&2
-    exit 13
-fi
-if [[ ! -x test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not executable" 1>&2
-    exit 13
-fi
-# test_JSON
-if [[ ! -e ./test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: ./test_JSON file not found" 1>&2
-    exit 14
-fi
-if [[ ! -d ./test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: ./test_ioccc/test_JSON is not a directory" 1>&2
-    exit 14
-fi
-if [[ ! -r ./test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: ./test_ioccc/test_JSON is not readable directory" 1>&2
-    exit 14
-fi
-# chkentry
-if [[ ! -e chkentry ]]; then
-    echo "$0: ERROR: chkentry file not found" 1>&2
-    exit 15
-fi
-if [[ ! -f chkentry ]]; then
-    echo "$0: ERROR: chkentry is not a regular file" 1>&2
-    exit 15
-fi
-if [[ ! -x chkentry ]]; then
-    echo "$0: ERROR: chkentry is not executable" 1>&2
-    exit 15
-fi
-# test_txzchk
-if [[ ! -e test_ioccc/test_txzchk ]]; then
-    echo "$0: ERROR: test_ioccc/test_txzchk file not found" 1>&2
-    exit 16
-fi
-if [[ ! -d test_ioccc/test_txzchk ]]; then
-    echo "$0: ERROR: test_ioccc/test_txzchk is not a directory" 1>&2
-    exit 16
-fi
-if [[ ! -r test_ioccc/test_txzchk ]]; then
-    echo "$0: ERROR: test_ioccc/test_txzchk is not readable directory" 1>&2
-    exit 16
-fi
-
 # clear log file
 #
 rm -f "$LOGFILE"
@@ -312,11 +141,165 @@ rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -e "$LOGFILE" ]]; then
     echo "$0: ERROR: couldn't create log file: $LOGFILE" 1>&2
-    exit 17
+    exit 5
 fi
 if [[ ! -w "$LOGFILE" ]]; then
     echo "$0: ERROR: log file is not writable: $LOGFILE" 1>&2
-    exit 17
+    exit 5
+fi
+
+# firewall - verify we have the required executables and needed data file(s)
+echo "Checking for required files and directories" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+
+# iocccsize_test.sh
+if [[ ! -e test_ioccc/iocccsize_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/iocccsize_test.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f test_ioccc/iocccsize_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/iocccsize_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x test_ioccc/iocccsize_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/iocccsize_test.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# dbg_test
+if [[ ! -e dbg/dbg_test ]]; then
+    echo "$0: ERROR: dbg_test file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f dbg/dbg_test ]]; then
+    echo "$0: ERROR: dbg_test is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x dbg/dbg_test ]]; then
+    echo "$0: ERROR: dbg_test is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# mkiocccentry_test.sh
+if [[ ! -e test_ioccc/mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f test_ioccc/mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x test_ioccc/mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# jstr_test.sh
+if [[ ! -e jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# jnum_chk
+if [[ ! -e jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# dyn_test
+if [[ ! -e dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# jparse_test.sh
+if [[ ! -e jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# json_teststr.txt: for jparse_test.sh
+if [[ ! -e jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -r jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt is not readable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# txzchk
+if [[ ! -e txzchk ]]; then
+    echo "$0: ERROR: txzchk file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f txzchk ]]; then
+    echo "$0: ERROR: txzchk is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x txzchk ]]; then
+    echo "$0: ERROR: txzchk is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# chkentry_test.sh
+if [[ ! -e test_ioccc/chkentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chkentry_test.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f test_ioccc/chkentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x test_ioccc/chkentry_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# test_JSON
+if [[ ! -e ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_JSON file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -d ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_ioccc/test_JSON is not a directory" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -r ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_ioccc/test_JSON is not readable directory" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# chkentry
+if [[ ! -e chkentry ]]; then
+    echo "$0: ERROR: chkentry file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f chkentry ]]; then
+    echo "$0: ERROR: chkentry is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x chkentry ]]; then
+    echo "$0: ERROR: chkentry is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# test_txzchk
+if [[ ! -e test_ioccc/test_txzchk ]]; then
+    echo "$0: ERROR: test_ioccc/test_txzchk file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -d test_ioccc/test_txzchk ]]; then
+    echo "$0: ERROR: test_ioccc/test_txzchk is not a directory" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -r test_ioccc/test_txzchk ]]; then
+    echo "$0: ERROR: test_ioccc/test_txzchk is not readable directory" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+
+if [[ "$EXIT_CODE" -ne 0 ]]; then
+    echo | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: cannot continue" | tee -a -- "$LOGFILE"
+    exit "$EXIT_CODE"
 fi
 
 # start the test suite
