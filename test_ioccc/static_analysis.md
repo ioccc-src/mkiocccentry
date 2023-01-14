@@ -822,3 +822,27 @@ would not have to worry about it.
 ### See also
 
 This issue is noted in commit 1124e12ac68be62af9bb613652396f7055b7a3d7.
+
+
+## Issue: warning: default label in switch which covers all enumeration values
+### Status: ignore
+
+### Example
+
+```c
+dyn_array.c:1105:2: warning: default label in switch which covers all enumeration values [-Wcovered-switch-default]
+        default:
+        ^
+```
+
+### Solution
+
+The problem clang is having is that all enum values are already handled so
+there's no need for default. But what happens if someone updates the enum to
+have a new value which would be an error that the default actually handles? It
+would no longer be an error even though it is. Thus we ignore this one too.
+
+
+### See also
+
+Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
