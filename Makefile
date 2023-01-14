@@ -358,13 +358,13 @@ bug_report: bug_report.sh
 bug_report-tx: bug_report.sh
 	${S} echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x"
 	${S} echo
-	-${Q} ./bug_report.sh -t -x
+	${Q} ./bug_report.sh -t -x
 	${S} echo
 	${S} echo "${OUR_NAME}: ending test of bug_report.sh -t -x"
 
 bug_report-txl: bug_report.sh
 	${S} echo "${OUR_NAME}: make $@: starting test of bug_report.sh -t -x -l"
-	-${Q} ./bug_report.sh -t -x -l
+	${Q} ./bug_report.sh -t -x -l
 	${S} echo "${OUR_NAME}: ending test of bug_report.sh -t -x -l"
 
 # slower more verbose build environment sanity check
