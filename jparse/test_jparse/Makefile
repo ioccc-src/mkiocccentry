@@ -339,9 +339,10 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if [[ ! -x ./jparse_test.sh ]]; then \
+	${Q} if [[ ! -x ./jparse_test.sh ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./jparse_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo "./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt"; \
 	    ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt; \

@@ -616,7 +616,7 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

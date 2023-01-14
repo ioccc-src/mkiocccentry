@@ -556,6 +556,22 @@ prep: test_ioccc/prep.sh
 		exit $$EXIT_CODE; \
 	    fi
 
+# a slower version of prep that does not write to a log file so one can see the
+# full details.
+slow_prep: test_ioccc/prep.sh
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_ioccc/prep.sh; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
+		echo; \
+		echo "make $@: see ${BUILD_LOG} for build details"; \
+		echo; \
+		exit $$EXIT_CODE; \
+	    fi
+
+
 # make build release pull
 #
 # Things to do before a release, forming a pull request and/or updating the
@@ -790,11 +806,11 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	-${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	-${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	-${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	-${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

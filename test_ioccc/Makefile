@@ -380,9 +380,10 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if [[ ! -x ./ioccc_test.sh ]]; then \
-	    echo "${OUR_NAME}: ERROR: executable not found: .//ioccc_test.sh" 1>&2; \
+	${Q} if [[ ! -x ./ioccc_test.sh ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: ./ioccc_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo ./ioccc_test.sh; \
 	    ./ioccc_test.sh; \
