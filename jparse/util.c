@@ -3888,7 +3888,7 @@ malloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(180, __func__, "filename is NULL");
+	err(179, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3905,7 +3905,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(181, __func__, "strdup of filename failed: %s", filename);
+	    errp(180, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3923,7 +3923,7 @@ malloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(182, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
+	    errp(181, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3933,7 +3933,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(183, __func__, "snprintf returned: %zu < 0", len);
+	    errp(182, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3942,7 +3942,7 @@ malloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(184, __func__, "function attempted to return NULL");
+	errp(183, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3968,7 +3968,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(185, __func__, "given NULL str");
+	err(184, __func__, "given NULL str");
 	not_reached();
     }
 

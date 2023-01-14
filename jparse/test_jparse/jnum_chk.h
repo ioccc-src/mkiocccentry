@@ -80,7 +80,9 @@ static const char * const usage_msg =
 /*
  * globals
  */
+#if !defined(JNUM_TEST)
 static bool quiet = false;				/* true ==> quiet mode */
+#endif
 
 /*
  * externals

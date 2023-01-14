@@ -411,13 +411,94 @@ static void usage(int exitcode, char const *prog, char const *str, int expected,
 
 The solution is to add an include guard to the file. It would not be a good
 solution to create a header file for `jnum_test` because even if this would not
-be unnecessary overkill these variables are also used in jnum_chk.c as well.
+be unnecessary overkill these variables are also used in `jnum_chk.c` as well.
 
-Now running from the main directory `make clobber all` will work.
+Now running from the main directory `make clobber all` will work - under some
+systems. There's one more step but since it's longer we describe it in the next
+example.
 
 ### See also
 
-These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc.
+These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc and the
+subsequent problem was fixed in commit 147e4b5783833e2245a3c925a3392fcbc732846d
+as described next.
+
+
+### Example
+
+After the above fix (see commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc) under
+some systems we run into a problem where a number of steps fail in `make prep`.
+What you'll see is something like:
+
+
+```sh
+$ make prep
+make_action 10 clobber OK
+make_action 11 all ERROR exit code 2
+make_action 12 depend OK
+make_action 13 clean_mkchk_sem OK
+make_action 14 all_sem_ref OK
+make_action 15 mkchk_sem OK
+make_action 16 all ERROR exit code 2
+make_action 18 parser OK
+make_action 19 all ERROR exit code 2
+make_action 20 load_json_ref OK
+make_action 21 use_json_ref OK
+make_action 22 clean_generated_obj OK
+make_action 23 all ERROR exit code 2
+make_action 24 bug_report-txl OK
+make_action 25 shellcheck ERROR exit code 2
+make_action 26 seqcexit ERROR exit code 2
+make_action 27 picky ERROR exit code 2
+make_action 28 tags ERROR exit code 2
+make_action 29 check_man OK
+make_action 30 all ERROR exit code 2
+make_action 31 test OK
+One or more tests failed:
+
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+	make -f ./Makefile non-zero exit code: 2
+
+See test_ioccc/test_ioccc.log for more details.
+
+make prep: ERROR: prep.sh exit code: 30
+
+make prep: see build.log for build details
+
+make: *** [prep] Error 30
+```
+
+Now as one can see `make all` fails so running it manually we see:
+
+
+```c
+$ make all
+cc -std=gnu11 -O0 -g -pedantic -Wall -Wextra -Werror  -I../.. jnum_test.c -c
+In file included from jnum_test.c:37:0:
+jnum_chk.h:83:13: error: 'quiet' defined but not used [-Werror=unused-variable]
+ static bool quiet = false;    /* true ==> quiet mode */
+             ^
+```
+
+### Solution
+
+The problem is that because `quiet` is not used in `jnum_test.c` we have to add
+an include guard for `quiet` as well. This was not picked up under macOS but it
+seems to be a problem under linux. This in turn means that the rules above that
+failed all depend on `make all` which as can be seen above would clearly fail!
+
+### See also
+
+This issue, which was created by commit
+89f8a4b9d9b6f3533b3577398dbd559f09e27ecc, was fixed in commit
+147e4b5783833e2245a3c925a3392fcbc732846d.
 
 
 ## Issue: warning: 'return' will never be executed
