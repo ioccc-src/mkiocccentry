@@ -713,3 +713,82 @@ want to spoil that's all we'll say. We won't even answer if your guess is right
 or wrong.
 
 Should this be found in another file please do report it.
+
+
+## Issue: warning: cast from `'const foo *'` to `'foo *'` drops const qualifier
+### Status: fixed (see below)
+### Example
+
+```c
+util.c:3495:19: warning: cast from 'const char *' to 'char *' drops const qualifier [-Wcast-qual]
+        *first = (char *)ptr+i;
+```
+
+### Solution
+
+In this case we do not want to modify `ptr` but we do need to modify `first` (or
+what it points to) so `first` cannot be const.
+
+### Example
+
+```c
+./jparse.l:542:41: warning: cast from 'const char *' to 'void *' drops const qualifier [-Wcast-qual]
+        (void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+                                               ^
+```
+
+### Solution
+
+In this case we can simply remove the cast and change the function
+`fprint_line_buf()` so that the `buf` variable is a pointer to a const void.
+After this we must run `make clobber parser-o all`.
+
+
+### Example
+
+```c
+
+json_sem.c:2416:81: warning: cast from 'const struct json *' to 'struct json *' drops const qualifier [-Wcast-qual]
+            fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_count_err->node));
+                                                                                       ^
+json_sem.c:2561:81: warning: cast from 'const struct json *' to 'struct json *' drops const qualifier [-Wcast-qual]
+            fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_val_err->node));
+                                                                                       ^
+```
+
+
+### Solution
+
+Here we change the function `json_item_type_name()` to take a pointer to a `const
+struct json` and remove the cast.
+
+
+### Example
+
+```c
+jsemtblgen.c:639:32: warning: cast from 'const void *' to 'struct json_sem *' drops const qualifier [-Wcast-qual]
+    first = (struct json_sem *)a;
+                               ^
+jsemtblgen.c:640:33: warning: cast from 'const void *' to 'struct json_sem *' drops const qualifier [-Wcast-qual]
+    second = (struct json_sem *)b;
+                                ^
+```
+
+### Solution
+
+Here there was no need for these to be non-const so we changed `first` and
+`second` to be const and then changed the casts to be
+
+
+```c
+    first = (const struct json_sem *)a;
+    second = (const struct json_sem *)b;
+```
+
+and rerun `make clobber all test`.
+
+
+### See also
+
+With the exception of the one noted that we cannot change all of these were
+fixed in commit c94bd325bb1f97dce57f636b17a1309426e4d697.

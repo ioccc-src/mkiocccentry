@@ -882,7 +882,7 @@ json_type_name(enum item_type type)
  * NOTE: This string returned is read only: It's not allocated on the stack.
  */
 char const *
-json_item_type_name(struct json *node)
+json_item_type_name(const struct json *node)
 {
     char const *name = "JTYPE_UNSET";
 

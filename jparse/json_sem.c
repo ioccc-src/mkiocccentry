@@ -2413,7 +2413,7 @@ fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *se
 	    /*
 	     * print JSON node type
 	     */
-	    fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_count_err->node));
+	    fpr(stream, __func__, "node type: %s ", json_item_type_name(sem_count_err->node));
 
 	    /*
 	     * case: JSON node is a member, print name
@@ -2558,7 +2558,7 @@ fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_va
 	    /*
 	     * print JSON node type
 	     */
-	    fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_val_err->node));
+	    fpr(stream, __func__, "node type: %s ", json_item_type_name(sem_val_err->node));
 
 	    /*
 	     * case: JSON node is a member, print name

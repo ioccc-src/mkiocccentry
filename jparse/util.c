@@ -3036,7 +3036,7 @@ clearerr_or_fclose(FILE *stream)
  *	EOF ==> write error or NULL buf
  */
 ssize_t
-fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
+fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 {
     size_t count = 0;		/* number of characters in line */
     int delayed_errno = 0;	/* for printing warning at end of function if necessary */
@@ -3087,7 +3087,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 	/*
 	 * print based on the byte value
 	 */
-	c = (int)(((uint8_t *)buf)[i]);
+	c = (int)(((const uint8_t *)buf)[i]);
 
 	/*
 	 * case: character is non-NUL start or non-NUL end or non-ASCII character

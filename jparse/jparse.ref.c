@@ -2632,7 +2632,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** BEGIN PARSE\n");
 	fprstr(stderr, "<\n");
-	(void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+	(void) fprint_line_buf(stderr, ptr, len, 0, 0);
 	fprstr(stderr, "\n>\n");
     }
 

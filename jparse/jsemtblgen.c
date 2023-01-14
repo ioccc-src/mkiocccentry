@@ -621,9 +621,9 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 static int
 sem_cmp(void const *a, void const *b)
 {
-    struct json_sem *first = NULL;	/* 1st entry to compare */
-    struct json_sem *second = NULL;	/* 2nd entry to compare */
-    int cmp = 0;			/* byte string comparison */
+    const struct json_sem *first = NULL;	/* 1st entry to compare */
+    const struct json_sem *second = NULL;	/* 2nd entry to compare */
+    int cmp = 0;				/* byte string comparison */
 
     /*
      * firewall
@@ -636,8 +636,8 @@ sem_cmp(void const *a, void const *b)
 	err(19, __func__, "b is NULL");
 	not_reached();
     }
-    first = (struct json_sem *)a;
-    second = (struct json_sem *)b;
+    first = (const struct json_sem *)a;
+    second = (const struct json_sem *)b;
 
     /*
      * compare depth in reverse order
