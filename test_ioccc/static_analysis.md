@@ -886,3 +886,27 @@ compiler and thus this warning can be ignored.
 ### See also
 
 Addressed in commit c5e902b1dc6b048ef95729f4e10b7f9c589b4bc1.
+
+
+## Issue: warning: signed shift result sets the sign bit of the shift expression's type  and becomes negative
+### Status: ignore
+
+### Example
+
+```c
+json_parse.c:1918:35: warning: signed shift result (0x8000000000000000) sets the sign bit of the shift expression's type ('ssize_t' (aka 'long')) and becomes negative [-Wshift-sign-overflow]
+        if (item->as_maxint >= (intmax_t)SSIZE_MIN && item->as_maxint <= (intmax_t)SSIZE_MAX) {
+                                         ^~~~~~~~~
+./util.h:101:32: note: expanded from macro 'SSIZE_MIN'
+#define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+                    ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+The purpose of this macro is to get the signed minimum value and so this is
+intended and thus can be ignored.
+
+### See also
+
+Addressed in commit f9a496be4ec48388daf751826ba8345e874726d7.
