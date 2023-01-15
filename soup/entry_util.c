@@ -2446,7 +2446,7 @@ test_authors(int author_count, struct author const *authorp)
      * initialize a zeroized array of author numbers
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    author_nums = calloc(author_count, sizeof(int));
+    author_nums = calloc((size_t)author_count, sizeof(int));
     if (author_nums == NULL) {
 	warnp(__func__, "calloc of %d ints failed", author_count);
 	return false;

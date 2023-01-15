@@ -436,7 +436,7 @@ json_fprintf_str(FILE *stream, char const *str)
      * print name, JSON encoded
      */
     for (p=str; *p != '\0'; ++p) {
-	if (json_putc(*p, stream) != true) {
+	if (json_putc((uint8_t const)*p, stream) != true) {
 	    warn(__func__, "json_putc #0 error");
 	    return false;
 	}

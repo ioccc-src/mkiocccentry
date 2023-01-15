@@ -2240,7 +2240,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     /*
      * count errors, if any
      */
-    err = dyn_array_tell(count_err) + dyn_array_tell(val_err);
+    err = (uintmax_t)dyn_array_tell(count_err) + (uintmax_t)dyn_array_tell(val_err);
 
     /*
      * report on the number of errors found
@@ -2273,7 +2273,7 @@ free_count_err(struct dyn_array *count_err)
     /*
      * free each semantic count error if malloced
      */
-    count = dyn_array_tell(count_err);
+    count = (uintmax_t)dyn_array_tell(count_err);
     for (i=0; i < count; ++i) {
 
 	/*
@@ -2319,7 +2319,7 @@ free_val_err(struct dyn_array *val_err)
     /*
      * free each semantic count error if malloced
      */
-    count = dyn_array_tell(val_err);
+    count = (uintmax_t)dyn_array_tell(val_err);
     for (i=0; i < count; ++i) {
 
 	/*

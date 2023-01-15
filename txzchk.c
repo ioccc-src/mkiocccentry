@@ -1081,10 +1081,11 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
 	warn("txzchk", "%s: files count <= 0: %jd", txzpath, *count);
     }
     /* check for too many files */
-    if (*count - tarball.abnormal_files > MAX_FILE_COUNT) {
+    if (*count - (intmax_t)tarball.abnormal_files > MAX_FILE_COUNT) {
 	++tarball.total_feathers;
 	++tarball.invalid_files_count;
-	warn("txzchk", "%s: too many files: %jd > %jd", txzpath, *count - tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
+	warn("txzchk", "%s: too many files: %jd > %jd", txzpath,
+		*count - (intmax_t)tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
     }
 }
 /*

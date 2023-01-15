@@ -1717,7 +1717,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * duplicate the line
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(len+1+1, sizeof(char));
+    ret = calloc((size_t)len+1+1, sizeof(char));
     if (ret == NULL) {
 	errp(151, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
@@ -1928,7 +1928,7 @@ read_all(FILE *stream, size_t *psize)
 	if (last_read > 0) {
 	    if (last_read != READ_ALL_CHUNK) {
 		/* update the dynamic array size based on amount of read in last read */
-		moved = dyn_array_seek(array, last_read-READ_ALL_CHUNK, SEEK_CUR);
+		moved = dyn_array_seek(array, (off_t)last_read-READ_ALL_CHUNK, SEEK_CUR);
 		if (moved == true) {
 		    ++move_cycle;
 		    dbg(DBG_VVVHIGH, "dyn_array_seek() caused a realloc data move, count: %ld", move_cycle);
@@ -1978,7 +1978,7 @@ read_all(FILE *stream, size_t *psize)
      * report the amount of data actually read, if requested
      */
     if (psize != NULL) {
-	*psize = used;
+	*psize = (size_t)used;
     }
 
     /*
@@ -3369,7 +3369,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
     if (success == false) {
 	return EOF;
     }
-    return count;
+    return (ssize_t)count;
 }
 
 
@@ -3395,7 +3395,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 ssize_t
 fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end)
 {
-    size_t count = 0;		/* number of characters in line */
+    ssize_t count = 0;		/* number of characters in line */
     int saved_errno = 0;	/* saved errno to restore before returning */
     size_t len = 0;		/* string length */
 

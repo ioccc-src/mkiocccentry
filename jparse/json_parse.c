@@ -228,7 +228,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
-    size_t mlen = 0;	    /* length of allocated encoded string */
+    ssize_t mlen = 0;	    /* length of allocated encoded string */
     char *p;		    /* next place to encode */
     size_t i;
 
@@ -254,7 +254,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     /*
      * malloc the encoded string
      */
-    ret = malloc(mlen + 1 + 1);
+    ret = malloc((size_t)mlen + 1 + 1);
     if (ret == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
@@ -305,7 +305,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju)",
 		     (uintmax_t)len, (uintmax_t)mlen);
     if (retlen != NULL) {
-	*retlen = mlen;
+	*retlen = (size_t)mlen;
     }
     return ret;
 }

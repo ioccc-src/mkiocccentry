@@ -1116,3 +1116,154 @@ It is TBD if we will change the `len` to be unsigned.
 ### See also
 
 Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.
+
+
+## Issue: warning: implicit conversion changes signedness
+### Status: fixed, TBD
+### Example
+
+
+```c
+txzchk.c:1084:9: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+    if (*count - tarball.abnormal_files > MAX_FILE_COUNT) {
+        ^~~~~~ ~
+txzchk.c:1087:59: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+        warn("txzchk", "%s: too many files: %jd > %jd", txzpath, *count - tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
+                                                                 ^~~~~~ ~
+```
+
+### Solution
+
+Cast the `tarball.abnormal_files` to a `intmax_t` as the ints in `sum_and_count`
+have to be signed but we want the count of the abnormal files to be unsigned
+otherwise.
+
+
+### Example
+
+```c
+utf8_posix_map.c:1707:46: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+            if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+                ~~~~~~~~~~~                      ~~~^~~~~~~~~~~~
+
+```
+
+### Solution
+
+This was already discussed in another issue. We can cast it to a `uintmax_t` and
+we have done so.
+
+
+### Example
+
+```c
+./jparse.y:786:49: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+        yyval = parse_json_string(yyget_text(scanner), yyget_leng(scanner));
+                ~~~~~~~~~~~~~~~~~                      ^~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+As far as this one goes we can cast it to a `size_t` and we have done so.
+
+
+### Example
+
+```c
+foo.c:142:49: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p) {
+                                     ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~ ~
+foo.c:275:25: warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+    no_comment = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
+                 ~~~~~ ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+We fixed this with some casts.
+
+
+### Example
+
+```c
+dbg.c:468:36: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+                                  ~^~~
+dbg.c:469:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    if ((size_t)ret2 >= size-ret) {
+                            ~^~~
+```
+### Solution
+
+We can cast the `ret` to be a `size_t` which is the same type as the `size`
+variable.
+
+
+```c
+json_parse.c:300:14: warning: implicit conversion changes signedness: 'long' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+    mlen = p - ret; /* paranoia */
+         ~ ~~^~~~~
+```
+
+### Solution
+
+Change the type of `mlen` to `ssize_t`. This does trigger two other warnings,
+however:
+
+```c
+json_parse.c:257:27: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+    ret = malloc(mlen + 1 + 1);
+          ~~~~~~ ~~~~~~~~~^~~
+json_parse.c:308:12: warning: implicit conversion changes signedness: 'ssize_t' (aka 'long') to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+        *retlen = mlen;
+                ~ ^~~~
+```
+
+Casting the `mlen` back to a `size_t` works but whether `retlen` should be
+changed to a pointer to a `ssize_t` is TBD.
+
+
+### Example
+
+```
+chk_validate.c:2852:30: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+    test = test_rule_2b_size(*value);
+           ~~~~~~~~~~~~~~~~~ ^~~~~~
+```
+
+### Solution
+
+We can use the recently added function `sem_member_value_size_t` (see commit
+e59f15db96dc0893341a985825fbb6028525a278)  and change the type of
+`value` to be a pointer to a `size_t` instead of a pointer to an `int`.
+
+
+### Example
+
+```c
+dyn_array.c:145:31: warning: implicit conversion changes signedness: 'unsigned long' to 'intmax_t' (aka 'long') [-Wsign-conversion]
+    old_bytes = old_allocated * array->elm_size;
+              ~ ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+dyn_array.c:145:17: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+    old_bytes = old_allocated * array->elm_size;
+                ^~~~~~~~~~~~~ ~
+dyn_array.c:147:46: warning: implicit conversion changes signedness: 'unsigned long' to 'intmax_t' (aka 'long') [-Wsign-conversion]
+    new_bytes = (new_allocated+array->chunk) * array->elm_size;
+              ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+dyn_array.c:147:31: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+    new_bytes = (new_allocated+array->chunk) * array->elm_size;
+                 ~~~~~~~~~~~~~^~~~~~~~~~~~~  ~
+dyn_array.c:196:36: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+            memset(p, 0, (elms_to_allocate+array->chunk) * array->elm_size);
+                          ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~  ~
+```
+
+### Solution
+
+This is TBD later.
+
+### See also
+
+With the exception of that in `dyn_array` code this was all fixed in commit
+1a71f4f8c24e6c4859abb9b457e321d8aff76579 with the help of commit
+e59f15db96dc0893341a985825fbb6028525a278.
