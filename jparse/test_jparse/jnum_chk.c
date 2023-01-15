@@ -638,7 +638,7 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	 * case strict: test for exact match
 	 */
 	if (strict == true) {
-	    if (val_a != val_b) {
+	    if ((intmax_t)val_a != (intmax_t)val_b) {
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg != item->as_%s: %.22Lg",
 			       testnum,
 			       type, val_a,

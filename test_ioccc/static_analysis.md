@@ -956,3 +956,38 @@ cast to an `int8_t`.
 ### See also
 
 Addressed in commit f75b1af2997bb43d4f3404e1b001591b287bf7b7.
+
+
+## Issue: warning: comparing floating point with == or != is unsafe
+### Status: fixed
+
+### Examples
+
+```c
+dyn_test.c:122:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_test.c:159:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_test.c:163:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i+1000000)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+and
+
+```c
+jnum_chk.c:641:16: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+            if (val_a != val_b) {
+                ~~~~~ ^  ~~~~~
+```
+
+### Solution
+
+Here we can cast both sides of each to an `intmax_t`.
+
+
+### See also
+
+Fixed in commit 22527837b43b258916e2c6250f95823fb990db36.

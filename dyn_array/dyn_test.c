@@ -119,7 +119,7 @@ main(int argc, char *argv[])
      * verify values
      */
     for (i = 0; i < 1000000; ++i) {
-	if ((double) i != dyn_array_value(array, double, i)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
 	    err = true;
 	}
@@ -156,11 +156,11 @@ main(int argc, char *argv[])
      * verify values again
      */
     for (i = 0; i < 1000000; ++i) {
-	if ((double) i != dyn_array_value(array, double, i)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
 	    err = true;
 	}
-	if ((double) i != dyn_array_value(array, double, i+1000000)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i+1000000)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i+1000000));
 	    err = true;
 	}
