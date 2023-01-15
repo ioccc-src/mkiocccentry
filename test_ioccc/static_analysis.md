@@ -1019,3 +1019,100 @@ cast it to a double to silence the warning.
 ### See also
 
 Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. 
+
+
+## Issue: warning: implicit conversion loses integer precision
+### Status: fixed
+
+### Example
+
+```c
+utf8_posix_map.c:1601:25: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+        hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
+                             ~ ^~~~~~~~~~~~~~~~~~~~~~~~
+utf8_posix_map.c:1602:26: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+        hmap[i].posix_str_len = strlen(hmap[i].posix_str);
+                              ~ ^~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+These variables in the struct need to be signed as `-1` signifies that it's not
+been initialised yet. Now since `strlen()` returns an unsigned int we simply
+cast the return value of `strlen()` to an int.
+
+
+### Example
+
+```c
+txzchk.c:1555:22: warning: implicit conversion loses integer precision: 'uintmax_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+        add_txz_line(linep, line_num);
+        ~~~~~~~~~~~~        ^~~~~~~~
+```
+
+### Solution
+
+The variable `line_num` is a `uintmax_t` but the function was expecting an
+`int`. The struct also had it as an `int` but since it should be unsigned and
+since we are being careful to have the maximum size the `int` was changed to
+`uintmax_t`.
+
+### Example
+
+```c
+verge.c:103:19: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+    ver1_levels = allocate_vers(ver1, &vlevel1);
+                ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+verge.c:112:19: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+    ver2_levels = allocate_vers(ver2, &vlevel2);
+                ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+Although we could change the type of `ver1_levels` and `ver2_levels` this would
+introduce the complication of other code so we simply cast the `allocate_vers()`
+calls to an int.
+
+
+### Example
+
+```c
+dyn_array.c:878:50: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+        data_first_offset = (uint8_t *)(array_to_add_p) - (uint8_t *)(array->data);
+                          ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_array.c:879:48: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+        data_last_offset = (uint8_t *)(last_add_byte) - (uint8_t *)(array->data);
+                         ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+As this is well tested code and since changing this would possibly introduce
+other complications we can ignore this for now. It is TBD if this will be fixed
+at a later date.
+
+
+### Example
+
+```c
+son_parse.c:3265:17: warning: implicit conversion loses integer precision: 'intmax_t' (aka 'long') to 'int' [-Wshorten-64-to-32]
+    item->len = dyn_array_tell(item->s);
+              ~ ^~~~~~~~~~~~~~~~~~~~~~~
+./../dyn_array/dyn_array.h:118:67: note: expanded from macro 'dyn_array_tell'
+#define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+```
+
+### Solution
+
+In the file `json_parse.h` we see that various structs of json types have an
+`int len`. Perhaps it should have been an unsigned int but if so this would
+introduce the problem of `dyn_array_tell` being signed but the `len` not being
+signed. Thus to fix this we cast the `dyn_array_tell` call to be an int.
+
+It is TBD if we will change the `len` to be unsigned.
+
+### See also
+
+Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.

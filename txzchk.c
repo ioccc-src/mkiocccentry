@@ -1643,7 +1643,7 @@ has_special_bits(char const *str)
  * This function returns void.
  */
 static void
-add_txz_line(char const *str, int line_num)
+add_txz_line(char const *str, uintmax_t line_num)
 {
     struct txz_line *line;
 
@@ -1711,7 +1711,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
 
     for (line = txz_lines; line != NULL; line = line->next) {
 	if (line->line == NULL) {
-	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
+	    warn("txzchk", "encountered NULL string on line %ju", line->line_num);
 	    ++tarball.total_feathers;
 	    continue;
 	}

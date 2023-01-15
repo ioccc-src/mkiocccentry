@@ -1598,8 +1598,8 @@ check_utf8_posix_map(void)
 	}
 
 	/* fill in string lengths */
-	hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
-	hmap[i].posix_str_len = strlen(hmap[i].posix_str);
+	hmap[i].utf8_str_len = (int)strlen(hmap[i].utf8_str);
+	hmap[i].posix_str_len = (int)strlen(hmap[i].posix_str);
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
 	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {

@@ -161,7 +161,7 @@ static struct txz_file *txz_files;	    /* linked list of the files in the tarbal
 struct txz_line
 {
     char *line;				/* copy of the line */
-    int line_num;			/* line number */
+    uintmax_t line_num;			/* line number */
     struct txz_line *next;		/* pointer to the next line or NULL if last line */
 };
 
@@ -219,7 +219,7 @@ static void check_txz_file(char const *txzpath, char const *dir_name, struct txz
 static void check_all_txz_files(char const *dir_name);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
-static void add_txz_line(char const *str, int line_num);
+static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
 static void free_txz_lines(void);
 static struct txz_file *alloc_txz_file(char const *path, intmax_t length);

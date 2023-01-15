@@ -3262,7 +3262,7 @@ json_create_object(void)
     /*
      * initialize accounting for the object
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
@@ -3354,7 +3354,7 @@ json_object_add_member(struct json *node, struct json *member)
     /*
      * update accounting for the object
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
 }
@@ -3411,7 +3411,7 @@ json_create_elements(void)
     /*
      * initialize accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
@@ -3514,7 +3514,7 @@ json_elements_add_value(struct json *node, struct json *value)
     /*
      * update accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
 }
@@ -3574,7 +3574,7 @@ json_create_array(void)
     /*
      * initialize accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 

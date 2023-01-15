@@ -506,7 +506,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * scan the blob
      */
-    bs = yy_scan_bytes(ptr, len, scanner);
+    bs = yy_scan_bytes(ptr, (int)len, scanner);
     if (bs == NULL) {
 	/*
 	 * if unable to scan the bytes it indicates an internal error and

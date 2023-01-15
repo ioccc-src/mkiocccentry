@@ -100,7 +100,7 @@ main(int argc, char *argv[])
     /*
      * convert first version string
      */
-    ver1_levels = allocate_vers(ver1, &vlevel1);
+    ver1_levels = (int)allocate_vers(ver1, &vlevel1);
     if (ver1_levels <= 0) {
 	err(2, program, "first version string is invalid"); /*ooo*/
 	not_reached();
@@ -109,7 +109,7 @@ main(int argc, char *argv[])
     /*
      * convert second version string
      */
-    ver2_levels = allocate_vers(ver2, &vlevel2);
+    ver2_levels = (int)allocate_vers(ver2, &vlevel2);
     if (ver2_levels <= 0) {
 	err(2, program, "second version string is invalid"); /*ooo*/
 	not_reached();
