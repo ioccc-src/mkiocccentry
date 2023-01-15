@@ -1395,7 +1395,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf-val: %e\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td-val: %le\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1417,7 +1417,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf-val: %f\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td-val: %lf\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1468,7 +1468,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf+val: %e\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td+val: %le\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1490,7 +1490,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf+val: %f\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td+val: %lf\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));

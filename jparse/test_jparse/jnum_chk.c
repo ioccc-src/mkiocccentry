@@ -401,7 +401,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
     /* test: float */
     check_fval(&test_error, "float", testnum,
 			    test_result[testnum].float_sized, item->float_sized,
-			    test_result[testnum].as_float, item->as_float,
+			    (double)test_result[testnum].as_float, (double)item->as_float,
 			    test_result[testnum].as_float_int, item->as_float_int, strict);
 
     /* test: double */

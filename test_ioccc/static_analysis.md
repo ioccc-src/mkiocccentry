@@ -991,3 +991,31 @@ Here we can cast both sides of each to an `intmax_t`.
 ### See also
 
 Fixed in commit 22527837b43b258916e2c6250f95823fb990db36.
+
+
+## Issue: warning: implicit conversion increases floating-point precision: 'float' to 'double'
+### Status: fixed
+
+### Example
+
+```c
+json_parse.c:2342:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
+        ~~~                                                             ~~~~~~^~~~~~~~
+json_parse.c:2343:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
+        ~~~                                                             ~~~~~~^~~~~~~~
+json_parse.c:2344:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+        ~~~
+```
+
+### Solution
+
+As this is for implicit conversion only and since it will become a double we can
+cast it to a double to silence the warning.
+
+
+### See also
+
+Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. 

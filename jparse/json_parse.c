@@ -2339,9 +2339,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     } else {
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, (double)item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, (double)item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, (double)item->as_float);
 	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", booltostr(item->as_float_int));
     }
 
