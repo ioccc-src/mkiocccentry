@@ -9,21 +9,29 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "27 November 2022" "jsemcgen.sh" "IOCCC tools"
+.TH jsemcgen.sh 8 "15 January 2023" "jsemcgen.sh" "jparse tools"
 .SH NAME
 jsemcgen.sh \- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
 .SH SYNOPSIS
 \fBjsemcgen.sh\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] [\-I] [\-N name] [\-D def_func] [\-P prefix] [\-1 func] [\-S func] [\-B func] [\-0 func] [\-M func] [\-O func] [\-A func] [\-U func] [\-j jsemtblgen] [\-p patch_tool] file.json head patch tail out
 .SH DESCRIPTION
-This tool is a wrapper to the \fBjsemtblgen(8)\fP tool. Along with \fBall_ref(8)\fP these tools, in the case of the IOCCC, create the JSON semantics tables for the \fBchkentry(1)\fP tool.
-As the \fBchkentry(1)\fP tool is a vitally important part of the IOCCC judging process these tools are also vital in running the IOCCC but at a lower level.
+This tool is a wrapper to the \fBjsemtblgen(8)\fP tool which itself creates JSON semantics tables.
+JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
+.PP
+In general, a JSON semantics table is an array of \fBstruct json_sem\fP that can be used to drive checks on the semantics of valid JSON.
+This can be done for any JSON file.
 .PP
 The \fIfile.json\fP file is expected to be a valid JSON file used to generate the initial JSON semantics table.
+.br
 The \fIhead\fP file is a file add to the beginning of the \fBjsemtblgen(8)\fP output (before patched \fBjsemtblgen(8)\fP output).
+.br
 The \fIpatch\fP file is a patch file to apply to the output of \fBjsemtblgen(8)\fP with \fIhead\fP and \fItail\fP.
+.br
 The \fItail\fP file is a file to add to the end of the \fBjsemtblgen(8)\fP output (after patching the \fBjsemtblgen(8)\fP output).
+.br
 The \fIout\fP argument is the \fBjsemtblgen(8)\fP output with possible head, tail and patch applied.
-If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP specify \fI.\fP instead.
+.PP
+If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP, you can specify \fI.\fP instead.
 .SH OPTIONS
 .TP
 \fB\-h\fP
@@ -85,17 +93,11 @@ Validate \fBJTYPE_ARRAY\fP JSON nodes with \fIfunc()\fP.
 \fB\-U \fIfunc\fP\fP
 Validate nodes with unknown types with \fIfunc()\fP.
 .TP
-\fB\--j \fIjsemtblgen\fP\fP
+\fB\-j \fIjsemtblgen\fP\fP
 Set path to \fBjsemtblgen(8)\fP.
-.RS
-This option is only used in this script.
-.RE
 .TP
 \fB\-p \fIpatch_tool\fP\fP
 Set path to the patch program.
-.RS
-This option is only used in this script.
-.RE
 .SH EXIT STATUS
 .TP
 0
@@ -124,12 +126,10 @@ Internal error.
 .SH NOTES
 .PP
 The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
-.PP
-This tool is needed in order to generate the JSON semantics table for \fBchkentry(1)\fP.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
 \fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH SEE ALSO
-\fBjsemtblgen(8)\fP, \fBchkentry(1)\fP, \fBall_ref(8)\fP
+\fBjsemtblgen(8)\fP
