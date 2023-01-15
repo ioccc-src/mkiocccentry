@@ -896,3 +896,63 @@ intended and thus can be ignored.
 ### See also
 
 Addressed in commit f9a496be4ec48388daf751826ba8345e874726d7.
+
+
+## Issue: warning: result of comparison is always true
+### Status: ignore
+
+### Examples
+
+
+```c
+json_parse.c:1879:64: warning: result of comparison 'intmax_t' (aka 'long') <= 9223372036854775807 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+                                                      ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
+json_parse.c:1879:22: warning: result of comparison 'intmax_t' (aka 'long') >= -9223372036854775808 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+            ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
+json_parse.c:1897:63: warning: result of comparison 'intmax_t' (aka 'long') <= 9223372036854775807 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+                                                     ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~
+json_parse.c:1897:22: warning: result of comparison 'intmax_t' (aka 'long') >= -9223372036854775808 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+            ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~
+
+```
+
+### Solution
+
+The purpose of this code is to find which int types the string, when converted to an
+int, will fit in. The way this code works is first converting it to an
+`intmax_t` (hence `as_maxint`) and then, if no errors, check each signed integer
+type range, and if it will fit, assign it as that type. For instance:
+
+```c
+        /* case int64_t: range check */
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+            item->int64_sized = true;
+            item->as_int64 = (int64_t)item->as_maxint;
+        }
+
+```
+
+It just so happens that on this system `intmax_t` is a `long` and so these cases
+are always true. Earlier in the file:
+
+
+```c
+        /* case int8_t: range check */
+        if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
+            item->int8_sized = true;
+            item->as_int8 = (int8_t)item->as_maxint;
+        }
+```
+
+This doesn't trigger the warning because it is not always true.
+When it is true, though, we set the `item->as_int8` to be `item->as_maxint`
+cast to an `int8_t`.
+
+
+### See also
+
+Addressed in commit f75b1af2997bb43d4f3404e1b001591b287bf7b7.
