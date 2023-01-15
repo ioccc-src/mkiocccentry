@@ -71,20 +71,6 @@ there might be some redundancy in your `CFLAGS` but we specify these explicitly
 as some of the flags will eventually change.
 
 
-### Using valgrind
-
-For valgrind, run with:
-
-```sh
-       valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
-           --leak-check=full --show-leak-kinds=all ./mkiocccentry ...
-```
-
-where `mkiocccentry` is the tool you wish to test and where the `...` are the
-arguments you wish to use.
-
-
-
 ### A note about the foo files and oebxergfB.h
 
 When it comes to these three files you should ignore any warnings. In the case
