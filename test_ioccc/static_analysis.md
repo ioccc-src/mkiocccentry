@@ -863,3 +863,26 @@ would no longer be an error even though it is. Thus we ignore this one too.
 ### See also
 
 Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
+
+
+## Issue: warning: include location '/usr/local/include' is unsafe for cross-compilation
+### Status: ignore
+
+### Example
+
+
+```sh
+$ make clobber all
+[...]
+warning: include location '/usr/local/include' is unsafe for cross-compilation [-Wpoison-system-directories]
+```
+
+### Solution
+
+This is a warning triggered under macOS but it is entirely bogus as we do not
+include that path in any of our files nor is it in any `-I` option to the
+compiler and thus this warning can be ignored.
+
+### See also
+
+Addressed in commit c5e902b1dc6b048ef95729f4e10b7f9c589b4bc1.
