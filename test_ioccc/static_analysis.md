@@ -1431,3 +1431,46 @@ This is a problem in the system header files and therefore we ignore it.
 ### See also
 
 Addressed in commit 5b8def79c2863c90bfd8225382eb522a9d122b13.
+
+
+## Issue: warning: empty expression statement has no effect; remove unnecessary ';'
+### Status: ignore
+### Example
+
+
+```c
+jparse.c:903:22: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                YY_DO_BEFORE_ACTION;
+                                   ^
+jparse.c:1318:34: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        yyg->yy_n_chars, num_to_read );
+                                                      ^
+```
+
+### Solution
+
+We cannot modify `jparse.c` but even if we could it probably does not matter so
+we ignore this.
+
+### Example
+
+```c
+iocccsize.c:122:60: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                            iocccsize_errx(4, "cannot parse -v arg: %s", optarg);
+                                                                                ^
+iocccsize.c:136:90: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        iocccsize_errx(6, "There is NO... Rule 6!  I'm not a number!  I'm a free(void *man)!"); /*ooo*/
+                                                                                                              ^
+iocccsize.c:157:55: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        iocccsize_errx(6, "fopen(%s) failed", argv[optind]); /*ooo*/
+                                                                           ^
+```
+
+### Solution
+
+This is something that must be dealt with by Landon but even so it probably does
+not matter so whether or not this will be fixed is TBD later.
+
+#### See also
+
+Addressed in commit 02f0496b809b18b28533b9a194586a2c2d3bec9b.
