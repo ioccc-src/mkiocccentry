@@ -162,9 +162,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
+C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
        jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
-H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
+H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
        jparse.tab.ref.h
 
@@ -208,7 +208,7 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -326,7 +326,7 @@ EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= jparse.a
-EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jnum_gen jstrdecode jstrencode
+EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -354,7 +354,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
@@ -438,12 +438,6 @@ jstrdecode: jstrdecode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
-
-jnum_gen.o: jnum_gen.c jnum_gen.h
-	${CC} ${CFLAGS} jnum_gen.c -c
-
-jnum_gen: jnum_gen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -601,10 +595,10 @@ use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
-rebuild_jnum_test: jnum_gen test_jparse/jnum.testset jnum_header.c
+rebuild_jnum_test: test_jparse/jnum_gen test_jparse/jnum.testset test_jparse/jnum_header.c
 	${RM} -f test_jparse/jnum_test.c
-	${CP} -f -v jnum_header.c test_jparse/jnum_test.c
-	./jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
+	${CP} -f -v test_jparse/jnum_header.c test_jparse/jnum_test.c
+	./test_jparse/jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
 
 bison: jparse.tab.c jparse.tab.h
 	@:
@@ -851,10 +845,6 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_gen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_gen.c jnum_gen.h \
-    json_parse.h json_util.h util.h
-jnum_header.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_header.c \
-    json_parse.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
     jparse.tab.h json_parse.h json_sem.h json_util.h util.h
 jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \

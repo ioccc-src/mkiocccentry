@@ -457,7 +457,8 @@ We cannot make them static exactly because they're used in `jnum_chk.c` as well.
 These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc and the
 subsequent problem was fixed in commit 147e4b5783833e2245a3c925a3392fcbc732846d
 as described next. A bug was fixed in commit
-60760b84607f520f271088e214cc83b68078fe20.
+60760b84607f520f271088e214cc83b68078fe20 and a bug that resulted from this was
+fixed in 3c312851717210fa1c50203b09cc36192f1621c5.
 
 
 ### Example

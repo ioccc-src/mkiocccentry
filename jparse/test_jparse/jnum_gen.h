@@ -25,27 +25,27 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "../dbg/dbg.h"
+#include "../../dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "../util.h"
 
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "../json_parse.h"
 
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "../json_util.h"
 
 /*
  * dyn_array - dynamic array facility
  */
-#include "../dyn_array/dyn_array.h"
+#include "../../dyn_array/dyn_array.h"
 
 
 /*
