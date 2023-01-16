@@ -86,7 +86,7 @@ static void fpr_number(FILE *stream, struct json_number *item);
 static void fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const *vcomm);
 static void fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char const *vcomm);
 static void fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *scomm,
-		      char const *vcomm, char const *sintval);
+		      char const *vcomm, char const *sintval, char const *suffix);
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 

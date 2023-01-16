@@ -2321,7 +2321,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
-	item->as_double_int = (item->as_double == floorl(item->as_double));
+	item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl((intmax_t)item->as_double));
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
@@ -2430,13 +2430,13 @@ json_conv_number(char const *ptr, size_t len)
     item->umaxint_sized = false;
     /* floating point values */
     item->float_sized = false;
-    item->as_float = 0.0;
+    item->as_float = 0.0f;
     item->as_float_int = false;
     item->double_sized = false;
     item->as_double = 0.0;
     item->as_double_int = false;
     item->longdouble_sized = false;
-    item->as_longdouble = 0.0;
+    item->as_longdouble = 0.0L;
     item->as_longdouble_int = false;
 
     /*

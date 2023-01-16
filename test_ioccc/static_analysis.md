@@ -205,7 +205,7 @@ find_matching_quote(char *q)
 util.c:2964:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
 char *
 ^
-static 
+static
 ```
 
 ### Solution
@@ -1018,7 +1018,8 @@ cast it to a double to silence the warning.
 
 ### See also
 
-Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. 
+Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. See also commit
+df409fefa7541a065dd1633de7c7a0e3093368fa.
 
 
 ## Issue: warning: implicit conversion loses integer precision
@@ -1268,3 +1269,114 @@ With the exception of that in `dyn_array` code this was fixed in commit
 1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
 e59f15db96dc0893341a985825fbb6028525a278) and
 c6b5f89a81a4910901cb3ef26c8f34858acd4740.
+
+
+## Issue: warning: implicit conversion increases floating-point precision: 'double' to 'long double'
+### Status: fixed
+### Example
+
+```c
+json_parse.c:2324:31: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = (item->as_double == floorl(item->as_double));
+                               ~~~~~~^~~~~~~~~ ~~
+json_parse.c:2324:57: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = (item->as_double == floorl(item->as_double));
+                                                  ~~~~~~ ~~~~~~^~~~~~~~~
+```
+
+### Solution
+
+This one is a bit trickier because it also has the problem of comparing floating
+point but it's not triggered in the system that triggered this warning. If we
+cast the two to `intmax_t` like we did for that problem as in:
+
+
+```c
+        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
+```
+
+we'll see something like:
+
+```c
+json_parse.c:2324:77: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
+                                                                      ~~~~~~ ~~~~~~^~~~~~~~~
+```
+
+which we can fix by also casting to an `intmax_t` which we have done.
+
+Whether there is a better approach, however, is TBD at a later time.
+
+### Example
+
+```c
+jnum_gen.c:538:42: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+    fpr_finfo(stream, item->float_sized, (double)item->as_float, item->as_float_int,
+    ~~~~~~~~~                            ^~~~~~~~~~~~~~~~~~~~~~
+jnum_gen.c:546:49: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+    fpr_finfo(stream, item->double_sized, item->as_double, item->as_double_int,
+    ~~~~~~~~~                             ~~~~~~^~~~~~~~~
+
+```
+
+### Solution
+
+This one is more complicated because the cast to double was to resolve the same
+warning in macOS but in fedora we see that it's now promoting it to long double.
+We might cast it to a long double instead but it might be better to ignore it so
+that systems that promote it to long double will be fine but otherwise it'll be
+the default double promotion. This is what we have chosen to do but whether this
+will change is TBD later.
+
+
+### Example
+
+```c
+jnum_gen.c:686:42: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+                       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+                                                    ~~ ^~~~~~~~~
+./util.h:155:65: note: expanded from macro 'fprint'
+#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
+                                                                ^~~~~~~~~~~
+jnum_gen.c:686:20: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+                       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+                              ~~ ^~~~~~~~~
+./util.h:155:65: note: expanded from macro 'fprint'
+#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
+                                                                ^~~~~~~~~~~
+
+```
+
+### Solution
+
+In this case we can use `L` suffix to make it long double. But is this correct?
+It might or might not be. Either way, whether it's correct or not, we can use
+the C99 macros `islessequal` and `isgreaterequal` for the comparison.
+
+It should be noted that these functions can have a performance penalty and
+another solution that we've already used for the warning `-Wfloat-equal` and
+that is casting each side to an `intmax_t` but whether that should be done here
+is TBD.
+
+
+### Example
+
+```c
+jnum_test.c:5474:2: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        -214748.3647200000000055,       /* JSON floating point value in long double form */
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+jnum_test.c:5296:2: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        -2147483647.099999999977,       /* JSON floating point value in long double form */
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+[...]
+```
+
+### Solution
+
+Since this set of warnings was only for the long double values we made a slight
+modification to the `jnum_gen` tool so that these will have the `L` suffix.
+
+### See also
+
+Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
+

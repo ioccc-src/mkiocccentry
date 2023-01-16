@@ -660,21 +660,21 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	    diff = fabsl(val_a - val_b);
 
 	    /* determine the difference as part of the whole */
-	    if (val_a != 0.0) {
+	    if ((intmax_t)val_a != (intmax_t)0.0) {
 		diff_part = fabsl(diff / val_a);
 	    } else {
 		diff_part = diff;	/* zero value special case */
 	    }
 
 	    /* compare difference as part of the whole */
-	    if (diff_part <= 1.0/MATCH_PRECISION) {
+	    if (islessequal(diff_part, 1.0L/MATCH_PRECISION)) {
 		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %.22Lg similar to item->as_%s: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b);
 		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: diff precision: %.22Lg <= 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
-			       type, diff_part, 1.0/MATCH_PRECISION);
+			       type, diff_part, 1.0L/MATCH_PRECISION);
 
 	    } else {
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg not similar to item->as_%s: %.22Lg",
@@ -683,7 +683,7 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 			       type, val_b);
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: diff precision: %.22Lg > 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
-			       type, diff_part, 1.0/MATCH_PRECISION);
+			       type, diff_part, 1.0L/MATCH_PRECISION);
 		*testp = true; /* test failed */
 	    }
 	}
