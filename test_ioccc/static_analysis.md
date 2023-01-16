@@ -418,11 +418,46 @@ Now running from the main directory `make clobber all` will work - under some
 systems. There's one more step but since it's longer we describe it in the next
 example.
 
+
+### Example
+
+```c
+jnum_test.c:44:11: warning: no previous extern declaration for non-static variable 'test_count' [-Wmissing-variable-declarations]
+int const test_count = TEST_COUNT;
+          ^
+jnum_test.c:44:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int const test_count = TEST_COUNT;
+^
+jnum_test.c:46:7: warning: no previous extern declaration for non-static variable 'test_set' [-Wmissing-variable-declarations]
+char *test_set[TEST_COUNT+1] = {
+      ^
+jnum_test.c:46:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *test_set[TEST_COUNT+1] = {
+^
+jnum_test.c:495:20: warning: no previous extern declaration for non-static variable 'test_result' [-Wmissing-variable-declarations]
+struct json_number test_result[TEST_COUNT+1] = {
+                   ^
+jnum_test.c:495:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+struct json_number test_result[TEST_COUNT+1] = {
+^
+
+```
+
+### Solution
+
+Define the macro `JNUM_TEST` in `jnum_header.c` and then also add the inclusion
+of `jnum_chk.h` so that the variables are declared. Then run `make
+rebuild_jnum_test` from `jparse/`.
+
+We cannot make them static exactly because they're used in `jnum_chk.c` as well.
+
+
 ### See also
 
 These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc and the
 subsequent problem was fixed in commit 147e4b5783833e2245a3c925a3392fcbc732846d
-as described next.
+as described next. A bug was fixed in commit
+60760b84607f520f271088e214cc83b68078fe20.
 
 
 ### Example

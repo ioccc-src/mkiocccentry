@@ -32,6 +32,11 @@
  */
 #include "../json_parse.h"
 
+/*
+ * jnum_chk - tool to check JSON number string conversions
+ */
+#include "jnum_chk.h"
+
 
 /*
  * NOTE: The file jnum_header.c contains the header for jnum_test.c
