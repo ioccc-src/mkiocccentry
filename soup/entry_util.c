@@ -1878,7 +1878,7 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 	 */
 	test = test_IOCCC_contest_id(IOCCC_contest_id);
 	if (test == false) {
-	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    /* test_IOCCC_contest_id() already issued json_dbg() messages */
 	    return NULL;
 	}
 
@@ -4202,7 +4202,7 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
 	 */
 	test = test_IOCCC_contest_id(IOCCC_contest_id);
 	if (test == false) {
-	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    /* test_IOCCC_contest_id() already issued json_dbg() messages */
 	    return false;
 	}
 
