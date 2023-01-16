@@ -1722,7 +1722,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 	errp(151, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
-    memcpy(ret, *linep, len);
+    memcpy(ret, *linep, (size_t)len);
 
     /*
      * strip trailing whitespace if requested

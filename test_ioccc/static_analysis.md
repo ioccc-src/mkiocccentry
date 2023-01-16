@@ -1264,6 +1264,7 @@ This is TBD later.
 
 ### See also
 
-With the exception of that in `dyn_array` code this was all fixed in commit
-1a71f4f8c24e6c4859abb9b457e321d8aff76579 with the help of commit
-e59f15db96dc0893341a985825fbb6028525a278.
+With the exception of that in `dyn_array` code this was fixed in commit
+1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
+e59f15db96dc0893341a985825fbb6028525a278) and
+c6b5f89a81a4910901cb3ef26c8f34858acd4740.

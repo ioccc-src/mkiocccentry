@@ -1879,7 +1879,7 @@ default_handle(char const *name)
 		     * copy translation into the default author handle buffer
 		     */
 		    errno = 0;		/* pre-clear errno for errp() */
-		    pret = strncpy(ret+cur_len, m->posix_str, m->posix_str_len);
+		    pret = strncpy(ret+cur_len, m->posix_str, (uintmax_t)m->posix_str_len);
 		    if (pret == NULL) {
 			errp(23, __func__, "strncpy() returned NULL");
 			not_reached();
