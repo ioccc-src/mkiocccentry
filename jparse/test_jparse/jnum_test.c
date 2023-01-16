@@ -25,6 +25,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#define JNUM_TEST
+
 /*
  * json_parse - JSON parser support code
  */
