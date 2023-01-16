@@ -1474,3 +1474,31 @@ not matter so whether or not this will be fixed is TBD later.
 #### See also
 
 Addressed in commit 02f0496b809b18b28533b9a194586a2c2d3bec9b.
+
+
+## Issue: warning: unannotated fall-through between switch labels
+### Status: fixed
+### Example
+
+```c
+mkiocccentry.c:211:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+        case 'a':               /* -a record_answers */
+        ^
+mkiocccentry.c:211:2: note: insert '__attribute__((fallthrough));' to silence this warning
+        case 'a':               /* -a record_answers */
+        ^
+        __attribute__((fallthrough));
+mkiocccentry.c:211:2: note: insert 'break;' to avoid fall-through
+        case 'a':               /* -a record_answers */
+        ^
+        break;
+```
+
+### Solution
+
+This should be ignored because not all compilers have all attributes and we
+certainly must fall through to case `'a'` with case `'A'`.
+
+### See also
+
+Addressed in commit 1975fef378691fcb724b71ab7e837787227d0f3c.
