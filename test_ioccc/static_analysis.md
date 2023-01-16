@@ -1380,3 +1380,23 @@ modification to the `jnum_gen` tool so that these will have the `L` suffix.
 
 Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
 
+
+## Issue: warning: macro name is a reserved identifier
+### Status: fixed (ignored)
+### Example
+
+```c
+jparse.c:63:9: warning: macro name is a reserved identifier [-Wreserved-macro-identifier]
+#define __STDC_LIMIT_MACROS 1
+        ^
+```
+
+### Solution
+
+Since we must not modify `jparse.c` or any code generated from the `jparse.l` or
+`jparse.y` files we simply ignore this warning.
+
+
+### See also
+
+Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
