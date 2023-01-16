@@ -1400,3 +1400,34 @@ Since we must not modify `jparse.c` or any code generated from the `jparse.l` or
 ### See also
 
 Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
+
+
+## Issue: warning: disabled expansion of recursive macro
+### Status: fixed (ignore)
+### Examples
+
+```c
+./jparse.y:874:9: warning: disabled expansion of recursive macro [-Wdisabled-macro-expansion]
+        fprint(stderr, " node type %s", json_item_type_name(*node));
+               ^
+/usr/include/stdio.h:149:16: note: expanded from macro 'stderr'
+#define stderr stderr
+               ^
+```
+
+```c
+jsemtblgen.c:318:30: warning: disabled expansion of recursive macro [-Wdisabled-macro-expansion]
+            cap_tbl_name[i] = (char)toupper(tbl_name[i]);
+                                    ^
+/usr/include/ctype.h:221:35: note: expanded from macro 'toupper'
+#  define toupper(c)    __tobody (c, toupper, *__ctype_toupper_loc (), (c))
+                                     ^
+```
+
+### Solution
+
+This is a problem in the system header files and therefore we ignore it.
+
+### See also
+
+Addressed in commit 5b8def79c2863c90bfd8225382eb522a9d122b13.
