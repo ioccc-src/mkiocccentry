@@ -1537,3 +1537,28 @@ certainly must fall through to case `'a'` with case `'A'`.
 ### See also
 
 Addressed in commit 1975fef378691fcb724b71ab7e837787227d0f3c.
+
+
+## Issue: warning: mixing declarations and code is incompatible with standards before C99
+### Status: ignore
+
+### Example
+
+
+```c
+foo.c:99:15: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+    uintmax_t forty = no_comment;       /* the value is two too much */
+              ^
+```
+
+### Solution
+
+Although we could assign the value of `no_comment` at declaration we will
+provide no comment as to why we do not do that. Since we are using C11 and C11
+comes after C99 (by 12 years) and since we'll be moving to C17 sometime later
+this year (2023) we do not see this as a problem. Whether it is TBD whether we
+will fix this or not we also provide no comment. :-)
+
+### See also
+
+Addressed in commit 7fd173ad4068befb109d3bbe2b2e0f28f69149ba.
