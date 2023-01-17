@@ -190,7 +190,7 @@ SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh 
 #
 MAN1_PAGES= man/man1/fnamchk.1
 MAN3_PAGES=
-MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
+MAN8_PAGES= man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
 	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8 \
 	man/man8/hostchk.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
