@@ -73,6 +73,48 @@ the problem is resolved.
 
 Fixed in commit 66f539b70c2fa2a54dd39cd8645bc7166b93b5b7.
 
+
+## Issue: N bytes in M blocks are definitely lost in loss record 1 of 2 in txzchk.c
+### Status: fixed
+
+### Example
+
+```
+==2085869== 120 bytes in 1 blocks are definitely lost in loss record 1 of 2
+==2085869==    at 0x484586F: malloc (vg_replace_malloc.c:381)
+==2085869==    by 0x48EE332: getdelim (iogetdelim.c:62)
+==2085869==    by 0x408C1C: readline (util.c:1627)
+==2085869==    by 0x403208: check_tarball (txzchk.c:1429)
+==2085869==    by 0x402866: main (txzchk.c:186)
+
+```
+
+### Solution
+
+Add the missing call to free the variable `dir_name`.
+
+### Example
+
+```
+==2086037== 1,320 bytes in 11 blocks are definitely lost in loss record 1 of 1
+==2086037==    at 0x484586F: malloc (vg_replace_malloc.c:381)
+==2086037==    by 0x48EE332: getdelim (iogetdelim.c:62)
+==2086037==    by 0x408C2C: readline (util.c:1627)
+==2086037==    by 0x40360D: check_tarball (txzchk.c:1529)
+==2086037==    by 0x402866: main (txzchk.c:186)
+```
+
+
+### Solution
+
+Free the variable `linep` in three spots: when using `continue` in the loop due
+to an error, at the end of each iteration of the loop and at the end of the
+function.
+
+### See also
+
+Fixed in commit b10e2e2747bfb6cb5d76effd4bb17ab12f525c07.
+
 ## Reporting issues
 
 If you notice any errors or warnings with the above please report them.

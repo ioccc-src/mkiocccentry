@@ -1544,6 +1544,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	if (p != NULL) {
 	    warnp("txzchk", "found NUL before end of line");
 	    msg("skipping to next line");
+	    /* free the allocated memory */
+	    if (linep != NULL) {
+		free(linep);
+		linep = NULL;
+	    }
 	    continue;
 	}
 	dbg(DBG_VHIGH, "line %ju: %s", line_num, linep);
@@ -1564,6 +1569,12 @@ check_tarball(char const *tar, char const *fnamchk)
 	    ret = printf("%s\n", linep);
 	    if (ret <= 0)
 		warnp(__func__, "unable to printf line from text file");
+	}
+
+	/* free the allocated memory */
+	if (linep != NULL) {
+	    free(linep);
+	    linep = NULL;
 	}
 
 
@@ -1600,6 +1611,16 @@ check_tarball(char const *tar, char const *fnamchk)
 
     /* free txz_lines list */
     free_txz_lines();
+
+    if (dir_name != NULL) {
+	free(dir_name);
+	dir_name = NULL;
+    }
+    /* free the allocated memory */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
 
     return tarball.total_feathers;
 }
