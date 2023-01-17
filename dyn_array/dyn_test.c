@@ -245,7 +245,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ALLOC_VERSION, DYN_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ARRAY_VERSION, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
