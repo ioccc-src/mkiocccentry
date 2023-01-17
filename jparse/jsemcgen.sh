@@ -112,7 +112,7 @@ Exit codes:
      2	 -h and help string printed or -V and version string printed
      3	 command line error
      4	 jsemtblgen or patch_tool is not an executable
-     5	 file.json, head, patch, and/or tail is not a readable file
+     5	 one of the files file.json, head, patch and tail is not a readable file
      6	 jsemtblgen failed
  >= 10	 internal error"
 
@@ -258,7 +258,7 @@ if [[ ! -x $JSEMTBLGEN ]]; then
     exit 4
 fi
 if [[ -z $PATCH_TOOL ]]; then
-    echo "$0: ERROR: cannot find default patch tool path, need to use -p patch_path" 1>&2
+    echo "$0: ERROR: cannot find default patch tool path, try -p patch_path" 1>&2
     exit 4
 fi
 if [[ ! -x $PATCH_TOOL ]]; then
@@ -270,7 +270,7 @@ if [[ ! -e $JSON_FILE ]]; then
     exit 5
 fi
 if [[ ! -f $JSON_FILE ]]; then
-    echo "$0: ERROR: file.json is not a file: $JSON_FILE" 1>&2
+    echo "$0: ERROR: file.json is not a regular file: $JSON_FILE" 1>&2
     exit 5
 fi
 if [[ ! -r $JSON_FILE ]]; then
@@ -283,7 +283,7 @@ if [[ -n $HEAD_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $HEAD_FILE ]]; then
-	echo "$0: ERROR: head is not a file: $HEAD_FILE" 1>&2
+	echo "$0: ERROR: head is not a regular file: $HEAD_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $HEAD_FILE ]]; then
@@ -297,7 +297,7 @@ if [[ -n $PATCH_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $PATCH_FILE ]]; then
-	echo "$0: ERROR: patch is not a file: $PATCH_FILE" 1>&2
+	echo "$0: ERROR: patch is not a regular file: $PATCH_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $PATCH_FILE ]]; then
@@ -311,7 +311,7 @@ if [[ -n $TAIL_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $TAIL_FILE ]]; then
-	echo "$0: ERROR: tail is not a file: $TAIL_FILE" 1>&2
+	echo "$0: ERROR: tail is not a regular file: $TAIL_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $TAIL_FILE ]]; then
