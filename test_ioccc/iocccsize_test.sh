@@ -27,10 +27,10 @@ export IOCCCSIZE="./iocccsize"
 export EXIT_CODE=0
 export IOCCCSIZE_ARGS="-v 1 --"
 export V_FLAG=0
-
+export TOPDIR=
 export TEST_IOCCCSIZE_VERSION="1.2 2022-11-04"
 
-export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limit]
+export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limit] [-Z topdir] [-I iocccsize_args]
 
     -h		    print usage message and exit 2
     -v lvl	    set debugging level to lvl (def: 0 ==> no debugging)
@@ -39,19 +39,25 @@ export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limi
     -w work_dir	    working directory that is removed & rebuilt during the test (def: $WORK_DIR)
     -l limit	    path to limit_ioccc.sh executable shell script (def: $LIMIT_IOCCC)
 		    A limit of . (dot) will disable use of an executable shell script.
+    -Z topdir	    top level build directory (def: try . or ..)
+    -I args	    the args to pass to iocccsize (def: $IOCCCSIZE_ARGS)
+			NOTE: don't forget to add -- at the end of the list
 
 Exit codes:
      0   all is OK
      1   one or more tests failed
      2   help or version mode used
+     3	 command line error
+     4	 missing or non executable iocccsize
+     5	 missing or unreadable limit_ioccc.h
  >= 10	 internal error
 
 $0 version: $TEST_IOCCCSIZE_VERSION"
 
 # parse args
 #
-while getopts 'hv:Vi:w:l:' opt; do
-    case "$opt" in
+while getopts 'hv:Vi:w:l:Z:I:' flag; do
+    case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
 	;;
@@ -66,28 +72,82 @@ while getopts 'hv:Vi:w:l:' opt; do
 	;;
     l)	LIMIT_IOCCC="$OPTARG"
 	;;
-    *)	echo "$0: ERROR: unknown option: -$opt" 1>&2
+    Z)  TOPDIR="$OPTARG";
+        ;;
+    I)	IOCCCSIZE_ARGS="$OPTARG";
+	;;
+    \?)	echo "$0: ERROR: invalid option: -$flag" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *)
 	;;
     esac
 done
 shift $((OPTIND - 1))
 
+# change to the top level directory as needed
+#
+if [[ -n $TOPDIR ]]; then
+    if [[ ! -d $TOPDIR ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: not a directory: $TOPDIR" 1>&2
+	exit 3
+    fi
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
+    fi
+    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # shellcheck disable=SC2164
+    cd "$TOPDIR"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
+	exit 3
+    fi
+elif [[ -f mkiocccentry.c ]]; then
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is .: $TOPDIR" 1>&2
+    fi
+elif [[ -f ../mkiocccentry.c ]]; then
+    cd ..
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: cd .. exit code: $status" 1>&2
+	exit 3
+    fi
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" 1>&2
+    fi
+else
+    echo "$0: ERROR: cannot determine TOPDIR, use -Z topdir" 1>&2
+    exit 3
+fi
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" 1>&2
+fi
+
+
 # validate ./iocccsize
 #
 if [[ ! -e $IOCCCSIZE ]]; then
     echo "$0: ERROR: iocccsize does not exist: $IOCCCSIZE" 1>&2
-    exit 10
+    exit 4
 fi
 if [[ ! -f $IOCCCSIZE ]]; then
     echo "$0: ERROR: iocccsize is not a file: $IOCCCSIZE" 1>&2
-    exit 11
+    exit 4
 fi
 if [[ ! -x $IOCCCSIZE ]]; then
-    echo "$0: ERROR: limit_ioccc.h is not an executable file: $IOCCCSIZE" 1>&2
-    exit 12
+    echo "$0: ERROR: iocccsize is not an executable file: $IOCCCSIZE" 1>&2
+    exit 4
 fi
 
 # validate readable limit_ioccc.h
@@ -95,15 +155,15 @@ fi
 if [[ $LIMIT_IOCCC != "." ]]; then
     if [[ ! -e $LIMIT_IOCCC ]]; then
 	echo "$0: ERROR: limit_ioccc.h does not exist: $LIMIT_IOCCC" 1>&2
-	exit 13
+	exit 5
     fi
     if [[ ! -f $LIMIT_IOCCC ]]; then
 	echo "$0: ERROR: limit_ioccc.h is not a file: $LIMIT_IOCCC" 1>&2
-	exit 14
+	exit 5
     fi
     if [[ ! -r $LIMIT_IOCCC ]]; then
 	echo "$0: ERROR: limit_ioccc.h is not a readable file: $LIMIT_IOCCC" 1>&2
-	exit 15
+	exit 5
     fi
 fi
 
@@ -113,13 +173,13 @@ rm -rf  "$WORK_DIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: rm -rf $WORK_DIR failed, error code: $status" 1>&2
-    exit 16
+    exit 10
 fi
 mkdir -p "$WORK_DIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mkdir -p $WORK_DIR failed, error code: $status" 1>&2
-    exit 17
+    exit 11
 fi
 
 # Change DIGRAPHS and TRIGRAPHS according to limit_ioccc.h, unless .
@@ -136,7 +196,7 @@ if [[ $LIMIT_IOCCC != "." ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: source $LIMIT_IOCCC error code: $status" 1>&2
-	exit 18
+	exit 12
     fi
 fi
 
