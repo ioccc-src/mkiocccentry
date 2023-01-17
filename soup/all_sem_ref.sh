@@ -40,14 +40,14 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] in
 	-J jsemcgen.sh	path to jsemcgen.sh (def: $JSEMCGEN_SH)
 
 	info.head.c	.info.json style header for .c semantic table files
-	info.tail.c	.info.json style trailer for .c semantic table files
+	info.tail.c	.info.json style footer for .c semantic table files
 	info.head.h	.info.json style header for .h semantic table files
-	info.tail.h	.info.json style trailer for .h semantic table files
+	info.tail.h	.info.json style footer for .h semantic table files
 
 	auth.head.c	.auth.json style header for .c semantic table files
-	auth.tail.c	.auth.json style trailer for .c semantic table files
+	auth.tail.c	.auth.json style footer for .c semantic table files
 	auth.head.h	.auth.json style header for .h semantic table files
-	auth.tail.h	.auth.json style trailer for .h semantic table files
+	auth.tail.h	.auth.json style footer for .h semantic table files
 
 	info_dir	process *.json files as .info.json files
 	auth_dir	process *.json files as .auth.json files
@@ -59,7 +59,7 @@ Exit codes:
      2	 -h and help string printed or -V and version string printed
      3	 command line error
      4	 jsemcgen.sh and/or jsemtblgen not found or not executable
-     5	 missing or not readable header or trailer file
+     5	 missing or not readable header or footer file
      6	 missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
  >= 10	 internal error"
 
