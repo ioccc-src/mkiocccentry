@@ -120,7 +120,7 @@ This warning can be safely ignored so we can add to the `WARN_FLAGS`
 
 
 ## Issue: macro is not used
-### Status: varies (see discussion below)
+### Status: fixed
 ### Examples:
 
 ```c
@@ -236,7 +236,7 @@ This was fixed in commit cd991fae57ad4ac358c899ec2967aca8f2f2f224.
 
 
 ## Issue: warning: format string is not a string literal
-### Status: ignored (see discussion below)
+### Status: ignore
 ### Example
 
 ```c
@@ -541,7 +541,7 @@ This issue, which was created by commit
 
 
 ## Issue: warning: 'return' will never be executed
-### Status: varies (see discussion below)
+### Status: fixed, ignore
 ### Example
 
 ```c
@@ -641,7 +641,7 @@ Fixed in commit a3fb666661cf375e4b14cc6629ad519aa8593de2.
 
 
 ## Issue: warning: code will never be executed
-### Status: fixed (ignored)
+### Status: ignore
 ### Example
 
 ```c
@@ -755,7 +755,7 @@ Should this be found in another file please do report it.
 
 
 ## Issue: warning: cast from `'const foo *'` to `'foo *'` drops const qualifier
-### Status: fixed (see below)
+### Status: fixed
 ### Example
 
 ```c
@@ -1418,7 +1418,7 @@ Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
 
 
 ## Issue: warning: macro name is a reserved identifier
-### Status: fixed (ignored)
+### Status: ignore
 ### Example
 
 ```c
@@ -1439,7 +1439,7 @@ Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
 
 
 ## Issue: warning: disabled expansion of recursive macro
-### Status: fixed (ignore)
+### Status: ignore
 ### Examples
 
 ```c
