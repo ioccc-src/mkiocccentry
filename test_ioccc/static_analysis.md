@@ -460,6 +460,16 @@ as described next. A bug was fixed in commit
 60760b84607f520f271088e214cc83b68078fe20 and a bug that resulted from this was
 fixed in 3c312851717210fa1c50203b09cc36192f1621c5.
 
+As for 60760b84607f520f271088e214cc83b68078fe20 the log was by mistake not
+finished and it should probably read something like:
+
+    A problem occurred where missing variable declarations in jnum_test.c
+    was not fixed properly as after the jnum_test.c has a JNUM_TEST macro
+    the jnum_header.c must #include jnum_chk.h. This is because otherwise
+    the test_set, test_count and test_result were not previously declared (but
+    are in jnum_chk.h). We could not have it static exactly because they're
+    used in both source files.
+
 
 ### Example
 
