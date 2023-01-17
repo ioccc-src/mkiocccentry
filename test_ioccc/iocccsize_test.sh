@@ -28,7 +28,7 @@ export EXIT_CODE=0
 export IOCCCSIZE_ARGS="-v 1 --"
 export V_FLAG=0
 export TOPDIR=
-export TEST_IOCCCSIZE_VERSION="1.2 2022-11-04"
+export TEST_IOCCCSIZE_VERSION="1.3 2023-01-17"
 
 export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limit] [-Z topdir] [-I iocccsize_args]
 
