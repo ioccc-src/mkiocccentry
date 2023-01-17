@@ -9,14 +9,14 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_usage.sh 8 "08 November 2022" "run_usage.sh" "IOCCC tools"
+.TH run_usage.sh 8 "17 January 2023" "run_usage.sh" "IOCCC tools"
 .SH NAME
 run_usage \- run \-h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
 \fBrun_usage.sh\fP [\-h] [\-V] [\-v level] [\-a awk] [\-c cut] [\-g grep] [\-s sed] [\-m section] [\-M man_file] [\-D man_dir] tool
 .SH DESCRIPTION
 .PP
-This script does a best guess at what the \fBSYNOPSIS\fP should be for the supplied tool with certain limitations (see both \fBNOTES\fP and \fBBUGS\fP).
+This script does a best guess at what the \fBSYNOPSIS\fP should be for the supplied tool with certain limitations (but see both \fBNOTES\fP and \fBBUGS\fP!).
 If the man page exists it attempts to, based on the \fB\-h\fP option of the tool, create the correct regexp for the \fBSYNOPSIS\fP and then uses \fBgrep\fP to check for it in the man page.
 .PP
 If the man page does not exist or is not a regular file or is not readable it is an error but a helpful note is given of what the \fBSYNOPSIS\fP might look like.
@@ -44,12 +44,11 @@ Set path to sed tool.
 Show version and exit.
 .TP
 \fB\-m \fIsection\fP\fP
-Specify a different man page section.
-Default is 1.
+Specify a different man page section (def: 1).
 .TP
 \fB\-M \fIman_file\fP\fP
 Specify the man page filename.
-This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).
+Useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.8\fP and not \fBrun_usage.sh.8\fP).
 .TP
 \fB\-D \fIman_dir\fP\fP
 Specify directory where man pages are to be found.
@@ -59,7 +58,7 @@ Specify directory where man pages are to be found.
 all okay
 .TQ
 1
-help string printed
+help or version string printed
 .TQ
 2
 tool missing or command used missing
@@ -73,8 +72,11 @@ command line usage error
 5
 missing or inconsistent synopsis
 .TQ
->=42
-some internal error occurred
+6
+tool does not have usage string
+.TQ
+7
+man directory does not exist or is not a readable directory
 .SH NOTES
 .PP
 It has a \fBvery fixed\fP idea of what formatting is correct.
@@ -94,6 +96,13 @@ Also as noted it could be that the output is not even correct; it's expected tha
 .PP
 At some point when we make the SYNOPSIS show option arguments in italic the script will fail to validate man pages but it can still be used in part because it gives the formatting for the rest of the SYNOPSIS.
 There are macros for SYNOPSIS sections but since these are not always available we don't use them (we could include them in each man page but this seems unnecessary especially as these macros are more complicated anyway).
+.SS Deprecation Warning
+This tool will become deprecated when we correct the SYNOPSIS format to have option arguments in italic.
+It can still be useful to get part of the
+.BR SYNOPSIS
+correct but at this point in time it will never say the man page is correctly formatted.
+But as this is sometimes the case anyway (more than one usage for example) this is not so much a problem.
+Again this is a quick, dirty and ugly hack that is far from perfect!
 .SH BUGS
 .PP
 It's not perfect. In particular:
@@ -111,12 +120,14 @@ There are other limitations as well!
 It's not meant to be perfect and it's not meant to replace the need for editing the man page manually.
 It can help determine that everything is correct assuming the usage string in the tool is correct (prefixed with \fBusage:\fP) and there's no silliness in the man page like the same usage more than once.
 Unfortunately changing the script so that it checks for each usage individually is not worth the effort.
+.PP
+See also the \fBNOTES\fP.
 .SH EXAMPLES
 .PP
 .nf
 Determine if the \fBSYNOPSIS\fP in this file is correct (according to the script) based on the usage message of \fBrun_usage.sh\fP:
 .RS
 \fB
- ./run_usage.sh \-M run_usage.1 run_usage.sh\fP
+ ./run_usage.sh \-M run_usage.8 run_usage.sh\fP
 .fi
 .RE

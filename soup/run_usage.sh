@@ -42,7 +42,6 @@ Exit codes:
      5	 missing or inconsistent synopsis
      6	 tool does not have usage string
      7	 man directory does not exist or is not a readable directory
- >= 10   internal error
 
 $0 version: $RUN_USAGE_VERSION"
 
