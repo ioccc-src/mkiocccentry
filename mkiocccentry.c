@@ -608,12 +608,17 @@ main(int argc, char *argv[])
 	    if (linep != NULL) {
 		error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
 		free(linep);
+		linep = NULL;
 	    }
 	    if (error) {
 	        errp(17, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
 	        not_reached();
 	    }
 	    input_stream = stdin;
+	    if (line != NULL) {
+		free(line);
+		line = NULL;
+	    }
 	} else {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
@@ -740,6 +745,8 @@ main(int argc, char *argv[])
     free_info(&info);
     memset(&info, 0, sizeof(info));
     free_auth(&auth);
+    memset(&auth, 0, sizeof(auth));
+
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -4312,7 +4319,7 @@ get_author_info(struct author **author_set_p)
 		      "",
 		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nThe IOCCC author handle is limtied to %d characters\n\n", MAX_HANDLE);
+		ret = fprintf(stderr, "\nThe IOCCC author handle is limited to %d characters\n\n", MAX_HANDLE);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing IOCCC author handle length limit");
 		}

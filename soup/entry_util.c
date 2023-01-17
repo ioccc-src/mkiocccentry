@@ -292,6 +292,10 @@ free_author_array(struct author *author_set, int author_count)
 	    free(author_set[i].url);
 	    author_set[i].url = NULL;
 	}
+	if (author_set[i].alt_url != NULL) {
+	    free(author_set[i].alt_url);
+	    author_set[i].alt_url = NULL;
+	}
 	if (author_set[i].mastodon != NULL) {
 	    free(author_set[i].mastodon);
 	    author_set[i].mastodon = NULL;
@@ -314,6 +318,8 @@ free_author_array(struct author *author_set, int author_count)
 	 */
 	memset(&(author_set[i]), 0, sizeof(author_set[i]));
     }
+    free(author_set);
+    author_set = NULL;
     return;
 }
 
