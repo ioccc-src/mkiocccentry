@@ -82,6 +82,49 @@ if [[ $# -gt 0 ]]; then
     exit 3
 fi
 
+
+# change to the top level directory as needed
+#
+if [[ -n $TOPDIR ]]; then
+    if [[ ! -d $TOPDIR ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: not a directory: $TOPDIR" 1>&2
+	exit 3
+    fi
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
+    fi
+    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # shellcheck disable=SC2164
+    cd "$TOPDIR"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
+	exit 3
+    fi
+elif [[ -f mkiocccentry.c ]]; then
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is .: $TOPDIR" 1>&2
+    fi
+elif [[ -f ../mkiocccentry.c ]]; then
+    cd ..
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: cd .. exit code: $status" 1>&2
+	exit 3
+    fi
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" 1>&2
+    fi
+else
+    echo "$0: ERROR: cannot determine TOPDIR, use -Z topdir" 1>&2
+    exit 3
+fi
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" 1>&2
+fi
+
 # clear log file
 #
 rm -f "$LOGFILE"
@@ -98,48 +141,6 @@ if [[ ! -w "$LOGFILE" ]]; then
     exit 4
 fi
 
-
-# change to the top level directory as needed
-#
-if [[ -n $TOPDIR ]]; then
-    if [[ ! -d $TOPDIR ]]; then
-	echo "$0: ERROR: -Z $TOPDIR given: not a directory: $TOPDIR" | tee -a -- "$LOGFILE"
-	exit 3
-    fi
-    if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" | tee -a -- "$LOGFILE"
-    fi
-    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
-    # shellcheck disable=SC2164
-    cd "$TOPDIR"
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" | tee -a -- "$LOGFILE"
-	exit 3
-    fi
-elif [[ -f mkiocccentry.c ]]; then
-    TOPDIR="$PWD"
-    if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: assume TOPDIR is .: $TOPDIR" | tee -a -- "$LOGFILE"
-    fi
-elif [[ -f ../mkiocccentry.c ]]; then
-    cd ..
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: cd .. exit code: $status" | tee -a -- "$LOGFILE"
-	exit 3
-    fi
-    TOPDIR="$PWD"
-    if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" | tee -a -- "$LOGFILE"
-    fi
-else
-    echo "$0: ERROR: cannot determine TOPDIR, use -Z topdir" | tee -a -- "$LOGFILE"
-    exit 3
-fi
-if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" | tee -a -- "$LOGFILE"
-fi
 
 # firewall - verify we have the required executables and needed data file(s)
 #
