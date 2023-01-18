@@ -18,7 +18,7 @@ If you use `valgrind`, run each tool with:
 making sure to replace `mkiocccentry` with whichever tool you want to test and the `...`
 with the arguments and options you want.
 
-## Issue: N bytes in M blocks are definitely lost in mkiocccentry.c
+## Issue: memory leaks in mkiocccentry.c
 ### Status: fixed
 ### Example
 
@@ -74,7 +74,7 @@ the problem is resolved.
 Fixed in commit 66f539b70c2fa2a54dd39cd8645bc7166b93b5b7.
 
 
-## Issue: N bytes in M blocks are definitely lost in loss record 1 of 2 in txzchk.c
+## Issue: memory leaks in txzchk.c
 ### Status: fixed
 
 ### Example
