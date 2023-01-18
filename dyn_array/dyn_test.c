@@ -167,6 +167,14 @@ main(int argc, char *argv[])
     }
 
     /*
+     * free dynamic array
+     */
+    if (array != NULL) {
+	dyn_array_free(array);
+	array = NULL;
+    }
+
+    /*
      * exit based on the test result
      */
     if (err == true) {

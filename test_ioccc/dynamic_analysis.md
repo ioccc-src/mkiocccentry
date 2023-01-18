@@ -223,6 +223,35 @@ Note that there are other memory leaks in the json parser itself. Whether these
 are worth fixing is TBD later.
 
 
+## Issue: memory leaks in `dyn_test.c`
+### Status: fixed
+### Example
+
+```
+==2257667== 48 bytes in 1 blocks are still reachable in loss record 1 of 2
+==2257667==    at 0x484A464: calloc (vg_replace_malloc.c:1328)
+==2257667==    by 0x401851: dyn_array_create (dyn_array.c:666)
+==2257667==    by 0x40124E: main (dyn_test.c:105)
+==2257667==
+==2257667== 16,015,360 bytes in 1 blocks are still reachable in loss record 2 of 2
+==2257667==    at 0x484A6AF: realloc (vg_replace_malloc.c:1437)
+==2257667==    by 0x401631: dyn_array_grow (dyn_array.c:164)
+==2257667==    by 0x401C14: dyn_array_append_set (dyn_array.c:904)
+==2257667==    by 0x40131F: main (dyn_test.c:140)
+```
+
+### Solution
+
+Add the appropriate call to `dyn_array_free`. Additionally add a call to
+`free(array);` at the end of `dyn_array_free()`. Indeed it is ironic that a
+function that frees memory did not free everything but there it is.
+
+### See also
+
+Fixed in commit f46114885ad81198163823ff9b58b5c676d826f9: Plug memory leaks in
+dyn_{array,test}.c.
+
+
 ## Reporting issues
 
 If you notice any errors or warnings with the above please report them.
