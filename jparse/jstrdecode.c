@@ -60,11 +60,11 @@
 static bool
 jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
 {
-    char *input;		/* argument to process */
+    char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
     size_t outputlen;		/* length of write of decode buffer */
     size_t bufsiz;		/* length of the buffer */
-    char *buf;			/* decode buffer */
+    char *buf = NULL;		/* decode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     int ret = 0;		/* libc function return code */
 
@@ -145,10 +145,19 @@ jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
     /*
      * free buffer
      */
-    if (buf == NULL) {
+    if (buf != NULL) {
 	free(buf);
 	buf = NULL;
     }
+
+    /*
+     * free input
+     */
+    if (input != NULL) {
+	free(input);
+	input = NULL;
+    }
+
 
     /*
      * return encoding status

@@ -115,6 +115,87 @@ function.
 
 Fixed in commit b10e2e2747bfb6cb5d76effd4bb17ab12f525c07.
 
+## Issue: memory leaks in jstrencode.c and jstredecode.c
+### Status: partially fixed
+### Example
+
+```
+==2089136== HEAP SUMMARY:
+==2089136==     in use at exit: 2,245,253 bytes in 3 blocks
+==2089136==   total heap usage: 10 allocs, 7 frees, 3,564,165 bytes allocated
+==2089136==
+==2089136== 458,752 bytes in 1 blocks are indirectly lost in loss record 1 of 3
+==2089136==    at 0x484A6AF: realloc (vg_replace_malloc.c:1437)
+==2089136==    by 0x40E057: dyn_array_grow (dyn_array.c:164)
+==2089136==    by 0x40E457: dyn_array_seek (dyn_array.c:1385)
+==2089136==    by 0x40AEEC: read_all (util.c:1904)
+==2089136==    by 0x40289F: jstrencode_stream (jstrencode.c:88)
+==2089136==    by 0x40275B: main (jstrencode.c:258)
+==2089136==
+==2089136== 1,786,453 bytes in 1 blocks are indirectly lost in loss record 2 of 3
+==2089136==    at 0x484586F: malloc (vg_replace_malloc.c:381)
+==2089136==    by 0x402AA4: json_encode (json_parse.c:257)
+==2089136==    by 0x4028D5: jstrencode_stream (jstrencode.c:98)
+==2089136==    by 0x40275B: main (jstrencode.c:258)
+==2089136==
+==2089136== 2,245,253 (48 direct, 2,245,205 indirect) bytes in 1 blocks are definitely lost in loss record 3 of 3
+==2089136==    at 0x484A464: calloc (vg_replace_malloc.c:1328)
+==2089136==    by 0x40CDB0: dyn_array_create (dyn_array.c:666)
+==2089136==    by 0x40AEBB: read_all (util.c:1892)
+==2089136==    by 0x40289F: jstrencode_stream (jstrencode.c:88)
+==2089136==    by 0x40275B: main (jstrencode.c:258)
+==2089136==
+==2089136== LEAK SUMMARY:
+==2089136==    definitely lost: 48 bytes in 1 blocks
+==2089136==    indirectly lost: 2,245,205 bytes in 2 blocks
+==2089136==      possibly lost: 0 bytes in 0 blocks
+==2089136==    still reachable: 0 bytes in 0 blocks
+==2089136==         suppressed: 0 bytes in 0 blocks
+
+```
+
+The same problem existed in `jstrdecode.c` as well.
+
+### Solution
+
+In `jstrencode_stream()` there was a typo `==` instead of `!=` prior to freeing
+`buf`.
+
+As well the `char *` `input` was not freed at all.
+
+These same issues were in `jstrdecode_stream()`.
+
+Now the memory loss count is (for both but here only showing for jstrencode):
+
+```
+==2242762== 48 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==2242762==    at 0x484A464: calloc (vg_replace_malloc.c:1328)
+==2242762==    by 0x40CDD0: dyn_array_create (dyn_array.c:666)
+==2242762==    by 0x40AEDB: read_all (util.c:1892)
+==2242762==    by 0x4028A3: jstrencode_stream (jstrencode.c:88)
+==2242762==    by 0x40275B: main (jstrencode.c:266)
+==2242762==
+==2242762== LEAK SUMMARY:
+==2242762==    definitely lost: 48 bytes in 1 blocks
+==2242762==    indirectly lost: 0 bytes in 0 blocks
+==2242762==      possibly lost: 0 bytes in 0 blocks
+==2242762==    still reachable: 0 bytes in 0 blocks
+==2242762==         suppressed: 0 bytes in 0 blocks
+```
+
+As can be seen there still are some bytes that are not freed. It appears to be
+because `read_all` uses the dynamic array facility and although the buffer
+`input` itself is freed the array is not. This is just a guess.
+
+If this is the case it is probably not worth trying to fix because it would
+complicate the code. This is TBD.
+
+For reference: these were detected via valgrind in the `jstr_test.sh` script.
+
+### See also
+
+Commit 6c746ed9fee496d303a2ba75bb3f199dc4a986be.
+
 ## Reporting issues
 
 If you notice any errors or warnings with the above please report them.

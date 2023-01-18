@@ -62,9 +62,9 @@
 static bool
 jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
 {
-    char *input;		/* argument to process */
+    char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
-    char *buf;			/* encode buffer */
+    char *buf = NULL;		/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of encode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
@@ -118,9 +118,17 @@ jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
     /*
      * free buffer
      */
-    if (buf == NULL) {
+    if (buf != NULL) {
 	free(buf);
 	buf = NULL;
+    }
+
+    /*
+     * free input
+     */
+    if (input != NULL) {
+	free(input);
+	input = NULL;
     }
 
     /*
