@@ -120,72 +120,76 @@ Exit codes:
 #
 while getopts :hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:j:p: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
-       ;;
-    J) J_FLAG="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -J '$J_FLAG'";
-       ;;
-    q) Q_FLAG="-q";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -q";
-       ;;
-    V) echo "$JSEMCGEN_VERSION"
-       exit 2
-       ;;
-    s) S_FLAG="-s";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -s";
-       ;;
-    I) I_FLAG="-I";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -I";
-       ;;
-    N) NAME="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -N '$NAME'";
-       ;;
-    D) DEFAULT_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -D '$DEFAULT_FUNC'";
-       ;;
-    P) PREFIX="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -P '$PREFIX'";
-       ;;
-    1) NUMBER_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -1 '$NUMBER_FUNC'";
-       ;;
-    S) STRING_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -S '$STRING_FUNC'";
-       ;;
-    B) BOOL_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -B '$BOOL_FUNC'";
-       ;;
-    0) NULL_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -0 '$NULL_FUNC'";
-       ;;
-    M) MEMBER_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -M '$MEMBER_FUNC'";
-       ;;
-    O) OBJECT_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -O '$OBJECT_FUNC'";
-       ;;
-    A) ARRAY_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -A '$ARRAY_FUNC'";
-       ;;
-    U) UNKNOWN_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -U '$UNKNOWN_FUNC'";
-       ;;
-    j) JSEMTBLGEN="$OPTARG";
-       ;;
-    p) PATCH_TOOL="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
+	;;
+    J)	J_FLAG="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -J '$J_FLAG'";
+	;;
+    q)	Q_FLAG="-q";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -q";
+	;;
+    V)	echo "$JSEMCGEN_VERSION"
+	exit 2
+	;;
+    s)	S_FLAG="-s";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -s";
+	;;
+    I)	I_FLAG="-I";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -I";
+	;;
+    N)	NAME="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -N '$NAME'";
+	;;
+    D)	DEFAULT_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -D '$DEFAULT_FUNC'";
+	;;
+    P)	PREFIX="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -P '$PREFIX'";
+	;;
+    1)	NUMBER_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -1 '$NUMBER_FUNC'";
+	;;
+    S)	STRING_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -S '$STRING_FUNC'";
+	;;
+    B)	BOOL_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -B '$BOOL_FUNC'";
+	;;
+    0)	NULL_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -0 '$NULL_FUNC'";
+	;;
+    M)	MEMBER_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -M '$MEMBER_FUNC'";
+	;;
+    O)	OBJECT_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -O '$OBJECT_FUNC'";
+	;;
+    A)	ARRAY_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -A '$ARRAY_FUNC'";
+	;;
+    U)	UNKNOWN_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -U '$UNKNOWN_FUNC'";
+	;;
+    j)	JSEMTBLGEN="$OPTARG";
+	;;
+    p)	PATCH_TOOL="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
-   *)
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *)
+	;;
     esac
 done
 

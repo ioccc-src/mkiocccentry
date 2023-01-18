@@ -62,24 +62,28 @@ export LIMIT_IOCCC_H="./limit_ioccc.h"
 #
 while getopts :hv:Vl: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    V) echo "$RESET_TSTAMP_VERSION"
-       exit 2
-       ;;
-    l) LIMIT_IOCCC_H="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$RESET_TSTAMP_VERSION"
+	exit 2
+	;;
+    l)	LIMIT_IOCCC_H="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
    *)
-       ;;
+	;;
     esac
 done
 if [[ -z $LIMIT_IOCCC_H ]]; then

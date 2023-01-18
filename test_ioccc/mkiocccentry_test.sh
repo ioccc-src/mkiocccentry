@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 #
-# A simple mkiocccentry test, or an example of how to automate the process!
+# mkiocccentry_test.sh - a test suite for the mkiocccentry tool (not repo)
+#
+# This script was written in 2022 by:
+#
+#	@ilyakurdyukov		Ilya Kurdyukov
+#
+# with improvements by
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+#
+# and
+#
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# Share and enjoy! :-)
 
 # setup
 #
@@ -29,26 +45,30 @@ export TOPDIR=
 #
 while getopts :hv:J:VZ: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    V) echo "$MKIOCCCENTRY_TEST_VERSION"
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    J) J_FLAG="$OPTARG";
-       ;;
-    Z) TOPDIR="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    V)	echo "$MKIOCCCENTRY_TEST_VERSION"
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    J)	J_FLAG="$OPTARG";
+	;;
+    Z)	TOPDIR="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
-   *)
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *)
+	;;
     esac
 done
 

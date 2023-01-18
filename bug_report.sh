@@ -112,9 +112,13 @@ while getopts :hVv:D:txlM: flag; do
     M)  MAKE_FLAGS="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
    *)

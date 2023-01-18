@@ -119,9 +119,13 @@ while getopts :hVv:t:d:T:F:Z:k flag; do
     k)  K_FLAG="true";
         ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
    *)

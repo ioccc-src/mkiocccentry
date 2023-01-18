@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 #
 # jstr_test.sh - JSON string encoding and decoding test
+#
+# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+#
+# This JSON parser was co-developed by:
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
+# "Share and Enjoy!"
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
 # setup
 #
@@ -34,25 +49,29 @@ $0 version: $JSTR_TEST_VERSION"
 export V_FLAG="0"
 while getopts :hVv:e:d:Z: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    V) echo "$JSTR_TEST_VERSION"
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    e) JSTRENCODE="$OPTARG"
-       ;;
-    d) JSTRDECODE="$OPTARG"
-       ;;
-    Z) TOPDIR="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    V)	echo "$JSTR_TEST_VERSION"
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    e)	JSTRENCODE="$OPTARG"
+	;;
+    d)	JSTRDECODE="$OPTARG"
+	;;
+    Z)	TOPDIR="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
        ;;
    *)
        ;;

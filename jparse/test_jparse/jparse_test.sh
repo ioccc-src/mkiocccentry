@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 #
-# jparse_test.sh - test jparse on simple one-line JSON files as well as whole
-# JSON documents
+# jparse_test.sh -  test jparse on simple one-line JSON files as well as whole
+#		    JSON documents
+#
+# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+#
+# This JSON scanner was co-developed by:
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
+# "Share and Enjoy!"
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+
 
 # setup
 #
@@ -70,9 +86,13 @@ while getopts :hVv:D:J:qj:d:s: flag; do
     s)  SUBDIR="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     *)
