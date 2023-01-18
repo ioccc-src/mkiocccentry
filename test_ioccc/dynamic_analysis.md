@@ -196,6 +196,33 @@ For reference: these were detected via valgrind in the `jstr_test.sh` script.
 
 Commit 6c746ed9fee496d303a2ba75bb3f199dc4a986be.
 
+
+## Issue: memory leak in jsemtblgen.c
+### Status: partially fixed
+### Example
+
+```
+==2258030== 9 bytes in 1 blocks are still reachable in loss record 1 of 13
+==2258030==    at 0x484586F: malloc (vg_replace_malloc.c:381)
+==2258030==    by 0x49F14FD: strdup (strdup.c:42)
+==2258030==    by 0x4025A5: main (jsemtblgen.c:306)
+```
+
+### Solution
+
+Add missing call to the cap_tbl_name variable.
+
+### Example
+
+### See also
+
+Fixed in commit 693c929355608f0cd316c31dc71d943e6641c213: Fix memory leak in
+jsemtblgen.c.
+
+Note that there are other memory leaks in the json parser itself. Whether these
+are worth fixing is TBD later.
+
+
 ## Reporting issues
 
 If you notice any errors or warnings with the above please report them.

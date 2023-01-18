@@ -398,6 +398,15 @@ main(int argc, char **argv)
     }
 
     /*
+     * free the capitalised name
+     */
+    if (cap_tbl_name != NULL) {
+	free(cap_tbl_name);
+	cap_tbl_name = NULL;
+    }
+
+
+    /*
      * exit based on JSON parse success or failure
      *
      * NOTE: this check is not strictly needed because if the JSON is not valid
