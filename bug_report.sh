@@ -28,7 +28,7 @@ export TOOLS="
     ./dbg/dbg_test
     ./dyn_array/dyn_test
     ./iocccsize
-    ./jparse/jnum_gen
+    ./jparse/test_jparse/jnum_gen
     ./jparse/jparse
     ./jparse/jsemcgen.sh
     ./jparse/jsemtblgen
