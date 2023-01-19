@@ -173,7 +173,7 @@ static const char * const usage_msg4 =
     "\t[file ...]\textra data files to include with your entry\n"
     "\n"
     "Exit codes:\n"
-    "     0   all is well\n"
+    "     0   all OK\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"

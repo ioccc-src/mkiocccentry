@@ -55,7 +55,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] in
 	ref_dir		sub-directory under which semantic table files are written
 
 Exit codes:
-     0	 all is well
+     0	 all OK
      2	 -h and help string printed or -V and version string printed
      3	 command line error
      4	 jsemcgen.sh and/or jsemtblgen not found or not executable
