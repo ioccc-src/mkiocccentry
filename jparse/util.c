@@ -2464,7 +2464,7 @@ parse_verbosity(char const *program, char const *arg)
     errno = 0;		/* pre-clear errno for errp() */
     verbosity = (int)strtol(arg, NULL, 0);
     if (errno != 0) {
-	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
 	not_reached();
     }
 

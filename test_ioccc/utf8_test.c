@@ -118,12 +118,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
-	    errno = 0;
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		err(3, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
+	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':	/* -V - print version and exit */
             print("%s\n", VERSION);

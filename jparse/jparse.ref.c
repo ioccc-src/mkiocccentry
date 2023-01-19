@@ -558,7 +558,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON scanner was co-developed by:
+ * This JSON scanner was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

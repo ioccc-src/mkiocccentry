@@ -30,7 +30,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-Z topdir]
     -Z topdir	    top level build directory (def: try . or ..)
 
 Exit codes:
-     0   all is OK
+     0   all tests are OK
      2   -h and help string printed or -V and version string printed
      3	 command line error
  >= 10   some make action exited non-zero

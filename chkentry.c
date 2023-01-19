@@ -3,7 +3,7 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

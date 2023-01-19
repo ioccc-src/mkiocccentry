@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "15 January 2023" "jsemcgen.sh" "jparse tools"
+.TH jsemcgen.sh 8 "19 January 2023" "jsemcgen.sh" "jparse tools"
 .SH NAME
 jsemcgen.sh \- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
 .SH SYNOPSIS
@@ -101,10 +101,10 @@ Set path to the patch program.
 .SH EXIT STATUS
 .TP
 0
-JSON is valid.
+valid JSON
 .TQ
 1
-JSON is invalid.
+invalid JSON
 .TQ
 2
 \fB\-h\fP or \fB\-V\fP used and help string or version string printed
@@ -115,11 +115,9 @@ command line error
 4
 \fIjsemtblgen\fP or \fIpatch_tool\fP is not an executable file
 .TQ
+.TQ
 5
 one of the files \fIfile.json\fP, \fIhead\fP, \fIpatch\fP or \fItail\fP is not a readable file
-.TQ
-6
-\fBjsemtblgen(8)\fP failed
 .TQ
 >= 10
 internal error

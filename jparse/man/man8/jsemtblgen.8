@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemtblgen 8 "15 January 2023" "jsemtblgen" "jparse tools"
+.TH jsemtblgen 8 "19 January 2023" "jsemtblgen" "jparse tools"
 .SH NAME
 jsemtblgen \- generate JSON semantics table
 .SH SYNOPSIS
@@ -86,19 +86,19 @@ Validate nodes with unknown types with \fIfunc()\fP.
 .SH EXIT STATUS
 .TP
 0
-JSON is valid.
+valid JSON
 .TQ
 1
-JSON is invalid.
+invalid JSON
 .TQ
 2
 \fB\-h\fP or \fB\-V\fP used and help string or version string printed.
 .TQ
 3
-Command line error.
+command line error.
 .TQ
-4
-Internal error.
+>=10
+internal error.
 .SH NOTES
 .PP
 The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.

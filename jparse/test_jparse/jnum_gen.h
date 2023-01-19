@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -65,11 +65,11 @@ static const char * const usage_msg =
     "\tfilename\tfile containing JSON number test cases\n"
     "\n"
     "Exit codes:\n"
-    "\t0\tall is OK\n"
-    "\t1\tfilename does not exist or is not a readable file\n"
-    "\t3\t-h and help string printed or -V and version string printed\n"
-    "\t4\tcommand line error\n"
-    "\t>=5\tinternal error\n"
+    "\t0\t\tall is OK\n"
+    "\t1\t\tfilename does not exist or is not a readable file\n"
+    "\t2\t\t-h and help string printed or -V and version string printed\n"
+    "\t3\t\tcommand line error\n"
+    "\t>=10\tinternal error\n"
     "\n"
     "jnum_gen version: %s\n";
 

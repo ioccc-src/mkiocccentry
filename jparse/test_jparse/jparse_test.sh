@@ -5,7 +5,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# This JSON scanner was co-developed by:
+# This JSON parser and the test suite were co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -44,10 +44,14 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
 			NOTE: To use stdin, end the command line with: -- -
 
 Exit codes:
-     0   all is well
+     0   all tests are OK
      1   at least one test failed
-     2   help mode exit
+     2	 -h and help string printed or -V and version string printed
      3   invalid command line
+     4	 jparse not a regular executable file
+     5	 couldn't create writable log file
+     6	 missing directory or directories
+     7	 missing JSON file
   >= 4   internal error
 
 $0 version: $JPARSE_TEST_VERSION"
@@ -137,45 +141,45 @@ fi
 #
 if [[ ! -e $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not found: $JSON_TREE" 1>&2
-    exit 10
+    exit 6
 fi
 if [[ ! -d $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not a directory: $JSON_TREE" 1>&2
-    exit 11
+    exit 6
 fi
 if [[ ! -r $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not readable directory: $JSON_TREE" 1>&2
-    exit 12
+    exit 6
 fi
 
 # good tree
 #
 if [[ ! -e $JSON_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/good for jparse directory not found: $JSON_GOOD_TREE" 1>&2
-    exit 13
+    exit 6
 fi
 if [[ ! -d $JSON_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/good for jparse not a directory: $JSON_GOOD_TREE" 1>&2
-    exit 14
+    exit 6
 fi
 if [[ ! -r $JSON_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/good for jparse not readable directory: $JSON_GOOD_TREE" 1>&2
-    exit 15
+    exit 6
 fi
 
 # bad tree
 #
 if [[ ! -e $JSON_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_TREE" 1>&2
-    exit 16
+    exit 6
 fi
 if [[ ! -d $JSON_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_TREE" 1>&2
-    exit 17
+    exit 6
 fi
 if [[ ! -r $JSON_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_TREE" 1>&2
-    exit 18
+    exit 6
 fi
 
 
@@ -210,7 +214,7 @@ run_file_test()
     #
     if [[ $# -ne 6 ]]; then
 	echo "$0: ERROR: expected 6 args to run_file_test, found $#" 1>&2
-	exit 4
+	exit 10
     fi
     declare jparse="$1"
     declare dbg_level="$2"
@@ -221,7 +225,7 @@ run_file_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_file_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	EXIT_CODE=2
+	EXIT_CODE=11
 	return
     fi
 
@@ -315,7 +319,7 @@ run_string_test()
     #
     if [[ $# -ne 5 ]]; then
 	echo "$0: ERROR: expected 5 args to run_string_test, found $#" 1>&2
-	exit 4
+	exit 12
     fi
     declare jparse="$1"
     declare dbg_level="$2"
@@ -404,15 +408,15 @@ if [[ $# -gt 0 ]]; then
 	else
 	    if [[ ! -e $CHK_TEST_FILE ]]; then
 		echo "$0: ERROR: test file not found: $CHK_TEST_FILE"
-		exit 4
+		exit 7
 	    fi
 	    if [[ ! -f $CHK_TEST_FILE ]]; then
 		echo "$0: ERROR: test file not a regular file: $CHK_TEST_FILE"
-		exit 4
+		exit 7
 	    fi
 	    if [[ ! -r $CHK_TEST_FILE ]]; then
 		echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
-		exit 4
+		exit 7
 	    fi
 	    # process all lines in test file
 	    #
@@ -430,15 +434,15 @@ elif [[ ! -z "$CHK_TEST_FILE" ]]; then
 	#
 	if [[ ! -e $CHK_TEST_FILE ]]; then
 	    echo "$0: ERROR: test file not found: $CHK_TEST_FILE"
-	    exit 4
+	    exit 7
 	fi
 	if [[ ! -f $CHK_TEST_FILE ]]; then
 	    echo "$0: ERROR: test file not a regular file: $CHK_TEST_FILE"
-	    exit 4
+	    exit 7
 	fi
 	if [[ ! -r $CHK_TEST_FILE ]]; then
 	    echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
-	    exit 4
+	    exit 7
 	fi
 
 	# process all lines in test file

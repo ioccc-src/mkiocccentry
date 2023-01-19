@@ -9,13 +9,15 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 1 "08 November 2022" "jparse" "IOCCC tools"
+.TH jparse 1 "19 January 2023" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
 \fBjparse\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] arg
 .SH DESCRIPTION
-\fBjparse\fP will parse a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option.
+\fBjparse\fP parses a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option, reporting if it is valid or invalid JSON.
+Depending on the JSON verbosity level it will also show more information.
+This tool by itself is useful to validate JSON but the \fBjparse(3)\fP API is much more useful in general as it allows for one to actually do things with the JSON.
 .PP
 .SH OPTIONS
 .TP
@@ -37,8 +39,18 @@ Show version and exit.
 \fB\-s\fP
 Parse argument as a string.
 .SH EXIT STATUS
-.PP
-\fB0\fP for success; different non\-zero values for error conditions.
+.TP
+0
+valid JSON
+.TQ
+1
+invalid JSON
+.TQ
+2
+\fB\-h\fP or \fB\-V\fP used and help string or version string printed.
+.TQ
+>=3
+some error occurred
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support \fBIOCCCMOCK\fP, \fBIOCCC28\fP and beyond.

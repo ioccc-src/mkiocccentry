@@ -4,7 +4,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# This JSON scanner was co-developed by:
+# This JSON scanner was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -56,13 +56,13 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex]
 Exit codes:
      0   flex output file formed or backup file used instead
      1   flex not found or too old and -o used
-     2   good flex found and ran but failed to form proper output file
-     3   flex input file missing or not readable: backup file had to be used
-     4   backup file is missing, or are not readable
-     5   failed to use backup file to form the flex C output file
+     2   good flex found and ran but failed to form proper output files
+     3   flex input file missing or not readable: backup files had to be used
+     4   backup file is missing or are not readable
+     5   failed to use backup file to form the flex C output files
      6   sorry.h file missing/not readable or verge missing/not executable
-     8   -h and help string printed or -V and version string printed
-     9   command line usage error
+     7   -h and help string printed or -V and version string printed
+     8   command line usage error
  >= 10   internal error
 
 $0 version: $RUN_FLEX_VERSION"
@@ -79,12 +79,12 @@ export S_FLAG=
 while getopts :hv:Vof:g:p:s:SF:D: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-	exit 8
+	exit 7
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
     V)	echo "$RUN_FLEX_VERSION"
-	exit 8
+	exit 7
 	;;
     o)	O_FLAG="-o"
 	;;
@@ -105,12 +105,12 @@ while getopts :hv:Vof:g:p:s:SF:D: flag; do
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 9
+	exit 8
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 9
+	exit 8
 	;;
     *)
 	;;
@@ -118,15 +118,15 @@ while getopts :hv:Vof:g:p:s:SF:D: flag; do
 done
 if [[ -z $FLEX_BASENAME ]]; then
     echo "$0: ERROR: -b $FLEX_BASENAME name cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 if [[ -z "$D_FLAG" ]]; then
     echo "$0: ERROR: -D dir cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 if [[ -z $PREFIX ]]; then
     echo "$0: ERROR: -p prefix cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 # set up the final prefix
 PREFIX="$D_FLAG/$PREFIX"

@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -123,7 +123,7 @@ main(int argc, char *argv[])
 	    break;
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(10, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
 	    not_reached();
 	}
 	item = &(node->item.number);

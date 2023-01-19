@@ -187,7 +187,7 @@ make_action() {
     #
     if [[ $# -ne 2 ]]; then
 	echo "$0: ERROR: function expects 2 args, found $#" 1>&2
-	exit 3
+	exit 9
     fi
     local CODE="$1"
     local RULE="$2"

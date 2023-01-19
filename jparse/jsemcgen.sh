@@ -6,7 +6,7 @@
 #
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# The JSON parser was co-developed by:
+# The JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -107,11 +107,11 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	out		jsemtblgen output, with possible head and tail and patch applied
 
 Exit codes:
-     0	 JSON is valid
-     1	 JSON is invalid
+     0	 valid JSON
+     1	 invalid JSON
      2	 -h and help string printed or -V and version string printed
      3	 command line error
-     4	 jsemtblgen or patch_tool is not an executable
+     4	 jsemtblgen or patch_tool is not an executable file
      5	 one of the files file.json, head, patch and tail is not a readable file
      6	 jsemtblgen failed
  >= 10	 internal error"

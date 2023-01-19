@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -67,12 +67,12 @@ static const char * const usage_msg =
     "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
     "\n"
     "Exit codes:\n"
-    "    0\tall is OK\n"
-    "    1\twithout -S given and JSON number conversion test suite failed\n"
-    "    2\t-S given and JSON number conversion test suite failed\n"
-    "    3\t-h and help string printed or -V and version string printed\n"
-    "    4\tcommand line error\n"
-    "    >=5\tinternal error\n"
+    "    0\t\tall is OK\n"
+    "    1\t\twithout -S given and JSON number conversion test suite failed\n"
+    "    2\t\t-S given and JSON number conversion test suite failed\n"
+    "    3\t\t-h and help string printed or -V and version string printed\n"
+    "    4\t\tcommand line error\n"
+    "    >=10\tinternal error\n"
     "\n"
     "jnum_chk version: %s\n";
 

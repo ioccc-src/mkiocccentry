@@ -3,7 +3,7 @@
  *
  * "Because too much minimalism can be sub-minimal." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -51,9 +51,9 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "     0   first version >= second version\n"
     "     1   first version < second version\n"
-    "     2   irst and/or second version is an invalid version\n"
-    "     3   -h and help string printed or -V and version string printed\n"
-    "     4   command line error\n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   command line error\n"
+    "     4   first or second version string is an invalid version\n"
     "  >=10   internal error\n"
     "\n"
     "verge version: %s\n";

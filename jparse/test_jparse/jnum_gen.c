@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -79,7 +79,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(3, program, "-h help mode", -1, -1); /*ooo*/
+	    usage(2, program, "-h help mode", -1, -1); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -90,7 +90,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", JNUM_GEN_VERSION);
-	    exit(3); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 'q':
@@ -98,13 +98,13 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	default:
-	    usage(4, program, "invalid -flag", -1, -1); /*ooo*/
+	    usage(3, program, "invalid -flag", -1, -1); /*ooo*/
 	    not_reached();
 	 }
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
+	usage(3, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
 	not_reached();
     }
     filename = argv[optind];
@@ -300,6 +300,7 @@ main(int argc, char *argv[])
 	}
     }
     dyn_array_free(str_array);
+    str_array = NULL;
 
     /*
      * free test results
@@ -312,6 +313,7 @@ main(int argc, char *argv[])
 	}
     }
     dyn_array_free(result_array);
+    result_array = NULL;
 
     /*
      * All Done!!! - Jessica Noll, age 2

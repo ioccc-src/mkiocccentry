@@ -79,12 +79,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_
     -M make_flags	    set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
-     0   all is well
+     0   all tests OK
      1   failed to create a bug report file
      2   help mode exit or print version mode exit
      3   invalid command line
      4	 error in function call
- >= 10   internal error
+ >= 10   at least one check failed
 
 $0 version: $BUG_REPORT_VERSION"
 

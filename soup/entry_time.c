@@ -5,7 +5,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

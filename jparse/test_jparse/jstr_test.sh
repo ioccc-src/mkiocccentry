@@ -4,7 +4,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# This JSON parser was co-developed by:
+# This JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -36,11 +36,16 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z
     -Z topdir	top level build directory (def: try . or ..)
 
 Exit codes:
-     0	 all is well
-     1	 test failed
-     2	 help message printed
+     0	 all tests OK
+     2	 help or version printed
      3	 invalid command line, invalid option or option missing an argument
- >= 10	 internal error
+     4	 test #0 failed
+     5	 test #1 failed
+     6	 test #2 failed
+     7	 test #3 failed
+     8	 missing or non-executable jstrencode
+     9	 missing or non-executable jstrdecode
+  >= 10	 internal error
 
 $0 version: $JSTR_TEST_VERSION"
 
@@ -124,11 +129,11 @@ fi
 #
 if [[ ! -x "$JSTRENCODE" ]]; then
     echo "$0: ERROR: missing jstrencode tool: $JSTRENCODE" 1>&2
-    exit 10
+    exit 8
 fi
 if [[ ! -x "$JSTRDECODE" ]]; then
     echo "$0: ERROR: missing jstrdecode tool: $JSTRDECODE" 1>&2
-    exit 11
+    exit 9
 fi
 
 # try removing the test files first
@@ -140,11 +145,11 @@ rm -f "$TEST_FILE $TEST_FILE2"
 #
 if [[ -e "$TEST_FILE" ]]; then
     echo "$0: ERROR: found $TEST_FILE; move or remove before running this test" 1>&2
-    exit 12
+    exit 10
 fi
 if [[ -e "$TEST_FILE2" ]]; then
     echo "$0: ERROR: found $TEST_FILE2; move or remove before running this test" 1>&2
-    exit 13
+    exit 11
 fi
 export EXIT_CODE=0
 trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
@@ -158,7 +163,7 @@ if [[ $status -eq 0 ]]; then
     echo "$0: test #0 passed"
 else
     echo "$0: test #0 failed" 1>&2
-    EXIT_CODE=42
+    EXIT_CODE=4
 fi
 
 # test JSON encoding and decoding pipe
@@ -174,7 +179,7 @@ if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed"
 else
     echo "$0: test #1 failed" 1>&2
-    EXIT_CODE=43
+    EXIT_CODE=5
 fi
 echo "$0: about to run test #2"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
@@ -186,7 +191,7 @@ if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
     echo "$0: test #2 passed"
 else
     echo "$0: test #2 failed" 1>&2
-    EXIT_CODE=44
+    EXIT_CODE=6
 fi
 
 # test some text holes in the encoding and decoding pipe
@@ -230,7 +235,7 @@ ERROR=
 for status in "${STATUS[@]}"; do
     if [[ "$status" -ne 0 ]]; then
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=45
+	EXIT_CODE=7
 	ERROR=1
 	break
     fi
@@ -242,12 +247,12 @@ if [[ -z "$ERROR" ]]; then
     # shellcheck disable=SC2086
     if ! cat $SRC_SET > "$TEST_FILE2"; then
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=45
+	EXIT_CODE=7
     elif cmp -s "$TEST_FILE2" "$TEST_FILE"; then
 	echo "$0: test #3 passed"
     else
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=45
+	EXIT_CODE=7
     fi
 fi
 

@@ -10,7 +10,7 @@
 #
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# The JSON parser was co-developed by:
+# The JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson

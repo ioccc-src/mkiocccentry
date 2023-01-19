@@ -4,7 +4,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# This JSON parser was co-developed by:
+# This JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -56,11 +56,11 @@ Exit codes:
      0   bison output files formed or backup files used instead
      1   bison not found or too old and -o used
      2   good bison found and ran but failed to form proper output files
-     3   bison input file missing or not readable: backup file(s) had to be used
+     3   bison input file missing or not readable: backup files had to be used
      4   backup file(s) are missing, or are not readable
-     5   failed to use backup file(s) to form the bison C output file(s)
+     5   failed to use backup files to form the bison C output files
      6   sorry.h file missing/not readable or verge missing/not executable
-     8   -h and help string printed or -V and version string printed
+     7   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
 
@@ -77,12 +77,12 @@ export S_FLAG=
 while getopts :hv:Vob:g:p:s:SB:D: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-	exit 8
+	exit 7
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
     V)	echo "$RUN_BISON_VERSION"
-	exit 8
+	exit 7
 	;;
     o)	O_FLAG="-o"
 	;;
@@ -103,12 +103,12 @@ while getopts :hv:Vob:g:p:s:SB:D: flag; do
     \?)	echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 9
+	exit 8
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 9
+	exit 8
 	;;
     *)
 	;;
@@ -116,15 +116,15 @@ while getopts :hv:Vob:g:p:s:SB:D: flag; do
 done
 if [[ -z $BISON_BASENAME ]]; then
     echo "$0: ERROR: -b $BISON_BASENAME name cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 if [[ -z "$D_FLAG" ]]; then
     echo "$0: ERROR: -D dir cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 if [[ -z $PREFIX ]]; then
     echo "$0: ERROR: -p prefix cannot be empty" 1>&2
-    exit 9
+    exit 8
 fi
 
 # set up the final prefix
