@@ -1,0 +1,221 @@
+.\" section 3 man page for jparse
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2023.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jparse 3  "17 January 2023" "jparse"
+.SH NAME
+.BR parse_json(),
+.BR parse_json_stream(),
+.BR parse_json_file(),
+.BR json_dbg_allowed(),
+.BR json_warn_allowed(),
+.BR json_err_allowed(),
+.BR json_dbg(),
+\- JSON parsing library
+.SH SYNOPSIS
+\fB#include "jparse.h"\fP
+.sp
+
+\fB#define JPARSE_VERSION "..." /* format: major.minor YYYY-MM-DD */"\fP
+.sp
+.B "extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);"
+.br
+.B "extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);"
+.br
+.B "extern struct json *parse_json_file(char const *name, bool *is_valid);"
+.sp
+.B "extern bool json_dbg_allowed(int json_dbg_lvl);"
+.br
+.B "extern bool json_warn_allowed(void);"
+.br
+.B "extern bool json_err_allowed(void);"
+.br
+.B "extern void json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...)"
+.SH DESCRIPTION
+The
+.B jparse
+library provides a way for C applications to parse JSON in a file (including stdin) or a string, returning a tree of the parsed JSON that one may then manipulate.
+The macro
+.B JPARSE_VERSION
+is a string that holds the current version of the parser.
+.sp
+The function
+.BR parse_json
+parses a JSON string
+.I ptr
+of length
+.I len
+in file
+.I filename\c
+\&.
+If
+.I is_valid
+is not NULL, it will set 
+.I *is_valid
+to true prior to returning the tree but it is an error if it is NULL.
+The
+.I ptr
+is a pointer to the start of the JSON data.
+The function will scan up to
+.I len
+bytes so that as long as one knows where in the string the JSON is, they can parse a document with other kinds of data.
+If
+.I filename
+is NULL then it will read from 
+.B stdin\c
+\& which can also be done by passing in \fI"\-"\fP.
+The function will return the parsed JSON as a tree of type
+.B struct json *\c
+\&.
+If the parse fails a blank JSON tree is returned instead.
+.sp
+The function
+.B parse_json_stream
+is like
+.B parse_json
+except that it parses an entire
+.B FILE *
+and does not accept a number of bytes to scan.
+The
+.I filename
+is for messages and is not used to determine what file to open as the stream should already be open.
+If you wish to do that you should use the
+.B parse_json_file()\c
+\& function instead.
+Unless
+.I stream
+is
+.B stdin\c
+\& the state of it should be considered unsafe to use after the return of the function as it will be closed.
+The function returns the parsed JSON as a
+.B struct json *\c
+\&.
+.sp
+The
+.B parse_json_file
+function is essentially a wrapper to the
+.B parse_json_stream
+function as it will open the file
+.I filename
+and then call
+.B parse_json_stream
+on the stream, returning a
+.B struct json *
+tree.
+.SS Debug, warn and error functions
+.PP
+The function
+.B json_dbg_allowed
+will return true if debug output would be displayed at the verbosity level
+.I json_dbg_lvl\c
+\&.
+.br
+The functions
+.B json_warn_allowed
+and
+.B json_err_allowed
+will return true if warnings and error output is allowed, respectively.
+.sp
+The function
+.B json_dbg
+allows for your application to give debug information to the user.
+The
+.I json_dbg_lvl
+is the verbosity level which, along with the
+.I dbg_output_allowed
+boolean, will determine if the output is to be printed.
+As long as
+.I dbg_output_allowed
+is true and
+.I json_dbg_lvl
+is either
+.B JSON_DBG_FORCED
+or <= the
+.I json_verbosity_level
+then the output will be displayed.
+The
+.I name
+is the name you wish to provide to the function, whether it be your application name or the function name that called it.
+The
+.I fmt
+is a
+.BR printf(3)
+style format argument.
+.SS The json struct
+.PP
+The
+.I json
+structure is defined as:
+.sp
+.in +4n
+.nf
+struct json
+{
+    enum item_type type;		/* union item specifier */
+    union json_union {
+	struct json_number number;	/* JTYPE_NUMBER - value is number (integer or floating point) */
+	struct json_string string;	/* JTYPE_STRING - value is a string */
+	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
+	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
+	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
+	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
+	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
+	struct json_elements elements;	/* JTYPE_ELEMENTS - zero or more JSON values */
+    } item;
+
+    /*
+     * JSON parse tree links
+     */
+    struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
+};
+.fi
+.in
+.SH RETURN VALUE
+.PP
+The functions
+.B parse_json\c
+\&,
+.B parse_json_stream
+and
+.B parse_json_file
+return a
+.B struct json *
+which is either blank or, if the parse was successful, a tree of the entire parsed JSON.
+.PP
+The functions
+.B json_dbg_allowed\c
+\&,
+.B json_warn_allowed
+and
+.B json_err_allowed
+will return true if debug, warn or error messages are allowed, respectively, and otherwise false.
+.SH NOTES
+.PP
+This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support \fBIOCCCMOCK\fP, \fBIOCCC28\fP and beyond.
+.PP
+For more detailed history that goes beyond this humble man page we recommend you check \fBjparse(1)\fP, \fIREADME.md\fP, and the GitHub git log as well as reading the source code (or not :\-) ).
+Understand that by source we refer to the \fIjparse.l\fP and \fIjparse.y\fP files: we do NOT recommend you read the generated code!
+This is because doing so might give you nightmares and cause other horrible symptoms. :-)
+See the apology at the top of the generated files or look directly at \fIsorry.tm.ca.h\fP instead.
+.PP
+.SH BUGS
+Although error reporting does have locations it is only line numbers and columns.
+Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (tabs for example).
+.sp
+Although the scanner and parser are re-entrant only one parse at one time in a process has been tested.
+The testing of more than one parse at the same time is way out of scope of this repo but will be tested more as I move this to a separate repo.
+.sp
+If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
+.SH SEE ALSO
+.B jparse(1)\c
+\&,
+.B printf(3)
+and
+.B README.md

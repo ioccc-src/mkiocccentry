@@ -185,7 +185,9 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
-MAN3_PAGES=
+MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
+	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
+	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
 MAN8_PAGES= man/man8/jnum_chk.8 man/man8/jnum_gen.8 man/man8/jparse_test.8 man/man8/jsemcgen.8 \
 	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/utf8_test.8 man/man8/verge.8 \
 	man/man8/run_bison.8 man/man8/run_bison.sh.8 man/man8/run_flex.8 man/man8/run_flex.sh.8 \
@@ -738,6 +740,8 @@ install_man: ${ALL_MAN_TARGETS}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN3_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
 
 # vi/vim tags
 #
