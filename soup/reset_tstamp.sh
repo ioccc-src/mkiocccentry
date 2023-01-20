@@ -49,9 +49,9 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
 Exit codes:
      0   timestamp updated
-     1   A verification phase test failed
+     1   a verification phase test failed
      2   -h and help string printed or -V and version string printed
-     3   Command line usage error
+     3   command line usage error
  >= 10   internal error
 
 $0 version: $RESET_TSTAMP_VERSION"
@@ -88,7 +88,7 @@ while getopts :hv:Vl: flag; do
 done
 if [[ -z $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: -l $LIMIT_IOCCC_H name cannot be empty" 1>&2
-    exit 9
+    exit 4
 fi
 
 # check args
@@ -96,26 +96,26 @@ fi
 shift $(( OPTIND - 1 ));
 if [[ $# -gt 0 ]]; then
     echo "$0: ERROR: Expected 0 args, found: $#" 1>&2
-    exit 9
+    exit 3
 fi
 
 # firewall
 #
 if [[ ! -e $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: limit.h file not found: $LIMIT_IOCCC_H" 1>&2
-    exit 7
+    exit 5
 fi
 if [[ ! -f $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: limit.h not a regular file: $LIMIT_IOCCC_H" 1>&2
-    exit 7
+    exit 5
 fi
 if [[ ! -r $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: limit.h not a readable file: $LIMIT_IOCCC_H" 1>&2
-    exit 7
+    exit 5
 fi
 if [[ ! -w $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: limit.h not a writable file: $LIMIT_IOCCC_H" 1>&2
-    exit 7
+    exit 5
 fi
 
 # debug
@@ -130,14 +130,16 @@ fi
 RPL_CMD=$(type -P rpl)
 if [[ -z "$RPL_CMD" ]]; then
     echo "$0: ERROR: rpl not found" 1>&2
-    echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
-    exit 1
+    echo "$0: ERROR: If you do not have the rpl tool, then you may not perform this action." 1>&2
+    exit 6
 fi
+# verify that we have the gdate command
+#
 GDATE_CMD=$(type -P gdate)
 if [[ -z "$GDATE_CMD" ]]; then
-    echo "$0: ERROR: date not found" 1>&2
-    echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
-    exit 1
+    echo "$0: ERROR: gdate not found" 1>&2
+    echo "$0: ERROR: If you do not have the gdate tool, then you may not perform this action." 1>&2
+    exit 6
 fi
 
 # Phase 0 of verification
@@ -162,7 +164,7 @@ echo -n 'Enter the phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'Please invalidate all IOCCC timestamps prior to now' ]]; then
     echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
-    exit 2
+    exit 1
 fi
 
 # Phase 1 of verification
@@ -185,7 +187,7 @@ echo -n 'Enter that phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'I understand this and apologise to those with existing IOCCC compressed tarballs' ]]; then
     echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
-    exit 3
+    exit 1
 fi
 
 # Phase 2 of verification
@@ -197,7 +199,7 @@ echo -n 'Enter the required phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'Sorry (tm Canada) :=)' ]]; then
     echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
-    exit 4
+    exit 1
 fi
 
 # Phase 3 of verification
@@ -208,7 +210,7 @@ read -r OLD_MIN_TIMESTAMP
 FORMED_OLD_NOW="$($GDATE_CMD -u --date=@"$OLD_MIN_TIMESTAMP" '+%a %b %d %H:%M:%S %Y UTC')"
 if [[ -z $FORMED_OLD_NOW ]]; then
     echo "$0: ERROR: cannot convert OLD_MIN_TIMESTAMP to time string" 1>&2
-    exit 5
+    exit 1
 fi
 export FORMED_OLD_NOW
 export NOW
@@ -237,7 +239,7 @@ export FORMED_NOW
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: rpl failed to modify $LIMIT_IOCCC_H: error code: $status" 1>&2
-    exit 6
+    exit 7
 fi
 echo
 echo "FYI:"

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH vermod 8 "02 November 2022" "vermod" "IOCCC tools"
+.TH vermod 8 "20 January 2023" "vermod" "IOCCC tools"
 .SH NAME
 vermod \- modify version strings (and others) under ./test_JSON/
 .SH SYNOPSIS
@@ -56,34 +56,31 @@ This is useful with \fB\-n\fP to show what wouldn't change.
 .SH EXIT STATUS
 .TP
 0
-all is well
+all OK
 .TQ
 1
 \fBrpl\fP exited non\-zero
 .TQ
 2
-\fBrpl\fP not found
+\-h and help string printed or \-V and version string printed
 .TQ
 3
-no limit.sh found or is not readable
+command line error and usage message printed
 .TQ
 4
 no test directory found or is not readable
 .TQ
 5
-usage message due to \-h
+\fBrpl\fP command not found
 .TQ
 6
-command line error and usage message printed
+no limit.sh found or is not readable
 .TQ
 7
 no *.json files found under test directory
 .TQ
 8
 new_ver (or old_ver if \-o) not found in limit file
-.TQ
->= 10
-internal error
 .SH FILES
 \fItest_JSON\fP
 .RS

@@ -25,38 +25,37 @@ export VERMOD_VERSION="0.1 2022-03-15"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
 
-    -h		    Print help and exit
-    -V		    Print version and exit
-    -v level	    Set the debugging level (def: 0)
+    -h		    print help and exit
+    -V		    print version and exit
+    -v level	    set the debugging level (def: 0)
 
-    -d test_dir	    Process '*.json' files below dir (def: $JSON_TREE)
-    -i limit.sh	    Use limit.sh to verify new version (def: $LIMIT_SH)
+    -d test_dir	    process '*.json' files below dir (def: $JSON_TREE)
+    -i limit.sh	    use limit.sh to verify new version (def: $LIMIT_SH)
 
-    -o		    Verify old version (def: verify new version)
-    -F		    Force change, even if it cannot be verified (def: reject an unverified change)
+    -o		    verify old version (def: verify new version)
+    -F		    force change, even if it cannot be verified (def: reject an unverified change)
 
-    -Q		    Do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
+    -Q		    do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
 
-    -n		    No op: change no files (def: change files)
-    -l		    List files that change/will change (def: do not list)
-			NOTE: Useful with -n to show what would change
-    -L		    List files that do not/will not change (def: do not list)
-			NOTE: Useful with -n to show what will not change
+    -n		    no op: change no files (def: change files)
+    -l		    list files that change/will change (def: do not list)
+			NOTE: useful with -n to show what would change
+    -L		    list files that do not/will not change (def: do not list)
+			NOTE: useful with -n to show what will not change
 
-    old_ver	    Old version string to change from
-    new_ver	    New version string to change to
+    old_ver	    old version string to change from
+    new_ver	    new version string to change to
 
 Exit codes:
-     0   all is well
+     0   all OK
      1   rpl exited non-zero
-     2   rpl command not found
-     3   no limit.sh file found, or is not readable
-     4   no test_dir directory found, or is not readable
-     5   -h and help string printed or -V and version string printed
-     6   command line error and usage message printed
+     2   -h and help string printed or -V and version string printed
+     3   command line error and usage message printed
+     4   no test_dir directory found or is not readable
+     5   rpl command not found
+     6   no limit.sh file found or is not readable
      7   no *.json files found under test_dir
      8   new_ver (or old_ver if -o) not found in limit.sh
- >= 10   internal error
 
 $0 version: $VERMOD_VERSION"
 export V_FLAG="0"
@@ -72,10 +71,10 @@ export LIST_NOCHANGE=
 while getopts :hVv:d:i:oFQnlL flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-	exit 5
+	exit 2
 	;;
     V)	echo "$VERMOD_VERSION"
-	exit 5
+	exit 2
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
@@ -98,12 +97,12 @@ while getopts :hVv:d:i:oFQnlL flag; do
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 6
+	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
-	exit 6
+	exit 3
 	;;
    *)
 	;;
@@ -116,7 +115,7 @@ shift $(( OPTIND - 1 ));
 if [[ $# -ne 2 ]]; then
     echo "$0: ERROR: expected 2 arguments, found $#" 1>&2
     echo "$USAGE" 1>&2
-    exit 6
+    exit 3
 fi
 OLD_VER="$QUOTE$1$QUOTE"
 NEW_VER="$QUOTE$2$QUOTE"
@@ -138,20 +137,20 @@ if [[ ! -r $JSON_TREE ]]; then
 fi
 if [[ ! -e $LIMIT_SH ]]; then
     echo "$0: ERROR: limit.sh does not exist: $LIMIT_SH" 1>&2
-    exit 3
+    exit 6
 fi
 if [[ ! -f $LIMIT_SH ]]; then
     echo "$0: ERROR: limit.sh is not a regular file: $LIMIT_SH" 1>&2
-    exit 3
+    exit 6
 fi
 if [[ ! -r $LIMIT_SH ]]; then
     echo "$0: ERROR: limit.sh is not a readable file: $LIMIT_SH" 1>&2
-    exit 3
+    exit 6
 fi
 RPL_CMD=$(type -P rpl)
 if [[ -z "$RPL_CMD" ]]; then
     echo "$0: ERROR: rpl command not found" 1>&2
-    exit 2
+    exit 5
 fi
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: V_FLAG: $V_FLAG" 1>&2
