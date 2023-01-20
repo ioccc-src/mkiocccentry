@@ -1,5 +1,5 @@
-ERROR[6]: main: second '-' separated token length: 7 != 6: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt failed with exit code: 6
+ERROR[4]: main: "test-" separated token length: 7 != 6: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt failed with exit code: 4
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra1
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra1
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff    1231 Feb  6 02:40 test-10/.info.json

@@ -75,6 +75,14 @@ static const char * const usage_msg =
     "\t\tNOTE: -t and -u cannot be used together.\n\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
+    "Exit codes:\n"
+    "     0   all OK\n"
+    "     1   \n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   command line error\n"
+    "	  4   first '-' separated token length != %ju\n"
+    "	 11   second '-' separated token length != %ju\n"
+    "  >=10   internal error\n"
     "fnamchk version: %s\n";
 
 

@@ -1,5 +1,5 @@
-ERROR[11]: main: second '-' separated token length: 50 != 38: ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt failed with exit code: 11
+ERROR[5]: main: "entry-" separated token length: 50 != 38: ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt failed with exit code: 5
 Warning: string_to_intmax2: string fred has no digits
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: trying to parse file size in on line: <drw-r--r--  0 501    20       fred Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra1/>: token: <fred>
 skipping to next line due to inability to parse file size
