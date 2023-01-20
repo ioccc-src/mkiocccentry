@@ -75,7 +75,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir
     -Z topdir		    top level build directory (def: try . or ..)
 
 Exit codes:
-     0   all is well
+     0   all OK
      1   at least one test failed
      2   help mode and version mode exit
      3   invalid command line
