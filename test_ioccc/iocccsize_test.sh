@@ -32,9 +32,9 @@ export TEST_IOCCCSIZE_VERSION="1.3 2023-01-17"
 
 export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limit] [-Z topdir] [-I iocccsize_args]
 
-    -h		    print usage message and exit 2
+    -h		    print help message and exit
     -v lvl	    set debugging level to lvl (def: 0 ==> no debugging)
-    -V		    print tool version and exit 2
+    -V		    print version and exit
     -i iocccsize    path to iocccsize tool (def: test with $IOCCCSIZE)
     -w work_dir	    working directory that is removed & rebuilt during the test (def: $WORK_DIR)
     -l limit	    path to limit_ioccc.sh executable shell script (def: $LIMIT_IOCCC)
@@ -44,9 +44,9 @@ export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limi
 			NOTE: don't forget to add -- at the end of the list
 
 Exit codes:
-     0   all is OK
+     0   all OK
      1   one or more tests failed
-     2   help or version mode used
+     2   -h and help string printed or -V and version string printed
      3	 command line error
      4	 missing or non executable iocccsize
      5	 missing or unreadable limit_ioccc.h
@@ -142,7 +142,7 @@ if [[ ! -e $IOCCCSIZE ]]; then
     exit 4
 fi
 if [[ ! -f $IOCCCSIZE ]]; then
-    echo "$0: ERROR: iocccsize is not a file: $IOCCCSIZE" 1>&2
+    echo "$0: ERROR: iocccsize is not a regular file: $IOCCCSIZE" 1>&2
     exit 4
 fi
 if [[ ! -x $IOCCCSIZE ]]; then
@@ -158,7 +158,7 @@ if [[ $LIMIT_IOCCC != "." ]]; then
 	exit 5
     fi
     if [[ ! -f $LIMIT_IOCCC ]]; then
-	echo "$0: ERROR: limit_ioccc.h is not a file: $LIMIT_IOCCC" 1>&2
+	echo "$0: ERROR: limit_ioccc.h is not a regular file: $LIMIT_IOCCC" 1>&2
 	exit 5
     fi
     if [[ ! -r $LIMIT_IOCCC ]]; then

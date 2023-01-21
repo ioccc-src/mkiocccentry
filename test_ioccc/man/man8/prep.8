@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH prep.sh 8 "18 January 2023" "prep.sh" "IOCCC tools"
+.TH prep.sh 8 "21 January 2023" "prep.sh" "IOCCC tools"
 .SH NAME
 prep.sh \- prepare for a release - actions for make prep and make release
 .SH SYNOPSIS
@@ -19,13 +19,13 @@ prep.sh \- prepare for a release - actions for make prep and make release
 .SH OPTIONS
 .TP
 \fB\-h\fP
-Show help and exit.
+Print help and exit.
 .TP
 \fB\-v\fP
 Set verbosity level (def: 0).
 .TP
 \fB\-V\fP
-Show version and exit.
+Print version and exit.
 .TP
 \fB\-e\fP
 Exit on first make action error.
@@ -45,7 +45,7 @@ Write all details to a log file and write less information to stdout.
 .SH EXIT STATUS
 .TP
 0
-all tests passed
+all OK
 .TQ
 1
 \fB\-h\fP and help string printed or \fB\-V\fP and version string printed
@@ -54,12 +54,15 @@ all tests passed
 command line error
 .TQ
 3
-Makefile not readable file that exists
+Makefile not readable file
 .TQ
 4
 could not make writable log file
 .TQ
->= 9
+9
+internal error
+.TQ
+>= 10
 some make action exited non-zero
 .SH NOTES
 .PP

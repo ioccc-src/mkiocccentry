@@ -35,10 +35,10 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [
     -l logfile      write details of actions to logfile (def: send to stdout)
 
 Exit codes:
-     0   all tests passed
+     0   all OK
      1   -h and help string printed or -V and version string printed
      2	 command line error
-     3	 Makefile not a readable file that exists
+     3	 Makefile not a readable file
      4	 could not make writable log file
  >= 10   some make action exited non-zero
 

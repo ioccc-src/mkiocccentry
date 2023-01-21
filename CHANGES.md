@@ -5,6 +5,19 @@
 
 XXX - add more details here as more is done or remembered (what has already been done).
 
+Fix many warnings triggered by clang `-Weverything`. See
+`test_ioccc/static_analysis.md` for details and to see how you can also help as
+well as fixes, what might need to be fixed and what we ignore (and why).
+
+Fix some memory leaks detected with `valgrind`. See
+`test_ioccc/dynamic_analysis.md` for details and to see how you might also help.
+
+Exit codes checked for consistency across usage strings, man pages and the tools
+themselves.
+
+Improving man pages, error messages and documentation is being worked on but
+this will take more time yet.
+
 
 ## Release 0.9.9 2022-12-31
 
@@ -72,7 +85,7 @@ more generally. TODO: make all man pages installed via `make install`.
 
 Moved jparse to subdirectory.
 
-Removed jparse.md and dbg.md in favor or README.md files in sub-directories.
+Removed jparse.md and dbg.md in favo(u)r of README.md files in sub-directories.
 
 Fixed dyn_array bug.
 

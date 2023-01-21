@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "19 January 2023" "chkentry" "IOCCC tools"
+.TH chkentry 1 "21 January 2023" "chkentry" "IOCCC tools"
 .SH NAME
 chkentry \- check JSON files in an IOCCC entry
 .SH SYNOPSIS
@@ -32,20 +32,19 @@ If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
 For a non\-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.auth.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
 .PP
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
+.TP
 \fB\-v level\fP
 Set verbosity level.
-.PP
+.TP
 \fB\-J level\fP
 Set JSON parser verbosity level.
-.PP
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
 \fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
@@ -53,7 +52,7 @@ Note that this currently is not used but will be in a future commit.
 .SH EXIT STATUS
 .TP
 0
-all is OK
+all OK
 .TQ
 1
 JSON files(s) are valid JSON but one or more semantic checks failed

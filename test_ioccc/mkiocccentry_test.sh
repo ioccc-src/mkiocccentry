@@ -133,22 +133,22 @@ mkdir -p -- "${work_dir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${work_dir} ${src_dir}" 1>&2
-    exit 250
+    exit 9
 fi
 
 # firewall
 #
 if [[ ! -d ${work_dir} ]]; then
     echo "$0: ERROR: work_dir not found: ${work_dir}" 1>&2
-    exit 250
+    exit 9
 fi
 if [[ ! -d ${src_dir} ]]; then
     echo "$0: ERROR: src_dir not found: ${src_dir}" 1>&2
-    exit 250
+    exit 9
 fi
 if [[ ! -x ./mkiocccentry ]]; then
     echo "$0: ERROR: executable not found: ./mkiocccentry" 1>&2
-    exit 250
+    exit 9
 fi
 
 # clean out the work_dir area

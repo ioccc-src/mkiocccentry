@@ -80,11 +80,11 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [
     -k			    keep temporary files on exit (def: remove temporary files before exiting)
 
 Exit codes:
-     0   all is well
+     0   all OK
      1   at least one test failed
      2   -h and help string printed or -V and version string printed
      3   invalid command line
- >= 10   internal error
+ >= 10   internal error or missing file or directory
 
 $0 version: $TXZCHK_TEST_VERSION"
 
@@ -138,6 +138,8 @@ done
 shift $(( OPTIND - 1 ));
 if [[ $# -gt 1 ]]; then
     echo "$0: ERROR: expected no more than 1 argument, found $#" 1>&2
+    echo 1>&2
+    echo "$USAGE" 1>&2
     exit 3
 fi
 if [[ $# -eq 1 ]]; then
@@ -341,11 +343,11 @@ rm -f "$TMP_STDERR_FILE"
 touch "$TMP_STDERR_FILE"
 if [[ ! -e "$TMP_STDERR_FILE" ]]; then
     echo "$0: could not create output file: $TMP_STDERR_FILE"
-    exit 30
+    exit 35
 fi
 if [[ ! -w "$TMP_STDERR_FILE" ]]; then
     echo "$0: output file not writable: $TMP_STDERR_FILE"
-    exit 31
+    exit 36
 fi
 
 # remove or key temporary files
@@ -364,19 +366,19 @@ if [[ -n $RUN_TAR_TEST ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: $TAR --format=v7 -cJf $TARBALL $TEST_FILE 2>$TAR_ERROR exit code: $status" 1>&2
-	EXIT_CODE=35
+	EXIT_CODE=1
 	TAR_TEST_SUCCESS=
     fi
     if [[ ! -s $TARBALL ]]; then
 	echo "$0: ERROR: did not find a non-empty tarball: $TARBALL" 1>&2
-	EXIT_CODE=36
+	EXIT_CODE=1
 	TAR_TEST_SUCCESS=
     fi
     if [[ -s $TAR_ERROR ]]; then
 	echo "$0: notice: tar stderr follows:" 1>&2
 	cat "$TAR_ERROR" 1>&2
 	echo "$0: notice: end of tar stderr" 1>&2
-	EXIT_CODE=37
+	EXIT_CODE=1
 	TAR_TEST_SUCCESS=
     fi
 else
@@ -410,7 +412,7 @@ run_test()
     #
     if [[ $# -ne 2 ]]; then
 	echo "$0: ERROR: expected 2 args to run_test, found $#" 1>&2
-	exit 32
+	exit 37
     fi
     declare pass_fail="$1"
     declare txzchk_test_file="$2"
@@ -418,39 +420,39 @@ run_test()
 
     if [[ ! -e $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not found: $txzchk_test_file"
-	exit 33
+	exit 38
     fi
     if [[ ! -f $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not a regular file: $txzchk_test_file"
-	exit 34
+	exit 39
     fi
     if [[ ! -r $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not readable: $txzchk_test_file"
-	exit 35
+	exit 40
     fi
 
     # if pass_fail is fail then there has to be an error file
     if [[ $pass_fail = fail ]]; then
 	if [[ ! -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not found for test that must fail: $txzchk_err_file"
-	    exit 36
+	    exit 41
 	fi
 	if [[ ! -f $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not a regular file for test that must fail: $txzchk_err_file"
-	    exit 37
+	    exit 42
 	fi
 	if [[ ! -r $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not readable for test that must fail: $txzchk_err_file"
-	    exit 38
+	    exit 43
 	fi
     elif [[ $pass_fail = pass ]]; then
 	if [[ -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file exists for test that must not fail: $txzchk_err_file"
-	    exit 39
+	    exit 44
 	fi
     else
 	echo "$0: pass_fail neither 'pass' nor 'fail': $pass_fail"
-	exit 4
+	exit 45
     fi
     # debugging
     #
@@ -490,7 +492,7 @@ run_test()
 		echo "$0: Warning: for more details try: $TXZCHK -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    fi
 	    echo | tee -a -- "${LOGFILE}" 1>&2
-	    EXIT_CODE=42
+	    EXIT_CODE=1
 	fi
     # Otherwise if there was output written to stderr it indicates that one or
     # more unexpected errors have occurred. This won't be because of a new test
@@ -508,8 +510,7 @@ run_test()
 	# tee -a -- "$LOGFILE < "$TMP_STDERR_FILE"
 	< "$TMP_STDERR_FILE" tee -a -- "$LOGFILE"
 	echo | tee -a -- "${LOGFILE}" 1>&2
-	exit
-	EXIT_CODE=43
+	EXIT_CODE=1
     # all is okay if we get here
     elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2

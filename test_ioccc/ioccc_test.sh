@@ -28,7 +28,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V] [-Z topdir]
     -Z topdir	    top level build directory (def: try . or ..)
 
 Exit codes:
-     0   all tests are OK
+     0   all OK
      2   -h and help string printed or -V and version string printed
      3   command line usage error
      4	 could not create a writable log file
@@ -54,7 +54,7 @@ while getopts :hv:J:VZ: flag; do
 	;;
     J)	J_FLAG="$OPTARG";
 	;;
-    V)	echo "$IOCCC_TEST_VERSION"
+    V)	echo "$IOCCC_TEST_VERSION" 1>&2
 	exit 2
 	;;
     Z)  TOPDIR="$OPTARG";
