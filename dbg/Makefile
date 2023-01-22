@@ -1,4 +1,4 @@
-
+#!/usr/bin/env make
 #
 # dbg - info, debug, warning, error and usage message facilities
 #

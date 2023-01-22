@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/env make
 #
 # test_ioccc - mkiocccentry test tools
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/env make
 #
 # soup - some delicious IOCCC soup recipes :-)
 #
