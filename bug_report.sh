@@ -1548,6 +1548,7 @@ if [[ "$EXIT_CODE" -ne 0 ]]; then
     write_echo "instead email the Judges but you're encouraged to file a"
     write_echo "report instead. This is because not all tools were written by"
     write_echo "the Judges."
+    X_FLAG=""
 elif [[ -z "$X_FLAG" ]]; then
     write_echo "All tests PASSED"
     write_echo ""

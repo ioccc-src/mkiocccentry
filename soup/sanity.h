@@ -9,6 +9,10 @@
 #if !defined(INCLUDE_SANITY_H)
 #    define  INCLUDE_SANITY_H
 
+/*
+ * soup - a big pot of soup for consumption :-)
+ */
+#include "soup.h"
 
 /*
  * jparse - the parser

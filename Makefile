@@ -1149,10 +1149,12 @@ iocccsize.o: dbg/dbg.h iocccsize.c iocccsize.h soup/iocccsize_err.h \
 mkiocccentry.o: dbg/dbg.h dyn_array/dyn_array.h iocccsize.h jparse/jparse.h \
     jparse/jparse.tab.h jparse/json_parse.h jparse/json_sem.h \
     jparse/json_util.h jparse/util.h mkiocccentry.c mkiocccentry.h \
-    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
-    soup/utf8_posix_map.h soup/version.h
+    soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
+    soup/entry_time.h soup/entry_util.h soup/limit_ioccc.h soup/location.h \
+    soup/sanity.h soup/soup.h soup/utf8_posix_map.h soup/version.h
 txzchk.o: dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h \
     jparse/jparse.tab.h jparse/json_parse.h jparse/json_sem.h \
-    jparse/json_util.h jparse/util.h soup/entry_util.h soup/limit_ioccc.h \
-    soup/location.h soup/sanity.h soup/utf8_posix_map.h soup/version.h \
-    txzchk.c txzchk.h
+    jparse/json_util.h jparse/util.h soup/chk_sem_auth.h \
+    soup/chk_sem_info.h soup/chk_validate.h soup/entry_time.h \
+    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
+    soup/soup.h soup/utf8_posix_map.h soup/version.h txzchk.c txzchk.h

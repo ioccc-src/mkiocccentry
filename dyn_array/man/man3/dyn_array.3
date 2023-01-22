@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3  "17 January 2023" "dyn_array"
+.TH dyn_array 3  "22 January 2023" "dyn_array"
 .SH NAME
 .BR dyn_array_value(),
 .BR dyn_array_addr(),
@@ -30,6 +30,7 @@
 \fB#include "dyn_array.h"\fP
 .sp
 \fB#define DYN_ARRAY_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.br
 \fBextern const char *const dyn_array_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
 .B "#define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])"

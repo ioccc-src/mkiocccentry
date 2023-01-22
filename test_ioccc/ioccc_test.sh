@@ -17,7 +17,7 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="0.5 2022-11=04"
+export IOCCC_TEST_VERSION="0.5 2022-11-04"
 
 export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V] [-Z topdir]
 
@@ -54,7 +54,7 @@ while getopts :hv:J:VZ: flag; do
 	;;
     J)	J_FLAG="$OPTARG";
 	;;
-    V)	echo "$IOCCC_TEST_VERSION" 1>&2
+    V)	echo "$IOCCC_TEST_VERSION"
 	exit 2
 	;;
     Z)  TOPDIR="$OPTARG";
