@@ -811,8 +811,9 @@ rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h limit_ioccc.h location.h \
-    sanity.c sanity.h utf8_posix_map.h version.h
+    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.h chk_sem_info.h \
+    chk_validate.h entry_time.h entry_util.h limit_ioccc.h location.h \
+    sanity.c sanity.h soup.h utf8_posix_map.h version.h
 utf8_posix_map.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_util.h ../jparse/util.h limit_ioccc.h utf8_posix_map.c \

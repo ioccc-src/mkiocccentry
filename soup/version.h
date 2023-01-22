@@ -62,7 +62,7 @@
 
 
 /*
- * official soup version
+ * official soup version (aka recipe :-) )
  */
 #define SOUP_VERSION "1.0 2023-01-21"		/* format: major.minor YYYY-MM-DD */
 

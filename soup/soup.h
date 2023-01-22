@@ -78,5 +78,11 @@
  */
 #include "version.h"
 
+/*
+ * global variables
+ *
+ * We put the soup.a version string here because we need to put it somewhere. :-)
+ */
+extern const char *const soup_version;
 
 #endif /* INCLUDE_SOUP_H */
