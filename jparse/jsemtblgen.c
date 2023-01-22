@@ -195,7 +195,8 @@ static Word cwords[] = {
 static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
 static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
 static int sem_cmp(void const *a, void const *b);
-static void print_c_funct_name(FILE *stream, char const *prefix, char const *str);
+static char *alloc_c_funct_name(char const *prefix, char const *str);
+static bool append_unique_str(struct dyn_array *tbl, char *str);
 static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static Word *find_member(Word *table, const char *string);
@@ -695,7 +696,7 @@ sem_cmp(void const *a, void const *b)
 
 
 /*
- * print_c_funct_name - print a string as a C function name
+ * alloc_c_funct_name - allocate a string as a C function name
  *
  * Prints str as a valid C function name. Any character that is not
  * alphanumeric is printed as an underscore ("_") character.
@@ -713,7 +714,7 @@ sem_cmp(void const *a, void const *b)
  * If a C reserved word would otherwise be printed, a leading
  * x ("x") will be printed before str is processed.
  *
- * Examples:
+ * Examples (how both prefix and str are processed):
  *
  *	"foo" ==> "foo"
  *	"23209" ==> "x23209"
@@ -727,32 +728,53 @@ sem_cmp(void const *a, void const *b)
  *	"#if" ==> "x_if"
  *	"_Pragma" ==> "x_Pragma"
  *
- * In all of the above cases, if prefix is non-NULL, then a processed prefix
- * followed by an _ is printed before the processed str is printed.
+ * If prefix is NULL, then the string formed is just str as processed.
+ * If prefix is non-NULL, then the string formed starts with a processed
+ * prefix, followed by _ (underscore), followed by str as processed.
  *
  * given:
- *	stream	open FILE stream to print on
- *	prefix	!= NULL ==? print prefix_
- *	str	string to print to stream
+ *	prefix	!= NULL ==> prefix to add (before str), along with a trailing _
+ *	str	string to process
  *
- * NOTE: This function does not return if given NULL pointers or on error.
+ * returns:
+ *	allocated string as a C function name
+ *
+ * NOTE: This function will not return on error.
+ *
+ * NOTE: This function does NOT return NULL.
  */
-static void
-print_c_funct_name(FILE *stream, char const *prefix, char const *str)
+static char *
+alloc_c_funct_name(char const *prefix, char const *str)
 {
-    bool reserved = false;	/* true ==> str is a reserved word in C */
+    bool prefix_is_reserved = false;	/* true ==> prefix is a reserved word in C */
+    bool str_is_reserved = false;	/* true ==> str is a reserved word in C */
+    size_t len = 0;			/* length of allocated string */
+    char *ret = NULL;			/* allocated string to return */
+    char *p = NULL;			/* next character to add */
 
     /*
      * firewall
      */
-    if (stream == NULL) {
-	err(19, __func__, "stream is NULL");
-	not_reached();
-    }
     if (str == NULL) {
-	err(20, __func__, "str is NULL");
+	err(19, __func__, "str is NULL");
 	not_reached();
     }
+
+    /*
+     * allocated space for the string
+     */
+    if (prefix != NULL) {
+	prefix_is_reserved = test_reserved(prefix);
+	len = strlen(prefix) + (prefix_is_reserved ? 1 : 0) + 1;	/* + 1 for _ after prefix */
+    }
+    str_is_reserved = test_reserved(str);
+    len += strlen(str) + (str_is_reserved ? 1 : 0) + 1;	/* + 1 for NUL */
+    ret = calloc(len + 1, sizeof(char));		/* + 1 for guard byte paranoia */
+    if (ret == NULL) {
+	errp(20, __func__, "calloc of %ju bytes failed", (uintmax_t)ret);
+	not_reached();
+    }
+    p = ret;
 
     /*
      * if we have a prefix, process each prefix character in C, converting non-alphanumeric characters to underscore.
@@ -765,10 +787,9 @@ print_c_funct_name(FILE *stream, char const *prefix, char const *str)
 	 * case: prefix begins with a digit
 	 * case: prefix begins with an underscore
 	 */
-	reserved = test_reserved(prefix);
-	if (reserved == true || prefix[0] == '\0' || (isascii(prefix[0]) && isdigit(prefix[0])) || prefix[0] == '_') {
-	    /* print a leading x */
-	    fprstr(stream, "x");
+	if (prefix_is_reserved == true || prefix[0] == '\0' || (isascii(prefix[0]) && isdigit(prefix[0])) || prefix[0] == '_') {
+	    /* add x due to the cases mentioned above */
+	    *p++ = 'x';
 	}
 
 	/*
@@ -777,13 +798,17 @@ print_c_funct_name(FILE *stream, char const *prefix, char const *str)
 	while (prefix[0] != '\0') {
 	    if (!isascii(prefix[0]) || !isalnum(prefix[0])) {
 		/* convert non-C name character to underscore */
-		fprstr(stream, "_");
+		*p++ = '_';
 	    } else {
-		fprint(stream, "%c", prefix[0]);
+		*p++ = prefix[0];
 	    }
 	    ++prefix;
 	}
-	fprstr(stream, "_");
+
+	/*
+	 * append _ after prefix
+	 */
+	*p++ = '_';
     }
 
     /*
@@ -792,10 +817,9 @@ print_c_funct_name(FILE *stream, char const *prefix, char const *str)
      * case: str begins with a digit
      * case: str begins with an underscore
      */
-    reserved = test_reserved(str);
-    if (reserved == true || str[0] == '\0' || (isascii(str[0]) && isdigit(str[0])) || str[0] == '_') {
-	/* print a leading x */
-	fprstr(stream, "x");
+    if (str_is_reserved == true || str[0] == '\0' || (isascii(str[0]) && isdigit(str[0])) || str[0] == '_') {
+	/* add x due to the cases mentioned above */
+	*p++ = 'x';
     }
 
     /*
@@ -804,13 +828,89 @@ print_c_funct_name(FILE *stream, char const *prefix, char const *str)
     while (str[0] != '\0') {
 	if (!isascii(str[0]) || !isalnum(str[0])) {
 	    /* convert non-C name character to underscore */
-	    fprstr(stream, "_");
+	    *p++ = '_';
 	} else {
-	    fprint(stream, "%c", str[0]);
+	    *p++ = str[0];
 	}
 	++str;
     }
-    return;
+    *p = '\0';	/* paranoia */
+
+    /*
+     * return calloced string
+     */
+    return ret;
+}
+
+
+/*
+ * append_unique_str - append string pointer to dynamic array if not already found
+ *
+ * Given a pointer to string, we search a dynamic array of pointers to strings.
+ * If an exact match is found (i.e, the string is already in the dynamic array),
+ * nothing is done other than to return false.  If no match is found, the pointer
+ * to the string is appended to the dynamic array and we return true.
+ *
+ * given:
+ *	tbl		dynamic array of pointers to strings
+ *	str		string to search tbl and append if not already found
+ *
+ * returns:
+ *	true		str was not already in dynamic array and has now been appended
+ *	false		str was already in the dynamic array, table is unchanged
+ *
+ * NOTE: This function does not return if given NULL pointers or on other errors.
+ */
+static bool
+append_unique_str(struct dyn_array *tbl, char *str)
+{
+    intmax_t unique_len = 0;	/* number of unique function name entries */
+    char *u = NULL;		/* unique name pointer */
+    intmax_t i;
+
+    /*
+     * firewall
+     */
+    if (tbl == NULL) {
+	err(21, __func__, "tbl is NULL");
+	not_reached();
+    }
+    if (str == NULL) {
+	err(22, __func__, "str is NULL");
+	not_reached();
+    }
+
+    /*
+     * search tbl for the string
+     *
+     * NOTE: We realize calling the function with unique strings will
+     *	     cause the execution time to grow as O(n^2).  However the
+     *	     usual number of strings in a unique function name dynamic array
+     *	     is almost certainly small.  Therefore we do not need to
+     *	     employ a more optimized dynamic array search mechanism.
+     */
+    unique_len = dyn_array_tell(tbl);
+    for (i=0; i < unique_len; ++i) {
+
+	/* get next string pointer */
+	u = dyn_array_value(tbl, char *, i);
+	if (u == NULL) {	/* paranoia */
+	    err(23, __func__, "found NULL pointer in function name dynamic array element: %ju", (uintmax_t)i);
+	    not_reached();
+	}
+
+	/* look for match */
+	if (strcmp(str, u) == 0) {
+	    /* str found in function name dynamic array, not unique */
+	    return false;
+	}
+    }
+
+    /*
+     * function name is unique, append to function name dynamic array
+     */
+    (void) dyn_array_append_value(tbl, &str);
+    return true;	/* pointer to string was appended */
 }
 
 
@@ -828,6 +928,7 @@ static void
 print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 {
     struct json_sem *p = NULL;	/* current semantic table to print */
+    char *func_name = NULL;	/* function name (allocated) to print */
     intmax_t len = 0;		/* number of semantic table entries */
     intmax_t i;
 
@@ -835,15 +936,15 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(21, __func__, "tbl is NULL");
+	err(24, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(22, __func__, "tbl_name is NULL");
+	err(25, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(23, __func__, "cap_tbl_name is NULL");
+	err(26, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
@@ -939,13 +1040,23 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    if (member_func != NULL) {
 
 		/* print -M member_func */
-		print_c_funct_name(stdout, prefix, member_func);
+		func_name = alloc_c_funct_name(prefix, member_func);
+		if (func_name != NULL) {
+		    print("%s", func_name);
+		    free(func_name);
+		    func_name = NULL;
+		}
 
 	    /* without -M member_func print member name if we have one */
 	    } else if (p->name != NULL) {
 
 		/* print member name */
-		print_c_funct_name(stdout, prefix, p->name);
+		func_name = alloc_c_funct_name(prefix, p->name);
+		if (func_name != NULL) {
+		    print("%s", func_name);
+		    free(func_name);
+		    func_name = NULL;
+		}
 
 	    /* otherwise print NULL */
 	    } else {
@@ -964,7 +1075,12 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	} else if (validate != NULL) {
 
 	    /* print validate_function */
-	    print_c_funct_name(stdout, prefix, validate);
+	    func_name = alloc_c_funct_name(prefix, validate);
+	    if (func_name != NULL) {
+		print("%s", func_name);
+		free(func_name);
+		func_name = NULL;
+	    }
 	    prstr(",");
 
 	/*
@@ -982,7 +1098,12 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	if (p->name != NULL) {
 	    /* print quoted member name w/o any prefix */
 	    prstr("\t\"");
-	    print_c_funct_name(stdout, NULL, p->name);
+	    func_name = alloc_c_funct_name(NULL, p->name);
+	    if (func_name != NULL) {
+		print("%s", func_name);
+		free(func_name);
+		func_name = NULL;
+	    }
 	    prstr("\" },\n");
 	} else {
 	    /* print NULL for no name */
@@ -1014,6 +1135,11 @@ static void
 print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 {
     struct json_sem *p = NULL;	/* current semantic table to print */
+    char *func_name = NULL;	/* function name (allocated) to print */
+    struct dyn_array *unique_tbl = NULL;	/* dynamic array of unique function names */
+    char *u = NULL;		/* unique name pointer */
+    intmax_t unique_len = 0;	/* number of unique function name entries */
+    bool is_unique = false;	/* true ==> function name was appended to unique_tbl */
     intmax_t len = 0;		/* number of semantic table entries */
     intmax_t i;
 
@@ -1021,15 +1147,15 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(24, __func__, "tbl is NULL");
+	err(27, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(25, __func__, "tbl_name is NULL");
+	err(28, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(26, __func__, "cap_tbl_name is NULL");
+	err(29, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
@@ -1037,6 +1163,15 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * sort the semantic table
      */
     qsort(tbl->data, (size_t)dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+
+    /*
+     * allocate empty dynamic array of unique function names
+     */
+    unique_tbl = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (unique_tbl == NULL) {
+	err(30, __func__, "dyn_array_create failed");
+	not_reached();
+    }
 
     /*
      * print semantic table header
@@ -1113,11 +1248,25 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    /* if -M member_func print member_func */
 	    if (member_func != NULL) {
 
+		/* form function name based on -M member_func */
+		func_name = alloc_c_funct_name(prefix, member_func);
+		if (func_name == NULL) {
+		    err(31, __func__, "alloc_c_funct_name for member_func returned NULL");
+		    not_reached();
+		}
+		is_unique = append_unique_str(unique_tbl, func_name);
+		if (is_unique == false) {
+		    /* we previously saw this function name, no need to reprint function decl */
+		    free(func_name);
+		    func_name = NULL;
+		    continue;
+		}
+
 		/* print start of function declaration */
 		prstr("extern bool ");
 
 		/* print -M func name */
-		print_c_funct_name(stdout, prefix, member_func);
+		print("%s", func_name);
 
 		/* print end of function declaration */
 		prstr("(struct json const *node,\n\tunsigned int depth, "
@@ -1126,11 +1275,25 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    /* without -M member_func print member name if we have one */
 	    } else if (p->name != NULL) {
 
+		/* form function name based on JSON member name */
+		func_name = alloc_c_funct_name(prefix, p->name);
+		if (func_name == NULL) {
+		    err(32, __func__, "alloc_c_funct_name for JSON member name returned NULL");
+		    not_reached();
+		}
+		is_unique = append_unique_str(unique_tbl, func_name);
+		if (is_unique == false) {
+		    /* we previously saw this function name, no need to reprint function decl */
+		    free(func_name);
+		    func_name = NULL;
+		    continue;
+		}
+
 		/* print start of function declaration */
 		prstr("extern bool ");
 
 		/* print function name */
-		print_c_funct_name(stdout, prefix, p->name);
+		print("%s", func_name);
 
 		/* print end of function declaration */
 		prstr("(struct json const *node,\n\tunsigned int depth, "
@@ -1150,11 +1313,25 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 */
 	} else if (validate != NULL) {
 
+	    /* form function name based validation function */
+	    func_name = alloc_c_funct_name(prefix, validate);
+	    if (func_name == NULL) {
+		err(33, __func__, "alloc_c_funct_name for validation function name returned NULL");
+		not_reached();
+	    }
+	    is_unique = append_unique_str(unique_tbl, func_name);
+	    if (is_unique == false) {
+		/* we previously saw this function name, no need to reprint function decl */
+		free(func_name);
+		func_name = NULL;
+		continue;
+	    }
+
 	    /* print start of function declaration */
 	    prstr("extern bool ");
 
 	    /* print validation function name */
-	    print_c_funct_name(stdout, prefix, validate);
+	    print("%s", func_name);
 
 	    /* print end of function declaration */
 	    prstr("(struct json const *node,\n\tunsigned int depth, "
@@ -1167,6 +1344,18 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 * nothing to do
 	 */
     }
+
+    /*
+     * free dynamic array of unique function names
+     */
+    unique_len = dyn_array_tell(unique_tbl);
+    for (i=0; i < unique_len; ++i) {
+	u = dyn_array_value(unique_tbl, char *, i);
+	if (u != NULL) {
+	    free(u);
+	}
+    }
+    dyn_array_free(unique_tbl);
 
     /*
      * print semantic table trailer

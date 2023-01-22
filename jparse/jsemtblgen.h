@@ -66,7 +66,7 @@
 /*
  * official jsemtblgen version
  */
-#define JSEMTBLGEN_VERSION "0.5 2023-01-21"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "0.6 2023-01-22"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

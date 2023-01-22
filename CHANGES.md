@@ -30,7 +30,9 @@ Added SOUP_VERSION as "1.0 2023-01-21".
 
 Changed jsemtblgen so that -P prefix will always be used on function names.
 Use of -M func will override any specific member name.
-Changed JSEMTBLGEN_VERSION from "0.4 2022-07-13" to "0.5 2023-01-21".
+Changed JSEMTBLGEN_VERSION from "0.4 2022-07-13" to "0.6 2023-01-22".
+The jsemtblgen tool, with the -I option, will not print duplicate
+extern function declarations.
 
 
 ## Release 0.9.9 2022-12-31
