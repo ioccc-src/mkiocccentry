@@ -207,7 +207,7 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.o util.o
+LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #

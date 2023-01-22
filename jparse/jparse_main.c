@@ -175,7 +175,7 @@ usage(int exitcode, char const *str, char const *prog)
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     fprintf_usage(exitcode, stderr, usage_msg, prog,
-		  DBG_DEFAULT, json_verbosity_level, JSON_PARSER_VERSION, JPARSE_VERSION);
+		  DBG_DEFAULT, json_verbosity_level, json_parser_version, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
