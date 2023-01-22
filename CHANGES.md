@@ -21,10 +21,12 @@ this will take more time yet.
 Added dbg_version as a global string for users of the dbg.a library.
 Added dyn_array_version as a global string for users of the dyn_array.a library.
 Added json_parser_version as a global string for users of the jparse.a library.
+Added soup_version as a global string for users of the soup.a library.
 
 Changed DBG_VERSION from "2.6 2022-11-09" to "2.7 2023-01-21".
 Changed DYN_ARRAY_VERSION from "2.0 2022-06-09" to "2.1 2023-01-21".
 Changed JSON_PARSER_VERSION from "0.12 2022-11-09" to "0.13 2023-01-21".
+Added SOUP_VERSION as "1.0 2023-01-21".
 
 
 ## Release 0.9.9 2022-12-31

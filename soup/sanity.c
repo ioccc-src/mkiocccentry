@@ -15,6 +15,14 @@
 
 
 /*
+ * global variables
+ *
+ * We put the soup.a version string here because we need to put it somewhere. :-)
+ */
+const char *const soup_version = SOUP_VERSION;	/* library version format: major.minor YYYY-MM-DD */
+
+
+/*
  * ioccc_sanity_chks	-   run sanity checks on specific data that's
  *			    used in several of the IOCCC tools
  *
