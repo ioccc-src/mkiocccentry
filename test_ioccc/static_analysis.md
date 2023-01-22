@@ -1135,15 +1135,14 @@ dyn_array.c:879:48: warning: implicit conversion loses integer precision: 'long'
 
 ### Solution
 
-As this is well tested code and since changing this would possibly introduce
-other complications we can ignore this for now. It is TBD if this will be fixed
-at a later date.
+Local varianles data_first_offset and data_first_offset in dyn_array.c
+were changed to type intmax_t in order to avoid integer precision loses.
 
 
 ### Example
 
 ```c
-son_parse.c:3265:17: warning: implicit conversion loses integer precision: 'intmax_t' (aka 'long') to 'int' [-Wshorten-64-to-32]
+json_parse.c:3265:17: warning: implicit conversion loses integer precision: 'intmax_t' (aka 'long') to 'int' [-Wshorten-64-to-32]
     item->len = dyn_array_tell(item->s);
               ~ ^~~~~~~~~~~~~~~~~~~~~~~
 ./../dyn_array/dyn_array.h:118:67: note: expanded from macro 'dyn_array_tell'

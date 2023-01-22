@@ -820,8 +820,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
     enum move_case mv_case = MOVE_CASE_UNSET;	/* assume no special move case */
     uint8_t *last_add_byte = NULL;		/* last byte of the data to add, if != NULL */
     uint8_t *last_alloc_byte = NULL;		/* last byte of the allocated data of the dynamic array */
-    int data_first_offset = 0;			/* offset of array_to_add_p from dynamic array allocated data */
-    int data_last_offset = 0;			/* offset of end of data to add om dynamic array allocated data */
+    intmax_t data_first_offset = 0;		/* offset of array_to_add_p from dynamic array allocated data */
+    intmax_t data_last_offset = 0;		/* offset of end of data to add om dynamic array allocated data */
     intmax_t data_size = 0;			/* length in bytes, of the data to move */
     intmax_t alloc_size = 0;			/* initial size of dynamic array allocated data */
     bool moved = false;				/* true ==> location of the elements array moved during realloc() */
@@ -890,8 +890,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    dbg(DBG_VVVVHIGH, "in %s: array_to_add_p: %p", __func__, (void *)array_to_add_p);
 	    dbg(DBG_VVVVHIGH, "in %s: data_size: %jd", __func__, data_size);
 	    dbg(DBG_VVVVHIGH, "in %s: last_add_byte: %p", __func__, (void *)last_add_byte);
-	    dbg(DBG_VVVVHIGH, "in %s: data_first_offset: %d", __func__, data_first_offset);
-	    dbg(DBG_VVVVHIGH, "in %s: data_last_offset: %d", __func__, data_last_offset);
+	    dbg(DBG_VVVVHIGH, "in %s: data_first_offset: %ju", __func__, data_first_offset);
+	    dbg(DBG_VVVVHIGH, "in %s: data_last_offset: %ju", __func__, data_last_offset);
 	}
 	mv_case = determine_move_case(array->data, last_alloc_byte, array_to_add_p, last_add_byte);
 	if (dbg_allowed(DBG_VVVVHIGH)) {
@@ -978,7 +978,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset >= 0) {
-		err(93, __func__, "mv_case: %s but data_first_offset >= 0: %d",
+		err(93, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
 				  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
@@ -1018,7 +1018,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset >= 0) {
-		err(96, __func__, "mv_case: %s but data_first_offset >= 0: %d",
+		err(96, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
 				  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
@@ -1071,7 +1071,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset < 0) {
-		err(100, __func__, "mv_case: %s but data_first_offset < 0: %d",
+		err(100, __func__, "mv_case: %s but data_first_offset < 0: %ju",
 				  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
