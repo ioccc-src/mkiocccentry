@@ -947,8 +947,8 @@ dbg.reload: dbg.clone/
 	${E} ${RM} -rf dbg
 	${E} ${MAKE} dbg.rsync
 
-dbg.rsync: dbg.clone/ .exclude
-	${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dbg.clone/ dbg
+dbg.rsync: dbg.clone/
+	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dbg.clone/ dbg
 
 dbg.status: dbg.clone/
 	${E} ${GIT} status dbg.clone
@@ -977,8 +977,8 @@ dyn_array.reload: dyn_array/dyn_array.clone/
 	@#${E} ${RM} -rf dyn_array
 	@#${E} ${MAKE} dyn_array.rsync
 
-dyn_array.rsync: dyn_array/dyn_array.clone/ .exclude
-	@#${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dyn_array/dyn_array.clone/ dyn_array
+dyn_array.rsync: dyn_array/dyn_array.clone/
+	@#${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dyn_array/dyn_array.clone/ dyn_array
 
 dyn_array.status: dyn_array/dyn_array.clone/
 	@#${E} ${GIT} status dyn_array/dyn_array.clone
@@ -1007,8 +1007,8 @@ jparse.reload: jparse.clone/
 	@#${E} ${RM} -rf jparse
 	@#${E} ${MAKE} jparse.rsync
 
-jparse.rsync: jparse.clone/ .exclude
-	@#${E} ${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v jparse.clone/ jparse
+jparse.rsync: jparse.clone/
+	@#${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v jparse.clone/ jparse
 
 jparse.status: jparse.clone/
 	@#${E} ${GIT} status jparse.clone
