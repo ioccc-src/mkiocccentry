@@ -28,6 +28,10 @@ Changed DYN_ARRAY_VERSION from "2.0 2022-06-09" to "2.1 2023-01-21".
 Changed JSON_PARSER_VERSION from "0.12 2022-11-09" to "0.13 2023-01-21".
 Added SOUP_VERSION as "1.0 2023-01-21".
 
+Changed jsemtblgen so that -P prefix will always be used on function names.
+Use of -M func will override any specific member name.
+Changed JSEMTBLGEN_VERSION from "0.4 2022-07-13" to "0.5 2023-01-21".
+
 
 ## Release 0.9.9 2022-12-31
 

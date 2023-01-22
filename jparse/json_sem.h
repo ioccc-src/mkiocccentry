@@ -97,7 +97,7 @@ struct json_sem
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
     unsigned int count;		/* number of times this JSON semantic was matched */
     int sem_index;		/* index of sem in JSON semantic table or -1 ==> end of the table */
-    size_t name_len;		/* length of name_str, not including final NUL or 0 */
+    size_t name_len;		/* if type == JTYPE_MEMBER length of name_str (not including final NUL) or 0 */
     bool (* validate)(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 				/* JSON parse tree node validator, or NULL */

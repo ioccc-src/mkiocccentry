@@ -49,7 +49,7 @@
  */
 static bool h_mode = false;		/* -I - true ==> output as .h include file, false ==> output as .c src */
 static char *tbl_name = "sem_tbl";	/* -N name - name of the semantic table */
-static char *def_func = "NULL";		/* -D def_func - validate with def_func() unless overridden */
+static char *def_func = NULL;		/* -D def_func - validate with def_func() unless overridden */
 static char *prefix = NULL;		/* -P prefix - validate JTYPE_MEMBER with prefix_name() or NULL */
 static char *number_func = NULL;	/* -1 func - validate JTYPE_NUMBER JSON nodes or NULL */
 static char *string_func = NULL;	/* -S func - validate JTYPE_STRING JSON nodes or NULL */
@@ -195,7 +195,7 @@ static Word cwords[] = {
 static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
 static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
 static int sem_cmp(void const *a, void const *b);
-static void print_c_funct_name(FILE *stream, char const *str);
+static void print_c_funct_name(FILE *stream, char const *prefix, char const *str);
 static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static Word *find_member(Word *table, const char *string);
@@ -727,14 +727,18 @@ sem_cmp(void const *a, void const *b)
  *	"#if" ==> "x_if"
  *	"_Pragma" ==> "x_Pragma"
  *
+ * In all of the above cases, if prefix is non-NULL, then a processed prefix
+ * followed by an _ is printed before the processed str is printed.
+ *
  * given:
  *	stream	open FILE stream to print on
+ *	prefix	!= NULL ==? print prefix_
  *	str	string to print to stream
  *
  * NOTE: This function does not return if given NULL pointers or on error.
  */
 static void
-print_c_funct_name(FILE *stream, char const *str)
+print_c_funct_name(FILE *stream, char const *prefix, char const *str)
 {
     bool reserved = false;	/* true ==> str is a reserved word in C */
 
@@ -751,6 +755,38 @@ print_c_funct_name(FILE *stream, char const *str)
     }
 
     /*
+     * if we have a prefix, process each prefix character in C, converting non-alphanumeric characters to underscore.
+     */
+    if (prefix != NULL) {
+
+	/*
+	 * case: prefix is a C reserved word
+	 * case: prefix is an empty string
+	 * case: prefix begins with a digit
+	 * case: prefix begins with an underscore
+	 */
+	reserved = test_reserved(prefix);
+	if (reserved == true || prefix[0] == '\0' || (isascii(prefix[0]) && isdigit(prefix[0])) || prefix[0] == '_') {
+	    /* print a leading x */
+	    fprstr(stream, "x");
+	}
+
+	/*
+	 * process prefix
+	 */
+	while (prefix[0] != '\0') {
+	    if (!isascii(prefix[0]) || !isalnum(prefix[0])) {
+		/* convert non-C name character to underscore */
+		fprstr(stream, "_");
+	    } else {
+		fprint(stream, "%c", prefix[0]);
+	    }
+	    ++prefix;
+	}
+	fprstr(stream, "_");
+    }
+
+    /*
      * case: str is a C reserved word
      * case: str is an empty string
      * case: str begins with a digit
@@ -763,7 +799,7 @@ print_c_funct_name(FILE *stream, char const *str)
     }
 
     /*
-     * process each character in C, converting non-alphanumeric characters to underscore.
+     * process each str character in C, converting non-alphanumeric characters to underscore.
      */
     while (str[0] != '\0') {
 	if (!isascii(str[0]) || !isalnum(str[0])) {
@@ -827,11 +863,12 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * print each semantic table entry
      */
     for (i=0; i < len; ++i) {
-	char *validate = def_func;	/* validation function name */
+	char *validate;		/* validation function name */
 
 	/*
 	 * determine the validation function name
 	 */
+	validate = def_func;	/* start with default name, which may be NULL */
 	p = dyn_array_addr(tbl, struct json_sem, i);
 	switch (p->type) {
 	case JTYPE_NUMBER:
@@ -877,58 +914,79 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	}
 
 	/*
-	 * print a given semantic table entry
+	 * print start of semantic table element, entry depth, type, min,
 	 */
-	if (p->name == NULL) {
-	    if (p->count == INF) {
-		print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t0,\t",
-		      p->depth, json_type_name(p->type), p->count, i);
-		print_c_funct_name(stdout, validate);
-		prstr("\tNULL },\n");
-	    } else {
-		print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t0,\t",
-		      p->depth, json_type_name(p->type), p->count, p->count, i);
-		print_c_funct_name(stdout, validate);
-		prstr(",\tNULL },\n");
-	    }
+	print("  { %u,\t%s,\t1,", p->depth, json_type_name(p->type));
+	/* print max, count, sem_index, name_len, */
+	if (p->count == INF) {
+	    print("\tINF,\t%u,\t%ju,\t%ju,", p->count, i, (uintmax_t)p->name_len);
 	} else {
-	    if (p->count == INF) {
-		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, i, (uintmax_t)p->name_len);
-		    print_c_funct_name(stdout, prefix);
-		    prstr("_");
-		    print_c_funct_name(stdout, p->name);
-		    prstr(",\t\"");
-		    print_c_funct_name(stdout, p->name);
-		    prstr("\" },\n");
-		} else {
-		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, i, (uintmax_t)p->name_len);
-		    print_c_funct_name(stdout, p->name);
-		    prstr(",\t\"");
-		    print_c_funct_name(stdout, validate);
-		    prstr("\" },\n");
-		}
+	    print("\t%u,\t%u,\t%ju,\t%ju,", p->count, p->count, i, (uintmax_t)p->name_len);
+	}
+
+	/*
+	 * case: JSON MEMBER
+	 *
+	 * The JTYPE_MEMBER type is a special case where -M member_func will override
+	 * any member named function.
+	 *
+	 * print validate_function,
+	 */
+	prstr("\t");
+	if (p->type == JTYPE_MEMBER) {
+
+	    /* if -M member_func print member_func */
+	    if (member_func != NULL) {
+
+		/* print -M member_func */
+		print_c_funct_name(stdout, prefix, member_func);
+
+	    /* without -M member_func print member name if we have one */
+	    } else if (p->name != NULL) {
+
+		/* print member name */
+		print_c_funct_name(stdout, prefix, p->name);
+
+	    /* otherwise print NULL */
 	    } else {
-		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, p->count, i, (uintmax_t)p->name_len);
-		    print_c_funct_name(stdout, prefix);
-		    prstr("_");
-		    print_c_funct_name(stdout, p->name);
-		    prstr(",\t\"");
-		    print_c_funct_name(stdout, p->name);
-		    prstr("\" },\n");
-		} else {
-		    print("  { %u,\t%s,\t1,\t%u,\t%u,\r%ju,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, p->count, i, (uintmax_t)p->name_len);
-		    print_c_funct_name(stdout, p->name);
-		    prstr(",\t\"");
-		    print_c_funct_name(stdout, validate);
-		    prstr("\" },\n");
-		}
+		prstr("NULL");
 	    }
+	    prstr(",");
+
+	/*
+	 * case: JSON non-MEMBER with a validation function
+	 *
+	 * In the non-JTYPE_MEMBER type case, we print either a general validation function,
+	 * or default validation function, or just NULL, where is no validation function.
+	 *
+	 * print validate_function,
+	 */
+	} else if (validate != NULL) {
+
+	    /* print validate_function */
+	    print_c_funct_name(stdout, prefix, validate);
+	    prstr(",");
+
+	/*
+	 * case: JSON non-MEMBER without a validation function
+	 *
+	 * print NULL,
+	 */
+	} else {
+	    prstr("NULL,");
+	}
+
+	/*
+	 * print , name and end of element
+	 */
+	if (p->name != NULL) {
+	    /* print quoted member name w/o any prefix */
+	    prstr("\t\"");
+	    print_c_funct_name(stdout, NULL, p->name);
+	    prstr("\" },\n");
+	} else {
+	    /* print NULL for no name */
+	    prstr("\tNULL },\n");
 	}
     }
 
@@ -992,11 +1050,12 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * print each semantic table entry
      */
     for (i=0; i < len; ++i) {
-	char *validate = def_func;	/* validation function name */
+	char *validate;		/* validation function name */
 
 	/*
 	 * determine the validation function name
 	 */
+	validate = def_func;	/* start with default name, which may be NULL */
 	p = dyn_array_addr(tbl, struct json_sem, i);
 	switch (p->type) {
 	case JTYPE_NUMBER:
@@ -1042,20 +1101,71 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	}
 
 	/*
-	 * print an extern if we have a non-NULL validation function
+	 * case: JSON MEMBER
+	 *
+	 * The JTYPE_MEMBER type is a special case where -M member_func will override
+	 * any member named function.
+	 *
+	 * print extern for the validate_function if we have one
 	 */
-	if (p->name != NULL) {
-	    prstr("extern bool ");
-	    if (p->type == JTYPE_MEMBER && prefix != NULL && strcmp(p->name, "NULL") != 0) {
-		print_c_funct_name(stdout, prefix);
-		prstr("_");
-		print_c_funct_name(stdout, p->name);
-	    } else if (strcmp(validate, "NULL") != 0) {
-		print_c_funct_name(stdout, validate);
+	if (p->type == JTYPE_MEMBER) {
+
+	    /* if -M member_func print member_func */
+	    if (member_func != NULL) {
+
+		/* print start of function declaration */
+		prstr("extern bool ");
+
+		/* print -M func name */
+		print_c_funct_name(stdout, prefix, member_func);
+
+		/* print end of function declaration */
+		prstr("(struct json const *node,\n\tunsigned int depth, "
+		      "struct json_sem *sem, struct json_sem_val_err **val_err);\n");
+
+	    /* without -M member_func print member name if we have one */
+	    } else if (p->name != NULL) {
+
+		/* print start of function declaration */
+		prstr("extern bool ");
+
+		/* print function name */
+		print_c_funct_name(stdout, prefix, p->name);
+
+		/* print end of function declaration */
+		prstr("(struct json const *node,\n\tunsigned int depth, "
+		      "struct json_sem *sem, struct json_sem_val_err **val_err);\n");
+
 	    }
+
+	    /* otherwise nothing to do */
+
+	/*
+	 * case: JSON non-MEMBER with a validation function
+	 *
+	 * In the non-JTYPE_MEMBER type case, we print either a general validation function,
+	 * or default validation function, or just NULL, where is no validation function.
+	 *
+	 * print extern for the validate_function if we have one
+	 */
+	} else if (validate != NULL) {
+
+	    /* print start of function declaration */
+	    prstr("extern bool ");
+
+	    /* print validation function name */
+	    print_c_funct_name(stdout, prefix, validate);
+
+	    /* print end of function declaration */
 	    prstr("(struct json const *node,\n\tunsigned int depth, "
 		  "struct json_sem *sem, struct json_sem_val_err **val_err);\n");
 	}
+
+	/*
+	 * case: JSON non-MEMBER without a validation function
+	 *
+	 * nothing to do
+	 */
     }
 
     /*
