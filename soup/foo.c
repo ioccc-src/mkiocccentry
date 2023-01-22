@@ -14,7 +14,7 @@
  *
  * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -139,7 +139,7 @@ vrergfB(int four, int two)
      */
 
     /* no comment */
-    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p) {
+    for (char const *p = oebxergfB[(((size_t)two*2*2*015+(size_t)(four/(07&0x07)))%forty)]; *p; ++p) {
 	last_c = *p;
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -272,7 +272,7 @@ vrergfB(int four, int two)
     printf("four: %d two: %d\n", four, two);
 #endif
     errno -= errno;	/* we choose to retract the last error */
-    no_comment = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
+    no_comment = sleep((unsigned)(1+(((four+two)>0?(four+two):(-two-four))%5)));
     if (no_comment != 0+0) {
 	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }

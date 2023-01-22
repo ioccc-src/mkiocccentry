@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstr_test.sh 8 "08 November 2022" "jstr_test.sh" "IOCCC tools"
+.TH jstr_test.sh 8 "19 January 2023" "jstr_test.sh" "IOCCC tools"
 .SH NAME
 jstr_test.sh \- JSON string encoding and decoding tests
 .SH SYNOPSIS
@@ -62,9 +62,27 @@ all is well
 \-h and help string printed or \-V and version string printed
 .TQ
 3
-Command line usage error
+command line usage error
 .TQ
->= 10
+4
+test #0 failed
+.TQ
+5
+test #1 failed
+.TQ
+6
+test #2 failed
+.TQ
+7
+test #3 failed
+.TQ
+8
+missing or non\-executable \fBjstrencode(1)\fP
+.TQ
+9
+missing or non\-executable \fBjstrdecode(1)\fP
+.TQ
+>=10
 internal error
 .SH FILES
 \fIjstr_test.out\fP

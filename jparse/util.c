@@ -1717,12 +1717,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * duplicate the line
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(len+1+1, sizeof(char));
+    ret = calloc((size_t)len+1+1, sizeof(char));
     if (ret == NULL) {
 	errp(151, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
-    memcpy(ret, *linep, len);
+    memcpy(ret, *linep, (size_t)len);
 
     /*
      * strip trailing whitespace if requested
@@ -1928,7 +1928,7 @@ read_all(FILE *stream, size_t *psize)
 	if (last_read > 0) {
 	    if (last_read != READ_ALL_CHUNK) {
 		/* update the dynamic array size based on amount of read in last read */
-		moved = dyn_array_seek(array, last_read-READ_ALL_CHUNK, SEEK_CUR);
+		moved = dyn_array_seek(array, (off_t)last_read-READ_ALL_CHUNK, SEEK_CUR);
 		if (moved == true) {
 		    ++move_cycle;
 		    dbg(DBG_VVVHIGH, "dyn_array_seek() caused a realloc data move, count: %ld", move_cycle);
@@ -1978,7 +1978,7 @@ read_all(FILE *stream, size_t *psize)
      * report the amount of data actually read, if requested
      */
     if (psize != NULL) {
-	*psize = used;
+	*psize = (size_t)used;
     }
 
     /*
@@ -2464,7 +2464,7 @@ parse_verbosity(char const *program, char const *arg)
     errno = 0;		/* pre-clear errno for errp() */
     verbosity = (int)strtol(arg, NULL, 0);
     if (errno != 0) {
-	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
 	not_reached();
     }
 
@@ -3036,7 +3036,7 @@ clearerr_or_fclose(FILE *stream)
  *	EOF ==> write error or NULL buf
  */
 ssize_t
-fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
+fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 {
     size_t count = 0;		/* number of characters in line */
     int delayed_errno = 0;	/* for printing warning at end of function if necessary */
@@ -3087,7 +3087,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 	/*
 	 * print based on the byte value
 	 */
-	c = (int)(((uint8_t *)buf)[i]);
+	c = (int)(((const uint8_t *)buf)[i]);
 
 	/*
 	 * case: character is non-NUL start or non-NUL end or non-ASCII character
@@ -3369,7 +3369,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
     if (success == false) {
 	return EOF;
     }
-    return count;
+    return (ssize_t)count;
 }
 
 
@@ -3395,7 +3395,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 ssize_t
 fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end)
 {
-    size_t count = 0;		/* number of characters in line */
+    ssize_t count = 0;		/* number of characters in line */
     int saved_errno = 0;	/* saved errno to restore before returning */
     size_t len = 0;		/* string length */
 
@@ -3888,7 +3888,7 @@ malloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(180, __func__, "filename is NULL");
+	err(179, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3905,7 +3905,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(181, __func__, "strdup of filename failed: %s", filename);
+	    errp(180, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3923,7 +3923,7 @@ malloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(182, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
+	    errp(181, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3933,7 +3933,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(183, __func__, "snprintf returned: %zu < 0", len);
+	    errp(182, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3942,7 +3942,7 @@ malloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(184, __func__, "function attempted to return NULL");
+	errp(183, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3968,7 +3968,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(185, __func__, "given NULL str");
+	err(184, __func__, "given NULL str");
 	not_reached();
     }
 

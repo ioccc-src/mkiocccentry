@@ -14,7 +14,7 @@
  *
  * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

@@ -12,7 +12,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -292,6 +292,10 @@ free_author_array(struct author *author_set, int author_count)
 	    free(author_set[i].url);
 	    author_set[i].url = NULL;
 	}
+	if (author_set[i].alt_url != NULL) {
+	    free(author_set[i].alt_url);
+	    author_set[i].alt_url = NULL;
+	}
 	if (author_set[i].mastodon != NULL) {
 	    free(author_set[i].mastodon);
 	    author_set[i].mastodon = NULL;
@@ -314,6 +318,8 @@ free_author_array(struct author *author_set, int author_count)
 	 */
 	memset(&(author_set[i]), 0, sizeof(author_set[i]));
     }
+    free(author_set);
+    author_set = NULL;
     return;
 }
 
@@ -1878,7 +1884,7 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 	 */
 	test = test_IOCCC_contest_id(IOCCC_contest_id);
 	if (test == false) {
-	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    /* test_IOCCC_contest_id() already issued json_dbg() messages */
 	    return NULL;
 	}
 
@@ -2446,7 +2452,7 @@ test_authors(int author_count, struct author const *authorp)
      * initialize a zeroized array of author numbers
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    author_nums = calloc(author_count, sizeof(int));
+    author_nums = calloc((size_t)author_count, sizeof(int));
     if (author_nums == NULL) {
 	warnp(__func__, "calloc of %d ints failed", author_count);
 	return false;
@@ -4202,7 +4208,7 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
 	 */
 	test = test_IOCCC_contest_id(IOCCC_contest_id);
 	if (test == false) {
-	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    /* test_IOCCC_contest_id() already issued json_dbg() messages */
 	    return false;
 	}
 

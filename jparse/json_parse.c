@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -228,7 +228,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
-    size_t mlen = 0;	    /* length of allocated encoded string */
+    ssize_t mlen = 0;	    /* length of allocated encoded string */
     char *p;		    /* next place to encode */
     size_t i;
 
@@ -254,7 +254,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     /*
      * malloc the encoded string
      */
-    ret = malloc(mlen + 1 + 1);
+    ret = malloc((size_t)mlen + 1 + 1);
     if (ret == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
@@ -305,7 +305,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju)",
 		     (uintmax_t)len, (uintmax_t)mlen);
     if (retlen != NULL) {
-	*retlen = mlen;
+	*retlen = (size_t)mlen;
     }
     return ret;
 }
@@ -2321,7 +2321,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
-	item->as_double_int = (item->as_double == floorl(item->as_double));
+	item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl((intmax_t)item->as_double));
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
@@ -2339,9 +2339,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     } else {
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, (double)item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, (double)item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, (double)item->as_float);
 	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", booltostr(item->as_float_int));
     }
 
@@ -2430,13 +2430,13 @@ json_conv_number(char const *ptr, size_t len)
     item->umaxint_sized = false;
     /* floating point values */
     item->float_sized = false;
-    item->as_float = 0.0;
+    item->as_float = 0.0f;
     item->as_float_int = false;
     item->double_sized = false;
     item->as_double = 0.0;
     item->as_double_int = false;
     item->longdouble_sized = false;
-    item->as_longdouble = 0.0;
+    item->as_longdouble = 0.0L;
     item->as_longdouble_int = false;
 
     /*
@@ -3262,7 +3262,7 @@ json_create_object(void)
     /*
      * initialize accounting for the object
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
@@ -3354,7 +3354,7 @@ json_object_add_member(struct json *node, struct json *member)
     /*
      * update accounting for the object
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
 }
@@ -3411,7 +3411,7 @@ json_create_elements(void)
     /*
      * initialize accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
@@ -3514,7 +3514,7 @@ json_elements_add_value(struct json *node, struct json *value)
     /*
      * update accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
 }
@@ -3574,7 +3574,7 @@ json_create_array(void)
     /*
      * initialize accounting for the array
      */
-    item->len = dyn_array_tell(item->s);
+    item->len = (int)dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 

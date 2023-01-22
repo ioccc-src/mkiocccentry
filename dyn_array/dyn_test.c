@@ -119,7 +119,7 @@ main(int argc, char *argv[])
      * verify values
      */
     for (i = 0; i < 1000000; ++i) {
-	if ((double) i != dyn_array_value(array, double, i)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
 	    err = true;
 	}
@@ -156,14 +156,22 @@ main(int argc, char *argv[])
      * verify values again
      */
     for (i = 0; i < 1000000; ++i) {
-	if ((double) i != dyn_array_value(array, double, i)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
 	    err = true;
 	}
-	if ((double) i != dyn_array_value(array, double, i+1000000)) {
+	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i+1000000)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i+1000000));
 	    err = true;
 	}
+    }
+
+    /*
+     * free dynamic array
+     */
+    if (array != NULL) {
+	dyn_array_free(array);
+	array = NULL;
     }
 
     /*
@@ -245,7 +253,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ALLOC_VERSION, DYN_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ARRAY_VERSION, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

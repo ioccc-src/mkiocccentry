@@ -70,6 +70,7 @@ To do this you may use the feature above with the `makefile.local`.  Note that
 there might be some redundancy in your `CFLAGS` but we specify these explicitly
 as some of the flags will eventually change.
 
+
 ### A note about the foo files and oebxergfB.h
 
 When it comes to these three files you should ignore any warnings. In the case
@@ -119,7 +120,7 @@ This warning can be safely ignored so we can add to the `WARN_FLAGS`
 
 
 ## Issue: macro is not used
-### Status: varies (see discussion below)
+### Status: fixed
 ### Examples:
 
 ```c
@@ -204,7 +205,7 @@ find_matching_quote(char *q)
 util.c:2964:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
 char *
 ^
-static 
+static
 ```
 
 ### Solution
@@ -235,7 +236,7 @@ This was fixed in commit cd991fae57ad4ac358c899ec2967aca8f2f2f224.
 
 
 ## Issue: warning: format string is not a string literal
-### Status: ignored (see discussion below)
+### Status: ignore
 ### Example
 
 ```c
@@ -411,17 +412,146 @@ static void usage(int exitcode, char const *prog, char const *str, int expected,
 
 The solution is to add an include guard to the file. It would not be a good
 solution to create a header file for `jnum_test` because even if this would not
-be unnecessary overkill these variables are also used in jnum_chk.c as well.
+be unnecessary overkill these variables are also used in `jnum_chk.c` as well.
 
-Now running from the main directory `make clobber all` will work.
+Now running from the main directory `make clobber all` will work - under some
+systems. There's one more step but since it's longer we describe it in the next
+example.
+
+
+### Example
+
+```c
+jnum_test.c:44:11: warning: no previous extern declaration for non-static variable 'test_count' [-Wmissing-variable-declarations]
+int const test_count = TEST_COUNT;
+          ^
+jnum_test.c:44:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int const test_count = TEST_COUNT;
+^
+jnum_test.c:46:7: warning: no previous extern declaration for non-static variable 'test_set' [-Wmissing-variable-declarations]
+char *test_set[TEST_COUNT+1] = {
+      ^
+jnum_test.c:46:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *test_set[TEST_COUNT+1] = {
+^
+jnum_test.c:495:20: warning: no previous extern declaration for non-static variable 'test_result' [-Wmissing-variable-declarations]
+struct json_number test_result[TEST_COUNT+1] = {
+                   ^
+jnum_test.c:495:1: note: declare 'static' if the variable is not intended to be used outside of this translation unit
+struct json_number test_result[TEST_COUNT+1] = {
+^
+
+```
+
+### Solution
+
+Define the macro `JNUM_TEST` in `jnum_header.c` and then also add the inclusion
+of `jnum_chk.h` so that the variables are declared. Then run `make
+rebuild_jnum_test` from `jparse/`.
+
+We cannot make them static exactly because they're used in `jnum_chk.c` as well.
+
 
 ### See also
 
-These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc.
+These were fixed in commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc and the
+subsequent problem was fixed in commit 147e4b5783833e2245a3c925a3392fcbc732846d
+as described next. A bug was fixed in commit
+60760b84607f520f271088e214cc83b68078fe20 and a bug that resulted from this was
+fixed in 3c312851717210fa1c50203b09cc36192f1621c5.
+
+As for 60760b84607f520f271088e214cc83b68078fe20 the log was by mistake not
+finished and it should probably read something like:
+
+    A problem occurred where missing variable declarations in jnum_test.c
+    was not fixed properly as after the jnum_test.c has a JNUM_TEST macro
+    the jnum_header.c must #include jnum_chk.h. This is because otherwise
+    the test_set, test_count and test_result were not previously declared (but
+    are in jnum_chk.h). We could not have it static exactly because they're
+    used in both source files.
+
+
+### Example
+
+After the above fix (see commit 89f8a4b9d9b6f3533b3577398dbd559f09e27ecc) under
+some systems we run into a problem where a number of steps fail in `make prep`.
+What you'll see is something like:
+
+
+```sh
+$ make prep
+make_action 10 clobber OK
+make_action 11 all ERROR exit code 2
+make_action 12 depend OK
+make_action 13 clean_mkchk_sem OK
+make_action 14 all_sem_ref OK
+make_action 15 mkchk_sem OK
+make_action 16 all ERROR exit code 2
+make_action 18 parser OK
+make_action 19 all ERROR exit code 2
+make_action 20 load_json_ref OK
+make_action 21 use_json_ref OK
+make_action 22 clean_generated_obj OK
+make_action 23 all ERROR exit code 2
+make_action 24 bug_report-txl ERROR exit code 2
+make_action 25 shellcheck ERROR exit code 2
+make_action 26 seqcexit ERROR exit code 2
+make_action 27 picky ERROR exit code 2
+make_action 28 tags ERROR exit code 2
+make_action 29 check_man OK
+make_action 30 all ERROR exit code 2
+make_action 31 test ERROR exit code 2
+One or more tests failed:
+
+	make_action 11: make -f ./Makefile all: non-zero exit code: 2
+	make_action 16: make -f ./Makefile all: non-zero exit code: 2
+	make_action 19: make -f ./Makefile all: non-zero exit code: 2
+	make_action 23: make -f ./Makefile all: non-zero exit code: 2
+	make_action 24: make -f ./Makefile bug_report-txl: non-zero exit code: 2
+	make_action 25: make -f ./Makefile shellcheck: non-zero exit code: 2
+	make_action 26: make -f ./Makefile seqcexit: non-zero exit code: 2
+	make_action 27: make -f ./Makefile picky: non-zero exit code: 2
+	make_action 28: make -f ./Makefile tags: non-zero exit code: 2
+	make_action 30: make -f ./Makefile all: non-zero exit code: 2
+	make_action 31: make -f ./Makefile test: non-zero exit code: 2
+
+See test_ioccc/test_ioccc.log for more details.
+
+make prep: ERROR: prep.sh exit code: 31
+
+make prep: see build.log for build details
+
+make: *** [prep] Error 31
+```
+
+Now as one can see `make all` fails so running it manually we see:
+
+
+```c
+$ make all
+cc -std=gnu11 -O0 -g -pedantic -Wall -Wextra -Werror  -I../.. jnum_test.c -c
+In file included from jnum_test.c:37:0:
+jnum_chk.h:83:13: error: 'quiet' defined but not used [-Werror=unused-variable]
+ static bool quiet = false;    /* true ==> quiet mode */
+             ^
+```
+
+### Solution
+
+The problem is that because `quiet` is not used in `jnum_test.c` we have to add
+an include guard for `quiet` as well. This was not picked up under macOS but it
+seems to be a problem under linux. This in turn means that the rules above that
+failed all depend on `make all` which as can be seen above would clearly fail!
+
+### See also
+
+This issue, which was created by commit
+89f8a4b9d9b6f3533b3577398dbd559f09e27ecc, was fixed in commit
+147e4b5783833e2245a3c925a3392fcbc732846d.
 
 
 ## Issue: warning: 'return' will never be executed
-### Status: varies (see discussion below)
+### Status: fixed, ignore
 ### Example
 
 ```c
@@ -449,7 +579,7 @@ be 2.
 
 ### See also
 
-Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note comit
+Fixed in commit e217a44d892759a82b683f465db482df4ab790d8. Also note commit
 ab5579e0473199fc676b37e37e68b032338caf5b which is the commit for the
 `dbg_example.c` example above.
 
@@ -521,7 +651,7 @@ Fixed in commit a3fb666661cf375e4b14cc6629ad519aa8593de2.
 
 
 ## Issue: warning: code will never be executed
-### Status: fixed (ignored)
+### Status: ignore
 ### Example
 
 ```c
@@ -632,3 +762,814 @@ want to spoil that's all we'll say. We won't even answer if your guess is right
 or wrong.
 
 Should this be found in another file please do report it.
+
+
+## Issue: warning: cast from `'const foo *'` to `'foo *'` drops const qualifier
+### Status: fixed
+### Example
+
+```c
+util.c:3495:19: warning: cast from 'const char *' to 'char *' drops const qualifier [-Wcast-qual]
+        *first = (char *)ptr+i;
+```
+
+### Solution
+
+In this case we do not want to modify `ptr` but we do need to modify `first` (or
+what it points to) so `first` cannot be const.
+
+### Example
+
+```c
+./jparse.l:542:41: warning: cast from 'const char *' to 'void *' drops const qualifier [-Wcast-qual]
+        (void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+                                               ^
+```
+
+### Solution
+
+In this case we can simply remove the cast and change the function
+`fprint_line_buf()` so that the `buf` variable is a pointer to a const void.
+After this we must run `make clobber parser-o all`.
+
+
+### Example
+
+```c
+
+json_sem.c:2416:81: warning: cast from 'const struct json *' to 'struct json *' drops const qualifier [-Wcast-qual]
+            fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_count_err->node));
+                                                                                       ^
+json_sem.c:2561:81: warning: cast from 'const struct json *' to 'struct json *' drops const qualifier [-Wcast-qual]
+            fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_val_err->node));
+                                                                                       ^
+```
+
+
+### Solution
+
+Here we change the function `json_item_type_name()` to take a pointer to a `const
+struct json` and remove the cast.
+
+
+### Example
+
+```c
+jsemtblgen.c:639:32: warning: cast from 'const void *' to 'struct json_sem *' drops const qualifier [-Wcast-qual]
+    first = (struct json_sem *)a;
+                               ^
+jsemtblgen.c:640:33: warning: cast from 'const void *' to 'struct json_sem *' drops const qualifier [-Wcast-qual]
+    second = (struct json_sem *)b;
+                                ^
+```
+
+### Solution
+
+Here there was no need for these to be non-const so we changed `first` and
+`second` to be const and then changed the casts to be
+
+
+```c
+    first = (const struct json_sem *)a;
+    second = (const struct json_sem *)b;
+```
+
+and rerun `make clobber all test`.
+
+
+### See also
+
+With the exception of the one noted that we cannot change all of these were
+fixed in commit c94bd325bb1f97dce57f636b17a1309426e4d697.
+
+
+## Issue: warning: enumeration value not explicitly handled in switch
+### Status: ignore
+
+### Example
+
+
+```c
+json_sem.c:1138:13: warning: 7 enumeration values not explicitly handled in switch: 'JTYPE_UNSET', 'JTYPE_NUMBER', 'JTYPE_BOOL'... [-Wswitch-enum]
+    switch (value->type) {
+            ^~~~~~~~~~~
+json_sem.c:1138:13: note: add missing switch cases
+    switch (value->type) {
+            ^
+```
+
+
+### Solution
+
+There is no need to add these to the switch because those values that are not
+specified are not supposed to be there and if they are it is an error.
+Since only those explicitly checked are valid the `default` will be sufficient
+to handle the errors and in a way that even if another was added to the enum we
+would not have to worry about it.
+
+
+### See also
+
+This issue is noted in commit 1124e12ac68be62af9bb613652396f7055b7a3d7.
+
+
+## Issue: warning: default label in switch which covers all enumeration values
+### Status: ignore
+
+### Example
+
+```c
+dyn_array.c:1105:2: warning: default label in switch which covers all enumeration values [-Wcovered-switch-default]
+        default:
+        ^
+```
+
+### Solution
+
+The problem clang is having is that all enum values are already handled so
+there's no need for default. But what happens if someone updates the enum to
+have a new value which would be an error that the default actually handles? It
+would no longer be an error even though it is. Thus we ignore this one too.
+
+
+### See also
+
+Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
+
+
+## Issue: warning: include location '/usr/local/include' is unsafe for cross-compilation
+### Status: ignore
+
+### Example
+
+
+```sh
+$ make clobber all
+[...]
+warning: include location '/usr/local/include' is unsafe for cross-compilation [-Wpoison-system-directories]
+```
+
+### Solution
+
+This is a warning triggered under macOS but it is entirely bogus as we do not
+include that path in any of our files nor is it in any `-I` option to the
+compiler and thus this warning can be ignored.
+
+### See also
+
+Addressed in commit c5e902b1dc6b048ef95729f4e10b7f9c589b4bc1.
+
+
+## Issue: warning: signed shift result sets the sign bit of the shift expression's type  and becomes negative
+### Status: ignore
+
+### Example
+
+```c
+json_parse.c:1918:35: warning: signed shift result (0x8000000000000000) sets the sign bit of the shift expression's type ('ssize_t' (aka 'long')) and becomes negative [-Wshift-sign-overflow]
+        if (item->as_maxint >= (intmax_t)SSIZE_MIN && item->as_maxint <= (intmax_t)SSIZE_MAX) {
+                                         ^~~~~~~~~
+./util.h:101:32: note: expanded from macro 'SSIZE_MIN'
+#define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+                    ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+The purpose of this macro is to get the signed minimum value and so this is
+intended and thus can be ignored.
+
+### See also
+
+Addressed in commit f9a496be4ec48388daf751826ba8345e874726d7.
+
+
+## Issue: warning: result of comparison is always true
+### Status: ignore
+
+### Examples
+
+
+```c
+json_parse.c:1879:64: warning: result of comparison 'intmax_t' (aka 'long') <= 9223372036854775807 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+                                                      ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
+json_parse.c:1879:22: warning: result of comparison 'intmax_t' (aka 'long') >= -9223372036854775808 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+            ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
+json_parse.c:1897:63: warning: result of comparison 'intmax_t' (aka 'long') <= 9223372036854775807 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+                                                     ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~
+json_parse.c:1897:22: warning: result of comparison 'intmax_t' (aka 'long') >= -9223372036854775808 is always true [-Wtautological-type-limit-compare]
+        if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+            ~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~
+
+```
+
+### Solution
+
+The purpose of this code is to find which int types the string, when converted to an
+int, will fit in. The way this code works is first converting it to an
+`intmax_t` (hence `as_maxint`) and then, if no errors, check each signed integer
+type range, and if it will fit, assign it as that type. For instance:
+
+```c
+        /* case int64_t: range check */
+        if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+            item->int64_sized = true;
+            item->as_int64 = (int64_t)item->as_maxint;
+        }
+
+```
+
+It just so happens that on this system `intmax_t` is a `long` and so these cases
+are always true. Earlier in the file:
+
+
+```c
+        /* case int8_t: range check */
+        if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
+            item->int8_sized = true;
+            item->as_int8 = (int8_t)item->as_maxint;
+        }
+```
+
+This doesn't trigger the warning because it is not always true.
+When it is true, though, we set the `item->as_int8` to be `item->as_maxint`
+cast to an `int8_t`.
+
+
+### See also
+
+Addressed in commit f75b1af2997bb43d4f3404e1b001591b287bf7b7.
+
+
+## Issue: warning: comparing floating point with == or != is unsafe
+### Status: fixed
+
+### Examples
+
+```c
+dyn_test.c:122:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_test.c:159:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_test.c:163:17: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+        if ((double) i != dyn_array_value(array, double, i+1000000)) {
+            ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+and
+
+```c
+jnum_chk.c:641:16: warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+            if (val_a != val_b) {
+                ~~~~~ ^  ~~~~~
+```
+
+### Solution
+
+Here we can cast both sides of each to an `intmax_t`.
+
+
+### See also
+
+Fixed in commit 22527837b43b258916e2c6250f95823fb990db36.
+
+
+## Issue: warning: implicit conversion increases floating-point precision: 'float' to 'double'
+### Status: fixed
+
+### Example
+
+```c
+json_parse.c:2342:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
+        ~~~                                                             ~~~~~~^~~~~~~~
+json_parse.c:2343:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
+        ~~~                                                             ~~~~~~^~~~~~~~
+json_parse.c:2344:72: warning: implicit conversion increases floating-point precision: 'float' to 'double' [-Wdouble-promotion]
+        dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+        ~~~
+```
+
+### Solution
+
+As this is for implicit conversion only and since it will become a double we can
+cast it to a double to silence the warning.
+
+
+### See also
+
+Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. See also commit
+df409fefa7541a065dd1633de7c7a0e3093368fa.
+
+
+## Issue: warning: implicit conversion loses integer precision
+### Status: fixed
+
+### Example
+
+```c
+utf8_posix_map.c:1601:25: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+        hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
+                             ~ ^~~~~~~~~~~~~~~~~~~~~~~~
+utf8_posix_map.c:1602:26: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+        hmap[i].posix_str_len = strlen(hmap[i].posix_str);
+                              ~ ^~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+These variables in the struct need to be signed as `-1` signifies that it's not
+been initialised yet. Now since `strlen()` returns an unsigned int we simply
+cast the return value of `strlen()` to an int.
+
+
+### Example
+
+```c
+txzchk.c:1555:22: warning: implicit conversion loses integer precision: 'uintmax_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+        add_txz_line(linep, line_num);
+        ~~~~~~~~~~~~        ^~~~~~~~
+```
+
+### Solution
+
+The variable `line_num` is a `uintmax_t` but the function was expecting an
+`int`. The struct also had it as an `int` but since it should be unsigned and
+since we are being careful to have the maximum size the `int` was changed to
+`uintmax_t`.
+
+### Example
+
+```c
+verge.c:103:19: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+    ver1_levels = allocate_vers(ver1, &vlevel1);
+                ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+verge.c:112:19: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+    ver2_levels = allocate_vers(ver2, &vlevel2);
+                ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+Although we could change the type of `ver1_levels` and `ver2_levels` this would
+introduce the complication of other code so we simply cast the `allocate_vers()`
+calls to an int.
+
+
+### Example
+
+```c
+dyn_array.c:878:50: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+        data_first_offset = (uint8_t *)(array_to_add_p) - (uint8_t *)(array->data);
+                          ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+dyn_array.c:879:48: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+        data_last_offset = (uint8_t *)(last_add_byte) - (uint8_t *)(array->data);
+                         ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+As this is well tested code and since changing this would possibly introduce
+other complications we can ignore this for now. It is TBD if this will be fixed
+at a later date.
+
+
+### Example
+
+```c
+son_parse.c:3265:17: warning: implicit conversion loses integer precision: 'intmax_t' (aka 'long') to 'int' [-Wshorten-64-to-32]
+    item->len = dyn_array_tell(item->s);
+              ~ ^~~~~~~~~~~~~~~~~~~~~~~
+./../dyn_array/dyn_array.h:118:67: note: expanded from macro 'dyn_array_tell'
+#define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+```
+
+### Solution
+
+In the file `json_parse.h` we see that various structs of json types have an
+`int len`. Perhaps it should have been an unsigned int but if so this would
+introduce the problem of `dyn_array_tell` being signed but the `len` not being
+signed. Thus to fix this we cast the `dyn_array_tell` call to be an int.
+
+It is TBD if we will change the `len` to be unsigned.
+
+### See also
+
+Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.
+
+
+## Issue: warning: implicit conversion changes signedness
+### Status: fixed, TBD
+### Example
+
+
+```c
+txzchk.c:1084:9: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+    if (*count - tarball.abnormal_files > MAX_FILE_COUNT) {
+        ^~~~~~ ~
+txzchk.c:1087:59: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+        warn("txzchk", "%s: too many files: %jd > %jd", txzpath, *count - tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
+                                                                 ^~~~~~ ~
+```
+
+### Solution
+
+Cast the `tarball.abnormal_files` to a `intmax_t` as the ints in `sum_and_count`
+have to be signed but we want the count of the abnormal files to be unsigned
+otherwise.
+
+
+### Example
+
+```c
+utf8_posix_map.c:1707:46: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+            if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+                ~~~~~~~~~~~                      ~~~^~~~~~~~~~~~
+
+```
+
+### Solution
+
+This was already discussed in another issue. We can cast it to a `uintmax_t` and
+we have done so.
+
+
+### Example
+
+```c
+./jparse.y:786:49: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+        yyval = parse_json_string(yyget_text(scanner), yyget_leng(scanner));
+                ~~~~~~~~~~~~~~~~~                      ^~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+As far as this one goes we can cast it to a `size_t` and we have done so.
+
+
+### Example
+
+```c
+foo.c:142:49: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p) {
+                                     ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~ ~
+foo.c:275:25: warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+    no_comment = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
+                 ~~~~~ ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+We fixed this with some casts.
+
+
+### Example
+
+```c
+dbg.c:468:36: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+                                  ~^~~
+dbg.c:469:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    if ((size_t)ret2 >= size-ret) {
+                            ~^~~
+```
+### Solution
+
+We can cast the `ret` to be a `size_t` which is the same type as the `size`
+variable.
+
+
+```c
+json_parse.c:300:14: warning: implicit conversion changes signedness: 'long' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+    mlen = p - ret; /* paranoia */
+         ~ ~~^~~~~
+```
+
+### Solution
+
+Change the type of `mlen` to `ssize_t`. This does trigger two other warnings,
+however:
+
+```c
+json_parse.c:257:27: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+    ret = malloc(mlen + 1 + 1);
+          ~~~~~~ ~~~~~~~~~^~~
+json_parse.c:308:12: warning: implicit conversion changes signedness: 'ssize_t' (aka 'long') to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+        *retlen = mlen;
+                ~ ^~~~
+```
+
+Casting the `mlen` back to a `size_t` works but whether `retlen` should be
+changed to a pointer to a `ssize_t` is TBD.
+
+
+### Example
+
+```
+chk_validate.c:2852:30: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+    test = test_rule_2b_size(*value);
+           ~~~~~~~~~~~~~~~~~ ^~~~~~
+```
+
+### Solution
+
+We can use the recently added function `sem_member_value_size_t` (see commit
+e59f15db96dc0893341a985825fbb6028525a278)  and change the type of
+`value` to be a pointer to a `size_t` instead of a pointer to an `int`.
+
+
+### Example
+
+```c
+dyn_array.c:145:31: warning: implicit conversion changes signedness: 'unsigned long' to 'intmax_t' (aka 'long') [-Wsign-conversion]
+    old_bytes = old_allocated * array->elm_size;
+              ~ ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+dyn_array.c:145:17: warning: implicit conversion changes signedness: 'intmax_t' (aka 'long') to 'unsigned long' [-Wsign-conversion]
+    old_bytes = old_allocated * array->elm_size;
+                ^~~~~~~~~~~~~ ~
+dyn_array.c:147:46: warning: implicit conversion changes signedness: 'unsigned long' to 'intmax_t' (aka 'long') [-Wsign-conversion]
+    new_bytes = (new_allocated+array->chunk) * array->elm_size;
+              ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+dyn_array.c:147:31: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+    new_bytes = (new_allocated+array->chunk) * array->elm_size;
+                 ~~~~~~~~~~~~~^~~~~~~~~~~~~  ~
+dyn_array.c:196:36: warning: implicit conversion changes signedness: 'long' to 'unsigned long' [-Wsign-conversion]
+            memset(p, 0, (elms_to_allocate+array->chunk) * array->elm_size);
+                          ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~  ~
+```
+
+### Solution
+
+This is TBD later.
+
+### See also
+
+With the exception of that in `dyn_array` code this was fixed in commit
+1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
+e59f15db96dc0893341a985825fbb6028525a278) and
+c6b5f89a81a4910901cb3ef26c8f34858acd4740.
+
+
+## Issue: warning: implicit conversion increases floating-point precision: 'double' to 'long double'
+### Status: fixed
+### Example
+
+```c
+json_parse.c:2324:31: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = (item->as_double == floorl(item->as_double));
+                               ~~~~~~^~~~~~~~~ ~~
+json_parse.c:2324:57: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = (item->as_double == floorl(item->as_double));
+                                                  ~~~~~~ ~~~~~~^~~~~~~~~
+```
+
+### Solution
+
+This one is a bit trickier because it also has the problem of comparing floating
+point but it's not triggered in the system that triggered this warning. If we
+cast the two to `intmax_t` like we did for that problem as in:
+
+
+```c
+        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
+```
+
+we'll see something like:
+
+```c
+json_parse.c:2324:77: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
+                                                                      ~~~~~~ ~~~~~~^~~~~~~~~
+```
+
+which we can fix by also casting to an `intmax_t` which we have done.
+
+Whether there is a better approach, however, is TBD at a later time.
+
+### Example
+
+```c
+jnum_gen.c:538:42: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+    fpr_finfo(stream, item->float_sized, (double)item->as_float, item->as_float_int,
+    ~~~~~~~~~                            ^~~~~~~~~~~~~~~~~~~~~~
+jnum_gen.c:546:49: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+    fpr_finfo(stream, item->double_sized, item->as_double, item->as_double_int,
+    ~~~~~~~~~                             ~~~~~~^~~~~~~~~
+
+```
+
+### Solution
+
+This one is more complicated because the cast to double was to resolve the same
+warning in macOS but in fedora we see that it's now promoting it to long double.
+We might cast it to a long double instead but it might be better to ignore it so
+that systems that promote it to long double will be fine but otherwise it'll be
+the default double promotion. This is what we have chosen to do but whether this
+will change is TBD later.
+
+
+### Example
+
+```c
+jnum_gen.c:686:42: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+                       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+                                                    ~~ ^~~~~~~~~
+./util.h:155:65: note: expanded from macro 'fprint'
+#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
+                                                                ^~~~~~~~~~~
+jnum_gen.c:686:20: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+                       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+                              ~~ ^~~~~~~~~
+./util.h:155:65: note: expanded from macro 'fprint'
+#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
+                                                                ^~~~~~~~~~~
+
+```
+
+### Solution
+
+In this case we can use `L` suffix to make it long double. But is this correct?
+It might or might not be. Either way, whether it's correct or not, we can use
+the C99 macros `islessequal` and `isgreaterequal` for the comparison.
+
+It should be noted that these functions can have a performance penalty and
+another solution that we've already used for the warning `-Wfloat-equal` and
+that is casting each side to an `intmax_t` but whether that should be done here
+is TBD.
+
+
+### Example
+
+```c
+jnum_test.c:5474:2: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        -214748.3647200000000055,       /* JSON floating point value in long double form */
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+jnum_test.c:5296:2: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
+        -2147483647.099999999977,       /* JSON floating point value in long double form */
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+[...]
+```
+
+### Solution
+
+Since this set of warnings was only for the long double values we made a slight
+modification to the `jnum_gen` tool so that these will have the `L` suffix.
+
+### See also
+
+Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
+
+
+## Issue: warning: macro name is a reserved identifier
+### Status: ignore
+### Example
+
+```c
+jparse.c:63:9: warning: macro name is a reserved identifier [-Wreserved-macro-identifier]
+#define __STDC_LIMIT_MACROS 1
+        ^
+```
+
+### Solution
+
+Since we must not modify `jparse.c` or any code generated from the `jparse.l` or
+`jparse.y` files we simply ignore this warning.
+
+
+### See also
+
+Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
+
+
+## Issue: warning: disabled expansion of recursive macro
+### Status: ignore
+### Examples
+
+```c
+./jparse.y:874:9: warning: disabled expansion of recursive macro [-Wdisabled-macro-expansion]
+        fprint(stderr, " node type %s", json_item_type_name(*node));
+               ^
+/usr/include/stdio.h:149:16: note: expanded from macro 'stderr'
+#define stderr stderr
+               ^
+```
+
+```c
+jsemtblgen.c:318:30: warning: disabled expansion of recursive macro [-Wdisabled-macro-expansion]
+            cap_tbl_name[i] = (char)toupper(tbl_name[i]);
+                                    ^
+/usr/include/ctype.h:221:35: note: expanded from macro 'toupper'
+#  define toupper(c)    __tobody (c, toupper, *__ctype_toupper_loc (), (c))
+                                     ^
+```
+
+### Solution
+
+This is a problem in the system header files and therefore we ignore it.
+
+### See also
+
+Addressed in commit 5b8def79c2863c90bfd8225382eb522a9d122b13.
+
+
+## Issue: warning: empty expression statement has no effect; remove unnecessary ';'
+### Status: ignore
+### Example
+
+
+```c
+jparse.c:903:22: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                YY_DO_BEFORE_ACTION;
+                                   ^
+jparse.c:1318:34: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        yyg->yy_n_chars, num_to_read );
+                                                      ^
+```
+
+### Solution
+
+We cannot modify `jparse.c` but even if we could it probably does not matter so
+we ignore this.
+
+### Example
+
+```c
+iocccsize.c:122:60: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                            iocccsize_errx(4, "cannot parse -v arg: %s", optarg);
+                                                                                ^
+iocccsize.c:136:90: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        iocccsize_errx(6, "There is NO... Rule 6!  I'm not a number!  I'm a free(void *man)!"); /*ooo*/
+                                                                                                              ^
+iocccsize.c:157:55: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                        iocccsize_errx(6, "fopen(%s) failed", argv[optind]); /*ooo*/
+                                                                           ^
+```
+
+### Solution
+
+This is something that must be dealt with by Landon but even so it probably does
+not matter so whether or not this will be fixed is TBD later.
+
+#### See also
+
+Addressed in commit 02f0496b809b18b28533b9a194586a2c2d3bec9b.
+
+
+## Issue: warning: unannotated fall-through between switch labels
+### Status: fixed
+### Example
+
+```c
+mkiocccentry.c:211:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+        case 'a':               /* -a record_answers */
+        ^
+mkiocccentry.c:211:2: note: insert '__attribute__((fallthrough));' to silence this warning
+        case 'a':               /* -a record_answers */
+        ^
+        __attribute__((fallthrough));
+mkiocccentry.c:211:2: note: insert 'break;' to avoid fall-through
+        case 'a':               /* -a record_answers */
+        ^
+        break;
+```
+
+### Solution
+
+This should be ignored because not all compilers have all attributes and we
+certainly must fall through to case `'a'` with case `'A'`.
+
+### See also
+
+Addressed in commit 1975fef378691fcb724b71ab7e837787227d0f3c.
+
+
+## Issue: warning: mixing declarations and code is incompatible with standards before C99
+### Status: ignore
+
+### Example
+
+
+```c
+foo.c:99:15: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+    uintmax_t forty = no_comment;       /* the value is two too much */
+              ^
+```
+
+### Solution
+
+Although we could assign the value of `no_comment` at declaration we will
+provide no comment as to why we do not do that. Since we are using C11 and C11
+comes after C99 (by 12 years) and since we'll be moving to C17 sometime later
+this year (2023) we do not see this as a problem. Whether it is TBD whether we
+will fix this or not we also provide no comment. :-)
+
+### See also
+
+Addressed in commit 7fd173ad4068befb109d3bbe2b2e0f28f69149ba.

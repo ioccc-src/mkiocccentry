@@ -4,7 +4,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# This JSON parser was co-developed by:
+# This JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -166,8 +166,8 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jnum_chk.c jnum_test.c
-H_SRC= jnum_chk.h
+C_SRC= jnum_chk.c jnum_test.c jnum_gen.c jnum_header.c
+H_SRC= jnum_chk.h jnum_gen.h
 
 # source files that do not conform to strict picky standards
 #
@@ -189,7 +189,7 @@ LIB_OBJS= jnum_chk.o jnum_test.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS=
+OTHER_OBJS= jnum_gen.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -245,7 +245,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jnum_chk
+PROG_TARGETS= jnum_chk jnum_gen
 
 # what to make by all but NOT to removed by clobber
 #
@@ -305,6 +305,13 @@ jnum_chk.o: jnum_chk.c jnum_chk.h
 jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.a ../../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
+jnum_gen.o: jnum_gen.c jnum_gen.h
+	${CC} ${CFLAGS} jnum_gen.c -c
+
+jnum_gen: jnum_gen.o ../jparse.a ../../dyn_array/dyn_array.a ../../dbg/dbg.a
+	${CC} ${CFLAGS} $^ -lm -o $@
+
+
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
@@ -339,9 +346,10 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if [[ ! -x ./jparse_test.sh ]]; then \
+	${Q} if [[ ! -x ./jparse_test.sh ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./jparse_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo "./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt"; \
 	    ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt; \
@@ -550,5 +558,9 @@ depend: ${ALL_CSRC}
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
     ../json_util.h ../util.h jnum_chk.c jnum_chk.h
+jnum_gen.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_gen.c jnum_gen.h
+jnum_header.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_chk.h jnum_header.c
 jnum_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
     ../json_util.h ../util.h jnum_chk.h jnum_test.c

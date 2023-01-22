@@ -2173,7 +2173,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = parse_json_string(yyget_text(scanner), yyget_leng(scanner));
+	yyval = parse_json_string(yyget_text(scanner), (size_t)yyget_leng(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {

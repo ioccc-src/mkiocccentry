@@ -3,7 +3,7 @@
  *
  * "Because too much minimalism can be sub-minimal." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -68,7 +68,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:V")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(3, "-h help mode", program); /*ooo*/
+	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -79,7 +79,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", VERGE_VERSION);
-	    exit(3); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	default:
@@ -100,18 +100,18 @@ main(int argc, char *argv[])
     /*
      * convert first version string
      */
-    ver1_levels = allocate_vers(ver1, &vlevel1);
+    ver1_levels = (int)allocate_vers(ver1, &vlevel1);
     if (ver1_levels <= 0) {
-	err(2, program, "first version string is invalid"); /*ooo*/
+	err(4, program, "first version string is invalid"); /*ooo*/
 	not_reached();
     }
 
     /*
      * convert second version string
      */
-    ver2_levels = allocate_vers(ver2, &vlevel2);
+    ver2_levels = (int)allocate_vers(ver2, &vlevel2);
     if (ver2_levels <= 0) {
-	err(2, program, "second version string is invalid"); /*ooo*/
+	err(4, program, "second version string is invalid"); /*ooo*/
 	not_reached();
     }
 

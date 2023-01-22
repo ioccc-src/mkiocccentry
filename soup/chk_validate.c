@@ -7,7 +7,7 @@
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * The JSON parser was co-developed by:
+ * The JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -751,7 +751,7 @@ chk_authors(struct json const *node,
      * allocate array of authors
      */
     errno = 0;		/* pre-clear errno for werrp_sem_val() */
-    aset = calloc(*author_count, sizeof(aset[0]));
+    aset = calloc((size_t)*author_count, sizeof(aset[0]));
     if (aset == NULL) {
 	if (val_err != NULL) {
 	    *val_err = werrp_sem_val(117, node, depth, sem, __func__,
@@ -2834,13 +2834,13 @@ bool
 chk_rule_2b_size(struct json const *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    int *value = NULL;				/* JSON_NUMBER as decoded int */
+    size_t *value = NULL;				/* JSON_NUMBER as decoded size_t */
     bool test = false;				/* validation test result */
 
     /*
      * firewall - args and JSON number as int check
      */
-    value = sem_member_value_int(node, depth, sem, __func__, val_err);
+    value = sem_member_value_size_t(node, depth, sem, __func__, val_err);
     if (value == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;

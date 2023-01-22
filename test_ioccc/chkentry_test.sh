@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
 #
 # chkentry_test.sh - test chkentry on all the files in
-# test_JSON{info,auth}.json/{good,bad}
-
+#		     test_JSON{info,auth}.json/{good,bad}
+#
+# This script was written in 2022 by:
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+#
+# with some minor improvements by:
+#
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
 # setup
 #
 export V_FLAG="0"
@@ -74,9 +86,13 @@ while getopts :hVv:D:J:qc:d: flag; do
     d)	JSON_TREE="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     *)

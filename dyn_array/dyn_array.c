@@ -1529,5 +1529,9 @@ dyn_array_free(struct dyn_array *array)
     if (dbg_allowed(DBG_VVVHIGH)) {
 	dbg(DBG_VVVHIGH, "in %s(array)", __func__);
     }
+
+    free(array);
+    array = NULL;
+
     return;
 }

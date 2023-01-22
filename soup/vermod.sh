@@ -1,30 +1,21 @@
 #!/usr/bin/env bash
 #
-# vermod.sh - modify version strings (and others) under ./test_JSON
+# vermod.sh - modify version strings (and others) under ./test_ioccc/test_JSON
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# Permission to use, copy, modify, and distribute this software and
-# its documentation for any purpose and without fee is hereby granted,
-# provided that the above copyright, this permission notice and text
-# this comment, and the disclaimer below appear in all of the following:
+# The JSON scanner was co-developed in 2022 by:
 #
-#       supporting documentation
-#       source copies
-#       source works derived from this source
-#       binaries derived from this source or from derived source
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-#
-# Share and enjoy! :-)
+# "Share and Enjoy!"
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
 # setup
 #
@@ -80,38 +71,42 @@ export LIST_NOCHANGE=
 #
 while getopts :hVv:d:i:oFQnlL flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 5
-       ;;
-    V) echo "$VERMOD_VERSION"
-       exit 5
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    d) JSON_TREE="$OPTARG";
-       ;;
-    i) LIMIT_SH="$OPTARG";
-       ;;
-    o) OLD_FLAG="-o"
-       ;;
-    F) FORCE="-f"
-       ;;
-    Q) QUOTE=
-       ;;
-    n) NOOP="-n"
-       ;;
-    l) LIST_CHANGE="-l"
-       ;;
-    L) LIST_NOCHANGE="-L"
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 5
+	;;
+    V)	echo "$VERMOD_VERSION"
+	exit 5
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    d)	JSON_TREE="$OPTARG";
+	;;
+    i)	LIMIT_SH="$OPTARG";
+	;;
+    o)	OLD_FLAG="-o"
+	;;
+    F)	FORCE="-f"
+	;;
+    Q)	QUOTE=
+	;;
+    n)	NOOP="-n"
+	;;
+    l)	LIST_CHANGE="-l"
+	;;
+    L)	LIST_NOCHANGE="-L"
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 6
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 6
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 6
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 6
+	;;
    *)
-       ;;
+	;;
     esac
 done
 

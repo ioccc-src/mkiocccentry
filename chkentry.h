@@ -3,7 +3,7 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool and the JSON parser were co-developed by:
+ * This tool and the JSON parser were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -67,10 +67,10 @@ static const char * const usage_msg =
     "\n"
     "Exit codes:\n"
     "     0   all is OK\n"
-    "     1   JSON files(s) are valid JSON, however one or more semantic checks failed\n"
+    "     1   JSON files(s) are valid JSON but one or more semantic checks failed\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   command line error\n"
-    "     4   file(s) were not valid JSON, no semantic checks were performed\n"
+    "     4   file(s) not valid JSON, no semantic checks were performed\n"
     "  >=10   internal error\n"
     "\n"
     "chkentry version: %s\n";

@@ -190,9 +190,9 @@ SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh 
 #
 MAN1_PAGES= man/man1/fnamchk.1
 MAN3_PAGES=
-MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
+MAN8_PAGES= man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
 	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8 \
-	man/man8/hostchk.8
+	man/man8/hostchk.8 man/man8/ioccc_test.sh.8 man/man8/prep.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -380,9 +380,10 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if [[ ! -x ./ioccc_test.sh ]]; then \
-	    echo "${OUR_NAME}: ERROR: executable not found: .//ioccc_test.sh" 1>&2; \
+	${Q} if [[ ! -x ./ioccc_test.sh ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: ./ioccc_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo ./ioccc_test.sh; \
 	    ./ioccc_test.sh; \

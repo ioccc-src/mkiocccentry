@@ -10,7 +10,7 @@
 #
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# The JSON parser was co-developed by:
+# The JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -40,14 +40,14 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] in
 	-J jsemcgen.sh	path to jsemcgen.sh (def: $JSEMCGEN_SH)
 
 	info.head.c	.info.json style header for .c semantic table files
-	info.tail.c	.info.json style trailer for .c semantic table files
+	info.tail.c	.info.json style footer for .c semantic table files
 	info.head.h	.info.json style header for .h semantic table files
-	info.tail.h	.info.json style trailer for .h semantic table files
+	info.tail.h	.info.json style footer for .h semantic table files
 
 	auth.head.c	.auth.json style header for .c semantic table files
-	auth.tail.c	.auth.json style trailer for .c semantic table files
+	auth.tail.c	.auth.json style footer for .c semantic table files
 	auth.head.h	.auth.json style header for .h semantic table files
-	auth.tail.h	.auth.json style trailer for .h semantic table files
+	auth.tail.h	.auth.json style footer for .h semantic table files
 
 	info_dir	process *.json files as .info.json files
 	auth_dir	process *.json files as .auth.json files
@@ -55,11 +55,11 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] in
 	ref_dir		sub-directory under which semantic table files are written
 
 Exit codes:
-     0	 all is well
+     0	 all OK
      2	 -h and help string printed or -V and version string printed
      3	 command line error
      4	 jsemcgen.sh and/or jsemtblgen not found or not executable
-     5	 missing or not readable header or trailer file
+     5	 missing or not readable header or footer file
      6	 missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
  >= 10	 internal error"
 
@@ -67,27 +67,31 @@ Exit codes:
 #
 while getopts :hv:Vj:J: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
-       ;;
-    V) echo "$ALL_SEM_REF_VERSION"
-       exit 2
-       ;;
-    j) JSEMTBLGEN="$OPTARG";
-       ;;
-    J) JSEMCGEN_SH="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
+	;;
+    V)	echo "$ALL_SEM_REF_VERSION" 1>&2
+	exit 2
+	;;
+    j)	JSEMTBLGEN="$OPTARG";
+	;;
+    J)	JSEMCGEN_SH="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
    *)
-       ;;
+	;;
     esac
 done
 

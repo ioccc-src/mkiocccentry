@@ -6,7 +6,7 @@
 #
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# The JSON parser was co-developed by:
+# The JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -107,12 +107,12 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	out		jsemtblgen output, with possible head and tail and patch applied
 
 Exit codes:
-     0	 JSON is valid
-     1	 JSON is invalid
+     0	 valid JSON
+     1	 invalid JSON
      2	 -h and help string printed or -V and version string printed
      3	 command line error
-     4	 jsemtblgen or patch_tool is not an executable
-     5	 file.json, head, patch, and/or tail is not a readable file
+     4	 jsemtblgen or patch_tool is not an executable file
+     5	 one of the files file.json, head, patch and tail is not a readable file
      6	 jsemtblgen failed
  >= 10	 internal error"
 
@@ -120,72 +120,76 @@ Exit codes:
 #
 while getopts :hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:j:p: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
-       ;;
-    J) J_FLAG="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -J '$J_FLAG'";
-       ;;
-    q) Q_FLAG="-q";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -q";
-       ;;
-    V) echo "$JSEMCGEN_VERSION"
-       exit 2
-       ;;
-    s) S_FLAG="-s";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -s";
-       ;;
-    I) I_FLAG="-I";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -I";
-       ;;
-    N) NAME="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -N '$NAME'";
-       ;;
-    D) DEFAULT_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -D '$DEFAULT_FUNC'";
-       ;;
-    P) PREFIX="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -P '$PREFIX'";
-       ;;
-    1) NUMBER_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -1 '$NUMBER_FUNC'";
-       ;;
-    S) STRING_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -S '$STRING_FUNC'";
-       ;;
-    B) BOOL_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -B '$BOOL_FUNC'";
-       ;;
-    0) NULL_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -0 '$NULL_FUNC'";
-       ;;
-    M) MEMBER_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -M '$MEMBER_FUNC'";
-       ;;
-    O) OBJECT_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -O '$OBJECT_FUNC'";
-       ;;
-    A) ARRAY_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -A '$ARRAY_FUNC'";
-       ;;
-    U) UNKNOWN_FUNC="$OPTARG";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -U '$UNKNOWN_FUNC'";
-       ;;
-    j) JSEMTBLGEN="$OPTARG";
-       ;;
-    p) PATCH_TOOL="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 2
+	;;
+    v)	V_FLAG="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
+	;;
+    J)	J_FLAG="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -J '$J_FLAG'";
+	;;
+    q)	Q_FLAG="-q";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -q";
+	;;
+    V)	echo "$JSEMCGEN_VERSION"
+	exit 2
+	;;
+    s)	S_FLAG="-s";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -s";
+	;;
+    I)	I_FLAG="-I";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -I";
+	;;
+    N)	NAME="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -N '$NAME'";
+	;;
+    D)	DEFAULT_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -D '$DEFAULT_FUNC'";
+	;;
+    P)	PREFIX="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -P '$PREFIX'";
+	;;
+    1)	NUMBER_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -1 '$NUMBER_FUNC'";
+	;;
+    S)	STRING_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -S '$STRING_FUNC'";
+	;;
+    B)	BOOL_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -B '$BOOL_FUNC'";
+	;;
+    0)	NULL_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -0 '$NULL_FUNC'";
+	;;
+    M)	MEMBER_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -M '$MEMBER_FUNC'";
+	;;
+    O)	OBJECT_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -O '$OBJECT_FUNC'";
+	;;
+    A)	ARRAY_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -A '$ARRAY_FUNC'";
+	;;
+    U)	UNKNOWN_FUNC="$OPTARG";
+	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -U '$UNKNOWN_FUNC'";
+	;;
+    j)	JSEMTBLGEN="$OPTARG";
+	;;
+    p)	PATCH_TOOL="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
-   *)
-       ;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *)
+	;;
     esac
 done
 
@@ -258,7 +262,7 @@ if [[ ! -x $JSEMTBLGEN ]]; then
     exit 4
 fi
 if [[ -z $PATCH_TOOL ]]; then
-    echo "$0: ERROR: cannot find default patch tool path, need to use -p patch_path" 1>&2
+    echo "$0: ERROR: cannot find default patch tool path, try -p patch_path" 1>&2
     exit 4
 fi
 if [[ ! -x $PATCH_TOOL ]]; then
@@ -270,7 +274,7 @@ if [[ ! -e $JSON_FILE ]]; then
     exit 5
 fi
 if [[ ! -f $JSON_FILE ]]; then
-    echo "$0: ERROR: file.json is not a file: $JSON_FILE" 1>&2
+    echo "$0: ERROR: file.json is not a regular file: $JSON_FILE" 1>&2
     exit 5
 fi
 if [[ ! -r $JSON_FILE ]]; then
@@ -283,7 +287,7 @@ if [[ -n $HEAD_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $HEAD_FILE ]]; then
-	echo "$0: ERROR: head is not a file: $HEAD_FILE" 1>&2
+	echo "$0: ERROR: head is not a regular file: $HEAD_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $HEAD_FILE ]]; then
@@ -297,7 +301,7 @@ if [[ -n $PATCH_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $PATCH_FILE ]]; then
-	echo "$0: ERROR: patch is not a file: $PATCH_FILE" 1>&2
+	echo "$0: ERROR: patch is not a regular file: $PATCH_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $PATCH_FILE ]]; then
@@ -311,7 +315,7 @@ if [[ -n $TAIL_FILE ]]; then
 	exit 5
     fi
     if [[ ! -f $TAIL_FILE ]]; then
-	echo "$0: ERROR: tail is not a file: $TAIL_FILE" 1>&2
+	echo "$0: ERROR: tail is not a regular file: $TAIL_FILE" 1>&2
 	exit 5
     fi
     if [[ ! -r $TAIL_FILE ]]; then

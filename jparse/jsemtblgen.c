@@ -7,7 +7,7 @@
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * The JSON parser was co-developed by:
+ * The JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -356,12 +356,12 @@ main(int argc, char **argv)
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
-    if (valid_json == false) {
+    if (!valid_json) {
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
     if (tree == NULL) {
-	err(12, program, "JSON parse tree is NULL");
+	err(1, program, "JSON parse tree is NULL"); /*ooo*/
 	not_reached();
     }
 
@@ -370,7 +370,7 @@ main(int argc, char **argv)
      */
     tbl = dyn_array_create(sizeof(struct json_sem), CHUNK, CHUNK, true);
     if (tbl == NULL) {
-	err(13, program, "NULL dynamic array");
+	err(12, program, "NULL dynamic array");
 	not_reached();
     }
 
@@ -398,10 +398,19 @@ main(int argc, char **argv)
     }
 
     /*
+     * free the capitalised name
+     */
+    if (cap_tbl_name != NULL) {
+	free(cap_tbl_name);
+	cap_tbl_name = NULL;
+    }
+
+
+    /*
      * exit based on JSON parse success or failure
      *
      * NOTE: this check is not strictly needed because if the JSON is not valid
-     * it's a fatal error.
+     * it's a fatal error and so we'd never get here.
      */
     if (!valid_json) {
 	exit(1); /*ooo*/
@@ -488,7 +497,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
      * firewall
      */
     if (node == NULL) {
-	err(14, __func__, "node is NULL");
+	err(13, __func__, "node is NULL");
 	not_reached();
     }
 
@@ -502,7 +511,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
      */
     tbl = va_arg(ap2, struct dyn_array *);
     if (tbl == NULL) {
-	err(15, __func__, "tbl va_arg is NULL");
+	err(14, __func__, "tbl va_arg is NULL");
 	not_reached();
     }
     len = dyn_array_tell(tbl);
@@ -518,7 +527,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	p = dyn_array_addr(tbl, struct json_sem, i);
 	/* paranoia */
 	if (p == NULL) {
-	    err(16, __func__, "semantic tbl[%jd] is NULL", i);
+	    err(15, __func__, "semantic tbl[%jd] is NULL", i);
 	    not_reached();
 	}
 
@@ -547,7 +556,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    /* paranoia */
 	    if (item->name == NULL) {
-		err(17, __func__, "item->name is NULL");
+		err(16, __func__, "item->name is NULL");
 		not_reached();
 	    }
 	    if (item->name_str_len != p->name_len ||
@@ -621,23 +630,23 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 static int
 sem_cmp(void const *a, void const *b)
 {
-    struct json_sem *first = NULL;	/* 1st entry to compare */
-    struct json_sem *second = NULL;	/* 2nd entry to compare */
-    int cmp = 0;			/* byte string comparison */
+    const struct json_sem *first = NULL;	/* 1st entry to compare */
+    const struct json_sem *second = NULL;	/* 2nd entry to compare */
+    int cmp = 0;				/* byte string comparison */
 
     /*
      * firewall
      */
     if (a == NULL) {
-	err(18, __func__, "a is NULL");
+	err(17, __func__, "a is NULL");
 	not_reached();
     }
     if (b == NULL) {
-	err(19, __func__, "b is NULL");
+	err(18, __func__, "b is NULL");
 	not_reached();
     }
-    first = (struct json_sem *)a;
-    second = (struct json_sem *)b;
+    first = (const struct json_sem *)a;
+    second = (const struct json_sem *)b;
 
     /*
      * compare depth in reverse order
@@ -733,11 +742,11 @@ print_c_funct_name(FILE *stream, char const *str)
      * firewall
      */
     if (stream == NULL) {
-	err(20, __func__, "stream is NULL");
+	err(19, __func__, "stream is NULL");
 	not_reached();
     }
     if (str == NULL) {
-	err(21, __func__, "str is NULL");
+	err(20, __func__, "str is NULL");
 	not_reached();
     }
 
@@ -790,22 +799,22 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(22, __func__, "tbl is NULL");
+	err(21, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(23, __func__, "tbl_name is NULL");
+	err(22, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(24, __func__, "cap_tbl_name is NULL");
+	err(23, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
     /*
      * sort the semantic table
      */
-    qsort(tbl->data, dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+    qsort(tbl->data, (size_t)dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
 
     /*
      * print semantic table header
@@ -954,22 +963,22 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(25, __func__, "tbl is NULL");
+	err(24, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(26, __func__, "tbl_name is NULL");
+	err(25, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(27, __func__, "cap_tbl_name is NULL");
+	err(26, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
     /*
      * sort the semantic table
      */
-    qsort(tbl->data, dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+    qsort(tbl->data, (size_t)dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
 
     /*
      * print semantic table header

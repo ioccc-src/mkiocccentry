@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -436,7 +436,7 @@ json_fprintf_str(FILE *stream, char const *str)
      * print name, JSON encoded
      */
     for (p=str; *p != '\0'; ++p) {
-	if (json_putc(*p, stream) != true) {
+	if (json_putc((uint8_t const)*p, stream) != true) {
 	    warn(__func__, "json_putc #0 error");
 	    return false;
 	}
@@ -882,7 +882,7 @@ json_type_name(enum item_type type)
  * NOTE: This string returned is read only: It's not allocated on the stack.
  */
 char const *
-json_item_type_name(struct json *node)
+json_item_type_name(const struct json *node)
 {
     char const *name = "JTYPE_UNSET";
 
@@ -1395,7 +1395,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf-val: %e\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td-val: %le\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1417,7 +1417,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf-val: %f\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td-val: %lf\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1468,7 +1468,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf+val: %e\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td+val: %le\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));
@@ -1490,7 +1490,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 */
 			if (item->float_sized == true) {
 			    fprint(stream, "\tf+val: %f\tinteger: %s",
-					   item->as_float, booltostr(item->as_float_int));
+					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
 			    fprint(stream, "\td+val: %lf\tinteger: %s",
 					   item->as_double, booltostr(item->as_double_int));

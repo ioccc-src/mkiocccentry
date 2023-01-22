@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -25,10 +25,17 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#define JNUM_TEST
+
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "../json_parse.h"
+
+/*
+ * jnum_chk - tool to check JSON number string conversions
+ */
+#include "jnum_chk.h"
 
 
 /*

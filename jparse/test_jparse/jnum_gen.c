@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 #include <stdint.h>
 #include <inttypes.h>
 
@@ -78,7 +79,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(3, program, "-h help mode", -1, -1); /*ooo*/
+	    usage(2, program, "-h help mode", -1, -1); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -89,7 +90,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", JNUM_GEN_VERSION);
-	    exit(3); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 'q':
@@ -97,13 +98,13 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	default:
-	    usage(4, program, "invalid -flag", -1, -1); /*ooo*/
+	    usage(3, program, "invalid -flag", -1, -1); /*ooo*/
 	    not_reached();
 	 }
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
+	usage(3, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
 	not_reached();
     }
     filename = argv[optind];
@@ -299,6 +300,7 @@ main(int argc, char *argv[])
 	}
     }
     dyn_array_free(str_array);
+    str_array = NULL;
 
     /*
      * free test results
@@ -311,6 +313,7 @@ main(int argc, char *argv[])
 	}
     }
     dyn_array_free(result_array);
+    result_array = NULL;
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -535,10 +538,10 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print float info
      */
-    fpr_finfo(stream, item->float_sized, item->as_float, item->as_float_int,
+    fpr_finfo(stream, item->float_sized, (double)item->as_float, item->as_float_int,
 	   "true ==> converted JSON floating point to C float",
 	   "JSON floating point value in float form",
-	   "if float_sized == true, true ==> as_float is an integer");
+	   "if float_sized == true, true ==> as_float is an integer", "");
 
     /*
      * print double info
@@ -546,7 +549,7 @@ fpr_number(FILE *stream, struct json_number *item)
     fpr_finfo(stream, item->double_sized, item->as_double, item->as_double_int,
 	    "true ==> converted JSON floating point to C double",
 	    "JSON floating point value in double form",
-	    "if double_sized == true, true ==> as_double is an integer");
+	    "if double_sized == true, true ==> as_double is an integer", "");
 
     /*
      * print long double info
@@ -554,7 +557,7 @@ fpr_number(FILE *stream, struct json_number *item)
     fpr_finfo(stream, item->longdouble_sized, item->as_longdouble, item->as_float_int,
 	   "true ==> converted JSON floating point to C long double",
 	   "JSON floating point value in long double form",
-	   "if float_sized == true, true ==> as_float is an integer");
+	   "if float_sized == true, true ==> as_float is an integer", "L");
 }
 
 
@@ -665,12 +668,13 @@ fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char con
  * NOTE: This function does not return on error.
  */
 static void
-fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *scomm, char const *vcomm, char const *sintval)
+fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *scomm, char const *vcomm, char const *sintval,
+	char const *suffix)
 {
     /*
      * firewall
      */
-    if (stream == NULL || scomm == NULL || vcomm == NULL || sintval == NULL) {
+    if (stream == NULL || scomm == NULL || vcomm == NULL || sintval == NULL || suffix == NULL) {
 	err(24, __func__, "NULL arg(s)");
 	not_reached();
     }
@@ -681,9 +685,10 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
     fprstr(stream,"\n");
     if (sized == true) {
 	fprint(stream, "\ttrue,\t\t/* %s */\n", scomm);
-	fprint(stream, "\t%.22Lg,%s/* %s */\n",
-		       value,
-		       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+	fprint(stream, "\t%.22Lg%s,%s/* %s */\n",
+		       value, suffix,
+		       (islessequal(value, -100000.0L) ||
+			isgreaterequal(value, 1000000.0L)) ? "\t" : "\t\t",
 		       vcomm);
 	fprint(stream, "\t%s,\t\t/* %s */\n", booltostr(intval), sintval);
 

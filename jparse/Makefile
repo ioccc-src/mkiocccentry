@@ -2,7 +2,7 @@
 #
 # jparse - a JSON parser written in C
 #
-#  This JSON parser was co-developed by:
+#  This JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -162,9 +162,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
+C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
        jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
-H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
+H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
        jparse.tab.ref.h
 
@@ -185,10 +185,13 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
-MAN3_PAGES=
+MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
+	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
+	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
 MAN8_PAGES= man/man8/jnum_chk.8 man/man8/jnum_gen.8 man/man8/jparse_test.8 man/man8/jsemcgen.8 \
 	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/utf8_test.8 man/man8/verge.8 \
-	man/man8/run_bison.8 man/man8/run_flex.8
+	man/man8/run_bison.8 man/man8/run_bison.sh.8 man/man8/run_flex.8 man/man8/run_flex.sh.8 \
+	man/man8/jsemcgen.sh.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -208,7 +211,7 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -326,7 +329,7 @@ EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= jparse.a
-EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jnum_gen jstrdecode jstrencode
+EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -354,7 +357,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
@@ -438,12 +441,6 @@ jstrdecode: jstrdecode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
-
-jnum_gen.o: jnum_gen.c jnum_gen.h
-	${CC} ${CFLAGS} jnum_gen.c -c
-
-jnum_gen: jnum_gen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -601,10 +598,10 @@ use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
-rebuild_jnum_test: jnum_gen test_jparse/jnum.testset jnum_header.c
+rebuild_jnum_test: test_jparse/jnum_gen test_jparse/jnum.testset test_jparse/jnum_header.c
 	${RM} -f test_jparse/jnum_test.c
-	${CP} -f -v jnum_header.c test_jparse/jnum_test.c
-	./jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
+	${CP} -f -v test_jparse/jnum_header.c test_jparse/jnum_test.c
+	./test_jparse/jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
 
 bison: jparse.tab.c jparse.tab.h
 	@:
@@ -616,7 +613,7 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -743,6 +740,8 @@ install_man: ${ALL_MAN_TARGETS}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN3_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
 
 # vi/vim tags
 #
@@ -851,10 +850,6 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_gen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_gen.c jnum_gen.h \
-    json_parse.h json_util.h util.h
-jnum_header.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnum_header.c \
-    json_parse.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
     jparse.tab.h json_parse.h json_sem.h json_util.h util.h
 jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \

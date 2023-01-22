@@ -465,8 +465,8 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
      * write diagnostic to string
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
-    if ((size_t)ret2 >= size-ret) {
+    ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, fmt, ret, ret2);
@@ -649,8 +649,8 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
      * write warning to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
-    if ((size_t)ret2 >= size-ret) {
+    ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if ((size_t)ret2 >= size-(size_t)ret) {
 	if (allowed == true) {
 	    /* we cannot call warn() because that would produce an infinite loop! */
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
@@ -837,8 +837,8 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
      * write warning to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
-    if ((size_t)ret2 >= size-ret) {
+    ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if ((size_t)ret2 >= size-(size_t)ret) {
 	if (allowed == true) {
 	    /* we cannot call warn() because that would produce an infinite loop! */
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
@@ -851,8 +851,8 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
      * write errno details plus newline to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret3 = snprintf(str+ret+ret2, size-ret-ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
-    if ((size_t)ret3 >= size-ret-ret2) {
+    ret3 = snprintf(str+ret+ret2, size-(size_t)ret-(size_t)ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
 	if (allowed == true) {
 	    /* we cannot call warn() because that would produce an infinite loop! */
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
@@ -1021,8 +1021,8 @@ snerr_write(char *str, size_t size, int error_code, char const *caller,
      * write error diagnostic to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
-    if ((size_t)ret2 >= size-ret) {
+    ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret, ret2);
@@ -1189,8 +1189,8 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
      * write error diagnostic to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
-    if ((size_t)ret2 >= size-ret) {
+    ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret, ret2);
@@ -1200,8 +1200,8 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
      * write errno details plus newline to string
      */
     errno = 0;		/* pre-clear errno for strerror() */
-    ret3 = snprintf(str+ret+ret2, size-ret-ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
-    if ((size_t)ret3 >= size-ret-ret2) {
+    ret3 = snprintf(str+ret+ret2, size-(size_t)ret-(size_t)ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
 			       "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",

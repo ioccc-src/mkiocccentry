@@ -396,9 +396,10 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if [[ ! -x ./dyn_test ]]; then \
+	${Q} if [[ ! -x ./dyn_test ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./dyn_test" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo ./dyn_test; \
 	    ./dyn_test; \

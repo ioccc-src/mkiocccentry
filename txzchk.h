@@ -68,7 +68,10 @@
 
 
 /*
- * macros
+ * utility macros
+ *
+ * These will work for our purposes but the singular or plural one is in truth
+ * much more complicated than what we're making it seem like.
  */
 #define has_does_not_have(b) ((b)?"has":"does not have")
 #define singular_or_plural(x) ((x)==1?"":"s")
@@ -86,7 +89,7 @@ static bool always_show_warnings = false;	/* true ==> show warnings even if -q *
 /*
  * information about the tarball
  */
-struct txz_info
+struct tarball
 {
     bool has_info_json;			    /* true ==> has a .info.json file */
     bool empty_info_json;		    /* true ==> .info.json size == 0 */
@@ -119,7 +122,7 @@ struct txz_info
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
-static struct txz_info txz_info;	    /* all the information collected from txzpath */
+static struct tarball tarball;	    /* all the information collected from txzpath */
 
 /*
  * txz_file - struct for each file
@@ -158,7 +161,7 @@ static struct txz_file *txz_files;	    /* linked list of the files in the tarbal
 struct txz_line
 {
     char *line;				/* copy of the line */
-    int line_num;			/* line number */
+    uintmax_t line_num;			/* line number */
     struct txz_line *next;		/* pointer to the next line or NULL if last line */
 };
 
@@ -209,14 +212,14 @@ static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const
 static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
 		    bool normal_file, intmax_t *sum, intmax_t *count);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
-static void show_txz_info(char const *txzpath);
+static void show_tarball_info(char const *txzpath);
 static void check_file_size(char const *txzpath, off_t size, struct txz_file *file);
 static void count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t length);
 static void check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file);
 static void check_all_txz_files(char const *dir_name);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
-static void add_txz_line(char const *str, int line_num);
+static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
 static void free_txz_lines(void);
 static struct txz_file *alloc_txz_file(char const *path, intmax_t length);

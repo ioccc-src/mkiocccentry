@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -25,27 +25,27 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "../dbg/dbg.h"
+#include "../../dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "../util.h"
 
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "../json_parse.h"
 
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "../json_util.h"
 
 /*
  * dyn_array - dynamic array facility
  */
-#include "../dyn_array/dyn_array.h"
+#include "../../dyn_array/dyn_array.h"
 
 
 /*
@@ -65,11 +65,11 @@ static const char * const usage_msg =
     "\tfilename\tfile containing JSON number test cases\n"
     "\n"
     "Exit codes:\n"
-    "\t0\tall is OK\n"
-    "\t1\tfilename does not exist or is not a readable file\n"
-    "\t3\t-h and help string printed or -V and version string printed\n"
-    "\t4\tcommand line error\n"
-    "\t>=5\tinternal error\n"
+    "\t0\t\tall is OK\n"
+    "\t1\t\tfilename does not exist or is not a readable file\n"
+    "\t2\t\t-h and help string printed or -V and version string printed\n"
+    "\t3\t\tcommand line error\n"
+    "\t>=10\tinternal error\n"
     "\n"
     "jnum_gen version: %s\n";
 
@@ -86,7 +86,7 @@ static void fpr_number(FILE *stream, struct json_number *item);
 static void fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const *vcomm);
 static void fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char const *vcomm);
 static void fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *scomm,
-		      char const *vcomm, char const *sintval);
+		      char const *vcomm, char const *sintval, char const *suffix);
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 

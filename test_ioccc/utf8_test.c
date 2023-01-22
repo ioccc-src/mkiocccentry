@@ -4,7 +4,7 @@
  * "Because even POSIX needs an extra plus." :-)
  *
  * An author_handle, for an IOCCC winner, will be used to form
- * a winner_handle.  These winner_handle's will become part of a
+ * a winner_handle.  These winner handles will become part of a
  * JSON filename on the www.ioccc.org website.  For this reason,
  * (and other reasons), we must restrict an author_handle to
  * only lower case POSIX portable filenames, with the addition of the +,
@@ -118,12 +118,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
-	    errno = 0;
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		err(3, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
+	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':	/* -V - print version and exit */
             print("%s\n", VERSION);

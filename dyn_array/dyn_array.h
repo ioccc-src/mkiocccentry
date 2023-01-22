@@ -59,7 +59,7 @@
 /*
  * official version
  */
-#define DYN_ALLOC_VERSION "2.0 2022-06-09"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.0 2022-06-09"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -67,59 +67,59 @@
  *
  * Obtain an element in a dynamic array:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	double value;
  *
- *      value = dyn_array_value(array_p, double, i);
+ *      value = dyn_array_value(array, double, i);
  *
  * Obtain the address of an element in a dynamic array:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	struct json *addr;
  *
- *      addr = dyn_array_addr(array_p, struct json, i);
+ *      addr = dyn_array_addr(array, struct json, i);
  *
  * Current element count of dynamic array:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	intmax_t pos;
  *
- *	pos = dyn_array_tell(array_p);
+ *	pos = dyn_array_tell(array);
  *
  * Address of the element just beyond the elements in use:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	struct json_member *next;
  *
- *	next = dyn_array_beyond(array_p, struct json_member);
+ *	next = dyn_array_beyond(array, struct json_member);
  *
  * Number of elements allocated in memory for the dynamic array:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	intmax_t size;
  *
- *	size = dyn_array_alloced(array_p);
+ *	size = dyn_array_alloced(array);
  *
  * Number of elements available (allocated but not in use) for the dynamic array:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *	intmax_t avail;
  *
- *	avail = dyn_array_avail(array_p);
+ *	avail = dyn_array_avail(array);
  *
  * Rewind a dynamic array back to zero elements:
  *
- *	struct dyn_array *array_p;
+ *	struct dyn_array *array;
  *
- *	dyn_array_rewind(array_p);
+ *	dyn_array_rewind(array);
  */
-#define dyn_array_value(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))[(index)])
-#define dyn_array_addr(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))+(index))
-#define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)
-#define dyn_array_beyond(array_p, type) (dyn_array_addr(array_p, type, dyn_array_tell(array_p)))
-#define dyn_array_alloced(array_p) (((struct dyn_array *)(array_p))->allocated)
-#define dyn_array_avail(array_p) (dyn_array_alloced(array_p) - dyn_array_tell(array_p))
-#define dyn_array_rewind(array_p) (dyn_array_seek((struct dyn_array *)(array_p), 0, SEEK_SET))
+#define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])
+#define dyn_array_addr(array, type, index) (((type *)(((struct dyn_array *)(array))->data))+(index))
+#define dyn_array_tell(array) (((struct dyn_array *)(array))->count)
+#define dyn_array_beyond(array, type) (dyn_array_addr(array, type, dyn_array_tell(array)))
+#define dyn_array_alloced(array) (((struct dyn_array *)(array))->allocated)
+#define dyn_array_avail(array) (dyn_array_alloced(array) - dyn_array_tell(array))
+#define dyn_array_rewind(array) (dyn_array_seek((struct dyn_array *)(array), 0, SEEK_SET))
 
 
 /*

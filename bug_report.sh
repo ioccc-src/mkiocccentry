@@ -28,7 +28,7 @@ export TOOLS="
     ./dbg/dbg_test
     ./dyn_array/dyn_test
     ./iocccsize
-    ./jparse/jnum_gen
+    ./jparse/test_jparse/jnum_gen
     ./jparse/jparse
     ./jparse/jsemcgen.sh
     ./jparse/jsemtblgen
@@ -79,12 +79,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_
     -M make_flags	    set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
-     0   all is well
+     0   all tests OK
      1   failed to create a bug report file
      2   help mode exit or print version mode exit
      3   invalid command line
      4	 error in function call
- >= 10   internal error
+ >= 10   at least one check failed
 
 $0 version: $BUG_REPORT_VERSION"
 
@@ -112,9 +112,13 @@ while getopts :hVv:D:txlM: flag; do
     M)  MAKE_FLAGS="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 3
 	;;
    *)
@@ -127,19 +131,19 @@ done
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
 #
-LOG_FILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
-export LOG_FILE
+LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+export LOGFILE
 
 # attempt to create a writable log file
 #
-rm -f "$LOG_FILE"
-touch "$LOG_FILE"
-if [[ ! -e "$LOG_FILE" ]]; then
-    echo "$0: ERROR: could not create log file: $LOG_FILE"
+rm -f "$LOGFILE"
+touch "$LOGFILE"
+if [[ ! -e "$LOGFILE" ]]; then
+    echo "$0: ERROR: could not create log file: $LOGFILE"
     exit 1
 fi
-if [[ ! -w "$LOG_FILE" ]]; then
-    echo "$0: ERROR: log file not writable: $LOG_FILE"
+if [[ ! -w "$LOGFILE" ]]; then
+    echo "$0: ERROR: log file not writable: $LOGFILE"
     exit 1
 fi
 
@@ -151,9 +155,9 @@ write_echo()
     local MSG="$*"
 
     if [[ -z "$L_FLAG" ]]; then
-	echo "$MSG" | tee -a -- "$LOG_FILE"
+	echo "$MSG" | tee -a -- "$LOGFILE"
     else
-	echo "$MSG" >> "$LOG_FILE"
+	echo "$MSG" >> "$LOGFILE"
     fi
 }
 # exec_command - invoke command redirecting output only to the log file or to
@@ -165,13 +169,13 @@ exec_command()
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
 	#
 	# shellcheck disable=SC2086
-	command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
+	command ${COMMAND} 2>&1 | tee -a -- "$LOGFILE"
 	return "${PIPESTATUS[0]}"
     else
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
 	#
 	# shellcheck disable=SC2086
-	command ${COMMAND} >> "$LOG_FILE" 2>&1
+	command ${COMMAND} >> "$LOGFILE" 2>&1
 	return $?
     fi
 
@@ -186,13 +190,13 @@ exec_command_lines()
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
 	#
 	# shellcheck disable=SC2086
-	command ${COMMAND} 2>&1 | head -n "$LINES" | tee -a -- "$LOG_FILE"
+	command ${COMMAND} 2>&1 | head -n "$LINES" | tee -a -- "$LOGFILE"
 	return "${PIPESTATUS[0]}"
     else
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
 	#
 	# shellcheck disable=SC2086
-	command ${COMMAND} | head -n "$LINES" >> "$LOG_FILE" 2>&1
+	command ${COMMAND} | head -n "$LINES" >> "$LOGFILE" 2>&1
 	return "${PIPESTATUS[0]}"
     fi
 }
@@ -202,7 +206,7 @@ exec_command_lines()
 is_exec()
 {
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: expected 1 arg to is_exec, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: expected 1 arg to is_exec, found $#" | tee -a -- "$LOGFILE"
 	return 1
     else
 	declare f="$1"
@@ -227,7 +231,7 @@ is_exec()
 is_exec_quiet()
 {
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: expected 1 arg to is_exec_quiet, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: expected 1 arg to is_exec_quiet, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     else
 	declare f="$1"
@@ -254,7 +258,7 @@ type_of()
     # parse args
     #
     if [[ $# -ne 2 ]]; then
-	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
 
@@ -286,7 +290,7 @@ type_of_optional()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
 
@@ -361,7 +365,7 @@ get_version_optional()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local COMMAND
@@ -529,7 +533,7 @@ get_version()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local COMMAND
@@ -739,7 +743,7 @@ get_version_minimal()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local COMMAND
@@ -847,7 +851,7 @@ run_optional_check()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local COMMAND=$1
@@ -882,7 +886,7 @@ run_check_warn()
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local COMMAND="$1"
@@ -937,7 +941,7 @@ run_check()
     # parse args
     #
     if [[ $# -ne 2 ]]; then
-	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOG_FILE"
+	echo "$0: ERROR: function expects 2 args, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     fi
     local CODE="$1"
@@ -981,7 +985,7 @@ run_check()
 #############################
 
 if [[ $V_FLAG -gt 1 ]]; then
-    write_echo "Will write contents to $LOG_FILE"
+    write_echo "Will write contents to $LOGFILE"
 fi
 write_echo "# TIME OF REPORT: $(date)"
 write_echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION"
@@ -1464,13 +1468,13 @@ if [[ -e "./soup/limit_ioccc.sh" ]]; then
 	write_echo "## NOTICE: Found limit_ioccc.sh file:"
 	write_echo "--"
 	write_echo "cat ./soup/limit_ioccc.sh"
-	# tee -a -- "$LOG_FILE" < ./soup/limit_ioccc.sh
+	# tee -a -- "$LOGFILE" < ./soup/limit_ioccc.sh
 	if [[ -z "$L_FLAG" ]]; then
-	    < ./soup/limit_ioccc.sh tee -a -- "$LOG_FILE"
+	    < ./soup/limit_ioccc.sh tee -a -- "$LOGFILE"
 	else
-	    cat ./soup/limit_ioccc.sh >> "$LOG_FILE"
+	    cat ./soup/limit_ioccc.sh >> "$LOGFILE"
 	fi
-	write_echo "--" | tee -a -- "$LOG_FILE"
+	write_echo "--" | tee -a -- "$LOGFILE"
     else
 	write_echo "### NOTICE: Found unreadable limit_ioccc.sh"
     fi
@@ -1506,10 +1510,10 @@ if [[ -e "./makefile.local" ]]; then
 	write_echo "cat ./makefile.local"
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
-	    # tee -a -- "$LOG_FILE" < makefile.local
-	    < makefile.local tee -a -- "$LOG_FILE"
+	    # tee -a -- "$LOGFILE" < makefile.local
+	    < makefile.local tee -a -- "$LOGFILE"
 	else
-	    cat makefile.local >> "$LOG_FILE"
+	    cat makefile.local >> "$LOGFILE"
 	fi
 	write_echo "--"
     else
@@ -1574,20 +1578,20 @@ if [[ "$EXIT_CODE" -ne 0 ]]; then
     write_echo ""
     write_echo "	https://github.com/ioccc-src/mkiocccentry/issues"
     write_echo ""
-    write_echo "making sure to attach $LOG_FILE with your report. You may"
+    write_echo "making sure to attach $LOGFILE with your report. You may"
     write_echo "instead email the Judges but you're encouraged to file a"
     write_echo "report instead. This is because not all tools were written by"
     write_echo "the Judges."
 elif [[ -z "$X_FLAG" ]]; then
     write_echo "All tests PASSED"
     write_echo ""
-    write_echo "A log of the above tests was saved to $LOG_FILE."
+    write_echo "A log of the above tests was saved to $LOGFILE."
     write_echo "If you feel everything is in order you may safely delete that file."
     write_echo "Otherwise you may report the issue at the GitHub issue page:"
     write_echo ""
     write_echo "	https://github.com/ioccc-src/mkiocccentry/issues"
     write_echo ""
-    write_echo "making sure to attach $LOG_FILE with your report. You may"
+    write_echo "making sure to attach $LOGFILE with your report. You may"
     write_echo "instead email the Judges but you're encouraged to file a"
     write_echo "report instead. This is because not all tools were written by"
     write_echo "the Judges."
@@ -1595,7 +1599,7 @@ fi
 
 if [[ -z "$X_FLAG" ]]; then
     write_echo ""
-    write_echo "NOTE: $LOG_FILE contains various information about"
+    write_echo "NOTE: $LOGFILE contains various information about"
     write_echo "your environment including things such as hostname, login name, operating system"
     write_echo "information, paths and versions of various tools. Although not encouraged,"
     write_echo "you are free to edit this file if you feel so inclined. This information is"
@@ -1603,7 +1607,7 @@ if [[ -z "$X_FLAG" ]]; then
     write_echo "we kindly request that you please provide it to us when you report a problem with this"
     write_echo "code."
 else
-    rm -f "$LOG_FILE"
+    rm -f "$LOGFILE"
 fi
 # All Done!!! -- Jessica Noll, Age 2
 #

@@ -1598,8 +1598,8 @@ check_utf8_posix_map(void)
 	}
 
 	/* fill in string lengths */
-	hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
-	hmap[i].posix_str_len = strlen(hmap[i].posix_str);
+	hmap[i].utf8_str_len = (int)strlen(hmap[i].utf8_str);
+	hmap[i].posix_str_len = (int)strlen(hmap[i].posix_str);
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
 	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
@@ -1699,22 +1699,22 @@ default_handle(char const *name)
 	    }
 
 	    /* skip if map entry is too long for remainder of string */
-	    if (i + m->utf8_str_len > namelen) {
+	    if (i + (uintmax_t)m->utf8_str_len > namelen) {
 		continue;
 	    }
 
 	    /* skip if there isn't match with the rest of the string */
-	    if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+	    if (strncasecmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
 		continue;
 	    }
 
 	    /* match found: add to default handle length */
-	    def_len += m->posix_str_len;
+	    def_len += (uintmax_t)m->posix_str_len;
 
 	    /*
 	     * advance string position
 	     */
-	    i += m->utf8_str_len;
+	    i += (uintmax_t)m->utf8_str_len;
 
 	    /* stop hmap[] scan on this match */
 	    break;
@@ -1852,12 +1852,12 @@ default_handle(char const *name)
 		}
 
 		/* skip if map entry is too long for remainder of string */
-		if (i + m->utf8_str_len > namelen) {
+		if (i + (uintmax_t)m->utf8_str_len > namelen) {
 		    continue;
 		}
 
 		/* skip if there isn't a match with the rest of the string */
-		if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+		if (strncasecmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
 		    continue;
 		}
 
@@ -1869,7 +1869,7 @@ default_handle(char const *name)
 		    /*
 		     * firewall - do not copy beyond end of allocated buffer
 		     */
-		    if (cur_len + m->posix_str_len > def_len) {
+		    if (cur_len + (uintmax_t)m->posix_str_len > def_len) {
 			err(22, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond allocated len: %ju",
 					   (uintmax_t)cur_len, (uintmax_t)m->posix_str_len, (uintmax_t)def_len);
 			not_reached();
@@ -1879,7 +1879,7 @@ default_handle(char const *name)
 		     * copy translation into the default author handle buffer
 		     */
 		    errno = 0;		/* pre-clear errno for errp() */
-		    pret = strncpy(ret+cur_len, m->posix_str, m->posix_str_len);
+		    pret = strncpy(ret+cur_len, m->posix_str, (uintmax_t)m->posix_str_len);
 		    if (pret == NULL) {
 			errp(23, __func__, "strncpy() returned NULL");
 			not_reached();
@@ -1888,13 +1888,13 @@ default_handle(char const *name)
 		    /*
 		     * advance our copy position
 		     */
-		    cur_len += m->posix_str_len;
+		    cur_len += (uintmax_t)m->posix_str_len;
 		}
 
 		/*
 		 * advance our string position
 		 */
-		i += m->utf8_str_len;
+		i += (uintmax_t)m->utf8_str_len;
 
 		/* stop hmap[] scan on this match */
 		break;

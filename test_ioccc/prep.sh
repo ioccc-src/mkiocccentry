@@ -2,34 +2,25 @@
 #
 # prep.sh - prep for a release - actions for make prep and make release
 #
-# Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
+# This script was written in 2022 by:
 #
-# Permission to use, copy, modify, and distribute this software and
-# its documentation for any purpose and without fee is hereby granted,
-# provided that the above copyright, this permission notice and text
-# this comment, and the disclaimer below appear in all of the following:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-#       supporting documentation
-#       source copies
-#       source works derived from this source
-#       binaries derived from this source or from derived source
+# with some minor improvements by:
 #
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
 #
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # Share and enjoy! :-)
+
 
 # setup
 #
 export FAILURE_SUMMARY=
-export LOG_FILE=
+export LOGFILE=
 export PREP_VERSION="0.2 2023-01-04"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -79,12 +70,16 @@ while getopts :hv:Veom:M:l: flag; do
 	;;
     o)	O_FLAG="-o"
 	;;
-    l)	LOG_FILE="$OPTARG"
+    l)	LOGFILE="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 2
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 2
 	;;
     *)
@@ -117,14 +112,14 @@ fi
 
 # if -l logfile was specified, remove it and recreate it to start out empty
 #
-if [[ -n "$LOG_FILE" ]]; then
-    rm -f "$LOG_FILE"
-    touch "$LOG_FILE"
-    if [[ ! -f "${LOG_FILE}" ]]; then
+if [[ -n "$LOGFILE" ]]; then
+    rm -f "$LOGFILE"
+    touch "$LOGFILE"
+    if [[ ! -f "${LOGFILE}" ]]; then
 	echo "$0: ERROR: couldn't create log file" 1>&2
 	exit 4
     fi
-    if [[ ! -w "${LOG_FILE}" ]]; then
+    if [[ ! -w "${LOGFILE}" ]]; then
 	echo "$0: ERROR: log file not writable" 1>&2
 	exit 4
     fi
@@ -137,8 +132,8 @@ write_echo()
 {
     local MSG="$*"
 
-    if [[ -n "$LOG_FILE" ]]; then
-	echo "$MSG" | tee -a -- "$LOG_FILE"
+    if [[ -n "$LOGFILE" ]]; then
+	echo "$MSG" | tee -a -- "$LOGFILE"
     else
 	echo "$MSG" 1>&2
     fi
@@ -150,8 +145,8 @@ write_echo_n()
 {
     local MSG="$*"
 
-    if [[ -n "$LOG_FILE" ]]; then
-	echo -n "$MSG" | tee -a -- "$LOG_FILE"
+    if [[ -n "$LOGFILE" ]]; then
+	echo -n "$MSG" | tee -a -- "$LOGFILE"
     else
 	echo -n "$MSG" 1>&2
     fi
@@ -162,11 +157,11 @@ write_echo_n()
 exec_command()
 {
     local COMMAND=$*
-    if [[ -n "$LOG_FILE" ]]; then
+    if [[ -n "$LOGFILE" ]]; then
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
 	#
 	# shellcheck disable=SC2086
-	command ${COMMAND} >> "$LOG_FILE" 2>&1
+	command ${COMMAND} >> "$LOGFILE" 2>&1
 	return $?
     else
 	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
@@ -192,14 +187,14 @@ make_action() {
     #
     if [[ $# -ne 2 ]]; then
 	echo "$0: ERROR: function expects 2 args, found $#" 1>&2
-	exit 3
+	exit 9
     fi
     local CODE="$1"
     local RULE="$2"
 
     # announce pre-action
     #
-    if [[ -z "$LOG_FILE" ]]; then
+    if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-= START: $MAKE $RULE =-=-="
 	write_echo "$MAKE" -f "$MAKEFILE" "$RULE"
     else
@@ -217,12 +212,12 @@ make_action() {
 	EXIT_CODE="$CODE"
 
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$MAKE -f $MAKEFILE non-zero exit code: $status"
-	if [[ -z "$LOG_FILE" ]]; then
+	make_action $EXIT_CODE: $MAKE -f $MAKEFILE $RULE: non-zero exit code: $status"
+	if [[ -z "$LOGFILE" ]]; then
 	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	fi
 	if [[ -n $E_FLAG ]]; then
-	    if [[ -z "$LOG_FILE" ]]; then
+	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
 		write_echo "$0: ERROR: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
 		write_echo
@@ -233,7 +228,7 @@ make_action() {
 	    fi
 	    exit "$EXIT_CODE"
 	else
-	    if [[ -z "$LOG_FILE" ]]; then
+	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
 		write_echo "$0: Warning: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
 		write_echo
@@ -247,7 +242,7 @@ make_action() {
     # announce post-action
     #
     else
-	if [[ -z "$LOG_FILE" ]]; then
+	if [[ -z "$LOGFILE" ]]; then
 	    write_echo
 	    write_echo "=-=-= PASS: $MAKE $RULE =-=-="
 	    write_echo
@@ -260,7 +255,7 @@ make_action() {
 
 # perform make actions
 #
-if [[ -z "$LOG_FILE" ]]; then
+if [[ -z "$LOGFILE" ]]; then
     write_echo "=-=-=-=-= START: $0 =-=-=-=-="
     write_echo
 fi
@@ -291,7 +286,7 @@ make_action 30 all
 make_action 31 test
 
 if [[ $EXIT_CODE -eq 0 ]]; then
-    if [[ -z "$LOG_FILE" ]]; then
+    if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
 	write_echo
     else
@@ -300,7 +295,7 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
 else
-    if [[ -z "$LOG_FILE" ]]; then
+    if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= FAIL: $0 =-=-=-=-="
 	write_echo
 	write_echo "=-=-=-=-= Will exit: $EXIT_CODE =-=-=-=-="

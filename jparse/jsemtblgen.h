@@ -7,7 +7,7 @@
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * The JSON parser was co-developed by:
+ * The JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -119,11 +119,11 @@ static const char * const usage_msg =
     "\tjson_arg\tgenerate JSON semantics table for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
     "\n"
     "Exit codes:\n"
-    "    0\tJSON is valid\n"
-    "    1\tJSON is invalid\n"
-    "    2\t-h and help string printed or -V and version string printed\n"
-    "    3\tcommand line error\n"
-    "    >=4\tinternal error\n"
+    "    0\t\tJSON is valid\n"
+    "    1\t\tJSON is invalid\n"
+    "    2\t\t-h and help string printed or -V and version string printed\n"
+    "    3\t\tcommand line error\n"
+    "    >=10\tinternal error\n"
     "\n"
     "JSON parser version: %s\n"
     "jsemtblgen version: %s\n";

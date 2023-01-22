@@ -425,9 +425,10 @@ test:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} -f dbg_test.out
-	-${Q} if [[ ! -x ./dbg_test ]]; then \
+	${Q} if [[ ! -x ./dbg_test ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./dbg_test" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
 	    echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"; \
 	    ./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \

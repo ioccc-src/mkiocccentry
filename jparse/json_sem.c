@@ -7,7 +7,7 @@
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * The JSON parser was co-developed by:
+ * The JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -2240,7 +2240,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     /*
      * count errors, if any
      */
-    err = dyn_array_tell(count_err) + dyn_array_tell(val_err);
+    err = (uintmax_t)dyn_array_tell(count_err) + (uintmax_t)dyn_array_tell(val_err);
 
     /*
      * report on the number of errors found
@@ -2273,7 +2273,7 @@ free_count_err(struct dyn_array *count_err)
     /*
      * free each semantic count error if malloced
      */
-    count = dyn_array_tell(count_err);
+    count = (uintmax_t)dyn_array_tell(count_err);
     for (i=0; i < count; ++i) {
 
 	/*
@@ -2319,7 +2319,7 @@ free_val_err(struct dyn_array *val_err)
     /*
      * free each semantic count error if malloced
      */
-    count = dyn_array_tell(val_err);
+    count = (uintmax_t)dyn_array_tell(val_err);
     for (i=0; i < count; ++i) {
 
 	/*
@@ -2413,7 +2413,7 @@ fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *se
 	    /*
 	     * print JSON node type
 	     */
-	    fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_count_err->node));
+	    fpr(stream, __func__, "node type: %s ", json_item_type_name(sem_count_err->node));
 
 	    /*
 	     * case: JSON node is a member, print name
@@ -2558,7 +2558,7 @@ fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_va
 	    /*
 	     * print JSON node type
 	     */
-	    fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_val_err->node));
+	    fpr(stream, __func__, "node type: %s ", json_item_type_name(sem_val_err->node));
 
 	    /*
 	     * case: JSON node is a member, print name

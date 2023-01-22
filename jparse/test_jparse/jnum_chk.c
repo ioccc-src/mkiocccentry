@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -123,7 +123,7 @@ main(int argc, char *argv[])
 	    break;
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(10, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
 	    not_reached();
 	}
 	item = &(node->item.number);
@@ -401,7 +401,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
     /* test: float */
     check_fval(&test_error, "float", testnum,
 			    test_result[testnum].float_sized, item->float_sized,
-			    test_result[testnum].as_float, item->as_float,
+			    (double)test_result[testnum].as_float, (double)item->as_float,
 			    test_result[testnum].as_float_int, item->as_float_int, strict);
 
     /* test: double */
@@ -638,7 +638,7 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	 * case strict: test for exact match
 	 */
 	if (strict == true) {
-	    if (val_a != val_b) {
+	    if ((intmax_t)val_a != (intmax_t)val_b) {
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg != item->as_%s: %.22Lg",
 			       testnum,
 			       type, val_a,
@@ -660,21 +660,21 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	    diff = fabsl(val_a - val_b);
 
 	    /* determine the difference as part of the whole */
-	    if (val_a != 0.0) {
+	    if ((intmax_t)val_a != (intmax_t)0.0) {
 		diff_part = fabsl(diff / val_a);
 	    } else {
 		diff_part = diff;	/* zero value special case */
 	    }
 
 	    /* compare difference as part of the whole */
-	    if (diff_part <= 1.0/MATCH_PRECISION) {
+	    if (islessequal(diff_part, 1.0L/MATCH_PRECISION)) {
 		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %.22Lg similar to item->as_%s: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b);
 		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: diff precision: %.22Lg <= 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
-			       type, diff_part, 1.0/MATCH_PRECISION);
+			       type, diff_part, 1.0L/MATCH_PRECISION);
 
 	    } else {
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg not similar to item->as_%s: %.22Lg",
@@ -683,7 +683,7 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 			       type, val_b);
 		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: diff precision: %.22Lg > 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
-			       type, diff_part, 1.0/MATCH_PRECISION);
+			       type, diff_part, 1.0L/MATCH_PRECISION);
 		*testp = true; /* test failed */
 	    }
 	}

@@ -8,11 +8,12 @@
 # hack. There are limitations. For more details check the NOTES and BUGS
 # sections of the man page.
 #
-# This quick, dirty and possibly ugly hack was not written by Cody Boone
+# This quick, dirty and definitely ugly hack was not written by Cody Boone
 # Ferguson in support of issue
 # https://github.com/ioccc-src/mkiocccentry/issues/275. :-) Okay it was written
-# by Cody but it's dirty and maybe ugly and there's room for improvement. As
-# noted there are limitations. See the man page for details.
+# by Cody but it's dirty and very ugly and there's room for improvement. As
+# noted there are limitations and it'll be mostly useless once the man pages
+# have more proper formatting. See the man page for details.
 #
 
 # set up
@@ -42,7 +43,6 @@ Exit codes:
      5	 missing or inconsistent synopsis
      6	 tool does not have usage string
      7	 man directory does not exist or is not a readable directory
- >= 10   internal error
 
 $0 version: $RUN_USAGE_VERSION"
 
@@ -65,9 +65,13 @@ while getopts :hVm:M:D: flag; do
     D)	MAN_DIR="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 4
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
 	exit 4
 	;;
     *)

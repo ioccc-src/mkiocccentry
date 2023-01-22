@@ -3,7 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This JSON scanner was co-developed by:
+ * This JSON scanner was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -506,7 +506,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * scan the blob
      */
-    bs = yy_scan_bytes(ptr, len, scanner);
+    bs = yy_scan_bytes(ptr, (int)len, scanner);
     if (bs == NULL) {
 	/*
 	 * if unable to scan the bytes it indicates an internal error and
@@ -539,7 +539,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** BEGIN PARSE\n");
 	fprstr(stderr, "<\n");
-	(void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+	(void) fprint_line_buf(stderr, ptr, len, 0, 0);
 	fprstr(stderr, "\n>\n");
     }
 

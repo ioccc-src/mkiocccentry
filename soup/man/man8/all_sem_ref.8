@@ -9,30 +9,33 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH all_sem_ref.sh 8 "31 December 2022" "all_sem_ref.sh" "IOCCC tools"
+.TH all_sem_ref.sh 8 "19 January 2023" "all_sem_ref.sh" "IOCCC tools"
 .SH NAME
 all_sem_ref.sh \- form \fI*.json.c\fP and \fI*.json.h\fP semantic table files
 .SH SYNOPSIS
 \fBall_sem_ref.sh\fP [\-h] [\-v level] [\-V] [\-j jsemtblgen] [\-J jsemcgen.sh] info.head.c info.tail.c info.head.h info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
 .SH DESCRIPTION
-This tool forms semantic table files under a given directory which is, in the case of the IOCCC, important for the \fBchkentry(1)\fP tool.
-As \fBchkentry(1)\fP is a vitally important part of the IOCCC judging process this tool, along with \fBjsemcgen(8)\fP and \fBjsemtblgen(8)\fP are vital in running the IOCCC but at a lower level.
+This tool forms semantic table files under a given directory.
+JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
+.PP
+In general, a JSON semantics table is an array of \fBstruct json_sem\fP that can be used to drive checks on the semantics of valid JSON.
+This can be done for any JSON file but in particular this tool is for the \fI.info.json\fP and \fI.auth.json\fP files as part of the judging process for the IOCCC.
 .PP
 The \fIinfo.head.c\fP file is a \fI.info.json\fP style header for .c semantic table files.
 .br
-The \fIinfo.tail.c\fP file is a \fI.info.json\fP style trailer for .c semantic table files.
+The \fIinfo.tail.c\fP file is a \fI.info.json\fP style footer for .c semantic table files.
 .br
 The \fIinfo.head.h\fP file is a \fI.info.json\fP style header for .h semantic table files.
 .br
-The \fIinfo.tail.h\fP file is a \fI.info.json\fP style trailer for .h semantic table files.
+The \fIinfo.tail.h\fP file is a \fI.info.json\fP style footer for .h semantic table files.
 .PP
 The \fIauth.head.c\fP file is a \fI.auth.json\fP style header for .c semantic table files.
 .br
-The \fIauth.tail.c\fP file is a \fI.auth.json\fP style trailer for .c semantic table files.
+The \fIauth.tail.c\fP file is a \fI.auth.json\fP style footer for .c semantic table files.
 .br
 The \fIauth.head.h\fP file is a \fI.auth.json\fP style header for .h semantic table files.
 .br
-The \fIauth.tail.h\fP file is a \fI.auth.json\fP style trailer for .h semantic table files.
+The \fIauth.tail.h\fP file is a \fI.auth.json\fP style footer for .h semantic table files.
 .PP
 The \fIinfo_dir\fP directory is expected to have \fI*.json\fP files as \fI.info.json\fP files.
 .br
@@ -58,25 +61,25 @@ Set path to \fBjsemcgen(8)\fP.
 .SH EXIT STATUS
 .TP
 0
-all is well
+all OK
 .TQ
 2
 \fB\-h\fP or \fB\-V\fP used and help string printed or version string printed
 .TQ
 3
-Command line error
+command line error
 .TQ
 4
-\fBjsemcgen.sh\fP not found or not executable
+\fBjsemcgen.sh\fP and/or \fBjsemtblgen\fP not found or not executable
 .TQ
 5
-Missing or not readable header or trailer file
+missing or not readable header or footer file
 .TQ
 6
-Missing, not readable, or not writable \fIinfo_dir\fP, \fIauth_dir\fP and/or \fIref_dir\fP
+missing, not readable, or not writable \fIinfo_dir\fP, \fIauth_dir\fP and/or \fIref_dir\fP
 .TQ
 >= 10
-Internal error
+internal error
 .SH NOTES
 .PP
 The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
