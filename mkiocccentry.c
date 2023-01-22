@@ -365,7 +365,7 @@ main(int argc, char *argv[])
      */
     if (read_answers_flag_used && answers != NULL && strlen(answers) > 0) {
 	if (!is_read(answers)) {
-	    errp(13, __func__, "cannot read answers file");
+	    errp(13, __func__, "answers file not readable");
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */

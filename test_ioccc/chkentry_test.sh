@@ -25,8 +25,8 @@ export CHKENTRY="./chkentry"
 export LOGFILE="./test_ioccc/chkentry_test.log"
 export EXIT_CODE=0
 export INVALID_JSON_FOUND=""
-export UNEXPECTED_SEMANRIC_ERROR=""
-export SEMANRIC_ERROR_MISSED=""
+export UNEXPECTED_SEMANTIC_ERROR=""
+export SEMANTIC_ERROR_MISSED=""
 export JSON_TREE="./jparse/test_jparse/test_JSON"
 
 export CHKENTRY_TEST_VERSION="0.2 2022-11-04"
@@ -51,14 +51,14 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
 			json_tree/auth.json/bad/	valid JSON syntax that has 1 or more .auth.json semantic errors
 
 Exit codes:
-     0   all tests passed
-     1   all JSON files were valid JSON, however some chkentry semantic tests failed
-     2   help mode exit
+     0   all OK
+     1   all JSON files were valid JSON; however some chkentry semantic tests failed
+     2   -h and help string printed or -V and version string printed
      3   invalid command line
      4	 missing or non-executable chkentry
      5	 missing or non-readable json_tree directory or subdirectory
-     6	 some files were invalid JSON, chkentry correctly tested all other files
-     7	 some files were invalid JSON, some chkentry tests failed
+     6	 some files were invalid JSON; chkentry correctly tested all other files
+     7	 some files were invalid JSON and some chkentry tests failed
  >= 10   internal error
 
 $0 version: $CHKENTRY_TEST_VERSION"
@@ -307,7 +307,7 @@ run_auth_test()
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: debug[1]: ERROR: test $auth_json should FAIL: chkentry incorrectly exited code 0" 1>&2
 	    fi
-	    SEMANRIC_ERROR_MISSED="true"
+	    SEMANTIC_ERROR_MISSED="true"
 	fi
     else
 	if [[ $pass_fail = pass ]]; then
@@ -317,7 +317,7 @@ run_auth_test()
 		    echo "$0: debug[1]: ERROR: test $auth_json should pass: chkentry FAIL with exit code: $status" 1>&2
 		fi
 	    fi
-	    UNEXPECTED_SEMANRIC_ERROR="true"
+	    UNEXPECTED_SEMANTIC_ERROR="true"
 	else
 	    echo "$0: test $auth_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 1 ]]; then
@@ -363,7 +363,7 @@ run_info_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_info_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	EXIT_CODE=2
+	EXIT_CODE=14
 	return
     fi
 
@@ -415,7 +415,7 @@ run_info_test()
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: debug[1]: ERROR: test $info_json should FAIL: chkentry incorrectly exited code 0" 1>&2
 	    fi
-	    SEMANRIC_ERROR_MISSED="true"
+	    SEMANTIC_ERROR_MISSED="true"
 	fi
     else
 	if [[ $pass_fail = pass ]]; then
@@ -425,7 +425,7 @@ run_info_test()
 		    echo "$0: debug[1]: ERROR: test $info_json should pass: chkentry FAIL with exit code: $status" 1>&2
 		fi
 	    fi
-	    UNEXPECTED_SEMANRIC_ERROR="true"
+	    UNEXPECTED_SEMANTIC_ERROR="true"
 	else
 	    echo "$0: test $info_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 1 ]]; then
@@ -483,7 +483,7 @@ done < <(find "$INFO_BAD_TREE" -type f -name '*.json' -print)
 # determine exit code
 #
 if [[ -z $INVALID_JSON_FOUND ]]; then
-    if [[ -z $UNEXPECTED_SEMANRIC_ERROR && -z $SEMANRIC_ERROR_MISSED ]]; then
+    if [[ -z $UNEXPECTED_SEMANTIC_ERROR && -z $SEMANTIC_ERROR_MISSED ]]; then
 	EXIT_CODE=0
 	echo "$0: all tests PASSED" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
@@ -492,9 +492,9 @@ if [[ -z $INVALID_JSON_FOUND ]]; then
 	echo "$0: notice: about to exit: $EXIT_CODE" >> "${LOGFILE}"
     else
 	EXIT_CODE=1
-	echo "$0: all JSON files were valid JSON, however some chkentry semantic tests failed" >> "${LOGFILE}"
+	echo "$0: all JSON files were valid JSON; however some chkentry semantic tests failed" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: all JSON files were valid JSON, however some chkentry semantic tests failed" 1>&2
+	    echo "$0: debug[1]: all JSON files were valid JSON; however some chkentry semantic tests failed" 1>&2
 	    echo 1>&2
 	    echo "$0: Notice: see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
@@ -502,11 +502,11 @@ if [[ -z $INVALID_JSON_FOUND ]]; then
 	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
     fi
 else
-    if [[ -z $UNEXPECTED_SEMANRIC_ERROR && -z $SEMANRIC_ERROR_MISSED ]]; then
+    if [[ -z $UNEXPECTED_SEMANTIC_ERROR && -z $SEMANTIC_ERROR_MISSED ]]; then
 	EXIT_CODE=6
-	echo "$0: some files were invalid JSON, chkentry correctly tested all other files" >> "${LOGFILE}"
+	echo "$0: some files were invalid JSON; chkentry correctly tested all other files" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: some files were invalid JSON, chkentry correctly tested all other files" 1>&2
+	    echo "$0: debug[1]: some files were invalid JSON; chkentry correctly tested all other files" 1>&2
 	    echo 1>&2
 	    echo "$0: Notice: see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
@@ -514,9 +514,9 @@ else
 	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
     else
 	EXIT_CODE=7
-	echo "$0: some files were invalid JSON, some chkentry tests failed" >> "${LOGFILE}"
+	echo "$0: some files were invalid JSON and some chkentry tests failed" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: some files were invalid JSON, some chkentry tests failed" 1>&2
+	    echo "$0: debug[1]: some files were invalid JSON and some chkentry tests failed" 1>&2
 	    echo 1>&2
 	    echo "$0: Notice: see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2

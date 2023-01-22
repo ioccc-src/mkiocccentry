@@ -87,8 +87,8 @@ main(int argc, char *argv[])
     program = argv[0];
     while ((i = getopt(argc, argv, "hv:qVtquE:")) != -1) {
 	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(1, "-h help mode", program); /*ooo*/
+	case 'h':		/* -h - print help to stderr and exit 2 */
+	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -100,9 +100,9 @@ main(int argc, char *argv[])
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version and exit 2 */
 	    print("%s\n", FNAMCHK_VERSION);
-	    exit(0); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 't': /* force check to verify that the filename is a test entry filename */
@@ -111,24 +111,24 @@ main(int argc, char *argv[])
 	case 'u': /* force check to verify that the filename is a UUID (real) entry filename */
 	    uuid_mode = true;
 	    break;
-	case 'E': /* force extension check to be optarg instead of "txz": used for test suite for txzchk */
+	case 'E': /* force extension check to be optarg instead of "txz": used for txzchk test suite */
 	    ext = optarg;
 	    break;
 	default:
-	    usage(1, "invalid -flag", program); /*ooo*/
+	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	    break;
 	 }
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program); /*ooo*/
+	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
 
     /* -t and -u cannot be used together as the tests they enable conflict */
     if (test_mode && uuid_mode) {
-	err(1, __func__, "-t and -u cannot be used together");
+	err(3, __func__, "-t and -u cannot be used together"); /*ooo*/
 	not_reached();
     }
 
@@ -143,15 +143,15 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "filename: %s", filename);
 
     /*
-     * first .-separated token must be entry
+     * first '.' separated token must be entry
      */
     entry = strtok(filename, ".");
     if (entry == NULL) {
-	err(2, __func__, "first strtok() returned NULL");
+	err(10, __func__, "first strtok() returned NULL");
 	not_reached();
     }
     if (strcmp(entry, "entry") != 0) {
-	err(3, __func__, "filename does not start with \"entry.\": %s", filepath);
+	err(11, __func__, "filename does not start with \"entry.\": %s", filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "filename starts with \"entry.\": %s", filename);
@@ -161,7 +161,7 @@ main(int argc, char *argv[])
      */
     uuid = strtok(NULL, ".");
     if (uuid == NULL) {
-	err(4, __func__, "nothing found after first '.'  separated token of entry");
+	err(12, __func__, "nothing found after \"entry.\"");
 	not_reached();
     }
     len = strlen(uuid);
@@ -172,7 +172,7 @@ main(int argc, char *argv[])
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	/* if it starts as "test-" and -u was specified it's an error */
 	if (uuid_mode) {
-	    err(5, __func__, "-u specified and entry starts as a test mode filename");
+	    err(13, __func__, "-u specified and entry starts as a test mode filename");
 	    not_reached();
 	}
 
@@ -181,25 +181,25 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != LITLEN("test-")+MAX_ENTRY_CHARS) {
-	    err(6, __func__, "second '-' separated token length: %ju != %ju: %s",
-			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath); /*ooo*/
+	    err(4, __func__, "\"entry.test-\" separated token length: %ju != %ju: %s", /*ooo*/
+			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "test-%d%c", &entry_num, &guard);
 	if (ret != 1) {
-	    err(7, __func__, "second '.' separated non-test not in test-entry_number format: %s", filepath);
+	    err(14, __func__, "entry_number not found after \"test-\": %s", filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "entry ID is test: %s", uuid);
 	if (entry_num < 0) {
-	    err(8, __func__, "third '.' separated entry number: %d is < 0: %s", entry_num, filepath);
+	    err(15, __func__, "entry_number %d is < 0: %s", entry_num, filepath);
 	    not_reached();
 	}
 	if (entry_num > MAX_ENTRY_NUM) {
-	    err(9, __func__, "second '-' separated entry number: %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
+	    err(16, __func__, "entry_number %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "entry number is valid: %d", entry_num);
+	dbg(DBG_LOW, "entry_number %d is valid: %s", entry_num, filepath);
 
     /*
      * parse a UUID-entry_num IOCCC contest ID
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 	 * "entry.test-" then it's an error.
 	 */
 	if (test_mode) {
-	    err(10, __func__, "-t specified and entry does not start with \"entry.test-\"");
+	    err(17, __func__, "-t specified and entry does not start with \"entry.test-\"");
 	    not_reached();
 	}
 
@@ -219,30 +219,30 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != UUID_LEN+1+MAX_ENTRY_CHARS) {
-	    err(11, __func__, "second '-' separated token length: %ju != %ju: %s",
+	    err(5, __func__, "\"entry.UUID-\" separated token length: %ju != %ju: %s", /*ooo*/
 			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant, &d, &e, &f, &entry_num, &guard);
 	if (ret != 9) {
-	    err(12, __func__, "second '.' separated non-test not in UUID-entry_number format: %s", filepath);
+	    err(18, __func__, "UUID-entry_number not found after \"entry-\": %s", filepath);
 	    not_reached();
 	}
 	if (version != UUID_VERSION) {
-	    err(13, __func__, "second '.' separated UUID token version %x != %x: %s", version, UUID_VERSION, filepath);
+	    err(19, __func__, "UUID token version %x != %x: %s", version, UUID_VERSION, filepath);
 	    not_reached();
 	}
 	if (variant != UUID_VARIANT) {
-	    err(14, __func__, "second '.' separated UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
+	    err(20, __func__, "UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "entry ID is a valid UUID: %s", uuid);
 	if (entry_num < 0) {
-	    err(15, __func__, "third '.' separated entry number: %d is < 0: %s", entry_num, filepath);
+	    err(21, __func__, "entry_number %d is < 0: %s", entry_num, filepath);
 	    not_reached();
 	}
 	if (entry_num > MAX_ENTRY_NUM) {
-	    err(16, __func__, "second '-' separated entry number: %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
+	    err(22, __func__, "entry_number %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "entry number is valid: %d", entry_num);
@@ -253,16 +253,16 @@ main(int argc, char *argv[])
      */
     timestamp_str = strtok(NULL, ".");
     if (timestamp_str == NULL) {
-	err(17, __func__, "nothing found after second '.' separated token of entry number");
+	err(23, __func__, "nothing found after second '.' separated token of entry number");
 	not_reached();
     }
     ret = sscanf(timestamp_str, "%jd%c", &timestamp, &guard);
     if (ret != 1) {
-	err(18, __func__, "third '.' separated token: %s is not a timestamp: %s", timestamp_str, filepath);
+	err(24, __func__, "timestamp not found after \"entry_number.\": %s is not a timestamp: %s", timestamp_str, filepath);
 	not_reached();
     }
     if (timestamp < MIN_TIMESTAMP) {
-	err(19, __func__, "third '.' separated timestamp: %jd is < %jd: %s", timestamp, (intmax_t)MIN_TIMESTAMP, filepath);
+	err(25, __func__, "timestamp: %jd is < %jd: %s", timestamp, (intmax_t)MIN_TIMESTAMP, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "timestamp is valid: %jd", timestamp);
@@ -272,11 +272,11 @@ main(int argc, char *argv[])
      */
     extension = strtok(NULL, ".");
     if (extension == NULL) {
-	err(20, __func__, "nothing found after third '.' separated token of timestamp");
+	err(26, __func__, "nothing found after third '.' separated token of timestamp");
 	not_reached();
     }
     if (strcmp(extension, ext) != 0) {
-	err(21, __func__, "final fourth '.' separated token filename extension: %s != %s: %s", extension, ext, filepath);
+	err(27, __func__, "extension %s != %s: %s", extension, ext, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "filename extension is valid: %s", extension);
@@ -285,7 +285,7 @@ main(int argc, char *argv[])
      * filepath must use only POSIX portable filename and + chars /
      */
     if (posix_plus_safe(filepath, false, true, false) == false) {
-	err(22, __func__, "filepath: posix_plus_safe(%s, false, true, false) is false", filepath);
+	err(28, __func__, "filepath: posix_plus_safe(%s, false, true, false) is false", filepath);
 	not_reached();
     }
 
@@ -293,7 +293,7 @@ main(int argc, char *argv[])
      * filename must use only lower case POSIX portable filename and + chars
      */
     if (posix_plus_safe(filename, true, false, true) == false) {
-	err(23, __func__, "basename: posix_plus_safe(%s, true, false, true) is false", filename);
+	err(29, __func__, "basename: posix_plus_safe(%s, true, false, true) is false", filename);
 	not_reached();
     }
 
@@ -304,7 +304,7 @@ main(int argc, char *argv[])
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("%s\n", uuid);
     if (ret <= 0) {
-	errp(24, __func__, "printf of entry directory basename failed");
+	errp(30, __func__, "printf of entry directory basename failed");
 	not_reached();
     }
 
@@ -359,7 +359,8 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_ENTRY_CHARS),
+	    (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), FNAMCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

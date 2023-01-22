@@ -95,6 +95,7 @@ Run the `jparse_test.sh` script using the default `json_teststr.txt` file with v
 The following man pages might also be of value:
 
 - jparse(1)
+- jparse(3)
 - mkiocccentry(1)
 - jstrencode(1)
 - jstrdecode(1)

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH hostchk.sh 8 "11 January 2023" "hostchk.sh" "IOCCC tools"
+.TH hostchk.sh 8 "21 January 2023" "hostchk.sh" "IOCCC tools"
 .SH NAME
 hostchk.sh \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
 .SH SYNOPSIS
@@ -20,32 +20,32 @@ If any step fails we recommend you use the \fBbug_report(1)\fP script to create 
 .SH OPTIONS
 .TP
 \fB\-h\fP
-Show help and exit.
+print help and exit.
 .TP
 \fB\-V\fP
-Show version and exit.
+print version and exit.
 .TP
 \fB\-v \fIlevel\fP\fP
-Set verbosity level to \fIlevel\fP.
+set verbosity level to \fIlevel\fP.
 .TP
 \fB\-D \fIlevel\fP\fP
-Set verbosity level for the tests the script runs to \fIlevel\fP.
+set verbosity level for the tests the script runs to \fIlevel\fP.
 .TP
 \fB\-c \fIcc\fP\fP
-Set path to the compiler (cc) to \fIcc\fP.
+set path to the compiler (cc) to \fIcc\fP.
 .TP
 \fB\-w \fIwork_dir\fP\fP
-Use a working directory of \fIwork_dir\fP.
+use a working directory of \fIwork_dir\fP.
 By default a temporary working directory is used.
 The \fIwork_dir\fP must not exist.
 .TP
 \fB\-f\fP
-Fast compile mode.
+fast compile mode.
 Instead of testing one required system header file at a time it does it all at once.
 The default is not to use \fB\-f\fP because it will give more information to help identify the problem (and also let you know which files work).
 .TP
 \fB\-Z\fP \fItopdir\fP
-Declare the top level directory of this repository.
+declare the top level directory of this repository.
 The \fBtopdir\fP directory must contain the source file \fImkiocccentry.c\fP.
 By default, the source file \fImkiocccentry.c\fP is searched for in the current directory,
 and then the parent of current directory.
@@ -59,8 +59,21 @@ then this command exits as if there was a command line error.
 Once the \fBtopdir\fP directory is established,
 this command moves to that directory.
 .SH EXIT STATUS
-If no issues are detected the script will exit 0.
-Otherwise it will exit non\-zero.
+.TP
+0
+all OK
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+invalid command line
+.TQ
+4
+compiler not found or not executable file
+.TQ
+>= 10
+internal error or a test failed
 .SH NOTES
 .PP
 Even if the script exits 0 it does not necessarily mean there is no problem.
@@ -73,14 +86,15 @@ Sorry in advance if (to use an American English phrase which I will happily use 
 But now that you're in the loop it shouldn't even matter! :\-)
 .SH BUGS
 .PP
-Right now there are no known bugs except that it is currently incomplete.
-Nevertheless, if you feel there is an issue with this tool you may open an issue at the GitHub issues page.
-Depending on the issue it might be a good idea to run \fBbug_report(1)\fP and attach the log file it creates.
+No bugs are known except that a human wrote it. :\-)
 .PP
 Please remember that just because the script reports issues does not mean that there's a bug with the script itself.
 Instead it probably is a problem with one of the tools on your system which the script detected and is reporting.
 If that is the case please do use \fBbug_report(1)\fP and attach the log file it creates in your report.
-\fBbug_report(1)\fP will tell you how and where to report bugs.
+.PP
+Nevertheless, if you feel there is an issue with this tool you may open an issue at the GitHub issues page.
+Once again though, depending on the issue it might be a good idea to run \fBbug_report(1)\fP and attach the log file it creates.
+\fBbug_report(1)\fP will tell you how and where to report bugs as well.
 .SH EXAMPLES
 .PP
 .nf

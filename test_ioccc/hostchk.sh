@@ -75,10 +75,11 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir
     -Z topdir		    top level build directory (def: try . or ..)
 
 Exit codes:
-     0   all is well
+     0   all OK
      1   at least one test failed
      2   help mode and version mode exit
      3   invalid command line
+     4	 compiler not found or not executable file
  >= 10   internal error
 
 $0 version: $HOSTCHK_VERSION"
@@ -129,15 +130,15 @@ done
 #
 if [[ ! -e $CC ]]; then
     echo "$0: ERROR: cc not found: $CC" 1>&2
-    exit 10
+    exit 4
 fi
 if [[ ! -f $CC ]]; then
     echo "$0: ERROR: cc not a regular file: $CC" 1>&2
-    exit 11
+    exit 4
 fi
 if [[ ! -x $CC ]]; then
     echo "$0: ERROR: cc not executable: $CC" 1>&2
-    exit 12
+    exit 4
 fi
 
 # change to the top level directory as needed
@@ -186,14 +187,14 @@ if [[ -z $W_FLAG ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp -d .hostchk.work.XXXXXXXXXX exit code: $status" 1>&2
-	exit 13
+	exit 10
     fi
 elif [[ -z $WORK_DIR ]]; then
     echo "$0: ERROR: -w dir was given, but $$WORK_DIR is empty" 1>&2
-    exit 14
+    exit 11
 elif [[ -e $WORK_DIR ]]; then
     echo "$0: ERROR: -w $WORK_DIR exists" 1>&2
-    exit 15
+    exit 12
 fi
 
 # set up for compile test
@@ -203,7 +204,7 @@ RUN_INCLUDE_TEST="true"
 PROG_FILE=$(mktemp -u "$WORK_DIR/hostchk.XXXXXXXXXX.prog")
 status="$?"
 if [[ $status -ne 0 ]]; then
-    EXIT_CODE=16	# will exit 16 at the end unless EXIT_CODE is changed later on
+    EXIT_CODE=13	# will exit 13 at the end unless EXIT_CODE is changed later on
     echo "$0: ERROR: mktemp -u $PROG_FILE exit code: $status: new exit code: $EXIT_CODE" 1>&2
     RUN_INCLUDE_TEST=
 fi
@@ -238,14 +239,14 @@ if [[ -n $F_FLAG ]]; then
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	EXIT_CODE=17	# will exit 17 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=14	# will exit 14 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: unable to compile test file with all necessary system include files $h: new exit code: $EXIT_CODE" 1>&2
 	INCLUDE_TEST_SUCCESS="false"
     elif [[ -s $PROG_FILE && -x $PROG_FILE ]]; then
 	./"$PROG_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    EXIT_CODE=18	# will exit 18 at the end unless EXIT_CODE is changed later on
+	    EXIT_CODE=15	# will exit 15 at the end unless EXIT_CODE is changed later on
 	    echo "$0: ERROR: unable to run executable compiled with all necessary system include files: new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	else
@@ -254,7 +255,7 @@ if [[ -n $F_FLAG ]]; then
 	    fi
 	fi
     else
-	EXIT_CODE=19	# will exit 19 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=16	# will exit 16 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: unable to form an executable compiled using all necessary system include files: new exit code: $EXIT_CODE" 1>&2
 	INCLUDE_TEST_SUCCESS="false"
     fi
@@ -283,14 +284,14 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	#
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    EXIT_CODE=20	# will exit 20 at the end unless EXIT_CODE is changed later on
+	    EXIT_CODE=17	# will exit 17 at the end unless EXIT_CODE is changed later on
 	    echo "$0: ERROR: unable to compile with $h: new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	elif [[ -s $PROG_FILE && -x $PROG_FILE ]]; then
 	    ./"$PROG_FILE"
 	    status="$?"
 	    if [[ $status -ne 0 ]]; then
-		EXIT_CODE=21	# will exit 21 at the end unless EXIT_CODE is changed later on
+		EXIT_CODE=18	# will exit 18 at the end unless EXIT_CODE is changed later on
 		echo "$0: ERROR: unable to run executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
 		INCLUDE_TEST_SUCCESS="false"
 	    else
@@ -299,7 +300,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 		fi
 	    fi
 	else
-	    EXIT_CODE=22	# will exit 22 at the end unless EXIT_CODE is changed later on
+	    EXIT_CODE=19	# will exit 19 at the end unless EXIT_CODE is changed later on
 	    echo "$0: ERROR: unable to form an executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	fi
@@ -316,7 +317,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 # case: neither -f nor run include tests one at a time
 #
 else
-    EXIT_CODE=23	# will exit 23 at the end unless EXIT_CODE is changed later on
+    EXIT_CODE=20	# will exit 20 at the end unless EXIT_CODE is changed later on
     echo "$0: notice: include test disabled due to test set up error(s): new exit code: $EXIT_CODE" 1>&2
     INCLUDE_TEST_SUCCESS="false"
 fi
@@ -389,7 +390,7 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/pre-errno"
-if compile_test 24 "$WORK_DIR/pre-errno.c" "$WORK_FILE"; then	# compile failure will exit 24 unless EXIT_CODE is changed
+if compile_test 21 "$WORK_DIR/pre-errno.c" "$WORK_FILE"; then	# compile failure will exit 21 unless EXIT_CODE is changed
     ENOENT=$("$WORK_FILE")
     if [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got: ENOENT == $ENOENT" 1>&2
@@ -418,9 +419,9 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/errno0"
-if compile_test 25 "$WORK_DIR/errno0.c" "$WORK_FILE"; then	# compile failure will exit 25 unless EXIT_CODE is changed
+if compile_test 22 "$WORK_DIR/errno0.c" "$WORK_FILE"; then	# compile failure will exit 22 unless EXIT_CODE is changed
     if ! "$WORK_FILE" | grep -q "errno: $ENOENT"; then
-	EXIT_CODE=26	# will exit 26 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=23	# will exit 23 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: inconsistent ENOENT value: did not get: \"errno: $ENOENT\": new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got: errno: $ENOENT" 1>&2
@@ -444,11 +445,11 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/errno1"
-if compile_test 27 "$WORK_DIR/errno1.c" "$WORK_FILE"; then	# compile failure will exit 27 unless EXIT_CODE is changed
+if compile_test 24 "$WORK_DIR/errno1.c" "$WORK_FILE"; then	# compile failure will exit 24 unless EXIT_CODE is changed
     "$WORK_FILE"
     status=$?
     if [[ $status -ne 1 ]] ; then
-	EXIT_CODE=28	# will exit 28 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=25	# will exit 25 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: errno != ENOENT: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got return value 1: errno == ENOENT"
@@ -470,9 +471,9 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/hello"
-if compile_test 29 "$WORK_DIR/hello.c" "$WORK_FILE"; then	# compile failure will exit 29 unless EXIT_CODE is changed
+if compile_test 26 "$WORK_DIR/hello.c" "$WORK_FILE"; then	# compile failure will exit 26 unless EXIT_CODE is changed
     if ! "$WORK_FILE" | grep -q "Hello, world"; then
-	EXIT_CODE=30	# will exit 30 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=27	# will exit 27 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: expected string "Hello, world" not found: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got: "Hello, world"" 1>&2
@@ -492,9 +493,9 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/main0"
-if compile_test 31 "$WORK_DIR/main0.c" "$WORK_FILE"; then	# compile failure will exit 31 unless EXIT_CODE is changed
+if compile_test 28 "$WORK_DIR/main0.c" "$WORK_FILE"; then	# compile failure will exit 28 unless EXIT_CODE is changed
     if ! "$WORK_FILE"; then
-	EXIT_CODE=32	# will exit 32 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=29	# will exit 29 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: expected return value 0 not returned: got $?: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got return value 0" 1>&2
@@ -515,9 +516,9 @@ main(void)
 }
 EOF
 WORK_FILE="$WORK_DIR/main1"
-if compile_test 33 "$WORK_DIR/main1.c" "$WORK_FILE"; then	# compile failure will exit 33 unless EXIT_CODE is changed
+if compile_test 30 "$WORK_DIR/main1.c" "$WORK_FILE"; then	# compile failure will exit 30 unless EXIT_CODE is changed
     if "$WORK_FILE"; then
-	EXIT_CODE=34	# will exit 34 at the end unless EXIT_CODE is changed later on
+	EXIT_CODE=31	# will exit 31 at the end unless EXIT_CODE is changed later on
 	echo "$0: ERROR: expected return value 1 not returned: got $?: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got return value 1" 1>&2
