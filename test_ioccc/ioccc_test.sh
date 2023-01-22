@@ -54,7 +54,7 @@ while getopts :hv:J:VZ: flag; do
 	;;
     J)	J_FLAG="$OPTARG";
 	;;
-    V)	echo "$IOCCC_TEST_VERSION" 1>&2
+    V)	echo "$IOCCC_TEST_VERSION"
 	exit 2
 	;;
     Z)  TOPDIR="$OPTARG";

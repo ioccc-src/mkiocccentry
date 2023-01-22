@@ -73,7 +73,7 @@ while getopts :hv:Vj:J: flag; do
     v)	V_FLAG="$OPTARG";
 	JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
 	;;
-    V)	echo "$ALL_SEM_REF_VERSION" 1>&2
+    V)	echo "$ALL_SEM_REF_VERSION"
 	exit 2
 	;;
     j)	JSEMTBLGEN="$OPTARG";
