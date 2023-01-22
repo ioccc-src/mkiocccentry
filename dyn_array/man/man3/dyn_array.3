@@ -30,6 +30,7 @@
 \fB#include "dyn_array.h"\fP
 .sp
 \fB#define DYN_ARRAY_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dyn_array_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
 .B "#define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])"
 .br

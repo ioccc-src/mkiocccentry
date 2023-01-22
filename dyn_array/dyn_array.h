@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2023 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -59,7 +59,7 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.0 2022-06-09"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.1 2023-01-21"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -144,6 +144,12 @@ struct dyn_array
     intmax_t chunk;		/* Number of elements to expand by when allocating */
     void *data;			/* allocated dynamic array of identical things or NULL */
 };
+
+
+/*
+ * global variables
+ */
+extern const char *const dyn_array_version;	/* library version format: major.minor YYYY-MM-DD */
 
 
 /*

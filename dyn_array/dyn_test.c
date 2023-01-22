@@ -1,7 +1,7 @@
 /*
  * dyn_array_test - test the dynamic array facility
  *
- * Copyright (c) 2014,2015,2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2023 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -253,7 +253,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ARRAY_VERSION, DYN_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, dyn_array_version, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

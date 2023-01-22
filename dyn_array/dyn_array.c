@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2023 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -59,6 +59,12 @@ enum move_case {
     MOVE_CASE_BEFORE_IN_BEYOND,	/* case 4: data starts before and goes and then beyond allocated area */
     MOVE_CASE_IN_BEYOND,	/* case 5: data starts inside allocated area and goes beyond it */
 };
+
+
+/*
+ * global variables
+ */
+const char *const dyn_array_version = DYN_ARRAY_VERSION;	/* library version format: major.minor YYYY-MM-DD */
 
 
 /*
