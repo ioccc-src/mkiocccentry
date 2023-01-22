@@ -538,6 +538,8 @@ add_sorry() {
 	exit 19
     fi
     echo "#line 1 \"$FILE\"" >> "$TMP_FILE"
+    # warning: This $? refers to echo/printf, not a previous command. Assign to variable to avoid it being overwritten. [SC2320]
+    # shellcheck disable=SC2320
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: appending line number reset failed, exit code: $status" 1>&2

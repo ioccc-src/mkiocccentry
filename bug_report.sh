@@ -874,40 +874,6 @@ run_optional_check()
     return 0;
 }
 
-# run_check_warn    -	don't make it an error if it fails, just warn
-#
-# usage:
-#	run_check_warn command
-#
-#	command	    - check to run
-#
-run_check_warn()
-{
-    # parse args
-    #
-    if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 1 arg, found $#" | tee -a -- "$LOGFILE"
-	exit 4
-    fi
-    local COMMAND="$1"
-    write_echo "## RUNNING: $COMMAND"
-
-    exec_command "${COMMAND}"
-    status=$?
-    if [[ "$status" -ne 0 ]]; then
-	write_echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status"
-	WARNING_SUMMARY="$WARNING_SUMMARY
-	$COMMAND non-zero exit code: $status"
-	write_echo "### POSSIBLE ISSUE DETECTED: $COMMAND returned $status"
-    fi
-
-    # report result
-    #
-    write_echo "## OUTPUT OF ${COMMAND} ABOVE"
-    write_echo ""
-    return 0;
-}
-
 # get_shell - get the user shell :-)
 #
 get_shell()
