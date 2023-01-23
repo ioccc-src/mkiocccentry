@@ -60,7 +60,7 @@ This way we can get a list of all warnings like:
 
 ```sh
 make clobber all > warnings.log 2>&1;
-grep -E ' error: |  warning:' warnings.log
+grep -E ' error: | warning: ' warnings.log
 ```
 
 
