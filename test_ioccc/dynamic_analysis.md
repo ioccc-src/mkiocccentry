@@ -194,7 +194,7 @@ For reference: these were detected via valgrind in the `jstr_test.sh` script.
 
 ### See also
 
-Commit 6c746ed9fee496d303a2ba75bb3f199dc4a986be.
+Fixed in commit 670dc207b58dbeb0f0afd24e2f63fa7bf609daa2.
 
 
 ## Issue: memory leak in jsemtblgen.c
