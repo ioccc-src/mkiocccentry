@@ -118,7 +118,7 @@ Fixed obscure bug with bool typedef.
 
 ## Release 0.8.1 2022-11-19
 
-This is "roll-up" release was added so that it could be referenced
+This "roll-up" release was added so that it could be referenced
 in the https://www.ioccc.org/index.html news section.
 
 Updated legacy_clobber rule to remove older directories no longer used.

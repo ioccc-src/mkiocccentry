@@ -113,7 +113,7 @@ struct tarball
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
-static struct tarball tarball;	    /* all the information collected from txzpath */
+static struct tarball tarball;	    /* all the information collected from tarball_path */
 
 /*
  * txz_file - struct for each file
@@ -165,7 +165,7 @@ static struct txz_line *txz_lines;	/* all the lines read */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] txzpath\n"
+    "usage: %s [-h] [-v level] [-q] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -175,11 +175,11 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-F fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
+    "\t-F fnamchk\tpath to tool that checks if tarball_path is a valid compressed tarball name\n"
     "\t\t\tfilename (def: %s)\n\n"
-    "\t-T\t\tassume txzpath is a text file with tar listing (for testing different formats)\n"
+    "\t-T\t\tassume tarball_path is a text file with tar listing (for testing different formats)\n"
     "\t-E ext\t\tchange extension to test (def: txz)\n"
-    "\ttxzpath\t\tpath to an IOCCC compressed tarball\n"
+    "\ttarball_path\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "Exit codes:\n"
     "     0   no feathers stuck in tarball  :-)\n"
@@ -196,22 +196,22 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void txzchk_sanity_chks(char const *tar, char const *fnamchk);
-static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count,
+static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tarball_path, int *dir_count,
 			   intmax_t *sum, intmax_t *count);
-static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
-		    bool normal_file, intmax_t *sum, intmax_t *count);
-static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
-		    bool normal_file, intmax_t *sum, intmax_t *count);
+static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name,
+	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count);
+static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *tarball_path,
+	char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
-static void show_tarball_info(char const *txzpath);
-static void check_file_size(char const *txzpath, off_t size, struct txz_file *file);
-static void count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t length);
-static void check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file);
+static void show_tarball_info(char const *tarball_path);
+static void check_file_size(char const *tarball_path, off_t size, struct txz_file *file);
+static void count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t length);
+static void check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *file);
 static void check_all_txz_files(char const *dir_name);
-static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
+static void check_directories(struct txz_file *file, char const *dir_name, char const *tarball_path);
 static bool has_special_bits(char const *str);
 static void add_txz_line(char const *str, uintmax_t line_num);
-static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
+static void parse_all_txz_lines(char const *dir_name, char const *tarball_path);
 static void free_txz_lines(void);
 static struct txz_file *alloc_txz_file(char const *path, intmax_t length);
 static void add_txz_file_to_list(struct txz_file *file);

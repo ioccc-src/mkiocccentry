@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "22 January 2023" "jparse"
+.TH jparse 3  "23 January 2023" "jparse"
 .SH NAME
 .BR parse_json(),
 .BR parse_json_stream(),
@@ -24,7 +24,11 @@
 .sp
 \fB#define JPARSE_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const json_parser_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fB#define JSON_PARSER_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
+.br
+.B "extern const char *const json_parser_version;	/* library version format: major.minor YYYY-MM-DD */"
+.br
+.B "extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */"
 .sp
 .B "extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);"
 .br
@@ -43,10 +47,6 @@
 The
 .B jparse
 library provides a way for C applications to parse JSON in a file (including stdin) or a string, returning a tree of the parsed JSON that one may then manipulate.
-The macro
-.B JPARSE_VERSION
-is a string that holds the current version of the parser.
-.sp
 The function
 .BR parse_json
 parses a JSON string
@@ -161,6 +161,8 @@ struct json
 {
     enum item_type type;		/* union item specifier */
     union json_union {
+.in +4n
+.nf
 	struct json_number number;	/* JTYPE_NUMBER - value is number (integer or floating point) */
 	struct json_string string;	/* JTYPE_STRING - value is a string */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
@@ -169,15 +171,29 @@ struct json
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
 	struct json_elements elements;	/* JTYPE_ELEMENTS - zero or more JSON values */
+.in
     } item;
 
     /*
      * JSON parse tree links
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
-};
 .fi
 .in
+};
+.SS Version strings
+The string
+.B jparse_version\c
+\&, which points to
+.B JPARSE_VERSION\c
+\&, is the current version of the
+.B jparse
+tool.
+The string
+.B json_parser_version\c
+\&, which points to
+.B JSON_PARSER_VERSION\c
+\&, is the current version of the parser itself.
 .SH RETURN VALUE
 .PP
 The functions

@@ -72,13 +72,14 @@
 /*
  * official JSON parser version
  */
-#define JSON_PARSER_VERSION "0.13 2023-01-21"		/* format: major.minor YYYY-MM-DD */
+#define JSON_PARSER_VERSION "0.13 2023-01-21"		/* library version format: major.minor YYYY-MM-DD */
 
 
 /*
  * globals
  */
 extern const char *const json_parser_version;		/* library version format: major.minor YYYY-MM-DD */
+extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */
 /* lexer and parser specific variables */
 extern int yydebug;
 

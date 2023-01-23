@@ -96,7 +96,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 75 "./jparse.y"
+#line 76 "./jparse.y"
 
     #if !defined(YYLTYPE_IS_DECLARED)
     struct YYLTYPE
