@@ -29,6 +29,7 @@
 #
 CC= cc
 CMP= cmp
+CP= cp
 CTAGS= ctags
 GREP= grep
 INDEPEND= independ
@@ -286,7 +287,7 @@ all: ${TARGETS}
 #################################################
 
 .PHONY: all \
-	test legacy_clean legacy_clobber \
+	rebuild_jnum_test test legacy_clean legacy_clobber \
 	configure clean clobber install depend tags \
 	test_JSON/info.json/good/info.reference.json \
 	test_JSON/auth.json/good/auth.reference.json
@@ -341,6 +342,19 @@ test_JSON/auth.json/good/auth.reference.json:
 ###########################################################
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
+
+# use jnum_gen to regenerate test jnum_chk test suite
+#
+# IMPORTANT: DO NOT run this tool unless you KNOW that
+#	     the tables produced by jnum_gen are CORRECT!
+#
+# WARNING: If you use this rule and generate invalid tables, then you will cause the
+#	   jnum_chk(8) tool to check against bogus test results!
+#
+rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
+	${RM} -f jnum_test.c
+	${CP} -f -v jnum_header.c jnum_test.c
+	./jnum_gen jnum.testset >> jnum_test.c
 
 test:
 	${S} echo

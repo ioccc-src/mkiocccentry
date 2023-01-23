@@ -45,7 +45,7 @@
 /*
  * official jnum_gen version
  */
-#define JNUM_GEN_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "0.8 2023-01-22"	/* format: major.minor YYYY-MM-DD */
 
 
 int
@@ -538,7 +538,7 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print float info
      */
-    fpr_finfo(stream, item->float_sized, (double)item->as_float, item->as_float_int,
+    fpr_finfo(stream, item->float_sized, (long double)item->as_float, item->as_float_int,
 	   "true ==> converted JSON floating point to C float",
 	   "JSON floating point value in float form",
 	   "if float_sized == true, true ==> as_float is an integer", "");
@@ -546,7 +546,7 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print double info
      */
-    fpr_finfo(stream, item->double_sized, item->as_double, item->as_double_int,
+    fpr_finfo(stream, item->double_sized, (long double)item->as_double, item->as_double_int,
 	    "true ==> converted JSON floating point to C double",
 	    "JSON floating point value in double form",
 	    "if double_sized == true, true ==> as_double is an integer", "");

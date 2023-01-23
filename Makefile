@@ -412,7 +412,7 @@ hostchk_warning:
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep \
-        pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
+        pull release seqcexit shellcheck tags test test-chkentry use_json_ref \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
 	all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc depend
 

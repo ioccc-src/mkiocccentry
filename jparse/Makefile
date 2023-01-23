@@ -403,7 +403,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_json_ref bison flex test tags check_man legacy_clean legacy_clobber \
+	parser parser-o use_json_ref rebuild_jnum_test bison flex test tags check_man legacy_clean legacy_clobber \
 	load_json_ref install_man \
 	configure clean clobber install depend
 
@@ -598,10 +598,19 @@ use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
-rebuild_jnum_test: test_jparse/jnum_gen test_jparse/jnum.testset test_jparse/jnum_header.c
-	${RM} -f test_jparse/jnum_test.c
-	${CP} -f -v test_jparse/jnum_header.c test_jparse/jnum_test.c
-	./test_jparse/jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
+# IMPORTANT: DO NOT run this tool unless you KNOW that
+#	     the tables produced by jnum_gen are CORRECT!
+#
+# WARNING: If you use this rule and generate invalid tables, then you will cause the
+#	   jnum_chk(8) tool to check against bogus test results!
+#
+rebuild_jnum_test:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 bison: jparse.tab.c jparse.tab.h
 	@:

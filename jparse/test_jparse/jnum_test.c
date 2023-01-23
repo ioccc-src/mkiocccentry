@@ -669,10 +669,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-8589934594.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-8589934594.099999999627L,	/* JSON floating point value in long double form */
+	-8589934594.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -847,10 +847,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-858993.4594199999701232,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-858993.4594200000000228L,	/* JSON floating point value in long double form */
+	-858993.4594199999701232L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1025,10 +1025,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-8589934593.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-8589934593.099999999627L,	/* JSON floating point value in long double form */
+	-8589934593.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1203,10 +1203,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-858993.4593200000235811,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-858993.4593199999999911L,	/* JSON floating point value in long double form */
+	-858993.4593200000235811L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1381,10 +1381,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-8589934592.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-8589934592.099999999627L,	/* JSON floating point value in long double form */
+	-8589934592.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1559,10 +1559,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-858993.4592199999606237,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-858993.4592200000000162L,	/* JSON floating point value in long double form */
+	-858993.4592199999606237L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1737,10 +1737,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-8589934591.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-8589934591.100000000093L,	/* JSON floating point value in long double form */
+	-8589934591.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -1915,10 +1915,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-858993.4591200000140816,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-858993.4591199999999844L,	/* JSON floating point value in long double form */
+	-858993.4591200000140816L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2093,10 +2093,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-8589934590.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-8589934590.100000000093L,	/* JSON floating point value in long double form */
+	-8589934590.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2271,10 +2271,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-858993.4590199999511242,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-858993.4590200000000095L,	/* JSON floating point value in long double form */
+	-858993.4590199999511242L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2449,10 +2449,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-4294967298.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-4294967298.100000000093L,	/* JSON floating point value in long double form */
+	-4294967298.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2627,10 +2627,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-429496.7298200000077486,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-429496.7298199999999895L,	/* JSON floating point value in long double form */
+	-429496.7298200000077486L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2805,10 +2805,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-4294967297.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-4294967297.100000000093L,	/* JSON floating point value in long double form */
+	-4294967297.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -2983,10 +2983,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-429496.7297200000029989,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-429496.7297199999999862L,	/* JSON floating point value in long double form */
+	-429496.7297200000029989L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -3161,10 +3161,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-4294967296.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-4294967296.100000000093L,	/* JSON floating point value in long double form */
+	-4294967296.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -3339,10 +3339,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-429496.7296199999982491,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-429496.7296200000000113L,	/* JSON floating point value in long double form */
+	-429496.7296199999982491L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -3517,10 +3517,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-4294967295.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-4294967295.100000000093L,	/* JSON floating point value in long double form */
+	-4294967295.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -3695,10 +3695,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-429496.7295199999934994,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-429496.7295200000000079L,	/* JSON floating point value in long double form */
+	-429496.7295199999934994L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -3873,10 +3873,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-4294967294.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-4294967294.100000000093L,	/* JSON floating point value in long double form */
+	-4294967294.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4051,10 +4051,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-429496.7294199999887496,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-429496.7294200000000046L,	/* JSON floating point value in long double form */
+	-429496.7294199999887496L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4229,10 +4229,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2147483650.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2147483650.100000000093L,	/* JSON floating point value in long double form */
+	-2147483650.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4407,10 +4407,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-214748.3650199999974575,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-214748.3650200000000012L,	/* JSON floating point value in long double form */
+	-214748.3650199999974575L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4585,10 +4585,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2147483649.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2147483649.100000000093L,	/* JSON floating point value in long double form */
+	-2147483649.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4763,10 +4763,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-214748.3649199999927077,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-214748.3649199999999979L,	/* JSON floating point value in long double form */
+	-214748.3649199999927077L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -4941,10 +4941,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2147483648.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2147483648.100000000093L,	/* JSON floating point value in long double form */
+	-2147483648.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -5119,10 +5119,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-214748.364819999987958,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-214748.3648199999999946L,	/* JSON floating point value in long double form */
+	-214748.364819999987958L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -5297,10 +5297,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2147483647.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2147483647.099999999977L,	/* JSON floating point value in long double form */
+	-2147483647.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -5475,10 +5475,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-214748.3647200000123121,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-214748.3647200000000055L,	/* JSON floating point value in long double form */
+	-214748.3647200000123121L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -5653,10 +5653,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2147483646.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2147483646.099999999977L,	/* JSON floating point value in long double form */
+	-2147483646.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -5831,10 +5831,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-214748.3646200000075623,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-214748.3646200000000022L,	/* JSON floating point value in long double form */
+	-214748.3646200000075623L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -6098,10 +6098,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-131074.1000000000058208,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-131074.0999999999999943L,	/* JSON floating point value in long double form */
+	-131074.1000000000058208L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -6276,10 +6276,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-13.10741999999999940485,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-13.10741999999999999986L,		/* JSON floating point value in long double form */
+	-13.10741999999999940485L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -6543,10 +6543,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-131073.1000000000058208,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-131073.0999999999999943L,	/* JSON floating point value in long double form */
+	-131073.1000000000058208L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -6721,10 +6721,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-13.10731999999999963791,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-13.1073199999999999996L,		/* JSON floating point value in long double form */
+	-13.10731999999999963791L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -6988,10 +6988,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-131072.1000000000058208,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-131072.0999999999999943L,	/* JSON floating point value in long double form */
+	-131072.1000000000058208L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -7166,10 +7166,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-13.10721999999999987097,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-13.1072200000000000002L,		/* JSON floating point value in long double form */
+	-13.10721999999999987097L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -7433,10 +7433,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-131071.1000000000058208,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-131071.1000000000000014L,	/* JSON floating point value in long double form */
+	-131071.1000000000058208L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -7611,10 +7611,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-13.10712000000000010402,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-13.10711999999999999994L,		/* JSON floating point value in long double form */
+	-13.10712000000000010402L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -7878,10 +7878,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-131070.1000000000058208,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-131070.1000000000000014L,	/* JSON floating point value in long double form */
+	-131070.1000000000058208L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -8056,10 +8056,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-13.10702000000000033708,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-13.10701999999999999968L,		/* JSON floating point value in long double form */
+	-13.10702000000000033708L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -8323,10 +8323,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-65538.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-65538.10000000000000142L,		/* JSON floating point value in long double form */
+	-65538.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -8501,10 +8501,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-6.553819999999999978968,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-6.553819999999999999785L,		/* JSON floating point value in long double form */
+	-6.553819999999999978968L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -8768,10 +8768,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-65537.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-65537.10000000000000142L,		/* JSON floating point value in long double form */
+	-65537.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -8946,10 +8946,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-6.553720000000000212026,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-6.553719999999999999956L,		/* JSON floating point value in long double form */
+	-6.553720000000000212026L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -9213,10 +9213,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-65536.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-65536.10000000000000142L,		/* JSON floating point value in long double form */
+	-65536.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -9391,10 +9391,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-6.553619999999999556906,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-6.553620000000000000127L,		/* JSON floating point value in long double form */
+	-6.553619999999999556906L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -9658,10 +9658,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-65535.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-65535.10000000000000142L,		/* JSON floating point value in long double form */
+	-65535.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -9836,10 +9836,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-6.553519999999999789964,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-6.553519999999999999865L,		/* JSON floating point value in long double form */
+	-6.553519999999999789964L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -10103,10 +10103,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-65534.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-65534.10000000000000142L,		/* JSON floating point value in long double form */
+	-65534.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -10281,10 +10281,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-6.553420000000000023022,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-6.553420000000000000036L,		/* JSON floating point value in long double form */
+	-6.553420000000000023022L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -10548,10 +10548,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-32770.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-32770.10000000000000142L,		/* JSON floating point value in long double form */
+	-32770.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -10726,10 +10726,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-3.277019999999999821938,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-3.277019999999999999964L,		/* JSON floating point value in long double form */
+	-3.277019999999999821938L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -10993,10 +10993,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-32769.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-32769.10000000000000142L,		/* JSON floating point value in long double form */
+	-32769.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -11171,10 +11171,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-3.276920000000000054996,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-3.276919999999999999919L,		/* JSON floating point value in long double form */
+	-3.276920000000000054996L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -11438,10 +11438,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-32768.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-32768.10000000000000142L,		/* JSON floating point value in long double form */
+	-32768.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -11616,10 +11616,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-3.276819999999999843965,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-3.27682000000000000009L,		/* JSON floating point value in long double form */
+	-3.276819999999999843965L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -11883,10 +11883,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-32767.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-32767.09999999999999964L,		/* JSON floating point value in long double form */
+	-32767.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -12061,10 +12061,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-3.276720000000000077023,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-3.276720000000000000044L,		/* JSON floating point value in long double form */
+	-3.276720000000000077023L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -12328,10 +12328,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-32766.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-32766.09999999999999964L,		/* JSON floating point value in long double form */
+	-32766.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -12506,10 +12506,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-3.276619999999999865992,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-3.276619999999999999999L,		/* JSON floating point value in long double form */
+	-3.276619999999999865992L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -12773,10 +12773,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-514.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-514.0999999999999999778L,		/* JSON floating point value in long double form */
+	-514.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -12951,10 +12951,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.05142000000000000042855,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.05142000000000000000164L,		/* JSON floating point value in long double form */
+	-0.05142000000000000042855L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -13218,10 +13218,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-513.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-513.0999999999999999778L,		/* JSON floating point value in long double form */
+	-513.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -13396,10 +13396,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.05131999999999999756417,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.05132000000000000000024L,		/* JSON floating point value in long double form */
+	-0.05131999999999999756417L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -13663,10 +13663,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-512.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-512.0999999999999999778L,		/* JSON floating point value in long double form */
+	-512.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -13841,10 +13841,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.05122000000000000163869,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.05121999999999999999883L,		/* JSON floating point value in long double form */
+	-0.05122000000000000163869L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -14108,10 +14108,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-511.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-511.1000000000000000056L,		/* JSON floating point value in long double form */
+	-511.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -14286,10 +14286,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.05111999999999999877431,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.05112000000000000000082L,		/* JSON floating point value in long double form */
+	-0.05111999999999999877431L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -14553,10 +14553,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-510.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-510.1000000000000000056L,		/* JSON floating point value in long double form */
+	-510.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -14731,10 +14731,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.05102000000000000284883,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.05101999999999999999941L,		/* JSON floating point value in long double form */
+	-0.05102000000000000284883L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -14998,10 +14998,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-258.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-258.1000000000000000056L,		/* JSON floating point value in long double form */
+	-258.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -15176,10 +15176,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.02581999999999999920175,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.02581999999999999999965L,		/* JSON floating point value in long double form */
+	-0.02581999999999999920175L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -15443,10 +15443,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-257.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-257.1000000000000000056L,		/* JSON floating point value in long double form */
+	-257.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -15621,10 +15621,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.02571999999999999980682,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.02571999999999999999994L,		/* JSON floating point value in long double form */
+	-0.02571999999999999980682L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -15888,10 +15888,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-256.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-256.1000000000000000056L,		/* JSON floating point value in long double form */
+	-256.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -16066,10 +16066,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.02562000000000000041189,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.02562000000000000000023L,		/* JSON floating point value in long double form */
+	-0.02562000000000000041189L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -16333,10 +16333,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-255.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-255.1000000000000000056L,		/* JSON floating point value in long double form */
+	-255.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -16511,10 +16511,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.02552000000000000101696,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.02552000000000000000052L,		/* JSON floating point value in long double form */
+	-0.02552000000000000101696L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -16778,10 +16778,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-254.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-254.1000000000000000056L,		/* JSON floating point value in long double form */
+	-254.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -16956,10 +16956,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.02542000000000000162204,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.02542000000000000000081L,		/* JSON floating point value in long double form */
+	-0.02542000000000000162204L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -17223,10 +17223,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-130.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-130.1000000000000000056L,		/* JSON floating point value in long double form */
+	-130.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -17401,10 +17401,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.01302000000000000032307,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.01302000000000000000036L,		/* JSON floating point value in long double form */
+	-0.01302000000000000032307L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -17668,10 +17668,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-129.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-129.1000000000000000056L,		/* JSON floating point value in long double form */
+	-129.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -17846,10 +17846,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.01291999999999999919342,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.0129199999999999999998L,		/* JSON floating point value in long double form */
+	-0.01291999999999999919342L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -18113,10 +18113,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-128.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-128.1000000000000000056L,		/* JSON floating point value in long double form */
+	-128.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -18291,10 +18291,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.01281999999999999979849,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.01282000000000000000009L,		/* JSON floating point value in long double form */
+	-0.01281999999999999979849L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -18558,10 +18558,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-127.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-127.0999999999999999986L,		/* JSON floating point value in long double form */
+	-127.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -18736,10 +18736,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.01272000000000000040357,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.01272000000000000000038L,		/* JSON floating point value in long double form */
+	-0.01272000000000000040357L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -19003,10 +19003,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-126.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-126.0999999999999999986L,		/* JSON floating point value in long double form */
+	-126.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -19181,10 +19181,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.01261999999999999927391,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.01261999999999999999982L,		/* JSON floating point value in long double form */
+	-0.01261999999999999927391L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -19448,10 +19448,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-2.100000000000000088818,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-2.099999999999999999913L,		/* JSON floating point value in long double form */
+	-2.100000000000000088818L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -19626,10 +19626,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.0002200000000000000078323,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.0002199999999999999999972L,		/* JSON floating point value in long double form */
+	-0.0002200000000000000078323L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -19893,10 +19893,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-1.100000000000000088818,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-1.100000000000000000022L,		/* JSON floating point value in long double form */
+	-1.100000000000000088818L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -20071,10 +20071,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	-0.0001200000000000000030401,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	-0.0001200000000000000000027L,		/* JSON floating point value in long double form */
+	-0.0001200000000000000030401L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -20338,10 +20338,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.1000000000000000055511,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.1000000000000000000014L,		/* JSON floating point value in long double form */
+	0.1000000000000000055511L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -20516,10 +20516,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2.000000000000000163606e-05,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	1.99999999999999999999e-05L,		/* JSON floating point value in long double form */
+	2.000000000000000163606e-05L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -20783,10 +20783,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	1.100000000000000088818,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	1.100000000000000000022L,		/* JSON floating point value in long double form */
+	1.100000000000000088818L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -20961,10 +20961,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.0001200000000000000030401,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.0001200000000000000000027L,		/* JSON floating point value in long double form */
+	0.0001200000000000000030401L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -21228,10 +21228,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2.100000000000000088818,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2.099999999999999999913L,		/* JSON floating point value in long double form */
+	2.100000000000000088818L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -21406,10 +21406,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.0002200000000000000078323,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.0002199999999999999999972L,		/* JSON floating point value in long double form */
+	0.0002200000000000000078323L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -21673,10 +21673,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	126.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	126.0999999999999999986L,		/* JSON floating point value in long double form */
+	126.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -21851,10 +21851,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.01261999999999999927391,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.01261999999999999999982L,		/* JSON floating point value in long double form */
+	0.01261999999999999927391L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -22118,10 +22118,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	127.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	127.0999999999999999986L,		/* JSON floating point value in long double form */
+	127.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -22296,10 +22296,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.01272000000000000040357,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.01272000000000000000038L,		/* JSON floating point value in long double form */
+	0.01272000000000000040357L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -22563,10 +22563,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	128.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	128.1000000000000000056L,		/* JSON floating point value in long double form */
+	128.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -22741,10 +22741,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.01281999999999999979849,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.01282000000000000000009L,		/* JSON floating point value in long double form */
+	0.01281999999999999979849L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -23008,10 +23008,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	129.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	129.1000000000000000056L,		/* JSON floating point value in long double form */
+	129.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -23186,10 +23186,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.01291999999999999919342,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.0129199999999999999998L,		/* JSON floating point value in long double form */
+	0.01291999999999999919342L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -23453,10 +23453,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	130.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	130.1000000000000000056L,		/* JSON floating point value in long double form */
+	130.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -23631,10 +23631,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.01302000000000000032307,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.01302000000000000000036L,		/* JSON floating point value in long double form */
+	0.01302000000000000032307L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -23898,10 +23898,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	254.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	254.1000000000000000056L,		/* JSON floating point value in long double form */
+	254.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -24076,10 +24076,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.02542000000000000162204,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.02542000000000000000081L,		/* JSON floating point value in long double form */
+	0.02542000000000000162204L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -24343,10 +24343,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	255.0999999999999943157,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	255.1000000000000000056L,		/* JSON floating point value in long double form */
+	255.0999999999999943157L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -24521,10 +24521,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.02552000000000000101696,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.02552000000000000000052L,		/* JSON floating point value in long double form */
+	0.02552000000000000101696L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -24788,10 +24788,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	256.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	256.1000000000000000056L,		/* JSON floating point value in long double form */
+	256.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -24966,10 +24966,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.02562000000000000041189,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.02562000000000000000023L,		/* JSON floating point value in long double form */
+	0.02562000000000000041189L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -25233,10 +25233,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	257.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	257.1000000000000000056L,		/* JSON floating point value in long double form */
+	257.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -25411,10 +25411,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.02571999999999999980682,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.02571999999999999999994L,		/* JSON floating point value in long double form */
+	0.02571999999999999980682L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -25678,10 +25678,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	258.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	258.1000000000000000056L,		/* JSON floating point value in long double form */
+	258.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -25856,10 +25856,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.02581999999999999920175,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.02581999999999999999965L,		/* JSON floating point value in long double form */
+	0.02581999999999999920175L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -26123,10 +26123,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	510.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	510.1000000000000000056L,		/* JSON floating point value in long double form */
+	510.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -26301,10 +26301,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.05102000000000000284883,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.05101999999999999999941L,		/* JSON floating point value in long double form */
+	0.05102000000000000284883L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -26568,10 +26568,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	511.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	511.1000000000000000056L,		/* JSON floating point value in long double form */
+	511.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -26746,10 +26746,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.05111999999999999877431,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.05112000000000000000082L,		/* JSON floating point value in long double form */
+	0.05111999999999999877431L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -27013,10 +27013,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	512.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	512.0999999999999999778L,		/* JSON floating point value in long double form */
+	512.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -27191,10 +27191,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.05122000000000000163869,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.05121999999999999999883L,		/* JSON floating point value in long double form */
+	0.05122000000000000163869L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -27458,10 +27458,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	513.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	513.0999999999999999778L,		/* JSON floating point value in long double form */
+	513.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -27636,10 +27636,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.05131999999999999756417,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.05132000000000000000024L,		/* JSON floating point value in long double form */
+	0.05131999999999999756417L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -27903,10 +27903,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	514.1000000000000227374,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	514.0999999999999999778L,		/* JSON floating point value in long double form */
+	514.1000000000000227374L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -28081,10 +28081,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	0.05142000000000000042855,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	0.05142000000000000000164L,		/* JSON floating point value in long double form */
+	0.05142000000000000042855L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -28348,10 +28348,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	32766.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	32766.09999999999999964L,		/* JSON floating point value in long double form */
+	32766.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -28526,10 +28526,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	3.276619999999999865992,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	3.276619999999999999999L,		/* JSON floating point value in long double form */
+	3.276619999999999865992L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -28793,10 +28793,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	32767.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	32767.09999999999999964L,		/* JSON floating point value in long double form */
+	32767.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -28971,10 +28971,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	3.276720000000000077023,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	3.276720000000000000044L,		/* JSON floating point value in long double form */
+	3.276720000000000077023L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -29238,10 +29238,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	32768.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	32768.10000000000000142L,		/* JSON floating point value in long double form */
+	32768.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -29416,10 +29416,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	3.276819999999999843965,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	3.27682000000000000009L,		/* JSON floating point value in long double form */
+	3.276819999999999843965L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -29683,10 +29683,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	32769.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	32769.10000000000000142L,		/* JSON floating point value in long double form */
+	32769.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -29861,10 +29861,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	3.276920000000000054996,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	3.276919999999999999919L,		/* JSON floating point value in long double form */
+	3.276920000000000054996L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -30128,10 +30128,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	32770.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	32770.10000000000000142L,		/* JSON floating point value in long double form */
+	32770.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -30306,10 +30306,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	3.277019999999999821938,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	3.277019999999999999964L,		/* JSON floating point value in long double form */
+	3.277019999999999821938L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -30573,10 +30573,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	65534.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	65534.10000000000000142L,		/* JSON floating point value in long double form */
+	65534.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -30751,10 +30751,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	6.553420000000000023022,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	6.553420000000000000036L,		/* JSON floating point value in long double form */
+	6.553420000000000023022L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -31018,10 +31018,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	65535.09999999999854481,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	65535.10000000000000142L,		/* JSON floating point value in long double form */
+	65535.09999999999854481L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -31196,10 +31196,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	6.553519999999999789964,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	6.553519999999999999865L,		/* JSON floating point value in long double form */
+	6.553519999999999789964L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -31463,10 +31463,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	65536.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	65536.10000000000000142L,		/* JSON floating point value in long double form */
+	65536.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -31641,10 +31641,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	6.553619999999999556906,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	6.553620000000000000127L,		/* JSON floating point value in long double form */
+	6.553619999999999556906L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -31908,10 +31908,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	65537.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	65537.10000000000000142L,		/* JSON floating point value in long double form */
+	65537.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -32086,10 +32086,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	6.553720000000000212026,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	6.553719999999999999956L,		/* JSON floating point value in long double form */
+	6.553720000000000212026L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -32353,10 +32353,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	65538.10000000000582077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	65538.10000000000000142L,		/* JSON floating point value in long double form */
+	65538.10000000000582077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -32531,10 +32531,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	6.553819999999999978968,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	6.553819999999999999785L,		/* JSON floating point value in long double form */
+	6.553819999999999978968L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -32798,10 +32798,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	131070.1000000000058208,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	131070.1000000000000014L,		/* JSON floating point value in long double form */
+	131070.1000000000058208L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -32976,10 +32976,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	13.10702000000000033708,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	13.10701999999999999968L,		/* JSON floating point value in long double form */
+	13.10702000000000033708L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -33243,10 +33243,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	131071.1000000000058208,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	131071.1000000000000014L,		/* JSON floating point value in long double form */
+	131071.1000000000058208L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -33421,10 +33421,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	13.10712000000000010402,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	13.10711999999999999994L,		/* JSON floating point value in long double form */
+	13.10712000000000010402L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -33688,10 +33688,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	131072.1000000000058208,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	131072.0999999999999943L,		/* JSON floating point value in long double form */
+	131072.1000000000058208L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -33866,10 +33866,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	13.10721999999999987097,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	13.1072200000000000002L,		/* JSON floating point value in long double form */
+	13.10721999999999987097L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -34133,10 +34133,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	131073.1000000000058208,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	131073.0999999999999943L,		/* JSON floating point value in long double form */
+	131073.1000000000058208L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -34311,10 +34311,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	13.10731999999999963791,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	13.1073199999999999996L,		/* JSON floating point value in long double form */
+	13.10731999999999963791L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -34578,10 +34578,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	131074.1000000000058208,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	131074.0999999999999943L,		/* JSON floating point value in long double form */
+	131074.1000000000058208L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -34756,10 +34756,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	13.10741999999999940485,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	13.10741999999999999986L,		/* JSON floating point value in long double form */
+	13.10741999999999940485L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -34934,10 +34934,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2147483646.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2147483646.099999999977L,	/* JSON floating point value in long double form */
+	2147483646.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -35112,10 +35112,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	214748.3646200000075623,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	214748.3646200000000022L,		/* JSON floating point value in long double form */
+	214748.3646200000075623L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -35290,10 +35290,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2147483647.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2147483647.099999999977L,	/* JSON floating point value in long double form */
+	2147483647.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -35468,10 +35468,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	214748.3647200000123121,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	214748.3647200000000055L,		/* JSON floating point value in long double form */
+	214748.3647200000123121L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -35646,10 +35646,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2147483648.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2147483648.100000000093L,	/* JSON floating point value in long double form */
+	2147483648.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -35824,10 +35824,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	214748.364819999987958,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	214748.3648199999999946L,		/* JSON floating point value in long double form */
+	214748.364819999987958L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36002,10 +36002,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2147483649.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2147483649.100000000093L,	/* JSON floating point value in long double form */
+	2147483649.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36180,10 +36180,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	214748.3649199999927077,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	214748.3649199999999979L,		/* JSON floating point value in long double form */
+	214748.3649199999927077L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36358,10 +36358,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	2147483650.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	2147483650.100000000093L,	/* JSON floating point value in long double form */
+	2147483650.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36536,10 +36536,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	214748.3650199999974575,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	214748.3650200000000012L,		/* JSON floating point value in long double form */
+	214748.3650199999974575L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36714,10 +36714,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	4294967294.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	4294967294.100000000093L,	/* JSON floating point value in long double form */
+	4294967294.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -36892,10 +36892,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	429496.7294199999887496,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	429496.7294200000000046L,		/* JSON floating point value in long double form */
+	429496.7294199999887496L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37070,10 +37070,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	4294967295.099999904633,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	4294967295.100000000093L,	/* JSON floating point value in long double form */
+	4294967295.099999904633L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37248,10 +37248,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	429496.7295199999934994,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	429496.7295200000000079L,		/* JSON floating point value in long double form */
+	429496.7295199999934994L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37426,10 +37426,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	4294967296.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	4294967296.100000000093L,	/* JSON floating point value in long double form */
+	4294967296.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37604,10 +37604,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	429496.7296199999982491,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	429496.7296200000000113L,		/* JSON floating point value in long double form */
+	429496.7296199999982491L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37782,10 +37782,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	4294967297.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	4294967297.100000000093L,	/* JSON floating point value in long double form */
+	4294967297.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -37960,10 +37960,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	429496.7297200000029989,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	429496.7297199999999862L,		/* JSON floating point value in long double form */
+	429496.7297200000029989L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -38138,10 +38138,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	4294967298.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	4294967298.100000000093L,	/* JSON floating point value in long double form */
+	4294967298.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -38316,10 +38316,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	429496.7298200000077486,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	429496.7298199999999895L,		/* JSON floating point value in long double form */
+	429496.7298200000077486L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -38494,10 +38494,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	8589934590.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	8589934590.100000000093L,	/* JSON floating point value in long double form */
+	8589934590.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -38672,10 +38672,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	858993.4590199999511242,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	858993.4590200000000095L,		/* JSON floating point value in long double form */
+	858993.4590199999511242L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -38850,10 +38850,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	8589934591.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	8589934591.100000000093L,	/* JSON floating point value in long double form */
+	8589934591.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39028,10 +39028,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	858993.4591200000140816,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	858993.4591199999999844L,		/* JSON floating point value in long double form */
+	858993.4591200000140816L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39206,10 +39206,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	8589934592.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	8589934592.099999999627L,	/* JSON floating point value in long double form */
+	8589934592.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39384,10 +39384,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	858993.4592199999606237,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	858993.4592200000000162L,		/* JSON floating point value in long double form */
+	858993.4592199999606237L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39562,10 +39562,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	8589934593.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	8589934593.099999999627L,	/* JSON floating point value in long double form */
+	8589934593.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39740,10 +39740,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	858993.4593200000235811,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	858993.4593199999999911L,		/* JSON floating point value in long double form */
+	858993.4593200000235811L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -39918,10 +39918,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	8589934594.10000038147,	/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	8589934594.099999999627L,	/* JSON floating point value in long double form */
+	8589934594.10000038147L,	/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 
@@ -40096,10 +40096,10 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> converted JSON floating point to C double */
 	858993.4594199999701232,		/* JSON floating point value in double form */
-	true,		/* if double_sized == true, true ==> as_double is an integer */
+	false,		/* if double_sized == true, true ==> as_double is an integer */
 
 	true,		/* true ==> converted JSON floating point to C long double */
-	858993.4594200000000228L,		/* JSON floating point value in long double form */
+	858993.4594199999701232L,		/* JSON floating point value in long double form */
 	false,		/* if float_sized == true, true ==> as_float is an integer */
     },
 

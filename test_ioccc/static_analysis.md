@@ -1339,26 +1339,8 @@ json_parse.c:2324:57: warning: implicit conversion increases floating-point prec
 
 ### Solution
 
-This one is a bit trickier because it also has the problem of comparing floating
-point but it's not triggered in the system that triggered this warning. If we
-cast the two to `intmax_t` like we did for that problem as in:
-
-
-```c
-        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
-```
-
-we'll see something like:
-
-```c
-json_parse.c:2324:77: warning: implicit conversion increases floating-point precision: 'double' to 'long double' [-Wdouble-promotion]
-        item->as_double_int = ((intmax_t)item->as_double == (intmax_t)floorl(item->as_double));
-                                                                      ~~~~~~ ~~~~~~^~~~~~~~~
-```
-
-which we can fix by also casting to an `intmax_t` which we have done.
-
-Whether there is a better approach, however, is TBD at a later time.
+We fix this issue by using the `floor()` function instead of `floorl()` because
+the `floor()` function returns a `double` which is what we want in this case.
 
 ### Example
 
@@ -1374,12 +1356,8 @@ jnum_gen.c:546:49: warning: implicit conversion increases floating-point precisi
 
 ### Solution
 
-This one is more complicated because the cast to double was to resolve the same
-warning in macOS but in fedora we see that it's now promoting it to long double.
-We might cast it to a long double instead but it might be better to ignore it so
-that systems that promote it to long double will be fine but otherwise it'll be
-the default double promotion. This is what we have chosen to do but whether this
-will change is TBD later.
+As the fpr_finfo() function 3rd value is a `long double`, we cast to the 3rd arg
+to `long double` for values that are not otherwise `long double`.
 
 
 ### Example
@@ -1405,11 +1383,6 @@ jnum_gen.c:686:20: warning: implicit conversion increases floating-point precisi
 In this case we can use `L` suffix to make it long double. But is this correct?
 It might or might not be. Either way, whether it's correct or not, we can use
 the C99 macros `islessequal` and `isgreaterequal` for the comparison.
-
-It should be noted that these functions can have a performance penalty and
-another solution that we've already used for the warning `-Wfloat-equal` and
-that is casting each side to an `intmax_t` but whether that should be done here
-is TBD.
 
 
 ### Example

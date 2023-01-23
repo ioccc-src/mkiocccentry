@@ -34,6 +34,12 @@ Changed JSEMTBLGEN_VERSION from "0.4 2022-07-13" to "0.6 2023-01-22".
 The jsemtblgen tool, with the -I option, will not print duplicate
 extern function declarations.
 
+Fixed a number of tests relating to conversion of floating point values.
+Corrected `jparse/test_jparse/jnum_test.c1 test results for
+the `as_double is an integer` test cases.
+
+Changed JNUM_GEN_VERSION from "0.7 2022-05-01" to "0.8 2023-01-22".
+
 
 ## Release 0.9.9 2022-12-31
 
