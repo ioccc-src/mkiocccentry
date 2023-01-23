@@ -771,7 +771,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
     len += strlen(str) + (str_is_reserved ? 1 : 0) + 1;	/* + 1 for NUL */
     ret = calloc(len + 1, sizeof(char));		/* + 1 for guard byte paranoia */
     if (ret == NULL) {
-	errp(20, __func__, "calloc of %ju bytes failed", (uintmax_t)ret);
+	errp(20, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	not_reached();
     }
     p = ret;
