@@ -26,16 +26,16 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "13 November 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "23 January 2023" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
+\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] tarball_path
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0, \fBmkiocccentry\fP will exit with an error.
 .PP
-The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP and parses the output of the command, performing a variety of tests on the tarball.
+The program runs \fBtar \-tJvf\fP on the \fItarball_path\fP and parses the output of the command, performing a variety of tests on the tarball.
 As a side effect it will show the user the contents of the tarball.
 The tarball is \fBNOT\fP extracted.
 \fBtxzchk\fP also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named (this is also how it gets the directory name that the files should be in).
@@ -71,7 +71,7 @@ Specify path to the IOCCC \fBfnamchk(1)\fP tool.
 If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
 .TP
 \fB\-T\fP
-Assume txzpath is a text file: use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
+Assume tarball_path is a text file: use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .TP
 \fB\-E \fIext\fP\fP
 Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
