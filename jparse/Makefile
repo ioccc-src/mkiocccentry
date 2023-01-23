@@ -219,7 +219,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
 # rule used by prep.sh and make clean via make clean_generated_obj
 #
-BUILT_OBJS= jparse.o jparse.tab.o jparse.tab.o
+BUILT_OBJS= jparse.o jparse.tab.o
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
