@@ -1170,7 +1170,7 @@ Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.
 
 
 ## Issue: warning: implicit conversion changes signedness
-### Status: fixed, TBD
+### Status: fixed
 ### Example
 
 
@@ -1270,8 +1270,8 @@ json_parse.c:308:12: warning: implicit conversion changes signedness: 'ssize_t' 
                 ~ ^~~~
 ```
 
-Casting the `mlen` back to a `size_t` works but whether `retlen` should be
-changed to a pointer to a `ssize_t` is TBD.
+Making `mlem` of type `ssize_t` and adding paranoia checks for < 0 values,
+and then casting the non-negative result to `size_t` for `retlen` works.
 
 
 ### Example

@@ -654,6 +654,7 @@ check_file_size(char const *txzpath, off_t size, struct txz_file *file)
     }
 }
 
+
 /*
  * check_all_txz_files - check txz_files list after parsing tarball (or text file)
  *
@@ -1014,6 +1015,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     add_txz_file_to_list(file);
 }
 
+
 /*
  * count_and_sum    - wrapper to sum_and_count (util.c) related checks
  *
@@ -1088,6 +1090,8 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
 		*count - (intmax_t)tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
     }
 }
+
+
 /*
  * parse_bsd_txz_line - parse macOS/BSD tar output
  *

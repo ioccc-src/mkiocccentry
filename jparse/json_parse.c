@@ -250,6 +250,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     for (i=0; i < len; ++i) {
 	mlen += jenc[(uint8_t)(ptr[i])].len;
     }
+    if (mlen < 0) { /* paranoia */
+	warn(__func__, "mlen #0: %ju < 0", (uintmax_t)mlen);
+	return NULL;
+    }
 
     /*
      * malloc the encoded string
@@ -298,6 +302,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     }
     *p = '\0';	/* paranoia */
     mlen = p - ret; /* paranoia */
+    if (mlen < 0) { /* paranoia */
+	warn(__func__, "mlen #1: %ju < 0", (uintmax_t)mlen);
+	return NULL;
+    }
 
     /*
      * return result
