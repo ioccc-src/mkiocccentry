@@ -350,7 +350,7 @@ if [[ ! -w "$TMP_STDERR_FILE" ]]; then
     exit 36
 fi
 
-# remove or key temporary files
+# remove or keep (some) temporary files
 #
 if [[ -z $K_FLAG ]]; then
     trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR \$TMP_STDERR_FILE; exit" 0 1 2 3 15
