@@ -1,11 +1,51 @@
 # jparse - JSON parser written in C
 
-`jparse` is a JSON parser written in C with the help of `flex(1)` and
-`bison(1)`. It was co-developed by Cody Boone Ferguson and Landon Curt Noll (one
-of the IOCCC Judges) in support of the *IOCCC* (_International Obfuscated C Code
-Contest_), originally in the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
 
-# Synopsis
+`jparse` is a JSON parser (a stand-alone tool and a library) written in C with
+the help of `flex(1)` and `bison(1)`. It was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+
+in support of the **IOCCC** ([International Obfuscated C Code
+Contest](https://www.ioccc.org)), originally in the [mkiocccentry
+repo](https://github.com/ioccc-src/mkiocccentry), but we provide it here so that
+anyone may use it.
+
+As a stand-alone tool it is less useful, perhaps save for validating json
+documents and to see how it works. The library is much more useful because you
+can integrate it into your own applications and work with the parsed tree. More
+details on the library will be documented at a later date although we do give a
+bit of information below.
+
+We also have some additional tools, some of which will be documented later and
+some of which are documented below, namely `jstrencode` and `jstrdecode`.
+
+
+# Compiling
+
+We determine if you have a recent enough `flex(1)` and `bison(1)`. If you do not
+we use backup files. Either way, to compile you need only run:
+
+
+```sh
+make all
+```
+
+
+## Stand-alone tool
+
+As a tool by itself `jparse` takes a block of memory from either a file (stdin
+or a text file) or a string (via `-s` option) and parses it as JSON, reporting
+if it is validly formed JSON or not.
+
+### Synopsis
+
 
 ```sh
 ./jparse [-h] [-v level] [-J level] [-q] [-V] [-s] -- arg
@@ -21,10 +61,49 @@ to be a file.
 The options `-V` and `-h` show the version of the parser and the help or usage
 string, respectively.
 
-# Exit status
+
+### Exit status
 
 If the JSON is valid the exit status of `jparse` is 0. Different non-zero values
 are for different error conditions, or help or version string printed.
+
+
+## The jparse library
+
+As a library, `jparse` is much more useful as it allows one to parse JSON in
+their application and then interact with the parsed tree.
+
+
+### Linking the library into your own code
+
+To use you need to include `jparse.h` and then link in the `jparse.a` static
+library. This will be documented at a later date.
+
+
+### Example use of the library
+
+We currently do not have a short and simple example to go through. This will
+come at a later date when I (Cody) make this into a separate GitHub repo.
+Nevertheless one may check the library man page by:
+
+
+```sh
+man ./man/man3/jparse.3
+```
+
+which gives more information about the most important functions.
+
+### Re-entrancy
+
+Although the scanner and parser are both re-entrant, only one parse at one time
+in a process has been tested. The testing of more than one parse at the same
+time is way out of scope of this repo but will be tested more as I (@xexyl, Cody
+Boone Ferguson) move this to a separate repo.
+
+If it's not clear this means that having more than one parse active in the same
+process at the same time is not tested so even though it should be okay there
+might be some issues that have yet to be discovered.
+
 
 
 # History
@@ -37,25 +116,6 @@ the source code. If you do read the source code we **STRONGLY** recommend you
 read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
 code! This is because the generated code might give you nightmares and cause
 other horrible symptoms. :-) See `sorry.tm.ca.h` for more details.
-
-# Re-entrancy
-
-Although the scanner and parser are both re-entrant, only one parse at one time
-in a process has been tested. The testing of more than one parse at the same
-time is way out of scope of this repo but will be tested more as I (@xexyl, Cody
-Boone Ferguson) move this to a separate repo.
-
-If it's not clear this means that having more than one parse active in the same
-process at the same time is not tested so even though it should be okay there
-might be some issues that have yet to be discovered.
-
-# Compiling and using in your own code
-
-This won't be described until after the IOCCCMOCK contest and any changes are
-made based on what is learnt. After this I (Cody) will make a separate repo for
-the parser which will have an updated README. In there I will document how to
-use the tool in your own projects. The below section Examples will be updated at
-this point as well.
 
 # Examples
 
@@ -90,15 +150,65 @@ Run the `jparse_test.sh` script using the default `json_teststr.txt` file with v
 ```sh
 ./jparse_test.sh -v 5
 ```
-# See also
-       
-The following man pages might also be of value:
 
-- jparse(1)
-- jparse(3)
-- mkiocccentry(1)
-- jstrencode(1)
-- jstrdecode(1)
-- chkentry(1) (for the IOCCC reason the code exists in the first place)
-- flex(1)
-- bison(1)
+
+
+# See also
+
+For more information, try:
+
+```sh
+man ./man/man1/jparse.1
+man ./man/man3/jparse.3
+man ./man/man1/jstrencode.1
+man ./man/man1/jstrdecode.1
+```
+
+NOTE: the library man page currently has no example and this will not happen
+until later, possibly not until it's an actual repo.
+
+### `jstrencode`
+
+Encode data.  This tool can converts data into JSON encoded strings according to the so-called
+[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+
+This tool was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+For more information and examples, try:
+
+```sh
+man ./man/man1/jstrencode.1
+```
+
+NOTE: After doing a `make all`, this tool may be found as: `./jstrencode`.
+
+
+### `jstrdecode`
+
+Decode JSON encoded strings.  This tool converts JSON encoded strings to their original data according to the so-called
+[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+
+This tool was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+For more information and examples, try:
+
+```sh
+man ./man/man1/jstrdecode.1
+```
+
+NOTE: After doing a `make all`, this tool may be found as: `./jstrdecode`.
+
