@@ -69,6 +69,7 @@ int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on 
  * JSON parser library version
  */
 const char *const json_parser_version = JSON_PARSER_VERSION;	/* library version format: major.minor YYYY-MM-DD */
+const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
 
 %}
 
