@@ -60,7 +60,7 @@ main(int argc, char *argv[])
     char *readline_buf = NULL;	/* test case readline_buf buffer */
     ssize_t readline_len;	/* readline return length */
     int ret;			/* libc function return */
-    int count = 0;		/* test count read from filename */
+    intmax_t count = 0;		/* test count read from filename */
     char *p = NULL;		/* comment search */
     char *line = NULL;		/* allocated line with JSON number and/or comment */
     size_t len;			/* length of JSON test number */
@@ -69,7 +69,7 @@ main(int argc, char *argv[])
     struct dyn_array *str_array = NULL;		/* dynamic array of test strings */
     struct dyn_array *result_array = NULL;	/* dynamic array of test results */
     bool moved = false;		/* true ==> realloc() moved data */
-    int linenum = 0;		/* readline_buf number from filename */
+    intmax_t linenum = 0;	/* readline_buf number from filename */
     int i;
 
     /*
@@ -165,7 +165,7 @@ main(int argc, char *argv[])
 	 * trim comments from line
 	 */
 	++linenum;
-	dbg(DBG_VVHIGH, "linenum %d: <%s>", linenum, line);
+	dbg(DBG_VVHIGH, "linenum %jd: <%s>", linenum, line);
 	p = strchr(line, '#');
 	if (p != NULL) {
 	    /* strip comment from readline_buf */
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
 	len = find_text_str(line, &first);
 	if (len <= 0) {
 	    /* found no JSON number string to test, ignore this readline_buf */
-	    dbg(DBG_VHIGH, "only comment and/or whitespace found on line: %d", linenum);
+	    dbg(DBG_VHIGH, "only comment and/or whitespace found on line: %jd", linenum);
 	    continue;
 	}
 
@@ -188,7 +188,7 @@ main(int argc, char *argv[])
 	moved = dyn_array_append_value(str_array, &line);
 	if (moved == true) {
 	     dbg(DBG_VHIGH, "FYI: dyn_array_append_value(str_array, readline_buf) realloc moved data, "
-			    "count: %d readline_buf: %d", count, linenum);
+			    "count: %jd readline_buf: %jd", count, linenum);
 	}
 
 	/*
@@ -207,7 +207,7 @@ main(int argc, char *argv[])
 	moved = dyn_array_append_value(result_array, &node);
 	if (moved == true) {
 	     dbg(DBG_VHIGH, "FYI: dyn_array_append_value(result_array, node) realloc moved data, "
-			    "count: %d readline_buf: %d", count, linenum);
+			    "count: %jd readline_buf: %jd", count, linenum);
 	}
 	++count;	/* count another test */
     }
@@ -215,13 +215,13 @@ main(int argc, char *argv[])
     /*
      * firewall - dynamic array size sanity check
      */
-    dbg(DBG_MED, "found %d test cases in filename: %s", count, filename);
+    dbg(DBG_MED, "found %jd test cases in filename: %s", count, filename);
     if (dyn_array_tell(str_array) != count) {
-	err(15, program, "expected %jd pointers, found %jd in str_array", (intmax_t)count, dyn_array_tell(str_array));
+	err(15, program, "expected %jd pointers, found %jd in str_array", count, dyn_array_tell(str_array));
 	not_reached();
     }
     if (dyn_array_tell(result_array) != count) {
-	err(16, program, "expected %jd pointers, found %jd in result_array", (intmax_t)count, dyn_array_tell(result_array));
+	err(16, program, "expected %jd pointers, found %jd in result_array", count, dyn_array_tell(result_array));
 	not_reached();
     }
 
@@ -238,7 +238,7 @@ main(int argc, char *argv[])
     /*
      * output test count
      */
-    print("#define TEST_COUNT (%d)\n\n", count);
+    print("#define TEST_COUNT (%jd)\n\n", count);
     prstr("int const test_count = TEST_COUNT;\n\n");
 
     /*

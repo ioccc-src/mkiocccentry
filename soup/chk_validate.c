@@ -741,7 +741,7 @@ chk_authors(struct json const *node,
     if (*author_count != array->len) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(116, node, depth, sem, __func__,
-				    "author_count: %d != array len: %d",
+				    "author_count: %d != array len: %ju",
 				    *author_count, array->len);
 	}
 	return false;

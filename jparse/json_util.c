@@ -1668,7 +1668,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (item->converted == true) {
 
-		fprint(stream, "\tlen: %d", item->len);
+		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}
@@ -1694,7 +1694,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (item->converted == true) {
 
-		fprint(stream, "\tlen: %d", item->len);
+		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}
@@ -1720,7 +1720,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (item->converted == true) {
 
-		fprint(stream, "\tlen: %d", item->len);
+		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}

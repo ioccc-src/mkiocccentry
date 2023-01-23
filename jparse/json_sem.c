@@ -579,7 +579,7 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
 	    /* JTYPE_OBJECT specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(35, node, depth, sem, name, "JTYPE_OBJECT node: len: %d < 0",
+		    *val_err = werr_sem_val(35, node, depth, sem, name, "JTYPE_OBJECT node: len: %ju < 0",
 					    item->len);
 		}
 		return false;
@@ -614,7 +614,7 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
 	    /* JTYPE_ARRAY specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(39, node, depth, sem, name, "JTYPE_ARRAY node: len: %d < 0",
+		    *val_err = werr_sem_val(39, node, depth, sem, name, "JTYPE_ARRAY node: len: %ju < 0",
 					    item->len);
 		}
 		return false;
@@ -649,7 +649,7 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
 	    /* JTYPE_ELEMENTS specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(43, node, depth, sem, name, "JTYPE_ELEMENTS node: len: %d < 0",
+		    *val_err = werr_sem_val(43, node, depth, sem, name, "JTYPE_ELEMENTS node: len: %ju < 0",
 					    item->len);
 		}
 		return false;
@@ -1613,7 +1613,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
      */
     if (item->len < 0) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(82, node, depth, sem, name, "JTYPE_OBJECT set length: %d < 0", item->len);
+	    *val_err = werr_sem_val(82, node, depth, sem, name, "JTYPE_OBJECT set length: %ju < 0", item->len);
 	}
 	return NULL;
     } else if (item->len == 0) {
@@ -1622,7 +1622,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     }
     if (item->set == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(83, node, depth, sem, name, "JTYPE_OBJECT len: %d > 0 and set is NULL", item->len);
+	    *val_err = werr_sem_val(83, node, depth, sem, name, "JTYPE_OBJECT len: %ju > 0 and set is NULL", item->len);
 	}
 	return NULL;
     }
@@ -2259,8 +2259,8 @@ void
 free_count_err(struct dyn_array *count_err)
 {
     struct json_sem_count_err *p = NULL;	/* pointer to JSON semantic count error */
-    uintmax_t count = 0;		/* length of semantic count array */
-    uintmax_t i = 0;
+    intmax_t count = 0;		/* length of semantic count array */
+    intmax_t i = 0;
 
     /*
      * firewall
@@ -2273,7 +2273,7 @@ free_count_err(struct dyn_array *count_err)
     /*
      * free each semantic count error if malloced
      */
-    count = (uintmax_t)dyn_array_tell(count_err);
+    count = dyn_array_tell(count_err);
     for (i=0; i < count; ++i) {
 
 	/*
@@ -2305,8 +2305,8 @@ void
 free_val_err(struct dyn_array *val_err)
 {
     struct json_sem_val_err *p = NULL;	/* pointer to JSON semantic count error */
-    uintmax_t count = 0;		/* length of semantic count array */
-    uintmax_t i = 0;
+    intmax_t count = 0;		/* length of semantic count array */
+    intmax_t i = 0;
 
     /*
      * firewall
@@ -2319,7 +2319,7 @@ free_val_err(struct dyn_array *val_err)
     /*
      * free each semantic count error if malloced
      */
-    count = (uintmax_t)dyn_array_tell(val_err);
+    count = dyn_array_tell(val_err);
     for (i=0; i < count; ++i) {
 
 	/*

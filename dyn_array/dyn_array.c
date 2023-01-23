@@ -148,9 +148,9 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      */
     old_allocated = array->allocated;
     new_allocated = old_allocated + elms_to_allocate;
-    old_bytes = old_allocated * array->elm_size;
+    old_bytes = old_allocated * (intmax_t)array->elm_size;
     /* +array->chunk for guard chunk */
-    new_bytes = (new_allocated+array->chunk) * array->elm_size;
+    new_bytes = (new_allocated+array->chunk) * (intmax_t)array->elm_size;
 
     /*
      * firewall - check if new_bytes fits in a size_t variable
@@ -199,7 +199,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     if (array->zeroize == true) {
 	    p = (uint8_t *) (array->data) + old_bytes;
 	    /* +array->chunk for guard chunk */
-	    memset(p, 0, (elms_to_allocate+array->chunk) * array->elm_size);
+	    memset(p, 0, (elms_to_allocate+array->chunk) * (intmax_t)array->elm_size);
     }
 
     return moved;
@@ -680,7 +680,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Initialize empty dynamic array
      * Start with a dynamic array with allocated enough chunks to hold at least start_elm_count elements
      */
-    ret->elm_size = elm_size;
+    ret->elm_size = (intmax_t)elm_size;
     ret->zeroize = zeroize;
     /* Allocated array is empty */
     ret->count = 0;
@@ -692,7 +692,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * determine the size of the allocated area
      */
     /* +chunk for guard chunk */
-    number_of_bytes = (ret->allocated+chunk) * elm_size;
+    number_of_bytes = (ret->allocated+chunk) * (intmax_t)elm_size;
 
     errno = 0;			/* pre-clear errno for errp() */
     ret->data = malloc((size_t)number_of_bytes);
@@ -868,8 +868,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * Expand dynamic array if needed
      */
     available_empty_elements = dyn_array_avail(array);
-    data_size = array->elm_size * count_of_elements_to_add;
-    alloc_size = array->elm_size * array->allocated;
+    data_size = (intmax_t)array->elm_size * count_of_elements_to_add;
+    alloc_size = (intmax_t)array->elm_size * array->allocated;
     if (count_of_elements_to_add > available_empty_elements) {
 
 	/*
@@ -916,7 +916,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * We append depending on if the data moved during a possible dyn_array_grow() / realloc() call
      * as well of the move type.
      */
-    beyond = (uint8_t *)(array->data) + (array->count * array->elm_size);
+    beyond = (uint8_t *)(array->data) + (array->count * (intmax_t)array->elm_size);
     if (moved == false || mv_case == MOVE_CASE_UNSET || mv_case == MOVE_CASE_OUTSIDE) {
 
 	/*
@@ -958,7 +958,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset < 0) {
-		err(92, __func__, "mv_case == %s but data_first_offset < 0: %d",
+		err(92, __func__, "mv_case == %s but data_first_offset < 0: %ju",
 				  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
@@ -1356,7 +1356,8 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 
 	/* zeroize elements after new shrink point if requested */
 	if (array->zeroize == true) {
-	    memset((uint8_t *)array->data + (setpoint * array->elm_size), 0, (array->count - setpoint) * array->elm_size);
+	    memset((uint8_t *)array->data + (setpoint * (intmax_t)array->elm_size), 0,
+		   (array->count - setpoint) * (intmax_t)array->elm_size);
 	}
 
     /*
@@ -1377,7 +1378,8 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 
 	/* zeroize new elements beyond current in use point */
 	if (array->zeroize == true) {
-	    memset((uint8_t *)array->data + (array->count * array->elm_size), 0, (setpoint - array->count) * array->elm_size);
+	    memset((uint8_t *)array->data + (array->count * (intmax_t)array->elm_size), 0,
+		   (setpoint - array->count) * (intmax_t)array->elm_size);
 	}
 
     /*
@@ -1464,7 +1466,7 @@ dyn_array_clear(struct dyn_array *array)
      * Zeroize the elements currently in the array
      */
     if (array->zeroize == true) {
-	memset(array->data, 0, array->count * array->elm_size);
+	memset(array->data, 0, array->count * (intmax_t)array->elm_size);
     }
 
     /*
@@ -1513,7 +1515,7 @@ dyn_array_free(struct dyn_array *array)
      * Zeroize allocated data
      */
     if (array->zeroize == true && array->data != NULL && array->allocated > 0 && array->elm_size > 0) {
-	memset(array->data, 0, array->allocated * array->elm_size);
+	memset(array->data, 0, array->allocated * (intmax_t)array->elm_size);
     }
 
     /*

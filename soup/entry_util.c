@@ -1464,7 +1464,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	if (o->len != 1) {
 	    if (val_err != NULL) {
 		*val_err = werr_sem_val(130, e, depth+1, sem, __func__,
-					"manifest JTYPE_ARRAY[%jd] JTYPE_OBJECT len: %d != 1",
+					"manifest JTYPE_ARRAY[%jd] JTYPE_OBJECT len: %ju != 1",
 					i, o->len);
 	    }
 	    dyn_array_free(man.extra);

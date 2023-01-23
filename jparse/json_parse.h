@@ -333,7 +333,7 @@ struct json_object
 {
     bool converted;		/* true ==> able to decode JSON object */
 
-    int len;			/* number of JSON members in the object, 0 ==> empty object */
+    intmax_t len;		/* number of JSON members in the object, 0 ==> empty object */
     struct json **set;		/* set of JSON members belonging to the object */
 
     struct dyn_array *s;	/* dynamic array managed storage for the JSON object */
@@ -362,7 +362,7 @@ struct json_array
 {
     bool converted;		/* true ==> able to decode JSON array */
 
-    int len;			/* number of JSON values in the JSON array, 0 ==> empty array */
+    intmax_t len;		/* number of JSON values in the JSON array, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON array */
 
     struct dyn_array *s;	/* dynamic array managed storage for the JSON array */
@@ -388,7 +388,7 @@ struct json_elements
 {
     bool converted;		/* true ==> able to decode JSON array */
 
-    int len;			/* number of JSON values in the JSON elements, 0 ==> empty array */
+    intmax_t len;		/* number of JSON values in the JSON elements, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON elements */
 
     struct dyn_array *s;	/* dynamic array managed storage for the JSON array */

@@ -253,7 +253,9 @@ a literal to the debug function (or actually `fmsg_write()` from the `msg()`
 functions) where in turn the variable triggers the warning.
 
 In our case there is no place in the code that this is triggered that is a
-problem as it's all like the above example.
+problem as it's all like the above example.  Moreover, calls to these debug
+functions pass literal strings as the fmt argument further reducing the
+potrential negative impact of this issue.
 
 
 ## Issue: warning: function 'foo' could be declared with attribute 'noreturn'
@@ -891,6 +893,10 @@ there's no need for default. But what happens if someone updates the enum to
 have a new value which would be an error that the default actually handles? It
 would no longer be an error even though it is. Thus we ignore this one too.
 
+The dynamic array code maintains a default switch case in case (pun
+intended) the enum values are changed OR in case of a hardware (such
+as memory corruption) error.
+
 
 ### See also
 
@@ -1135,7 +1141,7 @@ dyn_array.c:879:48: warning: implicit conversion loses integer precision: 'long'
 
 ### Solution
 
-Local varianles data_first_offset and data_first_offset in dyn_array.c
+Local variables data_first_offset and data_first_offset in dyn_array.c
 were changed to type intmax_t in order to avoid integer precision loses.
 
 
@@ -1143,7 +1149,7 @@ were changed to type intmax_t in order to avoid integer precision loses.
 
 ```c
 json_parse.c:3265:17: warning: implicit conversion loses integer precision: 'intmax_t' (aka 'long') to 'int' [-Wshorten-64-to-32]
-    item->len = dyn_array_tell(item->s);
+    item->len = yn_array_tell(item->s);
               ~ ^~~~~~~~~~~~~~~~~~~~~~~
 ./../dyn_array/dyn_array.h:118:67: note: expanded from macro 'dyn_array_tell'
 #define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)
@@ -1152,12 +1158,11 @@ json_parse.c:3265:17: warning: implicit conversion loses integer precision: 'int
 
 ### Solution
 
-In the file `json_parse.h` we see that various structs of json types have an
-`int len`. Perhaps it should have been an unsigned int but if so this would
-introduce the problem of `dyn_array_tell` being signed but the `len` not being
-signed. Thus to fix this we cast the `dyn_array_tell` call to be an int.
-
-It is TBD if we will change the `len` to be unsigned.
+In the file `json_parse.h` we see that various structs of json types
+have an `int len` that instead should be `intmax_t len`, especially
+because the dynamic array facility has the potential to return (say
+via dyn_array_tell) large lengths (even though this repo is unlikely
+to need lengths that would exceed INT_MAX).
 
 ### See also
 
@@ -1306,11 +1311,14 @@ dyn_array.c:196:36: warning: implicit conversion changes signedness: 'long' to '
 
 ### Solution
 
-This is TBD later.
+While the dynamic array element elm_size is type `size_t`, when
+multiplying with such values we cast such values to `intmax_t`.
+This can be safely cast within most dyn_array.c code because there
+is code ahead of such use to object to negative elm_size values.
 
 ### See also
 
-With the exception of that in `dyn_array` code this was fixed in commit
+This was fixed in commit
 1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
 e59f15db96dc0893341a985825fbb6028525a278) and
 c6b5f89a81a4910901cb3ef26c8f34858acd4740.
