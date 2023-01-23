@@ -71,7 +71,7 @@ the problem is resolved.
 
 ### See also
 
-Fixed in commit 66f539b70c2fa2a54dd39cd8645bc7166b93b5b7.
+Fixed in commit 5eb62121b6298e5ecc5324c6c1fd13a7f904ee0b.
 
 
 ## Issue: memory leaks in txzchk.c
@@ -113,7 +113,7 @@ function.
 
 ### See also
 
-Fixed in commit b10e2e2747bfb6cb5d76effd4bb17ab12f525c07.
+Fixed in commit 290963a459b707cc6b22374cc20dbd76e9f5db6d.
 
 ## Issue: memory leaks in jstrencode.c and jstredecode.c
 ### Status: partially fixed
@@ -216,7 +216,7 @@ Add missing call to the cap_tbl_name variable.
 
 ### See also
 
-Fixed in commit 693c929355608f0cd316c31dc71d943e6641c213: Fix memory leak in
+Fixed in commit fa9eca1c273fdd138d338a93875f462f62b0bc5b: Fix memory leak in
 jsemtblgen.c.
 
 Note that there are other memory leaks in the json parser itself. Whether these
@@ -248,7 +248,7 @@ function that frees memory did not free everything but there it is.
 
 ### See also
 
-Fixed in commit f46114885ad81198163823ff9b58b5c676d826f9: Plug memory leaks in
+Fixed in commit 6c4138d788614f138013f4497b2ea1631923ab5b: Plug memory leaks in
 dyn_{array,test}.c.
 
 
