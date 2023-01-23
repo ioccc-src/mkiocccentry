@@ -76,15 +76,6 @@
 #define has_does_not_have(b) ((b)?"has":"does not have")
 #define singular_or_plural(x) ((x)==1?"":"s")
 
-/* globals */
-static bool quiet = false;				/* true ==> quiet mode */
-/* globals specific to txzchk */
-static char const *txzpath = NULL;		/* the current tarball being checked */
-static char const *program = NULL;		/* our name */
-static bool read_from_text_file = false;	/* true ==> assume txzpath is a text file */
-static char const *ext = "txz";			/* force extension in fnamchk to be this value */
-static char const *tok_sep = " \t";		/* token separators for strtok_r */
-static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
 
 /*
  * information about the tarball

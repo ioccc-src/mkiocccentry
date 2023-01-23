@@ -295,7 +295,7 @@ main(int argc, char *argv[])
 	not_reached();
     }
     info.tstamp = tp.tv_sec;
-    if ((time_t)-1 > 0) {
+    if ((time_t)(-1) > 0) {
 	/* case: unsigned time_t */
 	dbg(DBG_HIGH, "info.tstamp: %ju", (uintmax_t)info.tstamp);
     } else {

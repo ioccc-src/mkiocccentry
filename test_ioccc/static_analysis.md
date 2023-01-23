@@ -22,7 +22,7 @@ which are included in the `CFLAGS` as `WARN_FLAGS`) and `CC` so that you can use
 
 
 ```sh
-$ cat > makefile.local << "EOF"
+cat > makefile.local << "EOF"
 CC= clang
 WARN_FLAGS += -Weverything -Wno-error
 EOF
@@ -34,19 +34,33 @@ file to the other subdirectories or you can make a symlink e.g. something like:
 
 
 ```sh
-$ cd soup
-$ ln -s ../makefile.local .
+cd soup;
+ln -s ../makefile.local .
 ```
 
 After this the `soup/` subdirectory will also use the modifications (we do not
 pass the CFLAGS to other Makefiles though maybe we should).
 
 Note: we throw in the option `-Wno-error` to prevent the compiler from aborting
-prematurely. This way we can get a list of all warnings like:
+prematurely.
 
+Given various errors that we have chosen to ignore (see below), the
+following macOS makefile.local file is worth considering as you
+re-test these issues:
 
 ```sh
-$ make all > warnings.log 2>&1
+cat > makefile.local << "EOF"
+CC= clang
+WARN_FLAGS += -Weverything -Wno-error -Wno-padded -Wno-poison-system-directories \
+	-Wno-unreachable-code-break
+EOF
+```
+
+This way we can get a list of all warnings like:
+
+```sh
+make clobber all > warnings.log 2>&1;
+grep -E ' error: |  warning:' warnings.log
 ```
 
 
@@ -641,10 +655,9 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 
 ### Solution
 
-We ignore these because they are the same variable and serve to document the
-functions. In both tools the global variable is assigned in `main()` and then
-passed into other functions. Thus one can safely ignore this warning for both
-`tbl_name` in jsemtblgen.c and `txzpath` in `txzchk.c`.
+In the case of txzchk, we renamed the static global variable `txzchk`
+to `txzchk_path` in order to distinguish it from a function that
+is using a argument named `txzchk`.
 
 
 ### See also

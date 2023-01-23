@@ -54,6 +54,7 @@ txzchk
 txzchk_test.log
 utf8_test
 verge
+warnings.log
 
 # Prerequisites
 *.d

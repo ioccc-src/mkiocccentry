@@ -60,8 +60,21 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
+/*
+ * static globals
+ */
 static intmax_t sum_check;			/* negative of previous sum */
 static intmax_t count_check;			/* negative of previous count */
+
+static bool quiet = false;				/* true ==> quiet mode */
+
+static char const *txzpath_path = NULL;		/* the current tarball being checked */
+static char const *program = NULL;		/* our name */
+static bool read_from_text_file = false;	/* true ==> assume txzpath_path is a text file */
+static char const *ext = "txz";			/* force extension in fnamchk to be this value */
+static char const *tok_sep = " \t";		/* token separators for strtok_r */
+static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
+
 
 int
 main(int argc, char **argv)
@@ -127,8 +140,8 @@ main(int argc, char **argv)
 	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
-    txzpath = argv[optind];
-    dbg(DBG_LOW, "txzpath: %s", txzpath);
+    txzpath_path = argv[optind];
+    dbg(DBG_LOW, "txzpath: %s", txzpath_path);
 
     if (always_show_warnings) {
 	warn_output_allowed = true;
@@ -187,7 +200,7 @@ main(int argc, char **argv)
     if (!quiet && !tarball.total_feathers) {
 	para("No feathers stuck in tarball.", NULL);
     }
-    show_tarball_info(txzpath);
+    show_tarball_info(txzpath_path);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -333,7 +346,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if ((tar == NULL && !read_from_text_file) || fnamchk == NULL || txzpath == NULL) {
+    if ((tar == NULL && !read_from_text_file) || fnamchk == NULL || txzpath_path == NULL) {
 	err(11, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -446,7 +459,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     /*
      * txzpath must be readable
      */
-    if (!exists(txzpath)) {
+    if (!exists(txzpath_path)) {
 	fpara(stderr,
 	      "",
 	      "The tarball path specified does not exist. Perhaps you made a typo?",
@@ -455,11 +468,11 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [options] <txzpath>"
 	      "",
 	      NULL);
-	err(18, __func__, "txzpath does not exist: %s", txzpath);
+	err(18, __func__, "txzpath does not exist: %s", txzpath_path);
 	not_reached();
     }
 
-    if (!is_file(txzpath)) {
+    if (!is_file(txzpath_path)) {
 	fpara(stderr,
 	      "",
 	      "The file specified, while it exists, is not a regular file.",
@@ -469,11 +482,11 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <txzpath>",
 	      "",
 	      NULL);
-	err(19, __func__, "txzpath is not a regular file: %s", txzpath);
+	err(19, __func__, "txzpath is not a regular file: %s", txzpath_path);
 	not_reached();
     }
 
-    if (!is_read(txzpath)) {
+    if (!is_read(txzpath_path)) {
 	fpara(stderr,
 	      "",
 	      "The tarball path, while it is a file, is not readable.",
@@ -483,7 +496,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <txzpath>"
 	      "",
 	      NULL);
-	err(20, __func__, "txzpath is not readable: %s", txzpath);
+	err(20, __func__, "txzpath is not readable: %s", txzpath_path);
 	not_reached();
     }
 
@@ -703,13 +716,13 @@ check_all_txz_files(char const *dir_name)
 
 	if (dir_name != NULL && tarball.correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
-		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
+		warn("txzchk", "%s: found directory change in filename %s", txzpath_path, file->filename);
 		++tarball.total_feathers;
 	    }
 	}
 
 	if (file->count > 1) {
-	    warn("txzchk", "%s: found a total of %ju files with the name %s", txzpath, file->count, file->basename);
+	    warn("txzchk", "%s: found a total of %ju files with the name %s", txzpath_path, file->count, file->basename);
 	    tarball.total_feathers += file->count - 1;
 	}
     }
@@ -717,27 +730,27 @@ check_all_txz_files(char const *dir_name)
     /* determine if the required files are there */
     if (!tarball.has_info_json) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: no .info.json found", txzpath);
+	warn("txzchk", "%s: no .info.json found", txzpath_path);
     }
     if (!tarball.has_auth_json) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: no .auth.json found", txzpath);
+	warn("txzchk", "%s: no .auth.json found", txzpath_path);
     }
     if (!tarball.has_prog_c) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: no prog.c found", txzpath);
+	warn("txzchk", "%s: no prog.c found", txzpath_path);
     }
     if (!tarball.has_Makefile) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: no Makefile found", txzpath);
+	warn("txzchk", "%s: no Makefile found", txzpath_path);
     }
     if (!tarball.has_remarks_md) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: no remarks.md found", txzpath);
+	warn("txzchk", "%s: no remarks.md found", txzpath_path);
     }
     if (tarball.correct_directory < tarball.total_files) {
 	++tarball.total_feathers;
-	warn("txzchk", "%s: not all files in correct directory", txzpath);
+	warn("txzchk", "%s: not all files in correct directory", txzpath_path);
     }
 
     /*
@@ -747,7 +760,7 @@ check_all_txz_files(char const *dir_name)
      */
     if (tarball.invalid_dot_files > 0) {
 	warn("txzchk", "%s: found a total of %ju invalidly named dot file%s",
-		       txzpath, tarball.invalid_dot_files, tarball.invalid_dot_files==1?"":"s");
+		       txzpath_path, tarball.invalid_dot_files, tarball.invalid_dot_files==1?"":"s");
     }
 
     /*
@@ -755,7 +768,7 @@ check_all_txz_files(char const *dir_name)
      */
     if (tarball.total_feathers > 0) {
 	warn("txzchk", "%s: found %ju feather%s stuck in the tarball",
-		       txzpath, tarball.total_feathers, tarball.total_feathers==1?"":"s");
+		       txzpath_path, tarball.total_feathers, tarball.total_feathers==1?"":"s");
     }
 }
 
@@ -1366,7 +1379,7 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || txzpath == NULL)
+    if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || txzpath_path == NULL)
     {
 	err(35, __func__, "called with NULL arg(s)");
 	not_reached();
@@ -1391,16 +1404,16 @@ check_tarball(char const *tar, char const *fnamchk)
      * would tell it to expect the extension txt instead of txz).
      */
     if (dbg_allowed(DBG_HIGH)) {
-	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, txzpath);
+	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, txzpath_path);
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = shell_cmd(__func__, true, "% -v 5 -E % -- %", fnamchk, ext, txzpath);
+	exit_code = shell_cmd(__func__, true, "% -v 5 -E % -- %", fnamchk, ext, txzpath_path);
     } else {
-	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, txzpath);
+	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, txzpath_path);
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, txzpath);
+	exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, txzpath_path);
     }
     if (exit_code != 0) {
-	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
+	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath_path, fnamchk, txzpath_path, WEXITSTATUS(exit_code));
 	++tarball.total_feathers;
     } else {
 	fnamchk_okay = true;
@@ -1421,9 +1434,9 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * form pipe to the fnamchk command
 	 */
-	fnamchk_stream = pipe_open(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
+	fnamchk_stream = pipe_open(__func__, true, "% -E % -- %", fnamchk, ext, txzpath_path);
 	if (fnamchk_stream == NULL) {
-	    err(36, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
+	    err(36, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath_path);
 	    not_reached();
 	}
 
@@ -1432,7 +1445,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	readline_len = readline(&dir_name, fnamchk_stream);
 	if (readline_len < 0) {
-	    warn("txzchk", "%s: unexpected EOF from fnamchk", txzpath);
+	    warn("txzchk", "%s: unexpected EOF from fnamchk", txzpath_path);
 	}
 
 	/*
@@ -1441,22 +1454,22 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = pclose(fnamchk_stream);
 	if (ret < 0) {
-	    warnp(__func__, "%s: pclose error on fnamchk stream", txzpath);
+	    warnp(__func__, "%s: pclose error on fnamchk stream", txzpath_path);
 	}
 
 	fnamchk_stream = NULL;
 
 	if (dir_name == NULL || *dir_name == '\0') {
-	    err(37, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath);
+	    err(37, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath_path);
 	    not_reached();
 	}
     }
 
     /* determine size of tarball */
-    tarball.size = file_size(txzpath);
+    tarball.size = file_size(txzpath_path);
     /* report size if too big or !quiet */
     if (tarball.size < 0) {
-	err(38, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
+	err(38, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath_path);
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
@@ -1466,28 +1479,28 @@ check_tarball(char const *tar, char const *fnamchk)
 	      "",
 	      NULL);
 	err(39, __func__, "%s: The compressed tarball size %jd > %jd",
-		 txzpath, (intmax_t)tarball.size, (intmax_t)MAX_TARBALL_LEN);
+		 txzpath_path, (intmax_t)tarball.size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     } else if (!quiet) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = printf("txzchk: %s size of %jd bytes OK\n", txzpath, (intmax_t) tarball.size);
+	ret = printf("txzchk: %s size of %jd bytes OK\n", txzpath_path, (intmax_t) tarball.size);
 	if (ret <= 0)
-	    warnp("txzchk", "unable to tell user how big the tarball %s is", txzpath);
+	    warnp("txzchk", "unable to tell user how big the tarball %s is", txzpath_path);
     }
-    dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath, (intmax_t)tarball.size);
+    dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath_path, (intmax_t)tarball.size);
 
     if (read_from_text_file) {
-	input_stream = fopen(txzpath, "r");
+	input_stream = fopen(txzpath_path, "r");
 	errno = 0;
 	if (input_stream == NULL)
 	{
-	    errp(40, __func__, "fopen of %s failed", txzpath);
+	    errp(40, __func__, "fopen of %s failed", txzpath_path);
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
 	if (ret != 0)
-	    warnp(__func__, "setvbuf failed for %s", txzpath);
+	    warnp(__func__, "setvbuf failed for %s", txzpath_path);
 
     } else {
 	/*
@@ -1500,18 +1513,18 @@ check_tarball(char const *tar, char const *fnamchk)
 	 * first execute the tar command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath);
+	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath_path);
 	if (exit_code != 0) {
 	    errp(41, __func__, "%s -tJvf %s failed with exit code: %d",
-			      tar, txzpath, WEXITSTATUS(exit_code));
+			      tar, txzpath_path, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
 
 	/* now open a pipe to tar command (tar -tJvf) to read from */
-	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
+	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath_path);
 	if (input_stream == NULL) {
 	    err(42, __func__, "popen for reading failed for: %s -tJvf %s",
-			      tar, txzpath);
+			      tar, txzpath_path);
 	    not_reached();
 	}
     }
@@ -1532,10 +1545,10 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	readline_len = readline(&linep, input_stream);
         if (readline_len < 0) {
-	    dbg(DBG_HIGH, "reached EOF of tarball %s", txzpath);
+	    dbg(DBG_HIGH, "reached EOF of tarball %s", txzpath_path);
 	    break;
 	} else if (readline_len == 0) {
-	    dbg(DBG_HIGH, "found empty line in tarball %s", txzpath);
+	    dbg(DBG_HIGH, "found empty line in tarball %s", txzpath_path);
 	    continue;
 	}
 
@@ -1594,7 +1607,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	ret = pclose(input_stream);
     }
     if (ret < 0) {
-	warnp(__func__, "%s: %s error on tar stream", txzpath, read_from_text_file?"fclose":"pclose");
+	warnp(__func__, "%s: %s error on tar stream", txzpath_path, read_from_text_file?"fclose":"pclose");
     }
     input_stream = NULL;
 
@@ -1603,7 +1616,7 @@ check_tarball(char const *tar, char const *fnamchk)
      * now parse the lines, reporting any feathers stuck in the tarball that
      * have to be detected while parsing
      */
-    parse_all_txz_lines(dir_name, txzpath);
+    parse_all_txz_lines(dir_name, txzpath_path);
 
     /*
      * check files list and report any additional feathers stuck in the tarball
@@ -1819,20 +1832,20 @@ alloc_txz_file(char const *path, intmax_t length)
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(50, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
+	errp(50, __func__, "%s: unable to allocate a struct txz_file *", txzpath_path);
 	not_reached();
     }
 
     errno = 0;
     file->filename = strdup(path);
     if (!file->filename) {
-	errp(51, __func__, "%s: unable to strdup filename %s", txzpath, path);
+	errp(51, __func__, "%s: unable to strdup filename %s", txzpath_path, path);
 	not_reached();
     }
 
     file->basename = base_name(path);
     if (!file->basename || *(file->basename) == '\0') {
-	err(52, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
+	err(52, __func__, "%s: unable to strdup basename of filename %s", txzpath_path, path);
 	not_reached();
     }
 
