@@ -2341,6 +2341,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     char *line;			/* Makefile line to parse */
     int rulenum = 0;		/* current rule number */
     char *p;
+    char *saveptr = NULL;	/* for strtok_r */
 
     /*
      * firewall
@@ -2423,7 +2424,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	/*
 	 * split the line into whitespace separated tokens
 	 */
-	for (p = strtok(line, " \t"); p != NULL; p = strtok(NULL, ":")) {
+	for (p = strtok_r(line, " \t", &saveptr); p != NULL; p = strtok_r(NULL, ":", &saveptr)) {
 
 	    /*
 	     * detect all rule

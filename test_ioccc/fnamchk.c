@@ -79,6 +79,7 @@ main(int argc, char *argv[])
     int i;
     bool test_mode = false;	/* true ==> force check to test if it's a test entry filename */
     bool uuid_mode = false;	/* true ==> force check to test if it's a UUID entry filename */
+    char *saveptr = NULL;	/* for strtok_r() */
 
 
     /*
@@ -145,9 +146,9 @@ main(int argc, char *argv[])
     /*
      * first '.' separated token must be entry
      */
-    entry = strtok(filename, ".");
+    entry = strtok_r(filename, ".", &saveptr);
     if (entry == NULL) {
-	err(10, __func__, "first strtok() returned NULL");
+	err(10, __func__, "first strtok_r() returned NULL");
 	not_reached();
     }
     if (strcmp(entry, "entry") != 0) {
@@ -159,7 +160,7 @@ main(int argc, char *argv[])
     /*
      * second '.' separated token must be test or a UUID
      */
-    uuid = strtok(NULL, ".");
+    uuid = strtok_r(NULL, ".", &saveptr);
     if (uuid == NULL) {
 	err(12, __func__, "nothing found after \"entry.\"");
 	not_reached();
@@ -251,7 +252,7 @@ main(int argc, char *argv[])
     /*
      * third '.' separated token must be a valid timestamp
      */
-    timestamp_str = strtok(NULL, ".");
+    timestamp_str = strtok_r(NULL, ".", &saveptr);
     if (timestamp_str == NULL) {
 	err(23, __func__, "nothing found after second '.' separated token of entry number");
 	not_reached();
@@ -270,7 +271,7 @@ main(int argc, char *argv[])
     /*
      * fourth .-separated token must be the filename extension
      */
-    extension = strtok(NULL, ".");
+    extension = strtok_r(NULL, ".", &saveptr);
     if (extension == NULL) {
 	err(26, __func__, "nothing found after third '.' separated token of timestamp");
 	not_reached();
