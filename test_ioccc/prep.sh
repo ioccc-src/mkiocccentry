@@ -383,12 +383,20 @@ if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
 	write_echo
-	if [[ $BUG_REPORT_NOTICES -ne 0 ]]; then
-	    write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	    fi
 	fi
     else
-	if [[ $BUG_REPORT_NOTICES -ne 0 ]]; then
-	    write_echo "All tests PASSED; $BUG_REPORT_NOTICES notices issued."
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "All tests PASSED; $BUG_REPORT_NOTICES notices issued."
+	    fi
 	else
 	    write_echo "All tests PASSED."
 	fi
@@ -406,8 +414,12 @@ else
 	    write_echo "$FAILURE_SUMMARY"
 	fi
 	write_echo ""
-	if [[ $BUG_REPORT_NOTICES -ne 0 ]]; then
-	    write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	    fi
 	fi
 	write_echo ""
 	write_echo "See test_ioccc/test_ioccc.log for more details."
@@ -417,8 +429,12 @@ else
 	    write_echo "$FAILURE_SUMMARY"
 	    write_echo ""
 	fi
-	if [[ $BUG_REPORT_NOTICES -ne 0 ]]; then
-	    write_echo "One or more tests failed; $BUG_REPORT_NOTICES notices issued."
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notice issued."
+	    else
+		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notices issued."
+	    fi
 	else
 	    write_echo "One or more tests failed."
 	fi
