@@ -57,9 +57,9 @@ export TOOLS="
     ./txzchk
     "
 
-export BUG_REPORT_VERSION="0.11 2023-01-11"
+export BUG_REPORT_VERSION="0.12 2023-01-24"
 export FAILURE_SUMMARY=
-export WARNING_SUMMARY=
+export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
 export T_FLAG=""
@@ -67,7 +67,7 @@ export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_flags]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-M make_flags]
 
     -h			    print help and exit
     -V			    print version and exit
@@ -76,6 +76,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-M make_
     -t			    disable make actions (def: run make actions)
     -x			    remove bug report if no problems detected
     -l			    only write to log file
+    -L logfile		    specify logfile name (def: based on date and time)
     -M make_flags	    set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
@@ -88,10 +89,17 @@ Exit codes:
 
 $0 version: $BUG_REPORT_VERSION"
 
+# Determine the name of the log file
+#
+# NOTE: log file does not have an underscore in the name because we want to
+# distinguish it from this script which does have an underscore in it.
+#
+LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:txlM: flag; do
+while getopts :hVv:D:txlL:M: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -108,6 +116,8 @@ while getopts :hVv:D:txlM: flag; do
     x)	X_FLAG="-x"
 	;;
     l)	L_FLAG="-l"
+	;;
+    L)	LOGFILE="$OPTARG"
 	;;
     M)  MAKE_FLAGS="$OPTARG"
 	;;
@@ -126,14 +136,9 @@ while getopts :hVv:D:txlM: flag; do
     esac
 done
 
-# Determine the name of the log file
-#
-# NOTE: log file does not have an underscore in the name because we want to
-# distinguish it from this script which does have an underscore in it.
-#
-LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+# the LOGFILE name will have been either generated or specified by the -L option
+# but now we have to export it and create it.
 export LOGFILE
-
 # attempt to create a writable log file
 #
 rm -f "$LOGFILE"
@@ -494,9 +499,9 @@ get_version_optional()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	    WARNING_SUMMARY="$WARNING_SUMMARY
-	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    NOTICE_SUMMARY="$NOTICE_SUMMARY
+	    NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -510,9 +515,9 @@ get_version_optional()
 
     # report unknown version
     #
-    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND"
-    WARNING_SUMMARY="$WARNING_SUMMARY
-    WARNING: $COMMAND VERSION UNKNOWN"
+    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND"
+    NOTICE_SUMMARY="$NOTICE_SUMMARY
+    NOTICE: $COMMAND VERSION UNKNOWN"
     write_echo ""
     return 0;
 }
@@ -703,9 +708,9 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	    WARNING_SUMMARY="$WARNING_SUMMARY
-	    WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    NOTICE_SUMMARY="$NOTICE_SUMMARY
+	    NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -719,9 +724,9 @@ get_version()
 
     # report unknown version
     #
-    write_echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND"
-    WARNING_SUMMARY="$WARNING_SUMMARY
-    WARNING: $COMMAND VERSION UNKNOWN"
+    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND"
+    NOTICE_SUMMARY="$NOTICE_SUMMARY
+    NOTICE: $COMMAND VERSION UNKNOWN"
     write_echo ""
     return 0;
 }
@@ -1483,7 +1488,7 @@ if [[ -e "./makefile.local" ]]; then
 	fi
 	write_echo "--"
     else
-	write_echo "### NOTICE: Found unreadable makefile.local"
+	write_echo "### WARNING: Found unreadable makefile.local"
     fi
 else
     write_echo "### NOTICE: Makefile has no overriding makefile.local"
@@ -1524,11 +1529,11 @@ write_echo ""
 # final report #
 ################
 
-if [[ ! -z "$WARNING_SUMMARY" ]]; then
+if [[ ! -z "$NOTICE_SUMMARY" ]]; then
     write_echo 1>&2
     write_echo "One or more POSSIBLE issues detected:"
     write_echo ""
-    write_echo "$WARNING_SUMMARY"
+    write_echo "$NOTICE_SUMMARY"
     write_echo ""
     # make it so log file is not deleted even if -x specified
     X_FLAG=""
