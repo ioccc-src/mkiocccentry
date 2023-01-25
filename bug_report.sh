@@ -499,7 +499,7 @@ get_version_optional()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: Notice: unknown version for $COMMAND: trying strings"
+	    write_echo "$0: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
 	    Notice: unknown version for $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
@@ -515,7 +515,7 @@ get_version_optional()
 
     # report unknown version
     #
-    write_echo "$0: Notice: unknown version for $COMMAND"
+    write_echo "$0: unknown version for $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
     $0: Notice: $COMMAND version unknown"
     write_echo ""
@@ -708,7 +708,7 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: Notice: unknown version for $COMMAND: trying strings"
+	    write_echo "$0: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
 	    Notice: unknown version for $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
@@ -724,7 +724,7 @@ get_version()
 
     # report unknown version
     #
-    write_echo "$0: Notice: unknown version for $COMMAND"
+    write_echo "$0: unknown version for $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
     $0: Notice: $COMMAND version unknown"
     write_echo ""
