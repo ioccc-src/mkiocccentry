@@ -46,6 +46,45 @@
  */
 #define JNUM_CHK_VERSION "0.8 2022-05-01"      /* format: major.minor YYYY-MM-DD */
 
+/*
+ * usage message
+ *
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
+ */
+static const char * const usage_msg =
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-S]\n"
+    "\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-J level\tset JSON verbosity level (def level: %d)\n"
+    "\t-V\t\tprint version string and exit\n"
+    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\t-S\t\tstrict testing for all struct json_number elements\n"
+    "\t\t\t    (def: test only 8, 16, 32, 64 bit and max size signed and unsigned integer types)\n"
+    "\t\t\t    (def: test floating point with match to only 1 part in 4.1943E+06)\n"
+    "\n"
+    "\tNOTE: The -S mode is for informational purposes only, and may fail\n"
+    "\t      on your system due to hardware and/or other system differences.\n"
+    "\t      The IOCCC mkiocccentry repo does not need -S to pass in order\n"
+    "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
+    "\n"
+    "Exit codes:\n"
+    "    0\t\tall is OK\n"
+    "    1\t\twithout -S given and JSON number conversion test suite failed\n"
+    "    2\t\t-S given and JSON number conversion test suite failed\n"
+    "    3\t\t-h and help string printed or -V and version string printed\n"
+    "    4\t\tcommand line error\n"
+    "    >=10\tinternal error\n"
+    "\n"
+    "jnum_chk version: %s\n";
+
+
+
+/*
+ * forward declarations
+ */
+static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 int
 main(int argc, char *argv[])

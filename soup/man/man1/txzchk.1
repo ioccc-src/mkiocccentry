@@ -26,11 +26,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "23 January 2023" "txzchk" "IOCCC tools"
+.TH txzchk 1 "24 January 2023" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] tarball_path
+\fBtxzchk\fP [\fB\-h\fP] [\fB\-v\fP \fIlevel\fP] [\fB\-q\fP] [\fB\-w\fP] [\fB\-V\fP] [\fB\-t\fP \fItar\fP] [\fB\-F\fP \fIfnamchk\fP] [\fB\-T\fP] [\fB\-E\fP \fIext\fP] \fItarball_path\fP
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0, \fBmkiocccentry\fP will exit with an error.

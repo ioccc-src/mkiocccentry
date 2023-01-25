@@ -130,71 +130,10 @@
 #define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
 
 
-/*
- * usage message
- *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
- */
-static const char * const usage_msg0 =
-    "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
-    "\noptions:\n"
-    "\t-h\t\tprint help message and exit\n"
-    "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-J level\tset JSON verbosity level (def level: %d)\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
-    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-V\t\tprint version string and exit\n"
-    "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
-static const char * const usage_msg1 =
-    "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-c cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l ls\t\tpath to ls executable (def: %s)\n"
-    "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
-    "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
-static const char * const usage_msg2 =
-    "\t-C chkentry	path to chkentry executable (def: %s)\n";
-static const char * const usage_msg3 =
-    "\t-a answers\twrite answers to a file for easier updating of an entry\n"
-    "\t-A answers\twrite answers file even if it already exists\n"
-    "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
-    "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
-    "\n"
-    "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your entry\n";
-static const char * const usage_msg4 =
-    "\n"
-    "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
-    "\n"
-    "\tremarks.md\tRemarks about your entry in markdown format\n"
-    "\t\t\tNOTE: The following is a guide to markdown:\n"
-    "\n"
-    "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
-    "\n"
-    "\t[file ...]\textra data files to include with your entry\n"
-    "\n"
-    "Exit codes:\n"
-    "     0   all OK\n"
-    "     2   -h and help string printed or -V and version string printed\n"
-    "     3   invalid command line, invalid option or option missing an argument\n"
-    " >= 10   internal error\n"
-    "\n"
-    "mkiocccentry version: %s\n";
-
-/*
- * globals
- */
-static bool need_confirm = true;	/* true ==> ask for confirmations */
-static bool need_hints = true;		/* true ==> show hints */
-static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
-static FILE *input_stream = NULL;	/* input file: stdin or answers file  */
-static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
-
 
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program) \
-		__attribute__((noreturn));
 static void warn_empty_prog(char const *prog_c);
 static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);

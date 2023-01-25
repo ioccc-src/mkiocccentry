@@ -65,15 +65,58 @@
  */
 static intmax_t sum_check;			/* negative of previous sum */
 static intmax_t count_check;			/* negative of previous count */
-
-static bool quiet = false;				/* true ==> quiet mode */
-
+static bool quiet = false;			/* true ==> quiet mode */
 static char const *tarball_path = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */
 static bool read_from_text_file = false;	/* true ==> assume tarball_path is a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 static char const *tok_sep = " \t";		/* token separators for strtok_r */
 static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
+
+/*
+ * txzchk specific structs
+ */
+static struct txz_line *txz_lines;		/* all the lines read */
+static struct tarball tarball;			/* all the information collected from tarball_path */
+static struct txz_file *txz_files;		/* linked list of the files in the tarball */
+
+/*
+ * usage message
+ *
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
+ */
+static const char * const usage_msg =
+    "usage: %s [-h] [-v level] [-q] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
+    "\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\t-w\t\tshow warning messages even if -q would normally disable them\n"
+    "\t-V\t\tprint version string and exit\n"
+    "\n"
+    "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
+    "\t-F fnamchk\tpath to tool that checks if tarball_path is a valid compressed tarball name\n"
+    "\t\t\tfilename (def: %s)\n\n"
+    "\t-T\t\tassume tarball_path is a text file with tar listing (for testing different formats)\n"
+    "\t-E ext\t\tchange extension to test (def: txz)\n"
+    "\n"
+    "\ttarball_path\tpath to an IOCCC compressed tarball\n"
+    "\n"
+    "Exit codes:\n"
+    "     0   no feathers stuck in tarball  :-)\n"
+    "     1   tarball was successfully parsed :-) but there's at least one feather stuck in it  :-(\n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   invalid command line, invalid option or option missing an argument\n"
+    " >= 10   internal error has occurred or unknown tar listing format has been encountered\n"
+    "\n"
+    "txzchk version: %s\n";
+
+
+/*
+ * forward declarations
+ */
+static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
 int

@@ -47,34 +47,5 @@
 #include "dyn_array.h"
 
 
-/*
- * usage message
- *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
- */
-static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V]\n"
-    "\n"
-    "\t-h\t\tprint help message and exit\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-V\t\tprint version string and exit\n"
-    "\n"
-    "\n"
-    "Exit codes:\n"
-    "    0\tall is OK\n"
-    "    1\ttest suite failed\n"
-    "    2\t-h and help string printed or -V and version string printed\n"
-    "    3\tcommand line error\n"
-    "    >=4\tinternal error\n"
-    "\n"
-    "dyn_array library version: %s\n"
-    "dyn_test version: %s\n";
-
-
-/*
- * external allocation functions
- */
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-
 
 #endif		/* INCLUDE_DYN_TEST_H */

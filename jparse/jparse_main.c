@@ -36,6 +36,38 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
+/*
+ * usage message
+ */
+static const char * const usage_msg =
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg\n"
+    "\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-J level\tset JSON verbosity level (def level: %d)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-V\t\tprint version string and exit\n"
+    "\t-s\t\targ is a string (def: arg is a filename)\n"
+    "\n"
+    "\targ\t\tparse JSON for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
+    "\n"
+    "Exit codes:\n"
+    "    0\tJSON is valid\n"
+    "    1\tJSON is invalid\n"
+    "    2\t-h and help string printed or -V and version string printed\n"
+    "    3\tcommand line error\n"
+    "    >=4\tinternal error\n"
+    "\n"
+    "JSON parser version: %s\n"
+    "jparse version: %s\n";
+
+
+/*
+ * static functions
+ */
+static void usage(int exitcode, char const *str, char const *prog) \
+		__attribute__((noreturn));
+
 
 int
 main(int argc, char **argv)

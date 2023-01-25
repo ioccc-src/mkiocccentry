@@ -43,42 +43,12 @@
 #include "../../jparse/json_util.h"
 
 
-/*
- * usage message
- *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
- */
-static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-S]\n"
-    "\n"
-    "\t-h\t\tprint help message and exit\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-J level\tset JSON verbosity level (def level: %d)\n"
-    "\t-V\t\tprint version string and exit\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
-    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-S\t\tstrict testing for all struct json_number elements\n"
-    "\t\t\t    (def: test only 8, 16, 32, 64 bit and max size signed and unsigned integer types)\n"
-    "\t\t\t    (def: test floating point with match to only 1 part in 4.1943E+06)\n"
-    "\n"
-    "\tNOTE: The -S mode is for informational purposes only, and may fail\n"
-    "\t      on your system due to hardware and/or other system differences.\n"
-    "\t      The IOCCC mkiocccentry repo does not need -S to pass in order\n"
-    "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
-    "\n"
-    "Exit codes:\n"
-    "    0\t\tall is OK\n"
-    "    1\t\twithout -S given and JSON number conversion test suite failed\n"
-    "    2\t\t-S given and JSON number conversion test suite failed\n"
-    "    3\t\t-h and help string printed or -V and version string printed\n"
-    "    4\t\tcommand line error\n"
-    "    >=10\tinternal error\n"
-    "\n"
-    "jnum_chk version: %s\n";
-
 
 /*
  * globals
+ *
+ * Note that the include guard must be here and the quiet must also be in this
+ * file. As well the JNUM_TEST must be defined in jnum_test.c.
  */
 #if !defined(JNUM_TEST)
 static bool quiet = false;				/* true ==> quiet mode */
@@ -100,7 +70,6 @@ static void check_val(bool *testp, char const *type, int testnum, bool size_a, b
 static void check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
 static void check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 		       long double val_a, long double val_b, bool int_a, bool int_b, bool strict);
-static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 #endif
 
 #endif /* INCLUDE_JNUM_CHK_H */

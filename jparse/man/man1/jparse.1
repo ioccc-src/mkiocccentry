@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 1 "19 January 2023" "jparse" "IOCCC tools"
+.TH jparse 1 "24 January 2023" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
-\fBjparse\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] arg
+\fBjparse\fP [\fB\-h\fP] [\fB\-v level\fP] [\fB\-J\fP \fIlevel\fP] [\fB\-q\fP] [\fB\-V\fP] [\fB\-s\fP] \fIarg\fP
 .SH DESCRIPTION
 \fBjparse\fP parses a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option, reporting if it is valid or invalid JSON.
 Depending on the JSON verbosity level it will also show more information.
@@ -49,7 +49,10 @@ invalid JSON
 2
 \fB\-h\fP or \fB\-V\fP used and help string or version string printed.
 .TQ
->=3
+3
+command line error
+.TQ
+>=4
 some error occurred
 .SH NOTES
 .PP
