@@ -6,7 +6,7 @@
 #
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# with some minor improvements by:
+# with improvements by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -21,7 +21,8 @@
 #
 export FAILURE_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="0.2 2023-01-04"
+export PREP_VERSION="0.3 2023-01-24"
+export BUG_REPORT_NOTICES="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
     -h              print help and exit
@@ -125,6 +126,14 @@ if [[ -n "$LOGFILE" ]]; then
     fi
 fi
 
+# Determine the name of the bug_report.sh log file
+#
+# NOTE: this log file does not have an underscore in the name because we want to
+# distinguish it from this script which does have an underscore in it.
+#
+BUG_REPORT_LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+export BUG_REPORT_LOGFILE
+
 # write_echo - write a message to either the log file or both the log file and
 # stdout
 #
@@ -178,7 +187,7 @@ exec_command()
 # usage:
 #	make_action code rule
 #
-#	code - exit code of rule fails
+#	code - exit code if rule fails
 #	rule - Makefile rule to call
 #
 make_action() {
@@ -253,6 +262,90 @@ make_action() {
     return 0;
 }
 
+# make bug report
+#
+# usage:
+#	make_bug_report code
+#
+#	code - exit code if script fails
+#
+make_bug_report() {
+
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	exit 9
+    fi
+    local CODE="$1"
+
+    # announce pre-action
+    #
+    if [[ -z "$LOGFILE" ]]; then
+	write_echo "=-=-= START: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+    else
+	write_echo_n "make_action $CODE bug_report-txl -L $BUG_REPORT_LOGFILE "
+    fi
+
+    # perform action
+    #
+    exec_command "./bug_report.sh" -t -x -l -L "$BUG_REPORT_LOGFILE"
+    status="$?"
+
+    # First if the bug report log still exists, get how many notices were
+    # issued. We will use this at the final report of the script.
+    if [[ -e "$BUG_REPORT_LOGFILE" ]]; then
+	BUG_REPORT_NOTICES="$(grep -cE "^[[:space:]]+NOTICE:" "$BUG_REPORT_LOGFILE")"
+    fi
+    if [[ $status -ne 0 ]]; then
+
+	# process a bug_report.sh failure (i.e. error or actual issue
+	# detected NOT ONLY a warning)
+	#
+	EXIT_CODE="$CODE"
+
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	make bug_report-txl $EXIT_CODE: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
+	if [[ -z "$LOGFILE" ]]; then
+	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
+	fi
+	if [[ -n $E_FLAG ]]; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "$0: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo
+		write_echo "=-=-= FAIL: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+		write_echo
+	    else
+		write_echo "ERROR exit code $status"
+	    fi
+	    exit "$EXIT_CODE"
+	else
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "$0: Warning: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo
+		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "ERROR exit code $status"
+	    fi
+	fi
+    # announce post-action
+    #
+    else
+	if [[ -z "$LOGFILE" ]]; then
+	    write_echo
+	    write_echo "=-=-= PASS: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+	    write_echo
+	else
+	    write_echo "OK"
+	fi
+    fi
+    return 0;
+}
+
+
 # perform make actions
 #
 if [[ -z "$LOGFILE" ]]; then
@@ -276,7 +369,7 @@ make_action 20 load_json_ref
 make_action 21 use_json_ref
 make_action 22 clean_generated_obj
 make_action 23 all
-make_action 24 bug_report-txl
+make_bug_report 24
 make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky
@@ -285,12 +378,28 @@ make_action 29 check_man
 make_action 30 all
 make_action 31 test
 
+
 if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
 	write_echo
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	    fi
+	fi
     else
-	write_echo "All tests PASSED."
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "All tests PASSED; $BUG_REPORT_NOTICES notices issued."
+	    fi
+	else
+	    write_echo "All tests PASSED."
+	fi
 	write_echo ""
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
@@ -303,17 +412,33 @@ else
 	if [[ -n "$FAILURE_SUMMARY" ]]; then
 	    write_echo "One or more tests failed:"
 	    write_echo "$FAILURE_SUMMARY"
-	    write_echo ""
 	fi
+	write_echo ""
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	    else
+		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+	    fi
+	fi
+	write_echo ""
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     else
 	if [[ -n "$FAILURE_SUMMARY" ]]; then
 	    write_echo "One or more tests failed:"
 	    write_echo "$FAILURE_SUMMARY"
 	    write_echo ""
+	fi
+	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
+	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
+		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notice issued."
+	    else
+		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notices issued."
+	    fi
 	else
 	    write_echo "One or more tests failed."
 	fi
+	write_echo
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
 fi
