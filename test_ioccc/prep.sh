@@ -398,7 +398,7 @@ if [[ -n "$LOGFILE" ]]; then
 	write_logfile
 	write_logfile "=-=-= Summary of prep.sh notices follow:"
 	write_logfile
-	NOTICE_SET=$(grep -E "[[:space:]]+Notice::[[:space:]]" "$LOGFILE")
+	NOTICE_SET=$(grep -E "[[:space:]]+Notice:[[:space:]]" "$LOGFILE")
 	write_logfile "$NOTICE_SET"
 	write_logfile
 	write_logfile "=-=-= End of of prep.sh notice summary"
@@ -418,12 +418,15 @@ if [[ -e "$BUG_REPORT_LOGFILE" ]]; then
 	write_logfile
 	write_logfile "=-=-= Summary of make_bug_report notices follow:"
 	write_logfile
-	NOTICE_SET=$(grep -E "[[:space:]]+Notice::[[:space:]]" "$BUG_REPORT_LOGFILE")
+	NOTICE_SET=$(grep -E "[[:space:]]+Notice:[[:space:]]" "$BUG_REPORT_LOGFILE")
 	write_logfile "$NOTICE_SET"
 	write_logfile
 	write_logfile "=-=-= End of of make_bug_report notice summary"
     fi
 fi
+
+# Add any logfile notice count to the bug report log notice count.
+#
 ((NOTICE_COUNT=NOTICE_COUNT+LOFILE_NOTICE_COUNT))
 
 if [[ $EXIT_CODE -eq 0 ]]; then
@@ -447,8 +450,6 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 	else
 	    write_echo "All tests PASSED."
 	fi
-	write_echo ""
-	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
     # We have logged notices, no errors so we can remove the bug report log file now.
     rm -f "$BUG_REPORT_LOGFILE"
@@ -487,7 +488,7 @@ else
 	else
 	    write_echo "One or more tests failed."
 	fi
-	write_echo
+	write_echo ""
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
 fi

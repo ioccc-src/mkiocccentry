@@ -499,9 +499,9 @@ get_version_optional()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: Notice: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    Notice: unknown version for $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -515,9 +515,9 @@ get_version_optional()
 
     # report unknown version
     #
-    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND"
+    write_echo "$0: Notice: unknown version for $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
-    Notice: $COMMAND VERSION UNKNOWN"
+    $0: Notice: $COMMAND version unknown"
     write_echo ""
     return 0;
 }
@@ -708,9 +708,9 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: Notice: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    Notice: unknown version for $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -724,9 +724,9 @@ get_version()
 
     # report unknown version
     #
-    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND"
+    write_echo "$0: Notice: unknown version for $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
-    Notice: $COMMAND VERSION UNKNOWN"
+    $0: Notice: $COMMAND version unknown"
     write_echo ""
     return 0;
 }

@@ -550,26 +550,29 @@ prep: test_ioccc/prep.sh
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
-	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
-		echo; \
-		echo "make $@: see ${BUILD_LOG} for build details"; \
-		echo; \
-		exit $$EXIT_CODE; \
+	        echo "make $@: ERROR: ./test_ioccc/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
 	    fi
 
 # a slower version of prep that does not write to a log file so one can see the
 # full details.
+#
 slow_prep: test_ioccc/prep.sh
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
-	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
-		echo; \
-		echo "make $@: see ${BUILD_LOG} for build details"; \
-		echo; \
-		exit $$EXIT_CODE; \
+	        echo "make $@: ERROR: ./test_ioccc/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
 	    fi
 
 
@@ -594,11 +597,12 @@ release: test_ioccc/prep.sh
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
-	        echo "make $@: ERROR: prep.sh exit code: $$EXIT_CODE"; \
-		echo; \
-		echo "make $@: see ${BUILD_LOG} for build details"; \
-		echo; \
-		exit $$EXIT_CODE; \
+	        echo "make $@: ERROR: ./test_ioccc/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
 	    fi
 
 # make parser
