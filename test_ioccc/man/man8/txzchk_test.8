@@ -26,11 +26,28 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk_test 8 "21 January 2023" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "25 January 2023" "txzchk_test" "IOCCC tools"
 .SH NAME
-txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
+.B txzchk_test.sh 
+\- test suite for
+.B txzchk(1)
 .SH SYNOPSIS
-\fBtxzchk_test.sh\fP [\-h] [\-V] [\-v level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree] [\-Z topdir] [\-k]
+.B txzchk_test.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-t
+.IR txzchk \|]
+.RB [\| \-T
+.IR tar \|]
+.RB [\| \-F
+.IR fnamchk \|]
+.RB [\| \-d
+.IR txzchk_tree \|]
+.RB [\| \-Z
+.IR topdir \|]
+.RB [\| \-k \|]
 .SH DESCRIPTION
 \fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo\-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
 For the bad files it checks that the issues reported are the same as expected.
@@ -43,43 +60,79 @@ Specifically it must support \fB-J\fP and the \fBv7\fP format.
 Thus if a non-empty tarball can be created by \fBtar --format=v7 -cJf\fP all is good.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Print help and exit.
 .TP
-\fB\-V\fP
+.B \-V
 Print version and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to \fIlevel\fP for the script.
+.BI \-v\  level
+Set verbosity level to
+.I level
+for the script.
 .TP
-\fB\-t \fItxzchk\fP\fP
-Set \fBtxzchk\fP path to \fItxzchk\fP.
+.BI \-t\  txzchk
+Set
+.B txzchk
+path to 
+.I txzchk\c
+\&.
 .TP
-\fB\-T \fItar\fP\fP
-Set \fBtar\fP path to \fItar\fP.
+.BI \-T\  tar
+Set 
+.B tar
+path to 
+.I tar\c
+\&.
 .TP
-\fB\-F\fP \fIfnamchk\fP
-Set \fBfnamchk\fP path to \fIfnamchk\fP.
-\fBtxzchk\fP uses \fBfnamchk\fP to test if the tarball is validly named and if the files listed are in the correct directory.
+.BI \-F\  fnamchk
+Set
+.B fnamchk
+path to
+.I fnamchk\c
+\&.
+.B txzchk
+uses
+.B fnamchk
+to test if the tarball is validly named and if the files listed are in the correct directory.
 .TP
-\fB\-d\fP \fItxzchk_tree\fP
-Set path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo\-tarballs, to \fItxzchk_tree\fP.
+.BI \-d\  txzchk_tree
+Set path to the directory with the expected subdirectories 
+.I good
+and
+.I bad
+each containing text files of good and bad pseudo\-tarballs, to
+.I txzchk_tree\c
+\&.
 As already noted, the \fIbad\fP subdirectory also has error files to compare against the output of \fBtxzchk(1)\fP, in order to make sure that the failure is the correct failure.
 .TP
-\fB\-Z\fP \fItopdir\fP
+.BI \-Z\  topdir
 Declare the top level directory of this repository.
-The \fBtopdir\fP directory must contain the source file \fImkiocccentry.c\fP.
-By default, the source file \fImkiocccentry.c\fP is searched for in the current directory,
-and then the parent of current directory.
+The 
+.B topdir
+directory must contain the source file
+.I mkiocccentry.c\c
+\&.
+By default, the source file
+.I mkiocccentry.c
+is searched for in the current directory and then the parent of current directory.
 .sp 1
-If \fB\-Z\fP \fItopdir\fP is used on the command line, then the source file \fImkiocccentry.c\fP need not exist
-in the \fBtopdir\fP directory.
-If \fB\-Z\fP \fItopdir\fP is not used on the command line, and the source file \fImkiocccentry.c\fP
-is not found in the current directory or the parent of current directory,
-then this command exits as if there was a command line error.
+If
+.BI \-Z\  topdir
+is used on the command line, then the source file
+.I mkiocccentry.c
+need not exist in the
+.B topdir
+directory.
+If
+.BI \-Z\   topdir
+is not used on the command line, and the source file
+.I mkiocccentry.c
+is not found in the current directory or the parent of current directory, then this command exits as if there was a command line error.
 .sp 1
-Once the \fBtopdir\fP directory is established,
-this command moves to that directory.
+Once the
+.B topdir
+directory is established, this command moves to that directory.
 .TP
 \fB\-k\fP
 Keep temporary files on exit.
@@ -140,4 +193,4 @@ Perhaps there should be more tests done with the exit code of \fBtxzchk(1)\fP bu
 It is hoped that this will make the script harder to break than it is to have feathers in tar but if you can break it please report an issue on the GitHub issues page.
 See \fBtxzchk(1)\fP for more details on this.
 .SH SEE ALSO
-\fBtxzchk(1)\fP, \fBtxzchk_test(8)\fP and \fBfnamchk(1)\fP
+\fBtxzchk(1)\fP, \fBtxzchk_test(8)\fP, \fBfnamchk(1)\fP

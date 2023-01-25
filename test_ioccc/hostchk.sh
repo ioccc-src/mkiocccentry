@@ -64,15 +64,15 @@ fi
 export HOSTCHK_VERSION="0.3 2022-10-27"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f] [-Z topdir]
 
-    -h			    print help and exit
-    -V			    print version and exit
-    -v level		    set verbosity level for this script: (def level: 0)
-    -D dbg_level	    set verbosity level for tests (def: level: 0)
-    -c cc		    path to compiler (def: $CC)
-    -w work_dir		    use an explicit work directory (def: use a temporary directory)
+    -h			    Print help and exit
+    -V			    Print version and exit
+    -v level		    Set verbosity level for this script: (def level: 0)
+    -D dbg_level	    Set verbosity level for tests (def: level: 0)
+    -c cc		    Path to compiler (def: $CC)
+    -w work_dir		    Use an explicit work directory (def: use a temporary directory)
 				NOTE: The work_dir cannot exist
-    -f			    faster check (def: run slower for better diagnostics)
-    -Z topdir		    top level build directory (def: try . or ..)
+    -f			    Faster check (def: run slower for better diagnostics)
+    -Z topdir		    Top level build directory (def: try . or ..)
 
 Exit codes:
      0   all OK
