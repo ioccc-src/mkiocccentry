@@ -179,6 +179,7 @@ static const char * const usage_msg =
     "\t\t\tfilename (def: %s)\n\n"
     "\t-T\t\tassume tarball_path is a text file with tar listing (for testing different formats)\n"
     "\t-E ext\t\tchange extension to test (def: txz)\n"
+    "\n"
     "\ttarball_path\tpath to an IOCCC compressed tarball\n"
     "\n"
     "Exit codes:\n"
