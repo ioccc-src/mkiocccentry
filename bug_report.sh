@@ -511,14 +511,20 @@ get_version_optional()
 		return
 	    fi
 	fi
-    fi
 
-    # report unknown version
+	# report unknown version
+	#
+	write_echo "$0: unknown version for optional command: $COMMAND"
+	NOTICE_SUMMARY="$NOTICE_SUMMARY
+	$0: Notice: unknown version for optional command: $COMMAND"
+	write_echo ""
+
+    # mention that an optional command is not found or not executable
     #
-    write_echo "$0: unknown version for $COMMAND"
-    NOTICE_SUMMARY="$NOTICE_SUMMARY
-    $0: Notice: $COMMAND version unknown"
-    write_echo ""
+    else
+	write_echo "$0: optional command is not found or not executable: $COMMAND"
+	write_echo ""
+    fi
     return 0;
 }
 
@@ -720,14 +726,22 @@ get_version()
 		return
 	    fi
 	fi
-    fi
 
-    # report unknown version
+	# report unknown version
+	#
+	write_echo "$0: unknown version for required command: $COMMAND"
+	NOTICE_SUMMARY="$NOTICE_SUMMARY
+	$0: Notice: unknown version for required command: $COMMAND"
+	write_echo ""
+
+    # notice that a required command is not found or not executable
     #
-    write_echo "$0: unknown version for $COMMAND"
-    NOTICE_SUMMARY="$NOTICE_SUMMARY
-    $0: Notice: $COMMAND version unknown"
-    write_echo ""
+    else
+	write_echo "$0: required command is not found or is not executable: $COMMAND"
+	NOTICE_SUMMARY="$NOTICE_SUMMARY
+	Notice: required command is not found or is not executable: $COMMAND"
+	write_echo ""
+    fi
     return 0;
 }
 
