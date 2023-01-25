@@ -53,6 +53,40 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
+/*
+ * usage message
+ *
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
+ */
+static const char * const usage_msg =
+    "usage: %s [-h] [-v level] [-q] [-V] [-E ext] [-t|-u] filepath\n"
+    "\n"
+    "\t-h\t\t\tprint help message and exit\n"
+    "\t-v level\t\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-V\t\t\tprint version string and exit\n"
+    "\t-E ext\t\t\tchange extension to test (def: txz)\n"
+    "\t-t\t\t\tfilename must match test entry filename\n"
+    "\t-u\t\t\tfilename must match real entry filename\n"
+    "\n"
+    "\t\tNOTE: -t and -u cannot be used together.\n\n"
+    "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
+    "\n"
+    "Exit codes:\n"
+    "     0   all OK\n"
+    "     1   \n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   command line error\n"
+    "	  4   first '-' separated token length != %ju\n"
+    "	 11   second '-' separated token length != %ju\n"
+    "  >=10   internal error\n"
+    "fnamchk version: %s\n";
+
+
+/*
+ * forward declarations
+ */
+static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
 int

@@ -47,6 +47,41 @@
  */
 #define JNUM_GEN_VERSION "0.8 2023-01-22"	/* format: major.minor YYYY-MM-DD */
 
+/*
+ * usage message
+ *
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
+ */
+static const char * const usage_msg =
+    "usage: %s [-h] [-v level] [-V] [-q] filename\n"
+    "\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-V\t\tprint version string and exit\n"
+    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\n"
+    "\tfilename\tfile containing JSON number test cases\n"
+    "\n"
+    "Exit codes:\n"
+    "\t0\t\tall is OK\n"
+    "\t1\t\tfilename does not exist or is not a readable file\n"
+    "\t2\t\t-h and help string printed or -V and version string printed\n"
+    "\t3\t\tcommand line error\n"
+    "\t>=10\tinternal error\n"
+    "\n"
+    "jnum_gen version: %s\n";
+
+/*
+ * globals
+ */
+static bool quiet = false;			/* true ==> quiet mode */
+
+/*
+ * forward declarations
+ */
+static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
+
 
 int
 main(int argc, char *argv[])

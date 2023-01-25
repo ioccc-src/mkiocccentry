@@ -432,7 +432,7 @@ get_version_optional()
 	# An important note is that what(1) might not get the correct information.
 	# For instance running it on bmake(1) I see:
 	#
-	#	$ what ./bmake
+	#   $ what ./bmake
 	#   ./bmake:
 	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
 	#
@@ -648,7 +648,7 @@ get_version()
 	# An important note is that what(1) might not get the correct information.
 	# For instance running it on bmake(1) I see:
 	#
-	#	$ what ./bmake
+	#   $ what ./bmake
 	#   ./bmake:
 	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
 	#
@@ -801,7 +801,7 @@ get_version_minimal()
 	# An important note is that what(1) might not get the correct information.
 	# For instance running it on bmake(1) I see:
 	#
-	#	$ what ./bmake
+	#   $ what ./bmake
 	#   ./bmake:
 	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
 	#

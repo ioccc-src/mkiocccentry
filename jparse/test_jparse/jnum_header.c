@@ -25,6 +25,12 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+/*
+ * NOTE: this MUST be defined in this file _prior_ to including jnum_chk.h, as
+ * we need access to the quiet boolean in that file but we don't want to declare
+ * it, only use it. An inverse check and an extern, or even just an extern in
+ * the source file, might also work, of course.
+ */
 #define JNUM_TEST
 
 /*

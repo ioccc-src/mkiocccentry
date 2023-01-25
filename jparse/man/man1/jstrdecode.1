@@ -9,11 +9,22 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "29 October 2022" "jstrdecode" "IOCCC tools"
+.TH jstrdecode 1 "25 January 2023" "jstrdecode" "IOCCC tools"
 .SH NAME
-\fBjstrdecode\fP \- decode JSON encoded strings
+.B jstrdecode
+\- decode JSON encoded strings
 .SH SYNOPSIS
-\fBjstrdecode\fP [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
+.B jstrdecode
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.RB [\| \-t \|]
+.RB [\| \-n \|]
+.RB [\| \-Q \|]
+.RI [\| string
+.IR ... \|]
 .SH DESCRIPTION
 .B jstrdecode
 decodes JSON encoded strings given on the command line.
@@ -21,25 +32,27 @@ If given the \fB\-t\fP option it performs a test on the JSON decode and encode f
 By default the program reads from \fBstdin\fP.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to \fIlevel\fP.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-q\fP
+.B \-q
 Suppresses some of the output (def: not quiet).
 .TP
-\fB\-V\fP
+.B \-V
 Show version and exit.
 .TP
-\fB\-t\fP
+.B \-t
 Run tests on the JSON decode/encode functions.
 .TP
-\fB\-n\fP
+.B \-n
 Do not output a newline after the decode function.
 .TP
-\fB\-Q\fP
+.B \-Q
 Enclose output in quotes.
 .SH EXIT STATUS
 .TP

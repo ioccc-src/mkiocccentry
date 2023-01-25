@@ -9,26 +9,38 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH reset_tstamp.sh 8 "20 January 2023" "reset_tstamp.sh" "IOCCC tools"
+.TH reset_tstamp.sh 8 "25 January 2023" "reset_tstamp.sh" "IOCCC tools"
 .SH NAME
-reset_tstamp \- reset the minimum timestamp \fBMIN_TIMESTAMP\fP
+.B reset_tstamp.sh
+\- reset the minimum timestamp \fBMIN_TIMESTAMP\fP
 .SH SYNOPSIS
-\fBreset_tstamp.sh\fP [\-h] [\-V] [\-v level] [\-l limit_ioccc.h]
+.B reset_tstamp.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-l
+.IR limit_ioccc.h \|]
 .SH DESCRIPTION
-\fBreset_tstamp.sh\fP will reset the minimum timestamp allowed for entries to the contest.
+.B reset_tstamp.sh
+will reset the minimum timestamp allowed for entries to the contest.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
-\fB\-V\fP
+.B \-V
 Print version and exit.
 .TP
-\fB\-v\fP
-Set verbosity level.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-l\fP
-Specify limit file.
+.BI \-l\  limit.sh
+Set limit file to
+.I limit.sh\c
+\&.
 .SH EXIT STATUS
 .TP
 0

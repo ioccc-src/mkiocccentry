@@ -9,11 +9,25 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry_test.sh 8 "21 January 2023" "chkentry_test.sh" "IOCCC tools"
+.TH chkentry_test.sh 8 "25 January 2023" "chkentry_test.sh" "IOCCC tools"
 .SH NAME
-chkentry_test.sh \- test chkentry on good and bad auth.json and info.json files
+.B chkentry_test.sh
+\- test chkentry on good and bad auth.json and info.json files
 .SH SYNOPSIS
-\fBchkentry_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-c chkentry] [\-d json_tree]
+.B chkentry_test.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-D
+.IR dbg_level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-c
+.IR chkentry \|]
+.RB [\| \-d
+.IR json_tree \|]
 .SH DESCRIPTION
 \fBchkentry_test.sh\fP tests each file in the \fItest_JSON/auth.json\fP and \fItest_JSON/info.json\fP subdirectories
 It uses \fBfind(1)\fP to look under the JSON tree for good and bad files that must pass or fail respectively.
@@ -21,30 +35,40 @@ The files that must pass are in the subdirectory called \fIgood\fP and the files
 It keeps a log of all the tests in \fIchkentry_test.log\fP for later inspection.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-print help and exit.
+.B \-h
+Print help and exit.
 .TP
-\fB\-V\fP
-print version and exit.
+.B \-V
+Print version and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-set verbosity level to \fIlevel\fP.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-D \fIlevel\fP\fP
-set debug level to \fIlevel\fP.
+.BI \-D\  level
+Set debug level to 
+.I level\c
+\&.
 .TP
-\fB\-J \fIlevel\fP\fP
-set JSON verbosity level to \fIlevel\fP.
+.BI \-J\  level
+Set JSON verbosity level to 
+.I level\c
+\&.
 .TP
-\fB\-q\fP
-set quiet mode.
+.B \-q
+Set quiet mode.
 This will be passed to the JSON parser.
 .TP
-\fB\-c \fIchkentry\fP\fP
-set path to chkentry to \fIchkentry\fP.
+.BI \-c\  chkentry
+Set path to chkentry to
+.I chkentry\c
+\&.
 .TP
-\fB\-d \fIjson_tree\fP\fP
-set json tree to look for good and bad files under to \fIjson_tree\fP.
+.BI \-d\  json_tree
+Set json tree to look for good and bad files under to 
+.I json_tree\c
+\&.
 .SH EXIT STATUS
 .TP
 0

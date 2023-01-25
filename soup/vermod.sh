@@ -33,9 +33,9 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
     -i limit.sh	    use limit.sh to verify new version (def: $LIMIT_SH)
 
     -o		    verify old version (def: verify new version)
-    -F		    force change, even if it cannot be verified (def: reject an unverified change)
+    -F		    force change even if verification fails (def: reject unverified changes)
 
-    -Q		    do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
+    -Q		    do not double quote string (def: add double quotes)
 
     -n		    no op: change no files (def: change files)
     -l		    list files that change/will change (def: do not list)

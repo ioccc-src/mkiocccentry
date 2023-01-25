@@ -9,39 +9,62 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH prep.sh 8 "21 January 2023" "prep.sh" "IOCCC tools"
+.TH prep.sh 8 "25 January 2023" "prep.sh" "IOCCC tools"
 .SH NAME
-prep.sh \- prepare for a release - actions for make prep and make release
+.B prep.sh
+\- prepare for a release - actions for make prep and make release
 .SH SYNOPSIS
-\fBprep.sh\fP [\-h] [\-v level] [\-V] [\-e] [\-o] [\-m make] [\-M Makefile] [\-l logfile]
+.B prep.sh
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V \|]
+.RB [\| \-e \|]
+.RB [\| \-o \|]
+.RB [\| \-m
+.IR make \|]
+.RB [\| \-M
+.IR Makefile \|]
+.RB [\| \-l
+.IR logfile \|]
 .SH DESCRIPTION
 \fBprep.sh\fP runs a series of make actions to test the state of any changes prior to making a commit and pull request.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Print help and exit.
 .TP
-\fB\-v\fP
-Set verbosity level (def: 0).
+.BI \-v\  level
+Set verbosity level to
+.I level
+(def: 0).
 .TP
-\fB\-V\fP
+.B \-V
 Print version and exit.
 .TP
-\fB\-e\fP
+.B \-e
 Exit on first make action error.
 .TP
-\fB\-o\fP
+.B \-o
 Do not use backup files for flex or bison if either of those tools cannot be used.
-Specifically if this option is used the make rule \fBparser\-o\fP is used instead of \fBparser\fP.
+Specifically if this option is used the make rule
+.B parser\-o
+is used instead of
+.B parser\c
+\&.
 .TP
-\fB\-m \fImake\fP\fP
-Specify path to \fBmake(1)\fP command.
+.BI \-m\  make
+Specify path to
+.B make(1)
+command.
 .TP
-\fB\-M \fIMakefile\fP\fP
+.BI \-M\  Makefile
 Path to the Makefile to use.
 .TP
-\fB\-l \fIlogfile\fP\fP
-Write all details to a log file and write less information to stdout.
+.BI \-l\  logfile
+Write all details to log file
+.I logfile
+and write less information to stdout.
 .SH EXIT STATUS
 .TP
 0
