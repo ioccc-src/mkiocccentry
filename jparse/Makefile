@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/env make
 #
 # jparse - a JSON parser written in C
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/env make
 #
 # test_jparse - mkiocccentry jparse test tools
 #
