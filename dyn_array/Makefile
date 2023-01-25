@@ -487,8 +487,8 @@ check_man: ${ALL_MAN_TARGETS}
 	    echo ''; 1>&2; \
 	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
 	else \
-	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
-	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
+	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
+	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
