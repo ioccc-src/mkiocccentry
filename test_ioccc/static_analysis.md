@@ -495,7 +495,7 @@ What you'll see is something like:
 
 
 ```sh
-$ make prep
+make prep
 make_action 10 clobber OK
 make_action 11 all ERROR exit code 2
 make_action 12 depend OK
@@ -544,7 +544,7 @@ Now as one can see `make all` fails so running it manually we see:
 
 
 ```c
-$ make all
+make all
 cc -std=gnu11 -O0 -g -pedantic -Wall -Wextra -Werror  -I../.. jnum_test.c -c
 In file included from jnum_test.c:37:0:
 jnum_chk.h:83:13: error: 'quiet' defined but not used [-Werror=unused-variable]
@@ -923,20 +923,41 @@ Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
 
 
 ```sh
-$ make clobber all
+make clobber all
 [...]
 warning: include location '/usr/local/include' is unsafe for cross-compilation [-Wpoison-system-directories]
 ```
 
 ### Solution
 
-This is a warning triggered under macOS but it is entirely bogus as we do not
-include that path in any of our files nor is it in any `-I` option to the
-compiler and thus this warning can be ignored.
+This is a warning triggered under macOS and although it appears bogus it's
+probably not even though we don't include it explicitly (see next part to see
+why this is). The warning can be ignored but it's probably triggered because of
+the Makefile variable:
 
-### See also
 
-Addressed in commit c5e902b1dc6b048ef95729f4e10b7f9c589b4bc1.
+```makefile
+.INCLUDE_DIRS = /usr/local/include
+```
+
+This variable, which appears to be read-only, can be seen if one does:
+
+
+```sh
+make -p -f /dev/null 2>/dev/null|grep -B 1 INCLUDE
+# default
+.INCLUDE_DIRS = /usr/local/include
+```
+
+Thus although we don't explicitly include the `/usr/local/include` it is at
+least in some systems part of the include search path. Under linux it does not
+trigger a warning but the value does include it and more:
+
+
+```makefile
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+```
+
 
 
 ## Issue: warning: signed shift result sets the sign bit of the shift expression's type  and becomes negative
