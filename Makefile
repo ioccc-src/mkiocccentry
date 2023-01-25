@@ -301,7 +301,8 @@ PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
 
 # logs for testing
-TMP_BUILD_LOG= .build.log
+#
+TMP_BUILD_LOG= ".build.log.$$$$"
 BUILD_LOG= build.log
 
 ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc

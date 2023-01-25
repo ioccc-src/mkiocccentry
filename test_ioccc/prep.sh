@@ -21,8 +21,8 @@
 #
 export FAILURE_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="0.3 2023-01-24"
-export BUG_REPORT_NOTICES="0"
+export PREP_VERSION="0.4 2023-01-24"
+export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
     -h              print help and exit
@@ -161,6 +161,19 @@ write_echo_n()
     fi
 }
 
+# write_logfile - write a message to the log file, if we have one, otherwise to stderr
+#
+write_logfile()
+{
+    local MSG="$*"
+
+    if [[ -n "$LOGFILE" ]]; then
+	echo "$MSG" >> "$LOGFILE"
+    else
+	echo "$MSG" 1>&2
+    fi
+}
+
 # exec_command - invoke command redirecting output only to the log file or to
 # both stdout and the log file
 exec_command()
@@ -292,11 +305,8 @@ make_bug_report() {
     exec_command "./bug_report.sh" -t -x -l -L "$BUG_REPORT_LOGFILE"
     status="$?"
 
-    # First if the bug report log still exists, get how many notices were
-    # issued. We will use this at the final report of the script.
-    if [[ -e "$BUG_REPORT_LOGFILE" ]]; then
-	BUG_REPORT_NOTICES="$(grep -cE "^[[:space:]]+NOTICE:" "$BUG_REPORT_LOGFILE")"
-    fi
+    # Finally we report on the exit status of the bug_report.sh
+    #
     if [[ $status -ne 0 ]]; then
 
 	# process a bug_report.sh failure (i.e. error or actual issue
@@ -312,7 +322,7 @@ make_bug_report() {
 	if [[ -n $E_FLAG ]]; then
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo "$0: Warning: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
 		write_echo
 		write_echo "=-=-= FAIL: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
 		write_echo
@@ -378,24 +388,61 @@ make_action 29 check_man
 make_action 30 all
 make_action 31 test
 
+# If we have a logfile, count the number of Notice: messages in the logfile
+#
+LOFILE_NOTICE_COUNT=0
+export NOTICE_COUNT
+if [[ -n "$LOGFILE" ]]; then
+    LOFILE_NOTICE_COUNT="$(grep -cE "[[:space:]]+Notice:[[:space:]]" "$LOGFILE")"
+    if [[ $LOFILE_NOTICE_COUNT -gt 0 ]]; then
+	write_logfile
+	write_logfile "=-=-= Summary of prep.sh notices follow:"
+	write_logfile
+	NOTICE_SET=$(grep -E "[[:space:]]+Notice::[[:space:]]" "$LOGFILE")
+	write_logfile "$NOTICE_SET"
+	write_logfile
+	write_logfile "=-=-= End of of prep.sh notice summary"
+    fi
+fi
+
+# If the bug report log still exists, get how many notices were
+# issued. We will use this at the final report of the script.
+#
+if [[ -e "$BUG_REPORT_LOGFILE" ]]; then
+    NOTICE_COUNT="$(grep -cE "[[:space:]]+Notice:[[:space:]]" "$BUG_REPORT_LOGFILE")"
+
+    # Next we summarize Notices and Warnings directly the logfile
+    #
+    write_logfile "=-=-= bug_report.sh generated $NOTICE_COUNT notices in $BUG_REPORT_LOGFILE"
+    if [[ $NOTICE_COUNT -gt 0 ]]; then
+	write_logfile
+	write_logfile "=-=-= Summary of make_bug_report notices follow:"
+	write_logfile
+	NOTICE_SET=$(grep -E "[[:space:]]+Notice::[[:space:]]" "$BUG_REPORT_LOGFILE")
+	write_logfile "$NOTICE_SET"
+	write_logfile
+	write_logfile "=-=-= End of of make_bug_report notice summary"
+    fi
+fi
+((NOTICE_COUNT=NOTICE_COUNT+LOFILE_NOTICE_COUNT))
 
 if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= PASS: $0 =-=-=-=-="
 	write_echo
-	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
-	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
-		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	if [[ $NOTICE_COUNT -gt 0 ]]; then
+	    if [[ $NOTICE_COUNT -eq 1 ]]; then
+		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
 	    else
-		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+		write_echo "bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
     else
-	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
-	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
-		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	if [[ $NOTICE_COUNT -gt 0 ]]; then
+	    if [[ $NOTICE_COUNT -eq 1 ]]; then
+		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
 	    else
-		write_echo "All tests PASSED; $BUG_REPORT_NOTICES notices issued."
+		write_echo "All tests PASSED; $NOTICE_COUNT notices issued."
 	    fi
 	else
 	    write_echo "All tests PASSED."
@@ -403,6 +450,8 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 	write_echo ""
 	write_echo "See test_ioccc/test_ioccc.log for more details."
     fi
+    # We have logged notices, no errors so we can remove the bug report log file now.
+    rm -f "$BUG_REPORT_LOGFILE"
 else
     if [[ -z "$LOGFILE" ]]; then
 	write_echo "=-=-=-=-= FAIL: $0 =-=-=-=-="
@@ -414,11 +463,11 @@ else
 	    write_echo "$FAILURE_SUMMARY"
 	fi
 	write_echo ""
-	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
-	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
-		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notice."
+	if [[ $NOTICE_COUNT -gt 0 ]]; then
+	    if [[ $NOTICE_COUNT -eq 1 ]]; then
+		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
 	    else
-		write_echo "NOTICE: bug_report.sh issued $BUG_REPORT_NOTICES notices."
+		write_echo "bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
 	write_echo ""
@@ -429,11 +478,11 @@ else
 	    write_echo "$FAILURE_SUMMARY"
 	    write_echo ""
 	fi
-	if [[ $BUG_REPORT_NOTICES -gt 0 ]]; then
-	    if [[ $BUG_REPORT_NOTICES -eq 1 ]]; then
-		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notice issued."
+	if [[ $NOTICE_COUNT -gt 0 ]]; then
+	    if [[ $NOTICE_COUNT -eq 1 ]]; then
+		write_echo "One or more tests failed; $NOTICE_COUNT notice issued."
 	    else
-		write_echo "One or more tests failed; $BUG_REPORT_NOTICES notices issued."
+		write_echo "One or more tests failed; $NOTICE_COUNT notices issued."
 	    fi
 	else
 	    write_echo "One or more tests failed."

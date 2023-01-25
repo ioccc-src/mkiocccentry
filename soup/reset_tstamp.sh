@@ -163,7 +163,7 @@ echo
 echo -n 'Enter the phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'Please invalidate all IOCCC timestamps prior to now' ]]; then
-    echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
+    echo "$0: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
     exit 1
 fi
 
@@ -186,7 +186,7 @@ echo
 echo -n 'Enter that phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'I understand this and apologise to those with existing IOCCC compressed tarballs' ]]; then
-    echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
+    echo "$0: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
     exit 1
 fi
 
@@ -198,7 +198,7 @@ echo
 echo -n 'Enter the required phrase: '
 read -r ANSWER
 if [[ "$ANSWER" != 'Sorry (tm Canada) :=)' ]]; then
-    echo "$0: notice: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
+    echo "$0: Wise choice, MIN_TIMESTAMP was not changed." 1>&2
     exit 1
 fi
 
@@ -253,7 +253,7 @@ echo "This line in $LIMIT_IOCCC_H as it exists now, is:"
 echo
 grep '^#define MIN_TIMESTAMP' "$LIMIT_IOCCC_H"
 echo
-echo "$0: notice: You still need to:"
+echo "$0: You still need to:"
 echo
 echo '    make clobber all test'
 echo
@@ -268,7 +268,7 @@ echo
 echo "    ./vermod.sh -v 1 -Q $OLD_MIN_TIMESTAMP $NOW"
 echo "    $RPL_CMD -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_JSON"
 echo
-echo "$0: notice: And if all is well, commit and push the change to the GitHub repo!"
+echo "$0: And if all is well, commit and push the change to the GitHub repo!"
 echo
 
 # All Done!!! -- Jessica Noll, Age 2

@@ -304,7 +304,7 @@ test_size()
     #
     if [[ $pass == "true" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: notice: PASS: $file" 1>&2
+	    echo "$0: PASS: $file" 1>&2
 	fi
     else
 	echo "$0: ERROR: FAIL: $file" 1>&2
@@ -658,7 +658,7 @@ test_size semicolon2.c "67 127 8"
 #
 if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: notice: all tests PASSED"
+	echo "$0: all tests PASSED"
     fi
 else
     echo "$0: ERROR: about to exit $EXIT_CODE" 1>&2

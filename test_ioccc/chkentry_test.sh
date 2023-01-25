@@ -489,14 +489,14 @@ if [[ -z $INVALID_JSON_FOUND ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: all tests PASSED" 1>&2
 	fi
-	echo "$0: notice: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+	echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
     else
 	EXIT_CODE=1
 	echo "$0: all JSON files were valid JSON; however some chkentry semantic tests failed" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: all JSON files were valid JSON; however some chkentry semantic tests failed" 1>&2
 	    echo 1>&2
-	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: Notice: chkentry semantic tests failed, see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
 	fi
 	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
@@ -508,7 +508,7 @@ else
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: some files were invalid JSON; chkentry correctly tested all other files" 1>&2
 	    echo 1>&2
-	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: Notice: some files were invalid JSON, see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
 	fi
 	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
@@ -518,7 +518,7 @@ else
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: some files were invalid JSON and some chkentry tests failed" 1>&2
 	    echo 1>&2
-	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: Notice: chkentry tests failed and some files were invalid JSON: see $LOGFILE for details" 1>&2
 	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
 	fi
 	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"

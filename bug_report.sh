@@ -57,7 +57,7 @@ export TOOLS="
     ./txzchk
     "
 
-export BUG_REPORT_VERSION="0.12 2023-01-24"
+export BUG_REPORT_VERSION="0.13 2023-01-24"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -499,9 +499,9 @@ get_version_optional()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -515,9 +515,9 @@ get_version_optional()
 
     # report unknown version
     #
-    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND"
+    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
-    NOTICE: $COMMAND VERSION UNKNOWN"
+    Notice: $COMMAND VERSION UNKNOWN"
     write_echo ""
     return 0;
 }
@@ -708,9 +708,9 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    NOTICE: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	    Notice: UNKNOWN VERSION FOR $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
@@ -724,9 +724,9 @@ get_version()
 
     # report unknown version
     #
-    write_echo "$0: NOTICE: UNKNOWN VERSION FOR $COMMAND"
+    write_echo "$0: Notice: UNKNOWN VERSION FOR $COMMAND"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
-    NOTICE: $COMMAND VERSION UNKNOWN"
+    Notice: $COMMAND VERSION UNKNOWN"
     write_echo ""
     return 0;
 }
@@ -1436,7 +1436,7 @@ run_optional_check "make -C soup ${MAKE_FLAGS} limit_ioccc.sh"
 write_echo "## Checking for limit_ioccc.sh"
 if [[ -e "./soup/limit_ioccc.sh" ]]; then
     if [[ -r "./soup/limit_ioccc.sh" ]]; then
-	write_echo "## NOTICE: Found limit_ioccc.sh file:"
+	write_echo "## Found limit_ioccc.sh file:"
 	write_echo "--"
 	write_echo "cat ./soup/limit_ioccc.sh"
 	# tee -a -- "$LOGFILE" < ./soup/limit_ioccc.sh
@@ -1447,10 +1447,14 @@ if [[ -e "./soup/limit_ioccc.sh" ]]; then
 	fi
 	write_echo "--" | tee -a -- "$LOGFILE"
     else
-	write_echo "### NOTICE: Found unreadable limit_ioccc.sh"
+	write_echo "### Notice: Found unreadable limit_ioccc.sh"
+	NOTICE_SUMMARY="$NOTICE_SUMMARY
+	Notice: Found unreadable limit_ioccc.sh"
     fi
 else
-    write_echo "### No limit_ioccc.sh file found"
+    write_echo "### Notice: No limit_ioccc.sh file found"
+    NOTICE_SUMMARY="$NOTICE_SUMMARY
+    Notice: No limit_ioccc.sh file found"
 fi
 write_echo ""
 
@@ -1477,7 +1481,7 @@ write_echo ""
 write_echo "## CHECKING: if makefile.local exists"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
-	write_echo "### WARNING: Found Makefile overriding file makefile.local:"
+	write_echo "### Warning: Found Makefile overriding file makefile.local:"
 	write_echo "cat ./makefile.local"
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
@@ -1488,10 +1492,10 @@ if [[ -e "./makefile.local" ]]; then
 	fi
 	write_echo "--"
     else
-	write_echo "### WARNING: Found unreadable makefile.local"
+	write_echo "### Warning: Found unreadable makefile.local"
     fi
 else
-    write_echo "### NOTICE: Makefile has no overriding makefile.local"
+    write_echo "# Makefile has no overriding makefile.local"
 fi
 write_echo ""
 
@@ -1531,11 +1535,14 @@ write_echo ""
 
 if [[ ! -z "$NOTICE_SUMMARY" ]]; then
     write_echo 1>&2
-    write_echo "One or more POSSIBLE issues detected:"
+    write_echo "One or more POSSIBLE issues noticed:"
     write_echo ""
+    write_echo "Begin notice list"
     write_echo "$NOTICE_SUMMARY"
+    write_echo "End of notice list"
     write_echo ""
     # make it so log file is not deleted even if -x specified
+    # let the calling tool remove or not remove the logfile
     X_FLAG=""
 fi
 if [[ "$EXIT_CODE" -ne 0 ]]; then

@@ -375,9 +375,9 @@ if [[ -n $RUN_TAR_TEST ]]; then
 	TAR_TEST_SUCCESS=
     fi
     if [[ -s $TAR_ERROR ]]; then
-	echo "$0: notice: tar stderr follows:" 1>&2
-	cat "$TAR_ERROR" 1>&2
-	echo "$0: notice: end of tar stderr" 1>&2
+	echo "$0: Notice: tar stderr follows:" 1>&2
+	sed -e 's/^/Notice: /' < "$TAR_ERROR" 1>&2
+	echo "$0: Notice: end of tar stderr" 1>&2
 	EXIT_CODE=1
 	TAR_TEST_SUCCESS=
     fi

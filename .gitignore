@@ -1,6 +1,7 @@
 # IOCCC submission toolkit specific exclusions
 .all_ref.*.out
 .build.log
+.build.log.*
 .hostchk.*.work/
 .jsemcgen.*.out
 .sorry.*.c
