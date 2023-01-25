@@ -9,11 +9,23 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH fnamchk 1 "20 January 2023" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "25 January 2023" "fnamchk" "IOCCC tools"
 .SH NAME
-fnamchk \- IOCCC compressed tarball filename sanity check tool
+.B fnamchk
+\- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk\fP [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
+.B fnamchk
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.BR [\| \-q \|]
+.BR [\| \-V \|]
+.BR [\| \-E
+.IR ext \|]
+.BR [\| \-t
+|
+.BR \-u \|]
+.I filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
@@ -49,36 +61,49 @@ It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBm
 \fB\-h\fP
 Show help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 Default: 0.
 .TP
-\fB\-V\fP
+.B \-V
 Show version and exit.
 .TP
-\fB\-q\fP
+.B \-q
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
-Default: \fBfalse\fP.
+Default:
+.B false\c
+\&.
 .TP
-\fB\-E \fIext\fP\fP
+.BI \-E\  ext
 Change extension to extension specified (without the dot!).
-This is used for \fBTESTING\fP purposes only!
+This is used for
+.B TESTING
+purposes only!
 .TP
-\fB\-t\fP
+.B \-t
 If the filename does not start with the test mode filename format, issue an error.
-In other words the filename has to start with \fIentry.test\-\fP or it's an error.
+In other words the filename has to start with
+.I entry.test\-
+or it's an error.
 .TP
-\fB\-u\fP
+.B \-u
 If the filename does not start with the normal filename format, issue an error.
-In other words if the filename starts with \fIentry.test\-\fP it is an error.
+In other words if the filename starts with
+.I entry.test\-
+it is an error.
 .SH EXIT STATUS
 .TP
 0
 filename valid
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error

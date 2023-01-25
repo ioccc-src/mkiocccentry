@@ -9,13 +9,28 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH iocccsize 1 "24 January 2023" "iocccsize" "IOCCC tools"
+.TH iocccsize 1 "25 January 2023" "iocccsize" "IOCCC tools"
 .SH NAME
-iocccsize \- IOCCC Source Size Tool
+.B iocccsize
+\- IOCCC Source Size Tool
 .SH SYNOPSIS
-\fBiocccsize\fP [\fB\-h\fP] [\fB\-i\fP] [\fB\-v\fP \fIlevel\fP] [\fB\-q\fP] [\fB\-V\fP] \fIprog.c\fP
+.B iocccsize
+.RB [\| \-h \|]
+.RB [\| \-i \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.I prog.c
 .br
-\fBiocccsize\fP [\fB\-h\fP] [\fB\-i\fP] [\fB\-v\fP \fIlevel\fP] [\fB\-q\fP] [\fB\-V\fP] < \fIprog.c\fP
+.B iocccsize
+.RB [\| \-h \|]
+.RB [\| \-i \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V \|]
+<
+.I prog.c
 .SH DESCRIPTION
 .PP
 Reading a C source file from standard input or a file arg, apply the IOCCC source size rules as explained in the Guidelines.
@@ -26,21 +41,21 @@ The size tool counts most C reserved words (keyword, secondary, and selected pre
 The size tool counts all other octets as 1 excluding ASCII whitespace, and excluding any ';', '{' or '}' followed by ASCII whitespace, and excluding any ';', '{' or '}' octet immediately before the end of file.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
-\fB\-i\fP
+.B \-i
 Ignored for backward compatibility.
 .TP
-\fB\-v \fIlevel\fP\fP
+.BI \-v\  level
 Set debugging level to \fIlevel\fP.
 0, the default, implies no debugging.
 .TP
-\fB\-q\fP
+.B \-q
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 .TP
-\fB\-V\fP
+.B \-V
 Show version and exit.
 .SH EXIT STATUS
 .TP
@@ -51,10 +66,12 @@ source code is within Rule 2a and Rule 2b limits
 source code larger than Rule 2a and/or Rule 2b limits
 .TQ
 2
-\-h used and help printed
+.B \-h
+used and help printed
 .TQ
 3
-\-V used and version printed
+.B \-V
+used and version printed
 .TQ
 4
 invalid command line

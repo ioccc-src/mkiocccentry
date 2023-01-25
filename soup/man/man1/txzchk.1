@@ -26,11 +26,26 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "24 January 2023" "txzchk" "IOCCC tools"
+.TH txzchk 1 "25 January 2023" "txzchk" "IOCCC tools"
 .SH NAME
-txzchk \- sanity checker tool used on IOCCC compressed tarballs
+.B txzchk
+\- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk\fP [\fB\-h\fP] [\fB\-v\fP \fIlevel\fP] [\fB\-q\fP] [\fB\-w\fP] [\fB\-V\fP] [\fB\-t\fP \fItar\fP] [\fB\-F\fP \fIfnamchk\fP] [\fB\-T\fP] [\fB\-E\fP \fIext\fP] \fItarball_path\fP
+.B txzchk
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-w \|]
+.RB [\| \-V \|]
+.RB [\| \-t
+.IR tar \|]
+.RB [\| \-F
+.IR fnamchk \|]
+.RB [\| \-T \|]
+.RB [\| \-E
+.IR ext \|]
+.I tarball_path
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0, \fBmkiocccentry\fP will exit with an error.
@@ -44,38 +59,78 @@ In other words it makes sure that \fBmkiocccentry(1)\fP was used and that there 
 As an important part of the judging process, the Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
+.BI \-v\  level
 Set verbosity level.
 .TP
-\fB\-q\fP
+.B \-q
 Suppresses some of the output.
-Errors and the output of the \fBtar\fP command are still shown.
-If you need to see warnings with this option, use \fB\-w\fP.
+Errors and the output of the
+.B tar
+command are still shown.
+If you need to see warnings with this option, use
+.B -w\c
+\&.
 .TP
-\fB\-w\fP
+.B \-w
 Always show warnings.
-This is used in the \fBtxzchk_test(8)\fP script because it must see the warnings.
+This is used in the
+.B txzchk_test(8)
+script because it must see the warnings.
 .TP
-\fB\-V\fP
+.B \-V
 Show version and exit.
 .TP
-\fB\-t \fItar\fP\fP
-Specify path to \fBtar\fP that accepts the \fB\-J\fP option.
-\fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
+.BI \-t\  tar
+Set path to
+.B tar(1)
+to
+.I tar\c
+\&.
+It must accept the
+.B \-J
+option.
+.B txzchk
+checks
+.I /usr/bin/tar
+and
+.I /bin/tar
+if this option is not specified.
 .TP
-\fB\-F \fIfnamchk\fP\fP
-Specify path to the IOCCC \fBfnamchk(1)\fP tool.
-If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
+.BI \-F\  fnamchk
+Set path to the IOCCC
+.B fnamchk(1)
+tool to
+.I fnamchk\c
+\&.
+If this option is not specified the program looks under the current working directory and
+.I /usr/local/bin\c
+\&.
 .TP
-\fB\-T\fP
-Assume tarball_path is a text file: use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
+.B \-T
+Assume tarball_path is a text file: use
+.B fopen(3)
+and
+.B fclose(3)
+instead of
+.B popen(3)
+and
+.B pclose(3)
+and don't require
+.B tar
+program.
 .TP
-\fB\-E \fIext\fP\fP
-Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
-This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
+.BI \-E\  ext
+Change extension for
+.B fnamchk(1)
+to validate (don't include the dot).
+This is used in conjunction with
+.B \-T
+above for 
+.B TESTING
+purposes only!
 .SH EXIT STATUS
 .TP
 0
