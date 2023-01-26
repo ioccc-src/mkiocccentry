@@ -9,6 +9,8 @@ document warnings that can be safely ignored and explain why.
 Although it might seem like such a document and title would discuss lints we
 don't for reasons we care not to get into. :-)
 
+After the warnings with clang `-Weverything` we discuss clang `scan-build`.
+
 
 ## Making modifications to the Makefiles: an example
 
@@ -1593,3 +1595,51 @@ will fix this or not we also provide no comment. :-)
 ### See also
 
 Addressed in commit ca8bc86c7739355850925ada110b7d884e34f754.
+
+
+# Clang scan-build
+
+Another way to analyse the code is to use clang `scan-build` to compile the
+code. To do so one must have the tool compiled and then run:
+
+
+```sh
+make clobber
+scan-build make
+```
+
+It will compile all the code, looking for problems, and then give you some
+information at the end like. For instance running this under macOS:
+
+
+```sh
+scan-build: Analysis run complete.
+scan-build: 53 bugs found.
+scan-build: Run 'scan-view /var/folders/6n/nb4yym2d1r50sxlz7s0nt3dr0000gn/T/scan-build-2023-01-26-093839-22294-1' to examine bug reports.
+```
+
+To not have to worry about finding the path later we can copy the directory to
+the current working directory and then run `scan-view` on it. It will open the
+report in a browser and you can then peruse the report.
+
+## Issue: Assigned value is garbage or undefined
+### Status: ignore (see discussion)
+### Example
+
+```
+Bug Group ▾	Bug Type	File	Function/Method	Line	Path Length
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1644	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1710	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1677	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1839	43	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	2150	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1553	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1611	48	View Report	Report Bug	Open File
+
+```
+
+### Solution
+
+The reason we ignore these is because they're in the parser generated code so we
+cannot touch it.
+
