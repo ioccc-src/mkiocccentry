@@ -21,6 +21,7 @@ this will take more time yet.
 Added dbg_version as a global string for users of the dbg.a library.
 Added dyn_array_version as a global string for users of the dyn_array.a library.
 Added json_parser_version as a global string for users of the jparse.a library.
+Added jparse_version as a global string for users of the jparse.a library.
 Added soup_version as a global string for users of the soup.a library.
 
 Changed DBG_VERSION from "2.6 2022-11-09" to "2.7 2023-01-21".
@@ -45,6 +46,9 @@ The `test_ioccc/prep.sh` tool removed the generated bug report log file
 if the `bug-report.sh` tool does an exit 0, even if there are notices.
 Changed BUG_REPORT_VERSION from "0.12 2023-01-24" to "0.13 2023-01-24".
 Changed PREP_VERSION from "0.3 2023-01-24" to "0.4 2023-01-24".
+
+Moved static variables from header to source files.
+
 
 
 ## Release 0.9.9 2022-12-31
