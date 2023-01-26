@@ -901,7 +901,7 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} ${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
 	${Q} ${RM} -f fnamchk jnum_gen jsemtblgen jstrdecode jstrencode verge
 	${Q} ${RM} -f hostchk.sh prep.sh reset_tstamp.sh run_usage.sh vermod.sh
-	${Q} ${RM} -f utf8_test
+	${Q} ${RM} -f utf8_test .build.log.
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
 

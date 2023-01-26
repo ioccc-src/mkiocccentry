@@ -211,7 +211,7 @@ LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -808,7 +808,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${TARGETS}
-	${RM} -f jparse.output lex.yy.c
+	${RM} -f jparse.output lex.yy.c jparse.c
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags
 	${S} echo
