@@ -491,6 +491,12 @@ jparse.a: ${LIB_OBJS}
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 
+run_bison-v7: verge sorry.tm.ca.h
+	./run_bison.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -D .
+
+
+run_flex-v7: verge sorry.tm.ca.h
+	./run_flex.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -D .
 
 #########################################################
 # rules that invoke Makefile rules in other directories #

@@ -9,25 +9,34 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH verge 8 "14 November 2022" "verge" "IOCCC tools"
+.TH verge 8 "26 January 2023" "verge" "IOCCC tools"
 .SH NAME
-verge \- determine if first version >= second version
+.B verge
+\- determine if first version >= second version
 .SH SYNOPSIS
-\fBverge\fP [\-h] [\-v level] [\-V] major.minor.patch\-1 major.minor.patch\-2
+.B verge
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V \|]
+.I major.minor.patch\-1
+.I major.minor.patch\-2
 .SH DESCRIPTION
 \fBverge\fP (short for \fBversion greater than or equal\fP) compares the two versions specified, determining if they're equal or if one is >= the other.
 .PP
 This program requires two arguments but accepts several options.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-Show help and exit.
+.B \-h
+print help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level.
+.BI \-v\  level
+set verbosity level to
+.I level
+(def: 0).
 .TP
-\fB\-V\fP
-Show version and exit.
+.B \-V
+print version and exit.
 .SH EXIT STATUS
 .TP
 0

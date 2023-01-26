@@ -9,11 +9,29 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_test.sh 8 "19 January 2023" "jparse_test.sh" "IOCCC tools"
+.TH jparse_test.sh 8 "26 January 2023" "jparse_test.sh" "IOCCC tools"
 .SH NAME
-jparse_test.sh \- test jparse on one or more files with one or more one\-line JSON blobs
+.B jparse_test.sh
+\- test jparse on one or more files with one or more one\-line JSON blobs
 .SH SYNOPSIS
-\fBjparse_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [\-d json_tree] [\-s subdir] [file ..]
+.B jparse_test.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-D
+.IR dbg_level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-j
+.IR jparse \|]
+.RB [\| \-d
+.IR json_tree \|]
+.RB [\| \-s
+.IR subdir \|]
+.RI [\| file
+.IR .. \|]
 .SH DESCRIPTION
 \fBjparse_test.sh\fP tests each line in each file for valid JSON.
 The file name \fI\-\fP means read from stdin.
@@ -23,34 +41,52 @@ The files that must pass are in the subdirectory called \fIgood\fP and the files
 It keeps a log of all the tests in \fIjparse_test.log\fP for later inspection.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-Show help and exit.
+.B \-h
+Print help and exit.
 .TP
-\fB\-V\fP
-Show version and exit.
+.B \-V
+Print version and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to \fIlevel\fP.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-D \fIlevel\fP\fP
-Set debug level to \fIlevel\fP.
+.BI \-D\  level
+Set debug level to
+.I level\c
+\&.
 .TP
-\fB\-J \fIlevel\fP\fP
-Set JSON verbosity level to \fIlevel\fP.
+.BI \-J\  level
+Set JSON verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-q\fP
+.BI \-q
 Set quiet mode.
-This will be passed to the JSON parser.
+This will be affect the JSON parser.
 .TP
-\fB\-j \fIjparse\fP\fP
-Set path to jparse to \fIjparse\fP.
+.BI \-j\  jparse
+Set path to the JSON parser jparse to
+.I jparse\c
+\&.
 .TP
-\fB\-d \fIjson_tree\fP\fP
-Set json tree to look for good and bad files under to \fIjson_tree\fP.
+.BI \-d\  json_tree
+Set json tree to look for good and bad files under to
+.I json_tree\c
+\&.
 .TP
-\fB\-s \fIsubdir\fP\fP
-Set subdirectory in \fIjson_tree\fP above the \fIgood\fP and \fIbad\fP directories.
-This directory can be empty by specifying \fI.\fP as the directory.
+.BI \-s\  subdir
+Set subdirectory in
+.I json_tree
+above the
+.I good
+and
+.I bad
+directories.
+To not specify a subdirectory specify
+.I .
+(dot) as the directory.
 .SH EXIT STATUS
 .TP
 0

@@ -621,7 +621,7 @@ location_code_name_match(char const *code, char const *location_name)
     /*
      * search location table for the code
      */
-    for (p = &loc[0]; p->name != NULL && p->name != NULL; ++p) {
+    for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
 	if (strcasecmp(code, p->code) == 0) {
 	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
 	    break;

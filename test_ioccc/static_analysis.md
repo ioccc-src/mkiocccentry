@@ -9,6 +9,8 @@ document warnings that can be safely ignored and explain why.
 Although it might seem like such a document and title would discuss lints we
 don't for reasons we care not to get into. :-)
 
+After the warnings with clang `-Weverything` we discuss clang `scan-build`.
+
 
 ## Making modifications to the Makefiles: an example
 
@@ -495,7 +497,7 @@ What you'll see is something like:
 
 
 ```sh
-$ make prep
+make prep
 make_action 10 clobber OK
 make_action 11 all ERROR exit code 2
 make_action 12 depend OK
@@ -544,7 +546,7 @@ Now as one can see `make all` fails so running it manually we see:
 
 
 ```c
-$ make all
+make all
 cc -std=gnu11 -O0 -g -pedantic -Wall -Wextra -Werror  -I../.. jnum_test.c -c
 In file included from jnum_test.c:37:0:
 jnum_chk.h:83:13: error: 'quiet' defined but not used [-Werror=unused-variable]
@@ -855,7 +857,7 @@ and rerun `make clobber all test`.
 ### See also
 
 With the exception of the one noted that we cannot change all of these were
-fixed in commit c94bd325bb1f97dce57f636b17a1309426e4d697.
+fixed in commit 8609822e68a369b464a1be924a4b876c78ca563b.
 
 
 ## Issue: warning: enumeration value not explicitly handled in switch
@@ -885,7 +887,7 @@ would not have to worry about it.
 
 ### See also
 
-This issue is noted in commit 1124e12ac68be62af9bb613652396f7055b7a3d7.
+This issue is noted in commit d7555d25565d4b519f865565887837069a25dd13.
 
 
 ## Issue: warning: default label in switch which covers all enumeration values
@@ -913,7 +915,7 @@ as memory corruption) error.
 
 ### See also
 
-Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
+Addressed in commit 0c15034ed8697183b09761277e3fd9143b973e17.
 
 
 ## Issue: warning: include location '/usr/local/include' is unsafe for cross-compilation
@@ -923,21 +925,45 @@ Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
 
 
 ```sh
-$ make clobber all
+make clobber all
 [...]
 warning: include location '/usr/local/include' is unsafe for cross-compilation [-Wpoison-system-directories]
 ```
 
 ### Solution
 
-This is a warning triggered under macOS but it is entirely bogus as we do not
-include that path in any of our files nor is it in any `-I` option to the
-compiler and thus this warning can be ignored.
+This is a warning triggered under macOS and although it appears bogus it's
+probably not even though we don't include it explicitly (see next part to see
+why this is). The warning can be ignored but it's probably triggered because of
+the Makefile variable:
+
+
+```makefile
+.INCLUDE_DIRS = /usr/local/include
+```
+
+This variable, which appears to be read-only, can be seen if one does:
+
+
+```sh
+make -p -f /dev/null 2>/dev/null|grep -B 1 INCLUDE
+# default
+.INCLUDE_DIRS = /usr/local/include
+```
+
+Thus although we don't explicitly include the `/usr/local/include` it is at
+least in some systems part of the include search path. Under linux it does not
+trigger a warning but the value does include it and more:
+
+
+```makefile
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+```
 
 ### See also
 
-Addressed in commit c5e902b1dc6b048ef95729f4e10b7f9c589b4bc1.
-
+Commits ae1f962f60344b2509433bb0bbcedc8c9eee9ba6 and
+132087c1fb2ca618b726f5aeb3b57983a02550c2.
 
 ## Issue: warning: signed shift result sets the sign bit of the shift expression's type  and becomes negative
 ### Status: ignore
@@ -960,7 +986,7 @@ intended and thus can be ignored.
 
 ### See also
 
-Addressed in commit f9a496be4ec48388daf751826ba8345e874726d7.
+Addressed in commit 087e5709022b8b086d17f185fd6bed43bfcd8200..
 
 
 ## Issue: warning: result of comparison is always true
@@ -1020,7 +1046,7 @@ cast to an `int8_t`.
 
 ### See also
 
-Addressed in commit f75b1af2997bb43d4f3404e1b001591b287bf7b7.
+Addressed in commit 3cbb9de013ec99670d0188230997899b18762427.
 
 
 ## Issue: warning: comparing floating point with == or != is unsafe
@@ -1055,7 +1081,7 @@ Here we can cast both sides of each to an `intmax_t`.
 
 ### See also
 
-Fixed in commit 22527837b43b258916e2c6250f95823fb990db36.
+Fixed in commit 3b5402bd33e88f79bd20abf61895d2727b79fcac.
 
 
 ## Issue: warning: implicit conversion increases floating-point precision: 'float' to 'double'
@@ -1083,8 +1109,10 @@ cast it to a double to silence the warning.
 
 ### See also
 
-Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. See also commit
-df409fefa7541a065dd1633de7c7a0e3093368fa.
+Fixed in commit 55950a67be3319c085e0656d45c4391ee79b73c5. See also
+207715cf1e4f83d60dd8494d53832a02539c97b9,
+207715cf1e4f83d60dd8494d53832a02539c97b9 and
+2f68cd3177bef39ddad9dc022e28276165f64927.
 
 
 ## Issue: warning: implicit conversion loses integer precision
@@ -1179,7 +1207,7 @@ to need lengths that would exceed INT_MAX).
 
 ### See also
 
-Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.
+Fixed in commit 277dfe3cd9a2ec9d2684131c791ccf70a248ac2d..
 
 
 ## Issue: warning: implicit conversion changes signedness
@@ -1332,9 +1360,9 @@ is code ahead of such use to object to negative elm_size values.
 ### See also
 
 This was fixed in commit
-1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
+627b587de987153dc5a772a7d7cebda99e08b705 (with the help of commit
 e59f15db96dc0893341a985825fbb6028525a278) and
-c6b5f89a81a4910901cb3ef26c8f34858acd4740.
+dfce024daba6ea3f32d1ebf54e1ad72a277dfa54.
 
 
 ## Issue: warning: implicit conversion increases floating-point precision: 'double' to 'long double'
@@ -1417,7 +1445,8 @@ modification to the `jnum_gen` tool so that these will have the `L` suffix.
 
 ### See also
 
-Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
+Commit 207715cf1e4f83d60dd8494d53832a02539c97b9 and
+2f68cd3177bef39ddad9dc022e28276165f64927.
 
 
 ## Issue: warning: macro name is a reserved identifier
@@ -1438,7 +1467,7 @@ Since we must not modify `jparse.c` or any code generated from the `jparse.l` or
 
 ### See also
 
-Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
+Commit 2eef8867ce411bdcc9422b8cd0ed3657ef3a29a2.
 
 
 ## Issue: warning: disabled expansion of recursive macro
@@ -1469,7 +1498,7 @@ This is a problem in the system header files and therefore we ignore it.
 
 ### See also
 
-Addressed in commit 5b8def79c2863c90bfd8225382eb522a9d122b13.
+Addressed in commit 8311424e8c864ba5fbf72033476b054cf2d5590a.
 
 
 ## Issue: warning: empty expression statement has no effect; remove unnecessary ';'
@@ -1512,7 +1541,7 @@ not matter so whether or not this will be fixed is TBD later.
 
 #### See also
 
-Addressed in commit 02f0496b809b18b28533b9a194586a2c2d3bec9b.
+Addressed in commit e2dba0d51b3d65ad753dccdd5c02d5f15ff03de9.
 
 
 ## Issue: warning: unannotated fall-through between switch labels
@@ -1540,7 +1569,7 @@ certainly must fall through to case `'a'` with case `'A'`.
 
 ### See also
 
-Addressed in commit 1975fef378691fcb724b71ab7e837787227d0f3c.
+Addressed in commit 52d95ffd6598959cd415858036d36a9c794bcef2.
 
 
 ## Issue: warning: mixing declarations and code is incompatible with standards before C99
@@ -1565,4 +1594,116 @@ will fix this or not we also provide no comment. :-)
 
 ### See also
 
-Addressed in commit 7fd173ad4068befb109d3bbe2b2e0f28f69149ba.
+Addressed in commit ca8bc86c7739355850925ada110b7d884e34f754.
+
+
+# Clang scan-build
+
+Another way to analyse the code is to use clang `scan-build` to compile the
+code. To do so one must have the tool compiled and then run:
+
+
+```sh
+make clobber
+scan-build make
+```
+
+It will compile all the code, looking for problems, and then give you some
+information at the end like. For instance running this under macOS:
+
+
+```sh
+scan-build: Analysis run complete.
+scan-build: 53 bugs found.
+scan-build: Run 'scan-view /var/folders/6n/nb4yym2d1r50sxlz7s0nt3dr0000gn/T/scan-build-2023-01-26-093839-22294-1' to examine bug reports.
+```
+
+To not have to worry about finding the path later we can copy the directory to
+the current working directory and then run `scan-view` on it. It will open the
+report in a browser and you can then peruse the report.
+
+## Issue: Assigned value is garbage or undefined
+### Status: ignore (see discussion)
+### Example
+
+```
+Bug Group ▾	Bug Type	File	Function/Method	Line	Path Length
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1644	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1710	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1677	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1839	43	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	2150	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1553	48	View Report	Report Bug	Open File
+Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1611	48	View Report	Report Bug	Open File
+
+```
+
+There is no need to give example code for the same reason we will ignore it:
+it's generated code.
+
+### Solution
+
+The reason we ignore these is because they're in the parser generated code so we
+cannot touch it.
+
+### See also
+
+Commit bd4fe62f06096ebccc744648120852789003e022.
+
+
+## Issue: Result of operation is garbage or undefined (rule_count.c)
+### Status: TBD
+### Example
+
+It refers to this code:
+
+
+```c
+if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
+```
+
+And it says: the left operand of '!=' is a garbage value.
+
+### Solution
+
+This is code that only the IOCCC Judges should modify so I'm not even going to
+address it.
+
+
+## Issue: Uninitialized argument value
+### Status: ignore (see discussion)
+### Example
+
+```
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2070	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2144	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2013	43	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2079	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	1704	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	1671	48	View Report	Report Bug	Open File
+```
+
+And many more lines.
+
+### Solution
+
+As this is in generated code we will not show the any code itself and we will
+not adjust the code.
+
+
+## Issue: Division by zero
+### Status: ignore (not a bug)
+### Example
+
+The code in question is:
+
+```c
+    for (char const *p = oebxergfB[(((size_t)two*2*2*015+(size_t)(four/(07&0x07)))%forty)]; *p; ++p) {
+```
+
+### Solution
+
+It appears that clang scan-build is confused, falsely believing that after
+`forty` is set 0 (above this loop) it stays 0. This is not true though.
+
+Thus there's nothing to actually fix here because there's no division by 0.
