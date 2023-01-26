@@ -250,6 +250,16 @@ static char const *oebxergfB[] =
 "\n"
 "'Kw fye'b ds bnyb,' ayud bnw Buep, 'sl wtaw nw'd nyvw kwwe nwlw oulab.'\n"
 ,
+"Gobwl y tsep abluep so qeawyaseyktm xyli dyma ue Lufnupye, bnw bsruf\n"
+"so fsevwlaybuseyt eybqlyttm bqlewd bs bnw xwybnwl. Ga C xythwd uebs\n"
+"im sooufw se mwb yesbnwl iutd isleuep, C svwlnwyld bxs fs-xslhwla duafqaauep\n"
+"bnwul bnwsluwa yksqb xnm xw nyd kwwe arylwd bnw qaqyttm olupud xueda.\n"
+"\n"
+"Hueyttm sew so bnwi nub se bnw lwyt fqtrlub: 'Vwtt', nw fseftqdwd, 'y tsb\n"
+"so rwsrtw ylw aymuep ub'a ytt kwfyqaw so bnua Ot Fuebweds bnuep'.\n"
+"\n"
+"Usqlfw: Mwydwl'a Rupwab\n"
+,
 "'Tnua ua y fnutd!' Kyupny lwrtuwd wypwltm, fsiuep ue olseb so Gtufw bs\n"
 "ueblsdqfw nwl, yed arlwyduep sqb ksbn nua nyeda bsxylda nwl ue ye Gepts-Uyzse\n"
 "ybbubqdw. 'Vw setm osqed ub bs-dym. Cb'a ya tylpw ya tuow, yed bxufw ya\n"
@@ -337,33 +347,9 @@ static char const *oebxergfB[] =
 "\n"
 "nbbra://xxx.uedwrwedweb.fs.qh/ewxa/mwa-bnw-yeaxwl-bs-bnw-qeuvwlaw-lwyttm-ua-78-3453813.nbit\n"
 ,
-"Gobwl y tsep abluep so qeawyaseyktm xyli dyma ue Lufnupye, bnw bsruf\n"
-"so fsevwlaybuseyt eybqlyttm bqlewd bs bnw xwybnwl. Ga C xythwd uebs\n"
-"im sooufw se mwb yesbnwl iutd isleuep, C svwlnwyld bxs fs-xslhwla duafqaauep\n"
-"bnwul bnwsluwa yksqb xnm xw nyd kwwe arylwd bnw qaqyttm olupud xueda.\n"
-"\n"
-"Hueyttm sew so bnwi nub se bnw lwyt fqtrlub: 'Vwtt', nw fseftqdwd, 'y tsb\n"
-"so rwsrtw ylw aymuep ub'a ytt kwfyqaw so bnua Ot Fuebweds bnuep'.\n"
-"\n"
-"Usqlfw: Mwydwl'a Rupwab\n"
-,
 "De im xym nsiw olsi y xwk aqlouep ftyaa sew yobwlesse, C xya osttsxuep y\n"
 "tylpw yed vwlm dulbm ryewt blqfh. C esbufwd bnw kyfh dssl nyd bnwaw\n"
 "iypufyt twbbwla wbfnwd uebs bnw pluiw: xxx.xyaniw.fsi.\n"
-"\n"
-"Usqlfw: Mwydwl'a Rupwab\n"
-,
-"Gobwl ytisab 85 mwyla so iylluypw, C awb qr y ewx abqdm fsirtwbw xubn y\n"
-"fsirqbwl xw ksqpnb olsi sql dyqpnbwl. Vw xwlw vwlm aybuaouwd xubn\n"
-"sqlawtvwa yed owtb xw nyd oueyttm ylluvwd.\n"
-"\n"
-"Tnyb wvweuep xw ytt xweb bs y rylbm xnwlw xw iwb asiw rwsrtw olsi Luflsasob.\n"
-"Vw iwebusewd sql ewx fsirqbwl, yed bnw fsevwlaybuse kwpye: xnyb hued, nsx iqfn\n"
-"iwislm, xnyb hued so rluebwl?\n"
-"\n"
-"Vnwe im dyqpnbwl bstd bnwi sql fsirqbwl nyd y 21-20 iuflsrlsfwaasl fnur\n"
-"bnw Luflsasob ostha xwlw yiyjwd. Tnua xya sew so bnw oulab fnura osl xnufn\n"
-"Luflsasob xlsbw rlsplyia, yed ub ua esx ue bnw fsiryem iqawqi.\n"
 "\n"
 "Usqlfw: Mwydwl'a Rupwab\n"
 ,
@@ -495,6 +481,20 @@ static char const *oebxergfB[] =
 "\n"
 "-- Xwzmt\n"
 ,
+"Gobwl ytisab 85 mwyla so iylluypw, C awb qr y ewx abqdm fsirtwbw xubn y\n"
+"fsirqbwl xw ksqpnb olsi sql dyqpnbwl. Vw xwlw vwlm aybuaouwd xubn\n"
+"sqlawtvwa yed owtb xw nyd oueyttm ylluvwd.\n"
+"\n"
+"Tnyb wvweuep xw ytt xweb bs y rylbm xnwlw xw iwb asiw rwsrtw olsi Luflsasob.\n"
+"Vw iwebusewd sql ewx fsirqbwl, yed bnw fsevwlaybuse kwpye: xnyb hued, nsx iqfn\n"
+"iwislm, xnyb hued so rluebwl?\n"
+"\n"
+"Vnwe im dyqpnbwl bstd bnwi sql fsirqbwl nyd y 21-20 iuflsrlsfwaasl fnur\n"
+"bnw Luflsasob ostha xwlw yiyjwd. Tnua xya sew so bnw oulab fnura osl xnufn\n"
+"Luflsasob xlsbw rlsplyia, yed ub ua esx ue bnw fsiryem iqawqi.\n"
+"\n"
+"Usqlfw: Mwydwl'a Rupwab\n"
+,
 "Lm gsk ua bs blyue rwsrtw se xsld rlsfwaasla, yed C xya fyttwd sqb sew\n"
 "dym bs dwbwliuew xnm y fqabsiwl'a rluebwl dude'b xslh. Gobwl tsshuep\n"
 "yb bnw iyfnuew, C wzrtyuewd bs bnw fqabsiwl bnyb anw ewwdwd ewx rluebwl\n"
@@ -521,19 +521,6 @@ static char const *oebxergfB[] =
 "tsvw bnua tyx bnwm rlskyktm xse'b kw as yrrlwfuybuvw xnwe bnwm pwb oyb olsi ub. :-(\n"
 "\n"
 "-- Xwzmt\n"
-,
-"Zsq iym kw yddufbwd bs bnw Cebwlewb uo:\n"
-"\n"
-"- Zsq xyhw qr yb 4 yi bs ps bs bnw bsutwb yed absr bs fnwfh msql\n"
-"w-iyut.\n"
-"\n"
-"- Zsq dwfudw bs abym ue fsttwpw yesbnwl mwyl sl bxs, gqab osl bnw olww\n"
-"Cebwlewb yffwaa.\n"
-"\n"
-"- Kyto bnw rtyew blur ua arweb xubn msql tyrbsr kwaudw msq yed msql\n"
-"fnutd ue bnw svwlnwyd fsirylbiweb.\n"
-"\n"
-"Usqlfw: Mwydwl'a Rupwab\n"
 ,
 "Kyvw msq nwyld bnw sew yksqb bnw ylfnubwfb, ylbuab yed fsirqbwl wepuewwl\n"
 "xns xwlw duafqaauep xnwbnwl ub xya kwbbwl bs nyvw y xuow sl y iuablwaa?\n"
@@ -754,6 +741,19 @@ static char const *oebxergfB[] =
 "tqfh ?\n"
 "\n"
 "-- Xwzmt\n"
+,
+"Zsq iym kw yddufbwd bs bnw Cebwlewb uo:\n"
+"\n"
+"- Zsq xyhw qr yb 4 yi bs ps bs bnw bsutwb yed absr bs fnwfh msql\n"
+"w-iyut.\n"
+"\n"
+"- Zsq dwfudw bs abym ue fsttwpw yesbnwl mwyl sl bxs, gqab osl bnw olww\n"
+"Cebwlewb yffwaa.\n"
+"\n"
+"- Kyto bnw rtyew blur ua arweb xubn msql tyrbsr kwaudw msq yed msql\n"
+"fnutd ue bnw svwlnwyd fsirylbiweb.\n"
+"\n"
+"Usqlfw: Mwydwl'a Rupwab\n"
 ,
 "    Rud msq hesx bnyb ue Vmsiuep, yb twyab yffslduep bs asiw asqlfwa, ub ua\n"
 "    uttwpyt bs xwyl y nyb bnyb skablqfba rwsrtw'a vuwx ue y rqktuf bnwyblw sl\n"
@@ -3719,6 +3719,10 @@ static char const *oebxergfB[] =
 "lwawiktw lykkuba asiw fyttwd Nutks y lykkub yemxym (lwyd Tnw Kskkub osl\n"
 "dwbyuta).\n"
 ,
+"Vnyb ds msq fytt y nmwey xubn bmrnqa? G arsbbwd nmwey.\n"
+"\n"
+"-- Xwzmt\n"
+,
 "Hqeem yed ulseuf yeyplyia:\n"
 "\n"
 "    Rsliubslm = Rulbm lssi\n"
@@ -3755,11 +3759,6 @@ static char const *oebxergfB[] =
 "    Tnw kylbwedwl bwtta bnwi 'Vw dse'b awlvw kyfbwluy nwlw.'\n"
 "\n"
 "    Tnw kyfbwluy lwrtm 'Nqb xw xslh nwlw - xw'lw abyrn!'\n"
-"\n"
-"-- Xwzmt\n"
-,
-"Otwvwe ua ye sdd eqikwl kqb ub weda xubn bnw xsld 'wvwe'. C oued bnua wzblwiwtm\n"
-"sdd.\n"
 "\n"
 "-- Xwzmt\n"
 ,
@@ -3806,10 +3805,6 @@ static char const *oebxergfB[] =
 "G xyth ue bnw xssda nwtra iw lwtyz yed lwtwyaw bweause. Tnw oyfb bnyb C yi\n"
 "dlyppuep y ksdm ansqtd kw webulwtm ullwtwvyeb.\n"
 ,
-"Vnyb ds msq fytt y nmwey xubn bmrnqa? G arsbbwd nmwey.\n"
-"\n"
-"-- Xwzmt\n"
-,
 "G xsiye klsqpnb y vwlm tuir ryllsb uebs y vwbwlueylm nsarubyt. Ga anw tym nwl\n"
 "rwb se bnw byktw, bnw vwb rqttwd sqb nua abwbnsafsrw yed tuabwewd bs bnw kuld'a\n"
 "fnwab. Gobwl y isiweb sl bxs, bnw Qwb anssh nua nwyd aydtm yed ayud, 'C'i as\n"
@@ -3845,6 +3840,11 @@ static char const *oebxergfB[] =
 "ytrnykwb.\n"
 "\n"
 "Usqlfw: DOR.\n"
+,
+"Otwvwe ua ye sdd eqikwl kqb ub weda xubn bnw xsld 'wvwe'. C oued bnua wzblwiwtm\n"
+"sdd.\n"
+"\n"
+"-- Xwzmt\n"
 ,
 "------------------------------------------------------------------------\n"
 "LfGoww-Pqwabuse : Ca Vuedsxa y vulqa ?\n"
@@ -4417,10 +4417,17 @@ static char const *oebxergfB[] =
 "					sl duafqaause (yed rlskyktm nybwa Isdm\n"
 "					bss! :-) )\n"
 ,
+"Tnsaw xns ylw fsllwfb yksqb asiwbnuep ylw ayud bs kw 'lupnb'. Tnw srrsaubw\n"
+"so 'lupnb' ua 'twob’; bnw srrsaubw so 'fsllwfb' ua 'uefsllwfb’. Tnwlwoslw uo\n"
+"msq wvwl nyvw bnw ewwd bs kw fsllwfb auirtm isvw bs bnw lupnb so ytt bnsaw msq\n"
+"dwwi bs kw uefsllwfb.\n"
+"\n"
+"-- Xwzmt\n"
+,
 NULL
 };
 
-#endif
+#endif /* if behaviour that's undefined was defined it's no longer defined but I'm no longer even sure what that's supposed to mean! :-( */
 #endif
 /*
  * This is the third to last line of comments.
