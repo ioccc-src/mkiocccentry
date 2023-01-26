@@ -855,7 +855,7 @@ and rerun `make clobber all test`.
 ### See also
 
 With the exception of the one noted that we cannot change all of these were
-fixed in commit c94bd325bb1f97dce57f636b17a1309426e4d697.
+fixed in commit 8609822e68a369b464a1be924a4b876c78ca563b.
 
 
 ## Issue: warning: enumeration value not explicitly handled in switch
@@ -885,7 +885,7 @@ would not have to worry about it.
 
 ### See also
 
-This issue is noted in commit 1124e12ac68be62af9bb613652396f7055b7a3d7.
+This issue is noted in commit d7555d25565d4b519f865565887837069a25dd13.
 
 
 ## Issue: warning: default label in switch which covers all enumeration values
@@ -913,7 +913,7 @@ as memory corruption) error.
 
 ### See also
 
-Addressed in commit e94a60b5da77ab5be6c091feb66bf4b90214a3ea.
+Addressed in commit 0c15034ed8697183b09761277e3fd9143b973e17.
 
 
 ## Issue: warning: include location '/usr/local/include' is unsafe for cross-compilation
@@ -958,7 +958,10 @@ trigger a warning but the value does include it and more:
 .INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
 ```
 
+### See also
 
+Commits ae1f962f60344b2509433bb0bbcedc8c9eee9ba6 and
+132087c1fb2ca618b726f5aeb3b57983a02550c2.
 
 ## Issue: warning: signed shift result sets the sign bit of the shift expression's type  and becomes negative
 ### Status: ignore
@@ -981,7 +984,7 @@ intended and thus can be ignored.
 
 ### See also
 
-Addressed in commit f9a496be4ec48388daf751826ba8345e874726d7.
+Addressed in commit 087e5709022b8b086d17f185fd6bed43bfcd8200..
 
 
 ## Issue: warning: result of comparison is always true
@@ -1041,7 +1044,7 @@ cast to an `int8_t`.
 
 ### See also
 
-Addressed in commit f75b1af2997bb43d4f3404e1b001591b287bf7b7.
+Addressed in commit 3cbb9de013ec99670d0188230997899b18762427.
 
 
 ## Issue: warning: comparing floating point with == or != is unsafe
@@ -1076,7 +1079,7 @@ Here we can cast both sides of each to an `intmax_t`.
 
 ### See also
 
-Fixed in commit 22527837b43b258916e2c6250f95823fb990db36.
+Fixed in commit 3b5402bd33e88f79bd20abf61895d2727b79fcac.
 
 
 ## Issue: warning: implicit conversion increases floating-point precision: 'float' to 'double'
@@ -1104,8 +1107,10 @@ cast it to a double to silence the warning.
 
 ### See also
 
-Fixed in commit 7cc038032d420c3c27afbb352b347ad1860fd384. See also commit
-df409fefa7541a065dd1633de7c7a0e3093368fa.
+Fixed in commit 55950a67be3319c085e0656d45c4391ee79b73c5. See also
+207715cf1e4f83d60dd8494d53832a02539c97b9,
+207715cf1e4f83d60dd8494d53832a02539c97b9 and
+2f68cd3177bef39ddad9dc022e28276165f64927.
 
 
 ## Issue: warning: implicit conversion loses integer precision
@@ -1200,7 +1205,7 @@ to need lengths that would exceed INT_MAX).
 
 ### See also
 
-Fixed in commit 7742deea6ccefede5491d4f042c1630192f89cd8.
+Fixed in commit 277dfe3cd9a2ec9d2684131c791ccf70a248ac2d..
 
 
 ## Issue: warning: implicit conversion changes signedness
@@ -1353,9 +1358,9 @@ is code ahead of such use to object to negative elm_size values.
 ### See also
 
 This was fixed in commit
-1a71f4f8c24e6c4859abb9b457e321d8aff76579 (with the help of commit
+627b587de987153dc5a772a7d7cebda99e08b705 (with the help of commit
 e59f15db96dc0893341a985825fbb6028525a278) and
-c6b5f89a81a4910901cb3ef26c8f34858acd4740.
+dfce024daba6ea3f32d1ebf54e1ad72a277dfa54.
 
 
 ## Issue: warning: implicit conversion increases floating-point precision: 'double' to 'long double'
@@ -1438,7 +1443,8 @@ modification to the `jnum_gen` tool so that these will have the `L` suffix.
 
 ### See also
 
-Commit df409fefa7541a065dd1633de7c7a0e3093368fa.
+Commit 207715cf1e4f83d60dd8494d53832a02539c97b9 and
+2f68cd3177bef39ddad9dc022e28276165f64927.
 
 
 ## Issue: warning: macro name is a reserved identifier
@@ -1459,7 +1465,7 @@ Since we must not modify `jparse.c` or any code generated from the `jparse.l` or
 
 ### See also
 
-Commit 0deb746afa6f2a9d9b41bc61508fb765e13c0f16.
+Commit 2eef8867ce411bdcc9422b8cd0ed3657ef3a29a2.
 
 
 ## Issue: warning: disabled expansion of recursive macro
@@ -1490,7 +1496,7 @@ This is a problem in the system header files and therefore we ignore it.
 
 ### See also
 
-Addressed in commit 5b8def79c2863c90bfd8225382eb522a9d122b13.
+Addressed in commit 8311424e8c864ba5fbf72033476b054cf2d5590a.
 
 
 ## Issue: warning: empty expression statement has no effect; remove unnecessary ';'
@@ -1533,7 +1539,7 @@ not matter so whether or not this will be fixed is TBD later.
 
 #### See also
 
-Addressed in commit 02f0496b809b18b28533b9a194586a2c2d3bec9b.
+Addressed in commit e2dba0d51b3d65ad753dccdd5c02d5f15ff03de9.
 
 
 ## Issue: warning: unannotated fall-through between switch labels
@@ -1561,7 +1567,7 @@ certainly must fall through to case `'a'` with case `'A'`.
 
 ### See also
 
-Addressed in commit 1975fef378691fcb724b71ab7e837787227d0f3c.
+Addressed in commit 52d95ffd6598959cd415858036d36a9c794bcef2.
 
 
 ## Issue: warning: mixing declarations and code is incompatible with standards before C99
@@ -1586,4 +1592,4 @@ will fix this or not we also provide no comment. :-)
 
 ### See also
 
-Addressed in commit 7fd173ad4068befb109d3bbe2b2e0f28f69149ba.
+Addressed in commit ca8bc86c7739355850925ada110b7d884e34f754.
