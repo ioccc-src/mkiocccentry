@@ -1384,10 +1384,10 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -D ./jparse"
+run_check 45 "make -C jparse ${MAKE_FLAGS} run_bison-v7"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -D ./jparse"
+run_check 46 "make -C jparse ${MAKE_FLAGS} run_flex-v7"
 
 if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
