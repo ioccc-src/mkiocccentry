@@ -9,11 +9,52 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "19 January 2023" "jsemcgen.sh" "jparse tools"
+.TH jsemcgen.sh 8 "26 January 2023" "jsemcgen.sh" "jparse tools"
 .SH NAME
-jsemcgen.sh \- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
+.B jsemcgen.sh
+\- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
 .SH SYNOPSIS
-\fBjsemcgen.sh\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] [\-I] [\-N name] [\-D def_func] [\-P prefix] [\-1 func] [\-S func] [\-B func] [\-0 func] [\-M func] [\-O func] [\-A func] [\-U func] [\-j jsemtblgen] [\-p patch_tool] file.json head patch tail out
+.B jsemcgen.sh
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.RB [\| \-s \|]
+.RB [\| \-I \|]
+.RB [\| \-N
+.IR name \|]
+.RB [\| \-D
+.IR def_func \|]
+.RB [\| \-P
+.IR prefix \|]
+.RB [\| \-1
+.IR func \|]
+.RB [\| \-S
+.IR func \|]
+.RB [\-B
+.IR func \|]
+.RB [\-0
+.IR func \|]
+.RB [\-M
+.IR func \|]
+.RB [\-O
+.IR func \|]
+.RB [\-A
+.IR func \|]
+.RB [\-U
+.IR func \|]
+.RB [\-j
+.IR jsemtblgen \|]
+.RB [\-p
+.IR patch_tool \|]
+.I file.json
+.I head
+.I patch
+.I tail
+.I out
 .SH DESCRIPTION
 This tool is a wrapper to the \fBjsemtblgen(8)\fP tool which itself creates JSON semantics tables.
 JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
@@ -34,70 +75,123 @@ The \fIout\fP argument is the \fBjsemtblgen(8)\fP output with possible head, tai
 If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP, you can specify \fI.\fP instead.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-Show help and exit.
+.B \-h
+Print help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to level.
+.BI \-v\  level
+Set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-J \fIlevel\fP\fP
-Set JSON verbosity level.
+.BI \-J\  level
+Set JSON verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-q\fP
+.B \-q
 Set quiet mode.
 .TP
-\fB\-V\fP
-Show version and exit.
+.B \-V
+Print version and exit.
 .TP
-\fB\-s\fP
+.B \-s
 Specify that arg is a string to be processed rather than a file.
 .TP
-\fB\-I\fP
+.B \-I
 Output as a C header file.
 .TP
-\fB\-N \fIname\fP\fP
-Set name of the semantics table.
+.BI \-N\  name
+Set name of the semantics table to
+.I name\c
+\&.
 .TP
-\fB\-D \fIdef_func\fP\fP
-Validate with \fIdef_func()\fP unless overridden by another flag.
+.BI \-D\  def_func 
+Validate with
+.I def_func()
+unless overridden by another flag.
 .TP
-\fB\-P \fIprefix\fP\fP
-Validate \fBJTYPE_MEMBER\fP JSON nodes with prefix_name() (def: do not)
+.BI \-P\  prefix
+Validate
+.B JTYPE_MEMBER
+JSON nodes with
+.B prefix_name()
+(def: do not)
 .RS
-Note that the name is based on the \fBJTYPE_MEMBER\fP JSON decoded name string.
+Note that the name is based on the
+.B JTYPE_MEMBER
+JSON decoded name string.
 Underscore (_) replaces any name chars that are not valid in a C function name.
-\fB\-P\fP overrides any use of \fB\-M\fP.
+.B \-P
+overrides any use of
+.B \-M\c
+\&.
 .RE
 .TP
-\fB\-1 \fIfunc\fP\fP
-Validate \fBJTYPE_NUMBER\fP JSON nodes with \fIfunc()\fP.
+.BI \-1\  func
+Validate 
+.B JTYPE_NUMBER
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-S \fIfunc\fP\fP
-Validate \fBJTYPE_STRING\fP JSON nodes with \fIfunc()\fP.
+.BI \-S\  func
+Validate 
+.B JTYPE_STRING
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-B \fIfunc\fP\fP
-Validate \fBJTYPE_BOOL\fP JSON nodes with \fIfunc()\fP.
+.BI \-B\  func
+Validate 
+.B JTYPE_BOOL
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-0 \fIfunc\fP\fP
-Validate \fBJTYPE_NULL\fP JSON nodes with \fIfunc()\fP.
+.BI \-0\  func
+Validate 
+.B JTYPE_NULL
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-M \fIfunc\fP\fP
-Validate \fBJTYPE_MEMBER\fP JSON nodes with \fIfunc()\fP.
+.BI \-M\  func
+Validate 
+.B JTYPE_MEMBER
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-O \fIfunc\fP\fP
-Validate \fBJTYPE_OBJECT\fP JSON nodes with \fIfunc()\fP.
+.BI \-O\  func
+Validate 
+.B JTYPE_OBJECT
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-A \fIfunc\fP\fP
-Validate \fBJTYPE_ARRAY\fP JSON nodes with \fIfunc()\fP.
+.BI \-A\  func
+Validate 
+.B JTYPE_ARRAY
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-U \fIfunc\fP\fP
-Validate nodes with unknown types with \fIfunc()\fP.
+.BI \-U\  func
+Validate nodes with unknown types with
+.I func()\c
+\&.
 .TP
-\fB\-j \fIjsemtblgen\fP\fP
-Set path to \fBjsemtblgen(8)\fP.
+.BI \-j\  jsemtblgen
+Set path to
+.B jsemtblgen(8)
+to
+.I jsemtblgen\c
+\&.
 .TP
-\fB\-p \fIpatch_tool\fP\fP
-Set path to the patch program.
+.BI \-p\  patch_tool
+Set path to the patch program to
+.I patch_tool\c
+\&.
 .SH EXIT STATUS
 .TP
 0
