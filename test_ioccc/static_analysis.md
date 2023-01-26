@@ -1643,3 +1643,25 @@ Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1
 The reason we ignore these is because they're in the parser generated code so we
 cannot touch it.
 
+### See also
+
+Commit bd4fe62f06096ebccc744648120852789003e022.
+
+
+## Issue: Result of operation is garbage or undefined (rule_count.c)
+### Status: TBD
+### Example
+
+It refers to this code:
+
+
+```c
+if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
+```
+
+And it says: the left operand of '!=' is a garbage value.
+
+### Solution
+
+This is code that only the IOCCC Judges should modify so I'm not even going to
+address it.
