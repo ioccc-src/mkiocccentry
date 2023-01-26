@@ -1689,3 +1689,21 @@ And many more lines.
 
 As this is in generated code we will not show the any code itself and we will
 not adjust the code.
+
+
+## Issue: Division by zero
+### Status: ignore (not a bug)
+### Example
+
+The code in question is:
+
+```c
+    for (char const *p = oebxergfB[(((size_t)two*2*2*015+(size_t)(four/(07&0x07)))%forty)]; *p; ++p) {
+```
+
+### Solution
+
+It appears that clang scan-build is confused, falsely believing that after
+`forty` is set 0 (above this loop) it stays 0. This is not true though.
+
+Thus there's nothing to actually fix here because there's no division by 0.
