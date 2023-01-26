@@ -9,11 +9,44 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemtblgen 8 "19 January 2023" "jsemtblgen" "jparse tools"
+.TH jsemtblgen 8 "26 January 2023" "jsemtblgen" "jparse tools"
 .SH NAME
-jsemtblgen \- generate JSON semantics table
+.B jsemtblgen
+\- generate JSON semantics table
 .SH SYNOPSIS
-\fBjsemtblgen\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] [\-I] [\-N name] [\-D def_func] [\-P prefix] [\-1 func] [\-S func] [\-B func] [\-0 func] [\-M func] [\-O func] [\-A func] [\-U func] json_arg
+.B jsemtblgen
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.RB [\| \-s \|]
+.RB [\| \-I \|]
+.RB [\| \-N
+.IR name \|]
+.RB [\| \-D
+.IR def_func \|]
+.RB [\| \-P
+.IR prefix \|]
+.RB [\| \-1
+.IR func \|]
+.RB [\| \-S
+.IR func \|]
+.RB [\| \-B
+.IR func \|]
+.RB [\| \-0
+.IR func \|]
+.RB [\| \-M
+.IR func \|]
+.RB [\| \-O
+.IR func \|]
+.RB [\| \-A
+.IR func \|]
+.RB [\| \-U
+.IR func \|]
+.I json_arg
 .SH DESCRIPTION
 This tool creates JSON semantics tables.
 JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
@@ -25,64 +58,109 @@ If the \fB-s\fP option is used the \fIjson_arg\fP is a string.
 Otherwise it is assumed to be a file.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-Show help and exit.
+.B \-h
+print help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to level.
+.BI \-v\  level
+set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-J \fIlevel\fP\fP
-Set JSON verbosity level.
+.BI \-J\  level
+set JSON verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-q\fP
-Set quiet mode.
+.B \-q
+set quiet mode.
 .TP
-\fB\-V\fP
-Show version and exit.
+.B \-V
+print version and exit.
 .TP
-\fB\-s\fP
-Specify that arg is a string to be processed rather than a file.
+.B \-s
+specify that arg is a string to be processed rather than a file.
 .TP
-\fB\-I\fP
-Output as a C header file.
+.B \-I
+output as a C header file.
 .TP
-\fB\-N \fIname\fP\fP
-Set name of the semantics table.
+.BI \-N\  name
+set name of the semantics table.
 .TP
-\fB\-D \fIdef_func\fP\fP
-Validate with \fIdef_func()\fP unless overridden by another flag.
+.BI \-D\  def_func
+validate with
+.I def_func()
+unless overridden by another flag.
 .TP
-\fB\-P \fIprefix\fP\fP
-Validate \fBJTYPE_MEMBER\fP JSON nodes with prefix_name() (def: do not).
+.BI \-P\  prefix
+validate
+.B JTYPE_MEMBER
+JSON nodes with
+.I prefix_name()
+(def: do not).
 .RS
-Note that the name is based on the \fBJTYPE_MEMBER\fP JSON decoded name string.
+Note that the name is based on the
+.B JTYPE_MEMBER
+JSON decoded name string.
 Underscore (_) replaces any name chars that are not valid in a C function name.
-\fB\-P\fP overrides any use of \fB\-M\fP.
+.B \-P
+overrides any use of
+.B \-M\c
+\&.
 .RE
 .TP
-\fB\-1 \fIfunc\fP\fP
-Validate \fBJTYPE_NUMBER\fP JSON nodes with \fIfunc()\fP.
+.BI \-1\  func
+validate
+.B JTYPE_NUMBER
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-S \fIfunc\fP\fP
-Validate \fBJTYPE_STRING\fP JSON nodes with \fIfunc()\fP.
+.BI \-S\  func
+validate 
+.B JTYPE_STRING
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-B \fIfunc\fP\fP
-Validate \fBJTYPE_BOOL\fP JSON nodes with \fIfunc()\fP.
+.BI \-B\  func
+validate 
+.B JTYPE_BOOL
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-0 \fIfunc\fP\fP
-Validate \fBJTYPE_NULL\fP JSON nodes with \fIfunc()\fP.
+.BI \-0\  func
+validate 
+.B JTYPE_NULL
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-M \fIfunc\fP\fP
-Validate \fBJTYPE_MEMBER\fP JSON nodes with \fIfunc()\fP.
+.BI \-M\  func
+validate 
+.B JTYPE_MEMBER
+JSON nodes with
+.I func()\c
+\&.
 .TP
-\fB\-O \fIfunc\fP\fP
-Validate \fBJTYPE_OBJECT\fP JSON nodes with \fIfunc()\fP.
+.BI \-O\  func
+validate 
+.B JTYPE_OBJECT
+JSON nodes with 
+.I func()\c
+\&.
 .TP
-\fB\-A \fIfunc\fP\fP
-Validate \fBJTYPE_ARRAY\fP JSON nodes with \fIfunc()\fP.
+.BI \-A\  func
+validate 
+.B JTYPE_ARRAY
+JSON nodes with 
+.I func()\c
+\&.
 .TP
-\fB\-U \fIfunc\fP\fP
-Validate nodes with unknown types with \fIfunc()\fP.
+.BI \-U\  func
+validate nodes with unknown types with
+.I func()\c
+\&.
 .SH EXIT STATUS
 .TP
 0

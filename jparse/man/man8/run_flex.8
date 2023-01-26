@@ -9,15 +9,37 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_flex.sh 8 "05 January 2023" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 8 "26 January 2023" "run_flex.sh" "IOCCC tools"
 .SH NAME
-run_flex.sh \- run
+.B run_flex.sh
+\- run
 .B flex
 to generate C code from a
 .I *.l
 file or use backup files if error
 .SH SYNOPSIS
-\fBrun_flex.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-f flex] [\-g verge] [\-p prefix] [\-s sorry.h] [\-S] [\-F dir] [\-D dir] \-\- [flex_flags]
+.B run_flex.sh
+.RB [\| \-h \| ]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-o \|]
+.RB [\| \-f
+.IR flex \|]
+.RB [\| \-g
+.IR verge \|]
+.RB [\| \-p
+.IR prefix \|]
+.RB [\| \-s
+.IR sorry.h \|]
+.RB [\| \-S]
+.RB [\| \-F
+.IR dir \|]
+.RB [\| \-D
+.IR dir \|]
+.B \-\-
+.RB [\|
+.RI flex_flags \|]
 .SH DESCRIPTION
 \fBrun_flex.sh\fP attempts to find a recent enough version of
 .B flex
@@ -28,38 +50,50 @@ If a recent enough version is not found or
 encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files \fIprefix.ref.c\fP and \fIprefix.lex.ref.h\fP.
 .SH OPTIONS
 .TP
-\fB\-h\fP
-Show help and exit.
+.B \-h
+print help and exit.
 .TP
-\fB\-V\fP
-Show version and exit.
+.B \-V
+print version and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to \fIlevel\fP.
+.BI \-v\  level
+set verbosity level to
+.I level\c
+\&.
 .TP
-\fB\-o\fP
-Do \fBNOT\fP use backup files.
+.B \-o
+do
+.B NOT
+use backup files.
 If
 .B flex
 cannot be used or fails to generate the files the script will fail.
 .TP
-\fB\-f \fIflex\fP\fP
-Set
+.BI \-f\  flex
+set
 .B flex
-basename to \fIflex\fP.
+basename to
+.I flex\c
+\&.
 .TP
-\fB\-g \fIverge\fP\fP
-Set path to the \fBverge\fP tool to \fIverge\fP.
+.BI \-g\  verge
+set path to the \fBverge\fP tool to \fIverge\fP.
 This is used to determine if the
 .B flex
 tool is recent enough.
 .TP
-\fB\-p \fIprefix\fP\fP
-Set prefix of files to use to \fIprefix\fP.
+.BI \-p\  prefix
+set prefix of files to use to
+.I prefix\c
+\&.
 The
 .B flex
-input file will be \fIprefix.l\fP.
-If the \fB\-o\fP option was not used and
+input file will be
+.I prefix.l\c
+\&.
+If the
+.B \-o
+option was not used and
 .B flex
 cannot be used or fails then the backup files
 .I prefix.ref.c
@@ -67,25 +101,32 @@ and
 .I prefix.lex.ref.h
 will be used.
 .TP
-\fB\-s \fIsorry.h\fP\fP
-Set path to file to prepend to the C output to \fIsorry.h\fP.
+.BI \-s\  sorry.h
+set path of file to prepend to the C output to
+.I sorry.h\c
+\&.
 .TP
-\fB\-S\fP
-Suppress prepending apology to generated C output files.
+.B \-S
+suppress prepending apology to generated C output files.
 .TP
-\fB\-F \fIflex_dir\fP\fP
-Add a directory to search for
-.B flex
-in to \fIflex_dir\fP.
-\fB\-F\fP can be used more than once.
-If not used the script looks at \fB$PATH\fP.
+.BI \-F\  flex_dir
+add directory
+.I flex_dir
+to list to search for
+.B flex\c
+\&.
+.B \-F
+can be used more than once.
+If not used the script looks at
+.B $PATH\c
+\&.
 .TP
-\fB\-D \fIdir\fP\fP
-Set directory to find the flex source file.
+.BI \-D\  dir
+set directory to find the flex source file.
 Default is \fI.\fP.
 .PP
 The
-.B flex_flags
+.I flex_flags
 are any optional flags to give to
 .B flex
 before the prefix.

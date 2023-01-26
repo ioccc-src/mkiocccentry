@@ -76,42 +76,42 @@ If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP, you can spe
 .SH OPTIONS
 .TP
 .B \-h
-Print help and exit.
+print help and exit.
 .TP
 .BI \-v\  level
-Set verbosity level to
+set verbosity level to
 .I level\c
 \&.
 .TP
 .BI \-J\  level
-Set JSON verbosity level to
+set JSON verbosity level to
 .I level\c
 \&.
 .TP
 .B \-q
-Set quiet mode.
+set quiet mode.
 .TP
 .B \-V
-Print version and exit.
+print version and exit.
 .TP
 .B \-s
-Specify that arg is a string to be processed rather than a file.
+specify that arg is a string to be processed rather than a file.
 .TP
 .B \-I
-Output as a C header file.
+output as a C header file.
 .TP
 .BI \-N\  name
-Set name of the semantics table to
+set name of the semantics table to
 .I name\c
 \&.
 .TP
 .BI \-D\  def_func 
-Validate with
+validate with
 .I def_func()
 unless overridden by another flag.
 .TP
 .BI \-P\  prefix
-Validate
+validate
 .B JTYPE_MEMBER
 JSON nodes with
 .B prefix_name()
@@ -128,68 +128,68 @@ overrides any use of
 .RE
 .TP
 .BI \-1\  func
-Validate 
+validate 
 .B JTYPE_NUMBER
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-S\  func
-Validate 
+validate 
 .B JTYPE_STRING
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-B\  func
-Validate 
+validate 
 .B JTYPE_BOOL
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-0\  func
-Validate 
+validate 
 .B JTYPE_NULL
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-M\  func
-Validate 
+validate 
 .B JTYPE_MEMBER
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-O\  func
-Validate 
+validate 
 .B JTYPE_OBJECT
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-A\  func
-Validate 
+validate 
 .B JTYPE_ARRAY
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-U\  func
-Validate nodes with unknown types with
+validate nodes with unknown types with
 .I func()\c
 \&.
 .TP
 .BI \-j\  jsemtblgen
-Set path to
+set path to
 .B jsemtblgen(8)
 to
 .I jsemtblgen\c
 \&.
 .TP
 .BI \-p\  patch_tool
-Set path to the patch program to
+set path to the patch program to
 .I patch_tool\c
 \&.
 .SH EXIT STATUS
