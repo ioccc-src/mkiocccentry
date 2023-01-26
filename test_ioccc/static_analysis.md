@@ -1719,12 +1719,13 @@ If we look at the line in the scan-view we see:
 if (strcmp(author_set[i].name, author_set[j].name) == 0) {
 ```
 
+and it claims that the `author_set[i].name` is NULL. But how is this? If we look
+above we see that right before this there was a free() and set to NULL in the
+case the name is too long.
+
 ### Solution
 
-and it claims that the `author_set[i].name` is NULL. But how is this? If we look
-above we see that right before this there was a free() to it and set to NULL in
-the case that the name is too long. The fix is to add the missing 'else' prior
-to the 'if'.
+The fix is to add the missing 'else' prior to the 'if'.
 
 This prevents a segfault if the name is too long where one might have seen:
 
