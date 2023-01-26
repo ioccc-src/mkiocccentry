@@ -3654,7 +3654,7 @@ get_author_info(struct author **author_set_p)
 	    /*
 	     * reject if author name is a duplicate of a previous author name
 	     */
-	    if (i > 0) {
+	    else if (i > 0) {
 		for (j=0; j < i; ++j) {
 		    if (strcmp(author_set[i].name, author_set[j].name) == 0) {
 

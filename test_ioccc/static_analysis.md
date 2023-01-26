@@ -1707,3 +1707,33 @@ It appears that clang scan-build is confused, falsely believing that after
 `forty` is set 0 (above this loop) it stays 0. This is not true though.
 
 Thus there's nothing to actually fix here because there's no division by 0.
+
+## Issue: Unix API	mkiocccentry.c	get_author_info (mkiocccentry.c)
+### Status: fixed
+### Example
+
+If we look at the line in the scan-view we see:
+
+```c
+
+if (strcmp(author_set[i].name, author_set[j].name) == 0) {
+```
+
+### Solution
+
+and it claims that the `author_set[i].name` is NULL. But how is this? If we look
+above we see that right before this there was a free() to it and set to NULL in
+the case that the name is too long. The fix is to add the missing 'else' prior
+to the 'if'.
+
+This prevents a segfault if the name is too long where one might have seen:
+
+```
+Enter author name: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+
+Sorry ( tm Canada :-) ), we limit names to 48 characters
+
+Segmentation fault: 11
+```
+
+but now one will just be prompted again to re-enter the information.
