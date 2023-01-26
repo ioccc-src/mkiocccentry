@@ -1638,6 +1638,9 @@ Logic error	Assigned value is garbage or undefined	jparse/jparse.tab.c	yyparse	1
 
 ```
 
+There is no need to give example code for the same reason we will ignore it:
+it's generated code.
+
 ### Solution
 
 The reason we ignore these is because they're in the parser generated code so we
@@ -1665,3 +1668,24 @@ And it says: the left operand of '!=' is a garbage value.
 
 This is code that only the IOCCC Judges should modify so I'm not even going to
 address it.
+
+
+## Issue: Uninitialized argument value
+### Status: ignore (see discussion)
+### Example
+
+```
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2070	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2144	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2013	43	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	2079	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	1704	48	View Report	Report Bug	Open File
+Logic error	Uninitialized argument value	jparse/jparse.tab.c	yyparse	1671	48	View Report	Report Bug	Open File
+```
+
+And many more lines.
+
+### Solution
+
+As this is in generated code we will not show the any code itself and we will
+not adjust the code.
