@@ -204,7 +204,7 @@ break statement was removed. A good example has actually happened in the past.
 Choosing to ignore this very warning a long while back I (@xexyl) wrote some
 code (that was obsoleted by the json parser) that had a return prior to a break.
 Later on this actually happened as the return was removed and moved to the end
-of the file. But if there was another case in the switch block it would have
+of the function. But if there was another case in the switch block it would have
 fallen through and caused an error.
 
 
@@ -271,7 +271,7 @@ functions) where in turn the variable triggers the warning.
 In our case there is no place in the code that this is triggered that is a
 problem as it's all like the above example.  Moreover, calls to these debug
 functions pass literal strings as the fmt argument further reducing the
-potrential negative impact of this issue.
+potential for negative impact of this issue.
 
 
 ## Issue: warning: function 'foo' could be declared with attribute 'noreturn'

@@ -412,10 +412,11 @@ hostchk_warning:
 
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
-	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep \
-        pull release seqcexit shellcheck tags test test-chkentry use_json_ref \
+	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep soup \
+        pull release seqcexit shellcheck tags test test-chkentry use_json_ref eat eating eat eating_soup \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
 	all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc depend
+
 
 
 ####################################
@@ -463,8 +464,14 @@ all_jparse: jparse/Makefile
 all_jparse_test: jparse/test_jparse/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
 
+soup: soup/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup soup
+
 all_soup: soup/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all
+
+eat eating eat_soup eating_soup: soup/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup eat
 
 all_test_ioccc: test_ioccc/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all

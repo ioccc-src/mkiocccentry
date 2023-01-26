@@ -3,11 +3,8 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * The concept of this file was developed by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * The JSON parser was co-developed in 2022 by:
+ * The concept of this file and the JSON parser were both co-developed in 2022
+ * by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -16,6 +13,12 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * The IOCCC soup is a joke between Landon and Cody after Cody misread, being
+ * very tired at the time, one word as 'soup', when discussing decreasing the
+ * number of files in the top level directory (thus the name of this directory).
+ * We might have even left you all some delicious soup somewhere here. :-)
+ *
  */
 
 
