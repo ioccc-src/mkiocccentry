@@ -1602,6 +1602,11 @@ if [[ -z "$X_FLAG" ]]; then
 else
     rm -f "$LOGFILE"
 fi
+
+# final cleanup
+#
+rm -f jparse/lex.yy.c
+
 # All Done!!! -- Jessica Noll, Age 2
 #
 if [[ "$V_FLAG" -gt 1 ]]; then

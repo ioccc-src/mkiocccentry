@@ -808,7 +808,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${TARGETS}
-	${RM} -f jparse.output
+	${RM} -f jparse.output lex.yy.c
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags
 	${S} echo
