@@ -49,6 +49,10 @@ Changed PREP_VERSION from "0.3 2023-01-24" to "0.4 2023-01-24".
 
 Moved static variables from header to source files.
 
+Fix segfault when author length is too long from NULL pointer dereference: due
+to an else being left off from an if after rejecting the author, freeing and
+setting to NULL the code went on to check for unique author names which would
+then dereference the just rejected NULL author name.
 
 
 ## Release 0.9.9 2022-12-31
