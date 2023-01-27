@@ -97,7 +97,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:V")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(3, "-h help mode", program); /*ooo*/
+	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -108,16 +108,16 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    (void) printf("%s\n", DYN_TEST_VERSION);
-	    exit(3); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	default:
-	    usage(4, "invalid -flag", program); /*ooo*/
+	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
     if (argc - optind != REQUIRED_ARGS) {
-	usage(4, "expected no arguments", program); /*ooo*/
+	usage(3, "expected no arguments", program); /*ooo*/
 	not_reached();
     }
 
