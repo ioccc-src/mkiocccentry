@@ -475,7 +475,7 @@ check_location_table(void)
  * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
  *
  * Even though the ISO 3166-1 Alpha-2 code is only UPPER CASE, the
- * code is compared ion a case independent way.  That is, a non-canonical
+ * code is compared in a case independent way.  That is, a non-canonical
  * lower case code will match the canonical UPPER CASE ISO 3166-1 Alpha-2 code.
  *
  * given:
