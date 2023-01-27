@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "25 January 2023" "jstrencode" "IOCCC tools"
+.TH jstrencode 1 "27 January 2023" "jstrencode" "IOCCC tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -26,10 +26,15 @@
 .RI [\| string 
 .IR ... \|]
 .SH DESCRIPTION
-\fBjstrencode\fP encodes JSON encoded strings given on the command line.
-If given the \fB\-t\fP option it performs a test on the JSON encode and encode functions.
+.B jstrencode
+encodes JSON encoded strings given on the command line.
+If given the
+.B \-t 
+option it performs a test on the JSON encode and encode functions.
 .PP
-By default the program reads from \fBstdin\fP.
+By default the program reads from
+.B stdin\c
+\&.
 .SH OPTIONS
 .TP
 .B \-h
@@ -61,7 +66,10 @@ encode successful
 encode unsuccessful
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error
@@ -75,16 +83,24 @@ If you have an issue with the tool you can report it at
 \fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
-.nf
 Encode the JSON string \fB{ "test_mode" : false }\fP:
+.nf
 .RS
 \fB
  ./jstrencode { "test_mode" : false }\fP
 .fi
 .RE
+.sp
+Note that we didn't quote it!
 .PP
+Encode a string containing an escaped double quote from
+.B stdin
+(send
+.B EOF\c
+\&, usually ctrl\-d or
+.B ^D\c
+\&, to encode):
 .nf
-Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to encode):
 .RS
 \fB
  ./jstrencode
@@ -93,8 +109,8 @@ Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, 
 .fi
 .RE
 .PP
-.nf
 Encode just a negative number:
+.nf
 .RS
 \fB
  ./jstrencode \-\- \-5\fP
@@ -102,4 +118,6 @@ Encode just a negative number:
 .RE
 .SH SEE ALSO
 .PP
-For the decode counterpart, see \fBjstrdecode(1)\fP.
+For the decode counterpart, see
+.B jstrdecode(1)\c
+\&.
