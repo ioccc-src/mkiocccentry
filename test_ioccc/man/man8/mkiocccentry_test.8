@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry_test.sh 8 "25 January 2023" "mkiocccentry_test.sh" "IOCCC tools"
+.TH mkiocccentry_test.sh 8 "28 January 2023" "mkiocccentry_test.sh" "IOCCC tools"
 .SH NAME
 .B mkiocccentry_test.sh
 \- run several invocations of
@@ -26,7 +26,10 @@ to test that it functions well
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
-\fBmkiocccentry_test.sh\fP runs a series of invocations of \fBmkiocccentry\fP, testing various types of inputs including multiple authors some of which have non\-ASCII characters in their name.
+.B mkiocccentry_test.sh
+runs a series of invocations of
+.B mkiocccentry\c
+\&, testing various types of inputs including multiple authors some of which have non\-ASCII characters in their name.
 .SH OPTIONS
 .TP
 .B \-h
@@ -99,4 +102,6 @@ error code.
 This script does not let one set the path to the needed tools like the other scripts do and so requires that one is in the clone of the repo directory to successfully run this script.
 This should probably be fixed.
 .SH SEE ALSO
-\fBioccc_test(8)\fP and \fBiocccsize_test(8)\fP
+.B ioccc_test(8)\c
+\&,
+.B iocccsize_test(8)

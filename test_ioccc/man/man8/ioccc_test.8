@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH ioccc_test.sh 8 "25 January 2023" "ioccc_test.sh" "IOCCC tools"
+.TH ioccc_test.sh 8 "28 January 2023" "ioccc_test.sh" "IOCCC tools"
 .SH NAME
 .B ioccc_test.sh
 \- perform the complete suite of tests for the mkiocccentry repo
@@ -24,11 +24,22 @@
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
-\fBioccc_test.sh\fP runs the entire test suite for the
+.B ioccc_test.sh
+runs the entire test suite for the
 .BR
 mkiocccentry
 toolkit.
-Although this is mostly used by repo maintainers it is also run via the \fBbug_report.sh(1)\fP script (through \fBmake test\fP) to help report bugs or other problems.
+Although this is mostly used by repo maintainers it is also run via the
+.B bug_report.sh(1)
+script through
+.sp
+.RS
+.ft B
+make test
+.ft R
+.RE
+.sp
+to help report bugs or other problems.
 .SH OPTIONS
 .TP
 .B \-h
@@ -94,39 +105,76 @@ something not found, not the right file type, or not executable
 >=20
 some test failed
 .SH FILES
-\fItest_ioccc.log\fP
+.I test_ioccc.log
 .RS
-The log file kept by \fBioccc_test.sh\fP.
+The log file kept by
+.B ioccc_test.sh\c
+\&.
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
 .SH NOTES
-Although one can certainly run this script directly it is better to run it via \fBmake clobber all test\fP from the main directory.
-You can also run the test suite of specific directories by running \fBmake clobber all test\fP from those directories.
+Although one can certainly run this script directly it is better to run it via
+.sp
+.RS
+.ft B
+ make clobber all test
+.ft R
+.RE
+.sp
+from the main directory.
+You can also run the test suite of specific directories by running
+.sp
+.RS
+.ft B
+make clobber all test
+.ft R
+.RE
+.sp
+from those directories to run just the test suite of said directories.
 This is much less useful, however.
-.PP
-For a more exhaustive test you should try running \fBmake prep\fP from the main directory.
-This will also run \fBbug_report.sh(1)\fP (with much less output) and, as long as no issues are detected, it will remove the bug report log file.
+For a more exhaustive test you should try running
+.sp
+.RS
+.ft B
+make prep
+.ft R
+.RE
+.sp
+from the main directory.
+This will also run
+.B bug_report.sh(1)
+(with much less output) and, as long as no issues are detected, it will remove the bug report log file.
 .SH BUGS
 If you have a problem with the tool you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
-It would be helpful if you run \fBmake bug_report\fP from the main repo when reporting the issue.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
+It would be helpful if you run
+.sp
+.RS
+.ft B
+make bug_report
+.ft R
+.RE
+.sp
+from the main repo when reporting the issue.
 .SH EXAMPLES
 .PP
-.nf
 Run the test suite the preferred way:
+.sp
 .RS
-\fB
- make clobber all test\fP
-.fi
+.ft B
+make clobber all test
+.ft R
 .RE
 .PP
-.nf
 Run the test script directly:
+.sp
 .RS
-\fB
- make clobber all && ./test_ioccc/ioccc_test.sh\fP
+.ft B
+make clobber all && ./test_ioccc/ioccc_test.sh
+.ft R
 .RE
 .SH SEE ALSO
-\fBbug_report.sh(1)\fP
+.B bug_report.sh(1)

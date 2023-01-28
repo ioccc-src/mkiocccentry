@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH iocccsize_test.sh 8 "25 January 2023" "iocccsize_test" "IOCCC tools"
+.TH iocccsize_test.sh 8 "28 January 2023" "iocccsize_test" "IOCCC tools"
 .SH NAME
 .B iocccsize_test.sh
 \- test iocccsize tool
@@ -30,7 +30,10 @@
 .RB [\| \-I
 .IR iocccsize_args \|]
 .SH DESCRIPTION
-\fBiocccsize_test.sh\fP runs a series of tests on the \fBiocccsize(1)\fP tool, verifying that it is functioning properly.
+.B iocccsize_test.sh
+runs a series of tests on the 
+.B iocccsize(1)
+tool, verifying that it is functioning properly.
 .SH OPTIONS
 .TP
 .B \-h
@@ -104,27 +107,6 @@ Set the args to iocccsize.
 Don't forget to add
 .I \-\-
 at the end.
-.SH EXAMPLES
-Run the \fRiocccsize\fP test suite in silent mode, printing only if a problem is discovered:
-.PP
-.RS
-\fB./iocccsize_test.sh\fP
-.fi
-.RE
-.PP
-Run the \fRiocccsize\fP test suite, reporting on each sub\-test that is performed:
-.RS
-.sp
-\fB./iocccsize_test.sh \-v 1\fP
-.fi
-.RE
-.PP
-You may also wish to try the test script in even more verbose mode:
-.PP
-.RS
-\fB./iocccsize_test.sh \-v 3\fP
-.fi
-.RE
 .SH EXIT STATUS
 .TP
 0
@@ -134,7 +116,10 @@ all OK
 one or more tests failed
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error
@@ -147,9 +132,39 @@ missing or unreadable limit_ioccc.h
 .TQ
 >=10
 internal error
-.SH SEE ALSO
-\fBiocccsize(1)\fP
 .SH BUGS
 .PP
-The matched keyword count from \fBiocccsize(1)\fP is currently ignored by the IOCCC
-as well as this test suite.
+The matched keyword count from
+.B iocccsize(1)
+is currently ignored by the IOCCC as well as this test suite.
+.SH EXAMPLES
+Run the
+.B iocccsize
+test suite in silent mode, printing only if a problem is discovered:
+.sp
+.RS
+.ft B
+ ./iocccsize_test.sh
+.ft R
+.RE
+.PP
+Run the
+.B iocccsize
+test suite, reporting on each sub\-test that is performed:
+.sp
+.RS
+.ft B
+ ./iocccsize_test.sh \-v 1
+.ft R
+.RE
+.PP
+You may also wish to try the test script in even more verbose mode:
+.sp
+.RS
+.ft B
+ ./iocccsize_test.sh \-v 3
+.ft R
+.RE
+.SH SEE ALSO
+.B iocccsize(1)
+
