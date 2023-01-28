@@ -9,10 +9,12 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "26 January 2023" "jsemcgen.sh" "jparse tools"
+.TH jsemcgen.sh 8 "28 January 2023" "jsemcgen.sh" "jparse tools"
 .SH NAME
 .B jsemcgen.sh
-\- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
+\- generate JSON semantics table via the 
+.B jsemtblgen(8)
+tool
 .SH SYNOPSIS
 .B jsemcgen.sh
 .RB [\| \-h \|]
@@ -56,23 +58,61 @@
 .I tail
 .I out
 .SH DESCRIPTION
-This tool is a wrapper to the \fBjsemtblgen(8)\fP tool which itself creates JSON semantics tables.
+This tool is a wrapper to the
+.B jsemtblgen(8)
+tool which itself creates JSON semantics tables.
 JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
 .PP
-In general, a JSON semantics table is an array of \fBstruct json_sem\fP that can be used to drive checks on the semantics of valid JSON.
+In general, a JSON semantics table is an array of 
+.B struct json_sem
+that can be used to drive checks on the semantics of valid JSON.
 This can be done for any JSON file.
 .PP
-The \fIfile.json\fP file is expected to be a valid JSON file used to generate the initial JSON semantics table.
-.br
-The \fIhead\fP file is a file add to the beginning of the \fBjsemtblgen(8)\fP output (before patched \fBjsemtblgen(8)\fP output).
-.br
-The \fIpatch\fP file is a patch file to apply to the output of \fBjsemtblgen(8)\fP with \fIhead\fP and \fItail\fP.
-.br
-The \fItail\fP file is a file to add to the end of the \fBjsemtblgen(8)\fP output (after patching the \fBjsemtblgen(8)\fP output).
-.br
-The \fIout\fP argument is the \fBjsemtblgen(8)\fP output with possible head, tail and patch applied.
+The 
+.I file.json
+file is expected to be a valid JSON file used to generate the initial JSON semantics table.
+.sp
+The 
+.I head
+file is a file add to the beginning of the
+.B jsemtblgen(8)
+output (before patched
+.B jsemtblgen(8)
+output).
+.sp
+The
+.I patch
+file is a patch file to apply to the output of
+.B jsemtblgen(8)
+with
+.I head
+and
+.I tail\c
+\&.
+.sp
+The
+.I tail
+file is a file to add to the end of the
+.B jsemtblgen(8)
+output (after patching the
+.B jsemtblgen(8)
+output).
+.sp
+The 
+.I out
+argument is the 
+.B jsemtblgen(8)
+output with possible head, tail and patch applied.
 .PP
-If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP, you can specify \fI.\fP instead.
+If you do not wish to specify
+.I head\c
+\&,
+.I patch
+or
+.I tail\c
+\&, you can specify
+.I .
+(dot) instead.
 .SH OPTIONS
 .TP
 .B \-h
@@ -201,27 +241,46 @@ valid JSON
 invalid JSON
 .TQ
 2
-\fB\-h\fP or \fB\-V\fP used and help string or version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error
 .TQ
 4
-\fIjsemtblgen\fP or \fIpatch_tool\fP is not an executable file
-.TQ
+.I 
+jsemtblgen
+or
+.I patch_tool
+is not an executable file
 .TQ
 5
-one of the files \fIfile.json\fP, \fIhead\fP, \fIpatch\fP or \fItail\fP is not a readable file
+one of the files
+.I file.json\c
+\&,
+.I head\c
+\&,
+.I patch
+or
+.I tail
+is not a readable file
 .TQ
 >= 10
 internal error
 .SH NOTES
 .PP
-The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser 
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH SEE ALSO
-\fBjsemtblgen(8)\fP
+.B jsemtblgen(8)\c
+\&,
+.B jparse(3)
