@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH werr 3  "24 December 2022" "werr"
+.TH werr 3  "28 January 2023" "werr"
 .SH NAME
 .BR werr(),
 .BR vwerr(),
@@ -56,25 +56,51 @@
 .br
 .BI "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
-These functions provide a way to write non-fatal error messages to a stream such as \fBstderr\fP.
+These functions provide a way to write non-fatal error messages to a stream such as
+.B stderr\c
+\&.
 .SS Errno versions
 .PP
-The functions \fBwerrp()\fP, \fBfwerrp()\fP and \fBvsnwerrp()\fP  write a message according to the value of \fBerrno\fP, making sure to restore the \fBerrno\fP value in the case the function returns.
-.SS Alternative output \fBFILE *\fP stream
-The functions that do not take a \fBFILE *\fP or a \fBchar *\fP write to \fBstderr\fP.
+The functions
+.B werrp()\c
+\&,
+.B fwerrp()
+and
+.B vsnwerrp()
+write a message according to the value of
+.B errno\c
+\&, making sure to restore the
+.B errno
+value in the case the function returns.
+.SS Alternative output
+.B FILE *
+stream
+The functions that do not take a
+.B FILE *
+or a 
+.B char *
+write to
+.B stderr\c
+\&.
 The functions
 .BR fwerr()
 and
 .BR vfwerrp()
-can write to an alternative \fBFILE *\fP stream.
-.SS Writing to a \fBchar *\fP buffer
+can write to an alternative
+.B FILE *
+stream.
+.SS Writing to a
+.B char *
+buffer
 The functions
 .BR snwerr()
 and
 .BR snwerrp()
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
-They do not do anything if passed a NULL pointer or \fBsize <= 1\fP.
+They do not do anything if passed a NULL pointer or 
+.B size <= 1\c
+\&.
 .SS Variadic versions
 .PP
 The functions
@@ -97,44 +123,76 @@ are equivalent to the functions
 .BR fwerrp(3)
 and
 .BR snwerrp(3)
-except that they are called with a \fIva_list\fP instead of a variable number of arguments.
-The state of the \fIva_list\fP is not modified by these functions.
+except that they are called with a
+.I va_list
+instead of a variable number of arguments.
+The state of the
+.I va_list
+is not modified by these functions.
 .SS Format of the fmt string
-The format string is a character string in the same form as \fBprintf(3)\fP.
-As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
+The format string is a character string in the same form as
+.B printf(3)\c
+\&.
+As these are quite complex please refer to the
+.B printf(3)
+man page for more details and examples.
 .SS Output control
 .PP
-When \fBerr_output_allowed == false\fP these functions will not print anything.
+When 
+.B err_output_allowed == false
+these functions will not print anything.
 .SH RETURN VALUE
 .PP
 These functions return void.
 .SH NOTES
 .SS Variadic arguments
-In the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
+In the 
+.I va_list
+functions, the argument
+.I ap
+is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If \fIname\fP is \fBNULL\fP it will be set to
+If 
+.I name
+is NULL it will be set to
 .BR "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
-where \fBfoo\fP is the name of the function.
+where 
+.B foo
+is the name of the function.
 .SS The fmt argument
-The \fBfmt\fP argument in the functions is a \fBprintf(3)\fP style format.
+The 
+.I fmt
+argument in the functions is a
+.B printf(3)
+style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
-If \fIfmt\fP is \fBNULL\fP it will be set to
+If 
+.I fmt
+is NULL it will be set to
 .BR "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
 .sp
-where \fBfoo\fP is the name of the function.
+where 
+.B foo
+is the name of the function.
 .sp
-When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
+When the
+.I fmt
+is NULL or contains no
+.B %
+specifiers the arguments following
+.I fmt
+will be ignored.
 .SS Error checking
 All writes are checked for errors.
 Write error messages are written to stderr.
@@ -143,7 +201,9 @@ However, a persistent problem writing to the stream (such as if the stream being
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
 .PP
-For an example proper please refer to \fBdbg(3)\fP.
+For an example proper please refer to
+.B dbg(3)\c
+\&.
 .SH SEE ALSO
 .BR printf(3),
 .BR dbg(3),

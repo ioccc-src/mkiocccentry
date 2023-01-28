@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH printf_usage 3  "24 December 2022" "printf_usage"
+.TH printf_usage 3  "28 January 2023" "printf_usage"
 .SH NAME
 .BR printf_usage(),
 .BR vprintf_usage(),
@@ -32,7 +32,9 @@
 .br
 .BI "void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
 .SH DESCRIPTION
-These functions provide a way to write a usage message to a stream such as \fBstderr\fP.
+These functions provide a way to write a usage message to a stream such as
+.B stderr\c
+\&.
 .SS Variadic versions
 .PP
 The functions
@@ -43,44 +45,80 @@ are equivalent to the functions
 .BR printf_usage()
 and
 .BR fprintf_usage()
-except that they are called with a \fIva_list\fP instead of a variable number of arguments.
-The state of the \fIva_list\fP is not modified by these functions.
+except that they are called with a
+.I va_list
+instead of a variable number of arguments.
+The state of the 
+.I va_list
+is not modified by these functions.
 .SS Format of the fmt string
-The format string is a character string in the same form as \fBprintf\fP.
-As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
+The format string is a character string in the same form as
+.B printf\c
+\&.
+As these are quite complex please refer to the
+.B printf(3)
+man page for more details and examples.
 .SS Output control
 .PP
-When \fBusage_output_allowed == false\fP these functions will not print anything.
+When 
+.B usage_output_allowed == false
+these functions will not print anything.
 .SH RETURN VALUE
 .PP
-These functions return void except that the functions will call \fBexit(3)\fP with the exit code provided to the function if \fIexitcode\fP is >= 0.
+These functions return void except that the functions will call
+.B exit(3)
+with the exit code provided to the function if
+.B exitcode
+is >= 0.
 .SH NOTES
 .SS Variadic arguments
-In the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
+In the
+.I va_list
+functions, the argument
+.I ap
+is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If \fIname\fP is \fBNULL\fP it will be set to
+If 
+.I name
+is NULL it will be set to
 .BR "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
-where \fBfoo\fP is the name of the function.
+where 
+.B foo
+is the name of the function.
 .SS The fmt argument
-The \fBfmt\fP argument in the functions is a \fBprintf(3)\fP style format.
+The 
+.I fmt
+argument in the functions is a
+.B printf(3)
+style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
-If \fIfmt\fP is \fBNULL\fP it will be set to
+If 
+.I fmt
+is NULL it will be set to
 .BR "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
 .sp
-where \fBfoo\fP is the name of the function.
+where
+.B foo
+is the name of the function.
 .sp
-When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
+When the 
+.I fmt
+is NULL or contains no 
+.B %
+specifiers the arguments following
+.I fmt
+will be ignored.
 .SS Error checking
 All writes are checked for errors.
 Write error messages are written to stderr.
@@ -88,7 +126,9 @@ However, a persistent problem writing to the stream (such as if the stream being
 .SS Newlines
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
-For an example proper please refer to \fBdbg(3)\fP.
+For an example proper please refer to
+.B dbg(3)\c
+\&.
 .SH SEE ALSO
 .BR printf(3)
 .BR dbg(3),
