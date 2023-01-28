@@ -249,8 +249,7 @@ static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl
 static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static Word *find_member(Word *table, const char *string);
 static bool test_reserved(const char *string);
-static void usage(int exitcode, char const *str, char const *prog) \
-		__attribute__((noreturn));
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 int
 main(int argc, char **argv)
@@ -265,17 +264,17 @@ main(int argc, char **argv)
     int arg_count = 0;		    /* number of args to process */
     char *cap_tbl_name = NULL;	    /* UPPER case copy of tbl_name */
     size_t len = 0;		    /* length of tbl_name */
-    size_t i;
-    int c;
+    int i;
+    size_t c;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((c = getopt(argc, argv, "hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:")) != -1) {
-	switch (c) {
+    while ((i = getopt(argc, argv, ":hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:")) != -1) {
+	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, "-h help mode", program); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -337,14 +336,20 @@ main(int argc, char **argv)
 	case 'U':		/* -U func - validate nodes with unknown types */
 	    unknown_func = optarg;
 	    break;
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	default:
-	    usage(3, "invalid -flag or missing option argument", program); /*ooo*/
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	}
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(3, "wrong number of arguments", program); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
 
@@ -362,9 +367,9 @@ main(int argc, char **argv)
 	errp(11, program, "tbl_name cannot be empty");
 	not_reached();
     }
-    for (i=0; i < len; ++i) {
-	if (isascii(tbl_name[i]) && islower(tbl_name[i])) {
-	    cap_tbl_name[i] = (char)toupper(tbl_name[i]);
+    for (c=0; c < len; ++c) {
+	if (isascii(tbl_name[c]) && islower(tbl_name[c])) {
+	    cap_tbl_name[c] = (char)toupper(tbl_name[c]);
 	}
     }
     dbg(DBG_MED, "output_mode: %s", h_mode ? ".h include file" : ".c src file");
@@ -1478,7 +1483,7 @@ test_reserved(const char *string)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(3, program, "wrong number of arguments");
  *
  * given:
  *	exitcode        value to exit with
@@ -1492,24 +1497,26 @@ test_reserved(const char *string)
  *
  */
 static void
-usage(int exitcode, char const *str, char const *prog)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
      */
     if (str == NULL) {
 	str = "((NULL str))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
 	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
     fprintf_usage(exitcode, stderr, usage_msg, prog,
 		  DBG_DEFAULT, json_verbosity_level, json_parser_version, JSEMTBLGEN_VERSION);
     exit(exitcode); /*ooo*/

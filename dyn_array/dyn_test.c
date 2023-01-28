@@ -77,7 +77,7 @@ static const char * const usage_msg =
  * forward declarations
  */
 static int parse_verbosity(char const *program, char const *arg);
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 int
 main(int argc, char *argv[])
@@ -94,10 +94,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:V")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:V")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, "-h help mode", program); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -111,13 +111,24 @@ main(int argc, char *argv[])
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	default:
-	    usage(3, "invalid -flag", program); /*ooo*/
+	case ':':
+	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
+	    (void) usage(3, program, ""); /*ooo*/
 	    not_reached();
-	 }
+	    break;
+	case '?':
+	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
+	    (void) usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
+	default:
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
+	}
     }
     if (argc - optind != REQUIRED_ARGS) {
-	usage(3, "expected no arguments", program); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
 
@@ -244,7 +255,7 @@ parse_verbosity(char const *program, char const *arg)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(3, program, "missing required argument(s), program: %s");
  *
  * given:
  *	exitcode        value to exit with
@@ -257,24 +268,27 @@ parse_verbosity(char const *program, char const *arg)
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *prog)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
      */
     if (str == NULL) {
 	str = "((NULL str))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
 	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, dyn_array_version, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

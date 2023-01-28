@@ -5576,7 +5576,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vqe:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:Vqe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - write help, to stderr and exit 0 */
 	    fprintf_usage(0, stderr, usage, program, dbg_version); /*ooo*/
@@ -5612,6 +5612,16 @@ main(int argc, char *argv[])
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
+	case ':':
+	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
+	    fprintf_usage(3, stderr, usage, program, dbg_version); /*ooo*/
+	    not_reached();
+	    break;
+	case '?':
+	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
+	    fprintf_usage(3, stderr, usage, program, dbg_version); /*ooo*/
+	    not_reached();
+	    break;
 	default:
 	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    fprintf_usage(3, stderr, usage, program, dbg_version); /*ooo*/
@@ -5626,9 +5636,9 @@ main(int argc, char *argv[])
 	bar = argv[optind+2];
 	break;
     default:
-	fprintf_usage(DO_NOT_EXIT, stderr, "requires two or three arguments");
-	/* exit(4); */
-	fprintf_usage(4, stderr, usage, program, dbg_version); /*ooo*/
+	fprintf_usage(DO_NOT_EXIT, stderr, "requires two or three arguments\n");
+	/* exit(3); */
+	fprintf_usage(3, stderr, usage, program, dbg_version); /*ooo*/
 	not_reached();
 	break;
     }

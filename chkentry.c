@@ -229,12 +229,12 @@ open_json_dir_file(char const *dir, char const *path)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(3, program, "wrong number of arguments");
  *
  * given:
  *	exitcode        value to exit with
- *	prog		our program name
  *	str		top level usage message
+ *	prog		our program name
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -259,7 +259,9 @@ usage(int exitcode, char const *prog, char const *str)
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
     fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
     exit(exitcode);		/*ooo*/
     not_reached();
@@ -308,10 +310,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((c = getopt(argc, argv, "hv:J:Vq")) != -1) {
+    while ((c = getopt(argc, argv, ":hv:J:Vq")) != -1) {
 	switch (c) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, program, "-h help mode");	/*ooo*/
+	    usage(2, program, "");	/*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -335,8 +337,18 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
+	case ':':
+	    fprint(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
+	case '?':
+	    fprint(stderr, "%s: illegal option -- %c\n\n", program, optopt);
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	default:
-	    usage(3, program, "invalid -flag");	/*ooo*/
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	}
     }

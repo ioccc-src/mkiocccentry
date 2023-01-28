@@ -3980,3 +3980,44 @@ count_char(char const *str, int ch)
 
     return count;
 }
+
+/* check_invalid_option	    - check option error in getopt()
+ *
+ * given:
+ *
+ *	prog	    - program name
+ *	ch	    - value returned by getopt()
+ *	opt	    - program's optopt (option triggering the error)
+ *
+ * NOTE:    if prog is NULL we warn and then set to ((NULL prog)).
+ * NOTE:    this function should only be called if getopt() returns a ':' or a
+ *	    '?' but if anything else is passed to this function we do nothing.
+ * NOTE:    this function does NOT take an exit code because it is the caller's
+ *	    responsibility to do this. This is because they must call usage()
+ *	    which is specific to each tool.
+ */
+void
+check_invalid_option(char const *prog, int ch, int opt)
+{
+    /*
+     * firewall
+     */
+    if (ch != ':' && ch != '?') {
+	return; /* do nothing */
+    }
+    if (prog == NULL) {
+	warn(__func__, "prog is NULL, forcing it to be: ((NULL prog))");
+	prog = "((NULL prog))";
+    }
+
+    switch (ch) {
+	case ':':
+	    fprint(stderr, "%s: requires an argument -- %c\n\n", prog, opt);
+	    break;
+	case '?':
+	    fprint(stderr, "%s: illegal option -- %c\n\n", prog, opt);
+	    break;
+	default: /* should never be reached but we include it anyway */
+	    break;
+    }
+}
