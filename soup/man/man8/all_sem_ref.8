@@ -9,86 +9,192 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH all_sem_ref.sh 8 "19 January 2023" "all_sem_ref.sh" "IOCCC tools"
+.TH all_sem_ref.sh 8 "28 January 2023" "all_sem_ref.sh" "IOCCC tools"
 .SH NAME
-all_sem_ref.sh \- form \fI*.json.c\fP and \fI*.json.h\fP semantic table files
+.B all_sem_ref.sh
+\- form
+.I *.json.c
+and
+.I *.json.h
+semantic table files
 .SH SYNOPSIS
-\fBall_sem_ref.sh\fP [\-h] [\-v level] [\-V] [\-j jsemtblgen] [\-J jsemcgen.sh] info.head.c info.tail.c info.head.h info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
+.B all_sem_ref.sh
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V]
+.RB [\| \-j
+.IR jsemtblgen \|]
+.RB [\| \-J
+.IR jsemcgen.sh \|]
+.I info.head.c
+.I info.tail.c
+.I info.head.h
+.I info.tail.h
+.I auth.head.c
+.I auth.tail.c
+.I auth.head.h
+.I auth.tail.h
+.I info_dir
+.I auth_dir
+.I ref_dir
 .SH DESCRIPTION
 This tool forms semantic table files under a given directory.
 JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
 .PP
-In general, a JSON semantics table is an array of \fBstruct json_sem\fP that can be used to drive checks on the semantics of valid JSON.
-This can be done for any JSON file but in particular this tool is for the \fI.info.json\fP and \fI.auth.json\fP files as part of the judging process for the IOCCC.
+In general, a JSON semantics table is an array of
+.B struct json_sem
+that can be used to drive checks on the semantics of valid JSON.
+This can be done for any JSON file but in particular this tool is for the
+.I .info.json
+and
+.I .auth.json
+files as part of the judging process for the IOCCC.
 .PP
-The \fIinfo.head.c\fP file is a \fI.info.json\fP style header for .c semantic table files.
+The
+.I info.head.c
+file is a
+.I .info.json
+style header for .c semantic table files.
 .br
-The \fIinfo.tail.c\fP file is a \fI.info.json\fP style footer for .c semantic table files.
+The 
+.I info.tail.c
+file is a
+.I .info.json
+style footer for .c semantic table files.
 .br
-The \fIinfo.head.h\fP file is a \fI.info.json\fP style header for .h semantic table files.
+The 
+.I info.head.h
+file is a
+.I .info.json
+style header for .h semantic table files.
 .br
-The \fIinfo.tail.h\fP file is a \fI.info.json\fP style footer for .h semantic table files.
+The
+.I info.tail.h
+file is a
+.I .info.json
+style footer for .h semantic table files.
 .PP
-The \fIauth.head.c\fP file is a \fI.auth.json\fP style header for .c semantic table files.
+The
+.I auth.head.c
+file is a
+.I .auth.json
+style header for .c semantic table files.
 .br
-The \fIauth.tail.c\fP file is a \fI.auth.json\fP style footer for .c semantic table files.
+The 
+.I auth.tail.c
+file is a
+.I .auth.json
+style footer for .c semantic table files.
 .br
-The \fIauth.head.h\fP file is a \fI.auth.json\fP style header for .h semantic table files.
+The 
+.I auth.head.h
+file is a
+.I .auth.json
+style header for .h semantic table files.
 .br
-The \fIauth.tail.h\fP file is a \fI.auth.json\fP style footer for .h semantic table files.
+The 
+.I auth.tail.h
+file is a
+.I .auth.json
+style footer for .h semantic table files.
 .PP
-The \fIinfo_dir\fP directory is expected to have \fI*.json\fP files as \fI.info.json\fP files.
+The 
+.I info_dir
+directory is expected to have
+.I *.json
+files as
+.I .info.json
+files.
 .br
-The \fIauth_dir\fP directory is expected to have \fI*.json\fP files as \fI.auth.json\fP files.
+The
+.I auth_dir
+directory is expected to have
+.I *.json
+files as
+.I .auth.json
+files.
 .br
-The \fIref_dir\fP directory is a subdirectory under which the semantic table files are written.
+The 
+.I ref_dir
+directory is a subdirectory under which the semantic table files are written.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
-\fB\-v \fIlevel\fP\fP
-Set verbosity level to level.
+.BI \-v\  level
+Set verbosity level to
+.I level
+(def: 0).
 .TP
-\fB\-V\fP
+.B \-V
 Show version and exit.
 .TP
-\fB-j \fIjsemtblgen\fP\fP
-Set path to \fBjsemtblgen(8)\fP.
+.BI \-j\  jsemtblgen
+Set path of
+.B jsemtblgen(8)
+to
+.I jsemtblgen\c
+\&.
 .TP
-\fB-J \fIjsemcgen.sh\fP\fP
-Set path to \fBjsemcgen(8)\fP.
+.BI \-J\  jsemcgen.sh
+Set path of
+.B jsemcgen(8)
+to
+.I jsemcgen.sh\c
+\&.
 .SH EXIT STATUS
 .TP
 0
 all OK
 .TQ
 2
-\fB\-h\fP or \fB\-V\fP used and help string printed or version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error
 .TQ
 4
-\fBjsemcgen.sh\fP and/or \fBjsemtblgen\fP not found or not executable
+.B jsemcgen.sh
+and/or
+.B jsemtblgen
+not found or not executable
 .TQ
 5
 missing or not readable header or footer file
 .TQ
 6
-missing, not readable, or not writable \fIinfo_dir\fP, \fIauth_dir\fP and/or \fIref_dir\fP
+missing, not readable, or not writable
+.I info_dir\c
+\&,
+.I auth_dir
+and/or
+.I ref_dir
 .TQ
 >= 10
 internal error
 .SH NOTES
 .PP
-The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .PP
-This tool is needed in order to generate the JSON semantics table for \fBchkentry(1)\fP.
+This tool is needed in order to generate the JSON semantics table for
+.B chkentry(1)\c
+\&.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH SEE ALSO
-\fBjsemtblgen(8)\fP, \fBchkentry(1)\fP, \fBjsemcgen(8)\fP
+.B jsemtblgen(8)\c
+\&,
+.B jsemcgen(8)\c
+\&,
+.B chkentry(1)
