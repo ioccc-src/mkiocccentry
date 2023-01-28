@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "25 January 2023" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "28 January 2023" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -25,23 +25,46 @@
 .SH DESCRIPTION
 .B mkiocccentry
 gathers your source file, Makefile, remarks as well as any other files and creates an XZ compressed tarball.
-The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
+The tool runs
+.B iocccsize
+and it also runs a test on the Makefile to verify that everything seems in order.
 You can ignore the warnings except that the Makefile cannot be empty.
 The work_dir is a directory that the program will copy the files to (under a subdirectory based on the title of the entry and the entry number), to create the tarball.
 After forming the tarball
 .B txzchk
-is run which verifies that the tarball is okay (\fBtxzchk\fP in turn will call \fBfnamchk\fP).
-Once the writing of the \fI.info.json\fP file is completed \fBmkiocccentry\fP runs \fBchkinfo\fP and if there are any errors it aborts.
-After the writing of the \fI.info.json\fP file the \fI.auth.json\fP file is written; once completed \fBmkiocccentry\fP runs \fBchkauth\fP and if there are any errors it aborts.
+is run which verifies that the tarball is okay (\c
+.B txzchk
+in turn will call
+.B fnamchk\c
+\&).
+Once the writing of the
+.I .info.json
+file is completed
+.B mkiocccentry
+runs
+.B chkinfo
+and if there are any errors it aborts.
+After the writing of the 
+.I .info.json
+file the 
+.I .auth.json
+file is written; once completed 
+.B mkiocccentry
+runs 
+.B chkauth and if there are any errors it aborts.
 If the work_dir already exists the program will tell you to move it or delete it.
-The program does \fBNOT\fP delete it in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
+The program does 
+.B NOT
+delete it both for safety as well as in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
 .SH OPTIONS
 .TP
 .B \-h
 Show help and exit.
 .TP
 .BI \-v\  level
-Set verbosity level to \fIlevel\fP.
+Set verbosity level to
+.I level\c
+\&.
 .TP
 .B \-V
 Show version and exit.
@@ -75,7 +98,11 @@ and
 if this option is not specified.
 .TP
 .BI \-l\  ls
-Set \fBls\fP path to \fIls\fP.
+Set 
+.B ls
+path to
+.I ls\c
+\&.
 .B mkiocccentry
 checks
 .I /usr/bin/ls
@@ -176,38 +203,53 @@ More than 0 humans work on it! :)
 .PP
 If you have an issue with the tool you can open an issue at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH EXAMPLES
 .PP
-.nf
 Run test script:
+.sp
 .RS
-\fB
- ./mkiocccentry_test.sh\fP
-.fi
+.ft B
+ ./mkiocccentry_test.sh
+.ft R
 .RE
 .PP
-.nf
-Make \fIwork_dir\fP and then make an entry from the files \fIprog.c\fP, \fIMakefile\fP and \fIremarks.md\fP, saving your answers to the file \fIanswers\fP for future updates:
+Make 
+.I work_dir
+and then make an entry from the files 
+.I prog.c\c
+\&,
+.I Makefile\c
+\& and
+.I remarks.md\c
+\&, saving your answers to the file 
+.I answers
+for future updates:
+.sp
 .RS
-\fB
+.ft B
  mkdir work_dir
- ./mkiocccentry \-a answers work_dir prog.c Makefile remarks.md\fP
-.fi
+ ./mkiocccentry \-a answers work_dir prog.c Makefile remarks.md
+.ft R
 .RE
 .PP
-.nf
 Use the answers file from the previous invocation to quickly update the entry with an additional file added:
+.sp
 .RS
-\fB
- ./mkiocccentry \-i answers work_dir prog.c Makefile remarks.md data.txt\fP
-.fi
+.ft B
+ ./mkiocccentry \-i answers work_dir prog.c Makefile remarks.md data.txt
+.ft R
 .RE
 .PP
-.nf
-Run program, specifying alternative path to \fBtar\fP and \fBtxzchk\fP:
+Run program, specifying alternative path to 
+.B tar
+and 
+.B txzchk\c
+\&:
+.sp
 .RS
-\fB
- ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk\fP
-.fi
+.ft B
+ ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk
+.ft R
 .RE

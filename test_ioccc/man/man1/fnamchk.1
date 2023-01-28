@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH fnamchk 1 "25 January 2023" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "28 January 2023" "fnamchk" "IOCCC tools"
 .SH NAME
 .B fnamchk
 \- IOCCC compressed tarball filename sanity check tool
@@ -27,12 +27,36 @@
 .BR \-u \|]
 .I filepath
 .SH DESCRIPTION
-\fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
+.B fnamchk
+verifies that an IOCCC compressed tarball is properly named.
 .PP
-The program validates that the filename is correct, in the form of \fBentry.contest_ID\-entry_num.timestamp.ext\fP where
-\fBcontest_ID\fP is either \fItest\fP or a valid UUID (see below), \fBentry_number\fP is an integer from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive, \fBtimestamp\fP is an integer of the number of seconds since the epoch and \fBext\fP is either \fBtxz\fP or the user supplied extension from the \fB\-E\fP option.
+The program validates that the filename is correct, in the form of 
+.B entry.contest_ID\-entry_num.timestamp.ext
+where
+.B contest_ID
+is either
+.B test
+or a valid UUID (see below), 
+.B entry_number
+is an integer from 
+.B 0
+through
+.B MAX_ENTRY_NUM
+(see
+.I limit_ioccc.h\c
+\&) inclusive,
+.B timestamp
+is an integer of the number of seconds since the epoch and
+.B ext
+is either
+.B txz
+or the user supplied extension from the 
+.B \-E
+option.
 .PP
-More specifically, the filename \fBmust\fP:
+More specifically, the filename 
+.B MUST\c
+\&:
 .IP \(bu 4
 Start with "\fBentry\fP".
 .IP \(bu 4
@@ -51,14 +75,20 @@ Followed by a positive non\-zero 64\-bit decimal integer.
 .IP \(bu 4
 Followed by "\fB.\fP".
 .IP \(bu 4
-Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
+Followed by "\fBtxz\fP" (or the user supplied extension from option
+.B \-E\c
+\&).
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
-It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the Judges during the judging process of the contests.
+It is indirectly invoked via the 
+.B txzchk(1)
+utility which is called by
+.B mkiocccentry(1)
+and it will also be directly executed by the Judges during the judging process of the contests.
 .SH OPTIONS
 .TP
-\fB\-h\fP
+.B \-h
 Show help and exit.
 .TP
 .BI \-v\  level
@@ -118,80 +148,121 @@ command line error
 validation failed (see error message for details)
 .SH NOTES
 If there is an error in validation an appropriate error message is printed prior to exiting.
-Otherwise the program will output the name of the required directory in the tarball (this is necessary for \fBtxzchk(1)\fP).
+Otherwise the program will output the name of the required directory in the tarball (this is necessary for
+.B txzchk(1)\c
+\&).
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
 .PP
 If you have an issue with the tool you can open an issue at
 .br
-\fI<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I <https://github.com/ioccc\-src/mkiocccentry/issues>\c
+\&.
 .SH EXAMPLES
 .PP
-For the examples below assume that the \fBMIN_TIMESTAMP\fP is \fB(time_t)1662145368\fP.
+For the examples below assume that the
+.B MIN_TIMESTAMP
+is 
+.B (time_t)1662145368\c
+\&.
 .PP
-Run the program on the filename \fIentry.test\-0.1562145368.txz\fP which will fail because the timestamp in the filename is less than the minimum timestamp:
-.nf
+Run the program on the filename
+.I entry.test\-0.1562145368.txz
+which will fail because the timestamp in the filename is less than the minimum timestamp:
+.sp
 .RS
-\fB
- ./fnamchk \-t entry.test\-0.1562145368.txz\fP
-.fi
+.ft B
+ ./fnamchk \-t entry.test\-0.1562145368.txz
+.ft R
 .RE
 .PP
-Run the program on the filename \fItest.tar\fP, which will fail because the name format is invalid:
-.nf
+Run the program on the filename
+.I test.tar\c
+\&, which will fail because the name format is invalid:
+.sp
 .RS
-\fB
- ./fnamchk test.tar\fP
-.fi
+.ft B
+ ./fnamchk test.tar
+.ft R
 .RE
 .PP
-Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fB\-u\fP which will fail because it is a test\-mode filename but the \fB\-u\fP option is specified:
-.nf
+Run the program on the filename
+.I entry.test.0.1662145368.txz
+with the option
+.B \-u
+which will fail because it is a test\-mode filename but the
+.B \-u
+option is specified:
+.sp
 .RS
-\fB
- ./fnamchk \-u entry.test\-0.1662145368.txz\fP
-.fi
+.ft B
+ ./fnamchk \-u entry.test\-0.1662145368.txz
+.ft R
 .RE
 .PP
-Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-t\fP which will pass because it is a test\-mode file and the timestamp is not less than the minimum:
-.nf
+Run the program on the filename 
+.I entry.test.0.1662145368.txz
+with the option
+.I \-t
+which will pass because it is a test\-mode file and the timestamp is not less than the minimum:
+.sp
 .RS
-\fB
- ./fnamchk \-t entry.test\-0.1662145368.txz\fP
-.fi
+.ft B
+ ./fnamchk \-t entry.test\-0.1662145368.txz
+.ft R
 .RE
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
-Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option, which will pass because test mode is specified with a test filename, the extension matches the \fB\-E\fP option and the timestamp is correct:
-.nf
+Run the program on the file
+.I entry.test.0.1662145368.txt
+with the option
+.B \-t\c
+\&, changing the extension to 
+.I txt
+via the 
+.B \-E
+option, which will pass because test mode is specified with a test filename, the extension matches the 
+.B \-E
+option and the timestamp is correct:
+.sp
 .RS
-\fB
- ./fnamchk \-E txt \-t entry.test\-0.1662145368.txt\fP
-.fi
+.ft B
+ ./fnamchk \-E txt \-t entry.test\-0.1662145368.txt
+.ft R
 .RE
-.PP
+.sp
 The above will print "\fBtest\-0\fP".
 .PP
-Run the program on the file \fIentry.test.0.1662145368.txz\fP with the options \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option which will fail because the extension specified does not match the extension in the filename:
-.nf
+Run the program on the file
+.I entry.test.0.1662145368.txz
+with the options
+.B \-t\c
+\&, changing the extension to
+.I txt
+via the
+.B \-E
+option which will fail because the extension specified does not match the extension in the filename:
+.sp
 .RS
-\fB
- ./fnamchk \-E txt \-t entry.test\-0.1662145368.txz\fP
-.fi
+.ft B
+ ./fnamchk \-E txt \-t entry.test\-0.1662145368.txz
+.ft R
 .RE
+.sp
+NOTE: It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
 .PP
-It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
-.PP
-Run the program on the file \fIentry.test.0.1662145368.txz\fP without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
-.nf
+Run the program on the file
+.I entry.test.0.1662145368.txz
+without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
+.sp
 .RS
-\fB
- ./fnamchk entry.test\-0.1662145368.txz\fP
-.fi
+.ft B
+ ./fnamchk entry.test\-0.1662145368.txz
+.ft R
 .RE
-.PP
+.sp
 The above will print "\fBtest\-0\fP".
 .SH SEE ALSO
 .BR txzchk(1)
