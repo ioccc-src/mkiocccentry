@@ -54,8 +54,7 @@ Exit codes:
      3	    command line usage error
  >= 10	    internal error
 
-reset_tstamp.sh version: $RESET_TSTAMP_VERSION
-"
+reset_tstamp.sh version: $RESET_TSTAMP_VERSION"
 
 export V_FLAG="0"
 export LIMIT_IOCCC_H="./limit_ioccc.h"

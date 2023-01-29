@@ -86,8 +86,7 @@ Exit codes:
      3   invalid command line
  >= 10   internal error or missing file or directory
 
-txzchk_test.sh version: $TXZCHK_TEST_VERSION
-"
+txzchk_test.sh version: $TXZCHK_TEST_VERSION"
 
 export EXIT_CODE=0
 export LOGFILE="./test_ioccc/txzchk_test.log"

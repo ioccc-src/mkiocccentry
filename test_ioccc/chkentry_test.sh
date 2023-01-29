@@ -71,8 +71,7 @@ Exit codes:
      7	 some files were invalid JSON and some chkentry tests failed
  >= 10   internal error
 
-chkentry_test.sh version: $CHKENTRY_TEST_VERSION
-"
+chkentry_test.sh version: $CHKENTRY_TEST_VERSION"
 
 # parse args
 #

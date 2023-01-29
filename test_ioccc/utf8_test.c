@@ -93,7 +93,7 @@ static char const * const usage =
 "     3   invalid command line, invalid option or option missing an argument\n"
 " >= 10   internal error\n"
 "\n"
-"utf8_test version: %s\n";
+"utf8_test version: %s";
 
 
 int

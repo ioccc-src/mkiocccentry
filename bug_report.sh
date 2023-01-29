@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
 #
-# bug_report.sh - collect system information to help user report bugs and issues
-# using the mkiocccentry tools
+# bug_report.sh - produce a file suitable for filing a bug report
+#
+# Collect system information to help user report bugs and issues
+# using the mkiocccentry tools.
+#
+# When you run this script without any arguments:
+#
+#	./bug-report.sh
+#
+# After printing logs of stuff on the terminal, a file of the form:
+#
+#	bug-report.YYYYMMDD.HHMMSS.txt
+#
+# will be created in the current directory, where YYYYMMDD.HHMMSS is the
+# date and time in your default local timezone.
+#
+# If you are reporting a bug, the bug-report.YYYYMMDD.HHMMSS.txt file should
+# be uploaded as part of your bug report.  Report / create a GitHub issue
+# by going to:
+#
+#	https://github.com/ioccc-src/mkiocccentry/issues
+#
+# Please upload the bug-report.YYYYMMDD.HHMMSS.txt file as part of your report.
 #
 # This script was written in 2022 by:
 #
@@ -87,7 +108,8 @@ Exit codes:
      4	    error in function call
  >= 10	    at least one check failed
 
-$0 version: $BUG_REPORT_VERSION"
+bug_report.sh version: $BUG_REPORT_VERSION
+"
 
 # Determine the name of the log file
 #

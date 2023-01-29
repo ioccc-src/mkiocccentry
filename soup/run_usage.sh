@@ -48,8 +48,7 @@ Exit codes:
      6	    tool does not have usage string
      7	    man directory does not exist or is not a readable directory
 
-run_usage.sh version: $RUN_USAGE_VERSION
-"
+run_usage.sh version: $RUN_USAGE_VERSION"
 
 # parse args
 #

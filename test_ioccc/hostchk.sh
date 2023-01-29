@@ -84,8 +84,7 @@ Exit codes:
      4	 compiler not found or not executable file
  >= 10   internal error
 
-hostchk.sh version: $HOSTCHK_VERSION
-"
+hostchk.sh version: $HOSTCHK_VERSION"
 
 export EXIT_CODE=0
 export TOPDIR=

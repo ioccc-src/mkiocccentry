@@ -63,8 +63,7 @@ Exit codes:
      6	    missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
  >= 10	    internal error
 
-all_sem_ref.sh version: $ALL_SEM_REF_VERSION
-"
+all_sem_ref.sh version: $ALL_SEM_REF_VERSION"
 
 # parse args
 #

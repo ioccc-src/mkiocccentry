@@ -52,8 +52,7 @@ Exit codes:
      5	 missing or unreadable limit_ioccc.h
  >= 10	 internal error
 
-test_iocccsize.sh version: $TEST_IOCCCSIZE_VERSION
-"
+test_iocccsize.sh version: $TEST_IOCCCSIZE_VERSION"
 
 # parse args
 #
