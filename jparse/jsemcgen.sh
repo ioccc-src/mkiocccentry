@@ -114,7 +114,10 @@ Exit codes:
      4	 jsemtblgen or patch_tool is not an executable file
      5	 one of the files file.json, head, patch and tail is not a readable file
      6	 jsemtblgen failed
- >= 10	 internal error"
+ >= 10	 internal error
+
+jsemcgen version: $JSEMCGEN_VERSION
+"
 
 # parse args
 #
