@@ -172,7 +172,7 @@ open_json_dir_file(char const *dir, char const *path)
      * must be a readable file
      */
     if (!exists(path)) {
-	err(16, __func__, "JSON does exist: %s", path);
+	err(16, __func__, "JSON does not exist: %s", path);
 	not_reached();
     }
     if (!is_file(path)) {
