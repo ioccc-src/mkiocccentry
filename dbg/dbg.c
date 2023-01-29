@@ -153,7 +153,7 @@ static char const * const usage =
 "\n"
 "NOTE: This is just a demo. Arguments are ignored and may be of any value.\n"
 "\n"
-"Version: %s";
+"dbg version: %s\n";
 #endif /* DBG_TEST */
 
 
