@@ -108,8 +108,7 @@ Exit codes:
      4	    error in function call
  >= 10	    at least one check failed
 
-bug_report.sh version: $BUG_REPORT_VERSION
-"
+bug_report.sh version: $BUG_REPORT_VERSION"
 
 # Determine the name of the log file
 #

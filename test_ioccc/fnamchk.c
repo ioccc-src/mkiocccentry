@@ -78,7 +78,7 @@ static const char * const usage_msg =
     "     4\t\t\"entry.test-\" separated token length != %ju\n"
     "     5\t\t\"entry.UUID-\" token length != %ju\n"
     "     >=10\tinternal error\n"
-    "fnamchk version: %s\n";
+    "fnamchk version: %s";
 
 
 /*

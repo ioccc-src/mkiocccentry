@@ -77,7 +77,7 @@ static const char * const usage_msg =
     "    4\t\tcommand line error\n"
     "    >=10\tinternal error\n"
     "\n"
-    "jnum_chk version: %s\n";
+    "jnum_chk version: %s";
 
 
 

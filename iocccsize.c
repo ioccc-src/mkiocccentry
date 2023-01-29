@@ -138,7 +138,7 @@ main(int argc, char **argv)
 
 		case 'h':
 			fprintf(stderr, "%s%s", usage0, usage1);
-			fprintf(stderr, "\niocccsize version: %s\n\n", iocccsize_version);
+			fprintf(stderr, "\niocccsize version: %s\n", iocccsize_version);
 			exit(2); /*ooo*/
 			break;
 

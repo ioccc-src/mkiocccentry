@@ -70,7 +70,7 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "jnum_gen version: %s\n";
+    "jnum_gen version: %s";
 
 /*
  * globals
