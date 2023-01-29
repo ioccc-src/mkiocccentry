@@ -113,11 +113,11 @@
  * NOTE: MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF must be defined
  *	 in mkiocccentry.c and not here.
  */
-#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
+#define ISO_3166_1_CODE_URL0 "\thttps://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "\thttps://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "\thttps://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "\thttps://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "\thttps://www.iso.org/glossary-for-iso-3166.html"
 
 #undef IOCCC_WINNER_HANDLE_READY /* TODO: change to #define when IOCCC winner handles are available and ready */
 

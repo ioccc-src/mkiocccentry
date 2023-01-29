@@ -1662,7 +1662,7 @@ default_handle(char const *name)
      * firewall
      */
     if (name == NULL) {
-	err(15, __func__, "passed NULL arg");
+	err(15, __func__, "passed NULL name");
 	not_reached();
     }
     namelen = strlen(name);
@@ -1777,7 +1777,7 @@ default_handle(char const *name)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    iret = initstate((unsigned)tmp, state, STATE_LEN);
 	    if (iret == NULL) {
-		errp(18, __func__, "srandom failed");
+		errp(18, __func__, "initstate failed");
 		not_reached();
 	    }
 

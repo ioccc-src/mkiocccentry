@@ -246,7 +246,7 @@ main(int argc, char *argv[])
     } else {
 	/*
 	 * if -t is specified and we get here (filename does not start with
-	 * "entry.test-" then it's an error.
+	 * "entry.test-") then it's an error.
 	 */
 	if (test_mode) {
 	    err(17, __func__, "-t specified and entry does not start with \"entry.test-\"");

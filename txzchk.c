@@ -412,7 +412,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	if (!exists(tar)) {
 	    fpara(stderr,
 		  "",
-		  "We cannot find a tar program.",
+		  "We cannot find tar.",
 		  "",
 		  "A tar program that supports the -J (xz) option is required to test the compressed tarball.",
 		  "Perhaps you need to use:",
@@ -431,7 +431,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	if (!is_file(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, while it exists, is not a regular file.",
+		  "The tar path, while it exists, is not a regular file.",
 		  "",
 		  "Perhaps you need to use another path:",
 		  "",
@@ -449,7 +449,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	if (!is_exec(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, while it is a file, is not executable.",
+		  "The tar path, while it is a file, is not executable.",
 		  "",
 		  "We suggest you check the permissions on the tar program, or use another path:",
 		  "",
@@ -485,7 +485,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, while it exists, is not a regular file.",
+	      "The fnamchk path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -498,7 +498,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     if (!is_exec(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, while it is a file, is not executable.",
+	      "The fnamchk path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
@@ -1744,7 +1744,7 @@ add_txz_line(char const *str, uintmax_t line_num)
      * firewall
      */
     if (str == NULL) {
-	err(44, __func__, "passed NULL arg");
+	err(44, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -1798,7 +1798,7 @@ parse_all_txz_lines(char const *dir_name, char const *tarball_path)
      * firewall
      */
     if (tarball_path == NULL) {
-	err(47, __func__, "passed NULL arg");
+	err(47, __func__, "passed NULL tarball_path");
 	not_reached();
     }
 
