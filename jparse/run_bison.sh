@@ -64,7 +64,9 @@ Exit codes:
      9   command line usage error
  >= 10   internal error
 
-$0 version: $RUN_BISON_VERSION"
+run_bison.sh version: $RUN_BISON_VERSION
+"
+
 export D_FLAG="."
 export V_FLAG="0"
 export MIN_BISON_VERSION="3.8.2"		# minimum bison version needed to build the JSON parser

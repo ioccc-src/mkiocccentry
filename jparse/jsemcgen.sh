@@ -116,7 +116,7 @@ Exit codes:
      6	 jsemtblgen failed
  >= 10	 internal error
 
-jsemcgen version: $JSEMCGEN_VERSION
+jsemcgen.sh version: $JSEMCGEN_VERSION
 "
 
 # parse args

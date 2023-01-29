@@ -65,7 +65,8 @@ Exit codes:
      8   command line usage error
  >= 10   internal error
 
-$0 version: $RUN_FLEX_VERSION"
+run_flex.sh version: $RUN_FLEX_VERSION
+"
 
 export D_FLAG="."
 export V_FLAG="0"
