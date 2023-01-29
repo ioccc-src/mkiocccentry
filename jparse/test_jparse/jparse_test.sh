@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
 #
-# jparse_test.sh -  test jparse on simple one-line JSON files as well as whole
-#		    JSON documents
+# jparse_test.sh - test JSON parser on valid and invalid JSON file(s)
+#
+# Run jparse on simple one-line JSON files or on whole JSON documents to test the
+# JSON parser.
+#
+# When used with "-d json_tree -s subdir", two directories are expected:
+#
+#	json_tree/tree/subdir/good
+#	json_tree/tree/subdir/bad
+#
+# All files under json_tree/tree/subdir/good must be valid JSON.  If any file under
+# that directory tests as an invalid JSON file, this script will exit non-zero.
+#
+# All files under json_tree/tree/subdir/bad must be valid JSON.  If any file under
+# that directory tests as an valid JSON file, this script will exit non-zero.
+#
+# Without "-d json_tree -s subdir" a list of files in the command line are
+# tested to see if they are valid JSON files.  With no arguments, or - the
+# contents of stdin is tested.
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
@@ -54,7 +71,8 @@ Exit codes:
      7	 missing JSON file
   >= 4   internal error
 
-jparse_test.sh version: $JPARSE_TEST_VERSION"
+jparse_test.sh version: $JPARSE_TEST_VERSION
+"
 
 export V_FLAG="0"
 export DBG_LEVEL="0"
