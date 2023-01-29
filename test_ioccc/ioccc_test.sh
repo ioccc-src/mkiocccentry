@@ -35,7 +35,9 @@ Exit codes:
      5   something not found, not the right file type, or not executable
  >= 20   some test failed
 
-$0 version: $IOCCC_TEST_VERSION"
+ioccc_test.sh version: $IOCCC_TEST_VERSION
+"
+
 export V_FLAG="0"
 export J_FLAG="0"
 export EXIT_CODE="0"

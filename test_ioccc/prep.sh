@@ -43,7 +43,9 @@ Exit codes:
      4	 could not make writable log file
  >= 10   some make action exited non-zero
 
-$0 version: $PREP_VERSION"
+prep.sh version: $PREP_VERSION
+"
+
 export MAKE="make"
 export MAKEFILE="./Makefile"
 export V_FLAG="0"

@@ -35,7 +35,9 @@ Exit codes:
      3	 command line error
  >= 10   some make action exited non-zero
 
-mkiocccentry_test.sh version: $MKIOCCCENTRY_TEST_VERSION"
+mkiocccentry_test.sh version: $MKIOCCCENTRY_TEST_VERSION
+"
+
 export V_FLAG="0"
 export J_FLAG="0"
 export EXIT_CODE="0"

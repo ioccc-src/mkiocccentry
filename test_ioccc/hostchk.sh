@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# hostchk.sh - make various checks on a host to determine if it can use the
-# mkiocccentry repo.
+# hostchk.sh - check to see host is ready to make/use the mkiocccentry repo
+#
+# Make various checks on a host to determine if the current host can
+# can make and use the mkiocccentry repo.
 #
 # NOTE: This cannot be perfect and it cannot account for everything but along
 # with bug_report.sh we hope to account for most things. One can always report
@@ -82,7 +84,9 @@ Exit codes:
      4	 compiler not found or not executable file
  >= 10   internal error
 
-$0 version: $HOSTCHK_VERSION"
+hostchk.sh version: $HOSTCHK_VERSION
+"
+
 export EXIT_CODE=0
 export TOPDIR=
 

@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 #
-# chkentry_test.sh - test chkentry on all the files in
-#		     test_JSON{info,auth}.json/{good,bad}
+# chkentry_test.sh - chkentry test on good and bad files under a directory
+#
+# Use chkentry to test all the files under test_JSON{info,auth}.json/good/ and
+# verify there are no JSON semantic errors.  If any JSON semantic errors are
+# detected, this script will exit non-zero.
+#
+# Use chkentry to test all the files under test_JSON{info,auth}.json/bad/ and
+# verify there are JSON semantic errors.  If any file is found to be free of
+# JSON semantic errors, this script will exit non-zero.
+#
+# IMPORTANT NOTE: All JSON files (under both good and bad) MUST to be valid JSON.
+#		  This script focuses testing JSON semantic errors only.
 #
 # This script was written in 2022 by:
 #
@@ -61,7 +71,8 @@ Exit codes:
      7	 some files were invalid JSON and some chkentry tests failed
  >= 10   internal error
 
-$0 version: $CHKENTRY_TEST_VERSION"
+chkentry_test.sh version: $CHKENTRY_TEST_VERSION
+"
 
 # parse args
 #
