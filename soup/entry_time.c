@@ -86,7 +86,7 @@ timestr_eq_tstamp(char const *timestr, time_t timestamp)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: strptime cannot convert time string");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strptime failed convert time string: <%s>", timestr);
+		 "invalid: strptime failed to convert time string: <%s>", timestr);
 	return false;
     }
     if (ptr[0] != '\0') {
@@ -165,7 +165,7 @@ conv_timestr_test(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: strptime cannot convert formed_UTC");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strptime failed convert formed_UTC: <%s>", str);
+		 "invalid: strptime failed to convert formed_UTC: <%s>", str);
 	return false;
     }
     if (ptr[0] != '\0') {
@@ -183,9 +183,9 @@ conv_timestr_test(char const *str)
     strftime_ret = strftime(buf, MAX_TIMESTAMP_LEN+1, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
     if (strftime_ret == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: strftime failed to convert back to time string");
+		 "invalid: strftime failed to convert back to original time string");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strftime conversion back to time string failed: <%s>", str);
+		 "invalid: strftime conversion back to original time string failed: <%s>", str);
 	return false;
     }
 

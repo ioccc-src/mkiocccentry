@@ -370,7 +370,7 @@ main(int argc, char *argv[])
 	dbg(DBG_HIGH, "info.tstamp: %jd", (intmax_t)info.tstamp);
     }
     info.usec = tp.tv_usec;
-    dbg(DBG_HIGH, "infop->usec: %jd", (intmax_t)info.usec);
+    dbg(DBG_HIGH, "info.usec: %jd", (intmax_t)info.usec);
 
     /*
      * Welcome
@@ -909,7 +909,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(tar)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a tar program.",
+	      "We cannot find the tar program.",
 	      "",
 	      "A tar program that supports the -J (xz) option is required to build a compressed tarball.",
 	      "Perhaps you need to use:",
@@ -927,7 +927,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(tar)) {
 	fpara(stderr,
 	      "",
-	      "The tar, while it exists, is not a regular file.",
+	      "The tar path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -944,7 +944,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(tar)) {
 	fpara(stderr,
 	      "",
-	      "The tar, while it is a file, is not an executable.",
+	      "The tar path, while it is a file, is not an executable.",
 	      "",
 	      "We suggest you check the permissions on the tar program, or use another path:",
 	      "",
@@ -965,9 +965,9 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(cp)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a cp program.",
+	      "We cannot find the cp program.",
 	      "",
-	      "A cp program is required to copy files into a directory under work_dir.",
+	      "The cp program is required to copy files into a directory under work_dir.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -c /path/to/cp ...",
@@ -983,7 +983,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(cp)) {
 	fpara(stderr,
 	      "",
-	      "The cp, while it exists, is not a regular file.",
+	      "The cp path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1000,7 +1000,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(cp)) {
 	fpara(stderr,
 	      "",
-	      "The cp, while it is a file, is not executable.",
+	      "The cp path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the cp program, or use another path:",
 	      "",
@@ -1021,9 +1021,9 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(ls)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find an ls program.",
+	      "We cannot find the ls program.",
 	      "",
-	      "A ls program is required to copy files into a directory under work_dir.",
+	      "The ls program is required to help you verify the correct files are included.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -l /path/to/ls ...",
@@ -1039,7 +1039,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(ls)) {
 	fpara(stderr,
 	      "",
-	      "The ls, while it exists, is not a regular file.",
+	      "The ls path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1056,7 +1056,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(ls)) {
 	fpara(stderr,
 	      "",
-	      "The ls, while it is a file, is not executable.",
+	      "The ls path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the ls program, or use another path:",
 	      "",
@@ -1095,7 +1095,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(txzchk)) {
 	fpara(stderr,
 	      "",
-	      "The txzchk tool, while it exists, is not a regular file.",
+	      "The txzchk path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1112,7 +1112,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(txzchk)) {
 	fpara(stderr,
 	      "",
-	      "The txzchk tool, while it is a file, is not executable.",
+	      "The txzchk path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the txzchk program, or use another path:",
 	      "",
@@ -1133,7 +1133,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a fnamchk tool.",
+	      "We cannot find the fnamchk tool.",
 	      "",
 	      "The fnamchk program performs sanity checks on the compressed tarball filename.",
 	      "Perhaps you need to use:",
@@ -1151,7 +1151,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk tool, while it exists, is not a regular file.",
+	      "The fnamchk path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1168,7 +1168,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk tool, while it is a file, is not executable.",
+	      "The fnamchk path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
@@ -1189,9 +1189,9 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(chkentry)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a chkentry tool.",
+	      "We cannot find the chkentry tool.",
 	      "",
-	      "A chkentry program performs sanity checks on the compressed tarball.",
+	      "The chkentry program performs sanity checks on the JSON files.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -C /path/to/chkentry ...",
@@ -1207,7 +1207,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(chkentry)) {
 	fpara(stderr,
 	      "",
-	      "The chkentry tool, while it exists, is not a regular file.",
+	      "The chkentry path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1224,7 +1224,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_exec(chkentry)) {
 	fpara(stderr,
 	      "",
-	      "The chkentry tool, while it is a file, is not executable.",
+	      "The chkentry path, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the chkentry program, or use another path:",
 	      "",
@@ -1270,7 +1270,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "While the directory work_dir exists, it is not a writable directory.",
 	      "",
-	      "You should change the permission to make work_dir writable, or you move or remove work_dir and then",
+	      "You should change the permission to make work_dir writable, or move or remove work_dir and then",
 	      "create a new writable directory, or use a different work_dir directory path on the command line.",
 	      "",
 	      NULL);
@@ -1481,7 +1481,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    malloc_ret = prompt("", &len);
 	}
 	if (*read_answers_flag_used && !seen_answers_header) {
-	    dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
 	    err(53, __func__, "didn't find the correct answers file header");
 	    not_reached();
 	}
@@ -1520,7 +1519,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	     * reject invalid non-test contest ID
 	     */
 	    fpara(stderr,
-		  "IOCCC contest IDs are of the form:",
+		  "IOCCC contest IDs are in the form:",
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
@@ -1600,7 +1599,7 @@ get_entry_num(struct info *infop)
 		not_reached();
 	    }
 	    para("",
-		 "As in C, Entry numbers start with 0.  If you are updating a previous entry, PLEASE",
+		 "As in C, entry numbers start with 0.  If you are updating a previous entry, PLEASE",
 		 "use the same entry number that you previously uploaded so we know which entry we",
 		 "should replace. If this is your first entry to this given IOCCC, enter 0.",
 		 "",
@@ -1619,7 +1618,7 @@ get_entry_num(struct info *infop)
 	ret = sscanf(entry_str, "%d%c", &entry_num, &guard);
 	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 through %d, please re-enter.\n", MAX_ENTRY_NUM);
+	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 through %d; please re-enter.\n", MAX_ENTRY_NUM);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error while informing about the valid entry number range");
 	    }
@@ -1776,7 +1775,7 @@ warn_empty_prog(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(63, __func__, "called with NULL arg(s)");
+	err(63, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -1834,7 +1833,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
     }
 
     /*
-     * File is appears to be too big under Rule 2a warning
+     * File appears to be too big under Rule 2a warning
      */
     if (mode == RULE_2A_BIG_FILE_WARNING) {
 	dbg(DBG_MED, "prog.c: %s size: %jd > Rule 2a size: %jd", prog_c,
@@ -1887,7 +1886,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
      * invalid mode
      */
     } else {
-	err(68, __func__, "invalid mode used: %d", mode);
+	err(68, __func__, "invalid mode passed to function: %d", mode);
 	not_reached();
     }
     return;
@@ -1912,7 +1911,7 @@ warn_high_bit(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(69, __func__, "called with NULL arg(s)");
+	err(69, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -1921,7 +1920,7 @@ warn_high_bit(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nprog_c: %s has non-ASCII and/or character(s) with high bit set!\n"
+	ret = fprintf(stderr, "\nprog.c: %s has non-ASCII and/or character(s) with high bit set!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c char_warning");
@@ -1954,7 +1953,7 @@ warn_nul_chars(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(71, __func__, "called with NULL arg(s)");
+	err(71, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -1963,7 +1962,7 @@ warn_nul_chars(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nprog_c: %s has NUL character(s)!\n"
+	ret = fprintf(stderr, "\nprog.c: %s has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c nul_warning");
@@ -1997,7 +1996,7 @@ warn_trigraph(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(73, __func__, "called with NULL arg(s)");
+	err(73, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -2006,7 +2005,7 @@ warn_trigraph(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s has unknown or invalid trigraph(s) found!\n"
+	ret = fprintf(stderr, "\nprog.c: %s has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c trigraph_warning");
@@ -2039,7 +2038,7 @@ warn_wordbuf(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(75, __func__, "called with NULL arg(s)");
+	err(75, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -2048,7 +2047,7 @@ warn_wordbuf(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nprog_c: %s triggered a word buffer overflow!\n"
+	ret = fprintf(stderr, "\nprog.c: %s triggered a word buffer overflow!\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
 			      "YOUR remarks.md FILE!\n\n", prog_c);
 	if (ret <= 0) {
@@ -2083,7 +2082,7 @@ warn_ungetc(char const *prog_c)
      * firewall
      */
     if (prog_c == NULL) {
-	err(77, __func__, "called with NULL arg(s)");
+	err(77, __func__, "called with NULL prog.c path");
 	not_reached();
     }
 
@@ -2092,7 +2091,7 @@ warn_ungetc(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nprog_c: %s triggered a triggered an ungetc error: @SirWumpus goofed\n"
+	ret = fprintf(stderr, "\nprog.c: %s triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
 			      "YOUR remarks.md FILE!\n\n", prog_c);
 	if (ret <= 0) {
@@ -2103,7 +2102,7 @@ warn_ungetc(char const *prog_c)
 	    err(78, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
+	dbg(DBG_LOW, "user says that prog.c %s triggering an ungetc warning OK", prog_c);
     }
 }
 
@@ -2143,7 +2142,7 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
 	}
 
 	fpara(stderr,
-	      "Unless you are attempting some clever rule abuse, then we STRONGLY suggest that you",
+	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
@@ -2227,7 +2226,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     if (!is_read(prog_c)) {
 	fpara(stderr,
 	      "",
-	      "The prog.c, while it is a file, is not readable.",
+	      "The prog.c path, while it is a file, is not readable.",
 	      "",
 	      NULL);
 	err(87, __func__, "prog.c is not a readable file: %s", prog_c);
@@ -2263,7 +2262,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     infop->rule_2a_size = file_size(prog_c);
     dbg(DBG_MED, "Rule 2a size: %jd", (intmax_t)infop->rule_2a_size);
     if (infop->rule_2a_size < 0) {
-	err(90, __func__, "file_size error: %jd on prog_c: %s", (intmax_t)infop->rule_2a_size, prog_c);
+	err(90, __func__, "file_size error: %jd on prog.c: %s", (intmax_t)infop->rule_2a_size, prog_c);
 	not_reached();
     } else if (infop->rule_2a_size == 0 || infop->rule_2b_size == 0) {
 	warn_empty_prog(prog_c);
@@ -2612,7 +2611,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	 */
 	fpara(stderr,
 	      "",
-	      "There are problems with the Makefile provided:",
+	      "At least one problem was detected with the Makefile provided:",
 	      "",
 	      NULL);
 	if (!infop->first_rule_is_all) {
@@ -2640,7 +2639,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	    fpara(stderr,
 		  "  The Makefile appears to not have a clobber rule.",
 		  "    The clobber rule should restore the directory to the original submission state.",
-		  "    The clobber role should depend on the clean rule and should remove the entry's program,",
+		  "    The clobber rule should depend on the clean rule and should remove the entry's program,",
 		  "    clean up after program execution (if needed) and restore the entire directory back",
 		  "    to the original submission state.",
 		  "",
@@ -2724,7 +2723,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     if (!exists(Makefile)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find the prog.c file.",
+	      "We cannot find the Makefile.",
 	      "",
 	      NULL);
 	err(99, __func__, "Makefile does not exist: %s", Makefile);
@@ -2742,7 +2741,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     if (!is_read(Makefile)) {
 	fpara(stderr,
 	      "",
-	      "The Makefile, while it is a file, is not readable.",
+	      "The Makefile path, while it is a file, is not readable.",
 	      "",
 	      NULL);
 	err(101, __func__, "Makefile is not readable file: %s", Makefile);
@@ -2842,10 +2841,10 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (!is_read(remarks_md)) {
 	fpara(stderr,
 	      "",
-	      "The remarks.md, while it is a file, is not readable.",
+	      "The remarks.md path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(109, __func__, "remarks_md is not readable file: %s", remarks_md);
+	err(109, __func__, "remarks.md is not readable file: %s", remarks_md);
 	not_reached();
     }
     filesize = file_size(remarks_md);
@@ -2916,7 +2915,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	not_reached();
     }
     if (count < 0) {
-	err(115, __func__, "count :%d < 0", count);
+	err(115, __func__, "count: %d < 0", count);
 	not_reached();
     }
 
@@ -2958,7 +2957,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_file(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The file, while it exists, is not a regular file.",
+		   "The path, while it exists, is not a regular file.",
 		   "",
 		   NULL);
 	    err(118, __func__, "extra[%i] is not a regular file: %s", i, args[i]);
@@ -2967,7 +2966,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_read(args[i])) {
 	    fpara(stderr,
 		  "",
-		  "The file, while it is a file, is not readable.",
+		  "The file, while it is a regular file, is not readable.",
 		  "",
 		  NULL);
 	    err(119, __func__, "extra[%i] is not readable file: %s", i, args[i]);
@@ -3084,7 +3083,7 @@ yes_or_no(char const *question)
      * firewall
      */
     if (question == NULL) {
-	err(128, __func__, "called with NULL arg(s)");
+	err(128, __func__, "called with NULL question");
 	not_reached();
     }
 
@@ -3194,7 +3193,7 @@ get_title(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(129, __func__, "called with NULL arg(s)");
+	err(129, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -3204,10 +3203,10 @@ get_title(struct info *infop)
     if (need_hints) {
 	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
 	      "",
-	      "If your entry wins, the title might become the directory name of your entry.",
-	      "Although the IOCCC judges might change the title for various reason.",
+	      "If your entry wins, the title might become the directory name of your entry,",
+	      "although the IOCCC judges might change the title for various reason.",
 	      "",
-	      "If you submitting more than one entry, please make your titles unique",
+	      "If you are submitting more than one entry, please make your titles unique",
 	      "amongst the entries that you submit to the current IOCCC.",
 	      "",
 	      NULL);
@@ -3266,7 +3265,7 @@ get_title(struct info *infop)
 		  "",
 		  NULL);
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
+	    ret = fprintf(stderr, "Your title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf #1 error: %d", ret);
 	    }
@@ -3291,7 +3290,7 @@ get_title(struct info *infop)
 	     */
 	    fpara(stderr,
 		  "",
-		  "Your title contains invalid characters.  A title must match the following regex:",
+		  "Your title contains invalid characters. A title must match the following regex:",
 		  "",
 		  "    ^[0-9a-z][0-9a-z._+-]*$",
 		  "",
@@ -3345,7 +3344,7 @@ get_abstract(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(130, __func__, "called with NULL arg(s)");
+	err(130, __func__, "called with NULL infp");
 	not_reached();
     }
 
@@ -3405,7 +3404,7 @@ get_abstract(struct info *infop)
 		  "",
 		  NULL);
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "You abstract must be between 1 and %d characters long.\n\n", MAX_ABSTRACT_LEN);
+	    ret = fprintf(stderr, "Your abstract must be between 1 and %d characters long.\n\n", MAX_ABSTRACT_LEN);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error: %d", ret);
 	    }
@@ -3459,7 +3458,7 @@ get_author_info(struct author **author_set_p)
      * firewall
      */
     if (author_set_p == NULL) {
-	err(131, __func__, "called with NULL arg(s)");
+	err(131, __func__, "called with NULL author_set_p");
 	not_reached();
     }
 
@@ -3479,7 +3478,7 @@ get_author_info(struct author **author_set_p)
 	ret = sscanf(author_count_str, "%d%c", &author_count, &guard);
 	if (ret != 1 || test_author_count(author_count) == false) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe number of authors must a number from 1 through %d, please re-enter.\n", MAX_AUTHORS);
+	    ret = fprintf(stderr, "\nThe number of authors must be a number from 1 through %d; please re-enter.\n", MAX_AUTHORS);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error #0 while printing author number range");
 	    }
@@ -3542,9 +3541,9 @@ get_author_info(struct author **author_set_p)
 	     "",
 	     "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
 	     "",
-	     "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
-	     "",
 	     "If you wish your location/country to be anonymous, use the code: XX",
+	     "",
+	     "See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
 	     "",
 	     NULL);
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -3574,8 +3573,9 @@ get_author_info(struct author **author_set_p)
 	}
 	para("",
 	     "We will ask for the author(s) Email address. Press return if you don't want to provide it.",
-	     "We will ask for a home URL (starting with http:// or https://), or press return to skip.",
-	     "We will ask a mastodon handle (must start with @), or press return to skip.",
+	     "We will ask for a home URL (starting with http:// or https://). Each author may provide",
+	     "up to two URLs. Press return to skip.",
+	     "We will ask a Mastodon handle (must start with @), or press return to skip.",
 	     "We will ask a GitHub account (must start with @), or press return to skip.",
 	     "We will ask for an affiliation (company, school, group) of the author.",
 	     "We will ask if you have won the IOCCC before. Your answer will not affect your chances of winning.",
@@ -3713,7 +3713,7 @@ get_author_info(struct author **author_set_p)
 		      "",
 		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
+		ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL0);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf while printing ISO 3166-1 CODE URL #0");
 		}
@@ -3722,7 +3722,7 @@ get_author_info(struct author **author_set_p)
 		      "",
 		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
+		ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL1);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf while printing ISO 3166-1 CODE URL #1");
 		}
@@ -3961,7 +3961,7 @@ get_author_info(struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "url addresses must begin with http:// or https:// followed by the rest of the home page URL",
+			  "URLs must begin with http:// or https:// followed by the rest of the home page URL",
 			  "",
 			  NULL);
 
@@ -3977,7 +3977,7 @@ get_author_info(struct author **author_set_p)
 	    }
 	} while (author_set[i].url == NULL);
 
-	dbg(DBG_MED, "Author #%d URL: %s", i, author_set[i].url);
+	dbg(DBG_MED, "Author #%d URL #0: %s", i, author_set[i].url);
 
 	/*
 	 * ask for alt URL
@@ -3990,12 +3990,12 @@ get_author_info(struct author **author_set_p)
 	    author_set[i].alt_url = NULL;
 	    author_set[i].alt_url =
 		prompt(need_hints ?
-		    "Enter author home page URL (starting with http:// or https://), or press return to skip" :
-		    "Enter author home page URL", &len);
+		    "Enter second author URL (starting with http:// or https://), or press return to skip" :
+		    "Enter second author URL", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "URL withheld");
 	    } else {
-		dbg(DBG_VHIGH, "URL: %s", author_set[i].alt_url);
+		dbg(DBG_VHIGH, "URL #1: %s", author_set[i].alt_url);
 	    }
 
 	    /*
@@ -4046,7 +4046,7 @@ get_author_info(struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "url addresses must begin with http:// or https:// followed by the rest of the home page URL",
+			  "URLs must begin with http:// or https:// followed by the rest of the home page URL",
 			  "",
 			  NULL);
 
@@ -4075,8 +4075,8 @@ get_author_info(struct author **author_set_p)
 	     */
 	    author_set[i].mastodon = NULL;
 	    author_set[i].mastodon = prompt(need_hints ?
-		"Enter author mastodon handle, starting with @, or press return to skip" :
-		"Enter author mastodon handle", &len);
+		"Enter author Mastodon handle, starting with @, or press return to skip" :
+		"Enter author Mastodon handle", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "Mastodon handle not given");
 	    } else {
@@ -4092,8 +4092,8 @@ get_author_info(struct author **author_set_p)
 		 * issue rejection message
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit mastodon handles,"
-			      "starting with the @, to %d characters\n\n", MAX_MASTODON_LEN);
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit Mastodon handles to %d "
+			"characters, starting with the @\n\n", MAX_MASTODON_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing mastodon handle length limit");
 		}
@@ -4123,8 +4123,8 @@ get_author_info(struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "Mastodon handles must start with a @ and must have one other @ that's not adjacent to",
-			  "the other and is not the last character in the handle.",
+			  "Mastodon handles must start with a @, must have one other @ that's not adjacent to",
+			  "the first and is not the last character in the handle.",
 			  "",
 			  NULL);
 
@@ -4171,7 +4171,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for warnp() */
 		ret =
 		    fprintf(stderr,
-			    "\nSorry ( tm Canada :-) ), we limit GitHub account names, starting with the @, to %d characters\n\n",
+			    "\nSorry ( tm Canada :-) ), we limit GitHub account names to %d characters, starting with the @\n\n",
 			    MAX_GITHUB_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing GitHub user length limit");
@@ -4269,7 +4269,7 @@ get_author_info(struct author **author_set_p)
 	 */
 	if (need_hints) {
 	    para("",
-	        "Please note: Your next answer will not affect your chances of winning the IOCCC.",
+	        "Please note: your next answer will not affect your chances of winning the IOCCC.",
 		"We just need to know if you are a past IOCCC winner in case you do win.",
 		"This will simply help us identify all of your winning entries on the IOCCC website.",
 		"",
@@ -4563,7 +4563,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	not_reached();
     }
     if (kdirsize <= 0) {
-	err(140, __func__, "ls k block value: %d <= 0", kdirsize);
+	err(140, __func__, "ls k-block value: %d <= 0", kdirsize);
 	not_reached();
     }
     dbg(DBG_LOW, "entry directory %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
@@ -4667,7 +4667,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(144, __func__, "localtime #1 returned NULL");
+	errp(144, __func__, "gmtime returned NULL");
 	not_reached();
     }
 
@@ -4949,9 +4949,9 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
 static void
 write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk)
 {
-    char *author_path;		/* path to .auth.json file */
-    size_t author_path_len;	/* length of path to .auth.json */
-    FILE *author_stream;	/* open write stream to the .auth.json file */
+    char *auth_path;		/* path to .auth.json file */
+    size_t auth_path_len;	/* length of path to .auth.json */
+    FILE *auth_stream;	/* open write stream to the .auth.json file */
     int ret;			/* libc function return */
     int exit_code;		/* exit code from shell_cmd() */
     int i;
@@ -4975,24 +4975,24 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
     /*
      * open .auth.json for writing
      */
-    author_path_len = strlen(entry_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
+    auth_path_len = strlen(entry_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    author_path = (char *)malloc(author_path_len + 1);
-    if (author_path == NULL) {
-	errp(166, __func__, "malloc of %ju bytes failed", (uintmax_t)author_path_len + 1);
+    auth_path = (char *)malloc(auth_path_len + 1);
+    if (auth_path == NULL) {
+	errp(166, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(author_path, author_path_len, "%s/%s", entry_dir, AUTH_JSON_FILENAME);
+    ret = snprintf(auth_path, auth_path_len, "%s/%s", entry_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
 	errp(167, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
-    dbg(DBG_HIGH, ".auth.json path: %s", author_path);
+    dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
     errno = 0;			/* pre-clear errno for errp() */
-    author_stream = fopen(author_path, "w");
-    if (author_stream == NULL) {
-	errp(168, __func__, "failed to open for writing: %s", author_path);
+    auth_stream = fopen(auth_path, "w");
+    if (auth_stream == NULL) {
+	errp(168, __func__, "failed to open for writing: %s", auth_path);
 	not_reached();
     }
 
@@ -5000,22 +5000,22 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
      * write leading part of authorship to the open .auth.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(author_stream, "{\n") > 0 &&
-	json_fprintf_value_string(author_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", authp->tarball, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)authp->entry_num, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "author_count", " : ", (long)authp->author_count, ",\n") &&
-	json_fprintf_value_bool(author_stream, "\t", "test_mode", " : ", authp->test_mode, ",\n") &&
-	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
+    ret = fprintf(auth_stream, "{\n") > 0 &&
+	json_fprintf_value_string(auth_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "tarball", " : ", authp->tarball, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "entry_num", " : ", (long)authp->entry_num, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "author_count", " : ", (long)authp->author_count, ",\n") &&
+	json_fprintf_value_bool(auth_stream, "\t", "test_mode", " : ", authp->test_mode, ",\n") &&
+	fprintf(auth_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {
-	errp(169, __func__, "fprintf error writing leading part of authorship to %s", author_path);
+	errp(169, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -5025,23 +5025,23 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
     for (i = 0; i < authp->author_count; ++i) {
 	struct author *ap = &(authp->author[i]);
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(author_stream, "\t\t{\n") > 0 &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "name", " : ", ap->name, ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "location_code", " : ", ap->location_code, ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "location_name", " : ", ap->location_name, ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
-	    json_fprintf_value_bool(author_stream, "\t\t\t", "past_winner", " : ", ap->past_winner, ",\n") &&
-	    json_fprintf_value_bool(author_stream, "\t\t\t", "default_handle", " : ", ap->default_handle, ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
-	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", ap->author_num, "\n") &&
-	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
+	ret = fprintf(auth_stream, "\t\t{\n") > 0 &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "name", " : ", ap->name, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "location_code", " : ", ap->location_code, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "location_name", " : ", ap->location_name, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "\t\t\t", "past_winner", " : ", ap->past_winner, ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "\t\t\t", "default_handle", " : ", ap->default_handle, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "\t\t\t", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
+	    json_fprintf_value_long(auth_stream, "\t\t\t", "author_number", " : ", ap->author_num, "\n") &&
+	    fprintf(auth_stream, "\t\t}%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
 	if (ret == false) {
-	    errp(170, __func__, "fprintf error writing author %d info to %s", i, author_path);
+	    errp(170, __func__, "fprintf error writing author %d info to %s", i, auth_path);
 	    not_reached();
 	}
     }
@@ -5050,15 +5050,15 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
      * write trailing part of authorship to the open .auth.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(author_stream, "\t],\n") > 0 &&
-	json_fprintf_value_time_t(author_stream, "\t", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", authp->utctime, "\n") &&
-	fprintf(author_stream, "}\n") > 0;
+    ret = fprintf(auth_stream, "\t],\n") > 0 &&
+	json_fprintf_value_time_t(auth_stream, "\t", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
+	json_fprintf_value_string(auth_stream, "\t", "formed_UTC", " : ", authp->utctime, "\n") &&
+	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
-	errp(171, __func__, "fprintf error writing trailing part of authorship to %s", author_path);
+	errp(171, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -5066,7 +5066,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
      * close the file before checking it with chkentry
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fclose(author_stream);
+    ret = fclose(auth_stream);
     if (ret < 0) {
 	errp(172, __func__, "fclose error");
 	not_reached();
@@ -5079,11 +5079,11 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	para("",
 	    "Checking the format of .auth.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, author_path);
-    exit_code = shell_cmd(__func__, true, "% -q -- . %", chkentry, author_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, auth_path);
+    exit_code = shell_cmd(__func__, true, "% -q -- . %", chkentry, auth_path);
     if (exit_code != 0) {
 	err(173, __func__, "%s -q -- . %s failed with exit code: %d",
-			   chkentry, author_path, WEXITSTATUS(exit_code));
+			   chkentry, auth_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     if (!quiet) {
@@ -5093,9 +5093,9 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
     /*
      * free storage
      */
-    if (author_path != NULL) {
-	free(author_path);
-	author_path = NULL;
+    if (auth_path != NULL) {
+	free(auth_path);
+	auth_path = NULL;
     }
     return;
 }
@@ -5374,7 +5374,7 @@ show_registration_url(void)
     #if defined (IOCCC_SUBMIT_SERVER_READY)
 	int ret;
 	para("",
-	     "To submit entries to the IOCCC, you must be a registered contestant and have received a",
+	     "To submit entries to the IOCCC, you must be a registered contestant and have received an",
 	     "IOCCC contest ID (via email) shortly after you've successfully registered. To do so,",
 	     "please visit:",
 	     "",

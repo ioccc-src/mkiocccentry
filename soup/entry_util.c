@@ -88,7 +88,7 @@ free_auth(struct auth *authp)
      * firewall
      */
     if (authp == NULL) {
-	err(50, __func__, "called with NULL arg(s)");
+	err(50, __func__, "called with NULL authp");
 	not_reached();
     }
 
@@ -159,7 +159,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(51, __func__, "called with NULL arg(s)");
+	err(51, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -339,7 +339,7 @@ free_manifest(struct manifest *manp)
      * firewall
      */
     if (manp == NULL) {
-	err(54, __func__, "called with NULL arg(s)");
+	err(54, __func__, "called with NULL manp");
 	not_reached();
     }
 
@@ -944,7 +944,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     if (found_name == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(83, node, depth, sem, __func__,
-				    "author array index[%d]: missing __func__", author_num);
+				    "author array index[%d]: missing name", author_num);
 	}
 	return false;
     }
@@ -1044,7 +1044,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     if (auth_name == NULL) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(96, node, depth, sem, __func__,
-				    "author array index[%d]: __func__ is NULL", author_num);
+				    "author array index[%d]: auth_name is NULL", author_num);
 	}
 	return false;
     }
@@ -1115,7 +1115,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     if (email_withheld == false && test_email(email) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(103, node, depth, sem, __func__,
-				    "author array index[%d]: location_name is invalid", author_num);
+				    "author array index[%d]: email is invalid", author_num);
 	}
 	return false;
     }
@@ -1742,7 +1742,8 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
-     * verify that we do not have too many extra filenames
+     * verify that we do not have too many extra filenames or a bogus < 0 extra
+     * filenames
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
 	if (val_err != NULL) {
@@ -2508,7 +2509,7 @@ test_authors(int author_count, struct author const *authorp)
 	 */
 	if (authorp[i].author_handle == NULL) {
 	    json_dbg(JSON_DBG_MED, __func__,
-		     "invalid: author[%d] handle is NUL:", i);
+		     "invalid: author[%d] handle is NULL:", i);
 	    /* free array of author numbers */
 	    if (author_nums != NULL) {
 		free(author_nums);
@@ -2522,7 +2523,7 @@ test_authors(int author_count, struct author const *authorp)
 	 */
 	if (authorp[i].name == NULL) {
 	    json_dbg(JSON_DBG_MED, __func__,
-		     "invalid: author[%d] name is NUL:", i);
+		     "invalid: author[%d] name is NULL:", i);
 	    /* free array of author numbers */
 	    if (author_nums != NULL) {
 		free(author_nums);
@@ -2749,7 +2750,7 @@ test_email(char const *str)
     }
 
     /*
-     * reject if no leading @, or if more than one @
+     * reject if no @ or the first char is @ or the last char is @ or if more than one @
      */
     p = strchr(str, '@');
     if (p == NULL) {
@@ -3000,9 +3001,9 @@ test_formed_UTC(char const *str)
     match = conv_timestr_test(str);
     if (match == false) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: conv_into_out_of() failed");
+		 "invalid: conv_timestr_test() failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: conv_into_out_of() failed for: <%s>", str);
+		 "invalid: conv_timestr_test() failed for: <%s>", str);
 	return false;
     }
     return true;
@@ -3782,7 +3783,7 @@ test_mkiocccentry_version(char const *str)
 		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
+    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
     return true;
 }
 
