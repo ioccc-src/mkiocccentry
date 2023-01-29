@@ -84,7 +84,7 @@ Please add any other context about the problem here.
 Feel free to use [markdown](https://www.markdownguide.org/getting-started/) in your issue report.
 
 
-## Thank you, sorry, next steps
+## Thank you, sorry (tm Canada :-) ), next steps
 
 
 We are sorry (tm Canada :-)) that you seem to have encountered an problem or issue that prompted

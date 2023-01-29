@@ -68,7 +68,7 @@ static const char * const usage_msg =
     "\t1\t\tfilename does not exist or is not a readable file\n"
     "\t2\t\t-h and help string printed or -V and version string printed\n"
     "\t3\t\tcommand line error\n"
-    "\t>=10\tinternal error\n"
+    "\t>=10\t\tinternal error\n"
     "\n"
     "jnum_gen version: %s\n";
 
@@ -80,7 +80,7 @@ static bool quiet = false;			/* true ==> quiet mode */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
 int
@@ -111,10 +111,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, program, "-h help mode", -1, -1); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -132,14 +132,21 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-	default:
-	    usage(3, program, "invalid -flag", -1, -1); /*ooo*/
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
+	    break;
+	default:
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	 }
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(3, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
     filename = argv[optind];
@@ -309,7 +316,8 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(19, program, "node->type for test %d: %s != %s", i, json_type_name(node->type),
+		    json_type_name(JTYPE_NUMBER));
 	    not_reached();
 	}
 	fpr_number(stdout, &node->item.number);
@@ -750,8 +758,6 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
  *	exitcode        value to exit with
  *	prog		our program name
  *	str		top level usage message
- *	expected	>= 0 ==> expected args, < 0 ==> ignored
- *	argc		>= 0 ==> argument count, < 0 ==> ignored
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -759,7 +765,7 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *prog, char const *str, int expected, int argc)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
@@ -776,10 +782,8 @@ usage(int exitcode, char const *prog, char const *str, int expected, int argc)
     /*
      * print the formatted usage stream
      */
-    if (argc >= 0 && expected >= 0) {
-	fprintf_usage(DO_NOT_EXIT, stderr, str, expected, argc);
-    } else {
-	fprintf_usage(DO_NOT_EXIT, stderr, "%s", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_GEN_VERSION);
     exit(exitcode); /*ooo*/

@@ -351,7 +351,7 @@ json_putc(uint8_t const c, FILE *stream)
      * firewall
      */
     if (stream == NULL) {
-	warn(__func__, "called with NULL arg(s)");
+	warn(__func__, "called with NULL stream");
 	return false;
     }
 
@@ -405,7 +405,7 @@ json_fprintf_str(FILE *stream, char const *str)
      * firewall
      */
     if (stream == NULL) {
-	warn(__func__, "called with NULL arg(s)");
+	warn(__func__, "called with NULL stream");
 	return false;
     }
 

@@ -32,36 +32,36 @@ export ALL_SEM_REF_VERSION="1.1 2022-12-30"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] info.head.c info.tail.c info.head.h
 	info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
 
-	-h		print help message and exit
-	-v level	set verbosity level (def level: 0)
-	-V		print version string and exit
+	-h		    print help message and exit
+	-v level	    set verbosity level (def level: 0)
+	-V		    print version string and exit
 
-	-j jsemtblgen	path to jsemtblgen (def: $JSEMTBLGEN)
-	-J jsemcgen.sh	path to jsemcgen.sh (def: $JSEMCGEN_SH)
+	-j jsemtblgen	    path to jsemtblgen (def: $JSEMTBLGEN)
+	-J jsemcgen.sh	    path to jsemcgen.sh (def: $JSEMCGEN_SH)
 
-	info.head.c	.info.json style header for .c semantic table files
-	info.tail.c	.info.json style footer for .c semantic table files
-	info.head.h	.info.json style header for .h semantic table files
-	info.tail.h	.info.json style footer for .h semantic table files
+	info.head.c	    .info.json style header for .c semantic table files
+	info.tail.c	    .info.json style footer for .c semantic table files
+	info.head.h	    .info.json style header for .h semantic table files
+	info.tail.h	    .info.json style footer for .h semantic table files
 
-	auth.head.c	.auth.json style header for .c semantic table files
-	auth.tail.c	.auth.json style footer for .c semantic table files
-	auth.head.h	.auth.json style header for .h semantic table files
-	auth.tail.h	.auth.json style footer for .h semantic table files
+	auth.head.c	    .auth.json style header for .c semantic table files
+	auth.tail.c	    .auth.json style footer for .c semantic table files
+	auth.head.h	    .auth.json style header for .h semantic table files
+	auth.tail.h	    .auth.json style footer for .h semantic table files
 
-	info_dir	process *.json files as .info.json files
-	auth_dir	process *.json files as .auth.json files
+	info_dir	    process *.json files as .info.json files
+	auth_dir	    process *.json files as .auth.json files
 
-	ref_dir		sub-directory under which semantic table files are written
+	ref_dir		    sub-directory under which semantic table files are written
 
 Exit codes:
-     0	 all OK
-     2	 -h and help string printed or -V and version string printed
-     3	 command line error
-     4	 jsemcgen.sh and/or jsemtblgen not found or not executable
-     5	 missing or not readable header or footer file
-     6	 missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
- >= 10	 internal error"
+     0	    all OK
+     2	    -h and help string printed or -V and version string printed
+     3	    command line error
+     4	    jsemcgen.sh and/or jsemtblgen not found or not executable
+     5	    missing or not readable header or footer file
+     6	    missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
+ >= 10	    internal error"
 
 # parse args
 #
@@ -100,6 +100,7 @@ done
 shift $(( OPTIND - 1 ));
 if [[ $# -ne 11 ]]; then
     echo "$0: ERROR: expected 11 arguments, found $#" 1>&2
+    echo 1>&2
     echo "$USAGE" 1>&2
     exit 3
 fi

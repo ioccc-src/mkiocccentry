@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_test.sh 8 "26 January 2023" "jparse_test.sh" "IOCCC tools"
+.TH jparse_test.sh 8 "28 January 2023" "jparse_test.sh" "IOCCC tools"
 .SH NAME
 .B jparse_test.sh
 \- test jparse on one or more files with one or more one\-line JSON blobs
@@ -33,12 +33,23 @@
 .RI [\| file
 .IR .. \|]
 .SH DESCRIPTION
-\fBjparse_test.sh\fP tests each line in each file for valid JSON.
-The file name \fI\-\fP means read from stdin.
+.B jparse_test.sh
+tests each line in each file for valid JSON.
+The file name
+.I \-
+means read from stdin.
 At least one file is required.
-It also uses \fBfind(1)\fP to look under the JSON tree for good and bad files that must pass or fail respectively.
-The files that must pass are in the subdirectory called \fIgood\fP and the files that must fail are in the subdirectory called \fIbad\fP.
-It keeps a log of all the tests in \fIjparse_test.log\fP for later inspection.
+It also uses 
+.B find(1)
+to look under the JSON tree for good and bad files that must pass or fail respectively.
+The files that must pass are in the subdirectory called 
+.I good
+and the files that must fail are in the subdirectory called
+.I bad\c
+\&.
+It keeps a log of all the tests in
+.I jparse_test.log
+for later inspection.
 .SH OPTIONS
 .TP
 .B \-h
@@ -96,13 +107,17 @@ all tests are OK
 at least one test failed
 .TQ
 2
-\fB\-h\fP or \fB\-V\fP used and help string or version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 invalid command line
 .TQ
 4
-\fBjparse\fP not a regular executable file
+.B jparse
+not a regular executable file
 .TQ
 5
 couldn't create writable log file
@@ -116,25 +131,32 @@ missing JSON file
 >=10
 internal error
 .SH FILES
-\fIjson_teststr.txt\fP
+.I json_teststr.txt
 .RS
-The default file that \fBjparse_test.sh\fP reads from.
+The default file that
+.B jparse_test.sh
+reads from.
 .RE
-\fIjparse_test.log\fP
+.I jparse_test.log
 .RS
-The log file kept by \fBjparse_test.sh\fP.
+The log file kept by
+.B jparse_test.sh\c
+\&.
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
-\fItest_JSON\fP
+.I test_JSON
 .RS
 The default JSON tree with good and bad subdirectories for files that must pass and fail, respectively.
 .RE
 .SH NOTES
-The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH SEE ALSO
-\fBjparse(1)\fP
+.B jparse(1)

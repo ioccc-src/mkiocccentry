@@ -115,7 +115,7 @@ function.
 
 Fixed in commit 290963a459b707cc6b22374cc20dbd76e9f5db6d.
 
-## Issue: memory leaks in jstrencode.c and jstredecode.c
+## Issue: memory leaks in jstrencode.c and jstrdecode.c
 ### Status: partially fixed
 ### Example
 

@@ -176,8 +176,7 @@ static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program) \
-		__attribute__((noreturn));
+static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
 
 
 int
@@ -226,10 +225,10 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:J:qVt:c:l:a:i:A:WT:F:C:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:F:C:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
-	    usage(2, "-h help mode", program); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -294,14 +293,21 @@ main(int argc, char *argv[])
 	    chkentry_flag_used = true;
 	    chkentry = optarg;
 	    break;
-	default:
-	    usage(3, "invalid -flag", program); /*ooo*/
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
-	 }
+	    break;
+	default:
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
+	}
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(3, "wrong number of arguments", program); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
 
@@ -820,18 +826,12 @@ main(int argc, char *argv[])
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), tar: %s cp: %s ls: %s", "/usr/bin/tar", "/bin/cp", "/bin/ls", "./txzchk");
+ *      usage(3, program, "wrong number of arguments");
  *
  * given:
  *	exitcode        value to exit with
- *	str		top level usage message
  *	program		our program name
- *	tar		path to the tar utility
- *	cp		path to tar cp utility
- *	ls		path to tar ls utility
- *	txzchk		path to the txzchk tool
- *	fnamchk		path to the fnamchk tool
- *	chkentry	path to chkentry tool
+ *	str		top level usage message
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -839,7 +839,7 @@ main(int argc, char *argv[])
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *program)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
@@ -848,17 +848,20 @@ usage(int exitcode, char const *str, char const *program)
 	str = "((NULL str))";
 	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
-    if (program == NULL) {
-	program = "((NULL program))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", program);
+    if (prog == NULL) {
+	prog = "((NULL prog))";
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
 
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT, JSON_DBG_DEFAULT);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
@@ -3826,7 +3829,7 @@ get_author_info(struct author **author_set_p)
 		yorn = yes_or_no("Is that location/country code correct? [yn]");
 
 		/*
-		 * free storage if no (reenter location/country code)
+		 * free storage if no (re-enter location/country code)
 		 */
 		if (!yorn) {
 		    if (author_set[i].location_code != NULL) {
@@ -4457,7 +4460,7 @@ get_author_info(struct author **author_set_p)
 	    yorn = yes_or_no("Is that author information correct? [yn]");
 	    if (!yorn) {
 		/*
-		 * reenter author information
+		 * re-enter author information
 		 */
 		--i;
 		continue;

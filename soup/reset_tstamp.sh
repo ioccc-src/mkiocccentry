@@ -42,17 +42,17 @@
 export RESET_TSTAMP_VERSION="0.4 2022-04-23"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
-    -h              print help and exit
-    -V              print version and exit
-    -v level        set debug level (def: 0)
-    -l limit.h	    limit file (def: ./limit_ioccc.h)
+    -h			print help and exit
+    -V			print version and exit
+    -v level		set debug level (def: 0)
+    -l limit.h		limit file (def: ./limit_ioccc.h)
 
 Exit codes:
-     0   timestamp updated
-     1   a verification phase test failed
-     2   -h and help string printed or -V and version string printed
-     3   command line usage error
- >= 10   internal error
+     0	    timestamp updated
+     1	    a verification phase test failed
+     2	    -h and help string printed or -V and version string printed
+     3	    command line usage error
+ >= 10	    internal error
 
 $0 version: $RESET_TSTAMP_VERSION"
 export V_FLAG="0"

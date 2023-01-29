@@ -12,49 +12,63 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH warn_or_err 3  "26 January 2023" "warn_or_err"
+.TH warn_or_err 3  "29 January 2023" "warn_or_err"
 .SH NAME
-.BR warn_or_err(),
-.BR vwarn_or_err(),
-.BR fwarn_or_err(),
-.BR vfwarn_or_err(),
-.BR warnp_or_errp(),
-.BR vwarnp_or_errp(),
-.BR fwarnp_or_errp(),
-.BR vfwarnp_or_errp(),
+.BR warn_or_err() \|,
+.BR vwarn_or_err() \|,
+.BR fwarn_or_err() \|,
+.BR vfwarn_or_err() \|,
+.BR warnp_or_errp() \|,
+.BR vwarnp_or_errp() \|,
+.BR fwarnp_or_errp() \|,
+.B vfwarnp_or_errp()
 \- show either a warning message or a fatal error message
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
 .sp
-.BI "extern int verbosity_level;		/* maximum debug level for debug messages */"
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-.BI "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
-.br
-.BI "extern bool err_output_allowed;		/* false ==> disable error messages */"
-.br
-.BI "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.BI "void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...);"
+.B "extern int verbosity_level;		/* maximum debug level for debug messages */"
 .br
-.BI "void vwarn_or_err(int exitcode, const char *name, bool warning, const char *fmt, va_list ap);
+.B "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
 .br
-.BI "void fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...);"
+.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
 .br
-.BI "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
+.B "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+.sp
+.B "void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...);"
+.br
+.B "void vwarn_or_err(int exitcode, const char *name, bool warning, const char *fmt, va_list ap);
+.br
+.B "void fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...);"
+.br
+.B "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
 .SH DESCRIPTION
-These functions provide a way to write either a warning message or a fatal error message (prior to aborting) to a stream such as \fBstderr\fP.
-.SS Alternative output \fBFILE *\fP stream
-The functions that do not take a \fBFILE *\fP or a \fBchar *\fP write to \fBstderr\fP.
+These functions provide a way to write either a warning message or a fatal error message (prior to aborting) to a stream such as
+.B stderr\c
+\&.
+.SS Alternative output FILE * stream
+The functions that do not take a
+.B FILE *
+or a
+.B char *
+write to
+.B stderr\c
+\&.
 The functions
-.BR fwarn_or_err(),
+.BR fwarn_or_err() \|,
 .BR vfwarn_or_err()
 and
 .BR fwarnp_or_errp()
-can write to an alternative \fBFILE *\fP stream.
+can write to an alternative
+.B FILE *
+stream.
 .SS Variadic versions
 .PP
 The functions
-.BR vwarn_or_err(),
+.BR vwarn_or_err() \|,
 .BR vfwarn_or_err()
 and
 .BR vwarnp_or_errp()
@@ -63,58 +77,107 @@ are equivalent to the functions
 .BR fwarn_or_err()
 and
 .BR warnp_or_errp()
-except that they are called with a \fIva_list\fP instead of a variable number of arguments.
-The state of the \fIva_list\fP is not modified by these functions.
+except that they are called with a
+.I va_list
+instead of a variable number of arguments.
+The state of the 
+.I va_list
+is not modified by these functions.
 .SS Format of the fmt string
-The format string is a character string in the same form as \fBprintf\fP.
-As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
+The format string is a character string in the same form as
+.B printf\c
+\&.
+As these are quite complex please refer to the
+.B printf(3)
+man page for more details and examples.
 .SS Output control
 .PP
-When \fBwarn_output_allowed == false\fP warning messages will not be printed.
+When
+.B warn_output_allowed == false
+warning messages will not be printed.
 .sp
-When \fBerr_output_allowed == false\fP error messages will not be printed.
+When
+.B err_output_allowed == false
+error messages will not be printed.
 .sp
-When \fBmsg_warn_silent == true\fP warning messages will not be printed if \fBverbosity_level <= 0\fP.
+When
+.B msg_warn_silent == true
+warning messages will not be printed if
+.B verbosity_level <= 0\c
+\&.
+.SS Version string
+The string
+.B dbg_version\c
+\&, which points to
+.B DBG_VERSION\c
+\&, is the current version of the
+.B dbg
+library.
 .SH RETURN VALUE
 .PP
-These functions do not return if \fBwarning == false\fP in the same manner as the functions
-.BR err(),
-.BR verr(),
-.BR ferr(),
-.BR vferr(),
-.BR errp(),
-.BR verrp(),
-.BR ferrp(),
+These functions do not return if
+.B warning == false
+in the same manner as the functions
+.BR err() \|,
+.BR verr() \|,
+.BR ferr() \|,
+.BR vferr() \|,
+.BR errp() \|,
+.BR verrp() \|,
+.BR ferrp() \|,
 and
-.BR vferrp().
+.B vferrp()\c
+\&.
 Otherwise they will return void.
 .SH NOTES
 .SS Variadic arguments
-In the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
+In the
+.I va_list
+functions, the argument
+.I ap
+is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If \fIname\fP is \fBNULL\fP it will be set to
-.BR "((NULL name))"
+If 
+.I name
+is NULL it will be set to
+.B "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
-.BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
+.B "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
-where \fBfoo\fP is the name of the function.
+where 
+.B foo
+is the name of the function.
 .SS The fmt argument
-The \fBfmt\fP argument in the functions is a \fBprintf(3)\fP style format.
+The 
+.I fmt
+argument in the functions is a
+.B printf(3)
+style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
-If \fIfmt\fP is \fBNULL\fP it will be set to
+If
+.I fmt
+is NULL it will be set to
 .BR "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
 .sp
-where \fBfoo\fP is the name of the function.
+where 
+.B foo
+is the name of the function.
 .sp
-When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
+When the
+.I fmt
+is NULL or contains no
+.B %
+specifiers the arguments following
+.I fmt
+will be ignored.
 .SS Error checking
 All writes are checked for errors.
 Write error messages are written to stderr.
@@ -123,16 +186,17 @@ However, a persistent problem writing to the stream (such as if the stream being
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
 .PP
-For an example proper please refer to \fBdbg(3)\fP.
+For an example proper please refer to
+.B dbg(3)\c
+\&.
 .SH SEE ALSO
-.BR printf(3)
-.BR dbg(3),
-.BR err(3),
-.BR printf_usage(3),
-.BR warn(3),
-.BR werr(3),
-.BR warn_or_err(3),
-.BR msg(3)
+.BR dbg(3) \|,
+.BR msg(3) \|,
+.BR printf_usage(3) \|,
+.BR warn(3) \|,
+.BR werr(3) \|,
+.BR err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

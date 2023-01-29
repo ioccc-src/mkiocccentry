@@ -233,4 +233,7 @@ extern size_t find_text_str(char const *str, char **first);
 /* other utility functions */
 extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 
+/* for getopt() invalid option or missing option argument */
+extern void check_invalid_option(char const *prog, int ch, int opt);
+
 #endif				/* INCLUDE_UTIL_H */

@@ -116,7 +116,7 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
 int
@@ -134,10 +134,10 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVF:t:TE:w")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVF:t:TE:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
-	    usage(2, "-h help mode", program); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -172,15 +172,22 @@ main(int argc, char **argv)
 	case 'w':   /* -w - always show warnings - important for test suite */
 	    always_show_warnings = true;
 	    break;
-	default:
-	    usage(3, "invalid -flag", program); /*ooo*/
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
+	    break;
+	default:
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	}
     }
 
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(3, "wrong number of arguments", program); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
     tarball_path = argv[optind];
@@ -333,12 +340,12 @@ show_tarball_info(char const *tarball_path)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(2, "missing required argument(s), program: %s", program);
+ *      usage(2, program, "wrong number of arguments");
  *
  * given:
  *	exitcode        value to exit with
+ *	prog		our program name
  *	str		top level usage message
- *	program		our program name
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -346,25 +353,28 @@ show_tarball_info(char const *tarball_path)
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *prog)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
      */
     if (str == NULL) {
 	str = "((NULL str))";
-	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+	warn("txzchk", "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
 
     if (prog == NULL) {
 	prog = "txzchk";
-	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+	warn("txzchk", "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0, TXZCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

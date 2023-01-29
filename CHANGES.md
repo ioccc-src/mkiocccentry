@@ -54,6 +54,17 @@ to an else being left off from an if after rejecting the author, freeing and
 setting to NULL the code went on to check for unique author names which would
 then dereference the just rejected NULL author name.
 
+Go through all files and fix typos. This does NOT imply everything has been
+checked for consistency. For instance if an error message refers to the wrong
+object (though some of these have been fixed in the initial spellcheck pass).
+This excludes .json,  .txt and .err files under test_ioccc/ as there's no point
+in checking them (some of the .txt files do have text that would trigger
+spellchecking problems but they're part of invalid tarball listings). The
+iocccsize related files have not been checked. Where the alternative and
+incorrect English (that is American English) spelling was in the repo it was
+untouched as it is after all the International Obfuscated C Code Contest, not
+the Obfuscated C Code Contest for people who use proper English. :-)
+
 
 ## Release 0.9.9 2022-12-31
 

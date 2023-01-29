@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry_test.sh 8 "25 January 2023" "chkentry_test.sh" "IOCCC tools"
+.TH chkentry_test.sh 8 "28 January 2023" "chkentry_test.sh" "IOCCC tools"
 .SH NAME
 .B chkentry_test.sh
 \- test chkentry on good and bad auth.json and info.json files
@@ -29,10 +29,22 @@
 .RB [\| \-d
 .IR json_tree \|]
 .SH DESCRIPTION
-\fBchkentry_test.sh\fP tests each file in the \fItest_JSON/auth.json\fP and \fItest_JSON/info.json\fP subdirectories
-It uses \fBfind(1)\fP to look under the JSON tree for good and bad files that must pass or fail respectively.
-The files that must pass are in the subdirectory called \fIgood\fP and the files that must fail are in the subdirectory called \fIbad\fP.
-It keeps a log of all the tests in \fIchkentry_test.log\fP for later inspection.
+.B chkentry_test.sh tests each file in the
+.I test_JSON/auth.json
+and
+.I test_JSON/info.json
+subdirectories
+It uses
+.B find(1)
+to look under the JSON tree for good and bad files that must pass or fail respectively.
+The files that must pass are in the subdirectory called
+.I good
+and the files that must fail are in the subdirectory called
+.I bad\c
+\&.
+It keeps a log of all the tests in
+.I chkentry_test.log
+for later inspection.
 .SH OPTIONS
 .TP
 .B \-h
@@ -78,7 +90,10 @@ all OK
 all JSON files were valid JSON; however some chkentry semantic tests failed
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 invalid command line
@@ -98,21 +113,28 @@ some files were invalid JSON and some chkentry tests failed
 >=10
 internal error
 .SH FILES
-\fIchkentry_test.log\fP
+.I chkentry_test.log
 .RS
-The log file kept by \fBchkentry_test.sh\fP.
+The log file kept by
+.B chkentry_test.sh\c
+\&.
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
-\fItest_JSON\fP
+.I test_JSON
 .RS
 The default JSON tree with good and bad subdirectories for files that must pass and fail, respectively.
 .RE
 .SH NOTES
-The JSON parser \fBjparse(1)\fP and \fBchkentry(1)\fP were co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser
+.B jparse(1)
+and
+.B chkentry(1)
+were co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH SEE ALSO
-\fBchkentry(1)\fP
+.B chkentry(1)

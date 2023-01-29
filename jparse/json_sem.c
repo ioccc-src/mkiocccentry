@@ -128,7 +128,7 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
 {
     va_list ap;					/* variable argument list */
     struct json_sem_val_err *ret = NULL;	/* malloced return value */
-    char msg[BUFSIZ+1];				/* vsnwerr() message buffer */
+    char message[BUFSIZ+1];				/* vsnwerr() message buffer */
     char *diagnostic = NULL;			/* pointer to duplicated message buffer */
 
     /*
@@ -147,9 +147,9 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     /*
      * copy a werr() message (via vsnwerr()) into the static buffer
      */
-    msg[0] = '\0';	/* paranoia */
-    msg[BUFSIZ] = '\0';	/* paranoia */
-    vsnwerr(val_err, msg, BUFSIZ, name, fmt, ap);
+    message[0] = '\0';	/* paranoia */
+    message[BUFSIZ] = '\0';	/* paranoia */
+    vsnwerr(val_err, message, BUFSIZ, name, fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -159,7 +159,7 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     /*
      * duplicate the error message
      */
-    diagnostic = strdup(msg);
+    diagnostic = strdup(message);
     if (diagnostic == NULL) {
 	/* report strdup error */
 	return &sem_strdup_err;
@@ -227,7 +227,7 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
 {
     va_list ap;					/* variable argument list */
     struct json_sem_val_err *ret = NULL;	/* malloced return value */
-    char msg[BUFSIZ+1];				/* vsnwerr() message buffer */
+    char mesg[BUFSIZ+1];				/* vsnwerr() message buffer */
     char *diagnostic = NULL;			/* pointer to duplicated message buffer */
 
     /*
@@ -246,9 +246,9 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     /*
      * copy a werr() message (via vsnwerrp()) into the static buffer
      */
-    msg[0] = '\0';	/* paranoia */
-    msg[BUFSIZ] = '\0';	/* paranoia */
-    vsnwerrp(val_err, msg, BUFSIZ, name, fmt, ap);
+    mesg[0] = '\0';	/* paranoia */
+    mesg[BUFSIZ] = '\0';	/* paranoia */
+    vsnwerrp(val_err, mesg, BUFSIZ, name, fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -258,7 +258,7 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     /*
      * duplicate the error message
      */
-    diagnostic = strdup(msg);
+    diagnostic = strdup(mesg);
     if (diagnostic == NULL) {
 	/* report strdup error */
 	return &sem_strdup_err;
@@ -703,7 +703,7 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
  *	!= NULL ==> JSON node that is the name of a JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -792,7 +792,7 @@ sem_member_name(struct json const *node, unsigned int depth, struct json_sem *se
  *	!= NULL ==> JSON node that is the value of a JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1479,7 +1479,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
  *	!= NULL ==> valid parent JSON node
  *	    The val_err arg is ignored
  *	NULL ==> no parent node, invalid parent node, or internal error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1565,7 +1565,7 @@ sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *se
  *	!= NULL ==> JTYPE_MEMBER with a given name
  *	    The val_err arg is ignored
  *	NULL ==> no such JTYPE_MEMBER found, or invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_object_find_name(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1657,7 +1657,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	}
 
 	/*
-	 * try to match the memname with this set member
+	 * try to match the smemname with this set member
 	 */
 	smemname = sem_member_name_decoded_str(s, depth+1, sem, name, val_err);
 	if (smemname == NULL) {
@@ -1710,7 +1710,7 @@ json_sem_zero_count(struct json_sem *sem)
     }
 
     /*
-     * set the special JTYPE_UNSET nore
+     * set the special JTYPE_UNSET node
      */
     if (sem[i].type == JTYPE_UNSET) {
 	sem[i].count = 0;
@@ -1825,7 +1825,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 
 
 /*
- * json_sem_find - given JSON node, find 1st match in JSON semantic table
+ * json_sem_find - given JSON node, find first match in JSON semantic table
  *
  * given:
  *	node		pointer to a JSON parse tree
@@ -1833,7 +1833,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
  *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
  *
  * returns:
- *	>=0 ==> index into JSON semantic table for 1st match
+ *	>=0 ==> index into JSON semantic table for first match
  *	-1  ==> no JSON semantic table match found
  *	< -1 ==> invalid JSON node, or NULL ptr, or internal error
  */
@@ -1939,7 +1939,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
     struct dyn_array *count_err = NULL;	/* dynamic array of JSON semantic count errors */
     struct dyn_array *val_err = NULL;	/* dynamic array of JSON semantic validation errors */
     bool test = false;			/* validation test result */
-    struct json_sem_val_err *err = NULL;/* pointer to semantic validation error */
+    struct json_sem_val_err *error = NULL;/* pointer to semantic validation error */
     struct json_sem_count_err count;	/* semantic count error */
     int index = -1;			/* semantic array index match or -1 ==> no march or < -1 ==> error */
 
@@ -1999,7 +1999,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * try to validate
 	     */
-	    test = sem[index].validate(node, depth, sem, &err);
+	    test = sem[index].validate(node, depth, sem, &error);
 
 	    /*
 	     * case: validation failed
@@ -2007,17 +2007,17 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	    if (test == false) {
 
 		/* be sure we have a validation error message */
-		if (err == NULL) {
-		    /* err is NULL, assume sem_val_err_NULL */
-		    err = &sem_val_err_NULL;
+		if (error == NULL) {
+		    /* error is NULL, assume sem_val_err_NULL */
+		    error = &sem_val_err_NULL;
 
 		/* record semantic table index */
 		} else {
-		    err->sem_index = sem[index].sem_index;
+		    error->sem_index = sem[index].sem_index;
 		}
 
 		/* save validation error message */
-		dyn_array_append_value(val_err, err);
+		dyn_array_append_value(val_err, error);
 	    }
 	}
 
@@ -2041,19 +2041,19 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	    if (node->type == JTYPE_MEMBER) {
 		char *name = NULL;	/* name of JTYPE_MEMBER */
 
-		name = sem_member_name_decoded_str(node, depth, sem, __func__, &err);
+		name = sem_member_name_decoded_str(node, depth, sem, __func__, &error);
 		if (name == NULL) {
 		    snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s name: ((NULL)); unnamed member",
 			  depth, json_item_type_name(node));
 
 		    /* be sure we have a validation error message */
-		    if (err == NULL) {
-			/* err is NULL, assume sem_val_err_NULL */
-			err = &sem_val_err_NULL;
+		    if (error == NULL) {
+			/* error is NULL, assume sem_val_err_NULL */
+			error = &sem_val_err_NULL;
 		    }
 
 		    /* also save validation error message */
-		    dyn_array_append_value(val_err, err);
+		    dyn_array_append_value(val_err, error);
 
 		} else {
 		    snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s name: \"%s\"; unexpected node",
@@ -2113,7 +2113,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  * is used.
  *
  * We then walk the JSON parse tree and check each node against the JSON semantic table,
- * counting as nodes on the 1st match found in the JSON semantic table,
+ * counting as nodes on the first match found in the JSON semantic table,
  * or appending a JSON semantic count error to the *pcount_err dynamic array
  * when an unknown JSON node is found.
  *
@@ -2156,30 +2156,30 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 {
     struct dyn_array *count_err = NULL;		/* JSON semantic count errors */
     struct dyn_array *val_err = NULL;		/* JSON semantic validation errors */
-    uintmax_t err = 0;				/* number of errors (count+validation+internal) */
+    uintmax_t errors = 0;			/* number of errors (count+validation+internal) */
 
     /*
      * firewall - check args
      */
     if (node == NULL) {
 	warn(__func__, "node is NULL");
-	++err;
+	++errors;
     }
     if (sem == NULL) {
 	warn(__func__, "sem is NULL");
-	++err;
+	++errors;
     }
     if (pcount_err == NULL) {
 	warn(__func__, "pcount_err is NULL");
-	++err;
+	++errors;
     }
     if (pval_err == NULL) {
 	warn(__func__, "pval_err is NULL");
-	++err;
+	++errors;
     }
     /* abort early on internal errors */
-    if (err > 0) {
-	return err;
+    if (errors > 0) {
+	return errors;
     }
 
     /*
@@ -2189,7 +2189,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 	count_err = dyn_array_create(sizeof(struct json_sem_count_err), JSON_CHUNK, JSON_CHUNK, true);
 	if (count_err == NULL) {
 	    warn(__func__, "dyn_array_create() failed to create count_err");
-	    ++err;
+	    ++errors;
 	}
 	*pcount_err = count_err;
     } else {
@@ -2199,7 +2199,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 	val_err = dyn_array_create(sizeof(struct json_sem_val_err), JSON_CHUNK, JSON_CHUNK, true);
 	if (val_err == NULL) {
 	    warn(__func__, "dyn_array_create() failed to create val_err");
-	    ++err;
+	    ++errors;
 	}
 	*pval_err = val_err;
     } else {
@@ -2207,15 +2207,15 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     }
     if (count_err == NULL) {
 	warn(__func__, "count_err remains NULL in dyn_array_create()");
-	++err;
+	++errors;
     }
     if (val_err == NULL) {
 	warn(__func__, "val_err remains NULL in dyn_array_create()");
-	++err;
+	++errors;
     }
     /* abort early on internal errors */
-    if (err > 0) {
-	return err;
+    if (errors > 0) {
+	return errors;
     }
 
     /*
@@ -2240,12 +2240,12 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     /*
      * count errors, if any
      */
-    err = (uintmax_t)dyn_array_tell(count_err) + (uintmax_t)dyn_array_tell(val_err);
+    errors = (uintmax_t)dyn_array_tell(count_err) + (uintmax_t)dyn_array_tell(val_err);
 
     /*
      * report on the number of errors found
      */
-    return err;
+    return errors;
 }
 
 

@@ -65,8 +65,7 @@ static const char * const usage_msg =
 /*
  * static functions
  */
-static void usage(int exitcode, char const *str, char const *prog) \
-		__attribute__((noreturn));
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
 int
@@ -85,10 +84,10 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVsJ:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVsJ:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, "-h help mode", program); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -114,14 +113,21 @@ main(int argc, char **argv)
 	case 's':
 	    string_flag_used = true;
 	    break;
-	default:
-	    usage(3, "invalid -flag or missing option argument", program); /*ooo*/
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
+	    break;
+	default:
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	}
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(3, "wrong number of arguments", program); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
 
@@ -160,7 +166,7 @@ main(int argc, char **argv)
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
-    if (valid_json == false) {
+    if (!valid_json) {
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
@@ -174,12 +180,12 @@ main(int argc, char **argv)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(3, program,  "wrong number of arguments");
  *
  * given:
  *	exitcode        value to exit with
- *	str		top level usage message
  *	program		our program name
+ *	str		top level usage message
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -188,7 +194,7 @@ main(int argc, char **argv)
  *
  */
 static void
-usage(int exitcode, char const *str, char const *prog)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
@@ -205,7 +211,9 @@ usage(int exitcode, char const *str, char const *prog)
     /*
      * print the formatted usage stream
      */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
     fprintf_usage(exitcode, stderr, usage_msg, prog,
 		  DBG_DEFAULT, json_verbosity_level, json_parser_version, JPARSE_VERSION);
     exit(exitcode); /*ooo*/

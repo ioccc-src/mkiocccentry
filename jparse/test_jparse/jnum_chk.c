@@ -84,7 +84,7 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 int
 main(int argc, char *argv[])
@@ -105,10 +105,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:J:VqS")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:VqS")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(3, program, "-h help mode", -1, -1); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -125,7 +125,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", JNUM_CHK_VERSION);
-	    exit(3); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 'q':
@@ -135,14 +135,20 @@ main(int argc, char *argv[])
 	case 'S':		/* -S - strict mode */
 	    strict = true;
 	    break;
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
+	    not_reached();
+	    break;
 	default:
-	    usage(4, program, "invalid -flag", -1, -1); /*ooo*/
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	 }
     }
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
+	usage(3, program, "wrong number of arguments"); /*ooo*/
     }
     dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 
@@ -162,7 +168,7 @@ main(int argc, char *argv[])
 	    break;
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(10, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(10, program, "node->type for test %d: %s != %s", i, json_type_name(node->type), json_type_name(JTYPE_NUMBER));
 	    not_reached();
 	}
 	item = &(node->item.number);
@@ -456,7 +462,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 			    test_result[testnum].as_longdouble_int, item->as_longdouble_int, strict);
 
     /*
-     * if this test failed, force non-zero exit
+     * if this test failed, return false
      */
     if (test_error == true) {
 	dbg(DBG_MED, "ERROR: test %d failed", testnum);
@@ -482,7 +488,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
  *	val_a	- signed reference (test_result[i]) conversion into type value
  *	val_b	- signed reference (item->) conversion into type value
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b)
@@ -549,7 +555,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
  *	val_a	- unsigned reference (test_result[i]) conversion into type value
  *	val_b	- unsigned reference (item->) conversion into type value
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b)
@@ -619,7 +625,7 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
  *	int_b	- reference (item->) is an integer
  *	strict	- test for strict match
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
@@ -750,26 +756,21 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *prog, char const *str, int expected, int argc)
+usage(int exitcode, char const *prog, char const *str)
 {
     /*
      * firewall
      */
     if (prog == NULL) {
 	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {
 	str = "((NULL str))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
 
-    /*
-     * print the formatted usage stream
-     */
-    if (argc >= 0 && expected >= 0) {
-	fprintf_usage(DO_NOT_EXIT, stderr, str, expected, argc);
-    } else {
+    if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION);

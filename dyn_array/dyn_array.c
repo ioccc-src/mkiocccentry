@@ -698,7 +698,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     ret->data = malloc((size_t)number_of_bytes);
     if (ret->data == NULL) {
 	/* +chunk for guard chunk */
-	errp(75, __func__, "cannot malloc of %jd elements of %ju bytes each for dyn_array->data",
+	errp(75, __func__, "cannot malloc %jd elements of %ju bytes each for dyn_array->data",
 			   (ret->allocated+chunk), (uintmax_t)elm_size);
 	not_reached();
     }
@@ -821,7 +821,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
     uint8_t *last_add_byte = NULL;		/* last byte of the data to add, if != NULL */
     uint8_t *last_alloc_byte = NULL;		/* last byte of the allocated data of the dynamic array */
     intmax_t data_first_offset = 0;		/* offset of array_to_add_p from dynamic array allocated data */
-    intmax_t data_last_offset = 0;		/* offset of end of data to add om dynamic array allocated data */
+    intmax_t data_last_offset = 0;		/* offset of end of data to add from dynamic array allocated data */
     intmax_t data_size = 0;			/* length in bytes, of the data to move */
     intmax_t alloc_size = 0;			/* initial size of dynamic array allocated data */
     bool moved = false;				/* true ==> location of the elements array moved during realloc() */
@@ -1414,7 +1414,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 /*
  * dyn_array_clear - clear the dynamic array
  *
- * This function zeroize any element in use (if array->zerosize is true),
+ * This function zeroize any element in use (if array->zeroize is true),
  * and then set the number of element in use to 0.
  *
  * This function does NOT free allocated storage.
@@ -1487,7 +1487,7 @@ dyn_array_clear(struct dyn_array *array)
 /*
  * dyn_array_free - free the contents of a dynamic array
  *
- * This function zeroize any elements in use (if array->zerosize is true),
+ * This function zeroize any elements in use (if array->zeroize is true),
  * free the data storage, and set the dynamic array to empty.
  *
  * This function does NOT free the struct dyn_array itself.

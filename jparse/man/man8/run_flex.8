@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_flex.sh 8 "26 January 2023" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 8 "28 January 2023" "run_flex.sh" "IOCCC tools"
 .SH NAME
 .B run_flex.sh
 \- run
@@ -41,13 +41,26 @@ file or use backup files if error
 .RB [\|
 .RI flex_flags \|]
 .SH DESCRIPTION
-\fBrun_flex.sh\fP attempts to find a recent enough version of
+.B run_flex.sh
+attempts to find a recent enough version of
 .B flex
-(minimum version defined in \fIrun_flex.sh\fP) and use it to generate code from the \fBprefix.l\fP file.
-The default prefix is \fIjparse\fP but this script can be used for other scanners as well.
+(minimum version defined in
+.I run_flex.sh\c
+\&) and use it to generate code from the
+.I prefix.l
+file.
+The default prefix is
+.I jparse
+but this script can be used for other scanners as well.
 If a recent enough version is not found or
 .B flex
-encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files \fIprefix.ref.c\fP and \fIprefix.lex.ref.h\fP.
+encounters an error (syntax error or anything else) and the
+.B \-o
+option is not specified, it attempts to use the backup files 
+.I prefix.ref.c
+and
+.I prefix.lex.ref.h\c
+\&.
 .SH OPTIONS
 .TP
 .B \-h
@@ -77,7 +90,11 @@ basename to
 \&.
 .TP
 .BI \-g\  verge
-set path to the \fBverge\fP tool to \fIverge\fP.
+set path to the
+.B verge
+tool to
+.I verge\c
+\&.
 This is used to determine if the
 .B flex
 tool is recent enough.
@@ -123,7 +140,9 @@ If not used the script looks at
 .TP
 .BI \-D\  dir
 set directory to find the flex source file.
-Default is \fI.\fP.
+Default is
+.I .
+(dot).
 .PP
 The
 .I flex_flags
@@ -138,7 +157,9 @@ output files formed or backup files used instead
 .TQ
 1
 .B flex
-not found or too old and \fB\-o\fP used
+not found or too old and
+.B \-o
+used
 .TQ
 2
 good
@@ -174,69 +195,94 @@ command line usage error
 internal error
 .SH NOTES
 .PP
-The \fB\-o\fP option is mainly for maintainers of the \fBjparse\fP scanner and parser but it can be used to test if you have a recent enough version of \fBflex\fP.
+The
+.B \-o
+option is mainly for maintainers of the
+.B jparse
+scanner and parser but it can be used to test if you have a recent enough version of
+.B flex\c
+\&.
 The idea behind it is if
 .B flex
-fails it might indicate a syntax error which the authors of \fBjparse\fP would need to fix.
+fails it might indicate a syntax error which the authors of
+.B jparse
+would need to fix.
 .PP
-Beware that some make implementations have a default rule for \fI*.l\fP files so that if one were to in this repo do:
-.nf
+Beware that some make implementations have a default rule for
+.I *.l
+files so that if one were to in this repo do:
+.sp
 .RS
-\fB
+.ft B
  touch foo.l
- make\fP
-.fi
+ make
+.ft R
 .RE
-.PP
-the file \fIfoo.c\fP would be overwritten and cause a compilation error.
+.sp
+the file
+.I foo.c
+would be overwritten and cause a compilation error.
 This appears to be because foo is actually referenced in the Makefile as a target.
 .SH BUGS
 .PP
 If you have any issues with the tool you can open an issue at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH EXAMPLES
 .PP
-Run \fBrun_flex.sh\fP with default options, which should attempt to run
+Run
+.B run_flex.sh
+with default options, which should attempt to run
 .B flex
-on the \fIjparse.l\fP file:
-.nf
+on the
+.I jparse.l
+file:
+.sp
 .RS
-\fB
- ./run_flex.sh\fP
-.fi
+.ft B
+ ./run_flex.sh
+.ft R
 .RE
 .PP
-Run \fBrun_flex.sh\fP but specify that the backup files are not to be used in case a recent enough version of
+Run 
+.B run_flex.sh
+but specify that the backup files are not to be used in case a recent enough version of
 .B flex
-cannot be found or fails for some reason.
-.nf
+cannot be found or fails for some reason:
+.sp
 .RS
-\fB
- ./run_flex.sh \-o\fP
-.fi
-.RE
-.PP
-Try and run
-.B flex
-on the file \fIfoobar.l\fP and don't use the backup files:
-.nf
-.RS
-\fB
- ./run_flex.sh \-o \-p foobar\fP
-.fi
+.ft B
+ ./run_flex.sh \-o
+.ft R
 .RE
 .PP
 Try and run
 .B flex
-on the file \fIfoobar.l\fP with lex instead of
+on the file
+.I foobar.l
+and don't use the backup files:
+.sp
+.RS
+.ft B
+ ./run_flex.sh \-o \-p foobar
+.ft R
+.RE
+.PP
+Try and run
+.B flex
+on the file
+.I foobar.l
+with lex instead of
 .B flex
 and don't use the backup files:
-.nf
+.sp
 .RS
-\fB
- ./run_flex.sh \-o \-p foobar \-f lex\fP
-.fi
+.ft B
+ ./run_flex.sh \-o \-p foobar \-f lex
+.ft R
 .RE
 .SH SEE ALSO
-\fBrun_bison(1)\fP, \fBjparse(1)\fP and \fBchkentry(1)\fP
+.B run_bison(1)\c
+\&,
+.B jparse(1)

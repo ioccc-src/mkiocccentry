@@ -2406,7 +2406,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     }
 
     /*
-     * start with the 1st line number
+     * start with the first line number
      */
     ++linenum;
 

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstr_test.sh 8 "26 January 2023" "jstr_test.sh" "IOCCC tools"
+.TH jstr_test.sh 8 "28 January 2023" "jstr_test.sh" "IOCCC tools"
 .SH NAME
 .B jstr_test.sh
 \- JSON string encoding and decoding tests
@@ -26,7 +26,13 @@
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
-Using \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP the \fBjstr_test.sh\fP script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
+Using
+.B jstrencode(1)
+and
+.B jstrdecode(1)
+the
+.B jstr_test.sh
+script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
 This is important because if either is not working right then there will be a problem with the JSON parser as well as these tools use the same routines that the JSON parser uses.
 .SH OPTIONS
 .TP
@@ -107,34 +113,61 @@ test #2 failed
 test #3 failed
 .TQ
 8
-missing or non\-executable \fBjstrencode(1)\fP
+missing or non\-executable
+.B jstrencode(1)
 .TQ
 9
-missing or non\-executable \fBjstrdecode(1)\fP
+missing or non\-executable
+.B jstrdecode(1)
 .TQ
 >=10
 internal error
 .SH FILES
-\fIjstr_test.out\fP
+.I jstr_test.out
 .RS
-This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test2.out\fP, is used to to verify that encoding and decoding work.
+This temporary file holds the output of an encoded JSON string (via
+.B jstrencode(1)\c
+\&) decoded by
+.B jstrdecode(1)
+which, along with
+.I jstr_test2.out\c
+\&, is used to to verify that encoding and decoding work.
 If the file exists and cannot be removed the script will exit with code 102.
-In the script this file is the variable \fBTEST_FILE\fP.
+In the script this file is the variable
+.B TEST_FILE\c
+\&.
 When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
 .RE
-\fIjstr_test2.out\fP
+.I jstr_test2.out
 .RS
-This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test.out\fP, is used to to verify that encoding and decoding work.
+This temporary file holds the output of an encoded JSON string (via
+.B jstrencode(1)\c
+\&) decoded by
+.B jstrdecode(1)
+which, along with
+.I jstr_test.out\c
+\&, is used to to verify that encoding and decoding work.
 If the file exists and cannot be removed the script will exit with code 103.
-In the script this file is the variable \fBTEST_FILE2\fP.
+In the script this file is the variable
+.B TEST_FILE2\c
+\&.
 When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
 .RE
 .SH NOTES
-The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
+\&.
 .SH SEE ALSO
-\fBjparse(1)\fP, \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP
+.B jparse(1)\c
+\&,
+.B jparse(3)\c
+\&,
+.B jstrencode(1)\c
+\&,
+.B jstrdecode(1)
