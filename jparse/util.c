@@ -82,7 +82,7 @@ base_name(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(100, __func__, "called with NULL arg(s)"); /*coo*/
+	err(100, __func__, "called with NULL path"); /*coo*/
 	not_reached();
     }
 
@@ -193,7 +193,7 @@ exists(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(103, __func__, "called with NULL arg(s)");
+	err(103, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -233,7 +233,7 @@ is_file(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(104, __func__, "called with NULL arg(s)");
+	err(104, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -283,7 +283,7 @@ is_exec(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(105, __func__, "called with NULL arg(s)");
+	err(105, __func__, "called with NULL path");
 	not_reached();
      }
 
@@ -345,7 +345,7 @@ is_dir(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(106, __func__, "called with NULL arg(s)");
+	err(106, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -395,7 +395,7 @@ is_read(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(107, __func__, "called with NULL arg(s)");
+	err(107, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -446,7 +446,7 @@ is_write(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(108, __func__, "called with NULL arg(s)");
+	err(108, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -540,7 +540,7 @@ file_size(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(109, __func__, "called with NULL arg(s)");
+	err(109, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -861,7 +861,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (format == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    err(111, name, "called NULL format");
+	    err(111, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
@@ -1046,7 +1046,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     if (format == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(118, name, "called NULL format");
+	    err(118, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning NULL");
@@ -1256,13 +1256,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(129, __func__, "error writing newline to a stdout");
+		errp(129, __func__, "error writing newline to stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(130, __func__, "EOF while writing newline to a stdout");
+		err(130, __func__, "EOF while writing newline to stdout");
 		not_reached();
 	    } else {
-		errp(131, __func__, "unexpected fputc error newline a stdout");
+		errp(131, __func__, "unexpected fputc error writing newline to stdout");
 		not_reached();
 	    }
 	}
@@ -1366,13 +1366,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(137, __func__, "error writing paragraph to a stream");
+		errp(137, __func__, "error writing paragraph to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(138, __func__, "EOF while writing paragraph to a stream");
+		err(138, __func__, "EOF while writing paragraph to stream");
 		not_reached();
 	    } else {
-		errp(139, __func__, "unexpected fputs error writing paragraph to a stream");
+		errp(139, __func__, "unexpected fputs error writing paragraph to stream");
 		not_reached();
 	    }
 	}
@@ -1385,13 +1385,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(140, __func__, "error writing newline to a stream");
+		errp(140, __func__, "error writing newline to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(141, __func__, "EOF while writing newline to a stream");
+		err(141, __func__, "EOF while writing newline to stream");
 		not_reached();
 	    } else {
-		errp(142, __func__, "unexpected fputc error newline a stream");
+		errp(142, __func__, "unexpected fputc error writing newline to stream");
 		not_reached();
 	    }
 	}
@@ -1627,7 +1627,7 @@ readline(char **linep, FILE * stream)
     ret = getline(linep, &linecap, stream);
     if (ret < 0) {
 	if (feof(stream)) {
-	    dbg(DBG_VVHIGH, "EOF detected on readline");
+	    dbg(DBG_VVHIGH, "EOF detected in getline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
 	    errp(147, __func__, "getline() error");
@@ -1741,7 +1741,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 		}
 	    }
 	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %jd bytes", (intmax_t)len);
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace stripped, is %jd bytes", (intmax_t)len);
     }
     if (lenp != NULL) {
 	*lenp = (size_t)len;
@@ -2091,7 +2091,7 @@ string_to_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(153, __func__, "passed NULL arg");
+	err(153, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2129,7 +2129,7 @@ string_to_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(156, __func__, "passed NULL arg");
+	err(156, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2173,7 +2173,7 @@ string_to_int(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(160, __func__, "passed NULL arg");
+	err(160, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2211,7 +2211,7 @@ string_to_unsigned_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(163, __func__, "passed NULL arg");
+	err(163, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2248,7 +2248,7 @@ string_to_unsigned_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(166, __func__, "passed NULL arg");
+	err(166, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2285,7 +2285,7 @@ string_to_intmax(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(169, __func__, "passed NULL arg");
+	err(169, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2382,7 +2382,7 @@ string_to_uintmax(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(172, __func__, "passed NULL arg");
+	err(172, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2419,7 +2419,7 @@ string_to_float(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(175, __func__, "passed NULL arg");
+	err(175, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2824,7 +2824,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * empty string fails all tests
      */
     if (len <= 0) {
-	dbg(DBG_VVHIGH, "posix_safe_chk(.., false, false, false, false) returning: str is an empty string");
+	dbg(DBG_VVHIGH, "posix_safe_chk(%s, false, false, false, false) returning: str is an empty string", str);
 	return;
     }
 
@@ -2847,7 +2847,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	    *first_alphanum = true;
 	    if (isupper(str[0])) {
 		*upper = true;
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE alphanumeric: 0x%02x", (unsigned int)str[0]);
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02x", (unsigned int)str[0]);
 	    } else {
 		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
 	    }
@@ -2902,7 +2902,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    } else if (isalnum(str[i])) {
 		if (*upper == false && isupper(str[i])) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER case at str[%ju]: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER CASE at str[%ju]: 0x%02x",
 				     (uintmax_t)i, (unsigned int)str[i]);
 		    *upper = true;
 		}
@@ -2935,15 +2935,15 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      */
     if (found_unsafe == false) {
 	*posix_safe = true;
-	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
-		         booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper));
+	dbg(DBG_VVHIGH, "posix_safe_chk(%s, %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
+		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper));
 
     /*
      * report POSIX portable safe plus + safe with maybe /
      */
     } else {
-	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
-		        booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
+	dbg(DBG_VVHIGH, "posix_safe_chk(%s, %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
+		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
     }
     return;
 }
@@ -3469,6 +3469,7 @@ find_text(char const *ptr, size_t len, char **first)
 	return 0;
     }
     if (len <= 0) {
+	warn(__func__, "len <= 0");
 	return 0;
     }
 
@@ -3923,7 +3924,7 @@ malloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(181, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
+	    errp(181, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 

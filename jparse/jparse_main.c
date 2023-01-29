@@ -166,7 +166,7 @@ main(int argc, char **argv)
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
-    if (valid_json == false) {
+    if (!valid_json) {
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }

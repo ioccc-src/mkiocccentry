@@ -364,7 +364,7 @@ main(int argc, char **argv)
     }
     len = strlen(tbl_name);
     if (len <= 0) {
-	errp(11, program, "tbl_name cannot be empty");
+	errp(11, program, "tbl_name cannot be an empty string");
 	not_reached();
     }
     for (c=0; c < len; ++c) {

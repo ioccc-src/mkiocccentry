@@ -910,7 +910,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
     /*
      * write error diagnostic header to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf error\n",
@@ -920,7 +920,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
     /*
      * write error diagnostic warning to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): vfprintf error\n",
@@ -930,7 +930,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
     /*
      * write final newline to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fputc('\n', stream);
     if (ret != '\n') {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fputc error\n",
@@ -940,7 +940,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
     /*
      * flush the stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fflush(stream);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fflush error\n",
@@ -1077,7 +1077,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
     /*
      * write error diagnostic warning header to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf #0 error\n",
@@ -1087,7 +1087,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
     /*
      * write error diagnostic warning to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): vfprintf error\n",
@@ -1097,7 +1097,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
     /*
      * write errno details plus newline to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stream, ": errno[%d]: %s\n", saved_errno, strerror(saved_errno));
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf #1 error\n",
@@ -1107,7 +1107,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
     /*
      * flush the stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fflush(stream);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fflush error\n",
@@ -1189,7 +1189,7 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
     /*
      * write error diagnostic to string
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
     if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
@@ -1257,7 +1257,7 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
     /*
      * write the usage message to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, ap): vfprintf error\n",
@@ -1267,7 +1267,7 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
     /*
      * write final newline to stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fputc('\n', stream);
     if (ret != '\n') {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, ap): fputc error\n",
@@ -1277,7 +1277,7 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
     /*
      * flush the stream
      */
-    errno = 0;		/* pre-clear errno for strerror() */
+    errno = 0;		/* pre-clear errno for warnp() */
     ret = fflush(stream);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, ap): fflush error\n",
@@ -2347,6 +2347,7 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
      * stage 3: firewall checks
      */
     if (stream == NULL) {
+	/* we cannot call warn() because that would produce an infinite loop! */
 	stream = stderr;
 	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
 			       __func__);
@@ -2421,6 +2422,8 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
      */
     if (stream == NULL) {
 	stream = stderr;
+	name = "((NULL name))";
+	/* we cannot call warn() because that would produce an infinite loop! */
 	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
 			       __func__);
     }
@@ -2642,13 +2645,13 @@ warnp(char const *name, char const *fmt, ...)
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(): called with NULL name, forcing name: %s\n",
+	(void) fprintf(stderr, "\nWarning: %s: called with NULL name, forcing name: %s\n",
 			       __func__, name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(): called with NULL fmt, forcing fmt: %s\n",
+	(void) fprintf(stderr, "\nWarning: %s: called with NULL fmt, forcing fmt: %s\n",
 			       __func__, fmt);
     }
 
@@ -2709,13 +2712,13 @@ vwarnp(char const *name, char const *fmt, va_list ap)
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(): called with NULL name, forcing name: %s\n",
+	(void) fprintf(stderr, "\nWarning: %s: called with NULL name, forcing name: %s\n",
 			       __func__, name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(): called with NULL fmt, forcing fmt: %s\n",
+	(void) fprintf(stderr, "\nWarning: %s: called with NULL fmt, forcing fmt: %s\n",
 			       __func__, fmt);
     }
 
@@ -2777,19 +2780,20 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
      */
     if (stream == NULL) {
 	stream = stderr;
+	/* we cannot call warn() because that would produce an infinite loop! */
 	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
 			       __func__);
     }
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: in vwarnp(): called with NULL name, forcing name: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: called with NULL name, forcing name: %s\n",
 			       __func__, name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: in vwarnp(): called with NULL fmt, forcing fmt: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: called with NULL fmt, forcing fmt: %s\n",
 			       __func__, fmt);
     }
 
@@ -2856,13 +2860,13 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: in vwarnp(): called with NULL name, forcing name: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: called with NULL name, forcing name: %s\n",
 			       __func__, name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: in vwarnp(): called with NULL fmt, forcing fmt: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: called with NULL fmt, forcing fmt: %s\n",
 			       __func__, fmt);
     }
 
@@ -3029,7 +3033,7 @@ vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * err - write a fatal error message before exiting, to stderr
+ * err - write a fatal error message to stderr before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3105,7 +3109,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
- * verr - write a fatal error message before exiting, to stderr, in va_list form
+ * verr - write a fatal error message in va_list form to stderr before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3174,7 +3178,7 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * ferr - write a fatal error message before exiting, to a stream
+ * ferr - write a fatal error message to a stream before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3255,7 +3259,7 @@ ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vferr - write a fatal error message before exiting, to a stream, in va_list form
+ * vferr - write a fatal error message in va_list form to a stream before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3329,7 +3333,7 @@ vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * errp - write a fatal error message with errno details before exiting, to stderr
+ * errp - write a fatal error message with errno details to stderr before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3405,7 +3409,10 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
- * verrp - write a fatal error message with errno details before exiting, to stderr, in va_list form
+ * verrp
+ *
+ * Write a fatal error message with errno details, in va_list form, to stderr
+ * before exiting.
  *
  * given:
  *	exitcode	value to exit with
@@ -3474,7 +3481,7 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * ferrp - write a fatal error message with errno details before exiting, to a stream
+ * ferrp - write a fatal error message with errno details to a stream before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3555,7 +3562,10 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vferrp - write a fatal error message with errno details before exiting, to a stream, in va_list form
+ * vferrp
+ *
+ * Write a fatal error message with errno details in va_list form to a
+ * stream before exiting.
  *
  * given:
  *	exitcode	value to exit with
@@ -3629,7 +3639,7 @@ vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap
 
 
 /*
- * werr - write an error message w/o exiting, to stderr
+ * werr - write an error message to stderr w/o exiting
  *
  * given:
  *	error_code	error code
@@ -3700,7 +3710,7 @@ werr(int error_code, char const *name, char const *fmt, ...)
 
 
 /*
- * vwerr - write an error message w/o exiting, to stderr, in va_list form
+ * vwerr - write an error message in va_list form to stderr w/o exiting
  *
  * given:
  *	error_code	error code
@@ -3764,7 +3774,7 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * fwerr - write an error message w/o exiting, to a stream
+ * fwerr - write an error message to a stream w/o exiting
  *
  * given:
  *	error_code	error code
@@ -3840,7 +3850,7 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vfwerr - write an error message w/o exiting, to a stream, in va_list form
+ * vfwerr - write an error message in va_list form to a stream w/o exiting
  *
  * given:
  *	error_code	error code
@@ -3987,7 +3997,7 @@ snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt
 
 
 /*
- * vsnwerr - copy an error message string into a buffer, in va_list form
+ * vsnwerr - copy an error message string in va_list form into a buffer
  *
  * Copy an error message string into a fixed sized buffer.
  *
@@ -4058,7 +4068,7 @@ vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fm
 
 
 /*
- * werrp - write an error message with errno details w/o exiting, to stderr
+ * werrp - write an error message with errno details to stderr w/o exiting
  *
  * given:
  *	error_code	error code
@@ -4129,7 +4139,9 @@ werrp(int error_code, char const *name, char const *fmt, ...)
 
 
 /*
- * vwerrp - write an error message with errno info w/o exiting, to stderr, in va_list form
+ * vwerrp
+ *
+ * Write an error message with errno info in va_list form to stderr w/o exiting.
  *
  * given:
  *	error_code	error code
@@ -4193,7 +4205,7 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * fwerrp - write an error message with errno details w/o exiting, to a stream
+ * fwerrp - write an error message with errno details to a stream w/o exiting
  *
  * given:
  *	error_code	error code
@@ -4269,7 +4281,10 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vfwerrp - write an error message with errno details w/o exiting, to a stream, in va_list form
+ * vfwerrp
+ *
+ * Write a non-fatal error message in va_list form with errno details to a
+ * stream.
  *
  * given:
  *	error_code	error code
@@ -4338,7 +4353,7 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
 
 
 /*
- * snwerrp - copy an error message string with errno details into a buffer, in va_list form
+ * snwerrp - copy an error message string in va_list form with errno details into a buffer
  *
  * Copy an error message that includes errno details into a fixed string.
  *
@@ -4487,8 +4502,10 @@ vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *f
 
 
 /*
- * warn_or_err - write a warning or error message before exiting, depending on an arg,
- *		 to stderr
+ * warn_or_err
+ *
+ * Write a warning or error message (depending on a boolean) to stderr. If it is
+ * an error then exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -4588,8 +4605,10 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
 
 
 /*
- * vwarn_or_err - write a warning or error message before exiting, depending on an arg,
- *		  to stderr, in va_list form
+ * vwarn_or_err
+ *
+ * Write a warning or error message (depending on a boolean) in va_list form to
+ * stderr. If it is an error then exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -4683,8 +4702,10 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
 
 
 /*
- * fwarn_or_err - write a warning or error message before exiting, depending on an arg,
- *		  to a stream
+ * fwarn_or_err
+ *
+ * Write a warning or error message (depending on a boolean) to a stream. If it
+ * is an error then exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -4788,8 +4809,10 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
 
 
 /*
- * vfwarn_or_err - write a warning or error message before exiting, depending on an arg,
- *		   to a stream, in va_list form
+ * vfwarn_or_err
+ *
+ * Write a warning or error message (depending on a boolean) in va_list form to
+ * a stream. If it is an error then exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -4888,8 +4911,10 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 
 
 /*
- * warnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *		   w/errno details, to stderr
+ * warnp_or_errp
+ *
+ * Write a warning or error message (depending on a boolean) with errno details
+ * to stderr. If it is an error then exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -4989,8 +5014,10 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
 
 
 /*
- * vwarnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *		    w/errno details, to stderr, in va_list form
+ * vwarnp_or_errp
+ *
+ * Write a warning or error message (depending on a boolean) with errno details
+ * in va_list form to stderr.
  *
  * given:
  *	exitcode	value to exit with
@@ -5058,7 +5085,7 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
     }
 
     /*
-     * stage 4: write warning or an error w/errno diagnostic
+     * stage 4: write a warning or an error w/errno diagnostic
      */
     if (warning == true) {
 	fwarnp_write(stderr, __func__, name, fmt, ap);
@@ -5082,8 +5109,10 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
 
 
 /*
- * fwarnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *		    w/errno details, to a stream
+ * fwarnp_or_errp
+ *
+ * Write a warning or error message (depending on a boolean) with errno details
+ * to a stream. If it is an error, exit after writing the error.
  *
  * given:
  *	exitcode	value to exit with
@@ -5188,8 +5217,11 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
 
 
 /*
- * vfwarnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *		     w/errno details, to a stream, in va_list form
+ * vfwarnp_or_errp
+ *
+ * Write a warning or error message (depending on a boolean) with errno details
+ * in va_list form to a stream. If it is an error, exit after writing the error
+ * message.
  *
  * given:
  *	exitcode	value to exit with
@@ -5286,7 +5318,9 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
 
 
 /*
- * printf_usage - write command line usage and perhaps exit, to stderr
+ * printf_usage
+ *
+ * Write command line usage to stderr and, depending on exitcode, exit.
  *
  * given:
  *	exitcode	- >= 0, exit with this code
@@ -5355,7 +5389,9 @@ printf_usage(int exitcode, char const *fmt, ...)
 
 
 /*
- * vprintf_usage - write command line usage and perhaps exit, to stderr, in va_list form
+ * vprintf_usage
+ *
+ * Write command line usage to stderr and, depending on exitcode, exit.
  *
  * given:
  *	exitcode	>= 0, exit with this code
@@ -5417,7 +5453,9 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
 
 
 /*
- * fprintf_usage - write command line usage and perhaps exit, to a stream
+ * fprintf_usage
+ *
+ * Write command line usage to a stream and, depending on exitcode, exit.
  *
  * given:
  *	exitcode	- >= 0, exit with this code
@@ -5491,7 +5529,10 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 
 
 /*
- * vfprintf_usage - write command line usage and perhaps exit, to a stream, in va_list form
+ * vfprintf_usage
+ *
+ * Write command line usage to a stream in va_list form and, depending on
+ * exitcode, exit.
  *
  * given:
  *	exitcode	>= 0, exit with this code

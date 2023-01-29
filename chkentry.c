@@ -85,7 +85,7 @@ static const char * const usage_msg =
 /*
  * functions
  */
-static FILE *open_json_dir_file(char const *dir, char const *path);
+static FILE *open_json_dir_file(char const *dir, char const *file);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
@@ -100,7 +100,7 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
  * given:
  *	dir	directory into which we will temporarily chdir or
  *		    NULL ==> do not chdir
- *	path	path of readable JSON file to open
+ *	file	path of readable JSON file to open
  *
  * returns:
  *	open readable JSON file stream
@@ -112,7 +112,7 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
  * NOTE: This function will NOT return NULL.
  */
 static FILE *
-open_json_dir_file(char const *dir, char const *path)
+open_json_dir_file(char const *dir, char const *file)
 {
     FILE *ret_stream = NULL;		/* open file stream to return */
     int ret = 0;		/* libc function return */
@@ -121,8 +121,8 @@ open_json_dir_file(char const *dir, char const *path)
     /*
      * firewall
      */
-    if (path == NULL) {
-	err(10, __func__, "called with NULL path");
+    if (file == NULL) {
+	err(10, __func__, "called with NULL file");
 	not_reached();
     }
 
@@ -171,16 +171,16 @@ open_json_dir_file(char const *dir, char const *path)
     /*
      * must be a readable file
      */
-    if (!exists(path)) {
-	err(16, __func__, "JSON does not exist: %s", path);
+    if (!exists(file)) {
+	err(16, __func__, "file does not exist: %s", file);
 	not_reached();
     }
-    if (!is_file(path)) {
-	err(17, __func__, "JSON is not a file: %s", path);
+    if (!is_file(file)) {
+	err(17, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
-    if (!is_read(path)) {
-	err(18, __func__, "JSON is not a readable file: %s", path);
+    if (!is_read(file)) {
+	err(18, __func__, "file is not a readable file: %s", file);
 	not_reached();
     }
 
@@ -188,9 +188,9 @@ open_json_dir_file(char const *dir, char const *path)
      * open the readable JSON file
      */
     errno = 0;		/* pre-clear errno for errp() */
-    ret_stream = fopen(path, "r");
+    ret_stream = fopen(file, "r");
     if (ret_stream == NULL) {
-	errp(19, __func__, "cannot open JSON file: %s", path);
+	errp(19, __func__, "cannot open file: %s", file);
 	not_reached();
     }
 
@@ -247,7 +247,7 @@ usage(int exitcode, char const *prog, char const *str)
      */
     if (prog == NULL) {
 	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {
 	str = "((NULL str))";
@@ -261,7 +261,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
-    exit(exitcode);		/*ooo*/
+    exit(exitcode); /*ooo*/
     not_reached();
 }
 
@@ -301,15 +301,15 @@ main(int argc, char *argv[])
     uintmax_t all_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .auth.json */
     struct json_sem_count_err *sem_count_err = NULL;	/* semantic count error to print */
     struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
-    uintmax_t i;			/* dynamic array index */
-    int c;
+    uintmax_t c;			/* dynamic array index */
+    int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((c = getopt(argc, argv, ":hv:J:Vq")) != -1) {
-	switch (c) {
+    while ((i = getopt(argc, argv, ":hv:J:Vq")) != -1) {
+	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
 	    not_reached();
@@ -335,13 +335,9 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-	case ':':
-	    fprint(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	case '?':
-	    fprint(stderr, "%s: illegal option -- %c\n\n", program, optopt);
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	    check_invalid_option(program, i, optopt);
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	    break;
@@ -364,7 +360,7 @@ main(int argc, char *argv[])
 	auth_filename = argv[1];
 	break;
     default:
-	usage(2, program, "expected 1 or 2 argument");	/*ooo*/
+	usage(3, program, "wrong number of arguments");	/*ooo*/
 	not_reached();
 	break;
     }
@@ -374,23 +370,23 @@ main(int argc, char *argv[])
 	not_reached();
     }
     if (entry_dir == NULL) {
-	dbg(1, "entry_dir is NULL");
+	dbg(DBG_LOW, "entry_dir is NULL");
     } else {
-	dbg(1, "entry_dir: %s", entry_dir);
+	dbg(DBG_LOW, "entry_dir: %s", entry_dir);
     }
     if (info_filename == NULL) {
-	dbg(1, "info_filename is NULL");
+	dbg(DBG_LOW, "info_filename is NULL");
     } else if (strcmp(info_filename, ".") == 0) {
-	dbg(1, "info_filename is .");
+	dbg(DBG_LOW, "info_filename is .");
     } else {
-	dbg(1, "info_filename: %s", info_filename);
+	dbg(DBG_LOW, "info_filename: %s", info_filename);
     }
     if (auth_filename == NULL) {
-	dbg(1, "auth_filename is NULL");
+	dbg(DBG_LOW, "auth_filename is NULL");
     } else if (strcmp(auth_filename, ".") == 0) {
-	dbg(1, "auth_filename is .");
+	dbg(DBG_LOW, "auth_filename is .");
     } else {
-	dbg(1, "auth_filename: %s", auth_filename);
+	dbg(DBG_LOW, "auth_filename: %s", auth_filename);
     }
 
     /*
@@ -404,7 +400,7 @@ main(int argc, char *argv[])
 	info_filename = ".info.json";
 	info_stream = open_json_dir_file(entry_dir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(22, __func__, "open_json_dir_file(%s, %s) returned NULL", entry_dir, info_filename);
+	    err(22, __func__, "info_stream = open_json_dir_file(%s, %s) returned NULL", entry_dir, info_filename);
 	    not_reached();
 	}
 
@@ -414,7 +410,7 @@ main(int argc, char *argv[])
 	auth_filename = ".auth.json";
 	auth_stream = open_json_dir_file(entry_dir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(23, __func__, "open_json_dir_file(%s, %s) returned NULL", entry_dir, auth_filename);
+	    err(23, __func__, "auth_stream = open_json_dir_file(%s, %s) returned NULL", entry_dir, auth_filename);
 	    not_reached();
 	}
 
@@ -597,12 +593,12 @@ main(int argc, char *argv[])
 	if (info_count_err == NULL) {
 	    fpr(stderr, __func__, "info_count_err is NULL!!!\n");
 	} else {
-	    for (i=0; i < info_count_err_count; ++i) {
-		sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, i);
+	    for (c=0; c < info_count_err_count; ++c) {
+		sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, c);
 		fprint_count_err(stderr, ".info.json count error ", sem_count_err, "\n");
 	    }
-	    for (i=0; i < info_val_err_count; ++i) {
-		sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, i);
+	    for (c=0; c < info_val_err_count; ++c) {
+		sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, c);
 		fprint_val_err(stderr, ".info.json validation error ", sem_val_err, "\n");
 	    }
 	}
@@ -619,12 +615,12 @@ main(int argc, char *argv[])
 	if (auth_count_err == NULL) {
 	    fpr(stderr, __func__, "auth_count_err is NULL!!!\n");
 	} else {
-	    for (i=0; i < auth_count_err_count; ++i) {
-		sem_count_err = dyn_array_addr(auth_count_err, struct json_sem_count_err, i);
+	    for (c=0; c < auth_count_err_count; ++c) {
+		sem_count_err = dyn_array_addr(auth_count_err, struct json_sem_count_err, c);
 		fprint_count_err(stderr, ".auth.json count error ", sem_count_err, "\n");
 	    }
-	    for (i=0; i < auth_val_err_count; ++i) {
-		sem_val_err = dyn_array_addr(auth_val_err, struct json_sem_val_err, i);
+	    for (c=0; c < auth_val_err_count; ++c) {
+		sem_val_err = dyn_array_addr(auth_val_err, struct json_sem_val_err, c);
 		fprint_val_err(stderr, ".auth.json validation error ", sem_val_err, "\n");
 	    }
 	}

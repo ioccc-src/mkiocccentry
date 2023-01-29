@@ -168,7 +168,7 @@ main(int argc, char *argv[])
 	    break;
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(10, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(10, program, "node->type for test %d: %s != %s", i, json_type_name(node->type), json_type_name(JTYPE_NUMBER));
 	    not_reached();
 	}
 	item = &(node->item.number);
@@ -462,7 +462,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 			    test_result[testnum].as_longdouble_int, item->as_longdouble_int, strict);
 
     /*
-     * if this test failed, force non-zero exit
+     * if this test failed, return false
      */
     if (test_error == true) {
 	dbg(DBG_MED, "ERROR: test %d failed", testnum);
@@ -488,7 +488,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
  *	val_a	- signed reference (test_result[i]) conversion into type value
  *	val_b	- signed reference (item->) conversion into type value
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b)
@@ -555,7 +555,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
  *	val_a	- unsigned reference (test_result[i]) conversion into type value
  *	val_b	- unsigned reference (item->) conversion into type value
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b)
@@ -625,7 +625,7 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
  *	int_b	- reference (item->) is an integer
  *	strict	- test for strict match
  *
- * NOTE: This function will warn in error.
+ * NOTE: This function will warn with a very high debug level on error.
  */
 static void
 check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,

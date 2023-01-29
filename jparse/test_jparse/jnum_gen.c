@@ -316,7 +316,8 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    err(19, program, "node->type for test %d: %s != %s", i, json_type_name(node->type),
+		    json_type_name(JTYPE_NUMBER));
 	    not_reached();
 	}
 	fpr_number(stdout, &node->item.number);
