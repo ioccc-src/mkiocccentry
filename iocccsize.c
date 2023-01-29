@@ -81,11 +81,11 @@ static char usage0[] =
 "usage: iocccsize [-h] [-i] [-v level] [-q] [-V] prog.c\n"
 "usage: iocccsize [-h] [-i] [-v level] [-q] [-V] < prog.c\n"
 "\n"
-"-i\t\tignored for backward compatibility\n"
-"-h\t\tprint usage message in stderr and exit\n"
-"-v level\tset debug level (def: none)\n"
-"-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not msg_warn_silent)\n"
-"-V\t\tprint version and exit\n"
+"\t-i\t\tignored for backward compatibility\n"
+"\t-h\t\tprint usage message in stderr and exit\n"
+"\t-v level\tset debug level (def: none)\n"
+"\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not msg_warn_silent)\n"
+"\t-V\t\tprint version and exit\n"
 "\n";
 static char usage1[] =
 "\tBy default,the Rule 2b count is written to stdout.\n"
