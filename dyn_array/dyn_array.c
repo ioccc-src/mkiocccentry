@@ -698,7 +698,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     ret->data = malloc((size_t)number_of_bytes);
     if (ret->data == NULL) {
 	/* +chunk for guard chunk */
-	errp(75, __func__, "cannot malloc of %jd elements of %ju bytes each for dyn_array->data",
+	errp(75, __func__, "cannot malloc %jd elements of %ju bytes each for dyn_array->data",
 			   (ret->allocated+chunk), (uintmax_t)elm_size);
 	not_reached();
     }

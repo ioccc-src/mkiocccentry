@@ -453,7 +453,7 @@ main(int argc, char *argv[])
      * case: paranoia
      */
     } else {
-	err(26, __func__, "we should not get here");
+	err(26, __func__, "we should not get here; please report, making sure to use make bug_report");
 	not_reached();
     }
     info_path = malloc_path(entry_dir, info_filename);
@@ -473,10 +473,10 @@ main(int argc, char *argv[])
     if (info_stream != NULL) {
 	info_tree = parse_json_stream(info_stream, info_path, &info_valid);
 	if (info_valid == false || info_tree == NULL) {
-	    err(4, __func__, "failed to JSON parse of .info.json file: %s", info_path); /*ooo*/
+	    err(4, __func__, "failed to parse JSON in .info.json file: %s", info_path); /*ooo*/
 	    not_reached();
 	}
-	dbg(DBG_LOW, "successful JSON parse of .info.json file: %s", info_path);
+	dbg(DBG_LOW, "successful parse of JSON in .info.json file: %s", info_path);
     }
 
     /*
@@ -485,10 +485,10 @@ main(int argc, char *argv[])
     if (auth_stream != NULL) {
 	auth_tree = parse_json_stream(auth_stream, auth_path, &auth_valid);
 	if (auth_valid == false || auth_tree == NULL) {
-	    err(4, __func__, "failed to JSON parse of .auth.json file: %s", auth_path); /*ooo*/
+	    err(4, __func__, "failed to parse JSON in .auth.json file: %s", auth_path); /*ooo*/
 	    not_reached();
 	}
-	dbg(DBG_LOW, "successful JSON parse of .auth.json file: %s", auth_path);
+	dbg(DBG_LOW, "successful parse of JSON in .auth.json file: %s", auth_path);
     }
 
     /*
