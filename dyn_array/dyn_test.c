@@ -85,7 +85,7 @@ main(int argc, char *argv[])
     char const *program = NULL;	/* our name */
     struct dyn_array *array;	/* dynamic array to test */
     double d;			/* test double */
-    bool err = false;		/* true ==> test error found */
+    bool error = false;		/* true ==> test error found */
     bool moved = false;		/* true ==> array op moved data */
     intmax_t len = 0;		/* length of the dynamic array */
     int i;
@@ -154,7 +154,7 @@ main(int argc, char *argv[])
     for (i = 0; i < 1000000; ++i) {
 	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
-	    err = true;
+	    error = true;
 	}
     }
 
@@ -164,7 +164,7 @@ main(int argc, char *argv[])
     len = dyn_array_tell(array);
     if (len != 1000000) {
 	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)1000000);
-	err = true;
+	error = true;
     }
 
     /*
@@ -182,7 +182,7 @@ main(int argc, char *argv[])
     len = dyn_array_tell(array);
     if (len != 2000000) {
 	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)2000000);
-	err = true;
+	error = true;
     }
 
     /*
@@ -191,11 +191,11 @@ main(int argc, char *argv[])
     for (i = 0; i < 1000000; ++i) {
 	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
-	    err = true;
+	    error = true;
 	}
 	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i+1000000)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i+1000000));
-	    err = true;
+	    error = true;
 	}
     }
 
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
     /*
      * exit based on the test result
      */
-    if (err == true) {
+    if (error == true) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/
