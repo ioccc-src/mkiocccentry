@@ -59,7 +59,7 @@ static const char * const usage_msg =
     "    >=4\tinternal error\n"
     "\n"
     "JSON parser version: %s\n"
-    "jparse version: %s\n";
+    "jparse version: %s";
 
 
 /*

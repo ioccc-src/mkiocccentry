@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
-# run_usage.sh - run -h on a tool to extract usage information in order to help
+# run_usage.sh - extract usage information for help maintaining man pages
+#
+# run -h on a tool to extract usage information in order to help
 # with the creation and maintaining man pages
 #
 # This tool is in support of verifying that the man page SYNOPSIS is the same as
@@ -46,7 +48,8 @@ Exit codes:
      6	    tool does not have usage string
      7	    man directory does not exist or is not a readable directory
 
-$0 version: $RUN_USAGE_VERSION"
+run_usage.sh version: $RUN_USAGE_VERSION
+"
 
 # parse args
 #

@@ -161,7 +161,7 @@ static const char * const usage_msg4 =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "mkiocccentry version: %s\n";
+    "mkiocccentry version: %s";
 
 /*
  * globals

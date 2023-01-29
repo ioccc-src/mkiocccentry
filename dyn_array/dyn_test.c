@@ -70,7 +70,7 @@ static const char * const usage_msg =
     "    >=4\tinternal error\n"
     "\n"
     "dyn_array library version: %s\n"
-    "dyn_test version: %s\n";
+    "dyn_test version: %s";
 
 
 /*

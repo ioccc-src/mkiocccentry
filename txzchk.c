@@ -110,7 +110,7 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error has occurred or unknown tar listing format has been encountered\n"
     "\n"
-    "txzchk version: %s\n";
+    "txzchk version: %s";
 
 
 /*

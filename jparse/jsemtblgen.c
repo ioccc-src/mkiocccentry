@@ -105,7 +105,7 @@ static const char * const usage_msg =
     "    >=10\tinternal error\n"
     "\n"
     "JSON parser version: %s\n"
-    "jsemtblgen version: %s\n";
+    "jsemtblgen version: %s";
 
 
 /*

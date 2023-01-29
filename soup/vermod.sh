@@ -57,7 +57,9 @@ Exit codes:
      7	    no *.json files found under test_dir
      8	    new_ver (or old_ver if -o) not found in limit.sh
 
-$0 version: $VERMOD_VERSION"
+vermod.sh version: $VERMOD_VERSION
+"
+
 export V_FLAG="0"
 export OLD_FLAG=
 export FORCE=

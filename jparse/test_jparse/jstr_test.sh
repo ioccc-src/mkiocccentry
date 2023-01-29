@@ -47,8 +47,7 @@ Exit codes:
      9	 missing or non-executable jstrdecode
   >= 10	 internal error
 
-jstr_test.sh version: $JSTR_TEST_VERSION
-"
+jstr_test.sh version: $JSTR_TEST_VERSION"
 
 # parse args
 #

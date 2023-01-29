@@ -68,7 +68,7 @@ static const char * const usage_msg =
     "     4   first or second version string is an invalid version\n"
     "  >=10   internal error\n"
     "\n"
-    "verge version: %s\n";
+    "verge version: %s";
 
 
 /*

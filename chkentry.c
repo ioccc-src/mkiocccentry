@@ -79,7 +79,7 @@ static const char * const usage_msg =
     "    4\t\tfile(s) not valid JSON; no semantic checks were performed\n"
     "    >=10\tinternal error\n"
     "\n"
-    "chkentry version: %s\n";
+    "chkentry version: %s";
 
 
 /*

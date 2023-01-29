@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# all_sem_ref - form the semantic ref directory
+# all_sem_ref.sh - form the semantic ref directory
 #
 # For the ref sub-directory using via ./jsemcgen.sh, from test .info.json
 # and .auth.json files, form *.json.c and *.json.h semantic table files
@@ -61,7 +61,10 @@ Exit codes:
      4	    jsemcgen.sh and/or jsemtblgen not found or not executable
      5	    missing or not readable header or footer file
      6	    missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
- >= 10	    internal error"
+ >= 10	    internal error
+
+ all_sem_ref.sh version: $ALL_SEM_REF_VERSION
+ "
 
 # parse args
 #

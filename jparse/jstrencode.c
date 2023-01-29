@@ -70,7 +70,7 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "jstrencode version: %s\n";
+    "jstrencode version: %s";
 
 
 /*

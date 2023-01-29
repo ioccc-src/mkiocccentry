@@ -99,7 +99,7 @@ static char usage1[] =
 "     3   -V used and version printed\n"
 "     4   invalid command line\n"
 "     6   there is no Rule 6!\n"
-" >= 10   some internal error occurred\n";
+" >= 10   some internal error occurred";
 
 
 int

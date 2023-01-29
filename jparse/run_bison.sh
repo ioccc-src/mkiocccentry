@@ -64,8 +64,7 @@ Exit codes:
      9   command line usage error
  >= 10   internal error
 
-run_bison.sh version: $RUN_BISON_VERSION
-"
+run_bison.sh version: $RUN_BISON_VERSION"
 
 export D_FLAG="."
 export V_FLAG="0"
