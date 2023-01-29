@@ -54,7 +54,8 @@ Exit codes:
      7	 missing JSON file
   >= 4   internal error
 
-$0 version: $JPARSE_TEST_VERSION"
+jparse_test.sh version: $JPARSE_TEST_VERSION
+"
 
 export V_FLAG="0"
 export DBG_LEVEL="0"
