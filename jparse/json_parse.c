@@ -310,8 +310,8 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju)",
-		     (uintmax_t)len, (uintmax_t)mlen);
+    dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju, %s)",
+		     (uintmax_t)len, (uintmax_t)mlen, booltostr(skip_quote));
     if (retlen != NULL) {
 	*retlen = (size_t)mlen;
     }
@@ -402,7 +402,7 @@ jencchk(void)
     }
 
     /*
-     * assert: table must be 256 long
+     * assert: table must be of size 256
      */
     if (sizeof(jenc)/sizeof(jenc[0]) != JSON_BYTE_VALUES) {
 	err(101, __func__, "jenc table length is %ju instead of %d",
@@ -866,7 +866,7 @@ jencchk(void)
 	/* test json_decode_str() */
 	mstr2 = json_decode_str(mstr, &mlen2);
 	if (mstr2 == NULL) {
-	    err(159, __func__, "json_decode_str(<%s>, *mlen: %ju, true) == NULL",
+	    err(159, __func__, "json_decode_str(<%s>, *mlen2: %ju, true) == NULL",
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
@@ -876,7 +876,7 @@ jencchk(void)
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(161, __func__, "json_decode_str(<%s>, *mlen: %ju, true): 0x%02x != 0x%02x",
+	    err(161, __func__, "json_decode_str(<%s>, *mlen2: %ju, true): 0x%02x != 0x%02x",
 			       mstr, (uintmax_t)mlen2, (uint8_t)(mstr2[0]), i);
 	    not_reached();
 	}
@@ -1514,7 +1514,8 @@ parse_json_null(char const *string)
      */
     null = json_conv_null_str(string, NULL);
     if (null == NULL) {
-	err(177, __func__, "null ironically should not be NULL but it is :-)");
+	/* ironically null is NULL and it actually should not be :-) */
+	err(177, __func__, "null is NULL");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
         err(178, __func__, "expected JTYPE_NULL, found type: %s", json_item_type_name(null));
@@ -1522,6 +1523,7 @@ parse_json_null(char const *string)
     }
     item = &(null->item.null);
     if (!item->converted) {
+	/* why is it an error if we can't convert nothing ? :-) */
 	err(179,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
     }
@@ -2110,7 +2112,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	return false;	/* processing failed */
     }
     if (str == NULL) {
-	warn(__func__, "called with NULL ptr");
+	warn(__func__, "called with NULL str");
 	return false;	/* processing failed */
     }
     if (len <= 0) {
@@ -2211,7 +2213,11 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 
 	/* note e notation */
 	item->is_e_notation = true;
+    } else {
+	/* case: neither 'e' nor 'E' found */
+	item->is_e_notation = false;
     }
+
 
     /*
      * perform additional JSON number checks on e notation
@@ -2402,7 +2408,7 @@ json_conv_number(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NUMBER);
     if (ret == NULL) {
-	errp(194, __func__, "json_alloc() returned NULL");
+	errp(194, __func__, "json_alloc(JTYPE_NUMBER) returned NULL");
 	not_reached();
     }
 
@@ -2625,7 +2631,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      */
     ret = json_alloc(JTYPE_STRING);
     if (ret == NULL) {
-	errp(197, __func__, "json_alloc() returned NULL");
+	errp(197, __func__, "json_alloc(JTYPE_STRING) returned NULL");
 	not_reached();
     }
 
@@ -2648,7 +2654,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * firewall
      */
     if (ptr == NULL) {
-	warn(__func__, "called with NULL ptr");
+	warn(__func__, "called with NULL string");
 	return ret;
     }
 
@@ -2818,7 +2824,7 @@ json_conv_bool(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_BOOL);
     if (ret == NULL) {
-	errp(200, __func__, "json_alloc() returned NULL");
+	errp(200, __func__, "json_alloc(JTYPE_BOOL) returned NULL");
 	not_reached();
     }
 
@@ -2911,7 +2917,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      * NOTE: We will let the json_conv_bool() handle the arg firewall
      */
     if (str == NULL) {
-	warn(__func__, "called with NULL str");
+	warn(__func__, "called with NULL string");
     } else {
 	len = strlen(str);
     }
@@ -2921,7 +2927,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(202, __func__, "json_conv_bool() returned NULL");
+	err(202, __func__, "json_conv_bool(%s, %jd) returned NULL", str, (uintmax_t)len);
 	not_reached();
     }
 
@@ -2967,7 +2973,8 @@ json_conv_null(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NULL);
     if (ret == NULL) {
-	errp(203, __func__, "json_alloc() returned NULL");
+	/* if we want null and it returns NULL why is this an error ? :-) */
+	errp(203, __func__, "json_alloc(JTYPE_NULL) returned NULL");
 	not_reached();
     }
 
@@ -3126,7 +3133,7 @@ json_conv_member(struct json *name, struct json *value)
      */
     ret = json_alloc(JTYPE_MEMBER);
     if (ret == NULL) {
-	errp(206, __func__, "json_alloc() returned NULL");
+	errp(206, __func__, "json_alloc(JTYPE_MEMBER) returned NULL");
 	not_reached();
     }
 
@@ -3197,13 +3204,13 @@ json_conv_member(struct json *name, struct json *value)
     item->name_as_str = item2->as_str;
     /* paranoia */
     if (item->name_as_str == NULL) {
-	err(207, __func__, "item->as_str is NULL");
+	err(207, __func__, "item->name_as_str is NULL");
 	not_reached();
     }
     item->name_str = item2->str;
     /* paranoia */
-    if (item->name_as_str == NULL) {
-	err(208, __func__, "item->str is NULL");
+    if (item->name_str == NULL) {
+	err(208, __func__, "item->name_str is NULL");
 	not_reached();
     }
     item->name_as_str_len = item2->as_str_len;
@@ -3245,7 +3252,7 @@ json_create_object(void)
      */
     ret = json_alloc(JTYPE_OBJECT);
     if (ret == NULL) {
-	errp(209, __func__, "json_alloc() returned NULL");
+	errp(209, __func__, "json_alloc(JTYPE_OBJECT) returned NULL");
 	not_reached();
     }
 
@@ -3394,7 +3401,7 @@ json_create_elements(void)
      */
     ret = json_alloc(JTYPE_ELEMENTS);
     if (ret == NULL) {
-	errp(216, __func__, "json_alloc() returned NULL");
+	errp(216, __func__, "json_alloc(JTYPE_ELEMENTS) returned NULL");
 	not_reached();
     }
 
@@ -3557,7 +3564,7 @@ json_create_array(void)
      */
     ret = json_alloc(JTYPE_ARRAY);
     if (ret == NULL) {
-	errp(224, __func__, "json_alloc() returned NULL");
+	errp(224, __func__, "json_alloc(JTYPE_ARRAY) returned NULL");
 	not_reached();
     }
 
