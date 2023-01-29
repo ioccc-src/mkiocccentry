@@ -3197,13 +3197,13 @@ json_conv_member(struct json *name, struct json *value)
     item->name_as_str = item2->as_str;
     /* paranoia */
     if (item->name_as_str == NULL) {
-	err(207, __func__, "item2->as_str is NULL");
+	err(207, __func__, "item->as_str is NULL");
 	not_reached();
     }
     item->name_str = item2->str;
     /* paranoia */
     if (item->name_as_str == NULL) {
-	err(208, __func__, "item2->str is NULL");
+	err(208, __func__, "item->str is NULL");
 	not_reached();
     }
     item->name_as_str_len = item2->as_str_len;
@@ -3369,7 +3369,7 @@ json_object_add_member(struct json *node, struct json *member)
 
 
 /*
- * json_create_elements - allocate an emepty JSON elements
+ * json_create_elements - allocate an empty JSON elements
  *
  * A JSON elements is a set of JSON values/
  *

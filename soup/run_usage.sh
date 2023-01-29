@@ -26,23 +26,25 @@ export MAN_DIR="./man"
 export RUN_USAGE_VERSION="0.2 2022-11-06"
 export USAGE="usage: $0 [-h] [-V] [-m section] [-M man_file] [-D man_dir] tool
 
-    -h		    print help and exit
-    -V		    print version and exit
-    -m section	    man page section (def: $MAN_SECTION)
-    -M man file	    man page (including extension)
-    -D man_dir	    directory that man pages are to be found in
-    --		    end of $0 flags
-    tool	    one of the IOCCC tools to run with -h option
+    -h			print help and exit
+    -V			print version and exit
+    -m section		man page section (def: $MAN_SECTION)
+    -M man file		man page (including extension)
+    -D man_dir		directory that man pages are to be found in
+
+    --			end of $0 flags
+
+    tool		one of the IOCCC tools to run with -h option
 
 Exit codes:
-     0	 all okay
-     1	 help or version string printed
-     2	 tool missing or command missing
-     3	 man page missing
-     4	 command line usage error
-     5	 missing or inconsistent synopsis
-     6	 tool does not have usage string
-     7	 man directory does not exist or is not a readable directory
+     0	    all okay
+     1	    help or version string printed
+     2	    tool missing or command missing
+     3	    man page missing
+     4	    command line usage error
+     5	    missing or inconsistent synopsis
+     6	    tool does not have usage string
+     7	    man directory does not exist or is not a readable directory
 
 $0 version: $RUN_USAGE_VERSION"
 

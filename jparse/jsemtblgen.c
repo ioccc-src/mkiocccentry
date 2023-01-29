@@ -684,8 +684,8 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 static int
 sem_cmp(void const *a, void const *b)
 {
-    const struct json_sem *first = NULL;	/* 1st entry to compare */
-    const struct json_sem *second = NULL;	/* 2nd entry to compare */
+    const struct json_sem *first = NULL;	/* first entry to compare */
+    const struct json_sem *second = NULL;	/* second entry to compare */
     int cmp = 0;				/* byte string comparison */
 
     /*
@@ -900,7 +900,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
  * append_unique_str - append string pointer to dynamic array if not already found
  *
  * Given a pointer to string, we search a dynamic array of pointers to strings.
- * If an exact match is found (i.e, the string is already in the dynamic array),
+ * If an exact match is found (i.e. the string is already in the dynamic array),
  * nothing is done other than to return false.  If no match is found, the pointer
  * to the string is appended to the dynamic array and we return true.
  *

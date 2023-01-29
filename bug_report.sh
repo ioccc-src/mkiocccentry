@@ -80,12 +80,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfi
     -M make_flags	    set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
-     0   all tests OK
-     1   failed to create a bug report file
-     2   help mode exit or print version mode exit
-     3   invalid command line
-     4	 error in function call
- >= 10   at least one check failed
+     0	    all tests OK
+     1	    failed to create a bug report file
+     2	    help mode exit or print version mode exit
+     3	    invalid command line
+     4	    error in function call
+ >= 10	    at least one check failed
 
 $0 version: $BUG_REPORT_VERSION"
 
@@ -1143,8 +1143,8 @@ type_of 29 "sed"
 # try getting sed version
 get_version "sed"
 
-# type -a tar: get all types of tar (okay - actually tar in the system .. we
-# don't about the dark, flammable liquid :-) )
+# type -a tar: get all types of tar (okay - actually tar in the system ... we
+# don't care about the dark, flammable liquid :-) )
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
 # because hostchk.sh will do that later on.

@@ -41,7 +41,7 @@ which will delete the log file for you if no issues are found.
 ### Static analysis and dynamic analysis
 
 If you wish to run static analysis you may wish to see the file
-[test_ioccc/static_analsys.md](test_ioccc/static_analysis.md). For help on
+[test_ioccc/static_analysis.md](test_ioccc/static_analysis.md). For help on
 running with valgrind you may see the document
 [test_ioccc/dynamic_analysis.md](test_ioccc/dynamic_analysis.md).
 

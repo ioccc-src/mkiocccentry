@@ -215,7 +215,7 @@ get_wc()
 # usage:
 #	test_size c_src_file "expected_Rule_2b expected_Rule_2a expected_keywords"
 #
-# NOTE: The expected_keywords (3rd expected arg) is ignored.
+# NOTE: The expected_keywords (third expected arg) is ignored.
 #
 test_size()
 {
@@ -227,9 +227,9 @@ test_size()
     #
     declare iocccsize_v0	# iocccsize -v 0 output
     declare iocccsize_v1	# iocccsize -v 1 output
-    declare iocccsize_v0_2b	# iocccsize -v 0 Rule 2b (1st arg)
-    declare iocccsize_v1_2a	# iocccsize -v 1 Rule 2a (2nd arg)
-    declare iocccsize_v1_2b	# iocccsize -v 1 Rule 2b (1st arg)
+    declare iocccsize_v0_2b	# iocccsize -v 0 Rule 2b (first arg)
+    declare iocccsize_v1_2a	# iocccsize -v 1 Rule 2a (second arg)
+    declare iocccsize_v1_2b	# iocccsize -v 1 Rule 2b (first arg)
     #
     declare wc_bytes		# wc -c bytes
     #
@@ -253,7 +253,7 @@ test_size()
     #
     pass="true"
 
-    # verify iocccsize -v 1 Rule 2a (2nd) value against wc -c
+    # verify iocccsize -v 1 Rule 2a (second) value against wc -c
     #
     wc_bytes=$(get_wc "$file" 3)
     iocccsize_v1_2a=$(echo "$iocccsize_v1" | cut -d' ' -f2)
@@ -265,7 +265,7 @@ test_size()
 	echo "$0: debug[3]: $IOCCCSIZE -v 1 $file Rule 2a value: $iocccsize_v1_2a == wc -c value: $wc_bytes"
     fi
 
-    # verify iocccsize -v 1 Rule 2a (2nd) value expected Rule 2a test value
+    # verify iocccsize -v 1 Rule 2a (second) value expected Rule 2a test value
     #
     expect_2a=$(echo "$expect" | cut -d' ' -f2)
     if [[ $iocccsize_v1_2a -ne "$expect_2a" ]]; then
@@ -276,7 +276,7 @@ test_size()
 	echo "$0: debug[3]: $IOCCCSIZE -v 1 $file Rule 2a value: $iocccsize_v1_2a == expected Rule 2a value: $expect_2a" 1>&2
     fi
 
-    # verify iocccsize -v 0 (1st) Rule 2b value against expected Rule 2b test value
+    # verify iocccsize -v 0 (first) Rule 2b value against expected Rule 2b test value
     #
     expect_2b=$(echo "$expect" | cut -d' ' -f1)
     iocccsize_v0_2b=$(echo "$iocccsize_v0" | cut -d' ' -f1)
@@ -288,7 +288,7 @@ test_size()
 	echo "$0: debug[3]: $IOCCCSIZE -v 0 $file Rule 2b value: $iocccsize_v0_2b == expected Rule 2b value: $expect_2b" 1>&2
     fi
 
-    # verify iocccsize -v 1 (1st) Rule 2b value against expected Rule 2b test value
+    # verify iocccsize -v 1 (first) Rule 2b value against expected Rule 2b test value
     #
     expect_2b=$(echo "$expect" | cut -d' ' -f1)
     iocccsize_v1_2b=$(echo "$iocccsize_v1" | cut -d' ' -f1)
@@ -317,7 +317,7 @@ test_size()
 #
 #	test_size c_src_file "expected_Rule_2b expected_Rule_2a expected_keywords"
 #
-# NOTE: The expected_keywords (3rd expected arg) is ignored.
+# NOTE: The expected_keywords (third expected arg) is ignored.
 
 #######################################################################
 

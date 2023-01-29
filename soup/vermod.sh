@@ -25,37 +25,37 @@ export VERMOD_VERSION="0.1 2022-03-15"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
 
-    -h		    print help and exit
-    -V		    print version and exit
-    -v level	    set the debugging level (def: 0)
+    -h			print help and exit
+    -V			print version and exit
+    -v level		set the debugging level (def: 0)
 
-    -d test_dir	    process '*.json' files below dir (def: $JSON_TREE)
-    -i limit.sh	    use limit.sh to verify new version (def: $LIMIT_SH)
+    -d test_dir		process '*.json' files below dir (def: $JSON_TREE)
+    -i limit.sh		use limit.sh to verify new version (def: $LIMIT_SH)
 
-    -o		    verify old version (def: verify new version)
-    -F		    force change even if verification fails (def: reject unverified changes)
+    -o			verify old version (def: verify new version)
+    -F			force change even if verification fails (def: reject unverified changes)
 
-    -Q		    do not double quote string (def: add double quotes)
+    -Q			do not double quote string (def: add double quotes)
 
-    -n		    no op: change no files (def: change files)
-    -l		    list files that change/will change (def: do not list)
+    -n			no op: change no files (def: change files)
+    -l			list files that change/will change (def: do not list)
 			NOTE: useful with -n to show what would change
-    -L		    list files that do not/will not change (def: do not list)
-			NOTE: useful with -n to show what will not change
+    -L			list files that do not/will not change (def: do not list)
+			    NOTE: useful with -n to show what will not change
 
-    old_ver	    old version string to change from
-    new_ver	    new version string to change to
+    old_ver		old version string to change from
+    new_ver		new version string to change to
 
 Exit codes:
-     0   all OK
-     1   rpl exited non-zero
-     2   -h and help string printed or -V and version string printed
-     3   command line error and usage message printed
-     4   no test_dir directory found or is not readable
-     5   rpl command not found
-     6   no limit.sh file found or is not readable
-     7   no *.json files found under test_dir
-     8   new_ver (or old_ver if -o) not found in limit.sh
+     0	    all OK
+     1	    rpl exited non-zero
+     2	    -h and help string printed or -V and version string printed
+     3	    command line error
+     4	    no test_dir directory found or is not readable
+     5	    rpl command not found
+     6	    no limit.sh file found or is not readable
+     7	    no *.json files found under test_dir
+     8	    new_ver (or old_ver if -o) not found in limit.sh
 
 $0 version: $VERMOD_VERSION"
 export V_FLAG="0"

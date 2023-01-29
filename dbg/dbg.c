@@ -857,7 +857,7 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
 	if (allowed == true) {
 	    /* we cannot call warn() because that would produce an infinite loop! */
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-				   "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
+				   "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
 	}
     }
@@ -1205,7 +1205,7 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
     if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
+			       "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
 			       caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
     }
 

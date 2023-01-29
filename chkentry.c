@@ -72,16 +72,14 @@ static const char * const usage_msg =
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\n"
     "Exit codes:\n"
-    "     0   all is OK\n"
-    "     1   JSON files(s) are valid JSON but one or more semantic checks failed\n"
-    "     2   -h and help string printed or -V and version string printed\n"
-    "     3   command line error\n"
-    "     4   file(s) not valid JSON, no semantic checks were performed\n"
-    "  >=10   internal error\n"
+    "    0\t\tall is OK\n"
+    "    1\t\tJSON files(s) are valid JSON but one or more semantic checks failed\n"
+    "    2\t\t-h and help string printed or -V and version string printed\n"
+    "    3\t\tcommand line error\n"
+    "    4\t\tfile(s) not valid JSON; no semantic checks were performed\n"
+    "    >=10\tinternal error\n"
     "\n"
     "chkentry version: %s\n";
-
-
 
 
 /*

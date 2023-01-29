@@ -703,7 +703,7 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
  *	!= NULL ==> JSON node that is the name of a JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -792,7 +792,7 @@ sem_member_name(struct json const *node, unsigned int depth, struct json_sem *se
  *	!= NULL ==> JSON node that is the value of a JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1479,7 +1479,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
  *	!= NULL ==> valid parent JSON node
  *	    The val_err arg is ignored
  *	NULL ==> no parent node, invalid parent node, or internal error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1565,7 +1565,7 @@ sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *se
  *	!= NULL ==> JTYPE_MEMBER with a given name
  *	    The val_err arg is ignored
  *	NULL ==> no such JTYPE_MEMBER found, or invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_count_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 struct json *
 sem_object_find_name(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1657,7 +1657,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	}
 
 	/*
-	 * try to match the memname with this set member
+	 * try to match the smemname with this set member
 	 */
 	smemname = sem_member_name_decoded_str(s, depth+1, sem, name, val_err);
 	if (smemname == NULL) {
@@ -1710,7 +1710,7 @@ json_sem_zero_count(struct json_sem *sem)
     }
 
     /*
-     * set the special JTYPE_UNSET nore
+     * set the special JTYPE_UNSET node
      */
     if (sem[i].type == JTYPE_UNSET) {
 	sem[i].count = 0;
@@ -1825,7 +1825,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 
 
 /*
- * json_sem_find - given JSON node, find 1st match in JSON semantic table
+ * json_sem_find - given JSON node, find first match in JSON semantic table
  *
  * given:
  *	node		pointer to a JSON parse tree
@@ -1833,7 +1833,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
  *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
  *
  * returns:
- *	>=0 ==> index into JSON semantic table for 1st match
+ *	>=0 ==> index into JSON semantic table for first match
  *	-1  ==> no JSON semantic table match found
  *	< -1 ==> invalid JSON node, or NULL ptr, or internal error
  */
@@ -2113,7 +2113,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  * is used.
  *
  * We then walk the JSON parse tree and check each node against the JSON semantic table,
- * counting as nodes on the 1st match found in the JSON semantic table,
+ * counting as nodes on the first match found in the JSON semantic table,
  * or appending a JSON semantic count error to the *pcount_err dynamic array
  * when an unknown JSON node is found.
  *

@@ -3829,7 +3829,7 @@ get_author_info(struct author **author_set_p)
 		yorn = yes_or_no("Is that location/country code correct? [yn]");
 
 		/*
-		 * free storage if no (reenter location/country code)
+		 * free storage if no (re-enter location/country code)
 		 */
 		if (!yorn) {
 		    if (author_set[i].location_code != NULL) {
@@ -4460,7 +4460,7 @@ get_author_info(struct author **author_set_p)
 	    yorn = yes_or_no("Is that author information correct? [yn]");
 	    if (!yorn) {
 		/*
-		 * reenter author information
+		 * re-enter author information
 		 */
 		--i;
 		continue;

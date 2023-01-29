@@ -3900,7 +3900,7 @@ malloc_path(char const *dirname, char const *filename)
     if (dirname == NULL) {
 
 	/*
-	 * just return a newlt malloced filename
+	 * just return a newly malloced filename
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
