@@ -12,49 +12,53 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH werr 3  "28 January 2023" "werr"
+.TH werr 3  "29 January 2023" "werr"
 .SH NAME
-.BR werr(),
-.BR vwerr(),
-.BR fwerr(),
-.BR vfwerr(),
-.BR snwerr(),
-.BR vsnwerr(),
-.BR werrp(),
-.BR vwerrp(),
-.BR fwerrp(),
-.BR vfwerrp(),
-.BR snwerrp(),
+.BR werr() \|,
+.BR vwerr() \|,
+.BR fwerr() \|,
+.BR vfwerr() \|,
+.BR snwerr() \|,
+.BR vsnwerr() \|,
+.BR werrp() \|,
+.BR vwerrp() \|,
+.BR fwerrp() \|,
+.BR vfwerrp() \|,
+.BR snwerrp() \|,
 .BR vsnwerrp()
 \- non-fatal error messages facility
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
 .sp
-.BI "extern bool err_output_allowed;		/* false ==> disable error messages */"
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.br
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.BI "void werr(int error_code, const char *name, const char *fmt, ...);"
-.br
-.BI "void vwerr(int error_code, char const *name, char const *fmt, va_list ap);"
-.br
-.BI "void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.BI "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
-.br
-.BI "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
-.br
-.BI "void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
 .sp
-.BI "void werrp(int error_code, const char *name, const char *fmt, ...);"
+.B "void werr(int error_code, const char *name, const char *fmt, ...);"
 .br
-.BI "void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);"
+.B "void vwerr(int error_code, char const *name, char const *fmt, va_list ap);"
 .br
-.BI "void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.B "void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
 .br
-.BI "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
-.BI "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.B "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
 .br
-.BI "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.B "void werrp(int error_code, const char *name, const char *fmt, ...);"
+.br
+.B "void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.B "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.B "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write non-fatal error messages to a stream such as
 .B stderr\c
@@ -72,9 +76,7 @@ write a message according to the value of
 \&, making sure to restore the
 .B errno
 value in the case the function returns.
-.SS Alternative output
-.B FILE *
-stream
+.SS Alternative output FILE * stream
 The functions that do not take a
 .B FILE *
 or a 
@@ -89,9 +91,7 @@ and
 can write to an alternative
 .B FILE *
 stream.
-.SS Writing to a
-.B char *
-buffer
+.SS Writing to a char * buffer
 The functions
 .BR snwerr()
 and
@@ -104,22 +104,22 @@ They do not do anything if passed a NULL pointer or
 .SS Variadic versions
 .PP
 The functions
-.BR vwerr(),
-.BR vfwerr(),
-.BR vsnwerr(),
-.BR vwerrp(),
+.BR vwerr() \|,
+.BR vfwerr() \|,
+.BR vsnwerr() \|,
+.BR vwerrp() \|,
 .BR vfwerrp()
 and
 .BR vsnwerrp()
 are equivalent to the functions
-.BR err(3),
-.BR ferr(3),
-.BR errp(3),
-.BR ferrp(3),
-.BR werr(3),
-.BR fwerr(3),
-.BR snwerr(3),
-.BR werrp(3),
+.BR err(3) \|,
+.BR ferr(3) \|,
+.BR errp(3) \|,
+.BR ferrp(3) \|,
+.BR werr(3) \|,
+.BR fwerr(3) \|,
+.BR snwerr(3) \|,
+.BR werrp(3) \|,
 .BR fwerrp(3)
 and
 .BR snwerrp(3)
@@ -141,6 +141,14 @@ man page for more details and examples.
 When 
 .B err_output_allowed == false
 these functions will not print anything.
+.SS Version string
+The string
+.B dbg_version\c
+\&, which points to
+.B DBG_VERSION\c
+\&, is the current version of the
+.B dbg
+library.
 .SH RETURN VALUE
 .PP
 These functions return void.
@@ -156,10 +164,10 @@ For this reason these versions are not recommended for use.
 If 
 .I name
 is NULL it will be set to
-.BR "((NULL name))"
+.B "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
-.BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
+.B "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
 where 
 .B foo
@@ -177,10 +185,10 @@ Thus having too many arguments, too few arguments, or arguments of the wrong typ
 If 
 .I fmt
 is NULL it will be set to
-.BR "((NULL fmt))"
+.B "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
-.BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
+.B "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
 .sp
 where 
 .B foo
@@ -205,13 +213,13 @@ For an example proper please refer to
 .B dbg(3)\c
 \&.
 .SH SEE ALSO
-.BR printf(3),
-.BR dbg(3),
-.BR msg(3),
-.BR printf_usage(3),
-.BR warn(3),
-.BR err(3),
-.BR warn_or_err(3)
+.BR dbg(3) \|,
+.BR msg(3) \|,
+.BR printf_usage(3) \|,
+.BR warn(3) \|,
+.BR err(3) \|,
+.BR warn_or_err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

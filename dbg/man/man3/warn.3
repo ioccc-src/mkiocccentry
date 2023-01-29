@@ -12,53 +12,57 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH warn 3  "28 January 2023" "warn"
+.TH warn 3  "29 January 2023" "warn"
 .SH NAME
-.BR warn(),
-.BR vwarn(),
-.BR fwarn(),
-.BR vfwarn(),
-.BR snwarn(),
-.BR vsnwarn(),
-.BR warnp(),
-.BR vwarnp(),
-.BR fwarnp(),
-.BR vfwarnp(),
-.BR snwarnp(),
+.BR warn() \|,
+.BR vwarn() \|,
+.BR fwarn() \|,
+.BR vfwarn() \|,
+.BR snwarn() \|,
+.BR vsnwarn() \|,
+.BR warnp() \|,
+.BR vwarnp() \|,
+.BR fwarnp() \|,
+.BR vfwarnp() \|,
+.BR snwarnp() \|,
 .BR vsnwarnp()
 \- warning message facility
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
 .sp
-.BI "extern int verbosity_level;		/* maximum debug level for debug messages */"
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-.BI "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
-.br
-.BI "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.BI "void warn(const char *name, const char *fmt, ...);"
+.B "extern int verbosity_level;		/* maximum debug level for debug messages */"
 .br
-.BI "void vwarn(char const *name, char const *fmt, va_list ap);"
+.B "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
 .br
-.BI "void fwarn(FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.BI "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
-.br
-.BI "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
-.br
-.BI "void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
 .sp
-.BI "void warnp(const char *name, const char *fmt, ...);"
+.B "void warn(const char *name, const char *fmt, ...);"
 .br
-.BI "void vwarnp(char const *name, char const *fmt, va_list ap);"
+.B "void vwarn(char const *name, char const *fmt, va_list ap);"
 .br
-.BI "void fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
+.B "void fwarn(FILE *stream, const char *name, const char *fmt, ...);"
 .br
-.BI "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
-.BI "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.B "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
 .br
-.BI "void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.B "void warnp(const char *name, const char *fmt, ...);"
+.br
+.B "void vwarnp(char const *name, char const *fmt, va_list ap);"
+.br
+.B "void fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.B "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.B "void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write warning messages to a stream such as
 .B stderr
@@ -80,27 +84,24 @@ write a message according to the value of
 \&, making sure to restore the
 .B errno
 value in the case the function returns.
-.SS Alternative output
-.B FILE *
-stream
+.SS Alternative output FILE * stream
 The functions that do not take a
-.B FILE * or a
+.B FILE *
+or a
 .B char *
 write to
 .B stderr\c
 \&.
 The functions
-.BR fwarn(),
-.BR vfwarn(),
+.BR fwarn() \|,
+.BR vfwarn() \|,
 .BR fwarnp()
 and
 .BR vfwarnp()
 can write to an alternative
 .B FILE *
 stream.
-.SS Writing to a 
-.B char *
-buffer
+.SS Writing to a char * buffer
 The functions
 .BR snwarn()
 and
@@ -113,21 +114,21 @@ They do not do anything if passed a NULL pointer or
 .SS Variadic versions
 .PP
 The functions
-.BR vwarn(),
-.BR vfwarn(),
-.BR vsnwarn(),
-.BR vwarnp(),
+.BR vwarn() \|,
+.BR vfwarn() \|,
+.BR vsnwarn() \|,
+.BR vwarnp() \|,
 .BR vfwarnp()
 and
-.BR vsnwarnp(),
+.BR vsnwarnp()
 are equivalent to the functions
-.BR warn(),
-.BR fwarn(),
-.BR snwarn(),
-.BR warnp(),
-.BR fwarnp()
+.BR warn() \|,
+.BR fwarn() \|,
+.BR snwarn() \|,
+.BR warnp() \|,
+.B fwarnp()
 and
-.BR snwarnp()
+.B snwarnp()
 except that they are called with a 
 .I va_list
 instead of a variable number of arguments.
@@ -152,6 +153,14 @@ When
 these functions will be silenced if
 .B verbosity_level <= 0\c
 \&.
+.SS Version string
+The string
+.B dbg_version\c
+\&, which points to
+.B DBG_VERSION\c
+\&, is the current version of the
+.B dbg
+library.
 .SH RETURN VALUE
 .PP
 These functions return void.
@@ -215,13 +224,13 @@ For an example proper please refer to
 .B dbg(3)\c
 \&.
 .SH SEE ALSO
-.BR printf(3)
-.BR dbg(3),
-.BR err(3),
-.BR printf_usage(3),
-.BR msg(3),
-.BR warn_or_err(3),
-.BR werr(3)
+.BR dbg(3) \|,
+.BR msg(3) \|,
+.BR printf_usage(3) \|,
+.BR werr(3) \|,
+.BR err(3) \|,
+.BR warn_or_err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

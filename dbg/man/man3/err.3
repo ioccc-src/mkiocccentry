@@ -12,37 +12,41 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH err 3  "28 January 2023" "err"
+.TH err 3  "29 January 2023" "err"
 .SH NAME
-.BR err(),
-.BR verr(),
-.BR ferr(),
-.BR vferr(),
-.BR errp(),
-.BR verrp(),
-.BR ferrp(),
+.BR err() \|,
+.BR verr() \|,
+.BR ferr() \|,
+.BR vferr() \|,
+.BR errp() \|,
+.BR verrp() \|,
+.BR ferrp() \|,
 .BR vferrp()
 \- fatal error message facility
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
 .sp
-.BI "extern bool err_output_allowed;		/* false ==> disable error messages */"
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.br
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.BI "void err(int exitcode, const char *name, const char *fmt, ...);"
-.br
-.BI "void verr(int exitcode, char const *name, char const *fmt, va_list ap);"
-.br
-.BI "void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.BI "void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
 .sp
-.BI "void errp(int exitcode, const char *name, const char *fmt, ...);"
+.B "void err(int exitcode, const char *name, const char *fmt, ...);"
 .br
-.BI "void verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.B "void verr(int exitcode, char const *name, char const *fmt, va_list ap);"
 .br
-.BI "void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.B "void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
 .br
-.BI "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.B "void errp(int exitcode, const char *name, const char *fmt, ...);"
+.br
+.B "void verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.B "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write fatal error messages to a stream such as
 .B stderr\c
@@ -58,9 +62,7 @@ write a message according to the value of
 \&, making sure to restore the
 .B errno
 value in the case the function returns.
-.SS Alternative output
-.B FILE *
-stream
+.SS Alternative output FILE * stream
 The functions that do not take a
 .B FILE *
 or a
@@ -69,8 +71,8 @@ write to
 .B stderr\c
 \&.
 The functions
-.BR ferr(),
-.BR vferr(),
+.BR ferr() \|,
+.BR vferr() \|,
 .BR ferrp()
 and
 .BR vferrp()
@@ -80,14 +82,14 @@ stream.
 .SS Variadic versions
 .PP
 The functions
-.BR verr(),
-.BR vferr(),
+.BR verr() \|,
+.BR vferr() \|,
 .BR verrp()
 and
 .BR vferrp()
 are equivalent to the functions
-.BR err(),
-.BR ferr(),
+.BR err() \|,
+.BR ferr() \|,
 .BR errp()
 and
 .BR ferrp()
@@ -111,6 +113,14 @@ When
 the
 .B err()
 functions will not print anything.
+.SS Version string
+The string
+.B dbg_version\c
+\&, which points to
+.B DBG_VERSION\c
+\&, is the current version of the
+.B dbg
+library.
 .SH RETURN VALUE
 .PP
 These functions do not return at all.
@@ -135,7 +145,7 @@ For this reason these versions are not recommended for use.
 If
 .I name
 is NULL it will be set to
-.BR "((NULL name))"
+.B "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
@@ -156,7 +166,7 @@ Thus having too many arguments, too few arguments, or arguments of the wrong typ
 If 
 .I fmt
 is NULL it will be set to
-.BR "((NULL fmt))"
+.B "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
@@ -184,13 +194,13 @@ For an example proper please refer to
 .B dbg(3)\c
 \&.
 .SH SEE ALSO
-.BR printf(3),
-.BR dbg(3),
-.BR msg(3),
-.BR printf_usage(3),
-.BR warn(3),
-.BR werr(3),
-.BR warn_or_err(3)
+.BR dbg(3) \|,
+.BR msg(3) \|,
+.BR printf_usage(3) \|,
+.BR warn(3) \|,
+.BR werr(3) \|,
+.BR warn_or_err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

@@ -12,13 +12,13 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dbg 3  "28 January 2023" "dbg"
+.TH dbg 3  "29 January 2023" "dbg"
 .SH NAME
-.BR dbg(),
-.BR vdbg(),
-.BR fdbg(),
-.BR vfdbg(),
-.BR sndbg(),
+.BR dbg() \|,
+.BR vdbg() \|,
+.BR fdbg() \|,
+.BR vfdbg() \|,
+.BR sndbg() \|,
 .BR vsndbg()
 \- debug message facility
 .SH SYNOPSIS
@@ -28,30 +28,28 @@
 .br
 \fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.BI "extern int verbosity_level;		/* maximum debug level for debug messages */"
+.B "extern int verbosity_level;		/* maximum debug level for debug messages */"
 .br
-.BI "extern bool dbg_output_allowed;		/* false ==> disable debug messages */"
+.B "extern bool dbg_output_allowed;		/* false ==> disable debug messages */"
 .sp
-.BI "void dbg(int level, const char *fmt, ...);"
+.B "void dbg(int level, const char *fmt, ...);"
 .br
-.BI "void vdbg(int level, char const *fmt, va_list ap);"
+.B "void vdbg(int level, char const *fmt, va_list ap);"
 .br
-.BI "void fdbg(FILE *stream, int level, const char *fmt, ...);"
+.B "void fdbg(FILE *stream, int level, const char *fmt, ...);"
 .br
-.BI "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
+.B "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
 .br
-.BI "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
+.B "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
 .br
-.BI "void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);"
+.B "void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write debug messages to a stream such as
 .B stderr
 or to a
 .B char *
 of a fixed size.
-.SS Alternative output
-.B FILE *
-stream
+.SS Alternative output \fBFILE *\fP stream
 The functions that do not take a
 .B FILE *
 or a 
@@ -66,9 +64,7 @@ and
 can write to an alternative
 .B FILE *
 stream.
-.SS Writing to a
-.B char *
-buffer
+.SS Writing to a \fBchar *\fP buffer
 The function
 .BR sndbg()
 writes a message to a buffer of a fixed size.
@@ -79,12 +75,12 @@ It does not do anything if passed a NULL pointer or
 .SS Variadic versions
 .PP
 The functions
-.BR vdbg(),
+.BR vdbg() \|,
 .BR vfdbg()
 and
 .BR vsndbg()
 are equivalent to the functions
-.BR dbg(),
+.BR dbg() \|,
 .BR fdbg()
 and
 .BR sndbg()
@@ -116,7 +112,7 @@ The string
 .B DBG_VERSION\c
 \&, is the current version of the
 .B dbg
-facility.
+library.
 .SH RETURN VALUE
 These functions return void.
 .SH NOTES
@@ -131,7 +127,7 @@ For this reason these versions are not recommended for use.
 If
 .I name
 is NULL it will be set to
-.BR "((NULL name))"
+.B "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
@@ -152,7 +148,7 @@ Thus having too many arguments, too few arguments, or arguments of the wrong typ
 If 
 .I fmt
 is NULL it will be set to
-.BR "((NULL fmt))"
+.B "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
@@ -175,6 +171,7 @@ However, a persistent problem writing to the stream (such as if the stream being
 .SS Newlines
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
+.SS Program source
 .RS 4
 .nf
 $ cat dbg_example.c
@@ -235,11 +232,26 @@ main(void)
 
     return 2; /* this return is never reached */
 }
-$ cc \-c dbg.c
-$ cc \-o dbg_example dbg_example.c dbg.o
-The above two commands could be shortened to just:
-.B cc \-o dbg_example dbg_example.c dbg.c
-$ ./dbg_example
+.fi
+.RE
+.SS Compiling and running the example
+.PP
+To compile:
+.RS 4
+.nf
+.RB "$ " "cc \-c dbg.c"
+.RB "$ " "cc \-o dbg_example dbg_example.c dbg.o"
+.sp
+.B # The above two commands could be shortened to just:
+.RB "$ " "cc \-o dbg_example dbg_example.c dbg.c"
+.fi
+.RE
+.sp
+.PP
+To run:
+.RS 4
+.nf
+.RB "$ " "./dbg_example"
 NOTE: Setting verbosity_level to DBG_MED: 3
 NOTE: The next line should say: "Warning: main: elephant is sky\-blue pink"
 Warning: main: elephant is sky\-blue pink
@@ -254,13 +266,13 @@ $ echo $?
 .fi
 .RE
 .SH SEE ALSO
-.BR printf(3)
-.BR err(3),
-.BR msg(3),
-.BR printf_usage(3),
-.BR warn(3),
-.BR werr(3),
-.BR warn_or_err(3)
+.BR msg(3) \|,
+.BR printf_usage(3) \|,
+.BR warn(3) \|,
+.BR werr(3) \|,
+.BR err(3) \|,
+.BR warn_or_err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

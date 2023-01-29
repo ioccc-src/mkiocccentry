@@ -12,25 +12,29 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH printf_usage 3  "28 January 2023" "printf_usage"
+.TH printf_usage 3  "29 January 2023" "printf_usage"
 .SH NAME
-.BR printf_usage(),
-.BR vprintf_usage(),
-.BR fprintf_usage(),
+.BR printf_usage() \|,
+.BR vprintf_usage() \|,
+.BR fprintf_usage() \|,
 .BR vfprintf_usage()
 \- usage message facility
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
 .sp
-.BI "extern bool usage_output_allowed;		/* false ==> disable usage messages */"
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-.BI "void printf_usage(int exitcode, const char *fmt, ...) __attribute__((format(printf, 2, 3))); /* 2=format 3=params */"
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+.sp
+.B "extern bool usage_output_allowed;		/* false ==> disable usage messages */"
 .br
-.BI "void vprintf_usage(int exitcode, char const *fmt, va_list ap);"
+.B "void printf_usage(int exitcode, const char *fmt, ...) __attribute__((format(printf, 2, 3))); /* 2=format 3=params */"
+.br
+.B "void vprintf_usage(int exitcode, char const *fmt, va_list ap);"
 .br
 .BI "void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)  __attribute__((format(printf, 3, 4))); /* 3=format 4=params */"
 .br
-.BI "void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
+.B "void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write a usage message to a stream such as
 .B stderr\c
@@ -38,13 +42,13 @@ These functions provide a way to write a usage message to a stream such as
 .SS Variadic versions
 .PP
 The functions
-.BR vprintf_usage()
+.B vprintf_usage()
 and
-.BR vfprintf_usage()
+.B vfprintf_usage()
 are equivalent to the functions
-.BR printf_usage()
+.B printf_usage()
 and
-.BR fprintf_usage()
+.B fprintf_usage()
 except that they are called with a
 .I va_list
 instead of a variable number of arguments.
@@ -70,6 +74,14 @@ These functions return void except that the functions will call
 with the exit code provided to the function if
 .B exitcode
 is >= 0.
+.SS Version string
+The string
+.B dbg_version\c
+\&, which points to
+.B DBG_VERSION\c
+\&, is the current version of the
+.B dbg
+library.
 .SH NOTES
 .SS Variadic arguments
 In the
@@ -82,7 +94,7 @@ For this reason these versions are not recommended for use.
 If 
 .I name
 is NULL it will be set to
-.BR "((NULL name))"
+.B "((NULL name))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
@@ -103,7 +115,7 @@ Thus having too many arguments, too few arguments, or arguments of the wrong typ
 If 
 .I fmt
 is NULL it will be set to
-.BR "((NULL fmt))"
+.B "((NULL fmt))"
 and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
@@ -130,13 +142,13 @@ For an example proper please refer to
 .B dbg(3)\c
 \&.
 .SH SEE ALSO
-.BR printf(3)
-.BR dbg(3),
-.BR msg(3),
-.BR err(3),
-.BR warn(3),
-.BR werr(3),
-.BR warn_or_err(3)
+.BR dbg(3) \|,
+.BR msg(3) \|,
+.BR warn(3) \|,
+.BR werr(3) \|,
+.BR err(3) \|,
+.BR warn_or_err(3) \|,
+.B printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.
