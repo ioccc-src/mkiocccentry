@@ -20,13 +20,13 @@
 .\"
 .\" When you're playing with tar and you run you might trip and fall into a
 .\" tar pit. And if it's Hallowe'en you might be running from a ghost or vampire
-.\" or some kind of monster. :\-) That's why you should use txzchk(1): to make sure
-.\" you won't get stuck in tar! :\-)
+.\" or some kind of monster. :-) That's why you should use txzchk(1): to make sure
+.\" you won't get stuck in tar! :-)
 .\"
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "29 January 2023" "txzchk" "IOCCC tools"
+.TH txzchk 1 "30 January 2023" "txzchk" "IOCCC tools"
 .SH NAME
 .B txzchk
 \- sanity checker tool used on IOCCC compressed tarballs
@@ -60,7 +60,7 @@ will exit with an error.
 The program runs
 .B tar \-tJvf
 on the
-.B tarball_path
+.I tarball_path
 and parses the output of the command, performing a variety of tests on the tarball.
 As a side effect it will show the user the contents of the tarball.
 The tarball is
@@ -168,18 +168,11 @@ invalid command line, invalid option or option missing an argument
 internal error has occurred or unknown tar listing format has been encountered
 .SH NOTES
 .PP
-This tool was written by Cody Boone Ferguson for the
-.B IOCCC Judges
-in early 2022 for the
-.BR IOCCCMOCK ,
-.B IOCCC28
-and all future
-.B IOCCC
-competitions after discussing the requirements with Landon Curt Noll, one of the IOCCC Judges.
+This tool was written by Cody Boone Ferguson for the IOCCC Judges in early 2022 for the IOCCCMOCK, IOCCC28 and all future IOCCC competitions after discussing the requirements with Landon Curt Noll, one of the IOCCC Judges.
 For more history see
 .BR txzchk (1),
-.BR CHANGES.md ,
-.BR README.md ,
+.IR CHANGES.md ,
+.IR README.md ,
 the GitHub git log and of course reading the source itself.
 .PP
 No pitman or coal mines were harmed in the making of this tool and neither were any pine trees or birch trees.

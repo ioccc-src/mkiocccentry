@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH bug_report.sh 1 "29 January 2023" "bug_report.sh" "IOCCC tools"
+.TH bug_report.sh 1 "30 January 2023" "bug_report.sh" "IOCCC tools"
 .SH NAME
 .B bug_report.sh
 \- run a series of tests, collecting system information in the process, to help report bugs and issues
@@ -30,7 +30,7 @@
 .IR make_flags \|]
 .SH DESCRIPTION
 .B bug_report.sh
-runs a series of tests and scripts to gather as much information about your system as possible in order to help with reporting bugs.
+runs a series of tests and scripts to gather as much information about your system as possible in order to help with reporting bugs or other issues.
 If any step fails it will let you know and recommend that you file an issue at the GitHub issue page, reminding you to attach the log file that the script creates.
 If no step fails it will tell you that everything is okay but still informs you that if you feel there is an issue you can report it, also reminding you to attach the log file.
 If the
@@ -89,12 +89,12 @@ invalid command line
 4
 error in function call
 .TQ
-10
+>=10
 at least one check failed
 .SH NOTES
 .PP
 Even if the script exits 0 it does not necessarily mean there is no problem.
-If you feel there is a problem that was not detected you may still open an issue on the GitHub page (or email the Judges).
+If you feel there is a problem that was not detected you may still open an issue on the GitHub page (or email the Judges though this is discouraged as not all tools were created by the Judges for example this tool itself).
 The script will tell you how to do this whether there are issues detected or not.
 .PP
 If all tests are OK it will tell you that all should be okay and you can safely delete the log file.

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH utf8_test 8 "25 January 2023" "utf8_test" "IOCCC tools"
+.TH utf8_test 8 "30 January 2023" "utf8_test" "IOCCC tools"
 .SH NAME
 .B utf8_test
 \- test translate UTF\-8 chars into POSIX portable filename and +
@@ -32,7 +32,8 @@ Print help message and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.IR level .
+.IR level
+(def: 0).
 .TP
 .B \-V
 Print version string and exit.
@@ -45,7 +46,10 @@ Suppresses some of the output (def: not quiet).
 all is OK
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 invalid command line, invalid option or option missing an argument
