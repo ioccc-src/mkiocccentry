@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "29 January 2023" "jparse"
+.TH jparse 3  "30 January 2023" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_stream() \|,
@@ -210,9 +210,7 @@ will return true if debug, warn or error messages are allowed, respectively, and
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
-.BR IOCCCMOCK ,
-.B IOCCC28
-and beyond.
+IOCCCMOCK, IOCCC28 and beyond.
 .PP
 For more detailed history that goes beyond this humble man page we recommend you check
 .BR jparse (1),
@@ -238,5 +236,5 @@ The testing of more than one parse at the same time is way out of scope of this 
 If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
 .SH SEE ALSO
 .BR jparse (1),
-.BR README.md \|,
+.IR README.md \|,
 .BR printf (3)
