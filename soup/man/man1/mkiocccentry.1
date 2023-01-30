@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "28 January 2023" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "29 January 2023" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -44,16 +44,16 @@ file is completed
 runs
 .B chkinfo
 and if there are any errors it aborts.
-After the writing of the 
+After the writing of the
 .I .info.json
-file the 
+file the
 .I .auth.json
-file is written; once completed 
+file is written; once completed
 .B mkiocccentry
-runs 
+runs
 .B chkauth and if there are any errors it aborts.
 If the work_dir already exists the program will tell you to move it or delete it.
-The program does 
+The program does
 .B NOT
 delete it both for safety as well as in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
 .SH OPTIONS
@@ -85,8 +85,8 @@ and
 if this option is not specified.
 .TP
 .BI \-c\  cp
-Set 
-.B cp 
+Set
+.B cp
 path to
 .IR cp\c
 \&.
@@ -98,7 +98,7 @@ and
 if this option is not specified.
 .TP
 .BI \-l\  ls
-Set 
+Set
 .B ls
 path to
 .I ls\c
@@ -215,15 +215,15 @@ Run test script:
 .ft R
 .RE
 .PP
-Make 
+Make
 .I work_dir
-and then make an entry from the files 
+and then make an entry from the files
 .I prog.c\c
 \&,
 .I Makefile\c
 \& and
 .I remarks.md\c
-\&, saving your answers to the file 
+\&, saving your answers to the file
 .I answers
 for future updates:
 .sp
@@ -242,9 +242,9 @@ Use the answers file from the previous invocation to quickly update the entry wi
 .ft R
 .RE
 .PP
-Run program, specifying alternative path to 
+Run program, specifying alternative path to
 .B tar
-and 
+and
 .B txzchk\c
 \&:
 .sp

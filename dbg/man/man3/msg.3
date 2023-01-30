@@ -99,15 +99,15 @@ The format string is a character string in the same form as
 .B printf\c
 \&.
 As these are quite complex please refer to the
-.B printf(3)
+.BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
-When 
+When
 .B msg_output_allowed == false
 these functions will not print anything.
 .sp
-When 
+When
 .B msg_warn_silent == true
 these functions will be silenced if
 .B verbosity_level <= 0\c
@@ -132,7 +132,7 @@ functions, the argument
 is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If 
+If
 .I name
 is NULL it will be set to
 .B "((NULL name))"
@@ -144,10 +144,10 @@ where
 .B foo
 is the name of the function.
 .SS The fmt argument
-The 
+The
 .B fmt
 argument in the functions is a
-.B printf(3)
+.BR printf (3)
 style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
@@ -181,16 +181,15 @@ All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
 .PP
 For an example proper please refer to
-.B dbg(3)\c
-\&.
+.BR dbg (3).
 .SH SEE ALSO
-.BR dbg(3) \|,
-.BR printf_usage(3) \|,
-.BR warn(3) \|,
-.BR werr(3) \|,
-.BR err(3) \|,
-.BR warn_or_err(3) \|,
-.B printf(3)
+.BR dbg (3),
+.BR printf_usage (3),
+.BR warn (3),
+.BR werr (3),
+.BR err (3),
+.BR warn_or_err (3),
+.BR printf (3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

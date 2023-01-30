@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstr_test.sh 8 "28 January 2023" "jstr_test.sh" "IOCCC tools"
+.TH jstr_test.sh 8 "29 January 2023" "jstr_test.sh" "IOCCC tools"
 .SH NAME
 .B jstr_test.sh
 \- JSON string encoding and decoding tests
@@ -27,9 +27,9 @@
 .IR topdir \|]
 .SH DESCRIPTION
 Using
-.B jstrencode(1)
+.BR jstrencode (1)
 and
-.B jstrdecode(1)
+.BR jstrdecode (1)
 the
 .B jstr_test.sh
 script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
@@ -43,20 +43,20 @@ print help and exit.
 print version and exit.
 .TP
 .BI \-v\  level
-set verbosity level to 
+set verbosity level to
 .I level\c
 \&.
 .TP
 .BI \-e\  jstrencode
 set path of
-.B jstrencode(1)
+.BR jstrencode (1)
 tool to
 .I jstrencode\c
 \&.
 .TP
 .BI \-d\  jstrdecode
 set path of
-.B jstrdecode(1)
+.BR jstrdecode (1)
 tool to
 .I jstrdecode\c
 \&.
@@ -68,7 +68,7 @@ The
 directory must contain the source file
 .I mkiocccentry.c\c
 \&.
-By default, the source file 
+By default, the source file
 .I mkiocccentry.c
 is searched for in the current directory, and then the parent of current directory.
 .sp 1
@@ -85,7 +85,7 @@ is not used on the command line, and the source file
 .I mkiocccentry.c
 is not found in the current directory nor the parent of current directory, then this command exits as if there was a command line error.
 .sp 1
-Once the 
+Once the
 .B topdir
 directory is established, this command moves to that directory.
 .SH EXIT STATUS
@@ -114,11 +114,11 @@ test #3 failed
 .TQ
 8
 missing or non\-executable
-.B jstrencode(1)
+.BR jstrencode (1)
 .TQ
 9
 missing or non\-executable
-.B jstrdecode(1)
+.BR jstrdecode (1)
 .TQ
 >=10
 internal error
@@ -126,9 +126,9 @@ internal error
 .I jstr_test.out
 .RS
 This temporary file holds the output of an encoded JSON string (via
-.B jstrencode(1)\c
-\&) decoded by
-.B jstrdecode(1)
+.BR jstrencode (1))
+decoded by
+.BR jstrdecode (1)
 which, along with
 .I jstr_test2.out\c
 \&, is used to to verify that encoding and decoding work.
@@ -141,9 +141,9 @@ When the script ends this file should be deleted but the script attempts to dele
 .I jstr_test2.out
 .RS
 This temporary file holds the output of an encoded JSON string (via
-.B jstrencode(1)\c
-\&) decoded by
-.B jstrdecode(1)
+.BR jstrencode (1))
+decoded by
+.BR jstrdecode (1)
 which, along with
 .I jstr_test.out\c
 \&, is used to to verify that encoding and decoding work.
@@ -164,10 +164,7 @@ It can be found at
 .I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
 \&.
 .SH SEE ALSO
-.B jparse(1)\c
-\&,
-.B jparse(3)\c
-\&,
-.B jstrencode(1)\c
-\&,
-.B jstrdecode(1)
+.BR jparse (1),
+.BR jparse (3),
+.BR jstrencode (1),
+.BR jstrdecode (1)

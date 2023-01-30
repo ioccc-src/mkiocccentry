@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH vermod 8 "28 January 2023" "vermod" "IOCCC tools"
+.TH vermod 8 "29 January 2023" "vermod" "IOCCC tools"
 .SH NAME
 .B vermod
 \- modify version strings (and others) under ./test_JSON/
@@ -34,7 +34,7 @@
 .SH DESCRIPTION
 .B vermod.sh
 uses
-.B rpl(1)
+.BR rpl (1)
 to update strings from an old value to a new value under ./test_JSON (by default).
 This is needed for when a version of a tool changes so that the test suite does not fail.
 .SH OPTIONS
@@ -121,7 +121,7 @@ Default directory of good and bad subdirectories each respectively with good and
 This script is only needed when a version of a tool is changed by a developer of the repo.
 .PP
 The tool
-.B sed(1)
+.BR sed (1)
 and various others could also be used to do this but this script is generally preferred because it can verify that the version change is actually correct.
 .SH EXAMPLES
 .PP
@@ -147,4 +147,4 @@ After verifying that the above command is correct, run the script again to actua
 .ft R
 .RE
 .SH SEE ALSO
-.B rpl(1)
+.BR rpl (1)

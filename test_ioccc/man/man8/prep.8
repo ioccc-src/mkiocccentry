@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH prep.sh 8 "28 January 2023" "prep.sh" "IOCCC tools"
+.TH prep.sh 8 "29 January 2023" "prep.sh" "IOCCC tools"
 .SH NAME
 .B prep.sh
 \- prepare for a release - actions for make prep and make release
@@ -56,7 +56,7 @@ is used instead of
 .TP
 .BI \-m\  make
 Specify path to
-.B make(1)
+.BR make (1)
 command.
 .TP
 .BI \-M\  Makefile
@@ -134,7 +134,7 @@ This script is only needed for the repo maintainers prior to a commit and pull r
 .PP
 Run the script in a way that aborts on the first error including the inability to use
 .B bison
-or 
+or
 .B flex\c
 \&:
 .sp
@@ -152,18 +152,11 @@ Run the script in a more lenient way, specifying a log file to reduce output on 
 .ft R
 .RE
 .SH SEE ALSO
-.B bug_report(1)\c
-\&,
-.B iocccsize_test(8)\c
-\&,
-.B mkiocccentry_test(8)\c
-\&,
-.B jstr_test(8)\c
-\&,
-.B jnum_chk(8)\c
-\&,
-.B jparse_test(8)\c
-\&,
-.B txzchk_test(8)\c
-\&,
-.B chkentry_test(8)\c
+.BR bug_report (1),
+.BR iocccsize_test (8),
+.BR mkiocccentry_test (8),
+.BR jstr_test (8),
+.BR jnum_chk (8),
+.BR jparse_test (8),
+.BR txzchk_test (8),
+.BR chkentry_test (8)

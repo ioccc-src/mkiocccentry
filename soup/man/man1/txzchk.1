@@ -49,30 +49,30 @@
 .SH DESCRIPTION
 .B txzchk
 runs a series of sanity tests on IOCCC compressed tarballs.
-It is invoked by 
-.B mkiocccentry(1)
+It is invoked by
+.BR mkiocccentry (1)
 after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if
 .B txzchk
 does not return 0,
 .B mkiocccentry
 will exit with an error.
 .PP
-The program runs 
+The program runs
 .B tar \-tJvf
-on the 
+on the
 .B tarball_path
 and parses the output of the command, performing a variety of tests on the tarball.
 As a side effect it will show the user the contents of the tarball.
-The tarball is 
+The tarball is
 .B NOT
 extracted.
 .B txzchk
-also runs the IOCCC tool 
-.B fnamchk(1)
+also runs the IOCCC tool
+.BR fnamchk (1)
 on the file, verifying that the tarball is properly named (this is also how it gets the directory name that the files should be in).
 .PP
 In other words it makes sure that
-.B mkiocccentry(1)
+.BR mkiocccentry (1)
 was used and that there was no screwing around with the resultant tarball.
 As an important part of the judging process, the Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
@@ -95,7 +95,7 @@ If you need to see warnings with this option, use
 .B \-w
 Always show warnings.
 This is used in the
-.B txzchk_test(8)
+.BR txzchk_test (8)
 script because it must see the warnings.
 .TP
 .B \-V
@@ -103,7 +103,7 @@ Show version and exit.
 .TP
 .BI \-t\  tar
 Set path to
-.B tar(1)
+.BR tar (1)
 to
 .I tar\c
 \&.
@@ -119,7 +119,7 @@ if this option is not specified.
 .TP
 .BI \-F\  fnamchk
 Set path to the IOCCC
-.B fnamchk(1)
+.BR fnamchk (1)
 tool to
 .I fnamchk\c
 \&.
@@ -131,24 +131,24 @@ If this option is not specified the program looks under the current working dire
 Assume
 .I tarball_path
 is a text file: use
-.B fopen(3)
+.BR fopen (3)
 and
-.B fclose(3)
+.BR fclose (3)
 instead of
-.B popen(3)
+.BR popen (3)
 and
-.B pclose(3)
+.BR pclose (3)
 and don't require
 .B tar
 program.
 .TP
 .BI \-E\  ext
 Change extension for
-.B fnamchk(1)
+.BR fnamchk (1)
 to validate (don't include the dot).
 This is used in conjunction with
 .B \-T
-above for 
+above for
 .B TESTING
 purposes only!
 .SH EXIT STATUS
@@ -172,7 +172,7 @@ invalid command line, invalid option or option missing an argument
 internal error has occurred or unknown tar listing format has been encountered
 .SH NOTES
 .PP
-This tool was written by Cody Boone Ferguson for the 
+This tool was written by Cody Boone Ferguson for the
 .B IOCCC Judges
 in early 2022 for the
 .B IOCCCMOCK\c
@@ -181,17 +181,15 @@ in early 2022 for the
 and all future
 .B IOCCC
 competitions after discussing the requirements with Landon Curt Noll, one of the IOCCC Judges.
-For more history see 
-.B txzchk(1)\c
-\&,
-.B CHANGES.md\
-\&,
-.B README.md\c
-\&, the GitHub git log and of course reading the source itself.
+For more history see
+.BR txzchk (1),
+.BR CHANGES.md ,
+.BR README.md ,
+the GitHub git log and of course reading the source itself.
 .PP
 No pitman or coal mines were harmed in the making of this tool and neither were any pine trees or birch trees.
 Whether the fact no coal mines were harmed is a good or bad thing might be debatable but nevertheless none were harmed. :\-)
-More importantly, no tar pits \- including the 
+More importantly, no tar pits \- including the
 .B La Brea Tar Pits
 \- were disturbed in the making of this tool. :\-)
 .SH BUGS
@@ -205,12 +203,12 @@ You can find it at
 .br
 .I <https://github.com/ioccc\-src/mkiocccentry/issues>\c
 \&.
-If you would please mention 
+If you would please mention
 .B @xexyl
 as part of the report that would be appreciated.
 .SH EXAMPLES
 .PP
-Run the program on the tarball 
+Run the program on the tarball
 .I entry.test\-1.1644094311.txz\c
 \&:
 .sp
@@ -220,9 +218,9 @@ Run the program on the tarball
 .ft R
 .RE
 .PP
-Run the program on the tarball 
+Run the program on the tarball
 .I entry.test\-1.1644094311.txz\c
-\&, specifying an alternate path to 
+\&, specifying an alternate path to
 .B tar
 and
 .B fnamchk\c
@@ -236,7 +234,7 @@ and
 .PP
 Run the program on the file
 .I entry.test\-1.1644094311.txt\c
-\&, specifying that it's a text file (which means 
+\&, specifying that it's a text file (which means
 .B \-T
 and
 .B \-E
@@ -250,17 +248,15 @@ have to be used):
 .SH SEE ALSO
 .PP
 The IOCCC tools
-.B txzchk(1)\c
+.BR txzchk (1),
 \&, the test suite
-.B txzchk_test(8)\c
-\&,
-.B fnamchk(1)
+.BR txzchk_test (8),
+.BR fnamchk (1)
 and
-.B mkiocccentry(1)\c
-\&.
+.BR mkiocccentry (1).
 .br
 The tarry
-.B tar(1)
+.BR tar (1)
 command itself.
 .br
 And don't forget the very tarry

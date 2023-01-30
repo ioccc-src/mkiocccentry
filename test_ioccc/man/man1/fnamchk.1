@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH fnamchk 1 "28 January 2023" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "29 January 2023" "fnamchk" "IOCCC tools"
 .SH NAME
 .B fnamchk
 \- IOCCC compressed tarball filename sanity check tool
@@ -30,15 +30,15 @@
 .B fnamchk
 verifies that an IOCCC compressed tarball is properly named.
 .PP
-The program validates that the filename is correct, in the form of 
+The program validates that the filename is correct, in the form of
 .B entry.contest_ID\-entry_num.timestamp.ext
 where
 .B contest_ID
 is either
 .B test
-or a valid UUID (see below), 
+or a valid UUID (see below),
 .B entry_number
-is an integer from 
+is an integer from
 .B 0
 through
 .B MAX_ENTRY_NUM
@@ -50,11 +50,11 @@ is an integer of the number of seconds since the epoch and
 .B ext
 is either
 .B txz
-or the user supplied extension from the 
+or the user supplied extension from the
 .B \-E
 option.
 .PP
-More specifically, the filename 
+More specifically, the filename
 .B MUST\c
 \&:
 .IP \(bu 4
@@ -81,10 +81,10 @@ Followed by "\fBtxz\fP" (or the user supplied extension from option
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
-It is indirectly invoked via the 
-.B txzchk(1)
+It is indirectly invoked via the
+.BR txzchk (1)
 utility which is called by
-.B mkiocccentry(1)
+.BR mkiocccentry (1)
 and it will also be directly executed by the Judges during the judging process of the contests.
 .SH OPTIONS
 .TP
@@ -149,8 +149,7 @@ validation failed (see error message for details)
 .SH NOTES
 If there is an error in validation an appropriate error message is printed prior to exiting.
 Otherwise the program will output the name of the required directory in the tarball (this is necessary for
-.B txzchk(1)\c
-\&).
+.BR txzchk (1)),
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
@@ -163,7 +162,7 @@ If you have an issue with the tool you can open an issue at
 .PP
 For the examples below assume that the
 .B MIN_TIMESTAMP
-is 
+is
 .B (time_t)1662145368\c
 \&.
 .PP
@@ -201,7 +200,7 @@ option is specified:
 .ft R
 .RE
 .PP
-Run the program on the filename 
+Run the program on the filename
 .I entry.test.0.1662145368.txz
 with the option
 .I \-t
@@ -219,11 +218,11 @@ Run the program on the file
 .I entry.test.0.1662145368.txt
 with the option
 .B \-t\c
-\&, changing the extension to 
+\&, changing the extension to
 .I txt
-via the 
+via the
 .B \-E
-option, which will pass because test mode is specified with a test filename, the extension matches the 
+option, which will pass because test mode is specified with a test filename, the extension matches the
 .B \-E
 option and the timestamp is correct:
 .sp
@@ -265,4 +264,4 @@ without specifying test\-mode or normal mode which will also pass because the fi
 .sp
 The above will print "\fBtest\-0\fP".
 .SH SEE ALSO
-.BR txzchk(1)
+.BR txzchk (1)

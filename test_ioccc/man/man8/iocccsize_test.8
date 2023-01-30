@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH iocccsize_test.sh 8 "28 January 2023" "iocccsize_test" "IOCCC tools"
+.TH iocccsize_test.sh 8 "29 January 2023" "iocccsize_test" "IOCCC tools"
 .SH NAME
 .B iocccsize_test.sh
 \- test iocccsize tool
@@ -31,8 +31,8 @@
 .IR iocccsize_args \|]
 .SH DESCRIPTION
 .B iocccsize_test.sh
-runs a series of tests on the 
-.B iocccsize(1)
+runs a series of tests on the
+.BR iocccsize (1)
 tool, verifying that it is functioning properly.
 .SH OPTIONS
 .TP
@@ -59,12 +59,12 @@ Set iocccsize path to
 (def: ./iocccsize).
 .TP
 .BI \-w\  work_dir
-Set working directory that is removed and rebuilt during the test of the iocccsize tool (def: 
+Set working directory that is removed and rebuilt during the test of the iocccsize tool (def:
 .I ./test_iocccsize\c
 \&).
 .TP
 .BI \-l\  limit.sh
-Set path to an executable shell script with the correct specific limits extracted from various files (def: 
+Set path to an executable shell script with the correct specific limits extracted from various files (def:
 .I ./soup/limit_ioccc.sh\c
 \&).
 .RS
@@ -76,7 +76,7 @@ Specifying
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
-The 
+The
 .B topdir
 directory must contain the source file
 .I mkiocccentry.c\c
@@ -135,7 +135,7 @@ internal error
 .SH BUGS
 .PP
 The matched keyword count from
-.B iocccsize(1)
+.BR iocccsize (1)
 is currently ignored by the IOCCC as well as this test suite.
 .SH EXAMPLES
 Run the
@@ -166,5 +166,4 @@ You may also wish to try the test script in even more verbose mode:
 .ft R
 .RE
 .SH SEE ALSO
-.B iocccsize(1)
-
+.BR iocccsize (1)

@@ -73,7 +73,7 @@ The
 and
 .I start_elm_count
 specify a fixed number of elements to expand by when allocating and the starting number of elements to allocate, respectively.
-If 
+If
 .I zeroize
 is true the newly allocated chunks are zeroed.
 The function always allocates one more chunk than requested to serve as a guard chunk.
@@ -110,14 +110,14 @@ The
 .I count_of_elements_to_add
 is the number of elements to add to the dynamic array.
 If after adding the values of the array, all allocated values are used, the array will grow.
-If the address of the array of elements moved during 
+If the address of the array of elements moved during
 .B realloc()
 the function returns true.
 Otherwise it returns false.
 .sp
 The function
 .B dyn_array_concat_array()
-concatenates the 
+concatenates the
 .I other
 dynamic array to the
 .I array
@@ -131,10 +131,10 @@ If after adding the values of the array, all allocated values are used, the dyna
 .sp
 The function
 .B dyn_array_seek()
-sets the elements in use on the dynamic array 
+sets the elements in use on the dynamic array
 .I array\c
 \&.
-The 
+The
 .I offset
 is the offset in elements from the
 .I whence
@@ -160,7 +160,7 @@ as described below.
 .PP
 The function
 .B dyn_array_clear()
-will clear any element in use in the dynamic array 
+will clear any element in use in the dynamic array
 .I array
 (if the
 .I zeroize
@@ -177,7 +177,7 @@ frees the contents of the dynamic array
 \&.
 If
 .I array->zeroize
-is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via 
+is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via
 .B memset()\c
 \&) first.
 The function does not free the
@@ -225,7 +225,7 @@ returns the number of elements available (allocated but not in use) of the dynam
 \&.
 .TP
 .B dyn_array_rewind()
-rewinds the dynamic array 
+rewinds the dynamic array
 .I array
 back to zero elements.
 .SS The struct dyn_array

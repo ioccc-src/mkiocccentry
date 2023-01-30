@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH hostchk.sh 8 "28 January 2023" "hostchk.sh" "IOCCC tools"
+.TH hostchk.sh 8 "29 January 2023" "hostchk.sh" "IOCCC tools"
 .SH NAME
 .B hostchk.sh
 \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
@@ -31,8 +31,8 @@
 .SH DESCRIPTION
 .B hostchk.sh
 runs a series of checks to determine if you will be able to create an acceptable IOCCC entry tarball.
-If any step fails we recommend you use the 
-.B bug_report(1)
+If any step fails we recommend you use the
+.BR bug_report (1)
 script to create a log file for filing a bug.
 .SH OPTIONS
 .TP
@@ -48,7 +48,7 @@ Set verbosity level to
 \&.
 .TP
 .BI \-D\  level
-Set verbosity level for the tests the script runs to 
+Set verbosity level for the tests the script runs to
 .I level\c
 \&.
 .TP
@@ -58,24 +58,24 @@ Set path to the compiler (cc) to
 \&.
 .TP
 .BI \-w\  work_dir
-Use a working directory of 
+Use a working directory of
 .I work_dir\c
 \&.
 By default a temporary working directory is used.
-The 
+The
 .I work_dir
 must not exist.
 .TP
 .B \-f
 Fast compile mode.
 Instead of testing one required system header file at a time it does it all at once.
-The default is not to use 
+The default is not to use
 .B \-f
 because it will give more information to help identify the problem (and also let you know which files work).
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
-The 
+The
 .B topdir
 directory must contain the source file
 .I mkiocccentry.c\c
@@ -121,17 +121,17 @@ internal error or a test failed
 Even if the script exits 0 it does not necessarily mean there is no problem.
 If you feel there is a problem that was not detected you may still open an issue on the GitHub page (or email the Judges).
 In that case you should use
-.B bug_report(1)
+.BR bug_report (1)
 and include the log that it creates in your report.
 .PP
 The output can seem redundant if it fails and
-.B hostchk(1)
+.BR hostchk (1)
 was run via the Makefile since it will issue a warning that will tell you to use
-.B hostchk(1)
+.BR hostchk (1)
 and also tell you to use
-.B bug_report(1)
+.BR bug_report (1)
 which itself will tell you to use
-.B hostchk(1)
+.BR hostchk (1)
 which will trigger the warning again.
 Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :\-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
 But now that you're in the loop it shouldn't even matter! :\-)
@@ -142,14 +142,14 @@ No bugs are known except that a human wrote it. :\-)
 Please remember that just because the script reports issues does not mean that there's a bug with the script itself.
 Instead it probably is a problem with one of the tools on your system which the script detected and is reporting.
 If that is the case please do use
-.B bug_report(1)
+.BR bug_report (1)
 and attach the log file it creates in your report.
 .PP
 Nevertheless, if you feel there is an issue with this tool you may open an issue at the GitHub issues page.
 Once again though, depending on the issue it might be a good idea to run
-.B bug_report(1)
+.BR bug_report (1)
 and attach the log file it creates.
-.B bug_report(1)
+.BR bug_report (1)
 will tell you how and where to report bugs as well.
 .SH EXAMPLES
 .PP
@@ -161,4 +161,4 @@ Run script in fast mode:
 .ft R
 .RE
 .SH SEE ALSO
-.B bug_report(1)
+.BR bug_report (1)

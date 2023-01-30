@@ -79,7 +79,7 @@ value in the case the function returns.
 .SS Alternative output FILE * stream
 The functions that do not take a
 .B FILE *
-or a 
+or a
 .B char *
 write to
 .B stderr\c
@@ -98,7 +98,7 @@ and
 .BR snwerrp()
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
-They do not do anything if passed a NULL pointer or 
+They do not do anything if passed a NULL pointer or
 .B size <= 1\c
 \&.
 .SS Variadic versions
@@ -112,17 +112,17 @@ The functions
 and
 .BR vsnwerrp()
 are equivalent to the functions
-.BR err(3) \|,
-.BR ferr(3) \|,
-.BR errp(3) \|,
-.BR ferrp(3) \|,
-.BR werr(3) \|,
-.BR fwerr(3) \|,
-.BR snwerr(3) \|,
-.BR werrp(3) \|,
-.BR fwerrp(3)
+.BR err (3),
+.BR ferr (3),
+.BR errp (3),
+.BR ferrp (3),
+.BR werr (3),
+.BR fwerr (3),
+.BR snwerr (3),
+.BR werrp (3),
+.BR fwerrp (3)
 and
-.BR snwerrp(3)
+.BR snwerrp (3)
 except that they are called with a
 .I va_list
 instead of a variable number of arguments.
@@ -131,14 +131,14 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.B printf(3)\c
+.BR printf (3).
 \&.
 As these are quite complex please refer to the
-.B printf(3)
+.BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
-When 
+When
 .B err_output_allowed == false
 these functions will not print anything.
 .SS Version string
@@ -154,14 +154,14 @@ library.
 These functions return void.
 .SH NOTES
 .SS Variadic arguments
-In the 
+In the
 .I va_list
 functions, the argument
 .I ap
 is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If 
+If
 .I name
 is NULL it will be set to
 .B "((NULL name))"
@@ -169,20 +169,20 @@ and the following warning, preceded by a newline, will be issued:
 .sp
 .B "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
-where 
+where
 .B foo
 is the name of the function.
 .SS The fmt argument
-The 
+The
 .I fmt
 argument in the functions is a
-.B printf(3)
+.BR printf (3)
 style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
-If 
+If
 .I fmt
 is NULL it will be set to
 .B "((NULL fmt))"
@@ -190,7 +190,7 @@ and the following warning, preceded by a newline, will be issued:
 .sp
 .B "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
 .sp
-where 
+where
 .B foo
 is the name of the function.
 .sp
@@ -210,16 +210,15 @@ All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
 .PP
 For an example proper please refer to
-.B dbg(3)\c
-\&.
+.BR dbg (3).
 .SH SEE ALSO
-.BR dbg(3) \|,
-.BR msg(3) \|,
-.BR printf_usage(3) \|,
-.BR warn(3) \|,
-.BR err(3) \|,
-.BR warn_or_err(3) \|,
-.B printf(3)
+.BR dbg (3),
+.BR msg (3),
+.BR printf_usage (3),
+.BR warn (3),
+.BR err (3),
+.BR warn_or_err (3),
+.BR printf (3).
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

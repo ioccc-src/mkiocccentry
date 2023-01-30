@@ -41,7 +41,7 @@ Validates the
 and/or
 .I .auth.json
 of an IOCCC entry.
-In the two argument form, 
+In the two argument form,
 .I info.JSON
 is the path of an IOCCC entry information JSON file, and
 .I auth.JSON
@@ -56,11 +56,11 @@ If
 is
 .I .
 (dot), then this file is ignored.
-In the one argument form, 
+In the one argument form,
 .B entry_dir
 is assumed to be a directory containing both
 .I .info.json
-and 
+and
 .I .auth.json
 files.
 The one argument form is equivalent to calling the command with two arguments:
@@ -70,7 +70,7 @@ and
 \&.
 .PP
 As a sanity check, the
-.B mkiocccentry(1)
+.BR mkiocccentry (1)
 program executes
 .B chkentry
 AFTER both the
@@ -78,10 +78,10 @@ AFTER both the
 and
 .I .auth.json
 files have been created and before the compressed tarball is formed.
-If 
+If
 .B mkiocccentry
 sees a 0 exit status, then all is well.
-For a non\-zero exit code, the tool aborts because any problems detected by 
+For a non\-zero exit code, the tool aborts because any problems detected by
 .B chkentry
 based on what
 .B mkiocccentry
@@ -170,4 +170,7 @@ Run the tool on just the IOCCC entry author JSON file
 .RE
 .SH SEE ALSO
 .PP
-\fBchkentry_test(8)\fP, \fBmkiocccentry(1)\fP and \fBjparse(1)\fP
+.BR chkentry_test (8)
+.BR mkiocccentry (1)
+and
+.BR jparse (1)

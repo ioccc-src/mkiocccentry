@@ -28,9 +28,9 @@
 .\"
 .TH txzchk_test 8 "29 January 2023" "txzchk_test" "IOCCC tools"
 .SH NAME
-.B txzchk_test.sh 
+.B txzchk_test.sh
 \- test suite for
-.B txzchk(1)
+.BR txzchk (1)
 .SH SYNOPSIS
 .B txzchk_test.sh
 .RB [\| \-h \|]
@@ -55,14 +55,13 @@ runs
 in text file mode on pseudo\-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
 For the bad files it checks that the issues reported are the same as expected.
 The script enforces that bad files have an associated error file to compare with the errors reported by
-.B txzchk(1)
+.BR txzchk (1)
 so that this can be done without a problem.
 If an error file is missing it is an error.
 Conversely if a good file has an error file it is also an error.
 .PP
 It also runs a simple test to determine if the system supports the required options for
-.B tar(1)\c
-\&.
+.BR tar (1).
 Specifically it must support
 .B \-J
 and the
@@ -89,14 +88,14 @@ for the script.
 .BI \-t\  txzchk
 Set
 .B txzchk
-path to 
+path to
 .I txzchk\c
 \&.
 .TP
 .BI \-T\  tar
-Set 
+Set
 .B tar
-path to 
+path to
 .I tar\c
 \&.
 .TP
@@ -112,7 +111,7 @@ uses
 to test if the tarball is validly named and if the files listed are in the correct directory.
 .TP
 .BI \-d\  txzchk_tree
-Set path to the directory with the expected subdirectories 
+Set path to the directory with the expected subdirectories
 .I good
 and
 .I bad
@@ -122,12 +121,12 @@ each containing text files of good and bad pseudo\-tarballs, to
 As already noted, the
 .I bad
 subdirectory also has error files to compare against the output of
-.B txzchk(1)\c
-\&, in order to make sure that the failure is the correct failure.
+.BR txzchk (1),
+in order to make sure that the failure is the correct failure.
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
-The 
+The
 .B topdir
 directory must contain the source file
 .I mkiocccentry.c\c
@@ -201,7 +200,7 @@ When a new bad test file is added one has to update the error files. This can be
 .PP
 which is also documented in the readme for this script.
 Please note that this will overwrite all of the error files so one has to be careful that the errors are actually correct: if one were to have an outdated version of
-.B txzchk(1)
+.BR txzchk (1)
 or there's some other problem (for example, an unknown tar listing output that's not specifically being tested), for two examples, then one could inadvertently make the script think all is okay when it's not okay at all!
 .PP
 The script
@@ -210,31 +209,29 @@ runs this script.
 .SH BUGS
 .PP
 The error files for the files under the bad subdirectory are not flexible in content because the script checks for an exact match between the output of
-.B txzchk(1)
+.BR txzchk (1)
 and the error files.
 This is why the script will always pass to
-.B txzchk(1)
-the options 
+.BR txzchk (1)
+the options
 .B \-w \-v 0 \-q\c
 \&.
 As such the verbose option to the script really is only for the script.
 Perhaps error codes should be used instead but since
-.B txzchk(1)
+.BR txzchk (1)
 is supposed to check all issues this would have to be done differently from the rest of the repo.
 Additionally if this was done it would make it necessary to have only one issue in each test file which is not a good idea as it's easier to miss feathered tarballs by the simple fact that one has to be sure to have enough test files (there are a lot of checks that
-.B txzchk(1)
+.BR txzchk (1)
 performs!).
 .PP
 Perhaps there should be more tests done with the exit code of
-.B txzchk(1)
+.BR txzchk (1)
 but the script is pretty thorough otherwise.
 It is hoped that this will make the script harder to break than it is to have feathers in tar but if you can break it please report an issue on the GitHub issues page.
 See
-.B txzchk(1)
+.BR txzchk (1)
 for more details on this.
 .SH SEE ALSO
-.B txzchk(1)\c
-\&,
-.B txzchk_test(8)\c
-\&,
-.B fnamchk(1)
+.BR txzchk (1),
+.BR txzchk_test (8),
+.BR fnamchk (1)

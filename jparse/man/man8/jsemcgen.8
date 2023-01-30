@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "28 January 2023" "jsemcgen.sh" "jparse tools"
+.TH jsemcgen.sh 8 "29 January 2023" "jsemcgen.sh" "jparse tools"
 .SH NAME
 .B jsemcgen.sh
-\- generate JSON semantics table via the 
-.B jsemtblgen(8)
+\- generate JSON semantics table via the
+.BR jsemtblgen (8)
 tool
 .SH SYNOPSIS
 .B jsemcgen.sh
@@ -59,31 +59,31 @@ tool
 .I out
 .SH DESCRIPTION
 This tool is a wrapper to the
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 tool which itself creates JSON semantics tables.
 JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
 .PP
-In general, a JSON semantics table is an array of 
+In general, a JSON semantics table is an array of
 .B struct json_sem
 that can be used to drive checks on the semantics of valid JSON.
 This can be done for any JSON file.
 .PP
-The 
+The
 .I file.json
 file is expected to be a valid JSON file used to generate the initial JSON semantics table.
 .sp
-The 
+The
 .I head
 file is a file add to the beginning of the
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 output (before patched
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 output).
 .sp
 The
 .I patch
 file is a patch file to apply to the output of
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 with
 .I head
 and
@@ -93,15 +93,15 @@ and
 The
 .I tail
 file is a file to add to the end of the
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 output (after patching the
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 output).
 .sp
-The 
+The
 .I out
-argument is the 
-.B jsemtblgen(8)
+argument is the
+.BR jsemtblgen (8)
 output with possible head, tail and patch applied.
 .PP
 If you do not wish to specify
@@ -145,7 +145,7 @@ set name of the semantics table to
 .I name\c
 \&.
 .TP
-.BI \-D\  def_func 
+.BI \-D\  def_func
 validate with
 .I def_func()
 unless overridden by another flag.
@@ -168,49 +168,49 @@ overrides any use of
 .RE
 .TP
 .BI \-1\  func
-validate 
+validate
 .B JTYPE_NUMBER
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-S\  func
-validate 
+validate
 .B JTYPE_STRING
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-B\  func
-validate 
+validate
 .B JTYPE_BOOL
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-0\  func
-validate 
+validate
 .B JTYPE_NULL
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-M\  func
-validate 
+validate
 .B JTYPE_MEMBER
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-O\  func
-validate 
+validate
 .B JTYPE_OBJECT
 JSON nodes with
 .I func()\c
 \&.
 .TP
 .BI \-A\  func
-validate 
+validate
 .B JTYPE_ARRAY
 JSON nodes with
 .I func()\c
@@ -223,7 +223,7 @@ validate nodes with unknown types with
 .TP
 .BI \-j\  jsemtblgen
 set path to
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 to
 .I jsemtblgen\c
 \&.
@@ -250,7 +250,7 @@ and version string printed
 command line error
 .TQ
 4
-.I 
+.I
 jsemtblgen
 or
 .I patch_tool
@@ -271,7 +271,7 @@ is not a readable file
 internal error
 .SH NOTES
 .PP
-The JSON parser 
+The JSON parser
 .B jparse
 was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
@@ -281,6 +281,5 @@ It can be found at
 .I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
 \&.
 .SH SEE ALSO
-.B jsemtblgen(8)\c
-\&,
-.B jparse(3)
+.BR jsemtblgen (8),
+.BR jparse (3)

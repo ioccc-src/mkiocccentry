@@ -52,7 +52,7 @@ and
 except that they are called with a
 .I va_list
 instead of a variable number of arguments.
-The state of the 
+The state of the
 .I va_list
 is not modified by these functions.
 .SS Format of the fmt string
@@ -60,17 +60,17 @@ The format string is a character string in the same form as
 .B printf\c
 \&.
 As these are quite complex please refer to the
-.B printf(3)
+.BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
-When 
+When
 .B usage_output_allowed == false
 these functions will not print anything.
 .SH RETURN VALUE
 .PP
 These functions return void except that the functions will call
-.B exit(3)
+.BR exit (3)
 with the exit code provided to the function if
 .B exitcode
 is >= 0.
@@ -91,7 +91,7 @@ functions, the argument
 is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
-If 
+If
 .I name
 is NULL it will be set to
 .B "((NULL name))"
@@ -99,20 +99,20 @@ and the following warning, preceded by a newline, will be issued:
 .sp
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
-where 
+where
 .B foo
 is the name of the function.
 .SS The fmt argument
-The 
+The
 .I fmt
 argument in the functions is a
-.B printf(3)
+.BR printf (3)
 style format.
 If the format requires arguments, then such arguments may be given after the fmt.
 For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
-If 
+If
 .I fmt
 is NULL it will be set to
 .B "((NULL fmt))"
@@ -124,9 +124,9 @@ where
 .B foo
 is the name of the function.
 .sp
-When the 
+When the
 .I fmt
-is NULL or contains no 
+is NULL or contains no
 .B %
 specifiers the arguments following
 .I fmt
@@ -139,16 +139,15 @@ However, a persistent problem writing to the stream (such as if the stream being
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
 For an example proper please refer to
-.B dbg(3)\c
-\&.
+.BR dbg (3).
 .SH SEE ALSO
-.BR dbg(3) \|,
-.BR msg(3) \|,
-.BR warn(3) \|,
-.BR werr(3) \|,
-.BR err(3) \|,
-.BR warn_or_err(3) \|,
-.B printf(3)
+.BR dbg (3),
+.BR msg (3),
+.BR warn (3),
+.BR werr (3),
+.BR err (3),
+.BR warn_or_err (3),
+.BR printf (3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
 Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

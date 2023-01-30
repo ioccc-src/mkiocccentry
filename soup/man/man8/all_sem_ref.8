@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH all_sem_ref.sh 8 "28 January 2023" "all_sem_ref.sh" "IOCCC tools"
+.TH all_sem_ref.sh 8 "29 January 2023" "all_sem_ref.sh" "IOCCC tools"
 .SH NAME
 .B all_sem_ref.sh
 \- form
@@ -57,13 +57,13 @@ file is a
 .I .info.json
 style header for .c semantic table files.
 .br
-The 
+The
 .I info.tail.c
 file is a
 .I .info.json
 style footer for .c semantic table files.
 .br
-The 
+The
 .I info.head.h
 file is a
 .I .info.json
@@ -81,25 +81,25 @@ file is a
 .I .auth.json
 style header for .c semantic table files.
 .br
-The 
+The
 .I auth.tail.c
 file is a
 .I .auth.json
 style footer for .c semantic table files.
 .br
-The 
+The
 .I auth.head.h
 file is a
 .I .auth.json
 style header for .h semantic table files.
 .br
-The 
+The
 .I auth.tail.h
 file is a
 .I .auth.json
 style footer for .h semantic table files.
 .PP
-The 
+The
 .I info_dir
 directory is expected to have
 .I *.json
@@ -115,7 +115,7 @@ files as
 .I .auth.json
 files.
 .br
-The 
+The
 .I ref_dir
 directory is a subdirectory under which the semantic table files are written.
 .SH OPTIONS
@@ -133,14 +133,14 @@ Show version and exit.
 .TP
 .BI \-j\  jsemtblgen
 Set path of
-.B jsemtblgen(8)
+.BR jsemtblgen (8)
 to
 .I jsemtblgen\c
 \&.
 .TP
 .BI \-J\  jsemcgen.sh
 Set path of
-.B jsemcgen(8)
+.BR jsemcgen (8)
 to
 .I jsemcgen.sh\c
 \&.
@@ -184,8 +184,7 @@ The JSON parser
 was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .PP
 This tool is needed in order to generate the JSON semantics table for
-.B chkentry(1)\c
-\&.
+.BR chkentry (1),
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
@@ -193,8 +192,6 @@ It can be found at
 .I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
 \&.
 .SH SEE ALSO
-.B jsemtblgen(8)\c
-\&,
-.B jsemcgen(8)\c
-\&,
-.B chkentry(1)
+.BR jsemtblgen (8),
+.BR jsemcgen (8),
+.BR chkentry (1)

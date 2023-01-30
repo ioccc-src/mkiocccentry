@@ -58,7 +58,7 @@ in file
 \&.
 If
 .I is_valid
-is not NULL, it will set 
+is not NULL, it will set
 .I *is_valid
 to true prior to returning the tree but it is an error if it is NULL.
 The
@@ -69,7 +69,7 @@ The function will scan up to
 bytes so that as long as one knows where in the string the JSON is, they can parse a document with other kinds of data.
 If
 .I filename
-is NULL then it will read from 
+is NULL then it will read from
 .B stdin\c
 \& which can also be done by passing in \fI"\-"\fP.
 The function will return the parsed JSON as a tree of type
@@ -147,7 +147,7 @@ is the name you wish to provide to the function, whether it be your application 
 The
 .I fmt
 is a
-.B printf(3)
+.BR printf (3)
 style format argument.
 .SS The json struct
 .PP
@@ -222,8 +222,7 @@ This JSON parser was written as a collaboration between Cody Boone Ferguson and 
 and beyond.
 .PP
 For more detailed history that goes beyond this humble man page we recommend you check
-.B jparse(1)\c
-\&,
+.BR jparse (1),
 .I README.md\c
 \&, and the GitHub git log as well as reading the source code (or not :\-) ).
 Understand that by source we refer to the
@@ -245,6 +244,6 @@ The testing of more than one parse at the same time is way out of scope of this 
 .sp
 If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
 .SH SEE ALSO
-.BR jparse(1) \|,
+.BR jparse (1),
 .BR README.md \|,
-.BR printf(3)
+.BR printf (3)
