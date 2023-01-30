@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH verge 8 "29 January 2023" "verge" "IOCCC tools"
+.TH verge 8 "30 January 2023" "verge" "IOCCC tools"
 .SH NAME
 .B verge
 \- determine if first version >= second version
@@ -31,25 +31,28 @@ This program requires two arguments but accepts several options.
 .SH OPTIONS
 .TP
 .B \-h
-print help and exit.
+Print help and exit.
 .TP
 .BI \-v\  level
-set verbosity level to
+Set verbosity level to
 .I level
 (def: 0).
 .TP
 .B \-V
-print version and exit.
+Print version and exit.
 .SH EXIT STATUS
 .TP
 0
-First version \(>= second version
+first version \(>= second version
 .TQ
 1
-First version < second version
+first version < second version
 .TQ
 2
-\-h and help string printed or \-V and version string printed
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
 .TQ
 3
 command line error
@@ -61,13 +64,13 @@ first or second version string is an invalid version
 internal error
 .SH NOTES
 This tool is used in the
-.B run_flex.sh
+.BR run_flex.sh (8)
 and
-.B run_bison.sh
+.BR run_bison.sh (8)
 scripts to determine if the locally installed flex and bison tools are recent enough to generate the JSON parser from the
-.B jparse.l
+.I jparse.l
 and
-.B jparse.y
+.I jparse.y
 files.
 .SH BUGS
 .PP

@@ -83,24 +83,25 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.BR printf .
+.BR printf (3).
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
 When
-.B warn_output_allowed == false
-warning messages will not be printed.
+.I warn_output_allowed
+is false warning messages will not be printed.
 .sp
 When
-.B err_output_allowed == false
-error messages will not be printed.
+.I err_output_allowed
+is false error messages will not be printed.
 .sp
 When
-.B msg_warn_silent == true
-warning messages will not be printed if
-.BR verbosity_level\ <=\ 0 .
+.I msg_warn_silent
+is true warning messages will not be printed if
+.IR verbosity_level
+<= 0.
 .SS Version string
 The string
 .BR dbg_version ,
@@ -112,7 +113,7 @@ library.
 .SH RETURN VALUE
 .PP
 These functions do not return if
-.B warning == false
+.B warning is false
 in the same manner as the functions
 .BR err() \|,
 .BR verr() \|,
@@ -150,8 +151,11 @@ The
 argument in the functions is a
 .BR printf (3)
 style format.
-If the format requires arguments, then such arguments may be given after the fmt.
-For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If

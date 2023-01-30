@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH printf_usage 3  "29 January 2023" "printf_usage"
+.TH printf_usage 3  "30 January 2023" "printf_usage"
 .SH NAME
 .BR printf_usage() \|,
 .BR vprintf_usage() \|,
@@ -56,22 +56,15 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.BR printf .
+.BR printf (3).
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
 When
-.B usage_output_allowed == false
-these functions will not print anything.
-.SH RETURN VALUE
-.PP
-These functions return void except that the functions will call
-.BR exit (3)
-with the exit code provided to the function if
-.B exitcode
-is >= 0.
+.I usage_output_allowed
+is false these functions will not print anything.
 .SS Version string
 The string
 .BR dbg_version ,
@@ -80,6 +73,13 @@ which points to
 is the current version of the
 .B dbg
 library.
+.SH RETURN VALUE
+.PP
+These functions return void except that the functions will call
+.BR exit (3)
+with the exit code provided to the function if
+.I exitcode
+is >= 0.
 .SH NOTES
 .SS Variadic arguments
 In the
@@ -106,8 +106,11 @@ The
 argument in the functions is a
 .BR printf (3)
 style format.
-If the format requires arguments, then such arguments may be given after the fmt.
-For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If

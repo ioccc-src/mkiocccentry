@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_flex.sh 8 "29 January 2023" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 8 "30 January 2023" "run_flex.sh" "IOCCC tools"
 .SH NAME
 .B run_flex.sh
 \- run
-.B flex
+.BR flex (1)
 to generate C code from a
 .I *.l
 file or use backup files if error
@@ -43,7 +43,7 @@ file or use backup files if error
 .SH DESCRIPTION
 .B run_flex.sh
 attempts to find a recent enough version of
-.B flex
+.BR flex (1)
 (minimum version defined in
 .I run_flex.sh\c
 \&) and use it to generate code from the
@@ -53,7 +53,7 @@ The default prefix is
 .I jparse
 but this script can be used for other scanners as well.
 If a recent enough version is not found or
-.B flex
+.BR flex (1)
 encounters an error (syntax error or anything else) and the
 .B \-o
 option is not specified, it attempts to use the backup files
@@ -63,49 +63,50 @@ and
 .SH OPTIONS
 .TP
 .B \-h
-print help and exit.
+Print help and exit.
 .TP
 .B \-V
-print version and exit.
+Print version and exit.
 .TP
 .BI \-v\  level
-set verbosity level to
-.IR level .
+Set verbosity level to
+.IR level
+(def: 0).
 .TP
 .B \-o
-do
+Do
 .B NOT
 use backup files.
 If
-.B flex
+.BR flex (1)
 cannot be used or fails to generate the files the script will fail.
 .TP
 .BI \-f\  flex
-set
-.B flex
+Set
+.BR flex (1)
 basename to
 .IR flex .
 .TP
 .BI \-g\  verge
-set path to the
-.B verge
+Set path to the
+.BR verge (1)
 tool to
 .IR verge .
 This is used to determine if the
-.B flex
+.BR flex (1)
 tool is recent enough.
 .TP
 .BI \-p\  prefix
-set prefix of files to use to
+Set prefix of files to use to
 .IR prefix .
 The
-.B flex
+.BR flex (1)
 input file will be
 .IR prefix.l .
 If the
 .B \-o
 option was not used and
-.B flex
+.BR flex (1)
 cannot be used or fails then the backup files
 .I prefix.ref.c
 and
@@ -113,24 +114,26 @@ and
 will be used.
 .TP
 .BI \-s\  sorry.h
-set path of file to prepend to the C output to
+Set path of file to prepend to the C output to
 .IR sorry.h .
 .TP
 .B \-S
-suppress prepending apology to generated C output files.
+Suppress prepending apology to generated C output files.
 .TP
 .BI \-F\  flex_dir
-add directory
+Add directory
 .I flex_dir
 to list to search for
-.BR flex .
+.BR flex (1).
 .B \-F
 can be used more than once.
 If not used the script looks at
 .BR $PATH .
 .TP
 .BI \-D\  dir
-set directory to find the flex source file.
+Set directory to find the
+.BR flex (1)
+source file.
 Default is
 .I .
 (dot).
@@ -138,27 +141,27 @@ Default is
 The
 .I flex_flags
 are any optional flags to give to
-.B flex
+.BR flex (1)
 before the prefix.
 .SH EXIT STATUS
 .TP
 0
-.B flex
+.BR flex (1)
 output files formed or backup files used instead
 .TQ
 1
-.B flex
+.BR flex (1)
 not found or too old and
 .B \-o
 used
 .TQ
 2
 good
-.B flex
+.BR flex (1)
 found and ran but failed to form proper output files
 .TQ
 3
-.B flex
+.BR flex (1)
 input file missing or not readable: backup files had to be used
 .TQ
 4
@@ -166,7 +169,7 @@ backup files missing or are not readable
 .TQ
 5
 failed to use backup files to form the
-.B flex
+.BR flex (1)
 C output files
 .TQ
 6
@@ -191,14 +194,16 @@ The
 option is mainly for maintainers of the
 .B jparse
 scanner and parser but it can be used to test if you have a recent enough version of
-.BR flex .
+.BR flex (1).
 The idea behind it is if
-.B flex
+.BR flex (1)
 fails it might indicate a syntax error which the authors of
 .B jparse
 would need to fix.
 .PP
-Beware that some make implementations have a default rule for
+Beware that some
+.BR make (1)
+implementations have a default rule for
 .I *.l
 files so that if one were to in this repo do:
 .sp
@@ -223,7 +228,7 @@ If you have any issues with the tool you can open an issue at
 Run
 .B run_flex.sh
 with default options, which should attempt to run
-.B flex
+.BR flex (1)
 on the
 .I jparse.l
 file:
@@ -237,7 +242,7 @@ file:
 Run
 .B run_flex.sh
 but specify that the backup files are not to be used in case a recent enough version of
-.B flex
+.BR flex (1)
 cannot be found or fails for some reason:
 .sp
 .RS
@@ -247,7 +252,7 @@ cannot be found or fails for some reason:
 .RE
 .PP
 Try and run
-.B flex
+.BR flex (1)
 on the file
 .I foobar.l
 and don't use the backup files:
@@ -259,11 +264,11 @@ and don't use the backup files:
 .RE
 .PP
 Try and run
-.B flex
+.BR flex (1)
 on the file
 .I foobar.l
 with lex instead of
-.B flex
+.BR flex (1)
 and don't use the backup files:
 .sp
 .RS

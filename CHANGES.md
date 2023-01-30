@@ -15,9 +15,6 @@ Fix some memory leaks detected with `valgrind`. See
 Exit codes checked for consistency across usage strings, man pages and the tools
 themselves.
 
-Improving man pages, error messages and documentation is being worked on but
-this will take more time yet.
-
 Added dbg_version as a global string for users of the dbg.a library.
 Added dyn_array_version as a global string for users of the dyn_array.a library.
 Added json_parser_version as a global string for users of the jparse.a library.
@@ -71,6 +68,8 @@ Updated bug_report.sh version with improvements: check for Makefile in all
 subdirectories, check for overriding makefile.local in all subdirectories and
 check that all subdirectories exist and are readable and are executable.
 
+Improved man pages, error messages and documentation.  Went through all
+documentation and fixed noticed problems, typos, formatting issues etc.
 
 ## Release 0.9.9 2022-12-31
 

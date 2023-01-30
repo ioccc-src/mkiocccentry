@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH err 3  "29 January 2023" "err"
+.TH err 3  "30 January 2023" "err"
 .SH NAME
 .BR err() \|,
 .BR verr() \|,
@@ -106,8 +106,8 @@ man page for more details and examples.
 .SS Output control
 .PP
 When
-.B err_output_allowed == false
-the
+.I err_output_allowed
+is false the
 .B err()
 functions will not print anything.
 .SS Version string
@@ -152,12 +152,15 @@ where
 is the name of the function.
 .SS The fmt argument
 The
-.B fmt
+.I fmt
 argument in the functions is a
 .BR printf (3)
 style format.
-If the format requires arguments, then such arguments may be given after the fmt.
-For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If

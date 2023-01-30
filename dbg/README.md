@@ -26,10 +26,16 @@ For more information including an example see the next section.
 # The dbg API
 
 For an overview of all the functions, how to control output, general notes and
-other information, please see the man page `dbg.3`. You can render it by:
+other information, please see the man pages. You can render them like:
 
 ```sh
-man ./dbg.3
+man ./man/man3/dbg.3
+man ./man/man3/msg.3
+man ./man/man3/printf_usage.3
+man ./man/man3/warn.3
+man ./man/man3/werr.3
+man ./man/man3/err.3
+man ./man/man3/warn_or_err.3
 ```
 
 An example program making use of some of the functions is `dbg_example.c`. In

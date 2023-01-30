@@ -88,8 +88,8 @@ appends the single value
 to the array
 .IR array .
 The array will grow if all allocated values are used.
-If the function will return true if the address of the array of elements moved during
-.BR realloc() .
+The function will return true if the address of the array of elements moved during
+.BR realloc (3).
 Otherwise it returns false.
 .sp
 The function
@@ -107,19 +107,19 @@ The
 is the number of elements to add to the dynamic array.
 If after adding the values of the array, all allocated values are used, the array will grow.
 If the address of the array of elements moved during
-.B realloc()
+.BR realloc (3)
 the function returns true.
 Otherwise it returns false.
 .sp
 The function
 .B dyn_array_concat_array()
-concatenates the
+concatenates the dynamic array
 .I other
-dynamic array to the
-.I array
-dynamic array.
+to the
+dynamic array
+.IR array .
 If the address of the array of elements moved during
-.B realloc()
+.BR realloc (3)
 the function returns true.
 Otherwise it returns false.
 The contents of the other array is not modified nor is it freed.
@@ -127,7 +127,7 @@ If after adding the values of the array, all allocated values are used, the dyna
 .sp
 The function
 .B dyn_array_seek()
-sets the elements in use on the dynamic array
+sets the elements in use in the dynamic array
 .IR array .
 The
 .I offset
@@ -147,7 +147,7 @@ offset from the end of the allocated elements.
 .RE
 .sp 1
 The function will return true if the address of the array of elements moved during
-.B realloc()
+.BR realloc (3)
 and false otherwise.
 Attempting to seek to or before the beginning of the array will have the effect of calling
 .B dyn_array_clear()
@@ -171,7 +171,7 @@ frees the contents of the dynamic array
 If
 .I array->zeroize
 is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via
-.BR memset() )
+.BR memset (3))
 first.
 The function does not free the
 .B struct dyn_array
@@ -261,7 +261,7 @@ The functions
 and
 .BR dyn_array_seek()
 return true if the address of the array of elements moved during
-.BR realloc() .
+.BR realloc (3).
 Otherwise they return false.
 .PP
 The functions
