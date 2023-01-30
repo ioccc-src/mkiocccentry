@@ -288,13 +288,13 @@ is_exec_quiet()
     fi
 }
 
-# is_exec_dir   - determine if arg exists, is a directory and is searchable
+# is_read_exec_dir   - determine if arg exists, is a directory and is searchable
 #
 # NOTE: don't exit if the directory is not searchable
-is_exec_dir()
+is_read_exec_dir()
 {
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: expected 1 arg to is_exec_dir, found $#" | tee -a -- "$LOGFILE"
+	echo "$0: ERROR: expected 1 arg to is_read_exec_dir, found $#" | tee -a -- "$LOGFILE"
 	exit 4
     else
 	declare f="$1"
@@ -304,6 +304,10 @@ is_exec_dir()
 	fi
 	if [[ ! -d "$f" ]]; then
 	    write_echo "$0: ERROR: $1 is not a directory"
+	    return 1
+	fi
+	if [[ ! -r "$f" ]]; then
+	    write_echo "$0: ERROR: $1 is not readable"
 	    return 1
 	fi
 	if [[ ! -x "$f" ]]; then
@@ -1501,8 +1505,8 @@ done
 #
 # If any does not exist or is not readable we report this.
 for d in $SUBDIRS; do
-    write_echo "## CHECKING: if $d is a searchable directory"
-    if is_exec_dir "$d"; then
+    write_echo "## CHECKING: IF $d IS A SEARCHABLE DIRECTORY"
+    if is_read_exec_dir "$d"; then
 	write_echo "## $d IS A SEARCHABLE DIRECTORY"
 	write_echo ""
     else
