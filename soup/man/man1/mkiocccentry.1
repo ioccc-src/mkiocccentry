@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "29 January 2023" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "30 January 2023" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -27,35 +27,62 @@
 gathers your source file, Makefile, remarks as well as any other files and creates an XZ compressed tarball.
 The tool runs
 .B iocccsize
-and it also runs a test on the Makefile to verify that everything seems in order.
-You can ignore the warnings except that the Makefile cannot be empty.
-The work_dir is a directory that the program will copy the files to (under a subdirectory based on the title of the entry and the entry number), to create the tarball.
-After forming the tarball
-.B txzchk
-is run which verifies that the tarball is okay (\c
-.B txzchk
-in turn will call
-.B fnamchk\c
-\&).
-Once the writing of the
-.I .info.json
-file is completed
+on your
+.I prog.c
+and it also runs tests on the
+.IR Makefile \|,
+the
+.IR remarks.md
+and any extra files as well to verify that everything seems in order.
+You can ignore the warnings except that the
+.I Makefile
+cannot be empty.
+.PP
+Under the
+.I work_dir
 .B mkiocccentry
-runs
-.B chkinfo
-and if there are any errors it aborts.
-After the writing of the
-.I .info.json
-file the
-.I .auth.json
-file is written; once completed
-.B mkiocccentry
-runs
-.B chkauth and if there are any errors it aborts.
-If the work_dir already exists the program will tell you to move it or delete it.
+will create an entry directory (based on the IOCCC contestant ID and entry number) that the program will copy the files to in order to create the tarball.
+If the entry directory already exists the program will tell you to move it or delete it.
 The program does
 .B NOT
-delete it both for safety as well as in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
+delete it for you.
+.PP
+Before forming the tarball,
+.B mkiocccentry
+will ask you for information about your entry including the number of authors and various information about the author(s).
+Once all the information has been collected it will copy the files to the entry directory under the
+.IR work_dir \|.
+At this point it will create the
+.I .info.json
+and
+.I .auth.json 
+files with information about the entry and information about the authors (which is for winning entries).
+.PP
+After each file is formed it will run
+.BR chkentry (1)
+on the file. If
+.BR chkentry (1)
+exits with non\-zero
+.B mkiocccentry
+will abort because any problems detected by
+.BR chkentry (1)
+based on what
+.B mkiocccentry
+wrote indicates that there is a serious mismatch between what
+.B mkiocccentry
+is doing and what
+.BR chkentry (1)
+expects.
+.PP
+After forming the tarball
+.BR txzchk (1)
+is run which verifies that the tarball is okay (\c
+.BR txzchk (1)
+in turn will call
+.BR fnamchk (1)\c
+\&).
+.PP
+Because some might want or need to update an entry there is functionality to write your answers to a file so that you can feed the program the answers quickly.
 .SH OPTIONS
 .TP
 .B \-h
@@ -155,8 +182,9 @@ will ask you if you wish to overwrite it unless
 .B \-A
 is specified which will always overwrite the answers file.
 .TP
-.B \-A
-Always overwrite answers file.
+.BI \-A\  answers
+Always overwrite answers file
+.IR answers \|.
 .TP
 .BI \-i\  answers
 Read the answers from the file

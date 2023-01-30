@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "29 January 2023" "chkentry" "IOCCC tools"
+.TH chkentry 1 "30 January 2023" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check JSON files in an IOCCC entry
@@ -34,7 +34,6 @@
 .I info.json
 .I auth.json
 .SH DESCRIPTION
-.B chkentry is primarily used by other tools (not humans).
 .PP
 Validates the
 .I .info.json
@@ -57,7 +56,7 @@ is
 .I .
 (dot), then this file is ignored.
 In the one argument form,
-.B entry_dir
+.I entry_dir
 is assumed to be a directory containing both
 .I .info.json
 and
@@ -72,24 +71,24 @@ As a sanity check, the
 .BR mkiocccentry (1)
 program executes
 .B chkentry
-AFTER both the
+after the
 .I .info.json
 and
 .I .auth.json
-files have been created and before the compressed tarball is formed.
+files have been created, once per file, testing that everything is well.
 If
-.B mkiocccentry
+.BR mkiocccentry (1)
 sees a 0 exit status, then all is well.
 For a non\-zero exit code, the tool aborts because any problems detected by
 .B chkentry
 based on what
-.B mkiocccentry
+.BR mkiocccentry (1)
 wrote into
 .I .info.json
 and/or
 .I .auth.json
 indicates there is a serious mismatch between what
-.B mkiocccentry
+.BR mkiocccentry (1)
 is doing and what
 .B chkentry
 expects.
@@ -137,6 +136,10 @@ file(s) not valid JSON and no semantic checks were performed
 .TQ
 >=10
 internal error
+.SH NOTES
+.B chkentry
+is primarily used by other tools (not humans) but you may wish to test your entry JSON files manually if you're trying something clever.
+It would be a good idea to note why you think it's clever.
 .SH EXAMPLES
 .PP
 Run the tool on an IOCCC entry located in the directory
