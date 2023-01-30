@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH msg 3  "29 January 2023" "msg"
+.TH msg 3  "30 January 2023" "msg"
 .SH NAME
 .BR msg() \|,
 .BR vmsg() \|,
@@ -58,7 +58,6 @@ or a
 .B char *
 write to
 .BR stderr .
-\&.
 The functions
 .B fmsg()
 and
@@ -74,7 +73,8 @@ and
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
 They will not do anything if passed a NULL pointer or
-.BR size\ <=\ 1 .
+.IR size
+<=\ 1.
 .SS Variadic versions
 .PP
 The functions
@@ -95,20 +95,23 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.BR printf .
+.BR printf (3).
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
 .SS Output control
 .PP
 When
-.B msg_output_allowed == false
-these functions will not print anything.
+.I msg_output_allowed
+== false these functions will not print anything.
 .sp
 When
-.B msg_warn_silent == true
+.I msg_warn_silent
+==
+.I true
 these functions will be silenced if
-.BR verbosity_level\ <=\ 0 .
+.IR verbosity_level
+<= 0.
 .SS Version string
 The string
 .BR dbg_version ,
@@ -142,12 +145,15 @@ where
 is the name of the function.
 .SS The fmt argument
 The
-.B fmt
+.I fmt
 argument in the functions is a
 .BR printf (3)
 style format.
-If the format requires arguments, then such arguments may be given after the fmt.
-For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If
