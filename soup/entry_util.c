@@ -4018,8 +4018,8 @@ test_rule_2a_override(bool boolean)
  * Determine if rule_2a_size is within the proper limits.
  *
  * NOTE: Although this function does not return false if the size <= 0 or
- *	 if size > RULE_2A_SIZE we don't yet check that in this case the
- *	 rule 2a override option is enabled.
+ *	 if size > RULE_2A_SIZE we don't check that in this case the rule
+ *	 2a override option is enabled.
  *
  * because:
  *
@@ -4082,8 +4082,8 @@ test_rule_2b_override(bool boolean)
  * Determine if rule_2b_size is within the proper limits.
  *
  * NOTE: Although this function does not return false if the size <= 0 or
- *	 if size > RULE_2B_SIZE we don't yet check that in this case the
- *	 rule 2b override option is enabled.
+ *	 if size > RULE_2B_SIZE we don't check that in this case the rule
+ *	 2b override option is enabled.
  *
  * because:
  *
