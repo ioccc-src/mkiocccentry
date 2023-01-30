@@ -118,26 +118,6 @@ files.
 The
 .I ref_dir
 directory is a subdirectory under which the semantic table files are written.
-.SH EXAMPLE
-The
-.B soup/Makefile
-contains the following
-.BR make (1)
-.B all_sem_ref
-rule.
-It performs the following command to build the JSON semantic tables for
-.BR chkentry (8):
-.sp 1
-.in +0.5i
-.nf
-cd soup
-\&./all_sem_ref.sh \-v 1 \-j ../jparse/jsemtblgen \-J ../jparse/jsemcgen.sh -- \\
-    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \\
-    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \\
-    ../test_ioccc/test_JSON/info.json/good \\
-    ../test_ioccc/test_JSON/auth.json/good ref
-.fi
-.in -0.5i
 .SH OPTIONS
 .TP
 .B \-h
@@ -201,12 +181,35 @@ The JSON parser
 was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .PP
 This tool is needed in order to generate the JSON semantics table for
-.BR chkentry (1),
+.BR chkentry (1).
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> \|.
+.SH EXAMPLE
+The
+.I Makefile
+contains the following
+.BR make (1)
+.B all_sem_ref
+rule.
+It runs the following commands via the
+.I soup/Makefile
+to build the JSON semantic tables for
+.BR chkentry (8):
+.sp 1
+.in +0.5i
+.nf
+rm -rf ref
+mkdir ref
+\&./all_sem_ref.sh \-v 1 \-j ../jparse/jsemtblgen \-J ../jparse/jsemcgen.sh -- \\
+    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \\
+    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \\
+    ../test_ioccc/test_JSON/info.json/good \\
+    ../test_ioccc/test_JSON/auth.json/good ref
+.fi
+.in -0.5i
 .SH SEE ALSO
 .BR jsemtblgen (8),
 .BR jsemcgen (8),
