@@ -71,6 +71,8 @@ Updated bug_report.sh version with improvements: check for Makefile in all
 subdirectories, check for overriding makefile.local in all subdirectories and
 check that all subdirectories exist and are readable and are executable.
 
+Went through all documentation and fixed noticed problems, typos, formatting
+issues etc.
 
 ## Release 0.9.9 2022-12-31
 
