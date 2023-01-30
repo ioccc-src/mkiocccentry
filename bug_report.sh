@@ -14,7 +14,7 @@
 #	bug-report.YYYYMMDD.HHMMSS.txt
 #
 # will be created in the current directory, where YYYYMMDD.HHMMSS is the
-# date and time in your default local timezone.
+# date and time in your default local time zone.
 #
 # If you are reporting a bug, the bug-report.YYYYMMDD.HHMMSS.txt file should
 # be uploaded as part of your bug report.  Report / create a GitHub issue
@@ -78,7 +78,19 @@ export TOOLS="
     ./txzchk
     "
 
-export BUG_REPORT_VERSION="0.13 2023-01-24"
+# we need this to find overriding makefile.local in all directories to see if
+# the user is overriding any Makefile. As well, we check if the directory even
+# is searchable and has a Makefile.
+export SUBDIRS="
+    ./dbg
+    ./dyn_array
+    ./jparse
+    ./jparse/test_jparse
+    ./soup
+    ./test_ioccc
+    "
+
+export BUG_REPORT_VERSION="0.14 2023-01-30"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -229,11 +241,12 @@ exec_command_lines()
 
 # is_exec   - determine if arg exists, is a regular file and is executable
 #
+# NOTE: don't exit if the file is not an executable
 is_exec()
 {
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: expected 1 arg to is_exec, found $#" | tee -a -- "$LOGFILE"
-	return 1
+	exit 4
     else
 	declare f="$1"
 	if [[ ! -e "$f" ]]; then
@@ -254,6 +267,7 @@ is_exec()
 
 # is_exec_quiet   - determine if arg exists, is a regular file and is executable
 #
+# NOTE: don't exit if the file is not an executable
 is_exec_quiet()
 {
     if [[ $# -ne 1 ]]; then
@@ -274,11 +288,37 @@ is_exec_quiet()
     fi
 }
 
+# is_exec_dir   - determine if arg exists, is a directory and is searchable
+#
+# NOTE: don't exit if the directory is not searchable
+is_exec_dir()
+{
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: expected 1 arg to is_exec_dir, found $#" | tee -a -- "$LOGFILE"
+	exit 4
+    else
+	declare f="$1"
+	if [[ ! -e "$f" ]]; then
+	    write_echo "$0: ERROR: $1 does not exist"
+	    return 1
+	fi
+	if [[ ! -d "$f" ]]; then
+	    write_echo "$0: ERROR: $1 is not a regular file"
+	    return 1
+	fi
+	if [[ ! -x "$f" ]]; then
+	    write_echo "$0: ERROR: $1 is not searchable"
+	    return 1
+	fi
+	return 0
+    fi
+}
+
 
 # type_of - determine if a name is an alias, a path or a built-in
 #
 # NOTE: an alias is highly unlikely to be found in a script but if it something
-# is aliased by some chance we'll know from this function.
+# is aliased by some chance we'll hopefully know that from this function.
 type_of()
 {
     # parse args
@@ -310,7 +350,7 @@ type_of()
 # type_of_optional - determine if a name is an alias, a path or a built-in
 #
 # NOTE: an alias is highly unlikely to be found in a script but if it something
-# is aliased by some chance we'll know from this function.
+# is aliased by some chance we'll hopefully know that from this function.
 type_of_optional()
 {
     # parse args
@@ -455,7 +495,7 @@ get_version_optional()
 	#
 	#   $ what ./bmake
 	#   ./bmake:
-	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#   Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
 	#
 	# which(1) is entirely useless.
 	#
@@ -535,7 +575,7 @@ get_version_optional()
 
 	# report unknown version
 	#
-	write_echo "$0: unknown version for optional command: $COMMAND"
+	write_echo "Notice: unknown version for optional command: $COMMAND"
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
 	$0: Notice: unknown version for optional command: $COMMAND"
 	write_echo ""
@@ -543,7 +583,7 @@ get_version_optional()
     # mention that an optional command is not found or not executable
     #
     else
-	write_echo "$0: optional command is not found or not executable: $COMMAND"
+	write_echo "Optional command is not found or not executable: $COMMAND"
 	write_echo ""
     fi
     return 0;
@@ -589,7 +629,6 @@ get_version()
 
     # First check if this is bash. If it is we can do something special for
     # version information.
-
     if [[ "$(basename "${COMMAND}")" = "bash" ]]; then
 	write_echo "## RUNNING: echo \$BASH_VERSION"
 	exec_command "echo $BASH_VERSION"
@@ -735,14 +774,14 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ ! -z "$STRINGS" ]]; then
-	    write_echo "$0: unknown version for $COMMAND: trying strings"
+	    write_echo "Notice: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
 	    Notice: unknown version for $COMMAND: trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command_lines 15 "$STRINGS" "${COMMAND}"
-		write_echo "## strings $COMMAND ABOVE"
+		write_echo "## OUTPUT OF strings $COMMAND ABOVE"
 		write_echo ""
 		return
 	    fi
@@ -750,7 +789,7 @@ get_version()
 
 	# report unknown version
 	#
-	write_echo "$0: unknown version for required command: $COMMAND"
+	write_echo "Notice: unknown version for required command: $COMMAND"
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
 	$0: Notice: unknown version for required command: $COMMAND"
 	write_echo ""
@@ -758,7 +797,7 @@ get_version()
     # notice that a required command is not found or not executable
     #
     else
-	write_echo "$0: required command is not found or is not executable: $COMMAND"
+	write_echo "Notice: required command is not found or is not executable: $COMMAND"
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
 	Notice: required command is not found or is not executable: $COMMAND"
 	write_echo ""
@@ -824,7 +863,7 @@ get_version_minimal()
 	#
 	#   $ what ./bmake
 	#   ./bmake:
-	#	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+	#   Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
 	#
 	# which(1) is entirely useless.
 	#
@@ -871,7 +910,7 @@ get_version_minimal()
 
 	# don't try strings as this will clutter up the bug reports as there are
 	# some commands that we simply cannot rely on having versions and we
-	# probably don't even need the version of these tools.
+	# probably don't even need the version of those tools.
 
 	# We also don't report that the version is unknown because this might
 	# lead to false warnings.
@@ -991,7 +1030,7 @@ run_check()
 #############################
 
 if [[ $V_FLAG -gt 1 ]]; then
-    write_echo "Will write contents to $LOGFILE"
+    write_echo "Will write report to $LOGFILE"
 fi
 write_echo "# TIME OF REPORT: $(date)"
 write_echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION"
@@ -1054,6 +1093,10 @@ type_of 14 "bash"
 get_version "bash"
 
 # type -a cat: find which cat the user owns :-) (okay - types of cats)
+#
+#   We didn't mean no harm, but they jumps on us like
+#   cats on poor mices, they did, precious.
+#
 type_of 15 "cat"
 
 # try getting version of cat but in a limited way so that it does not block.
@@ -1089,21 +1132,22 @@ get_version "date"
 type_of 20 "echo"
 
 # NOTE: we don't try getting version of echo because in some implementations
-# (all I've tested in fact) it'll just echo the --version etc. despite the fact
+# (all I've tested in fact) it'll just echo --version etc. despite the fact
 # the man page suggests it should show a version. Well actually doing /bin/echo
 # --version does work (though command echo does not for some reason) but not all
 # implementations have this and will simply print "--version" etc. which is
 # pointless clutter. Now we could try what(1) or ident(1) but it's probably not
 # necessary and it would require an even simpler version of get_version_minimal.
-# We have draw a line somewhere and this is where it is:
+# We have to draw a line somewhere and this is where it is:
 #
 #	----------
 #
 # :-)
 #
 
-# type -a find: what kind of find did the user find ? :-) (or actually just find
-# all types of find :-) )
+# type -a find: find all the users since they appear to be lost :-)
+# Or to be more specific: what kind of find did the user find ? :-) (or actually
+# just find all types of find :-) )
 type_of 21 "find"
 
 # try getting version of find
@@ -1116,7 +1160,6 @@ get_version "find"
 # the command command or a path but using type -a should give us everything.
 # will give the path under both linux and macOS.
 type_of 22 "getopts"
-
 # NOTE: no need to try and get version as it's a built-in under both macOS and
 # linux and neither have even a --version option.
 
@@ -1158,7 +1201,7 @@ type_of 28 "rm"
 # try getting version of rm
 get_version "rm"
 
-# type -a sed: get all types of sed
+# type -a sed: record everything the user has said :-) (or rather get all types of sed)
 type_of 29 "sed"
 
 # try getting sed version
@@ -1203,7 +1246,7 @@ run_check 35 "true"
 # try getting version of true
 get_version "true"
 
-# type -a yes: get all yesses (yes yesses is a valid spelling just as yeses is :-) )
+# type -a yes: get all yesses (yes Preciouss, yesses is a valid spelling just as yeses is :-) )
 type_of 36 "yes"
 
 # don't try getting version of yes because it will just try printing the args
@@ -1312,7 +1355,7 @@ type_of 37 "cc"
 # cc -v: get compiler version
 run_check 38 "cc -v"
 
-# type -a make: get all make types :-)
+# type -a make: get all makes :-)
 type_of 39 "make"
 
 # try and get version of make
@@ -1439,7 +1482,7 @@ write_echo ""
 # If any tool is not executable the exit code will be set to 48.
 #
 for f in $TOOLS; do
-    write_echo "## Checking if $f is executable"
+    write_echo "## CHECKING: IF $f IS EXECUTABLE"
     if is_exec "$f"; then
 	write_echo "## $f IS EXECUTABLE"
 	write_echo "## RUNNING: $f -V"
@@ -1453,6 +1496,24 @@ for f in $TOOLS; do
 	write_echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced"
     fi
 done
+
+# See that every subdirectory exists.
+#
+# If any does not exist or is not readable we report this.
+for d in $SUBDIRS; do
+    write_echo "## CHECKING: if $d is a searchable directory"
+    if is_exec_dir "$d"; then
+	write_echo "## $d IS A SEARCHABLE DIRECTORY"
+	write_echo ""
+    else
+	EXIT_CODE=49
+	write_echo "$0: ERROR: $d IS NOT A SEARCHABLE DIRECTORY: new exit code: $EXIT_CODE"
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	$d is not a searchable directory"
+	write_echo "### ISSUE DETECTED: $d is not a searchable directory"
+    fi
+done
+
 
 # cat limit_ioccc.sh: this will give us many important variables
 #
@@ -1482,14 +1543,14 @@ if [[ -e "./soup/limit_ioccc.sh" ]]; then
 	fi
 	write_echo "--" | tee -a -- "$LOGFILE"
     else
-	write_echo "### Notice: Found unreadable limit_ioccc.sh"
+	write_echo "### Notice: found unreadable limit_ioccc.sh"
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
-	Notice: Found unreadable limit_ioccc.sh"
+	Notice: found unreadable limit_ioccc.sh"
     fi
 else
-    write_echo "### Notice: No limit_ioccc.sh file found"
+    write_echo "### Notice: no limit_ioccc.sh file found"
     NOTICE_SUMMARY="$NOTICE_SUMMARY
-    Notice: No limit_ioccc.sh file found"
+    Notice: no limit_ioccc.sh file found"
 fi
 write_echo ""
 
@@ -1507,16 +1568,62 @@ write_echo "# SECTION 6: USER MODIFICATIONS TO IOCCC TOOLS #"
 write_echo "################################################"
 write_echo ""
 
-# check for makefile.local to see if user is overriding any rules.
+# check that Makefile exists
+#
+# If it does not the script would have already reported an issue but we want to
+# be as complete as possible.
+write_echo "## CHECKING: IF Makefile EXISTS"
+if [[ -e "./Makefile" ]]; then
+    if [[ -r "./Makefile" ]]; then
+	write_echo "Makefile exists"
+    else
+	EXIT_CODE=50
+	write_echo "ERROR: Makefile NOT READABLE: new exit code: $EXIT_CODE"
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	Makefile not readable"
+	write_echo "### ISSUE DETECTED: Makefile not readable"
+    fi
+else
+    EXIT_CODE=51
+    write_echo "ERROR: Makefile DOES NOT EXIST: new exit code: $EXIT_CODE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    Makefile does not exist"
+    write_echo "### ISSUE DETECTED: Makefile does not exist"
+fi
+
+# now do the same for subdirectories
+for d in $SUBDIRS; do
+    write_echo "## CHECKING: IF $d/Makefile EXISTS"
+    if [[ -f "$d/Makefile" ]]; then
+	if [[ -r "$d/Makefile" ]]; then
+	    write_echo "$d/Makefile exists"
+	else
+	    EXIT_CODE=52
+	    write_echo "ERROR: $d/Makefile NOT READABLE: new exit code: $EXIT_CODE"
+	    FAILURE_SUMMARY="$FAILURE_SUMMARY
+	    $d/Makefile not readable"
+	    write_echo "### ISSUE DETECTED: $d/Makefile not readable"
+	fi
+    else
+	EXIT_CODE=53
+	write_echo "$0: ERROR: $d/Makefile DOES NOT EXIST: new exit code: $EXIT_CODE"
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	$d/Makefile does not exist"
+	write_echo "### ISSUE DETECTED: $d/Makefile does not exist"
+    fi
+done
+write_echo ""
+
+# check for makefile.local files to see if user is overriding any rules or variables.
 #
 # NOTE: we don't use run_check for this because it's not an actual error whether
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
 #
-write_echo "## CHECKING: if makefile.local exists"
+write_echo "## CHECKING: IF makefile.local EXISTS"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
-	write_echo "### Warning: Found Makefile overriding file makefile.local:"
+	write_echo "### Warning: found Makefile overriding file makefile.local:"
 	write_echo "cat ./makefile.local"
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
@@ -1527,12 +1634,36 @@ if [[ -e "./makefile.local" ]]; then
 	fi
 	write_echo "--"
     else
-	write_echo "### Warning: Found unreadable makefile.local"
+	write_echo "### Warning: found unreadable makefile.local"
     fi
 else
     write_echo "# Makefile has no overriding makefile.local"
 fi
 write_echo ""
+
+# now do the same for subdirectories
+for d in $SUBDIRS; do
+    if [[ -e "$d/makefile.local" ]]; then
+	if [[ -r "$d/makefile.local" ]]; then
+	    write_echo "### Warning: found $d/Makefile overriding file $d/makefile.local:"
+	    write_echo "cat $d/makefile.local"
+	    write_echo "--"
+	    if [[ -z "$L_FLAG" ]]; then
+		# tee -a -- "$LOGFILE" < makefile.local
+		< "$d/makefile.local" tee -a -- "$LOGFILE"
+	    else
+		cat "$d/makefile.local" >> "$LOGFILE"
+	    fi
+	    write_echo "--"
+	else
+	    write_echo "### Warning: found unreadable $d/makefile.local"
+	fi
+    else
+	write_echo "# $d/Makefile has no overriding $d/makefile.local"
+    fi
+done
+write_echo ""
+
 
 # check if there are any local modifications to the code
 #
