@@ -1397,7 +1397,7 @@ jnum_gen.c:546:49: warning: implicit conversion increases floating-point precisi
 
 ### Solution
 
-As the `fpr_finfo()` function third value is a `long double`, we cast to the
+As the `fpr_finfo()` function third value is a `long double`, we cast the
 third arg to `long double` for values that are not otherwise `long double`.
 
 
