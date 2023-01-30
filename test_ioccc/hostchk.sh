@@ -273,7 +273,11 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 
     # test each required system include file
     #
-    while read -r h; do
+    # NOTE: if your grep does not have -o this will fail. If this happens please
+    # submit a bug report and we'll add a workaround.
+    grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
+        "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] | \
+	sort -u | while read -r h; do
 
 	# form C prog
 	#
@@ -312,10 +316,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	#
 	rm -f "$PROG_FILE"
 
-    # NOTE: if your grep does not have -o this will fail. If this happens please
-    # submit a bug report and we'll add a workaround.
-    done < <(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
-	"$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)
+    done
 
 # case: neither -f nor run include tests one at a time
 #
@@ -337,7 +338,8 @@ fi
 #	source	    - source file
 #	output	    - output file of compiler
 #
-compile_test() {
+compile_test()
+{
 
     # parse args
     #
@@ -350,7 +352,13 @@ compile_test() {
     local OUTPUT="$3"
 
     if [[ ! -e $SOURCE ]]; then
-	echo "$0: ERROR: source code does not exist: $SOURCE: new exit code: $CODE" 1>&2
+	echo "$0: ERROR: source file does not exist: $SOURCE: new exit code: $CODE" 1>&2
+	EXIT_CODE="$CODE"
+	return 1
+    fi
+
+    if [[ ! -f $SOURCE ]]; then
+	echo "$0: ERROR: source file not a regular file: $SOURCE: new exit code: $CODE" 1>&2
 	EXIT_CODE="$CODE"
 	return 1
     fi
@@ -379,7 +387,7 @@ compile_test() {
 # pre-errno test: get value of ENOENT
 #
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should print the value of ENOENT" 1>&2
+    echo "$0: creating binary that should print the value of ENOENT" 1>&2
 fi
 cat <<EOF >"$WORK_DIR/pre-errno.c"
 #include <errno.h>
@@ -407,7 +415,7 @@ fi
 # where $ENOENT was obtained above then there's an inconsistency with the errno
 # value.
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should print: errno: $ENOENT" 1>&2
+    echo "$0: creating binary that should print: errno: $ENOENT" 1>&2
 fi
 cat <<EOF >"$WORK_DIR/errno0.c"
 #include <errno.h>
@@ -435,7 +443,7 @@ fi
 # ENOENT so errno == ENOENT should be 1)
 #
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should verify errno == $ENOENT, returning 1" 1>&2
+    echo "$0: creating binary that should verify errno == $ENOENT, returning 1" 1>&2
 fi
 cat<<EOF >"$WORK_DIR/errno1.c"
 #include <errno.h>
@@ -462,7 +470,7 @@ fi
 # hello.c: print "Hello, world".
 #
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should print: "Hello, world"" 1>&2
+    echo "$0: creating binary that should print: "Hello, world"" 1>&2
 fi
 cat <<EOF >"$WORK_DIR/hello.c"
 #include <stdio.h>
@@ -483,10 +491,10 @@ if compile_test 26 "$WORK_DIR/hello.c" "$WORK_FILE"; then	# compile failure will
     fi
 fi
 
-# main0: create source file that should return 0
+# main0: create binary file that should return 0
 #
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should simply return 0" 1>&2
+    echo "$0: creating binary that should simply return 0" 1>&2
 fi
 cat <<EOF >"$WORK_DIR/main0.c"
 int
@@ -498,18 +506,19 @@ EOF
 WORK_FILE="$WORK_DIR/main0"
 if compile_test 28 "$WORK_DIR/main0.c" "$WORK_FILE"; then	# compile failure will exit 28 unless EXIT_CODE is changed
     if ! "$WORK_FILE"; then
+	status=$?
 	EXIT_CODE=29	# will exit 29 at the end unless EXIT_CODE is changed later on
-	echo "$0: ERROR: expected return value 0 not returned: got $?: new exit code: $EXIT_CODE" 1>&2
+	echo "$0: ERROR: expected return value 0 not returned: got $status: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got return value 0" 1>&2
     fi
 fi
 
 
-# main1: create source file that should return 1
+# main1: create binary file that should return 1
 #
 if [[ $V_FLAG -gt 1 ]]; then
-    echo "$0: creating source that should simply return 1" 1>&2
+    echo "$0: creating binary that should simply return 1" 1>&2
 fi
 cat <<EOF >"$WORK_DIR/main1.c"
 int
@@ -521,8 +530,9 @@ EOF
 WORK_FILE="$WORK_DIR/main1"
 if compile_test 30 "$WORK_DIR/main1.c" "$WORK_FILE"; then	# compile failure will exit 30 unless EXIT_CODE is changed
     if "$WORK_FILE"; then
+	status=$?
 	EXIT_CODE=31	# will exit 31 at the end unless EXIT_CODE is changed later on
-	echo "$0: ERROR: expected return value 1 not returned: got $?: new exit code: $EXIT_CODE" 1>&2
+	echo "$0: ERROR: expected return value 1 not returned: got $status: new exit code: $EXIT_CODE" 1>&2
     elif [[ $V_FLAG -gt 1 ]]; then
 	echo "$0: got return value 1" 1>&2
     fi
