@@ -254,7 +254,7 @@ if [[ ${status} -ne 0 ]]; then
 fi
 rm -f "${src_dir}"/empty.c
 
-# Form entries that are unlikely to win the IOCCC :-)
+# Form entries that are (un?)likely to win the IOCCC :-)
 #
 test -f "${src_dir}"/prog.c || {
 cat >"${src_dir}"/prog.c <<"EOF"
