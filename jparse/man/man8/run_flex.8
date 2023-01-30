@@ -59,8 +59,7 @@ encounters an error (syntax error or anything else) and the
 option is not specified, it attempts to use the backup files
 .I prefix.ref.c
 and
-.I prefix.lex.ref.h\c
-\&.
+.IR prefix.lex.ref.h .
 .SH OPTIONS
 .TP
 .B \-h
@@ -71,8 +70,7 @@ print version and exit.
 .TP
 .BI \-v\  level
 set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-o
 do
@@ -86,28 +84,24 @@ cannot be used or fails to generate the files the script will fail.
 set
 .B flex
 basename to
-.I flex\c
-\&.
+.IR flex .
 .TP
 .BI \-g\  verge
 set path to the
 .B verge
 tool to
-.I verge\c
-\&.
+.IR verge .
 This is used to determine if the
 .B flex
 tool is recent enough.
 .TP
 .BI \-p\  prefix
 set prefix of files to use to
-.I prefix\c
-\&.
+.IR prefix .
 The
 .B flex
 input file will be
-.I prefix.l\c
-\&.
+.IR prefix.l .
 If the
 .B \-o
 option was not used and
@@ -120,8 +114,7 @@ will be used.
 .TP
 .BI \-s\  sorry.h
 set path of file to prepend to the C output to
-.I sorry.h\c
-\&.
+.IR sorry.h .
 .TP
 .B \-S
 suppress prepending apology to generated C output files.
@@ -130,13 +123,11 @@ suppress prepending apology to generated C output files.
 add directory
 .I flex_dir
 to list to search for
-.B flex\c
-\&.
+.BR flex .
 .B \-F
 can be used more than once.
 If not used the script looks at
-.B $PATH\c
-\&.
+.BR $PATH .
 .TP
 .BI \-D\  dir
 set directory to find the flex source file.
@@ -200,8 +191,7 @@ The
 option is mainly for maintainers of the
 .B jparse
 scanner and parser but it can be used to test if you have a recent enough version of
-.B flex\c
-\&.
+.BR flex .
 The idea behind it is if
 .B flex
 fails it might indicate a syntax error which the authors of
@@ -227,8 +217,7 @@ This appears to be because foo is actually referenced in the Makefile as a targe
 .PP
 If you have any issues with the tool you can open an issue at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH EXAMPLES
 .PP
 Run

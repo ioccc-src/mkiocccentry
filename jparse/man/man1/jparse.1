@@ -45,13 +45,11 @@ Show help and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-J\  level
 Set JSON verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-q
 Suppresses some of the output (def: not quiet).
@@ -83,17 +81,15 @@ internal error
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
-.B IOCCCMOCK\c
-\&,
+.BR IOCCCMOCK ,
 .B IOCCC28
 and beyond.
 .PP
 For more detailed history that goes beyond this humble man page we recommend you check
 .BR jparse (1),
-.I CHANGES.md\c
-\&,
-.I README.md\c
-\&, the GitHub git log as well as reading the source code (or not :\-) ).
+.IR CHANGES.md ,
+.IR README.md ,
+the GitHub git log as well as reading the source code (or not :\-) ).
 Understand that by source we refer to the
 .I jparse.l
 and
@@ -116,8 +112,7 @@ If it's not clear this means that having more than one parse active in the same 
 .SH EXAMPLES
 .PP
 Parse the JSON string
-.B { "test_mode" : false }\c
-\&:
+.BR {\ "test_mode"\ :\ false\ } :
 .sp
 .RS
 .B ./jparse \-s '{ "test_mode" : false }'
@@ -126,10 +121,10 @@ Parse the JSON string
 Parse input from
 .B stdin
 (send
-.B EOF\c
-\&, usually ctrl\-d or
-.B ^D\c
-\&, to parse):
+.BR EOF ,
+usually ctrl\-d or
+.BR ^D ,
+to parse):
 .sp
 .RS
 .ft B

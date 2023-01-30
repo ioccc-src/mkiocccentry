@@ -87,8 +87,7 @@ file is a patch file to apply to the output of
 with
 .I head
 and
-.I tail\c
-\&.
+.IR tail .
 .sp
 The
 .I tail
@@ -105,12 +104,11 @@ argument is the
 output with possible head, tail and patch applied.
 .PP
 If you do not wish to specify
-.I head\c
-\&,
+.IR head ,
 .I patch
 or
-.I tail\c
-\&, you can specify
+.IR tail ,
+you can specify
 .I .
 (dot) instead.
 .SH OPTIONS
@@ -120,13 +118,11 @@ print help and exit.
 .TP
 .BI \-v\  level
 set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-J\  level
 set JSON verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-q
 set quiet mode.
@@ -142,8 +138,7 @@ output as a C header file.
 .TP
 .BI \-N\  name
 set name of the semantics table to
-.I name\c
-\&.
+.IR name .
 .TP
 .BI \-D\  def_func
 validate with
@@ -163,75 +158,64 @@ JSON decoded name string.
 Underscore (_) replaces any name chars that are not valid in a C function name.
 .B \-P
 overrides any use of
-.B \-M\c
-\&.
+.BR \-M .
 .RE
 .TP
 .BI \-1\  func
 validate
 .B JTYPE_NUMBER
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-S\  func
 validate
 .B JTYPE_STRING
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-B\  func
 validate
 .B JTYPE_BOOL
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-0\  func
 validate
 .B JTYPE_NULL
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-M\  func
 validate
 .B JTYPE_MEMBER
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-O\  func
 validate
 .B JTYPE_OBJECT
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-A\  func
 validate
 .B JTYPE_ARRAY
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-U\  func
 validate nodes with unknown types with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-j\  jsemtblgen
 set path to
 .BR jsemtblgen (8)
 to
-.I jsemtblgen\c
-\&.
+.IR jsemtblgen .
 .TP
 .BI \-p\  patch_tool
 set path to the patch program to
-.I patch_tool\c
-\&.
+.IR patch_tool .
 .SH EXIT STATUS
 .TP
 0
@@ -258,10 +242,8 @@ is not an executable file
 .TQ
 5
 one of the files
-.I file.json\c
-\&,
-.I head\c
-\&,
+.IR file.json ,
+.IR head ,
 .I patch
 or
 .I tail
@@ -278,8 +260,7 @@ was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC 
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH SEE ALSO
 .BR jsemtblgen (8),
 .BR jparse (3)

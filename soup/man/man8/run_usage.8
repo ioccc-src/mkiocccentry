@@ -35,8 +35,7 @@ This script does a best guess at what the
 should be for the supplied tool with certain limitations (see both
 .B NOTES
 and
-.B BUGS\c
-\&!).
+.BR BUGS ).
 If the man page exists it attempts to, based on the
 .B \-h
 option of the tool, create the correct regexp for the
@@ -50,8 +49,7 @@ If the man page does not exist or is not a regular file or is not readable it is
 might look like (again, see
 .B NOTES
 and
-.B BUGS\c
-\&).
+.BR BUGS ).
 .SH OPTIONS
 .TP
 .B \-h
@@ -141,25 +139,22 @@ if this is not clear!
 It requires a
 .B \-h
 option for the tool in question and that this option will prefix each syntax with
-.B usage:\c
-\&.
+.BR usage: .
 .PP
 It does not have a quiet mode so that it only prints out what the format might be for
-.B SYNOPSIS\c
-\&.
+.BR SYNOPSIS .
 It does however not print anything if everything seems okay.
 This is a feature not a bug.
 .PP
 There are other limitations as well!
 It's not meant to be perfect and it's not meant to replace the need for editing the man page manually.
 It can help determine that everything is correct assuming the usage string in the tool is correct (prefixed with
-.B usage:\c
-\&) and there's no silliness in the man page like the same usage more than once.
+.BR usage: )
+and there's no silliness in the man page like the same usage more than once.
 Unfortunately changing the script so that it checks for each usage individually is not worth the effort especially as we now use formatting macros.
 .PP
 See also the
-.B NOTES\c
-\&.
+.BR NOTES .
 .SH EXAMPLES
 .PP
 Determine if the

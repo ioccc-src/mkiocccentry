@@ -69,13 +69,11 @@ print help and exit.
 .TP
 .BI \-v\  level
 set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-J\  level
 set JSON verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-q
 set quiet mode.
@@ -110,63 +108,54 @@ JSON decoded name string.
 Underscore (_) replaces any name chars that are not valid in a C function name.
 .B \-P
 overrides any use of
-.B \-M\c
-\&.
+.BR \-M .
 .RE
 .TP
 .BI \-1\  func
 validate
 .B JTYPE_NUMBER
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-S\  func
 validate 
 .B JTYPE_STRING
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-B\  func
 validate 
 .B JTYPE_BOOL
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-0\  func
 validate 
 .B JTYPE_NULL
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-M\  func
 validate 
 .B JTYPE_MEMBER
 JSON nodes with
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-O\  func
 validate 
 .B JTYPE_OBJECT
 JSON nodes with 
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-A\  func
 validate 
 .B JTYPE_ARRAY
 JSON nodes with 
-.I func()\c
-\&.
+.IR func() .
 .TP
 .BI \-U\  func
 validate nodes with unknown types with
-.I func()\c
-\&.
+.IR func() .
 .SH EXIT STATUS
 .TP
 0
@@ -195,8 +184,7 @@ was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC 
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH EXAMPLE
 Rather than use this tool directly one should use
 .BR jsemcgen (8)

@@ -28,8 +28,8 @@ to test that it functions well
 .SH DESCRIPTION
 .B mkiocccentry_test.sh
 runs a series of invocations of
-.B mkiocccentry\c
-\&, testing various types of inputs including multiple authors some of which have non\-ASCII characters in their name.
+.BR mkiocccentry ,
+testing various types of inputs including multiple authors some of which have non\-ASCII characters in their name.
 .SH OPTIONS
 .TP
 .B \-h
@@ -45,16 +45,14 @@ Set verbosity level to
 .TP
 .BI \-J\  level
 Set JSON verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
 The
 .B topdir
 directory must contain the source file
-.I mkiocccentry.c\c
-\&.
+.IR mkiocccentry.c .
 By default, the source file
 .I mkiocccentry.c
 is searched for in the current directory and then the parent of current directory.
@@ -87,10 +85,10 @@ all tests are OK
 command line usage error
 .TQ
 9
-.I work_dir\c
-\& or
-.I src_dir\c
-\& not found or
+.I work_dir
+or
+.I src_dir
+not found or
 .B mkiocccentry
 not executable.
 .TQ

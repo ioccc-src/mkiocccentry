@@ -44,30 +44,26 @@ print version and exit.
 .TP
 .BI \-v\  level
 set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-e\  jstrencode
 set path of
 .BR jstrencode (1)
 tool to
-.I jstrencode\c
-\&.
+.IR jstrencode .
 .TP
 .BI \-d\  jstrdecode
 set path of
 .BR jstrdecode (1)
 tool to
-.I jstrdecode\c
-\&.
+.IR jstrdecode .
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
 The
 .B topdir
 directory must contain the source file
-.I mkiocccentry.c\c
-\&.
+.IR mkiocccentry.c .
 By default, the source file
 .I mkiocccentry.c
 is searched for in the current directory, and then the parent of current directory.
@@ -130,12 +126,11 @@ This temporary file holds the output of an encoded JSON string (via
 decoded by
 .BR jstrdecode (1)
 which, along with
-.I jstr_test2.out\c
-\&, is used to to verify that encoding and decoding work.
+.IR jstr_test2.out ,
+is used to to verify that encoding and decoding work.
 If the file exists and cannot be removed the script will exit with code 102.
 In the script this file is the variable
-.B TEST_FILE\c
-\&.
+.BR TEST_FILE .
 When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
 .RE
 .I jstr_test2.out
@@ -145,12 +140,11 @@ This temporary file holds the output of an encoded JSON string (via
 decoded by
 .BR jstrdecode (1)
 which, along with
-.I jstr_test.out\c
-\&, is used to to verify that encoding and decoding work.
+.IR jstr_test.out ,
+is used to to verify that encoding and decoding work.
 If the file exists and cannot be removed the script will exit with code 103.
 In the script this file is the variable
-.B TEST_FILE2\c
-\&.
+.BR TEST_FILE2 .
 When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
 .RE
 .SH NOTES
@@ -161,8 +155,7 @@ was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC 
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH SEE ALSO
 .BR jparse (1),
 .BR jparse (3),

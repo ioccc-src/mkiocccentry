@@ -43,8 +43,8 @@ is an integer from
 through
 .B MAX_ENTRY_NUM
 (see
-.I limit_ioccc.h\c
-\&) inclusive,
+.IR limit_ioccc.h )
+inclusive,
 .B timestamp
 is an integer of the number of seconds since the epoch and
 .B ext
@@ -55,8 +55,7 @@ or the user supplied extension from the
 option.
 .PP
 More specifically, the filename
-.B MUST\c
-\&:
+.BR MUST :
 .IP \(bu 4
 Start with "\fBentry\fP".
 .IP \(bu 4
@@ -76,8 +75,7 @@ Followed by a positive non\-zero 64\-bit decimal integer.
 Followed by "\fB.\fP".
 .IP \(bu 4
 Followed by "\fBtxz\fP" (or the user supplied extension from option
-.B \-E\c
-\&).
+.BR \-E ).
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
@@ -93,8 +91,7 @@ Show help and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level\c
-\&.
+.IR level .
 Default: 0.
 .TP
 .B \-V
@@ -104,8 +101,7 @@ Show version and exit.
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 Default:
-.B false\c
-\&.
+.BR false .
 .TP
 .BI \-E\  ext
 Change extension to extension specified (without the dot!).
@@ -156,15 +152,13 @@ More than 0 humans work on it! :)
 .PP
 If you have an issue with the tool you can open an issue at
 .br
-.I <https://github.com/ioccc\-src/mkiocccentry/issues>\c
-\&.
+.IR <https://github.com/ioccc\-src/mkiocccentry/issues> .
 .SH EXAMPLES
 .PP
 For the examples below assume that the
 .B MIN_TIMESTAMP
 is
-.B (time_t)1662145368\c
-\&.
+.BR (time_t)1662145368 .
 .PP
 Run the program on the filename
 .I entry.test\-0.1562145368.txz
@@ -177,8 +171,8 @@ which will fail because the timestamp in the filename is less than the minimum t
 .RE
 .PP
 Run the program on the filename
-.I test.tar\c
-\&, which will fail because the name format is invalid:
+.IR test.tar ,
+which will fail because the name format is invalid:
 .sp
 .RS
 .ft B
@@ -217,8 +211,8 @@ The above will print "\fBtest\-0\fP".
 Run the program on the file
 .I entry.test.0.1662145368.txt
 with the option
-.B \-t\c
-\&, changing the extension to
+.BR \-t ,
+changing the extension to
 .I txt
 via the
 .B \-E
@@ -237,8 +231,8 @@ The above will print "\fBtest\-0\fP".
 Run the program on the file
 .I entry.test.0.1662145368.txz
 with the options
-.B \-t\c
-\&, changing the extension to
+.BR \-t ,
+changing the extension to
 .I txt
 via the
 .B \-E

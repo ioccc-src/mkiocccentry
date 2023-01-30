@@ -66,8 +66,7 @@ These macros and functions provide a way to create, modify and manipulate genera
 The function
 .B dyn_array_create()
 creates a dynamic array where each element is of size
-.I elm_size\c
-\&.
+.IR elm_size .
 The
 .I chunk
 and
@@ -87,12 +86,10 @@ The function
 appends the single value
 .I value_to_add
 to the array
-.I array\c
-\&.
+.IR array .
 The array will grow if all allocated values are used.
 If the function will return true if the address of the array of elements moved during
-.B realloc()\c
-\&.
+.BR realloc() .
 Otherwise it returns false.
 .sp
 The function
@@ -104,8 +101,7 @@ is a pointer to the dynamic array.
 The
 .I array_to_add_p
 is a pointer to the array to add to the end of the dynamic array
-.I array\c
-\&.
+.IR array .
 The
 .I count_of_elements_to_add
 is the number of elements to add to the dynamic array.
@@ -132,8 +128,7 @@ If after adding the values of the array, all allocated values are used, the dyna
 The function
 .B dyn_array_seek()
 sets the elements in use on the dynamic array
-.I array\c
-\&.
+.IR array .
 The
 .I offset
 is the offset in elements from the
@@ -167,19 +162,17 @@ will clear any element in use in the dynamic array
 boolean is true) and then set the number of elements in use to 0.
 The function does not free allocated storage.
 For that see
-.B dyn_array_free()\c
-\&.
+.BR dyn_array_free() .
 .PP
 The function
 .B dyn_array_free()
 frees the contents of the dynamic array
-.B array\c
-\&.
+.BR array .
 If
 .I array->zeroize
 is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via
-.B memset()\c
-\&) first.
+.BR memset() )
+first.
 The function does not free the
 .B struct dyn_array
 itself: it only frees any allocated storage.
@@ -201,28 +194,23 @@ obtains the address of the dynamic array
 of an element of type
 .I type
 at index
-.I index\c
-\&.
+.IR index .
 .TP
 .B dyn_array_tell()
 returns the current element count of the dynamic array
-.I array\c
-\&.
+.IR array .
 .TP
 .B dyn_array_beyond()
 returns the address of the element just beyond the elements in use in the dynamic array
-.I array\c
-\&.
+.IR array .
 .TP
 .B dyn_array_alloced()
 returns the number of elements allocated in memory for the dynamic array
-.I array\c
-\&.
+.IR array .
 .TP
 .B dyn_array_avail()
 returns the number of elements available (allocated but not in use) of the dynamic array
-.I array\c
-\&.
+.IR array .
 .TP
 .B dyn_array_rewind()
 rewinds the dynamic array
@@ -251,10 +239,10 @@ struct dyn_array
 .in
 .SS Version string
 The string
-.B dyn_array_version\c
-\&, which points to
-.B DYN_ARRAY_VERSION\c
-\&, is the current version of the
+.BR dyn_array_version ,
+which points to
+.BR DYN_ARRAY_VERSION ,
+is the current version of the
 .B dyn_array
 facility.
 .SH RETURN VALUE
@@ -273,8 +261,7 @@ The functions
 and
 .BR dyn_array_seek()
 return true if the address of the array of elements moved during
-.B realloc()\c
-\&.
+.BR realloc() .
 Otherwise they return false.
 .PP
 The functions
@@ -286,7 +273,6 @@ return void.
 For an example program that uses the dynamic array facility see the files
 .I dyn_test.h
 and
-.I dyn_test.c\c
-\&.
+.IR dyn_test.c .
 .SH HISTORY
 The dyn_array facility was first written by Landon Curt Noll in 2014 for use in tools such as STS (see the https://github.com/arcetri/STS GitHub repo).

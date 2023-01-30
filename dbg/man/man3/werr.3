@@ -61,19 +61,17 @@
 .B "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write non-fatal error messages to a stream such as
-.B stderr\c
-\&.
+.BR stderr .
 .SS Errno versions
 .PP
 The functions
-.B werrp()\c
-\&,
+.BR werrp() ,
 .B fwerrp()
 and
 .B vsnwerrp()
 write a message according to the value of
-.B errno\c
-\&, making sure to restore the
+.BR errno ,
+making sure to restore the
 .B errno
 value in the case the function returns.
 .SS Alternative output FILE * stream
@@ -82,8 +80,7 @@ The functions that do not take a
 or a
 .B char *
 write to
-.B stderr\c
-\&.
+.BR stderr .
 The functions
 .BR fwerr()
 and
@@ -99,8 +96,7 @@ and
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
 They do not do anything if passed a NULL pointer or
-.B size <= 1\c
-\&.
+.BR size\ <=\ 1 .
 .SS Variadic versions
 .PP
 The functions
@@ -143,10 +139,10 @@ When
 these functions will not print anything.
 .SS Version string
 The string
-.B dbg_version\c
-\&, which points to
-.B DBG_VERSION\c
-\&, is the current version of the
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
 .B dbg
 library.
 .SH RETURN VALUE

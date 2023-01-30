@@ -32,8 +32,7 @@ If given the
 .B \-t
 option it performs a test on the JSON decode and encode functions.
 By default the program reads from
-.B stdin\c
-\&.
+.BR stdin .
 .SH OPTIONS
 .TP
 .B \-h
@@ -41,8 +40,7 @@ Show help and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-q
 Suppresses some of the output (def: not quiet).
@@ -81,13 +79,11 @@ internal error
 .PP
 If you have an issue with the tool you can report it at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH EXAMPLES
 .PP
 Decode the JSON string
-.B { "test_mode" : false }\c
-\&:
+.BR {\ "test_mode"\ :\ false\ } :
 .sp
 .RS
 .ft B
@@ -100,10 +96,10 @@ Note that we didn't quote it!
 Decode input from
 .B stdin
 (send
-.B EOF\c
-\&, usually ctrl\-d or
-.B ^D\c
-\&, to decode):
+.BR EOF ,
+usually ctrl\-d or
+.BR ^D ,
+to decode):
 .sp
 .RS
 .ft B

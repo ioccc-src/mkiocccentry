@@ -37,8 +37,7 @@
 .B "void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write a usage message to a stream such as
-.B stderr\c
-\&.
+.BR stderr .
 .SS Variadic versions
 .PP
 The functions
@@ -57,8 +56,7 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.B printf\c
-\&.
+.BR printf .
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
@@ -76,10 +74,10 @@ with the exit code provided to the function if
 is >= 0.
 .SS Version string
 The string
-.B dbg_version\c
-\&, which points to
-.B DBG_VERSION\c
-\&, is the current version of the
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
 .B dbg
 library.
 .SH NOTES

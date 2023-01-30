@@ -72,16 +72,14 @@ of a fixed size.
 .SS Errno versions
 .PP
 The functions
-.B warnp()\c
-\&,
-.B fwarnp()\c
-\&,
+.BR warnp() ,
+.BR fwarnp() ,
 .B vfwarnp()
 and
 .B vsnwarnp()
 write a message according to the value of
-.B errno\c
-\&, making sure to restore the
+.BR errno ,
+ making sure to restore the
 .B errno
 value in the case the function returns.
 .SS Alternative output FILE * stream
@@ -90,8 +88,7 @@ The functions that do not take a
 or a
 .B char *
 write to
-.B stderr\c
-\&.
+.BR stderr .
 The functions
 .BR fwarn() \|,
 .BR vfwarn() \|,
@@ -109,8 +106,7 @@ and
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
 They do not do anything if passed a NULL pointer or
-.B size <= 1\c
-\&.
+.BR size\ <=\ 1 .
 .SS Variadic versions
 .PP
 The functions
@@ -137,8 +133,7 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.B printf\c
-\&.
+.BR printf .
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
@@ -151,14 +146,13 @@ these functions will not print anything.
 When
 .B msg_warn_silent == true
 these functions will be silenced if
-.B verbosity_level <= 0\c
-\&.
+.BR verbosity_level\ <=\ 0 .
 .SS Version string
 The string
-.B dbg_version\c
-\&, which points to
-.B DBG_VERSION\c
-\&, is the current version of the
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
 .B dbg
 library.
 .SH RETURN VALUE

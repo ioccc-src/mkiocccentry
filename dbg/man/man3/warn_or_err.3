@@ -47,16 +47,14 @@
 .B "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write either a warning message or a fatal error message (prior to aborting) to a stream such as
-.B stderr\c
-\&.
+.BR stderr .
 .SS Alternative output FILE * stream
 The functions that do not take a
 .B FILE *
 or a
 .B char *
 write to
-.B stderr\c
-\&.
+.BR stderr .
 The functions
 .BR fwarn_or_err() \|,
 .BR vfwarn_or_err()
@@ -85,8 +83,7 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.B printf\c
-\&.
+.BR printf .
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
@@ -103,14 +100,13 @@ error messages will not be printed.
 When
 .B msg_warn_silent == true
 warning messages will not be printed if
-.B verbosity_level <= 0\c
-\&.
+.BR verbosity_level\ <=\ 0 .
 .SS Version string
 The string
-.B dbg_version\c
-\&, which points to
-.B DBG_VERSION\c
-\&, is the current version of the
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
 .B dbg
 library.
 .SH RETURN VALUE
@@ -126,8 +122,7 @@ in the same manner as the functions
 .BR verrp() \|,
 .BR ferrp() \|,
 and
-.B vferrp()\c
-\&.
+.BR vferrp() .
 Otherwise they will return void.
 .SH NOTES
 .SS Variadic arguments

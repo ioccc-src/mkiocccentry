@@ -89,22 +89,19 @@ for the script.
 Set
 .B txzchk
 path to
-.I txzchk\c
-\&.
+.IR txzchk .
 .TP
 .BI \-T\  tar
 Set
 .B tar
 path to
-.I tar\c
-\&.
+.IR tar .
 .TP
 .BI \-F\  fnamchk
 Set
 .B fnamchk
 path to
-.I fnamchk\c
-\&.
+.IR fnamchk .
 .B txzchk
 uses
 .B fnamchk
@@ -116,8 +113,7 @@ Set path to the directory with the expected subdirectories
 and
 .I bad
 each containing text files of good and bad pseudo\-tarballs, to
-.I txzchk_tree\c
-\&.
+.IR txzchk_tree .
 As already noted, the
 .I bad
 subdirectory also has error files to compare against the output of
@@ -129,8 +125,7 @@ Declare the top level directory of this repository.
 The
 .B topdir
 directory must contain the source file
-.I mkiocccentry.c\c
-\&.
+.IR mkiocccentry.c .
 By default, the source file
 .I mkiocccentry.c
 is searched for in the current directory and then the parent of current directory.
@@ -179,8 +174,7 @@ Default directory of good and bad subdirectories each respectively with good and
 .I txzchk_test.log
 .RS
 The log file kept by
-.B txzchk_test.sh\c
-\&.
+.BR txzchk_test.sh .
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
 .SH NOTES
@@ -214,8 +208,7 @@ and the error files.
 This is why the script will always pass to
 .BR txzchk (1)
 the options
-.B \-w \-v 0 \-q\c
-\&.
+.BR \-w \-v 0 \-q .
 As such the verbose option to the script really is only for the script.
 Perhaps error codes should be used instead but since
 .BR txzchk (1)

@@ -40,8 +40,7 @@ to look under the JSON tree for good and bad files that must pass or fail respec
 The files that must pass are in the subdirectory called
 .I good
 and the files that must fail are in the subdirectory called
-.I bad\c
-\&.
+.IR bad .
 It keeps a log of all the tests in
 .I chkentry_test.log
 for later inspection.
@@ -55,18 +54,15 @@ Print version and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-D\  level
 Set debug level to
-.I level\c
-\&.
+.IR level .
 .TP
 .BI \-J\  level
 Set JSON verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-q
 Set quiet mode.
@@ -74,13 +70,11 @@ This will be passed to the JSON parser.
 .TP
 .BI \-c\  chkentry
 Set path to chkentry to
-.I chkentry\c
-\&.
+.IR chkentry .
 .TP
 .BI \-d\  json_tree
 Set json tree to look for good and bad files under to
-.I json_tree\c
-\&.
+.IR json_tree ,
 .SH EXIT STATUS
 .TP
 0
@@ -116,8 +110,7 @@ internal error
 .I chkentry_test.log
 .RS
 The log file kept by
-.B chkentry_test.sh\c
-\&.
+.BR chkentry_test.sh .
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
 .I test_JSON
@@ -134,7 +127,6 @@ were co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH SEE ALSO
 .BR chkentry (1)

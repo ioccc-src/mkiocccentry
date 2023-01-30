@@ -49,8 +49,7 @@
 .B "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write fatal error messages to a stream such as
-.B stderr\c
-\&.
+.BR stderr .
 .SS Errno versions
 .PP
 The functions
@@ -58,8 +57,8 @@ The functions
 and
 .B ferrp()
 write a message according to the value of
-.B errno\c
-\&, making sure to restore the
+.BR errno ,
+making sure to restore the
 .B errno
 value in the case the function returns.
 .SS Alternative output FILE * stream
@@ -68,8 +67,7 @@ The functions that do not take a
 or a
 .B char *
 write to
-.B stderr\c
-\&.
+.BR stderr .
 The functions
 .BR ferr() \|,
 .BR vferr() \|,
@@ -114,10 +112,10 @@ the
 functions will not print anything.
 .SS Version string
 The string
-.B dbg_version\c
-\&, which points to
-.B DBG_VERSION\c
-\&, is the current version of the
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
 .B dbg
 library.
 .SH RETURN VALUE
@@ -130,8 +128,8 @@ with the appropriate exit code but immediately after call either
 or
 .BR abort (3)
 depending on the value of
-.B __has_builtin(__builtin_unreachable)\c
-\&, thereby terminating the program.
+.BR __has_builtin(__builtin_unreachable) ,
+thereby terminating the program.
 .SH NOTES
 .SS Variadic arguments
 In the

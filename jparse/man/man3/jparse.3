@@ -54,8 +54,7 @@ parses a JSON string
 of length
 .I len
 in file
-.I filename\c
-\&.
+.IR filename .
 If
 .I is_valid
 is not NULL, it will set
@@ -70,11 +69,10 @@ bytes so that as long as one knows where in the string the JSON is, they can par
 If
 .I filename
 is NULL then it will read from
-.B stdin\c
-\& which can also be done by passing in \fI"\-"\fP.
+.B stdin
+which can also be done by passing in \fI"\-"\fP.
 The function will return the parsed JSON as a tree of type
-.B struct json *\c
-\&.
+.BR struct\ json\ * .
 If the parse fails a blank JSON tree is returned instead.
 .sp
 The function
@@ -88,16 +86,15 @@ The
 .I filename
 is for messages and is not used to determine what file to open as the stream should already be open.
 If you wish to do that you should use the
-.B parse_json_file()\c
-\& function instead.
+.B parse_json_file()
+function instead.
 Unless
 .I stream
 is
-.B stdin\c
-\& the state of it should be considered unsafe to use after the return of the function as it will be closed.
+.B stdin
+the state of it should be considered unsafe to use after the return of the function as it will be closed.
 The function returns the parsed JSON as a
-.B struct json *\c
-\&.
+.BR struct\ json\ * .
 .sp
 The
 .B parse_json_file
@@ -115,8 +112,7 @@ tree.
 The function
 .B json_dbg_allowed
 will return true if debug output would be displayed at the verbosity level
-.I json_dbg_lvl\c
-\&.
+.IR json_dbg_lvl .
 .br
 The functions
 .B json_warn_allowed
@@ -183,22 +179,21 @@ struct json
 };
 .SS Version strings
 The string
-.B jparse_version\c
-\&, which points to
-.B JPARSE_VERSION\c
-\&, is the current version of the
+.BR jparse_version ,
+which points to
+.BR JPARSE_VERSION ,
+is the current version of the
 .B jparse
 tool.
 The string
-.B json_parser_version\c
-\&, which points to
-.B JSON_PARSER_VERSION\c
-\&, is the current version of the parser itself.
+.BR json_parser_version ,
+which points to
+.BR JSON_PARSER_VERSION ,
+is the current version of the parser itself.
 .SH RETURN VALUE
 .PP
 The functions
-.B parse_json\c
-\&,
+.BR parse_json ,
 .B parse_json_stream
 and
 .B parse_json_file
@@ -207,8 +202,7 @@ return a
 which is either blank or, if the parse was successful, a tree of the entire parsed JSON.
 .PP
 The functions
-.B json_dbg_allowed\c
-\&,
+.BR json_dbg_allowed ,
 .B json_warn_allowed
 and
 .B json_err_allowed
@@ -216,15 +210,14 @@ will return true if debug, warn or error messages are allowed, respectively, and
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
-.B IOCCCMOCK\c
-\&,
+.BR IOCCCMOCK ,
 .B IOCCC28
 and beyond.
 .PP
 For more detailed history that goes beyond this humble man page we recommend you check
 .BR jparse (1),
-.I README.md\c
-\&, and the GitHub git log as well as reading the source code (or not :\-) ).
+.IR README.md ,
+and the GitHub git log as well as reading the source code (or not :\-) ).
 Understand that by source we refer to the
 .I jparse.l
 and

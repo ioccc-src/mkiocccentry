@@ -44,8 +44,8 @@ file or use backup files if error
 attempts to find a recent enough version of
 .B bison
 (minimum version defined in
-.I run_bison.sh\c
-\&) and use it to generate code from the
+.IR run_bison.sh )
+and use it to generate code from the
 .I prefix.y
 file.
 The default prefix is
@@ -58,8 +58,7 @@ encounters an error (syntax error or anything else) and the
 option is not specified, it attempts to use the backup files
 .I prefix.tab.ref.c
 and
-.I prefix.tab.ref.h\c
-\&.
+.IR prefix.tab.ref.h .
 .SH OPTIONS
 .TP
 .B \-h
@@ -70,8 +69,7 @@ print version and exit.
 .TP
 .BI \-v\  level
 set verbosity level to
-.I level\c
-\&.
+.IR level .
 .TP
 .B \-o
 do
@@ -84,26 +82,22 @@ cannot be used or fails to generate the files the script will fail.
 set
 .B bison
 basename to
-.I bison\c
-\&.
+.IR bison .
 .TP
 .BI \-g\  verge
 set path to the
 .B verge
 tool to
-.I verge\c
-\&.
+.IR verge .
 This is used to determine if the
 .B bison
 tool is recent enough.
 .TP
 .BI \-p\  prefix
 set prefix of files to use to
-.I prefix\c
-\&.
+.IR prefix .
 The bison input file will be
-.I prefix.y\c
-\&.
+.IR prefix.y .
 If the
 .B \-o option was not used and bison cannot be used or fails then the backup files
 .I prefix.tab.ref.c
@@ -113,8 +107,7 @@ will be used.
 .TP
 .BI \-s\  sorry.h
 set path of file to prepend to the C output to
-.I sorry.h\c
-\&.
+.IR sorry.h .
 .TP
 .B \-S
 suppress prepending apology to generated C output files.
@@ -123,18 +116,15 @@ suppress prepending apology to generated C output files.
 add directory
 .I bison_dir
 to list to search for
-.B bison\c
-\&.
+.BR bison .
 .B \-B
 can be used more than once.
 If not used the script looks at
-.B $PATH\c
-\&.
+.BR $PATH .
 .TP
 .BI \-D\  dir
 set directory to find the flex source file in to
-.I dir\c
-\&.
+.IR dir .
 Default is
 .I .
 (dot).
@@ -192,8 +182,7 @@ The
 option is mainly for maintainers of the
 .B jparse
 parser and scanner but it can be used to test if you have a recent enough version of
-.B bison\c
-\&.
+.BR bison .
 The idea behind it is if
 .B bison
 fails it might indicate a syntax error which the authors of
@@ -224,8 +213,7 @@ is a target in the Makefile, of course.
 .PP
 If you have any issues with the tool you can open an issue at
 .br
-.I \<https://github.com/ioccc\-src/mkiocccentry/issues\>\c
-\&.
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
 .SH EXAMPLES
 .PP
 Run
