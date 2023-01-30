@@ -207,6 +207,10 @@ if [[ ! -x "$AWK" ]]; then
     exit 2
 fi
 
+echo "WARNING: this tool is deprecated but if you know what you're doing this" 1>&2
+echo "WARNING: tool can be useful as a starting point." 1>&2
+echo 1>&2
+
 # WARNING: if your eyes or brain cannot deal with indecent hacks you should not
 # look below this line as this is where it starts to get uglier and later
 # becomes a hack. Even so it could be worse and it's probably not _that_ ugly.

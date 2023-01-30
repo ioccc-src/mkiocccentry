@@ -117,7 +117,7 @@ while getopts :hv:Vof:g:p:s:SF:D: flag; do
     esac
 done
 if [[ -z $FLEX_BASENAME ]]; then
-    echo "$0: ERROR: -b $FLEX_BASENAME name cannot be empty" 1>&2
+    echo "$0: ERROR: -f $FLEX_BASENAME name cannot be empty" 1>&2
     exit 8
 fi
 if [[ -z "$D_FLAG" ]]; then

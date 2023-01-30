@@ -398,7 +398,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 17
     fi
     if [[ ! -f $TMP_FILE ]]; then
-	echo "$0: ERROR: jsemtblgen tmp file is not a file: $TMP_FILE" 1>&2
+	echo "$0: ERROR: jsemtblgen tmp file is not a regular file: $TMP_FILE" 1>&2
 	exit 18
     fi
     if [[ ! -r $TMP_FILE ]]; then
@@ -410,7 +410,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 20
     fi
 
-    # output the trailer
+    # output the footer 
     #
     if [[ -n "$TAIL_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
@@ -464,7 +464,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	echo "$0: debug[3]: preserving possible patch files: $TMP_FILE $ORIG_FILE $REJ_FILE" 1>&2
     else
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[3]: about to run: rm -f $ORIG_FILE $REJ_FILE" 1>&2
+	    echo "$0: debug[3]: about to run: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE" 1>&2
 	fi
 	rm -f "$TMP_FILE" "$ORIG_FILE" "$REJ_FILE"
 	status="$?"
@@ -515,7 +515,7 @@ else
 	exit 29
     fi
 
-    # output the trailer
+    # output the footer
     #
     if [[ -n "$TAIL_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then

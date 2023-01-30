@@ -150,7 +150,7 @@ if [[ ! -e $INFO_HEAD_C ]]; then
     exit 5
 fi
 if [[ ! -f $INFO_HEAD_C ]]; then
-    echo "$0: ERROR: info.head.c not a file: $INFO_HEAD_C" 1>&2
+    echo "$0: ERROR: info.head.c not a regular file: $INFO_HEAD_C" 1>&2
     exit 5
 fi
 if [[ ! -r $INFO_HEAD_C ]]; then
@@ -163,7 +163,7 @@ if [[ ! -e $INFO_HEAD_H ]]; then
     exit 5
 fi
 if [[ ! -f $INFO_HEAD_H ]]; then
-    echo "$0: ERROR: info.head.h not a file: $INFO_HEAD_H" 1>&2
+    echo "$0: ERROR: info.head.h not a regular file: $INFO_HEAD_H" 1>&2
     exit 5
 fi
 if [[ ! -r $INFO_HEAD_H ]]; then
@@ -176,7 +176,7 @@ if [[ ! -e $INFO_TAIL_C ]]; then
     exit 5
 fi
 if [[ ! -f $INFO_TAIL_C ]]; then
-    echo "$0: ERROR: info.tail.c not a file: $INFO_TAIL_C" 1>&2
+    echo "$0: ERROR: info.tail.c not a regular file: $INFO_TAIL_C" 1>&2
     exit 5
 fi
 if [[ ! -r $INFO_TAIL_C ]]; then
@@ -189,7 +189,7 @@ if [[ ! -e $INFO_TAIL_H ]]; then
     exit 5
 fi
 if [[ ! -f $INFO_TAIL_H ]]; then
-    echo "$0: ERROR: info.tail.h not a file: $INFO_TAIL_H" 1>&2
+    echo "$0: ERROR: info.tail.h not a regular file: $INFO_TAIL_H" 1>&2
     exit 5
 fi
 if [[ ! -r $INFO_TAIL_H ]]; then
@@ -202,7 +202,7 @@ if [[ ! -e $AUTH_HEAD_C ]]; then
     exit 5
 fi
 if [[ ! -f $AUTH_HEAD_C ]]; then
-    echo "$0: ERROR: auth.head.c not a file: $AUTH_HEAD_C" 1>&2
+    echo "$0: ERROR: auth.head.c not a regular file: $AUTH_HEAD_C" 1>&2
     exit 5
 fi
 if [[ ! -r $AUTH_HEAD_C ]]; then
@@ -215,7 +215,7 @@ if [[ ! -e $AUTH_HEAD_H ]]; then
     exit 5
 fi
 if [[ ! -f $AUTH_HEAD_H ]]; then
-    echo "$0: ERROR: auth.head.h not a file: $AUTH_HEAD_H" 1>&2
+    echo "$0: ERROR: auth.head.h not a regular file: $AUTH_HEAD_H" 1>&2
     exit 5
 fi
 if [[ ! -r $AUTH_HEAD_H ]]; then
@@ -228,7 +228,7 @@ if [[ ! -e $AUTH_TAIL_C ]]; then
     exit 5
 fi
 if [[ ! -f $AUTH_TAIL_C ]]; then
-    echo "$0: ERROR: auth.tail.c not a file: $AUTH_TAIL_C" 1>&2
+    echo "$0: ERROR: auth.tail.c not a regular file: $AUTH_TAIL_C" 1>&2
     exit 5
 fi
 if [[ ! -r $AUTH_TAIL_C ]]; then
@@ -241,7 +241,7 @@ if [[ ! -e $AUTH_TAIL_H ]]; then
     exit 5
 fi
 if [[ ! -f $AUTH_TAIL_H ]]; then
-    echo "$0: ERROR: auth.tail.h not a file: $AUTH_TAIL_H" 1>&2
+    echo "$0: ERROR: auth.tail.h not a regular file: $AUTH_TAIL_H" 1>&2
     exit 5
 fi
 if [[ ! -r $AUTH_TAIL_H ]]; then
