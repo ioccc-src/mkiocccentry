@@ -178,8 +178,8 @@ main(int argc, char *argv[])
 	 */
 	test = chk_test(i, item, &test_result[i], len, strict);
 	if (test == false) {
-	    warn(__func__, "test: %d json_conv_number_str(\"%s\", &%ju) failed",
-			   i, test_set[i], (uintmax_t)len);
+	    warn(__func__, "test: chk_test(%d, item, &test_result[%d], %ju, %s) failed",
+			   i, i, (uintmax_t)len, (strict ? "true" : "false"));
 	    error = true;
 	}
 
