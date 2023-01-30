@@ -303,7 +303,7 @@ is_exec_dir()
 	    return 1
 	fi
 	if [[ ! -d "$f" ]]; then
-	    write_echo "$0: ERROR: $1 is not a regular file"
+	    write_echo "$0: ERROR: $1 is not a directory"
 	    return 1
 	fi
 	if [[ ! -x "$f" ]]; then
