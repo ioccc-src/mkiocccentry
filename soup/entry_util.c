@@ -4017,20 +4017,15 @@ test_rule_2a_override(bool boolean)
  *
  * Determine if rule_2a_size is within the proper limits.
  *
- * NOTE: Although this function does not return false if the size <= 0 or >
- * RULE_2A_SIZE we don't yet check that in this case the rule 2a override option
- * is enabled.
+ * NOTE: Although this function does not return false if the size <= 0 or
+ *	 if size > RULE_2A_SIZE we don't yet check that in this case the
+ *	 rule 2a override option is enabled.
  *
- * As the comment at
- * https://github.com/ioccc-src/mkiocccentry/pull/321#issuecomment-1223274394
- * says:
+ * because:
  *
  *	Failing the test_rule_2a_size() test does NOT disqualify the entry. It
- *	just triggers, in the case of mkiocccentry to ask the user if they
- *	really want to try and break the rule. In the case of the chk function we
- *	will write, the presence of a true value in the appropriate boolean in
- *	the parse tree will allow a 0 size or an over the limit size to still
- *	return true.
+ *	just triggers, in the case of mkiocccentry, to ask the user if they
+ *	really want to try and break the rule.
  *
  * given:
  *	rule_2a_size	rule 2a size
@@ -4086,22 +4081,15 @@ test_rule_2b_override(bool boolean)
  *
  * Determine if rule_2b_size is within the proper limits.
  *
- * NOTE: Although this function does not return false if the size <= 0 or >
- * RULE_2B_SIZE we don't yet check that in this case the rule 2a override option
- * is enabled.
+ * NOTE: Although this function does not return false if the size <= 0 or
+ *	 if size > RULE_2B_SIZE we don't yet check that in this case the
+ *	 rule 2b override option is enabled.
  *
- * As the comment at
- * https://github.com/ioccc-src/mkiocccentry/pull/321#issuecomment-1223274394
- * says:
+ * because:
  *
  *	Failing the test_rule_2b_size() test does NOT disqualify the entry. It
- *	just triggers, in the case of mkiocccentry to ask the user if they
- *	really want to try and break the rule. In the case of the chk function we
- *	will write, the presence of a true value in the appropriate boolean in
- *	the parse tree will allow a 0 size or an over the limit size to still
- *	return true.
- *
- * ..and I believe this also applies to rule 2b as well! :-)
+ *	just triggers, in the case of mkiocccentry, to ask the user if they
+ *	really want to try and break the rule.
  *
  * given:
  *	rule_2b_size	rule 2b size
