@@ -122,7 +122,7 @@ element refers to the parse tree depth from the root node.
 The root node as a
 .B depth
 value of 0.
-Invalid nodes and unset nodes (such as the last table entry) are given negative value.
+Invalid nodes and unset nodes (such as the last table entry) are given a negative value.
 .sp 1
 The
 .B type
@@ -137,14 +137,14 @@ element value is initially given the value
 .sp 1
 The
 .B max
-This will initially given the same value as
+will initially be given the same value as
 .BR count .
 .sp 1
 The
 .B count
 element value records the number of times that
 .BR jsemtblgen (8)
-found a given JSON element at the given depth was found in the given JSON file.
+found a given JSON element at the given depth in the given JSON file.
 .sp 1
 The
 .B sem_index
@@ -222,7 +222,7 @@ chk_IOCCC_contest_id(struct json const *node,
 In particular, the arguments given to the validation function provide a complete
 context for the given function to perform additional validation of the given JSON node.
 See
-.B json_parse.h
+.I json_parse.h
 for more information about the
 .B struct\ json
 structure.
@@ -234,11 +234,8 @@ function:
 .in +0.5i
 The
 .B node
-argument points to a fully linked JSON parse tree, starting at the given JSON node
-in question.
-Because the JSON parse tree contains pointers to parent and sibling nodes,
-the validation function may be coded to walk the JSON parse tree wherever
-is needed to perform whatever additional validation checks may be required.
+argument points to a fully linked JSON parse tree, starting at the given JSON node in question.
+Because the JSON parse tree contains pointers to parent and sibling nodes, the validation function may be coded to walk the JSON parse tree wherever is needed to perform whatever additional required validation checks.
 .sp 1
 The
 .B depth
@@ -266,7 +263,7 @@ and finally set
 .B *val_err
 to the allocated address.
 See
-.B json_sem.h
+.I json_sem.h
 for more information about the
 .B struct\ json_sem_val_err
 structure.
@@ -276,10 +273,10 @@ structure.
 The
 .B name
 element refers to the decoded name of a JSON member for JSON nodes that are of type
-.BR JTYPE_MEMBER .
-For nodes that are not JTYPE_MEMBER
-this value is
-.BR NULL .
+.BR JTYPE_MEMBER \|.
+For nodes that are not
+.B JTYPE_MEMBER
+this value is NULL.
 .sp 1
 .in -0.5i
 .PP
@@ -292,31 +289,31 @@ utility is recommended to accomplish this.
 .SH OPTIONS
 .TP
 .B \-h
-print help and exit.
+Print help and exit.
 .TP
 .BI \-v\  level
-set verbosity level to
-.IR level .
+Set verbosity level to
+.IR level \c
 \&.
 .TP
 .BI \-J\  level
-set JSON verbosity level to
+Set JSON verbosity level to
 .IR level .
 .TP
 .B \-q
-set quiet mode.
+Set quiet mode.
 .TP
 .B \-V
-print version and exit.
+Print version and exit.
 .TP
 .B \-s
-specify that arg is a string to be processed rather than a file.
+Specify that arg is a string to be processed rather than a file.
 .TP
 .B \-I
-output as a C header file.
+Output as a C header file.
 .TP
 .BI \-N\  name
-set name of the semantics table.
+Set name of the semantics table.
 .sp 1
 The default
 .I name
@@ -324,21 +321,18 @@ is
 .BR sem_tbl .
 .TP
 .BI \-D\  def_func
-validate with
+Validate with
 .I def_func()
 unless overridden by another flag.
 .sp 1
 The default
 .I def_func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-P\  prefix
 All
 .B validate
-functions, that are not
-.B NULL
-will start with
+functions, that are not NULL will start with
 .I prefix
 followed by an underscore (_).
 .sp 1
@@ -348,104 +342,90 @@ contains invalid function name characters, those
 characters are replaced by underscore (_).
 If
 .I prefix
-is a C language keyword,
-or does not start with a character that is valid for
-a C function name, then then it is prepended with
+is a C language keyword, or does not start with a character that is valid for a C function name, then then it is prepended with
 .BR x .
 .sp 1
 The default is to not use a prefix.
 .RE
 .TP
 .BI \-1\  func
-validate
+Validate
 .B JTYPE_NUMBER
 JSON nodes with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-S\  func
-validate
+Validate
 .B JTYPE_STRING
 JSON nodes with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-B\  func
-validate
+Validate
 .B JTYPE_BOOL
 JSON nodes with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-0\  func
-validate
+Validate
 .B JTYPE_NULL
 JSON nodes with
-.IR func() .
+.IR func() \|.
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-M\  func
-validate
+Validate
 .B JTYPE_MEMBER
 JSON nodes with
-.IR func() .
+.IR func() \|.
 .sp 1
 The default is based on the JSON member name.
-If the JSON member name
-contains invalid function name characters, those
-characters are replaced by underscore (_).
-If the JSON member name
-is a C language keyword,
-or does not start with a character that is valid for
-a C function name, then then it is prepended with
+If the JSON member name contains invalid function name characters, those characters are replaced by underscore (_).
+If the JSON member name is a C language keyword, or does not start with a character that is valid for a C function name, then then it is prepended with
 .BR x .
 .TP
 .BI \-O\  func
-validate
+Validate
 .B JTYPE_OBJECT
 JSON nodes with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-A\  func
-validate
+Validate
 .B JTYPE_ARRAY
 JSON nodes with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .TP
 .BI \-U\  func
-validate nodes with unknown types with
+Validate nodes with unknown types with
 .IR func() .
 .sp 1
 The default
 .I func
-is
-.BR NULL .
+is NULL.
 .SH EXIT STATUS
 .TP
 0
@@ -482,5 +462,4 @@ instead.
 See that man page for an example.
 .SH SEE ALSO
 .BR jsemcgen.sh (8),
-\&,
 .BR jparse (3)

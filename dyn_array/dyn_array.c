@@ -144,7 +144,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     }
 
     /*
-     * determine the size of the realloc-ed area
+     * determine the size of the realloced area
      */
     old_allocated = array->allocated;
     new_allocated = old_allocated + elms_to_allocate;
@@ -437,43 +437,43 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	 * case: data starts at beginning of allocated
 	 */
 	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "is %s: first_add: %p == first_alloc: %p",
+	    dbg(DBG_VVVVHIGH, "in %s: first_add: %p == first_alloc: %p",
 			  __func__, first_add, first_alloc);
 	}
 	switch (compare_addr(last_add, last_alloc)) {
 
 	case PTR_BELOW_ADDR:	/* data ends before end of allocated */
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: last_add: %p < last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_INSIDE;
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: ret #5: %s: last_add: %p < last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: ret #5: %s: last_add: %p < last_alloc: %p",
 			      __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_EQ:		/* data ends at end of allocated */
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: last_add: %p == last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_INSIDE;
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: ret #6: %s: last_add: %p == last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: ret #6: %s: last_add: %p == last_alloc: %p",
 			       __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: last_add: %p > last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_IN_BEYOND;
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: ret #7: %s: last_add: %p > last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: ret #7: %s: last_add: %p > last_alloc: %p",
 			      __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
@@ -490,49 +490,49 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	 * case: data to add starts after allocated starts
 	 */
 	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "is %s: first_add: %p > first_alloc: %p",
+	    dbg(DBG_VVVVHIGH, "in %s: first_add: %p > first_alloc: %p",
 			  __func__, first_add, first_alloc);
 	}
 	switch (compare_addr(first_add, last_alloc)) {
 
 	case PTR_BELOW_ADDR:	/* data starts before end of allocated */
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: first_add: %p < last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: first_add: %p < last_alloc: %p",
 			      __func__, first_add, last_alloc);
 	    }
 	    switch (compare_addr(last_add, last_alloc)) {
 	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: last_add: %p < last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: ret #8: %s: last_add: %p == last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: ret #8: %s: last_add: %p < last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_EQ:		/* data ends matches end of allocated */
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: last_add: %p == last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: ret #9: %s: last_add: %p == last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: ret #9: %s: last_add: %p == last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: last_add: %p > last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_IN_BEYOND;
 		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "is %s: ret #10: %s: last_add: %p > last_alloc: %p",
+		    dbg(DBG_VVVVHIGH, "in %s: ret #10: %s: last_add: %p > last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
@@ -546,19 +546,19 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	case PTR_EQ:		/* data start matches end of allocated */
 	    ret = MOVE_CASE_INSIDE;
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: ret #11: %s: first_add: %p == last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: ret #11: %s: first_add: %p == last_alloc: %p",
 			       __func__, move_case_name(ret), first_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_ABOVE_ADDR:	/* data start beyond end of allocated */
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: first_add: %p > last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: first_add: %p > last_alloc: %p",
 			      __func__, first_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_OUTSIDE;
 	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "is %s: ret #12: %s: first_add: %p > last_alloc: %p",
+		dbg(DBG_VVVVHIGH, "in %s: ret #12: %s: first_add: %p > last_alloc: %p",
 			      __func__, move_case_name(ret), first_add, last_alloc);
 	    }
 	    break;
@@ -948,11 +948,13 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    err(90, __func__, "mv_case: %s but previous if says this is impossible",
 			       move_case_name(mv_case));
 	    not_reached();
+	    break;
 
 	case MOVE_CASE_OUTSIDE:
 	    err(91, __func__, "mv_case: %s but previous if says this is impossible",
 			       move_case_name(mv_case));
 	    not_reached();
+	    break;
 
 	case MOVE_CASE_INSIDE:
 
@@ -964,7 +966,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    }
 
 	    /* append the entire chunk of data */
-	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new stating location */
+	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new starting location */
 	    if (dbg_allowed(DBG_VVVHIGH)) {
 		dbg(DBG_VVVHIGH, "mv_case: %s special "
 			     "memmove(beyond: %p, new_array_to_add_p: %p, data_size: %ju)",
@@ -1111,6 +1113,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	default:
 	    err(103, __func__, "mv_case is an unknown enum value: %d", (int)mv_case);
 	    not_reached();
+	    break;
 	}
     }
 

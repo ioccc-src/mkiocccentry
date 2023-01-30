@@ -3331,12 +3331,12 @@ json_object_add_member(struct json *node, struct json *member)
 	not_reached();
     }
     if (node->type != JTYPE_OBJECT) {
-	err(213, __func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
+	err(213, __func__, "object node type expected to be JTYPE_OBJECT: %d found type: %d",
 		           JTYPE_OBJECT, node->type);
 	not_reached();
     }
     if (member->type != JTYPE_MEMBER) {
-	err(214, __func__, "node type expected to be JTYPE_MEMBER: %d found type: %d",
+	err(214, __func__, "object member type expected to be JTYPE_MEMBER: %d found type: %d",
 		           JTYPE_MEMBER, node->type);
 	not_reached();
     }
@@ -3344,8 +3344,6 @@ json_object_add_member(struct json *node, struct json *member)
     /*
      * point to object
      */
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_item_type_name(node));
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON member type: %s", json_item_type_name(member));
     item = &(node->item.object);
     if (item->s == NULL) {
 	err(215, __func__, "item->s is NULL");
@@ -3371,6 +3369,10 @@ json_object_add_member(struct json *node, struct json *member)
      */
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
+
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object node type: %s", json_item_type_name(node));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object member type: %s", json_item_type_name(member));
+
     return node;
 }
 

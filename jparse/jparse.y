@@ -191,19 +191,19 @@ json:
 	    json_dbg_tree_print(JSON_DBG_MED, __func__, $json, JSON_DEFAULT_MAX_DEPTH);
 	}
 
-	/* return the JSON parse tree */
-	if ($json == NULL) {
-	    /* Magic: See below magic note for how *tree will be set to NULL */
-	    warn(__func__, "under json: $json == NULL: about to perform: "
-			   "*tree = NULL;");
-	}
-	if (json_dbg_allowed(JSON_DBG_HIGH)) {
-	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about to also perform: "
-					      "*tree = $json;");
-	}
 	if (tree == NULL) {
 	    warn(__func__, "under json: tree == NULL");
 	} else {
+	    /* return the JSON parse tree */
+	    if ($json == NULL) {
+		/* Magic: See below magic note for how *tree will be set to NULL */
+		warn(__func__, "under json: $json == NULL: about to perform: "
+			       "*tree = NULL;");
+	    }
+	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+		json_dbg(JSON_DBG_HIGH, __func__, "under json: about to also perform: "
+						  "*tree = $json;");
+	    }
 	    /*
 	     * Magic: If $json == NULL then *tree will be set to NULL. If it's
 	     * not NULL, however, *tree will be set to the parse tree itself
@@ -357,7 +357,7 @@ json_value:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(yytext);");
+					       "$json_value = parse_json_bool(yyget_text(scanner));");
 	}
 
 	/* action */
@@ -387,7 +387,7 @@ json_value:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(yytext);");
+					       "$json_value = parse_json_bool(yyget_text(scanner))");
 	}
 
 	/* action */
@@ -417,7 +417,7 @@ json_value:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_null(yytext);");
+					       "$json_value = parse_json_null(yyget_text(scanner));");
 	}
 
 	/* action */
@@ -785,7 +785,7 @@ json_string:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", yyget_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = parse_json_string(yytext, yyleng);");
+					       "$json_string = parse_json_string(yyget_text(scanner), (size_t)yyget_leng(scanner);");
 	}
 
 	/* action */
@@ -817,7 +817,7 @@ json_number:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", yyget_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = parse_json_number(yytext);");
+					       "$json_number = parse_json_number(yyget_text(scanner));");
 	}
 
 	/* action */

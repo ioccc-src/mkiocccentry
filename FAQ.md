@@ -51,13 +51,14 @@ for more details on what you can do to help us.
 
 
 If your tar does not support the `-J` option you can either use a system
-which does have such a tar or you can try downloading and installing GNU Tar at
-the [GNU website](https://www.gnu.org/software/tar/).
+which does have such a tar or you can try downloading GNU Tar from
+the [GNU website](https://www.gnu.org/software/tar/) and compile and install it
+so that the tools may find it.
 
 
 ## I need help with formatting markdown files for my entry
 
-Please see this simple [markdown
-guide](https://www.markdownguide.org/basic-syntax) for more help.
+Please see this simple
+[markdown guide](https://www.markdownguide.org/basic-syntax) for more help.
 
 
