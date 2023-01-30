@@ -501,12 +501,6 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 {
     int ret;			/* libc function return code */
     int saved_errno;		/* errno at function start */
-    bool allowed = false;	/* true ==> output is allowed */
-
-    /*
-     * determine if conditions allow function to write a warning to stderr
-     */
-    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -526,11 +520,9 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -539,11 +531,9 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -552,11 +542,9 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fputc('\n', stream);
     if (ret != '\n') {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -565,11 +553,9 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fflush(stream);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -608,12 +594,6 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     int ret;			/* libc function return code */
     int ret2;			/* libc function return code */
     int saved_errno;		/* errno at function start */
-    bool allowed = false;	/* true ==> output is allowed */
-
-    /*
-     * determine if conditions allow function to write a warning to stderr
-     */
-    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -639,11 +619,9 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-				   caller, __func__, size, caller, name, fmt, ret);
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret);
     }
 
     /*
@@ -652,12 +630,10 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
     if ((size_t)ret2 >= size-(size_t)ret) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-				   "snprintf returned: %d vsnprintf returned: %d\n",
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
-	}
     }
 
     /*
@@ -688,12 +664,6 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
 {
     int ret;			/* libc function return code */
     int saved_errno;		/* errno at function start */
-    bool allowed = false;	/* true ==> output is allowed */
-
-    /*
-     * determine if conditions allow function to write a warning to stderr
-     */
-    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -713,11 +683,9 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -726,11 +694,9 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -739,11 +705,9 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, ": errno[%d]: %s\n", saved_errno, strerror(saved_errno));
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
-				   caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
+			       caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -752,11 +716,9 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fflush(stream);
     if (ret < 0) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
-				   caller, __func__, caller, name, fmt, strerror(errno));
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
     /*
@@ -796,12 +758,6 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     int ret2;			/* libc function return code */
     int ret3;			/* libc function return code */
     int saved_errno;		/* errno at function start */
-    bool allowed = false;	/* true ==> output is allowed */
-
-    /*
-     * determine if conditions allow function to write a warning to stderr
-     */
-    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -827,11 +783,9 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-				   caller, __func__, size, caller, name, fmt, ret);
-	}
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret);
     }
 
     /*
@@ -840,12 +794,10 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
     if ((size_t)ret2 >= size-(size_t)ret) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-				   "snprintf returned: %d vsnprintf returned: %d\n",
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
-	}
     }
 
     /*
@@ -854,12 +806,10 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for strerror() */
     ret3 = snprintf(str+ret+ret2, size-(size_t)ret-(size_t)ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
     if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
-	if (allowed == true) {
-	    /* we cannot call warn() because that would produce an infinite loop! */
-	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-				   "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
-	}
     }
 
     /*
