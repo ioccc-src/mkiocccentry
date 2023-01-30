@@ -67,6 +67,10 @@ incorrect English (that is American English) spelling was in the repo it was
 untouched as it is after all the International Obfuscated C Code Contest, not
 the Obfuscated C Code Contest for people who use proper English. :-)
 
+Updated bug_report.sh version with improvements: check for Makefile in all
+subdirectories, check for overriding makefile.local in all subdirectories and
+check that all subdirectories exist and are readable and are executable.
+
 
 ## Release 0.9.9 2022-12-31
 
