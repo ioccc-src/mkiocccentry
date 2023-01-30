@@ -106,7 +106,7 @@ and
 write a message to a buffer of a fixed size.
 They do not write a newline after the message but the string is NUL terminated.
 They do not do anything if passed a NULL pointer or
-.BI size
+.I size
 <= 1.
 .SS Variadic versions
 .PP
@@ -134,7 +134,7 @@ The state of the
 is not modified by these functions.
 .SS Format of the fmt string
 The format string is a character string in the same form as
-.BR printf .
+.BR printf (3).
 As these are quite complex please refer to the
 .BR printf (3)
 man page for more details and examples.
@@ -189,7 +189,8 @@ style format.
 If the format requires arguments, then such arguments may be given after the
 .IR fmt .
 For modern C compilers, the agreement between any % directives in
-.IR fmt , and any arguments that may follow is checked by the format attribute facility.
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
 Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If

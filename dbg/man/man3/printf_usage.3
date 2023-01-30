@@ -65,13 +65,6 @@ man page for more details and examples.
 When
 .I usage_output_allowed
 is false these functions will not print anything.
-.SH RETURN VALUE
-.PP
-These functions return void except that the functions will call
-.BR exit (3)
-with the exit code provided to the function if
-.B exitcode
-is >= 0.
 .SS Version string
 The string
 .BR dbg_version ,
@@ -80,6 +73,13 @@ which points to
 is the current version of the
 .B dbg
 library.
+.SH RETURN VALUE
+.PP
+These functions return void except that the functions will call
+.BR exit (3)
+with the exit code provided to the function if
+.I exitcode
+is >= 0.
 .SH NOTES
 .SS Variadic arguments
 In the
