@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemtblgen 8 "29 January 2023" "jsemtblgen" "jparse tools"
+.TH jsemtblgen 8 "30 January 2023" "jsemtblgen" "jparse tools"
 .SH NAME
 .B jsemtblgen
 \- generate JSON semantics table
@@ -48,20 +48,247 @@
 .IR func \|]
 .I json_arg
 .SH DESCRIPTION
-This tool creates JSON semantics tables.
-JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
+The
+.BR jsemtblgen (8)
+writes a JSON semantics table to stdout based on the contents of the JSON file
+.BR json_arg ,
+or if
+.B \-s
+is given then
+.B json_arg
+is assumed to be a JSON document string.
+.PP
+The JSON semantics table is written in C.
+Without
+.B \-I
+the JSON semantics C language table is written as an
+initialized array of
+.B struct json_sem
+values to standard output.
+With
+.B \-I
+a suitable C header file is written to standard output.
+.PP
+Normally one would use the shell script tool
+.BR jsemcgen.sh (8)
+to drive the
+.BR jsemtblgen (8)
+tool to generate table C code.
+.PP
+If the
+.B \-s
+option is used the
+.I json_arg
+is a string.
+Otherwise it is assumed to be a file.
 .PP
 In general, a JSON semantics table is an array of
 .B struct json_sem
 that can be used to drive checks on the semantics of valid JSON.
 This can be done for any JSON file.
 .PP
-If the 
-.B \-s
-option is used the
-.I json_arg
-is a string.
-Otherwise it is assumed to be a file.
+The
+.B struct json_sem
+is declared in
+.B json_sem.h
+as follows:
+.PP
+.in +0.5i
+.nf
+struct json_sem
+{
+    unsigned int depth;         /* JSON parse tree node depth */
+    enum item_type type;        /* type of JSON node, JTYPE_UNSET ==> end of table */
+    unsigned int min;           /* minimum allowed count */
+    unsigned int max;           /* maximum allowed count, 0 ==> infinite */
+    unsigned int count;         /* number of times this JSON semantic was matched */
+    int sem_index;              /* index of sem in JSON semantic table or -1 ==> end of the table */
+    size_t name_len;            /* if type == JTYPE_MEMBER length of name_str (not including final NUL) or 0 */
+    bool (* validate)(struct json const *node,
+                      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+                                /* JSON parse tree node validator, or NULL */
+    char *name;                 /* if type == JTYPE_MEMBER, match decoded name or NULL */
+};
+.fi
+.in -0.5i
+.PP
+The following refers to elements of
+.BR struct\ json_sem :
+.PP
+.in +0.5i
+The
+.B depth
+element refers to the parse tree depth from the root node.
+The root node as a
+.B depth
+value of 0.
+Invalid nodes and unset nodes (such as the last table entry) are given negative value.
+.sp 1
+The
+.B type
+element defines the type of JSON node that was parsed.
+Invalid nodes and unset nodes (such as the last table entry) are given a value of
+.BR JTYPE_UNSET .
+.sp 1
+The
+.B min
+element value is initially given the value
+.BR 1 .
+.sp 1
+The
+.B max
+This will initially given the same value as
+.BR count .
+.sp 1
+The
+.B count
+element value records the number of times that
+.BR jsemtblgen (8)
+found a given JSON element at the given depth was found in the given JSON file.
+.sp 1
+The
+.B sem_index
+is assigned sequential values in the table,
+as sorted by
+.BR jsemtblgen (8),
+starting with 0.
+Invalid nodes and unset nodes (such as the last table entry) are given a value of
+.BR \-1 .
+.sp 1
+The
+.B name_len
+for JSON nodes that are of type
+.B JTYPE_MEMBER
+is the string length (not counting the enclosing quotes and not counting the trailing NUL byte)
+of the name part of a JSON member.
+For nodes that are not JTYPE_MEMBER
+this value is
+.BR 0 .
+.sp 1
+For example, consider the following JSON member element:
+.sp 1
+.in +0.5i
+.nf
+"curds" : 12345,
+.fi
+.in -0.5i
+.sp 1
+Because the string
+.B curds
+had a string length of 5, the
+.B name_len
+would be assigned a value of
+.BR 5 .
+.sp 1
+The
+.B validate
+element refers to a pointer to a function that may be called, if non-NULL,
+to perform additional validation of the given JSON node.
+What appears to a somewhat "complex" function pointer simply refers to a function name
+with 5 arguments of a given type.
+If
+.BR validate \ ==\ NULL
+then there is no function to perform additional validation of the given JSON node.
+.sp 1
+For example, if
+.BR validate \ ==\ chk_IOCCC_contest_id
+then the following function will satisfy the function pointer requirement:
+.sp 1
+.in +0.5i
+.nf
+/*
+ * chk_IOCCC_contest_id - JSON semantic check for IOCCC_contest_id
+ *
+ * given:
+ *      node    JSON parse node being checked
+ *      depth   depth of node in the JSON parse tree (0 ==> tree root)
+ *      sem     JSON semantic node triggering the check
+ *      val_err pointer to address where to place a JSON semantic validation error,
+ *              NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *      true ==> JSON element is valid
+ *      false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_IOCCC_contest_id(struct json const *node,
+                     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    ...
+}
+.fi
+.in -0.5i
+.sp 1
+In particular, the arguments given to the validation function provide a complete
+context for the given function to perform additional validation of the given JSON node.
+See
+.B json_parse.h
+for more information about the
+.B struct\ json
+structure.
+.sp 1
+The following refers to the arguments of the
+.B validate
+function:
+.sp 1
+.in +0.5i
+The
+.B node
+argument points to a fully linked JSON parse tree, starting at the given JSON node
+in question.
+Because the JSON parse tree contains pointers to parent and sibling nodes,
+the validation function may be coded to walk the JSON parse tree wherever
+is needed to perform whatever additional validation checks may be required.
+.sp 1
+The
+.B depth
+argument gives the JSON parse tree depth of the given JSON node,
+with 0 indicating the root of the JSON parse tree.
+.sp 1
+The
+.B sem
+argument points to the given semantics table entry that triggered the additional validation
+function call.
+.sp 1
+The
+.B val_err
+argument points to a pointer to a
+.B struct\ json_sem_val_err
+structure.
+If the validation function discovered a JSON semantic (or other) problem,
+it may use
+.BR calloc (3)
+to allocate a
+.B struct\ json_sem_val_err
+and then assign values to the
+.B struct\ json_sem_val_err
+and finally set
+.B *val_err
+to the allocated address.
+See
+.B json_sem.h
+for more information about the
+.B struct\ json_sem_val_err
+structure.
+.sp 1
+.in -0.5i
+.sp 1
+The
+.B name
+element refers to the decoded name of a JSON member for JSON nodes that are of type
+.BR JTYPE_MEMBER .
+For nodes that are not JTYPE_MEMBER
+this value is
+.BR NULL .
+.sp 1
+.in -0.5i
+.PP
+One may modify the default table values via the
+.BR patch (1)
+utility.
+The use of the
+.BR jsemcgen.sh (8)
+utility is recommended to accomplish this.
 .SH OPTIONS
 .TP
 .B \-h
@@ -70,6 +297,7 @@ print help and exit.
 .BI \-v\  level
 set verbosity level to
 .IR level .
+\&.
 .TP
 .BI \-J\  level
 set JSON verbosity level to
@@ -89,26 +317,43 @@ output as a C header file.
 .TP
 .BI \-N\  name
 set name of the semantics table.
+.sp 1
+The default
+.I name
+is
+.BR sem_tbl .
 .TP
 .BI \-D\  def_func
 validate with
 .I def_func()
 unless overridden by another flag.
+.sp 1
+The default
+.I def_func
+is
+.BR NULL .
 .TP
 .BI \-P\  prefix
-validate
-.B JTYPE_MEMBER
-JSON nodes with
-.I prefix_name()
-(def: do not).
-.RS
-Note that the name is based on the
-.B JTYPE_MEMBER
-JSON decoded name string.
-Underscore (_) replaces any name chars that are not valid in a C function name.
-.B \-P
-overrides any use of
-.BR \-M .
+All
+.B validate
+functions, that are not
+.B NULL
+will start with
+.I prefix
+followed by an underscore (_).
+.sp 1
+If
+.I prefix
+contains invalid function name characters, those
+characters are replaced by underscore (_).
+If
+.I prefix
+is a C language keyword,
+or does not start with a character that is valid for
+a C function name, then then it is prepended with
+.BR x .
+.sp 1
+The default is to not use a prefix.
 .RE
 .TP
 .BI \-1\  func
@@ -116,46 +361,91 @@ validate
 .B JTYPE_NUMBER
 JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-S\  func
-validate 
+validate
 .B JTYPE_STRING
 JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-B\  func
-validate 
+validate
 .B JTYPE_BOOL
 JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-0\  func
-validate 
+validate
 .B JTYPE_NULL
 JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-M\  func
-validate 
+validate
 .B JTYPE_MEMBER
 JSON nodes with
 .IR func() .
+.sp 1
+The default is based on the JSON member name.
+If the JSON member name
+contains invalid function name characters, those
+characters are replaced by underscore (_).
+If the JSON member name
+is a C language keyword,
+or does not start with a character that is valid for
+a C function name, then then it is prepended with
+.BR x .
 .TP
 .BI \-O\  func
-validate 
+validate
 .B JTYPE_OBJECT
-JSON nodes with 
+JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-A\  func
-validate 
+validate
 .B JTYPE_ARRAY
-JSON nodes with 
+JSON nodes with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .TP
 .BI \-U\  func
 validate nodes with unknown types with
 .IR func() .
+.sp 1
+The default
+.I func
+is
+.BR NULL .
 .SH EXIT STATUS
 .TP
 0
@@ -191,6 +481,6 @@ Rather than use this tool directly one should use
 instead.
 See that man page for an example.
 .SH SEE ALSO
-.BR jsemcgen (8),
+.BR jsemcgen.sh (8),
 \&,
 .BR jparse (3)

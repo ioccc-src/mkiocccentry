@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH all_sem_ref.sh 8 "29 January 2023" "all_sem_ref.sh" "IOCCC tools"
+.TH all_sem_ref.sh 8 "30 January 2023" "all_sem_ref.sh" "IOCCC tools"
 .SH NAME
 .B all_sem_ref.sh
 \- form
@@ -118,6 +118,26 @@ files.
 The
 .I ref_dir
 directory is a subdirectory under which the semantic table files are written.
+.SH EXAMPLE
+The
+.B soup/Makefile
+contains the following
+.BR make (1)
+.B all_sem_ref
+rule.
+It performs the following command to build the JSON semantic tables for
+.BR chkentry (8):
+.sp 1
+.in +0.5i
+.nf
+cd soup
+\&./all_sem_ref.sh \-v 1 \-j ../jparse/jsemtblgen \-J ../jparse/jsemcgen.sh -- \\
+    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \\
+    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \\
+    ../test_ioccc/test_JSON/info.json/good \\
+    ../test_ioccc/test_JSON/auth.json/good ref
+.fi
+.in -0.5i
 .SH OPTIONS
 .TP
 .B \-h
