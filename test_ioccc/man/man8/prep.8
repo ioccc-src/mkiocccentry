@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH prep.sh 8 "29 January 2023" "prep.sh" "IOCCC tools"
+.TH prep.sh 8 "30 January 2023" "prep.sh" "IOCCC tools"
 .SH NAME
 .B prep.sh
 \- prepare for a release - actions for make prep and make release
@@ -124,7 +124,8 @@ to get a summary of all issues to fix.
 However the
 .B make release
 generally should pass before a commit (if one does not modify the jparse files then one can probably get away with not using
-.BR make release ).
+.B make release\c
+\&).
 .PP
 This script is only needed for the repo maintainers prior to a commit and pull request.
 .PP
