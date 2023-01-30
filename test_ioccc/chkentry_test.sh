@@ -301,9 +301,9 @@ run_auth_test()
     # examine test result
     #
     if [[ $status -eq 4 ]]; then
-	echo "$0: ERROR: file is not valid JSON, not a valid file for chkentry to test: $auth_json" >> "${LOGFILE}"
+	echo "$0: ERROR: file is not a valid JSON file for chkentry to test: $auth_json" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: ERROR: file is not valid JSON, not a valid file for chkentry to test: $auth_json" 1>&2
+	    echo "$0: debug[1]: ERROR: file is not a valid JSON file for chkentry to test: $auth_json" 1>&2
 	fi
 	INVALID_JSON_FOUND="true"
     elif [[ $status -eq 0 ]]; then
@@ -409,9 +409,9 @@ run_info_test()
     # examine test result
     #
     if [[ $status -eq 4 ]]; then
-	echo "$0: ERROR: file is not valid JSON, not a valid file for chkentry to test: $info_json" >> "${LOGFILE}"
+	echo "$0: ERROR: file is not a valid JSON file for chkentry to test: $info_json" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: ERROR: file is not valid JSON, not a valid file for chkentry to test: $info_json" 1>&2
+	    echo "$0: debug[1]: ERROR: file is not a valid JSON file for chkentry to test: $info_json" 1>&2
 	fi
 	INVALID_JSON_FOUND="true"
     elif [[ $status -eq 0 ]]; then
