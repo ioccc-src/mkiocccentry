@@ -38,6 +38,14 @@ tell you the log file name). Alternatively you can run:
 
 which will delete the log file for you if no issues are found.
 
+If it finds a problem please report it at the
+[GitHub issues page](https://github.com/ioccc-src/mkiocccentry/issues/new/choose),
+making sure to attach the bug report file it notes prior to exiting.
+
+The [FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) gives a
+bit more information on this.
+
+
 ### Static analysis and dynamic analysis
 
 If you wish to run static analysis you may wish to see the file
@@ -57,6 +65,13 @@ you may alternatively offer a fix and open a pull request.
 
 Finally we thank you once again in helping to make the IOCCC toolkit even better
 in order to improve the IOCCC itself!
+
+
+## Getting help
+
+If you have a problem with anything in this repo, please see the
+[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) for
+answers to a number of possible problems as well as to see how to report issues.
 
 
 ## The mkiocccentry toolkit
