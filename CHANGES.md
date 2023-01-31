@@ -5,9 +5,18 @@
 
 XXX - add more details here as more is done or remembered (what has already been done).
 
-Fix many warnings triggered by clang `-Weverything`. See
+
+Resolved all macOS -Weverything issues worth addressing.  See
 `test_ioccc/static_analysis.md` for details and to see how you can also help as
-well as fixes, what might need to be fixed and what we ignore (and why).
+well as the fixes we applied, what might need to be fixed and what we ignore
+(and why we choose to ignore them). Note that originally the commit ids were
+bogus and although we fixed those in that file the git commit log obviously has
+the bogus ids.
+
+Restore Makefile use -Werror and use of -O0. With the exception of the dbg code,
+use of -Werror and compiling with -O0 -g is restored in various Makefiles while
+version 1.0.0 is still in development.
+
 
 Fix some memory leaks detected with `valgrind`. See
 `test_ioccc/dynamic_analysis.md` for details and to see how you might also help.
@@ -15,18 +24,26 @@ Fix some memory leaks detected with `valgrind`. See
 Exit codes checked for consistency across usage strings, man pages and the tools
 themselves.
 
-Added dbg_version as a global string for users of the dbg.a library.
-Added dyn_array_version as a global string for users of the dyn_array.a library.
-Added json_parser_version as a global string for users of the jparse.a library.
-Added jparse_version as a global string for users of the jparse.a library.
-Added soup_version as a global string for users of the soup.a library.
-
 Changed DBG_VERSION from "2.6 2022-11-09" to "2.8 2023-01-29".
 Minor improvements made on when warning messages are printed.
+Added dbg_version as a global string for users of the dbg.a library.
 
-Changed DYN_ARRAY_VERSION from "2.0 2022-06-09" to "2.1 2023-01-21".
+Changed DYN_ARRAY_VERSION from "2.0 2022-06-09" to "2.1 2023-01-21" and then
+from "2.1 2023-01-21" to "2.2 2023-01-22".
+Added dyn_array_version as a global string for users of the dyn_array.a library.
+
 Changed JSON_PARSER_VERSION from "0.12 2022-11-09" to "0.13 2023-01-21".
+Added json_parser_version as a global string for users of the jparse.a library.
+
+Moved JPARSE_VERSION "0.11 2022-07-04" from jparse_main.h to jparse.h.
+Added jparse_version as a global string for users of the jparse.a library.
+
+Changed JNUM_GEN_VERSION from "0.7 2022-05-01" to "0.8 2023-01-22".
+Current JNUM_CHK_VERSION is "0.8 2022-05-01".
+Fixed bug where jnum_gen.c had JNUM_CHK_VERSION.
+
 Added SOUP_VERSION as "1.0 2023-01-21".
+Added soup_version as a global string for users of the soup.a library.
 
 Changed jsemtblgen so that -P prefix will always be used on function names.
 Use of -M func will override any specific member name.
@@ -35,15 +52,18 @@ The jsemtblgen tool, with the -I option, will not print duplicate
 extern function declarations.
 
 Fixed a number of tests relating to conversion of floating point values.
-Corrected `jparse/test_jparse/jnum_test.c1 test results for
+Corrected `jparse/test_jparse/jnum_test.c` test results for
 the `as_double is an integer` test cases.
 
-Changed JNUM_GEN_VERSION from "0.7 2022-05-01" to "0.8 2023-01-22".
-
-Added a system to notice "Notice:" messagees and count then for `make prep`.
+Added a system to notice "Notice:" messages and count then for `make prep`.
 The `test_ioccc/prep.sh` tool removed the generated bug report log file
 if the `bug-report.sh` tool does an exit 0, even if there are notices.
-Changed BUG_REPORT_VERSION from "0.12 2023-01-24" to "0.13 2023-01-24".
+Changed BUG_REPORT_VERSION from "0.12 2023-01-24" to "0.13 2023-01-24". 
+Then with more improvements (see below) it was changed to "0.14 2023-01-30". The
+improvements: check for Makefile in all subdirectories, check for overriding
+makefile.local in all subdirectories and check that all subdirectories exist and
+are readable and are executable.
+
 Changed PREP_VERSION from "0.3 2023-01-24" to "0.4 2023-01-24".
 
 Moved static variables from header to source files.
@@ -51,25 +71,139 @@ Moved static variables from header to source files.
 Fix segfault when author length is too long from NULL pointer dereference: due
 to an else being left off from an if after rejecting the author, freeing and
 setting to NULL the code went on to check for unique author names which would
-then dereference the just rejected NULL author name.
+then dereference the just rejected NULL author name. See commit
+48ea6cc0bda39b2aa1e31fe42aee781197fe8b18.
 
-Go through all files and fix typos. This does NOT imply everything has been
-checked for consistency. For instance if an error message refers to the wrong
-object (though some of these have been fixed in the initial spellcheck pass).
-This excludes .json,  .txt and .err files under test_ioccc/ as there's no point
-in checking them (some of the .txt files do have text that would trigger
-spellchecking problems but they're part of invalid tarball listings). The
-iocccsize related files have not been checked. Where the alternative and
-incorrect English (that is American English) spelling was in the repo it was
-untouched as it is after all the International Obfuscated C Code Contest, not
-the Obfuscated C Code Contest for people who use proper English. :-)
+Go through all files and fix typos and do a check for consistency in messages as
+well (error, debug, general, warnings etc.). This excludes .json,  .txt and .err
+files under test_ioccc/ as there's no point in checking them (some of the .txt
+files do have text that would trigger spellchecking problems but they're part of
+invalid tarball listings). The iocccsize related files have not been checked.
+Where the alternative and incorrect English (that is American English) spelling
+was in the repo it was untouched as it is after all the International Obfuscated
+C Code Contest, not the Obfuscated C Code Contest for people who use proper
+English. :-)
 
-Updated bug_report.sh version with improvements: check for Makefile in all
-subdirectories, check for overriding makefile.local in all subdirectories and
-check that all subdirectories exist and are readable and are executable.
+Fix some grammar errors. More could probably be done later but whether this is
+worth it can be TBD at another time. There are some places that are problematic
+in fixing and it's time consuming to find all the remaining issues. Besides,
+this is for the IOCCC so if a few things here and there are misleading or
+confusing it's probably not all that bad anyway! :-)
 
 Improved man pages, error messages and documentation.  Went through all
 documentation and fixed noticed problems, typos, formatting issues etc.
+
+Add CodeQL Analysis for GitHub commits: added codeql.yml as a new GitHub
+workflow.
+
+Fix internal Makefile rules to do with the
+[dbg repo](https://github.com/lcn2/dbg).
+Fold in .gitignore from dbg repo.
+
+Improve Makefile #! lines.
+
+Fix shellcheck errors under macOS.
+
+Moved utf8_test(8) to test_ioccc/man/man8.
+
+Improve getopt() calls. We now control the error messages for better output like
+removing "-h help mode" when -h is specified. Compress the '?', ':' and default
+cases by way of new function check_invalid_option().
+
+Fix bug_report.sh options -l and -x.
+
+Improve dyn_alloc code robustness.
+
+Fix several implicit signed conversion issues and double precision floating
+point tests. Improve other fixes to various warnings.
+
+Change remaining calls to strtok() to strtok_r().
+
+Remove duplicate object in jparse Makefile.
+
+Update README.md for information on how to help (for when we're ready for such
+help). The note that we're not yet ready will be removed once we are.
+
+Fixed debug calls in jparse.y to match the functions being called that changed
+due to making the parser re-entrant.
+
+Fixed various compile errors in systems that were not initially tested (debian
+and linux in general depending on the issue).
+
+Improve prep.sh so that issues reported are more specific. In particular it will
+show which rule failed rather than just that a make action failed.
+
+Change in txzchk the txzpath to tarball_path to be clearer what it is.
+
+Fix double notices by bug_report.sh for unknown versions of tools.
+
+Improve how bug_report.sh reports on missing commands.
+
+Fix man pages to use formatting macros throughout and add them to the SYNOPSIS
+and OPTIONS sections. This makes run_usage.sh (which was always a quick, dirty
+and ugly hack) even less useful but not entirely useless. Update checknr call
+in Makefiles so that checknr is aware of the additional macros.
+
+Fix (prevent) stray jparse related files after bug_report.sh.
+
+Fix potential NULL pointer dereferences.
+
+Improve make clobber so that specific files and directories that were being
+erroneously being removed no longer are removed.
+
+Make it easier to make soup. :-) Yes this is for fun only and that sentence has
+a slight hint.
+
+Typo fix in soup/location.c: although ions have their place when peroxide ions
+in particular combine with water and diluted acids it forms hydrogen peroxide
+which has ended up killing people when those unaware of the dangers
+misunderstand the request that someone would like a glass of H2O too. Thus we
+should get rid of stray ions in the repo and now have. See commit
+532d33773a198058a3d1d596ad1192cb7f3b35d0 for details.
+
+Make parameters in usage() functions consistent across all files. Add usage() to
+utf8_test.c and improve usage message. Change VERSION to UTF8_TEST_VERSION in
+utf8_test.c.
+
+Change boldness of foo([138]) in man pages so that only foo is in bold.
+
+Fix usage message in fnamchk.
+
+Change some local variables to not be the name of functions in the dbg library
+(which the files in question used).
+
+Improve iocccsize -h output. This includes adding version information to the
+message.
+
+Add version information to jsemcgen -h. More generally fix shell script -h
+version in several scripts to print script name and version string.
+
+Remove extra spaces in all_sem_ref.sh -h output.
+
+Remove trailing blank lines to various scripts -h output.
+
+Clarify comments about rule 2a and rule 2b tests.
+
+Improve jsemcgen(8), jsemtblgen(8) and all_sem_ref(8).
+Improve output of `jsemtblgen -h`.
+
+Add FAQ.md for information on getting help with various problems.
+
+Bug fix hostchk.sh. In particular in some cases it would be that the non-zero
+exit code would be reported as 0.
+
+Update dbg/README.md to refer to other dbg(3) man pages (the main files not the
+symlinks). The jparse/README.md does not refer to an example yet (for the
+library) as an example program does not exist. The dyn_array/README.md does not
+explain how to link in the library yet because it depends on the dbg repo and it
+is not yet determined how this will be approached. Similar can be said for
+jparse though we do have json_dbg() and other related functions.
+
+Major updates to CHANGES.md. See
+[CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
+for details. :-)
+
+
 
 ## Release 0.9.9 2022-12-31
 

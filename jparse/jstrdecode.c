@@ -257,14 +257,12 @@ main(int argc, char *argv[])
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
+	default:    /* anything else but should not actually happen */
 	    check_invalid_option(program, i, optopt);
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	    break;
-	default:
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
-	 }
+	}
     }
     dbg(DBG_LOW, "enclose in quotes: %s", booltostr(write_quote));
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));

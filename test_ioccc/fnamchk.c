@@ -149,15 +149,12 @@ main(int argc, char *argv[])
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
+	default:    /* anything else but should not actually happen */
 	    check_invalid_option(program, i, optopt);
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	    break;
-	default:
-	    usage(3, program,  ""); /*ooo*/
-	    not_reached();
-	    break;
-	 }
+	}
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {

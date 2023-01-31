@@ -248,16 +248,26 @@ vrergfB(int four, int two)
      * The next comment might be empty.
      */
 
+    /* This comment is empty.
+     */
+
     /*
-     * This comment isn't empty but the next one isn't empty and the above one
-     * was empty.
+     * This comment mightn't be empty but the previous one wasn't and the above one
+     * was. We can provide no opinion on the emptiness of the next comment.
      */
     if (last_c != '\n') {
+	/*
+	 * This comment might or might not be empty.
+	 */
 	errno = 0;	/* be positive: pretend we have 0 errors so far */
 	ret = fputc(0x0a, stdout);
 	if (ret != 0x0a) {
 	    fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
 	}
+
+	/*
+	 * This comment is blank.
+	 */
     }
 
     /*
@@ -283,14 +293,15 @@ vrergfB(int four, int two)
      * If you've read this far you've read more than necessary and you should
      * pat yourself on the back for a job well done.
      */
-}
 
 #if 1
     #define if_you_got_here_you_made_it_as_far_as_the_pre_processor() \
 	printf("Congratulations for making it as far as the C pre-processor! :-)\n")
 	/* if_you_got_here_you_made_it_as_far_as_the_pre_processor(); */
 #endif
-#undef if_you_got_here /* make the C pre-processor too lazy to process the block below. :-) */
+}
+
+#undef you_got_here /* make the C pre-processor too lazy to process the block below. :-) */
 #if you_got_here
     #define you_are_not_as_lazy_as_the_pre_processor_which_does_not_use_this() \
 	printf("Congratulations for making it further than the C pre-preprocessor!\n")
@@ -298,3 +309,8 @@ vrergfB(int four, int two)
 #endif
 
 #define If you get here you are not as lazy as the C pre-processor which just uses this line for no good purpose
+
+
+/*
+ * This comment is empty, forlorn and totally depressed :-(
+ */
