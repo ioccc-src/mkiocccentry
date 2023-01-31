@@ -132,7 +132,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':	/* -V - print version and exit */
             print("%s\n", UTF8_TEST_VERSION);
-            exit(2); /* ooo */
+            exit(2); /*ooo*/
             not_reached();
             break;
 	case 'q':
