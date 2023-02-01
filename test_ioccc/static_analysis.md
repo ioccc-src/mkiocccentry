@@ -1740,7 +1740,7 @@ Segmentation fault: 11
 but now one will just be prompted again to re-enter the information.
 
 
-## Issue:  deadcode.DeadStores dyn_test.c: value stored to 'moved' is never read
+## Issue:  deadcode.DeadStores dyn_test.c: value stored to 'foo' is never read
 ### Status: fixed
 ### Example
 
@@ -1758,6 +1758,64 @@ dyn_test.c:176:2: warning: Value stored to 'moved' is never read [deadcode.DeadS
 The code only used the boolean to check the return value of the function just
 called so we can just move the function calls into the respective if tests and
 remove the boolean `moved`.
+
+### Example
+
+```c
+json_parse.c:1473:14: warning: Although the value stored to 'tmp' is used in the enclosing expression, the value is never actually read from 'tmp' [deadcode.DeadStores]
+        } else if ((tmp = strtobool(item->as_str)) != item->value) {
+                    ^     ~~~~~~~~~~~~~~~~~~~~~~~
+json_parse.c:1476:14: warning: Although the value stored to 'tmp' is used in the enclosing expression, the value is never actually read from 'tmp' [deadcode.DeadStores]
+        } else if ((tmp = strtobool(str)) != item->value) {
+                    ^     ~~~~~~~~~~~~~~
+```
+
+### Solution
+
+Make the if include the function call rather than check the value of `tmp`.
+
+
+### Example
+
+```c
+jnum_gen.c:191:13: warning: Although the value stored to 'readline_len' is used in the enclosing expression, the value is never actually read from 'readline_len' [deadcode.DeadStores]
+    while ((readline_len = readline(&readline_buf, stream)) >= 0) {
+            ^              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+```
+
+### Solution
+
+Once again we simply make the function call the condition itself.
+
+
+### Example
+
+```c
+mkiocccentry.c:268:6: warning: Value stored to 'answers' is never read [deadcode.DeadStores]
+            answers = optarg;
+            ^         ~~~~~~
+```
+
+### Solution
+
+This is actually incorrect. If you scroll down further in the function you will
+see that `answers` most certainly is read.
+
+
+### Example
+
+```c
+mkiocccentry.c:1498:6: warning: Value stored to 'valid' is never read [deadcode.DeadStores]
+            valid = true;
+            ^       ~~~~
+```
+
+### Solution
+
+Remove the assignment. This is okay because the function immediately returns
+after this even if it did not right after that the value is overwritten so it
+would be valid would be invalidly valid (or something like that :-) ).
 
 
 ## Issue: Value stored to 'foo' is never read in jparse.tab.c
@@ -1781,7 +1839,7 @@ As already explained we cannot modify this and there are no problems in the
 bison/flex grammar cited.
 
 
-## Issue: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
+## Issue: warning: 1st function call argument is an uninitialized value
 ### Status: ignore
 
 ### Example
@@ -1796,7 +1854,7 @@ bison/flex grammar cited.
 
 We ignore this as there are no problems in our grammar.
 
-## Issue: warning: Assigned value is garbage or undefined [core.uninitialized.Assign]
+## Issue: warning: Assigned value is garbage or undefined
 ### Status: ignore
 ### Example
 ```c
@@ -1808,3 +1866,79 @@ We ignore this as there are no problems in our grammar.
 ### Solution
 
 Once again there is nothing wrong with our grammar so we don't touch it.
+
+
+## Issue: warning: Potential leak of memory pointed to by 'foo'
+### Status: fixed
+
+### Example
+
+```c
+json_parse.c:294:10: warning: Potential leak of memory pointed to by 'p' [unix.Malloc]
+            if (retlen != NULL) {
+                ^~~~~~
+json_parse.c:1248:8: warning: Potential leak of memory pointed to by 'p' [unix.Malloc]
+                        if (retlen != NULL) {
+                            ^~~~~~
+```
+
+### Solution
+
+Before returning we free `ret` which is what `p` points to.
+
+
+### Example
+
+```
+json_sem.c:174:10: warning: Potential leak of memory pointed to by 'diagnostic' [unix.Malloc]
+        return &sem_calloc_err;
+                ^~~~~~~~~~~~~~
+json_sem.c:273:10: warning: Potential leak of memory pointed to by 'diagnostic' [unix.Malloc]
+        return &sem_calloc_err;
+                ^~~~~~~~~~~~~~
+```
+
+### Solution
+
+Before returning we free `diagnostic` and set to NULL.
+
+### Example
+
+```c
+chk_validate.c:783:10: warning: Potential leak of memory pointed to by 'aset' [unix.Malloc]
+    test = test_authors(*author_count, aset);
+    ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+This is TBD later but probably it's okay to free `aset` before returning which
+it finds at:
+
+
+```c
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(118, node, depth, sem, __func__,
+				    "author set contains invalid author numbers "
+				    "and/or duplicate names");
+	}
+	return false;
+```
+
+
+## Issue: :warning: The left operand of '!=' is a garbage value
+### Status: TBD
+
+### Example
+
+
+```c
+
+rule_count.c:410:16: warning: The left operand of '!=' is a garbage value [core.UndefinedBinaryOperatorResult]
+                if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
+                     ~~~~~~~ ^
+```
+
+### Solution
+
+As this is in a file that only the judges can touch this is TBD.

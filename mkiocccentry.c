@@ -1495,7 +1495,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    para("",
 		 "IOCCC contest ID is test, entering test mode.",
 		 NULL);
-	    valid = true;
 	    *testp = true;
 	    return malloc_ret;
 	}
