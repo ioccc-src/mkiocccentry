@@ -199,10 +199,13 @@ explain how to link in the library yet because it depends on the dbg repo and it
 is not yet determined how this will be approached. Similar can be said for
 jparse though we do have json_dbg() and other related functions.
 
+In order to make it easier to run tools from the top level directory, we
+changed the default path of `fnamchk` from "./fnamchk" to "./test_ioccc/fnamchk",
+and the path of `jparse` from "./jparse" to "./jparse/jparse".
+
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
 for details. :-)
-
 
 
 ## Release 0.9.9 2022-12-31
