@@ -203,6 +203,11 @@ In order to make it easier to run tools from the top level directory, we
 changed the default path of `fnamchk` from "./fnamchk" to "./test_ioccc/fnamchk",
 and the path of `jparse` from "./jparse" to "./jparse/jparse".
 
+Check return value of function `yylex_init_extra()` and warn with errno
+information if non-zero return value. Sequenced exit codes, updated backup
+parser files.
+
+
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
 for details. :-)
