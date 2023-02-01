@@ -2,6 +2,10 @@
 
 *NOTE*: This code is currently under alpha-test.
 
+*NOTE*: you may wish to also read our
+[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md).
+
+
 ## HOW TO HELP TEST THIS REPO
 
 **IMPORTANT NOTE**: we currently are **NOT** _yet ready for this_. We will remove this
