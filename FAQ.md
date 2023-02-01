@@ -1,7 +1,32 @@
 # Frequently Asked Questions about the `mkiocccentry` repo
 
 
-## <a name="download">Where can I find the mkiocccentry tool?</a>
+<a name="toc">Table of Contents</a>
+
+0. <a href="#download">Where can I download the mkiocccentry tool?</a>
+
+1. <a href="#compiling">How do I compile the mkiocccentry tools?</a>
+
+2. <a href="#package">How do I package my entry?</a>
+
+3. <a href="#submitting">Can't I just submit my obfuscated C program to the judges?</a>
+
+4. <a href="#mkiocccentry-requirements">Do I have to use mkiocccentry to package my entry?</a>
+
+5. <a href="#installing">Do I need to install this code to use it?</a>
+
+6. <a href="#help">How can I learn more about how to use the tools?</a>
+
+7. <a href="#reporting-bugs">How do I report bugs or other issues?</a>
+
+8. <a href="#how-to-help">How can I help test this repo?</a>
+
+9. <a href="#tar">What can I do if my system's tar(1) does not support the correct options?</a>
+
+10. <a href="#markdown">Where can I find help with formatting markdown files for my entry?</a>
+
+
+## 0. <a name="download">Where can I find the mkiocccentry tool?</a>
 
 The `mkiocccentry` tool source code is found in the
 [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
@@ -18,7 +43,7 @@ If you don't have `git` you may
 and then extract that file.
 
 
-## <a name="compiling">How do I compile the mkiocccentry tool ?</a>
+## 1. <a name="compiling">How do I compile the mkiocccentry tool?</a>
 
 After downloading the repo (making sure that if you downloaded the zip file that
 you unzip it first) move into the _mkiocccentry_ directory:
@@ -35,11 +60,11 @@ make clobber all
 
 If all is well, you will find the `mkiocccentry` executable in your
 local directory.  If something went wrong, see
-<a href="#reporting-bugs">how do I report bugs or other issues ?</a>
+<a href="#reporting-bugs">how do I report bugs or other issues?</a>
 
 
 
-## How do I package my entry?
+## 2. <a name="package">How do I package my entry?</a>
 
 We recommend that you use the `mkiocccentry` tool to package your entry.
 If you have not already done so, download the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry)
@@ -81,7 +106,7 @@ Once you have answered all of the questions, the tool will form a
 XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
-## Can't I just submit my obfuscated C program to the judges?
+## 3. <a name="submitting">Can't I just submit my obfuscated C program to the judges?</a>
 
 No. While we appreciate your enthusiasm for wanting to show us your obfuscated
 code, the [IOCCC judges](https://www.ioccc.org/judges.html) request your help by
@@ -97,23 +122,24 @@ In short, you cannot simply upload your obfuscated C program as it needs to
 be in a certain form and the `mkiocccentry` tool does that.
 
 
-## Do I have to use mkiocccentry to package my entry?
+## 4. <a name="mkiocccentry-requirements">Do I have to use mkiocccentry to package my entry?</a>
 
-Technically you do not have to use the `mkiocccentry` tool; however,
-you run the risk of having your entry rejected if what you upload
-to the submit server is malformed.  Moreover, the contents of the
-XZ compressed tarball (in v7 format) that you upload to the submit
-server must be in proper form or your entry could be rejected.
-Therefore we highly recommend that you use the `mkiocccentry` tools.
+Technically you do not have to use the `mkiocccentry` tool; however, you run the
+risk of having your entry rejected if what you upload to the submit server is
+malformed.  Moreover, the contents of the XZ compressed tarball (in v7 format)
+that you upload to the submit server must be in proper form or your entry could
+be rejected. The mkiocccentry tool also creates two JSON files that are
+required. Therefore we highly recommend that you use the `mkiocccentry` tools.
 
-If you simply must package your entry yourself then we strongly
-recommend that you use the `txzchk` tool to verify that the tarball
-you plan to upload to the submit server is OK.  We also strongly
-recommend that use the `chkentry` tool to inspect the directory
-that you used to form the tarball to verify that the contents under
-that directory are also OK.
+If you simply must package your entry yourself then we strongly recommend that
+you use the `txzchk` tool to verify that the tarball you plan to upload to the
+submit server is OK.  We also strongly recommend that use the `chkentry` tool to
+inspect the directory that you used to form the tarball to verify that the
+contents under that directory are also OK. In particular, that tool tests that
+the JSON files are correct.
 
-## Do I need to install this code to use it?
+## 5. <a name="installing">Do I need to install this code to use it?</a>
+
 No, installing the code in this repo is not necessary to use it. These tools
 were designed to be used from the top level directory of the source, or after
 installing, whichever you prefer.
@@ -130,7 +156,7 @@ For example:
 ./mkiocccentry -h
 ```
 
-## How can I learn more about how to use the tools?
+## 6. <a name="help">How can I learn more about how to use the tools?</a>
 
 Assuming you have <a href="#download">downloaded</a> and <a
 href="#compiling">compiled</a> the code you can get a quick reminder of command
@@ -169,7 +195,7 @@ Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairl
 well commented.
 
 
-## <a name="reporting-bugs">How do I report bugs or other issues ?</a>
+## 7. <a name="reporting-bugs">How do I report bugs or other issues?</a>
 
 Please run the following from the main directory:
 
@@ -210,7 +236,7 @@ The script that the make rule runs, `bug_report.sh`, will tell you the name of
 the file to upload.
 
 
-## How can I help test this repo ?
+## 8. <a name="how-to-help">How can I help test this repo?</a>
 
 Thank you for any and all help!
 
@@ -219,7 +245,7 @@ Please see the
 for more details on what you can do to help us.
 
 
-## What can I do if my system's tar(1) does not support the correct options ?
+## 9. <a name="tar">What can I do if my system's tar(1) does not support the correct options?</a>
 
 
 If your tar does not support the `-J` option you can either use a system
@@ -228,7 +254,7 @@ the [GNU website](https://www.gnu.org/software/tar/) and after extracting it,
 compile it and then install it so that the tools may find it.
 
 
-## Where can I find help with formatting markdown files for my entry?
+## 10. <a name="markdown">Where can I find help with formatting markdown files for my entry?</a>
 
 Please see this simple
 [markdown guide](https://www.markdownguide.org/basic-syntax) for more help.
