@@ -1738,3 +1738,23 @@ Segmentation fault: 11
 ```
 
 but now one will just be prompted again to re-enter the information.
+
+
+## Issue:  deadcode.DeadStores dyn_test.c: value stored to 'moved' is never read
+### Status: fixed
+### Example
+
+```c
+dyn_test.c:147:6: warning: Value stored to 'moved' is never read [deadcode.DeadStores]
+            moved = false;
+            ^       ~~~~~
+dyn_test.c:176:2: warning: Value stored to 'moved' is never read [deadcode.DeadStores]
+        moved = false;
+        ^       ~~~~~
+```
+
+### Solution
+
+The code only used the boolean to check the return value of the function just
+called so we can just move the function calls into the respective if tests and
+remove the boolean `moved`.
