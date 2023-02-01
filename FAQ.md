@@ -1,45 +1,51 @@
-# Frequently Asked Questions about the mkiocccentry repo
+# Frequently Asked Questions about the `mkiocccentry` repo
 
 
-## Where can I find the mkiocccentry tool?
+## <a name="download">Where can I find the mkiocccentry tool?</a>
 
-The `mkiocccentry` tool source code is found in the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
-If you have not already done so, you may download the source:
+The `mkiocccentry` tool source code is found in the
+[mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
+If you have not already done so, you may download the source by using `git
+clone`:
 
-Assuming that you do not already a _mkiocccentry_ in your directory,
-clone the source:
 
 ```sh
 git clone git@github.com:ioccc-src/mkiocccentry.git
 ```
 
-Now move into that newly created  _mkiocccentry_ directory:
+If you don't have `git` you may
+[download the zip file](https://github.com/ioccc-src/mkiocccentry/archive/refs/heads/master.zip)
+and then extract that file.
+
+
+## <a name="compiling">How do I compile the mkiocccentry tool ?</a>
+
+After downloading the repo (making sure that if you downloaded the zip file that
+you unzip it first) move into the _mkiocccentry_ directory:
 
 ```sh
 cd mkiocccentry
 ```
 
-And compile everything from scratch:
+and compile everything from scratch:
 
 ```sh
 make clobber all
 ```
 
 If all is well, you will find the `mkiocccentry` executable in your
-local directory.  If something went wrong, see the FAQ entry:
+local directory.  If something went wrong, see
+<a href="#reporting-bugs">how do I report bugs or other issues ?</a>
 
-```
-How do I report bugs or other issues ?
-```
-
-found below.
 
 
 ## How do I package my entry?
 
 We recommend that you use the `mkiocccentry` tool to package your entry.
 If you have not already done so, download the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry)
-(see the FAQ above) and compile (see also the FAQ above).
+(instructions <a href="#download">here</a>)
+and compile it
+(instructions <a href="#compiling">here</a>).
 
 From the top level directory, run the `mkiocccentry` executable:
 
@@ -48,43 +54,52 @@ From the top level directory, run the `mkiocccentry` executable:
 ```
 
 The _work_dir_ is the path where your entry's files will be packaged from.
-The _work_dir_ must *NOT* already exist.  Something like _/tmp/work_dir_ is
-a good choice.
+The _work_dir_ **must** exist as _mkiocccentry_ will create a subdirectory under it to
+package your entry. The entry directory depends on the IOCCC contestant id and
+the entry number.
+
+Something like _/tmp/ioccc_ is a good choice:
+
+```sh
+mkdir -p /tmp/ioccc
+```
 
 The _prog.c_ is the path to the main C source code for your entry.
 
 The _Makefile_ is the path to a Makefile used to build your entry.
 
-The _remarks.md_ is a path to a [markdown guide](https://www.markdownguide.org/basic-syntax)
-file that describes your entry.
+The _remarks.md_ is a path to a
+[markdown file](https://www.markdownguide.org/basic-syntax)
+that describes your entry.
 
 If you have other optional files that belong to your entry, give them
-as additional paths on the end if your `mkiocccentry` tool command line.
+as additional paths at the end if your `mkiocccentry` tool command line.
 
 The `mkiocccentry` tool, by default, will ask you a series of
 questions about your entry and about the authors of your entry.
 Once you have answered all of the questions, the tool will form a
-XZ compressed tarball, in v7 format, under yhe _work_dir_ directory.
+XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
-## Why do I need this code, can't I just submit my obfuscated C program to judge?
+## Can't I just submit my obfuscated C program to the judges?
 
-While we appreciate your enthusiasm for wanting to show us your obfuscated, the
-[IOCCC judges[(https://www.ioccc.org/judges.html) request your help by using the `mkiocccentry` tool to package your entry.
+No. While we appreciate your enthusiasm for wanting to show us your obfuscated
+code, the [IOCCC judges](https://www.ioccc.org/judges.html) request your help by
+using the `mkiocccentry` tool to package your entry.
 
-We need your entry in the form of a XZ compressed tarball in v7 format,
-along with things like a Makefile, a pair of JSON files that
+We need your entry in the form of an XZ compressed tarball in v7 format,
+along with things like your Makefile, a pair of JSON files that
 help describe you and your entry, some remarks you wrote about your
-entry, etc.  The  `mkiocccentry` tool does a lot in packaging your
+entry etc. The  `mkiocccentry` tool does a lot in packaging your
 entry and we kindly request that you use it.
 
-In short, no, you cannot simply upload your obfuscated C program,
-it seems to be in a certain form and `mkiocccentry` tool does that.
+In short, you cannot simply upload your obfuscated C program as it needs to
+be in a certain form and the `mkiocccentry` tool does that.
 
 
 ## Do I have to use mkiocccentry to package my entry?
 
-Technically you do not have to use the `mkiocccentry` tool, however,
+Technically you do not have to use the `mkiocccentry` tool; however,
 you run the risk of having your entry rejected if what you upload
 to the submit server is malformed.  Moreover, the contents of the
 XZ compressed tarball (in v7 format) that you upload to the submit
@@ -98,8 +113,63 @@ recommend that use the `chkentry` tool to inspect the directory
 that you used to form the tarball to verify that the contents under
 that directory are also OK.
 
+## Do I need to install this code to use it?
+No, installing the code in this repo is not necessary to use it. These tools
+were designed to be used from the top level directory of the source, or after
+installing, whichever you prefer.
 
-## How do I report bugs or other issues ?
+You can simply execute the code from the top level directly of the source, after
+compiling of course.
+
+As `.` may not be (and probably shouldn't be) in your `$PATH`, you may need to
+put _./_ before the name of a command.
+
+For example:
+
+```shell
+./mkiocccentry -h
+```
+
+## How can I learn more about how to use the tools?
+
+Assuming you have <a href="#download">downloaded</a> and <a
+href="#compiling">compiled</a> the code you can get a quick reminder of command
+options and arguments by use of the `-h` option of any tool:
+
+For instance:
+
+```shell
+./mkiocccentry -h
+./iocccsze -h
+./chkentry -h
+./txzchk -h
+```
+
+There are man pages that go into much more detail than the `-h` help modes. You
+may use the `man(1)` command to read the man pages without having to install
+them.
+
+After compiling this code, various man pages are copied under the local `man/`
+directory at the top of the source directory.
+
+For example:
+
+```shell
+man man/man1/mkiocccentry.1
+man man/man1/iocccsize.1
+man man/man1/chkentry.1
+man man/man1/txzchk.1
+```
+
+There are many other man pages under the `man/` directory for the curious to
+read, using a similar technique.
+
+If all that fails to satisfy your curiosity, we recommend you _"use the source,
+Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairly
+well commented.
+
+
+## <a name="reporting-bugs">How do I report bugs or other issues ?</a>
 
 Please run the following from the main directory:
 
@@ -123,9 +193,9 @@ The bug report filename is in the format:
 `bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt` where:
 
 
-- `%Y` is the digit year (e.g. 2023).
+- `%Y` is the four digit year (e.g. 2023).
 
-- `%m` is the is the two digit month (01..12).
+- `%m` is the two digit month (01..12).
 
 - `%d` is the two digit day of the month (e.g. 30).
 
@@ -154,8 +224,8 @@ for more details on what you can do to help us.
 
 If your tar does not support the `-J` option you can either use a system
 which does have such a tar or you can try downloading GNU Tar from
-the [GNU website](https://www.gnu.org/software/tar/) and compile and install it
-so that the tools may find it.
+the [GNU website](https://www.gnu.org/software/tar/) and after extracting it,
+compile it and then install it so that the tools may find it.
 
 
 ## Where can I find help with formatting markdown files for my entry?
