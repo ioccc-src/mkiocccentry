@@ -1758,3 +1758,53 @@ dyn_test.c:176:2: warning: Value stored to 'moved' is never read [deadcode.DeadS
 The code only used the boolean to check the return value of the function just
 called so we can just move the function calls into the respective if tests and
 remove the boolean `moved`.
+
+
+## Issue: Value stored to 'foo' is never read in jparse.tab.c
+### Status: ignore
+
+### Example
+
+```c
+jparse.tab.c:1171:5: warning: Value stored to 'yymsg' is never read [deadcode.DeadStores]
+    yymsg = "Deleting";
+    ^       ~~~~~~~~~~
+jparse.tab.c:1401:7: warning: Value stored to 'yytoken' is never read [deadcode.DeadStores]
+      yytoken = YYSYMBOL_YYerror;
+      ^         ~~~~~~~~~~~~~~~~
+```
+
+
+### Solution
+
+As already explained we cannot modify this and there are no problems in the
+bison/flex grammar cited.
+
+
+## Issue: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
+### Status: ignore
+
+### Example
+
+```c
+./jparse.y:177:11: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
+                                             json_item_type_name(yyvsp[0]));
+                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+### Solution
+
+We ignore this as there are no problems in our grammar.
+
+## Issue: warning: Assigned value is garbage or undefined [core.uninitialized.Assign]
+### Status: ignore
+### Example
+```c
+./jparse.y:183:8: warning: Assigned value is garbage or undefined [core.uninitialized.Assign]
+        yyval = yyvsp[0];       /* magic: json_value becomes json_element's type */
+              ^ ~~~~~~~~
+```
+
+### Solution
+
+Once again there is nothing wrong with our grammar so we don't touch it.
