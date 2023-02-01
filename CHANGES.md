@@ -207,6 +207,8 @@ Check return value of function `yylex_init_extra()` and warn with errno
 information if non-zero return value. Sequenced exit codes, updated backup
 parser files.
 
+Remove unused function string_to_intmax() and change string_to_intmax2() to be
+string_to_intmax().
 
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)

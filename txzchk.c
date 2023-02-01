@@ -1015,7 +1015,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	return;
     }
 
-    test = string_to_intmax2(p, &length);
+    test = string_to_intmax(p, &length);
     if (!test) {
 	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
@@ -1243,7 +1243,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	return;
     }
 
-    test = string_to_intmax2(p, &length);
+    test = string_to_intmax(p, &length);
     if (!test) {
 	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
@@ -1860,7 +1860,7 @@ free_txz_lines(void)
  * given:
  *
  *	path	- file path
- *	length	- length of file as calculated by string_to_intmax2 (validating
+ *	length	- length of file as calculated by string_to_intmax (validating
  *		  size of files will be done later)
  *
  * Returns the newly allocated struct txz_file * with the file information. The
