@@ -251,6 +251,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	mlen += jenc[(uint8_t)(ptr[i])].len;
     }
     if (mlen < 0) { /* paranoia */
+	/* error - clear allocated length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
 	warn(__func__, "mlen #0: %ju < 0", (uintmax_t)mlen);
 	return NULL;
     }
