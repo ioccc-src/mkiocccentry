@@ -59,11 +59,15 @@
  */
 #include "../soup/utf8_posix_map.h"
 
+/*
+ * jparse - the parser
+ */
+#include "../jparse/jparse.h"
 
 /*
  * definitions
  */
-#define VERSION "1.1 2022-10-17"
+#define UTF8_TEST_VERSION "1.1 2022-10-17"
 
 
 /*
@@ -76,25 +80,31 @@
  *
  * The follow usage message came from an early draft of mkiocccentry.
  * This is just an example of usage: there is no mkiocccentry functionality here.
+ *
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
-static char const * const usage =
-"usage: %s [-h] [-v level] [-V] [-q] name ...\n"
-"\n"
-"\t-h\t\tPrint help message and exit\n"
-"\t-v level\tSet verbosity level: (def level: 0)\n"
-"\t-V\t\tPrint version string and exit\n"
-"\t-q\t\tQuiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
-"\n"
-"\tname\t\tUTF-8 name to translate into POSIX portable filename and + chars\n"
-"\n"
-"Exit codes:\n"
-"     0   all is OK\n"
-"     2   -h and help string printed or -V and version string printed\n"
-"     3   invalid command line, invalid option or option missing an argument\n"
-" >= 10   internal error\n"
-"\n"
-"utf8_test version: %s";
+static char const * const usage_msg =
+    "usage: %s [-h] [-v level] [-V] [-q] name ...\n"
+    "\n"
+    "\t-h\t\tPrint help message and exit\n"
+    "\t-v level\tSet verbosity level: (def level: 0)\n"
+    "\t-V\t\tPrint version string and exit\n"
+    "\t-q\t\tQuiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\n"
+    "\tname\t\tUTF-8 name to translate into POSIX portable filename and + chars\n"
+    "\n"
+    "Exit codes:\n"
+    "     0   all is OK\n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   invalid command line, invalid option or option missing an argument\n"
+    " >= 10   internal error\n"
+    "\n"
+    "utf8_test version: %s";
 
+/*
+ * functions
+ */
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 int
 main(int argc, char *argv[])
@@ -110,10 +120,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
-	    fprintf_usage(2, stderr, usage, program, VERSION); /*ooo*/
+	    usage(2, program, "");
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -121,23 +131,25 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':	/* -V - print version and exit */
-            print("%s\n", VERSION);
-            exit(2); /* ooo */
+            print("%s\n", UTF8_TEST_VERSION);
+            exit(2); /*ooo*/
             not_reached();
             break;
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
-	default:
-	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
-	    fprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	default:    /* anything else but should not actually happen */
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
 	    not_reached();
+	    break;
 	}
     }
     /* must have 1 or more */
     if (argc-optind <= 0) {
-	fprintf_usage(DO_NOT_EXIT, stderr, "requires 1 or more arguments");
-	fprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
+	usage(3, program, "wrong number of arguments");	/*ooo*/
 	not_reached();
     }
 
@@ -181,3 +193,48 @@ main(int argc, char *argv[])
      */
     exit(0); /*ooo*/
 }
+
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(2, program, "wrong number of arguments");
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	prog		our program name
+ *	str		top level usage message
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *prog, char const *str)
+{
+    /*
+     * firewall
+     */
+    if (prog == NULL) {
+	prog = "utf8_test";
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
+    }
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+
+    fprintf_usage(exitcode, stderr, usage_msg, prog, UTF8_TEST_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
+}
+
+

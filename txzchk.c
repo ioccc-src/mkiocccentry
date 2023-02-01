@@ -66,9 +66,9 @@
 static intmax_t sum_check;			/* negative of previous sum */
 static intmax_t count_check;			/* negative of previous count */
 static bool quiet = false;			/* true ==> quiet mode */
-static char const *tarball_path = NULL;		/* the current tarball being checked */
+static char const *tarball_path = NULL;		/* the tarball (by path) being checked */
 static char const *program = NULL;		/* our name */
-static bool read_from_text_file = false;	/* true ==> assume tarball_path is a text file */
+static bool read_from_text_file = false;	/* true ==> assume tarball_path refers to a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 static char const *tok_sep = " \t";		/* token separators for strtok_r */
 static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
@@ -76,8 +76,8 @@ static bool always_show_warnings = false;	/* true ==> show warnings even if -q *
 /*
  * txzchk specific structs
  */
-static struct txz_line *txz_lines;		/* all the lines read */
-static struct tarball tarball;			/* all the information collected from tarball_path */
+static struct txz_line *txz_lines;		/* all of the read lines */
+static struct tarball tarball;			/* all the information collected from tarball */
 static struct txz_file *txz_files;		/* linked list of the files in the tarball */
 
 /*
@@ -174,11 +174,8 @@ main(int argc, char **argv)
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
+	default:    /* anything else but should not actually happen */
 	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	default:
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	    break;
