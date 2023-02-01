@@ -113,6 +113,61 @@ recommend that use the `chkentry` tool to inspect the directory
 that you used to form the tarball to verify that the contents under
 that directory are also OK.
 
+## Do I need to install this code to use it?
+No, installing the code in this repo is not necessary to use it. These tools
+were designed to be used from the top level directory of the source, or after
+installing, whichever you prefer.
+
+You can simply execute the code from the top level directly of the source, after
+compiling of course.
+
+As `.` may not be (and probably shouldn't be) in your `$PATH`, you may need to
+put _./_ before the name of a command.
+
+For example:
+
+```shell
+./mkiocccentry -h
+```
+
+## How can I learn more about how to use the tools?
+
+Assuming you have <a href="#download">downloaded</a> and <a
+href="#compiling">compiled</a> the code you can get a quick reminder of command
+options and arguments by use of the `-h` option of any tool:
+
+For instance:
+
+```shell
+./mkiocccentry -h
+./iocccsze -h
+./chkentry -h
+./txzchk -h
+```
+
+There are man pages that go into much more detail than the `-h` help modes. You
+may use the `man(1)` command to read the man pages without having to install
+them.
+
+After compiling this code, various man pages are copied under the local `man/`
+directory at the top of the source directory.
+
+For example:
+
+```shell
+man man/man1/mkiocccentry.1
+man man/man1/iocccsize.1
+man man/man1/chkentry.1
+man man/man1/txzchk.1
+```
+
+There are many other man pages under the `man/` directory for the curious to
+read, using a similar technique.
+
+If all that fails to satisfy your curiosity, we recommend you _"use the source,
+Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairly
+well commented.
+
 
 ## <a name="reporting-bugs">How do I report bugs or other issues ?</a>
 
