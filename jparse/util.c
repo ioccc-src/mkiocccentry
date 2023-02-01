@@ -3949,6 +3949,7 @@ malloc_path(char const *dirname, char const *filename)
     return buf;
 }
 
+
 /*
  * count the number of instances of a char in the string
  *
@@ -3982,7 +3983,9 @@ count_char(char const *str, int ch)
     return count;
 }
 
-/* check_invalid_option	    - check option error in getopt()
+
+/*
+ * check_invalid_option	    - check option error in getopt()
  *
  * given:
  *
@@ -4011,6 +4014,9 @@ check_invalid_option(char const *prog, int ch, int opt)
 	prog = "((NULL prog))";
     }
 
+    /*
+     * report to stderr, based on the value returned by getopt
+     */
     switch (ch) {
 	case ':':
 	    fprint(stderr, "%s: requires an argument -- %c\n\n", prog, opt);
@@ -4019,6 +4025,8 @@ check_invalid_option(char const *prog, int ch, int opt)
 	    fprint(stderr, "%s: illegal option -- %c\n\n", prog, opt);
 	    break;
 	default: /* should never be reached but we include it anyway */
+	    fprint(stderr, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, ch);
 	    break;
     }
+    return;
 }
