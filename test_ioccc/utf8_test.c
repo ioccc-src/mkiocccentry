@@ -74,7 +74,6 @@
  * globals
  */
 
-
 /*
  * usage message
  *
@@ -105,6 +104,7 @@ static char const * const usage_msg =
  * functions
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
+
 
 int
 main(int argc, char *argv[])
@@ -194,6 +194,7 @@ main(int argc, char *argv[])
     exit(0); /*ooo*/
 }
 
+
 /*
  * usage - print usage to stderr
  *
@@ -236,5 +237,3 @@ usage(int exitcode, char const *prog, char const *str)
     exit(exitcode); /*ooo*/
     not_reached();
 }
-
-
