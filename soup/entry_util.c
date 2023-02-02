@@ -4011,7 +4011,6 @@ test_rule_2a_override(bool boolean)
 }
 
 
-
 /*
  * test_rule_2a_size - test if rule_2a_size is valid
  *
@@ -4544,6 +4543,7 @@ test_ungetc_warning(bool boolean)
     json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
     return true;
 }
+
 
 /*
  * test_alt_url - test if URL is valid
