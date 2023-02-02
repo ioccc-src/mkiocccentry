@@ -2072,198 +2072,6 @@ strnull(char const * const str)
 }
 
 
-/*
- * string_to_long - convert str to long and check for errors
- *
- * given:
- *	str	-   the string to convert to a long int.
- *
- * Returns string 'str' as a long int.
- *
- * Does not return on error or NULL pointer.
- */
-long
-string_to_long(char const *str)
-{
-    long long num; /* use a long long for overflow/underflow checks */
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(153, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoll(str, NULL, 10);
-
-    if (errno != 0) {
-	errp(154, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
-	not_reached();
-    }
-    else if (num < LONG_MIN || num > LONG_MAX) {
-	err(155, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
-	not_reached();
-    }
-    return (long)num;
-}
-
-
-/*
- * string_to_long_long - convert str to long long and check for errors
- *
- * given:
- *	str	-   the string to convert to a long long int.
- *
- * Returns string 'str' as a long long int.
- *
- * Does not return on error or NULL pointer.
- */
-long long
-string_to_long_long(char const *str)
-{
-    long long num;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(156, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    if (strlen(str) > LLONG_MAX_BASE10_DIGITS) {
-	err(157, __func__, "string '%s' too long", str);
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoll(str, NULL, 10);
-
-    if (errno != 0) {
-	errp(158, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
-	not_reached();
-    }
-    else if (num <= LLONG_MIN || num >= LLONG_MAX) {
-	err(159, __func__, "number %s out of range for long long int (must be > %jd && < %jd)",
-			    str, (intmax_t)LLONG_MIN, (intmax_t)LLONG_MAX);
-	not_reached();
-    }
-    return num;
-}
-
-
-/*
- * string_to_int - convert str to int and check for errors
- *
- * given:
- *	str	-   the string to convert to an int.
- *
- * Returns string 'str' as an int.
- *
- * Does not return on error or NULL pointer.
- */
-int
-string_to_int(char const *str)
-{
-    long long num; /* use a long long for overflow/underflow checks */
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(160, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = (int)strtoll(str, NULL, 10);
-
-    if (errno != 0) {
-	errp(161, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
-	not_reached();
-    }
-    else if (num < INT_MIN || num > INT_MAX) {
-	err(162, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
-	not_reached();
-    }
-    return (int)num;
-}
-
-
-/*
- * string_to_unsigned_long - string to unsigned long with error checks
- *
- * given:
- *	str	- the string to convert to unsigned long
- *
- * Returns str as an unsigned long.
- *
- * Does not return on error.
- */
-unsigned long
-string_to_unsigned_long(char const *str)
-{
-    unsigned long num = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(163, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoul(str, NULL, 10);
-    if (errno != 0) {
-	errp(164, __func__, "strtoul(%s): %s", str, strerror(errno));
-	not_reached();
-    } else if (num >= ULONG_MAX) {
-	err(165, __func__, "strtoul(%s): too big", str);
-	not_reached();
-    }
-
-    return num;
-}
-
-
-/*
- * string_to_unsigned_long_long - string to unsigned long long with error checks
- *
- * given:
- *	str	- the string to convert to unsigned long long
- *
- * Returns str as an unsigned long long.
- *
- * Does not return on error.
- */
-unsigned long long
-string_to_unsigned_long_long(char const *str)
-{
-    unsigned long long num;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(166, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoul(str, NULL, 10);
-    if (errno != 0) {
-	errp(167, __func__, "strtoul(%s): %s", str, strerror(errno));
-	not_reached();
-    } else if (num >= ULLONG_MAX) {
-	err(168, __func__, "strtoul(%s): too big", str);
-	not_reached();
-    }
-
-    return num;
-}
 
 /*
  * string_to_intmax - convert base 10 str to intmax_t and check for errors
@@ -2322,82 +2130,6 @@ string_to_intmax(char const *str, intmax_t *ret)
     *ret = num;
     return true;
 }
-
-
-/*
- * string_to_uintmax - string to uintmax_t with error checks
- *
- * given:
- *	str	- the string to convert to uintmax_t
- *
- * Returns str as an unsigned long long.
- *
- * Does not return on error.
- */
-uintmax_t
-string_to_uintmax(char const *str)
-{
-    uintmax_t num;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(169, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoumax(str, NULL, 10);
-    if (errno != 0) {
-	errp(170, __func__, "strtoumax(%s): %s", str, strerror(errno));
-	not_reached();
-    } else if (num >= UINTMAX_MAX) {
-	err(171, __func__, "strtoumax(%s): too big", str);
-	not_reached();
-    }
-
-    return num;
-}
-
-
-/*
- * string_to_float - string to long double with error checks
- *
- * given:
- *	str	- the string to convert to a quad_t
- *
- * Returns str as an unsigned long long.
- *
- * Does not return on error.
- */
-long double
-string_to_float(char const *str)
-{
-    long double num;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(172, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtold(str, NULL);
-
-    if (errno != 0) {
-	errp(173, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
-	not_reached();
-    }
-    else if (num <= LDBL_MIN || num >= LDBL_MAX) {
-	err(174, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
-	not_reached();
-    }
-    return num;
-}
-
 
 /*
  * parse_verbosity - parse -v option for our tools
@@ -2769,7 +2501,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(175, __func__, "called with NULL arg(s)");
+	err(153, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3850,7 +3582,7 @@ malloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(176, __func__, "filename is NULL");
+	err(154, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3867,7 +3599,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(177, __func__, "strdup of filename failed: %s", filename);
+	    errp(155, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3885,7 +3617,7 @@ malloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(178, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(156, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3895,7 +3627,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(179, __func__, "snprintf returned: %zu < 0", len);
+	    errp(157, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3904,7 +3636,7 @@ malloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(180, __func__, "function attempted to return NULL");
+	errp(158, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3931,7 +3663,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(181, __func__, "given NULL str");
+	err(159, __func__, "given NULL str");
 	not_reached();
     }
 

@@ -215,6 +215,23 @@ read IOCCC news.  Added `IOCCC_REGISTRATION_READY` to `mkiocccentry.h`
 to indicate if the registration process is ready independently from
 the submit server.
 
+Fixed coredump in verge when a version string starts with a non-digit
+(`!isascii() && !isdigit()`).
+
+Make verge use string_to_intmax() (instead of string_to_long()) and get rid of
+the following unused functions:
+
+        extern long string_to_long(char const *str);
+        extern long long string_to_long_long(char const *str);
+        extern int string_to_int(char const *str);
+        extern unsigned long string_to_unsigned_long(char const *str);
+        extern unsigned long long string_to_unsigned_long_long(char const *str);
+        extern uintmax_t string_to_uintmax(char const *str);
+        extern long double string_to_float(char const *str);
+    
+This required a resequencing of exit codes.
+
+
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
 for details. :-)

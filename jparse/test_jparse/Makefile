@@ -476,7 +476,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
