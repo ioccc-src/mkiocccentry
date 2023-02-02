@@ -260,7 +260,7 @@ main(int argc, char **argv)
 
 
 /*
- * show_tarball_info    - show information about tarball (if verbosity is >= DBG_MED)
+ * show_tarball_info - show information about tarball (if verbosity is >= DBG_MED)
  *
  * given:
  *
@@ -1080,7 +1080,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
 
 /*
- * count_and_sum    - wrapper to sum_and_count (util.c) related checks
+ * count_and_sum - wrapper to sum_and_count (util.c) related checks
  *
  * given:
  *
@@ -1308,7 +1308,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
 
 /*
- * parse_txz_line  - parse a line in the tarball listing
+ * parse_txz_line - parse a line in the tarball listing
  *
  * given:
  *
@@ -1335,7 +1335,6 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     /*
      * firewall
      */
-
     if (linep == NULL || line_dup == NULL || tarball_path == NULL || dir_count == NULL ||
 	    sum == NULL || count == NULL) {
 	err(34, __func__, "called with NULL arg(s)");
@@ -1621,7 +1620,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	dbg(DBG_VHIGH, "line %ju: %s", line_num, linep);
 
-
 	/*
 	 * add line to list (to parse once the list of files has been shown to
 	 * the user).
@@ -1645,7 +1643,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	    linep = NULL;
 	}
 
-
     } while (readline_len >= 0);
 
     /*
@@ -1661,7 +1658,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	warnp(__func__, "%s: %s error on tar stream", tarball_path, read_from_text_file?"fclose":"pclose");
     }
     input_stream = NULL;
-
 
     /*
      * now parse the lines, reporting any feathers stuck in the tarball that
@@ -1767,7 +1763,7 @@ add_txz_line(char const *str, uintmax_t line_num)
 
 
 /*
- * parse_all_txz_lines
+ * parse_all_txz_lines - parse all tar txz lines
  *
  * Parse the txz_lines list and report any feathers stuck in the tarball. After
  * all the lines have been parsed additional tests will be performed.
