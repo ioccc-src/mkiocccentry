@@ -440,6 +440,7 @@ struct location loc[] = {
 
 size_t SIZEOF_LOCATION_TABLE = TBLLEN(loc);
 
+
 /* check_location_table	    - make sure that there are no embedded NULL elements
  *			      in the location table and that the last element is
  *			      NULL
