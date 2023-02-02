@@ -2778,6 +2778,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      * NOTE: We will let the json_conv_string() handle the arg firewall
      */
     if (str == NULL) {
+	/* the firewall in json_conv_string() called below will handle the NULL str case */
 	warn(__func__, "called with NULL str");
     } else {
 	len = strlen(str);
@@ -2928,6 +2929,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      * NOTE: We will let the json_conv_bool() handle the arg firewall
      */
     if (str == NULL) {
+	/* the firewall in json_conv_bool() called below will handle the NULL str case */
 	warn(__func__, "called with NULL string");
     } else {
 	len = strlen(str);
@@ -2984,7 +2986,6 @@ json_conv_null(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NULL);
     if (ret == NULL) {
-	/* if we want null and it returns NULL why is this an error ? :-) */
 	errp(203, __func__, "json_alloc(JTYPE_NULL) returned NULL");
 	not_reached();
     }
@@ -3074,6 +3075,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      * NOTE: We will let the json_conv_null() handle the arg firewall
      */
     if (str == NULL) {
+	/* the firewall in json_conv_null() called below will handle the NULL str case */
 	warn(__func__, "called with NULL str");
     } else {
 	len = strlen(str);
