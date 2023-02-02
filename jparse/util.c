@@ -2073,7 +2073,7 @@ strnull(char const * const str)
 
 
 /*
- * string_to_long   -	convert str to long and check for errors
+ * string_to_long - convert str to long and check for errors
  *
  * given:
  *	str	-   the string to convert to a long int.
@@ -2111,7 +2111,7 @@ string_to_long(char const *str)
 
 
 /*
- * string_to_long_long   -	convert str to long long and check for errors
+ * string_to_long_long - convert str to long long and check for errors
  *
  * given:
  *	str	-   the string to convert to a long long int.
@@ -2155,7 +2155,7 @@ string_to_long_long(char const *str)
 
 
 /*
- * string_to_int   -	convert str to int and check for errors
+ * string_to_int - convert str to int and check for errors
  *
  * given:
  *	str	-   the string to convert to an int.
@@ -2266,7 +2266,7 @@ string_to_unsigned_long_long(char const *str)
 }
 
 /*
- * string_to_intmax   - convert base 10 str to intmax_t and check for errors
+ * string_to_intmax - convert base 10 str to intmax_t and check for errors
  *
  * given:
  *	str	- the string to convert to an intmax_t
@@ -2400,7 +2400,7 @@ string_to_float(char const *str)
 
 
 /*
- * parse_verbosity	- parse -v option for our tools
+ * parse_verbosity - parse -v option for our tools
  *
  * given:
  *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
@@ -2434,7 +2434,7 @@ parse_verbosity(char const *program, char const *arg)
 
 
 /*
- * is_decimal	    - if the buffer is a base 10 integer in ASCII
+ * is_decimal - if the buffer is a base 10 integer in ASCII
  *
  * given:
  *	ptr	    - pointer to buffer containing an integer in ASCII
@@ -2524,7 +2524,7 @@ is_decimal(char const *ptr, size_t len)
 
 
 /*
- * is_decimal_str	    - if the string str is a base 10 integer in ASCII
+ * is_decimal_str - if the string str is a base 10 integer in ASCII
  *
  * This is a simplified interface for is_decimal().
  *
@@ -2912,11 +2912,11 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 
 
 /*
- * clearerr_or_fclose
+ * clearerr_or_fclose - clear FILE stream if stdin, stdout, or stderr OR close the stream
  *
  * If stream is NULL, this function does nothing.
  *
- * This function calls clearerr() is stream is stdin, or stdout, or stderr.
+ * This function calls clearerr() if stream is stdin, or stdout, or stderr.
  * Otherwise fclose() will be called on the stream.
  *
  * given:
@@ -3912,7 +3912,7 @@ malloc_path(char const *dirname, char const *filename)
 
 
 /*
- * count the number of instances of a char in the string
+ * count_char - count the number of instances of a char in the string
  *
  * given:
  *
@@ -3946,7 +3946,7 @@ count_char(char const *str, int ch)
 
 
 /*
- * check_invalid_option	    - check option error in getopt()
+ * check_invalid_option - check option error in getopt()
  *
  * given:
  *
