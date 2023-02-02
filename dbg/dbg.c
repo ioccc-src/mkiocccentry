@@ -3359,10 +3359,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
- * verrp
- *
- * Write a fatal error message with errno details, in va_list form, to stderr
- * before exiting.
+ * verrp - write a fatal error message with errno details, in va_list form, to stderr before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -3512,10 +3509,7 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vferrp
- *
- * Write a fatal error message with errno details in va_list form to a
- * stream before exiting.
+ * vferrp - write a fatal error message with errno details in va_list form to a stream before exiting
  *
  * given:
  *	exitcode	value to exit with
@@ -4089,9 +4083,7 @@ werrp(int error_code, char const *name, char const *fmt, ...)
 
 
 /*
- * vwerrp
- *
- * Write an error message with errno info in va_list form to stderr w/o exiting.
+ * vwerrp - write an error message with errno info in va_list form to stderr w/o exiting
  *
  * given:
  *	error_code	error code
@@ -4231,10 +4223,7 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 
 
 /*
- * vfwerrp
- *
- * Write a non-fatal error message in va_list form with errno details to a
- * stream.
+ * vfwerrp - write a non-fatal error message in va_list form with errno details to a stream
  *
  * given:
  *	error_code	error code
@@ -4452,7 +4441,7 @@ vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *f
 
 
 /*
- * warn_or_err
+ * warn_or_err - write a warning or fatal error message to stderr before exiting
  *
  * Write a warning or error message (depending on a boolean) to stderr. If it is
  * an error then exit after writing the error.
@@ -4555,7 +4544,7 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
 
 
 /*
- * vwarn_or_err
+ * vwarn_or_err - write a warning or fatal error message in va_list form to stderr before exiting
  *
  * Write a warning or error message (depending on a boolean) in va_list form to
  * stderr. If it is an error then exit after writing the error.
@@ -4652,7 +4641,7 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
 
 
 /*
- * fwarn_or_err
+ * fwarn_or_err - write a warning or fatal error message to a stream before exiting
  *
  * Write a warning or error message (depending on a boolean) to a stream. If it
  * is an error then exit after writing the error.
@@ -4759,7 +4748,7 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
 
 
 /*
- * vfwarn_or_err
+ * vfwarn_or_err - write a warning or fatal error message in va_list form to a stream before
  *
  * Write a warning or error message (depending on a boolean) in va_list form to
  * a stream. If it is an error then exit after writing the error.
@@ -4861,7 +4850,7 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 
 
 /*
- * warnp_or_errp
+ * warnp_or_errp - write a warning or fatal error message with errno details to stderr before exiting
  *
  * Write a warning or error message (depending on a boolean) with errno details
  * to stderr. If it is an error then exit after writing the error.
@@ -4964,7 +4953,7 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
 
 
 /*
- * vwarnp_or_errp
+ * vwarnp_or_errp - write a warning or fatal error message with errno details, in va_list form, to stderr before exiting
  *
  * Write a warning or error message (depending on a boolean) with errno details
  * in va_list form to stderr.
@@ -5059,7 +5048,7 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
 
 
 /*
- * fwarnp_or_errp
+ * fwarnp_or_errp - write a warning or fatal error message with errno details to a stream before exiting
  *
  * Write a warning or error message (depending on a boolean) with errno details
  * to a stream. If it is an error, exit after writing the error.
@@ -5167,7 +5156,7 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
 
 
 /*
- * vfwarnp_or_errp
+ * vfwarnp_or_errp - write a warning or fatal error message with errno details in va_list form to a stream before exiting
  *
  * Write a warning or error message (depending on a boolean) with errno details
  * in va_list form to a stream. If it is an error, exit after writing the error
@@ -5268,9 +5257,7 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
 
 
 /*
- * printf_usage
- *
- * Write command line usage to stderr and, depending on exitcode, exit.
+ * printf_usage - write command line usage to stderr and, depending on exitcode, exit
  *
  * given:
  *	exitcode	- >= 0, exit with this code
@@ -5339,9 +5326,7 @@ printf_usage(int exitcode, char const *fmt, ...)
 
 
 /*
- * vprintf_usage
- *
- * Write command line usage to stderr and, depending on exitcode, exit.
+ * vprintf_usage - write command line usage to stderr and, depending on exitcode, exit
  *
  * given:
  *	exitcode	>= 0, exit with this code
@@ -5403,9 +5388,7 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
 
 
 /*
- * fprintf_usage
- *
- * Write command line usage to a stream and, depending on exitcode, exit.
+ * fprintf_usage - write command line usage to a stream and, depending on exitcode, exit
  *
  * given:
  *	exitcode	- >= 0, exit with this code
@@ -5479,10 +5462,7 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 
 
 /*
- * vfprintf_usage
- *
- * Write command line usage to a stream in va_list form and, depending on
- * exitcode, exit.
+ * vfprintf_usage - write command line usage to a stream in va_list form and, depending on exitcode, exit
  *
  * given:
  *	exitcode	>= 0, exit with this code
