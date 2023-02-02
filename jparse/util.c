@@ -2265,47 +2265,8 @@ string_to_unsigned_long_long(char const *str)
     return num;
 }
 
-
 /*
- * string_to_intmax   -	convert base 10 str to intmax_t and check for errors
- *
- * given:
- *	str	-   the string to convert to an intmax_t.
- *
- * Returns string 'str' as a long long int.
- *
- * Does not return on error or NULL pointer.
- */
-intmax_t
-string_to_intmax(char const *str)
-{
-    intmax_t num;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(169, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    errno = 0;
-    num = strtoimax(str, NULL, 10);
-
-    if (errno != 0) {
-	errp(170, __func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
-	not_reached();
-    }
-    else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
-	err(171, __func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
-	not_reached();
-    }
-    return num;
-}
-
-
-/*
- * string_to_intmax2   - second interface to convert base 10 str to intmax_t and check for errors
+ * string_to_intmax   - convert base 10 str to intmax_t and check for errors
  *
  * given:
  *	str	- the string to convert to an intmax_t
@@ -2316,7 +2277,7 @@ string_to_intmax(char const *str)
  *	false ==> unable to convert / not a valid base 10 integer, NULL pointer or internal error
  */
 bool
-string_to_intmax2(char const *str, intmax_t *ret)
+string_to_intmax(char const *str, intmax_t *ret)
 {
     intmax_t num = 0;
     int saved_errno = 0;
@@ -2382,17 +2343,17 @@ string_to_uintmax(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(172, __func__, "passed NULL string");
+	err(169, __func__, "passed NULL string");
 	not_reached();
     }
 
     errno = 0;
     num = strtoumax(str, NULL, 10);
     if (errno != 0) {
-	errp(173, __func__, "strtoumax(%s): %s", str, strerror(errno));
+	errp(170, __func__, "strtoumax(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= UINTMAX_MAX) {
-	err(174, __func__, "strtoumax(%s): too big", str);
+	err(171, __func__, "strtoumax(%s): too big", str);
 	not_reached();
     }
 
@@ -2419,7 +2380,7 @@ string_to_float(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(175, __func__, "passed NULL string");
+	err(172, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2427,11 +2388,11 @@ string_to_float(char const *str)
     num = strtold(str, NULL);
 
     if (errno != 0) {
-	errp(176, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
+	errp(173, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LDBL_MIN || num >= LDBL_MAX) {
-	err(177, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
+	err(174, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
 	not_reached();
     }
     return num;
@@ -2808,7 +2769,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(178, __func__, "called with NULL arg(s)");
+	err(175, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3889,7 +3850,7 @@ malloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(179, __func__, "filename is NULL");
+	err(176, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3906,7 +3867,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(180, __func__, "strdup of filename failed: %s", filename);
+	    errp(177, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3924,7 +3885,7 @@ malloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(181, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(178, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3934,7 +3895,7 @@ malloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(182, __func__, "snprintf returned: %zu < 0", len);
+	    errp(179, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3943,7 +3904,7 @@ malloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(183, __func__, "function attempted to return NULL");
+	errp(180, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3970,7 +3931,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(184, __func__, "given NULL str");
+	err(181, __func__, "given NULL str");
 	not_reached();
     }
 

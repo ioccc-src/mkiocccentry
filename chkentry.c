@@ -701,7 +701,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * cleanup - except for info_path, auth_path, info_stream and auth_stream.
+     * cleanup - except for info_stream and auth_stream.
      *
      * We don't try closing info_stream or auth_stream because the json parser
      * already does that at this point. This is because we no longer use yyin

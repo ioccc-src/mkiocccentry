@@ -251,6 +251,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	mlen += jenc[(uint8_t)(ptr[i])].len;
     }
     if (mlen < 0) { /* paranoia */
+	/* error - clear allocated length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
 	warn(__func__, "mlen #0: %ju < 0", (uintmax_t)mlen);
 	return NULL;
     }
@@ -294,6 +298,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	    if (retlen != NULL) {
 		*retlen = 0;
 	    }
+	    if (ret != NULL) {
+		free(ret);
+		ret = NULL;
+	    }
 	    warn(__func__, "encoding ran beyond end of allocated encoded string");
 	    return NULL;
 	}
@@ -304,6 +312,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     mlen = p - ret; /* paranoia */
     if (mlen < 0) { /* paranoia */
 	warn(__func__, "mlen #1: %ju < 0", (uintmax_t)mlen);
+	if (ret != NULL) {
+	    free(ret);
+	    ret = NULL;
+	}
 	return NULL;
     }
 
@@ -1463,17 +1475,16 @@ parse_json_bool(char const *string)
 	 * bool to string and make sure everything matches.
 	 */
 	char const *str = booltostr(item->value);
-	bool tmp = false;
 	if (str == NULL) {
 	    err(172, __func__, "could not convert boolean->value back to a string");
 	    not_reached();
 	} else if (strcmp(str, item->as_str)) {
 	    err(173, __func__, "boolean->as_str != item->value as a string");
 	    not_reached();
-	} else if ((tmp = strtobool(item->as_str)) != item->value) {
+	} else if (strtobool(item->as_str) != item->value) {
 	    err(174, __func__, "mismatch between boolean string and converted value");
 	    not_reached();
-	} else if ((tmp = strtobool(str)) != item->value) {
+	} else if (strtobool(str) != item->value) {
 	    err(175, __func__, "mismatch between converted string value and converted value");
 	    not_reached();
 	}

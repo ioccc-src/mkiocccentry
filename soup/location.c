@@ -632,6 +632,11 @@ location_code_name_match(char const *code, char const *location_name)
 	return false;
     }
 
+    if (p->name == NULL) {
+	dbg(DBG_HIGH, "name: <%s> is unknown", location_name);
+	return false;
+    }
+
     /*
      * compare location name with name from the code found in the table
      */

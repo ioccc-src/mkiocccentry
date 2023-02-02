@@ -2410,7 +2410,7 @@ test_author_number(int author_number)
 
 
 /*
- * test_authors - test is the authors array contains unique authors
+ * test_authors - test if the authors array contains unique authors
  *
  * We verify that the authors array contains author numbers that are unique
  * and bound in the range [0,author_count].

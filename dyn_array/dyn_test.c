@@ -86,7 +86,6 @@ main(int argc, char *argv[])
     struct dyn_array *array;	/* dynamic array to test */
     double d;			/* test double */
     bool error = false;		/* true ==> test error found */
-    bool moved = false;		/* true ==> array op moved data */
     intmax_t len = 0;		/* length of the dynamic array */
     int i;
 
@@ -141,10 +140,8 @@ main(int argc, char *argv[])
      * load a million doubles
      */
     for (d = 0.0; d < 1000000.0; d += 1.0) {
-	moved = dyn_array_append_value(array, &d);
-	if (moved == true) {
+	if (dyn_array_append_value(array, &d)) {
 	    dbg(DBG_LOW, "moved data after appending d: %f", d);
-	    moved = false;
 	}
     }
 
@@ -170,10 +167,8 @@ main(int argc, char *argv[])
     /*
      * concatenate the array onto itself
      */
-    moved = dyn_array_concat_array(array, array);
-    if (moved == true) {
+    if (dyn_array_concat_array(array, array)) {
 	dbg(DBG_LOW, "moved data after concatenation");
-	moved = false;
     }
 
     /*

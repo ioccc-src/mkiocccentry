@@ -863,7 +863,7 @@ yyerror(YYLTYPE *yyltype, struct json **node, yyscan_t scanner, char const *form
      * firewall
      */
     if (scanner == NULL) {
-	err(55, __func__, "NULL scanner");
+	err(56, __func__, "NULL scanner");
 	not_reached();
     }
     /*

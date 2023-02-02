@@ -171,6 +171,10 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     ret = calloc(1, sizeof(struct json_sem_val_err));
     if (ret == NULL) {
 	/* report calloc error */
+	if (diagnostic != NULL) {
+	    free(diagnostic);
+	    diagnostic = NULL;
+	}
 	return &sem_calloc_err;
     }
 
@@ -270,6 +274,10 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     ret = calloc(1, sizeof(struct json_sem_val_err));
     if (ret == NULL) {
 	/* report calloc error */
+	if (diagnostic != NULL) {
+	    free(diagnostic);
+	    diagnostic = NULL;
+	}
 	return &sem_calloc_err;
     }
 

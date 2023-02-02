@@ -93,7 +93,6 @@ main(int argc, char *argv[])
     char *filename = NULL;	/* name of file containing test cases */
     FILE *stream = NULL;	/* test case open stream */
     char *readline_buf = NULL;	/* test case readline_buf buffer */
-    ssize_t readline_len;	/* readline return length */
     int ret;			/* libc function return */
     intmax_t count = 0;		/* test count read from filename */
     char *p = NULL;		/* comment search */
@@ -188,7 +187,7 @@ main(int argc, char *argv[])
     /*
      * process lines from filename
      */
-    while ((readline_len = readline(&readline_buf, stream)) >= 0) {
+    while (readline(&readline_buf, stream) >= 0) {
 
 	/*
 	 * form line from readline buffer
