@@ -3439,6 +3439,7 @@ chk_ungetc_warning(struct json const *node,
     return true;
 }
 
+
 /*
  * chk_alt_url - JSON semantic check for url
  *
