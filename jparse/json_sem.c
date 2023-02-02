@@ -1287,6 +1287,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
     return &(inum->as_int);
 }
 
+
 /*
  * sem_member_value_size_t - return pointer to size_t from a JSON number value of JTYPE_MEMBER
  *
@@ -1362,6 +1363,7 @@ sem_member_value_size_t(struct json const *node, unsigned int depth, struct json
      */
     return &(snum->as_size);
 }
+
 
 /*
  * sem_member_value_time_t - return pointer to time_t from a JSON number value of JTYPE_MEMBER
