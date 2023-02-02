@@ -213,7 +213,7 @@ main(int argc, char *argv[])
 
 
 /*
- * parse_verbosity	- parse -v option for our tools
+ * parse_verbosity - parse -v option for our tools
  *
  * given:
  *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
