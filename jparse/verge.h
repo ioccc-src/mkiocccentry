@@ -45,7 +45,7 @@
 /*
  * function prototypes
  */
-static size_t allocate_vers(char *str, long **pvers);
+static size_t allocate_vers(char *str, intmax_t **pvers);
 
 
 #endif /* INCLUDE_VERGE_H */

@@ -87,8 +87,8 @@ main(int argc, char *argv[])
     char *ver2 = NULL;		/* second version string */
     int ver1_levels = 0;	/* number of version levels for first version string */
     int ver2_levels = 0;	/* number of version levels for second version string */
-    long *vlevel1 = NULL;	/* allocated version levels from first version string */
-    long *vlevel2 = NULL;	/* allocated version levels from second version string */
+    intmax_t *vlevel1 = NULL;	/* allocated version levels from first version string */
+    intmax_t *vlevel2 = NULL;	/* allocated version levels from second version string */
     int i;
 
     /*
@@ -160,7 +160,7 @@ main(int argc, char *argv[])
 	if (vlevel1[i] > vlevel2[i]) {
 
 	    /* ver1 > ver2 */
-	    dbg(DBG_MED, "version 1 level %d: %ld > version 2 level %d: %ld",
+	    dbg(DBG_MED, "version 1 level %d: %ld > version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	    dbg(DBG_LOW, "%s > %s", ver1, ver2);
 	    /* free memory */
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
 	} else if (vlevel1[i] < vlevel2[i]) {
 
 	    /* ver1 < ver2 */
-	    dbg(DBG_MED, "version 1 level %d: %ld < version 2 level %d: %ld",
+	    dbg(DBG_MED, "version 1 level %d: %jd < version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	    dbg(DBG_LOW, "%s < %s", ver1, ver2);
 	    /* free memory */
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 	} else {
 
 	    /* versions match down to this level */
-	    dbg(DBG_MED, "version 1 level %d: %ld == version 2 level %d: %ld",
+	    dbg(DBG_MED, "version 1 level %d: %jd == version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	}
     }
@@ -264,9 +264,10 @@ main(int argc, char *argv[])
  * NOTE: This function does not return on allocation failures or NULL args.
  */
 static size_t
-allocate_vers(char *str, long **pvers)
+allocate_vers(char *str, intmax_t **pvers)
 {
     char *wstr = NULL;		/* working allocated copy of orig_str */
+    char *wstr_start = NULL;	/* pointer to starting point of wstr */
     size_t len;			/* length of version string */
     bool dot = false;		/* true ==> previous character was dot */
     size_t dot_count = 0;	/* number of .'s in version string */
@@ -296,6 +297,7 @@ allocate_vers(char *str, long **pvers)
 	errp(11, __func__, "cannot strdup: <%s>", str);
 	not_reached();
     }
+    wstr_start = wstr;
 
     /*
      * trim leading non-digits
@@ -310,9 +312,9 @@ allocate_vers(char *str, long **pvers)
 	/* report invalid version string */
 	dbg(DBG_MED, "version string contained no digits: <%s>", wstr);
 	/* free strdup()d string if != NULL */
-	if (wstr != NULL) {
-	    free(wstr);
-	    wstr = NULL;
+	if (wstr_start != NULL) {
+	    free(wstr_start);
+	    wstr_start = NULL;
 	}
 	return 0;
     }
@@ -357,9 +359,9 @@ allocate_vers(char *str, long **pvers)
 		/* report invalid version string */
 		dbg(DBG_MED, "trimmed version string contains 2 dots in a row: <%s>", wstr);
 		/* free strdup()d string if != NULL */
-		if (wstr != NULL) {
-		    free(wstr);
-		    wstr = NULL;
+		if (wstr_start != NULL) {
+		    free(wstr_start);
+		    wstr_start = NULL;
 		}
 		return 0;
 	    }
@@ -370,9 +372,9 @@ allocate_vers(char *str, long **pvers)
 	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
 			 (uintmax_t)i, wstr[i], wstr);
 	    /* free strdup()d string if != NULL */
-	    if (wstr != NULL) {
-		free(wstr);
-		wstr = NULL;
+	    if (wstr_start != NULL) {
+		free(wstr_start);
+		wstr_start = NULL;
 	    }
 	    return 0;
 	}
@@ -386,9 +388,9 @@ allocate_vers(char *str, long **pvers)
      * Allocate the array of dot_count+1 versions.
      */
     errno = 0;		/* pre-clear errno for errp() */
-    *pvers = (long *)calloc(dot_count+1+1, sizeof(long));
+    *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(intmax_t));
     if (*pvers == NULL) {
-	errp(12, __func__, "cannot calloc %ju longs", (uintmax_t)dot_count+1+1);
+	errp(12, __func__, "cannot calloc %ju intmax_ts", (uintmax_t)dot_count+1+1);
 	not_reached();
     }
 
@@ -400,14 +402,14 @@ allocate_vers(char *str, long **pvers)
 	 ++i, word=strtok_r(NULL, ".", &brkt)) {
 	/* word is the next version string - convert to integer */
 	dbg(DBG_VVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
-	(*pvers)[i] = string_to_long(word);
-	dbg(DBG_VHIGH, "version level %ju: %ld", (uintmax_t)i, (*pvers)[i]);
+	(void) string_to_intmax(word, &(*pvers)[i]);
+	dbg(DBG_VHIGH, "version level %ju: %jd", (uintmax_t)i, (*pvers)[i]);
     }
 
     /* we no longer need the duplicated string */
-    if (wstr != NULL) {
-	free(wstr);
-	wstr = NULL;
+    if (wstr_start != NULL) {
+	free(wstr_start);
+	wstr_start = NULL;
     }
 
     /*
