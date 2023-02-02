@@ -23,8 +23,9 @@ const char *const soup_version = SOUP_VERSION;	/* library version format: major.
 
 
 /*
- * ioccc_sanity_chks	-   run sanity checks on specific data that's
- *			    used in several of the IOCCC tools
+ * ioccc_sanity_chks - perform IOCCC sanity checks
+ *
+ * Run sanity checks on specific data that's used in several of the IOCCC tools.
  *
  * This function does not return if things are not sane.
  */
