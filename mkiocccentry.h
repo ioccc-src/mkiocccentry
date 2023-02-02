@@ -123,7 +123,9 @@
 
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
-#undef IOCCC_SUBMIT_SERVER_READY /* TODO: change to #define when submit server is ready */
+#define IOCCC_NEWS_URL "https://www.ioccc.org/index.html#news"
+#undef IOCCC_REGISTRATION_READY		/* TODO: change to #define when registration process is ready */
+#undef IOCCC_SUBMIT_SERVER_READY	/* TODO: change to #define when submit server is ready */
 
 /* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */

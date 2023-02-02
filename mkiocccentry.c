@@ -3059,6 +3059,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
     return;
 }
 
+
 /*
  * yes_or_no - determine if input is yes or no
  *
@@ -5346,58 +5347,79 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	/*
 	 * inform them of the compressed tarball file
 	 */
-	#if defined(IOCCC_SUBMIT_SERVER_READY)
-	    show_registration_url();
-	    show_submit_url(work_dir, tarball_path);
-	#else /* IOCCC_SUBMIT_SERVER_READY */
-	    show_submit_url(work_dir, tarball_path);
-	#endif /* IOCCC_SUBMIT_SERVER_READY */
+	show_registration_url();
+	show_submit_url(work_dir, tarball_path);
     }
-
     return;
 }
+
+
 /*
- *  show_registration_url
+ * show_registration_url - print if the submit server is ready
  *
- *  If the submit server is ready we will tell the user how to register as a
- *  contestant. If it is NOT ready we will tell them they cannot register as a
- *  contestant and implicitly that they may NOT submit an entry.
+ * If the submit server is ready we will tell the user how to register as a
+ * contestant. If it is NOT ready we will tell them they cannot register as a
+ * contestant and implicitly that they may NOT submit an entry.
  *
  */
 static void
 show_registration_url(void)
 {
-    #if defined (IOCCC_SUBMIT_SERVER_READY)
-	int ret;
-	para("",
-	     "To submit entries to the IOCCC, you must be a registered contestant and have received an",
-	     "IOCCC contest ID (via email) shortly after you've successfully registered. To do so,",
-	     "please visit:",
-	     "",
-	     NULL);
-	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
-	if (ret <= 0) {
-	    err(188, __func__, "fprintf error printing IOCCC_REGISTER_URL");
-	    not_reached();
-	}
-    #else /* IOCCC_SUBMIT_SERVER_READY */
-    para("The IOCCC submit server is NOT ready so you may not register as an IOCCC",
-	 "contestant at this time.",
+    int ret;			/* libc function return */
+
+#if defined (IOCCC_REGISTRATION_READY)
+
+    /*
+     * print information about how to register for the IOCCC
+     */
+    para("",
+	 "To submit entries to the IOCCC, you must be a registered contestant and have received an",
+	 "IOCCC contest ID (via email) shortly after you've successfully registered.  To do so,",
+	 "please visit:",
 	 "",
 	 NULL);
-    #endif /* IOCCC_SUBMIT_SERVER_READY */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
+    if (ret <= 0) {
+	err(188, __func__, "fprintf error printing IOCCC_REGISTER_URL");
+	not_reached();
+    }
+
+#else /* IOCCC_REGISTRATION_READY */
+
+    /*
+     * print that the registration system is not ready
+     */
+    para("",
+         "The IOCCC registration process and submit servers are not ready.  You cannot",
+	 "register for the IOCCC nor use the IOCCC submit server at this time.",
+	 "Please try again later, and monitor the IOCCC news for updates:",
+	 "",
+	 NULL);
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "    %s\n\n", IOCCC_NEWS_URL);
+    if (ret <= 0) {
+	err(189, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	not_reached();
+    }
+    para("",
+	 "Sorry, tm Canada :-).",
+	 "",
+	 NULL);
+
+#endif /* IOCCC_REGISTRATION_READY */
 }
 
+
 /*
- *  show_submit_url
+ * show_submit_url
  *
- *  If the submit server is ready we will tell the user where they may submit
- *  their entry if the contest is still open. If the submit server is NOT open
- *  we will tell them that the server is not ready and that they CANNOT submit
- *  their entry.
+ * If the submit server is ready we will tell the user where they may submit
+ * their entry if the contest is still open. If the submit server is NOT open
+ * we will tell them that the server is not ready and that they CANNOT submit
+ * their entry.
  *
- *  given:
+ * given:
  *	    work_dir	    - work directory
  *	    tarball_path    - path to the entry tarball
  *
@@ -5409,11 +5431,22 @@ show_registration_url(void)
 static void
 show_submit_url(char const *work_dir, char const *tarball_path)
 {
+#if defined (IOCCC_SUBMIT_SERVER_READY) || defined (IOCCC_REGISTRATION_READY)
+    int ret;			/* libc function return */
+#endif /* IOCCC_SUBMIT_SERVER_READY || IOCCC_REGISTRATION_READY */
+
+    /*
+     * firewall
+     */
     if (work_dir == NULL || tarball_path == NULL) {
 	return;
     }
-    #if defined (IOCCC_SUBMIT_SERVER_READY)
-    int ret;
+
+#if defined (IOCCC_SUBMIT_SERVER_READY)
+
+    /*
+     * print information the tarball that was formed
+     */
     para("",
 	 "Once you've registered, you may submit your entry by uploading",
 	 "the following tarball:",
@@ -5421,25 +5454,44 @@ show_submit_url(char const *work_dir, char const *tarball_path)
 	 NULL);
     ret = printf("    %s/%s\n", work_dir, tarball_path);
     if (ret <= 0) {
-	errp(189, __func__, "printf #4 error");
+	errp(190, __func__, "printf #4 error");
 	not_reached();
     }
 
+    /*
+     * print the submit server URL
+     */
     para("",
 	 "If the contest is still open, you may upload the above",
 	 "tarball to the following submission URL:",
 	 "",
 	 NULL);
-    ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
+    ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(190, __func__, "printf #5 error");
+	errp(191, __func__, "printf #5 error");
 	not_reached();
     }
-    #else /* IOCCC_SUBMIT_SERVER_READY */
-	para("",
-	     "The IOCCC submit server is NOT ready so you may NOT enter the",
-	     "contest. Please do NOT email the Judges your entry."
-	     "",
-	     NULL);
-    #endif /* IOCCC_SUBMIT_SERVER_READY */
+
+#elif defined (IOCCC_REGISTRATION_READY)
+
+    /*
+     * print that the submit server not ready for submissions
+     */
+    para("",
+	 "The IOCCC submit server is NOT ready to receive submissions.",
+	 "Please try again later, and monitor the IOCCC news for updates:",
+	 "",
+	 NULL);
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "    %s\n", IOCCC_NEWS_URL);
+    if (ret <= 0) {
+	err(192, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	not_reached();
+    }
+    para("",
+	 "Sorry, tm Canada :-).",
+	 "",
+	 NULL);
+
+#endif /* IOCCC_REGISTRATION_READY */
 }

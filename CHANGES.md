@@ -210,6 +210,11 @@ parser files.
 Remove unused function string_to_intmax() and change string_to_intmax2() to be
 string_to_intmax().
 
+Added `IOCCC_NEWS_URL` to `mkiocccentry.h` to define the URL to
+read IOCCC news.  Added `IOCCC_REGISTRATION_READY` to `mkiocccentry.h`
+to indicate if the registration process is ready independently from
+the submit server.
+
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
 for details. :-)
