@@ -765,7 +765,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	-${Q} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

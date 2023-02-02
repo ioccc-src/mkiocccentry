@@ -807,7 +807,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	-${V} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
