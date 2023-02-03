@@ -160,7 +160,7 @@ main(int argc, char *argv[])
 	if (vlevel1[i] > vlevel2[i]) {
 
 	    /* ver1 > ver2 */
-	    dbg(DBG_MED, "version 1 level %d: %ld > version 2 level %d: %jd",
+	    dbg(DBG_MED, "version 1 level %d: %jd > version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	    dbg(DBG_LOW, "%s > %s", ver1, ver2);
 	    /* free memory */
