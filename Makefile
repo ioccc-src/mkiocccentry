@@ -827,7 +827,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RM} -f ${LOCAL_DIR_TAGS}
-	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

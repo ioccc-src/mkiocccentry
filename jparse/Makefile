@@ -769,6 +769,13 @@ tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${Q} for dir in ../dbg ../dyn_alloc; do \
+	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
+		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
+	    fi; \
+	done
+	${Q} echo
 	${E} ${MAKE} local_dir_tags
 	${Q} echo
 	${E} ${MAKE} all_tags
@@ -781,17 +788,10 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} for dir in ../dbg ../dyn_alloc; do \
-	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
-		echo ${MAKE} ${MAKE_CD_Q} -C $$dir $@; \
-		${MAKE} ${MAKE_CD_Q} -C $$dir $@; \
-	    fi; \
-	done
-	${Q} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${Q} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
-	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
