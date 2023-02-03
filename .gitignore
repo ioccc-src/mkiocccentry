@@ -4,6 +4,7 @@
 .build.log.*
 .hostchk.*.work/
 .jsemcgen.*.out
+.local.dir.tags
 .sorry.*.c
 .txzchk_test.*.test_file
 .txzchk_test.tar_err.*.out

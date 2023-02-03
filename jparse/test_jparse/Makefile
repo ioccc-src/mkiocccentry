@@ -41,6 +41,7 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+SORT= sort
 
 
 ####################
@@ -184,6 +185,10 @@ SH_FILES= jparse_test.sh jstr_test.sh
 # intermediate files #
 ######################
 
+# tags for just the files in this directory
+#
+LOCAL_DIR_TAGS= .local.dir.tags
+
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= jnum_chk.o jnum_test.o
@@ -288,7 +293,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	rebuild_jnum_test test legacy_clean legacy_clobber \
-	configure clean clobber install depend tags \
+	configure clean clobber install depend tags local_dir_tags all_tags \
 	test_JSON/info.json/good/info.reference.json \
 	test_JSON/auth.json/good/auth.reference.json
 
@@ -476,8 +481,36 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${Q} ${RM} -f tags
+	-${S} ${CTAGS} -t -w ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
+#
+local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
+#
+all_tags:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} ${RM} -f tags
+	${Q} for dir in . .. ../../dbg ../../dyn_alloc; do \
+	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
+		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
+	    fi; \
+	done
+	${E} ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -519,7 +552,7 @@ clobber: legacy_clobber clean
 	${S} echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	${RM} -f tags
+	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

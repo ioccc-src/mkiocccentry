@@ -63,6 +63,7 @@ SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP= sleep
+SORT= sort
 TEE= tee
 TR= tr
 
@@ -213,6 +214,10 @@ ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 ######################
 # intermediate files #
 ######################
+
+# tags for just the files in this directory
+#
+LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -413,7 +418,8 @@ hostchk_warning:
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep soup \
-        pull release seqcexit shellcheck tags test test-chkentry use_json_ref eat eating eat eating_soup \
+        pull release seqcexit shellcheck tags local_dir_tags all_tags test test-chkentry use_json_ref \
+	eat eating eat eating_soup \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
 	all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc depend
 
@@ -802,13 +808,53 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg local_dir_tags
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array local_dir_tags
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse local_dir_tags
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags
+	${Q} echo
+	${E} ${MAKE} local_dir_tags
+	${Q} echo
+	${E} ${MAKE} all_tags
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
+#
+local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} -f ${LOCAL_DIR_TAGS}
+	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
+#
+all_tags:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${Q} echo
+	${E} ${RM} -f tags
+	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
+	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
+		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
+	    elif [[ -e $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo "make $@ Warning: found empty local tags file: $$dir/${LOCAL_DIR_TAGS}" 1>&2 ; \
+	    else \
+		echo "make $@ Warning: missing local tags file: $$dir/${LOCAL_DIR_TAGS}" 1>&2 ; \
+	    fi; \
+	done
+	${E} ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -935,7 +981,7 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
         dyn_array/dyn_array.clone dyn_array.diff dyn_array.fetch dyn_array.reclone dyn_array.reload \
 	dyn_array.rsync dyn_array.status jparse.clone jparse.diff jparse.fetch jparse.reclone \
 	jparse.reload jparse.rsync jparse.status all.clone all.diff all.fetch all.reclone \
-	all.reload all.rsync all.status
+	all.reload all.rsync all.status local_dir_tags all_tags
 
 # dbg external repo
 #
@@ -1085,7 +1131,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f ${TARGETS}
 	${RM} -rf man
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log ${BUILD_LOG}
-	${RM} -f tags
+	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

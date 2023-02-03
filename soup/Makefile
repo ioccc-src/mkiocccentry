@@ -54,6 +54,7 @@ SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP= sleep
+SORT= sort
 TOUCH= touch
 TR= tr
 
@@ -205,6 +206,10 @@ ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 # intermediate files #
 ######################
 
+# tags for just the files in this directory
+#
+LOCAL_DIR_TAGS= .local.dir.tags
+
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_time.o entry_util.o \
@@ -336,7 +341,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup legacy_clean legacy_clobber \
-	configure clean clobber install depend tags \
+	configure clean clobber install depend tags local_dir_tags all_tags \
 	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
 	limit_ioccc.sh all_sem_ref all_sem_ref_ptch
 
@@ -684,8 +689,36 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${Q} ${RM} -f tags
+	-${S} ${CTAGS} -t -w ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
+#
+local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
+#
+all_tags:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} ${RM} -f tags
+	${Q} for dir in . ../dbg ../dyn_alloc ../jparse ../jparse/test_jparse; do \
+	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
+		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
+	    fi; \
+	done
+	${E} ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -730,7 +763,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f .soup
-	${RM} -f tags
+	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${RM} -f .all_ref.*
 	${RM} -f ${TARGETS}
 	${S} echo

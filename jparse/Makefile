@@ -40,6 +40,7 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+SORT= sort
 
 
 ####################
@@ -198,6 +199,10 @@ ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 ######################
 # intermediate files #
 ######################
+
+# tags for just the files in this directory
+#
+LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -403,8 +408,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_json_ref rebuild_jnum_test bison flex test tags check_man legacy_clean legacy_clobber \
-	load_json_ref install_man \
+	parser parser-o use_json_ref rebuild_jnum_test bison flex test tags local_dir_tags all_tags check_man \
+	legacy_clean legacy_clobber load_json_ref install_man \
 	configure clean clobber install depend
 
 
@@ -765,8 +770,40 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
-	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${Q} ${RM} -f tags
+	-${S} ${CTAGS} -t -w ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
+#
+local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${Q} echo
+	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
+#
+all_tags:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${Q} echo
+	${Q} ${RM} -f tags
+	${Q} for dir in . ../dbg ../dyn_alloc test_jparse; do \
+	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
+		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
+	    fi; \
+	done
+	${E} ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -810,7 +847,7 @@ clobber: legacy_clobber clean
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output lex.yy.c jparse.c
 	${RM} -f jsemcgen.out.*
-	${RM} -f tags
+	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

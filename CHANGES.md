@@ -1,10 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.0.0 2023-01-21
-
-XXX - add more details here as more is done or remembered (what has already been done).
-
+## Release 1.0.0 2023-02--2
 
 Resolved all macOS -Weverything issues worth addressing.  See
 `test_ioccc/static_analysis.md` for details and to see how you can also help as
@@ -229,8 +226,11 @@ the following unused functions:
         extern uintmax_t string_to_uintmax(char const *str);
         extern long double string_to_float(char const *str);
     
-This required a resequencing of exit codes.
+Exit codes were resequenced.
 
+The `make tags` now forms both local directory tags files by the name of
+.local.dir.tags as well as a tags file from the accumulation of tags from
+related source directories.
 
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)

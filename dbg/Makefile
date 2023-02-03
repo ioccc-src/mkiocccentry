@@ -51,6 +51,7 @@ RM= rm
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
+SORT= sort
 
 
 ####################
@@ -203,6 +204,10 @@ ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 # intermediate files #
 ######################
 
+# tags for just the files in this directory
+#
+LOCAL_DIR_TAGS= .local.dir.tags
+
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= dbg.o
@@ -335,7 +340,7 @@ all: ${TARGETS}
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dbg.3 \
 	man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 man/man3/printf_usage.3 man/man3/warn_or_err.3 \
 	test check_man legacy_clean legacy_clobber install_man \
-	configure clean clobber install depend tags
+	configure clean clobber install depend tags local_dir_tags all_tags
 
 
 ####################################
@@ -545,8 +550,31 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${S} ${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${Q} ${RM} -f tags ${LOCAL_DIR_TAGS}
+	-${S} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
+#
+local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# for a tags file from ${LOCAL_DIR_TAGS}
+#
+all_tags:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} -f tags
+	${E} ${CP} -f -v ${LOCAL_DIR_TAGS} tags
+	${E} ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -588,7 +616,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${TARGETS}
-	${RM} -f tags
+	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
