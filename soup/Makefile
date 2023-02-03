@@ -689,8 +689,9 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f tags
-	-${S} ${CTAGS} -t -w ${ALL_CSRC} ${ALL_HSRC}
+	${E} ${MAKE} local_dir_tags
+	${Q} echo
+	${E} ${MAKE} all_tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
