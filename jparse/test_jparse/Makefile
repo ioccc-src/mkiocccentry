@@ -477,7 +477,7 @@ check_man:
 
 # vi/vim tags
 #
-tags: ${ALL_CSRC} ${ALL_HSRC}
+tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -493,6 +493,13 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${Q} for dir in ../../dbg ../../dyn_alloc ..; do \
+	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
+		echo ${MAKE} ${MAKE_CD_Q} -C $$dir $@; \
+		${MAKE} ${MAKE_CD_Q} -C $$dir $@; \
+	    fi; \
+	done
+	${Q} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -t -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
