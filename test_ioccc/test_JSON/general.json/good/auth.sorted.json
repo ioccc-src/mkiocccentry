@@ -1,5 +1,5 @@
 {
-	"IOCCC_auth_version" : "1.18 2022-11-30",
+	"IOCCC_auth_version" : "1.19 2023-02-04",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"authors" : [
 		{
@@ -75,15 +75,15 @@
 	],
 	"author_count" : 5,
 	"entry_num" : 0,
-	"fnamchk_version" : "0.6 2022-03-15",
+	"fnamchk_version" : "1.0 2023-02-04",
 	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC",
 	"formed_timestamp" : 1662145368,
 	"formed_timestamp_usec" : 506171,
 	"IOCCC_contest" : "IOCCCMOCK",
-	"IOCCC_year" : 2022,
-	"chkentry_version" : "0.4 2022-11-30",
+	"IOCCC_year" : 2023,
+	"chkentry_version" : "1.0 2023-02-04",
 	"min_timestamp" : 1662145368,
-	"mkiocccentry_version" : "0.44 2022-11-30",
+	"mkiocccentry_version" : "1.0 2023-02-04",
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
 	"test_mode" : true,

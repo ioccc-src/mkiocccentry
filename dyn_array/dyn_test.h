@@ -39,7 +39,7 @@
 /*
  * official versions
  */
-#define DYN_TEST_VERSION "1.8 2023-01-28"	/* format: major.minor YYYY-MM-DD */
+#define DYN_TEST_VERSION "1.9 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * dyn_array - dynamic array facility

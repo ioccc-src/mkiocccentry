@@ -59,7 +59,7 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.2 2023-01-22"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.3 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

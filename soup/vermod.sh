@@ -19,9 +19,9 @@
 
 # setup
 #
-export JSON_TREE="../test_ioccc/test_JSON"
-export LIMIT_SH="./limit_ioccc.sh"
-export VERMOD_VERSION="0.1 2022-03-15"
+export JSON_TREE="test_ioccc/test_JSON"
+export LIMIT_SH="soup/limit_ioccc.sh"
+export VERMOD_VERSION="1.0 2023-02-04"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
 

@@ -25,7 +25,7 @@ export M_FLAG=""
 export MAN_FLAG=""
 export MAN_PAGE=""
 export MAN_DIR="./man"
-export RUN_USAGE_VERSION="0.2 2022-11-06"
+export RUN_USAGE_VERSION="1.0 2023-02-04"
 export USAGE="usage: $0 [-h] [-V] [-m section] [-M man_file] [-D man_dir] tool
 
     -h			print help and exit

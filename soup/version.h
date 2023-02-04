@@ -64,42 +64,42 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.0 2023-01-21"		/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1 2023-02-04"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.12 2022-10-17"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.13 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.44 2022-11-30"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.13 2022-10-28"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.14 2023-02-04"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.18 2022-11-30"		/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.19 2023-02-04"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "0.6 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "0.13 2022-10-09"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.0 2023-02-04"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "0.4 2022-11-30"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

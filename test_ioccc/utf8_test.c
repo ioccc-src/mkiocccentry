@@ -67,7 +67,7 @@
 /*
  * definitions
  */
-#define UTF8_TEST_VERSION "1.1 2022-10-17"
+#define UTF8_TEST_VERSION "1.3 2023-02-04"
 
 
 /*

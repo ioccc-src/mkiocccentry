@@ -91,7 +91,7 @@
  * NOTE: If the contest spans the new year, then the year
  *	 that IOCCC_CONTEST opens may be different.
  */
-#define IOCCC_YEAR (2022)
+#define IOCCC_YEAR (2023)
 
 
 /*

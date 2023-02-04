@@ -20,7 +20,7 @@
 
 # setup
 #
-export MKIOCCCENTRY_TEST_VERSION="0.3 2022-11-05"
+export MKIOCCCENTRY_TEST_VERSION="1.0 2023-02-04"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-Z topdir]
 
     -h              print help and exit

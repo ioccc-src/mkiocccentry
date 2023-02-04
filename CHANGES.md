@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.0.0 2023-02--2
+## Release 1.0.0 2023-02-04
 
 Resolved all macOS -Weverything issues worth addressing.  See
 `test_ioccc/static_analysis.md` for details and to see how you can also help as
@@ -13,7 +13,6 @@ the bogus ids.
 Restore Makefile use -Werror and use of -O0. With the exception of the dbg code,
 use of -Werror and compiling with -O0 -g is restored in various Makefiles while
 version 1.0.0 is still in development.
-
 
 Fix some memory leaks detected with `valgrind`. See
 `test_ioccc/dynamic_analysis.md` for details and to see how you might also help.
@@ -55,7 +54,7 @@ the `as_double is an integer` test cases.
 Added a system to notice "Notice:" messages and count then for `make prep`.
 The `test_ioccc/prep.sh` tool removed the generated bug report log file
 if the `bug-report.sh` tool does an exit 0, even if there are notices.
-Changed BUG_REPORT_VERSION from "0.12 2023-01-24" to "0.13 2023-01-24". 
+Changed BUG_REPORT_VERSION from "0.12 2023-01-24" to "0.13 2023-01-24".
 Then with more improvements (see below) it was changed to "0.14 2023-01-30". The
 improvements: check for Makefile in all subdirectories, check for overriding
 makefile.local in all subdirectories and check that all subdirectories exist and
@@ -225,7 +224,7 @@ the following unused functions:
         extern unsigned long long string_to_unsigned_long_long(char const *str);
         extern uintmax_t string_to_uintmax(char const *str);
         extern long double string_to_float(char const *str);
-    
+
 Exit codes were resequenced.
 
 The `make tags` now forms both local directory tags files by the name of
@@ -235,6 +234,60 @@ related source directories.
 Major updates to CHANGES.md. See
 [CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
 for details. :-)
+
+Changed `soup/vermod.sh` default JSON tree from "../test_ioccc/test_JSON" to "test_ioccc/test_JSON" and default limit.sh from "./limit_ioccc.sh" to "soup/limit_ioccc.sh" so that `soup/vermod.sh` may be executed from the top level source directory without the need for using `-d test_dir` nor `-i limit.sh`.
+
+Update versions prior to code freeze.
+
+Changed ALL_SEM_REF_VERSION from "1.1 2022-12-30" to "1.2 2023-02-04".
+Changed AUTH_VERSION from "1.18 2022-11-30" to "1.19 2023-02-04".
+Changed BUG_REPORT_VERSION from "0.14 2023-01-30" to "1.0 2023-02-04".
+Changed CHKENTRY_TEST_VERSION from "0.2 2022-11-04" to "1.0 2023-02-04".
+Changed CHKENTRY_VERSION from "0.4 2022-11-30" to "1.0 2023-02-04".
+Changed DBG_VERSION from "2.8 2023-01-29" to "2.9 2023-02-04".
+Changed DYN_ARRAY_VERSION from "2.2 2023-01-22" to "2.3 2023-02-04".
+Changed DYN_TEST_VERSION from "1.8 2023-01-2" to "1.9 2023-02-04".
+Changed FNAMCHK_VERSION from "0.6 2022-03-15" to "1.0 2023-02-04".
+Changed HOSTCHK_VERSION from "0.3 2022-10-27" to "1.0 2023-02-04".
+Changed INFO_VERSION from "1.13 2022-10-28" to "1.14 2023-02-04".
+Changed IOCCC_YEAR from 2022 to 2023.
+Changed IOCCCSIZE_VERSION from "28.12 2022-10-17" to "28.13 2023-02-04".
+Changed IOCCC_TEST_VERSION from "0.5 2022-11-04" to "1.0 2023-02-04".
+Changed JNUM_CHK_VERSION from "0.8 2022-05-01" to "1.0 2023-02-04".
+Changed JNUM_GEN_VERSION from "0.8 2023-01-22" to "1.0 2023-02-04".
+Changed JPARSE_TEST_VERSION from "0.5 2022-12-31" to "1.0 2023-02-04".
+Changed JPARSE_VERSION from "0.11 2022-07-04" to "1.0 2023-02-04".
+Changed JSEMCGEN_VERSION from "1.2 2022-10-23" to "1.3 2023-02-04".
+Changed JSEMTBLGEN_VERSION from "0.6 2023-01-22" to "1.0 2023-02-04".
+Changed JSON_PARSER_VERSION from "0.13 2023-01-21" to "1.0 2023-02-04".
+Changed JSTRDECODE_VERSION from "0.5 2022-04-17" to "1.0 2023-02-04".
+Changed JSTRENCODE_VERSION from "0.5 2022-04-17" to "1.0 2023-02-04".
+Changed JSTR_TEST_VERSION from "0.4 2022-11-05" to "1.0 2023-02-04".
+Changed MKIOCCCENTRY_TEST_VERSION from "0.3 2022-11-05" to "1.0 2023-02-04".
+Changed MKIOCCCENTRY_VERSION from "0.44 2022-11-30" to "1.0 2023-02-04".
+Changed PREP_VERSION from "0.4 2023-01-24" to "1.0 2023-02-04".
+Changed RESET_TSTAMP_VERSION from "0.4 2022-04-23" to "1.0 2023-02-04".
+Changed RUN_BISON_VERSION from "0.4 2023-01-05" to "1.0 2023-02-04".
+Changed RUN_FLEX_VERSION from "0.5 2023-01-05" to "1.0 2023-02-04".
+Changed RUN_USAGE_VERSION from "0.2 2022-11-06" to "1.0 2023-02-04".
+Changed SOUP_VERSION from "1.0 2023-01-21" to "1.1 2023-02-04".
+Changed TEST_IOCCCSIZE_VERSION from "1.3 2023-01-17" to "1.4 2023-02-04".
+Changed TXZCHK_TEST_VERSION from "0.5 2022-11-04" to "1.0 2023-02-04".
+Changed TXZCHK_VERSION from "0.13 2022-10-09" to "1.0 2023-02-04".
+Changed UTF8_TEST_VERSION from "1.1 2022-10-17" to "1.3 2023-02-04".
+Changed VERGE_VERSION from "0.1 2022-04-02" to "1.0 2023-02-04".
+Changed VERMOD_VERSION from "0.1 2022-03-15" to "1.0 2023-02-04".
+
+Updated test_ioccc/test_JSON for new:
+
+- AUTH_VERSION
+- CHKENTRY_VERSION
+- FNAMCHK_VERSION
+- INFO_VERSION
+- IOCCCSIZE_VERSION
+- IOCCC_YEAR
+- MKIOCCCENTRY_VERSION
+- TXZCHK_VERSION
 
 
 ## Release 0.9.9 2022-12-31

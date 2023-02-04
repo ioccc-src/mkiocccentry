@@ -42,7 +42,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message

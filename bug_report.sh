@@ -90,7 +90,7 @@ export SUBDIRS="
     ./test_ioccc
     "
 
-export BUG_REPORT_VERSION="0.14 2023-01-30"
+export BUG_REPORT_VERSION="1.0 2023-02-04"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

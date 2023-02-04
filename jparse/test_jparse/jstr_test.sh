@@ -23,7 +23,7 @@ export JSTRENCODE="./jparse/jstrencode"
 export JSTRDECODE="./jparse/jstrdecode"
 export TEST_FILE="./jparse/test_jparse/jstr_test.out"
 export TEST_FILE2="./jparse/test_jparse/jstr_test2.out"
-export JSTR_TEST_VERSION="0.4 2022-11-05"
+export JSTR_TEST_VERSION="1.0 2023-02-04"
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]

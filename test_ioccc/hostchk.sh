@@ -63,7 +63,7 @@ CC="$(type -P cc 2>/dev/null)"
 if [[ -z $CC ]]; then
     CC="/usr/bin/cc"
 fi
-export HOSTCHK_VERSION="0.3 2022-10-27"
+export HOSTCHK_VERSION="1.0 2023-02-04"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f] [-Z topdir]
 
     -h			    Print help and exit

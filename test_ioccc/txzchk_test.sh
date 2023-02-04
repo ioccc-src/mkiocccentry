@@ -56,7 +56,7 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export TXZCHK_TEST_VERSION="0.5 2022-11-04"
+export TXZCHK_TEST_VERSION="1.0 2023-02-04"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"

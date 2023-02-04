@@ -39,7 +39,7 @@ export UNEXPECTED_SEMANTIC_ERROR=""
 export SEMANTIC_ERROR_MISSED=""
 export JSON_TREE="./jparse/test_jparse/test_JSON"
 
-export CHKENTRY_TEST_VERSION="0.2 2022-11-04"
+export CHKENTRY_TEST_VERSION="1.0 2023-02-04"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c chkentry] [-d json_tree]
 
