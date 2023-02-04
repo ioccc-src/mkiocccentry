@@ -815,21 +815,24 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean: test_jparse/Makefile
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: nothing to do"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean test_jparse/Makefile
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
-	${Q} ${RM} -f jstr_test.out jstr_test2.out
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: nothing to do"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################

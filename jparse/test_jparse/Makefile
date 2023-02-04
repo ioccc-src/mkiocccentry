@@ -523,20 +523,20 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean:
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################

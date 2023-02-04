@@ -566,20 +566,20 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean:
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
-	${Q} ${RM} -f jint.test.o jfloat.test.o
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
-	${Q} ${RM} -f jparse_test.log jint.test jfloat.test
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 

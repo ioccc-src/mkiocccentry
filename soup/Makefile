@@ -735,20 +735,20 @@ clean_mkchk_sem:
 	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
 
 legacy_clean:
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
-	${V} echo
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
-	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
