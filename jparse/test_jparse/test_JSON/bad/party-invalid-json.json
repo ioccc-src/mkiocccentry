@@ -2,7 +2,7 @@
         "event" : "A Long-expected Party",
 	"location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
 	"date" : "22 September T.A. 3001",
-	"birthdays" : [
+	"birthdays" :
 		{
 		    "hobbit" : [
 			{
@@ -55,6 +55,22 @@
                         "RSVP_state" : "default accepted"
                 },
 		{
+                        "name" : "Sauron",
+                        "alias" : "(Second) Dark Lord",
+                        "alias" : "Annatar, the Lord of Gifts",
+			"alias" : "Gorthaur",
+			"alias" : "Aulendil",
+			"alias" : "Artano",
+			"alias" : "Thû",
+			"alias" : "the Necromancer",
+                        "RSVP_requested" : ,
+                        "attendance" : "denied",
+                        "guest_number":  -1,
+			"Gross" : false,
+                        "like_level" : -1.0,
+                        "RSVP_state" : "'What are Hobbits?'"
+                },
+		{
                         "name" : "Gollum",
                         "alias" : "Precious",
 			"alias" : "Sméagol",
@@ -71,7 +87,7 @@
                         "alias": "Proudfeet",
                         "RSVP_requested" : true,
                         "attendance" : "pending",
-                        "guest_number":  4,
+                        "guest_number":  3,
 			"Gross" : false,
                         "like_level" : 0.5,
                         "RSVP_state" : "pending"
@@ -84,7 +100,7 @@
                         "guest_number":  144,
 			"Gross" : true,
                         "like_level" : -0.1,
-                        "RSVP_state" : "begrudgingly"
+                        "RSVP_state" : "party crash"
                 }
         ],
         "guest_list_state" : "incomplete",
