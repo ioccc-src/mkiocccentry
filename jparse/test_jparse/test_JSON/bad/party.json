@@ -2,7 +2,7 @@
         "event" : "A Long-expected Party",
 	"location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
 	"date" : "22 September T.A. 3001",
-	"birthdays" : [
+	"birthdays" :
 		{
 		    "hobbit" : [
 			{
@@ -63,7 +63,7 @@
 			"alias" : "Artano",
 			"alias" : "Thû",
 			"alias" : "the Necromancer",
-                        "RSVP_requested" : false,
+                        "RSVP_requested" : ,
                         "attendance" : "denied",
                         "guest_number":  -1,
 			"Gross" : false,
@@ -100,7 +100,7 @@
                         "guest_number":  144,
 			"Gross" : true,
                         "like_level" : -0.1,
-                        "RSVP_state" : "begrudgingly"
+                        "RSVP_state" : "party crash"
                 }
         ],
         "guest_list_state" : "incomplete",
