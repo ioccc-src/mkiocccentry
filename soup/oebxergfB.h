@@ -4021,8 +4021,6 @@ static char const *oebxergfB[] =
 "- C qawd bs kw y kyehwl kqb C tsab uebwlwab.\n"
 "- G nmdlspwe ybsi xytha uebs y kyl yed ayma 'C'vw tsab im wtwfblse.' 'Glw msq\n"
 "  aqlw?' yaha bnw kylbwedwl, 'Zwa, C'i rsaubuvw'.\n"
-"- Ksx dud bnw ramfnsyeytmab uegqlw nuiawto se y ahuuep nstudym? Kw nyd y\n"
-"  Hlwqduye atur.\n"
 "\n"
 "Lslw yb: nbbra://xxx.bwtwplyrn.fs.qh/fsiwdm/fsiwduyea/oqeeuwab-rqea-ue-nuabslm/\n"
 ,
@@ -4701,35 +4699,6 @@ static char const *oebxergfB[] =
 "\n"
 "Tnw oyfb ub oyuta bs rlsdqfw y rluiw se bnw 73ab ua asiwnsx wvwe kwbbwl ue im\n"
 "iued.\n"
-,
-"Vnwe ue dsqkb, rtym y pyiw so oujjkue.\n"
-,
-"\"Wwebtwiwe, msq fye'b oupnb ue nwlw. Tnua ua bnw xyl lssi!\"\n"
-"\n"
-"—Elwaudweb Lwlhue Lqootwm (Ewbwl Uwttwla), Rl. Ublyepwtsvw\n"
-,
-"Nsk:	Yssha tuhw msq'vw kwwe iuaauep y tsb so xslh tybwtm.\n"
-"Ewbwl:	C xsqtde'b aym C'vw kwwe iuaauep ub, Nsk.\n"
-"\n"
-"—Nsk (Eyqt Vutase) yed Ewbwl (Mse Yuvuepabse), Dooufw Uryfw\n"
-,
-"\"Tnwlw’a esbnuep xlsep xubn msq bnyb ye wzrweauvw srwlybuse fye’b rlstsep.\"\n"
-"\n"
-"—Uqlpwse (Wlynyi Inyriye), Lsebm Embnse’a Htmuep Iulfqa"
-,
-"Twd Ubluhwl: \"Uqlwtm msq fye’b kw awlusqa.\"\n"
-"Rl. Mqiyfh: \"C yi awlusqa. Ged dse’b fytt iw Unultwm!\"\n"
-"\n"
-"—Twd Ubluhwl (Mskwlb Kyma) yed Rl. Mqiyfh (Ywatuw Fuwtawe), Gulrtyew!"
-,
-"Tlqbn nqlba. Lymkw esb ya iqfn ya gqiruep se y kufmftw xubn y awyb iuaauep, kqb ub nqlba.\n"
-"\n"
-"—Yb. Hlyeh Rlwkue (Ywatuw Fuwtawe), Fyhwd Wqe 8½: Tnw Uiwtt so Hwyl"
-,
-"Sanwl: \"Nludw sl plssi?\"\n"
-"Vwdduep pqwab: \"Cb ansqtd kw rwlowfbtm skvusqa C’i ewubnwl!\"\n"
-"\n"
-"—Hsql Vwdduepa yed y Hqewlyt\n"
 ,
 NULL
 };

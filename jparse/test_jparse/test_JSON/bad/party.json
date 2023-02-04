@@ -1,18 +1,24 @@
 {
-        "name" : "Bilbo Baggins",
-        "age" : 111,
         "event" : "A Long-expected Party",
 	"location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
+	"date" : "22 September T.A. 3001",
+	"birthdays" : [
+		{
+		    "hobbit" : [
+			{
+			    "name" : "Bilbo Baggins",
+			    "age" : 111,
+			    "inheritance" : false
+			},
+			{
+			    "name": "Frodo Baggins",
+			    "age": 33,
+			    "inheritance" : true
+			}
+		    ]
+		}
+	],
         "guest_list" : [
-                {
-                        "name" : "Frodo Baggins",
-			"age": 33,
-                        "RSVP_requested" : false,
-                        "attendance" : "assumed",
-                        "guest_number":  1,
-                        "like_level" : 1.0,
-                        "RSVP_state" : "default accepted"
-                },
                 {
                         "name" : "Gandalf",
                         "alias" : "Gandalf the Grey",
@@ -22,7 +28,8 @@
 			"alias" : "Incánus", 
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
-                        "guest_number":  2,
+                        "guest_number":  1,
+			"Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
@@ -31,7 +38,8 @@
 			"alias" : "Merry",
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
-                        "guest_number":  1,
+                        "guest_number":  2,
+			"Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
@@ -41,7 +49,8 @@
 			"alias" : "Pip",
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
-                        "guest_number":  1,
+                        "guest_number":  3,
+			"Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
@@ -54,8 +63,10 @@
 			"alias" : "Artano",
 			"alias" : "Thû",
 			"alias" : "the Necromancer",
-                        "RSVP_requested" : ,
+                        "RSVP_requested" : false,
                         "attendance" : "denied",
+                        "guest_number":  -1,
+			"Gross" : false,
                         "like_level" : -1.0,
                         "RSVP_state" : "'What are Hobbits?'"
                 },
@@ -67,6 +78,7 @@
                         "RSVP_requested" : false,
                         "attendance" : "denied",
                         "guest_number":  -1,
+			"Gross" : false,
                         "like_level" : -1.0,
                         "RSVP_state" : null
                 },
@@ -76,6 +88,7 @@
                         "RSVP_requested" : true,
                         "attendance" : "pending",
                         "guest_number":  3,
+			"Gross" : false,
                         "like_level" : 0.5,
                         "RSVP_state" : "pending"
                 },
@@ -85,8 +98,9 @@
                         "RSVP_requested" : false,
                         "attendance" : "tolerated",
                         "guest_number":  144,
+			"Gross" : true,
                         "like_level" : -0.1,
-                        "RSVP_state" : "party crash"
+                        "RSVP_state" : "begrudgingly"
                 }
         ],
         "guest_list_state" : "incomplete",
