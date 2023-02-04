@@ -61,7 +61,7 @@ running with valgrind you may see the document
 ### Reviewing the tools
 
 For a list of tools that you may wish to look at in more detail, see the below
-list. 
+list.
 
 If at any stage you feel like you have an improvement you may open a new issue
 at the [GitHub issues page](https://github.com/ioccc-src/mkiocccentry/issues) or

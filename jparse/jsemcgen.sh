@@ -410,7 +410,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 20
     fi
 
-    # output the footer 
+    # output the footer
     #
     if [[ -n "$TAIL_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
