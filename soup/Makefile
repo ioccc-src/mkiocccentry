@@ -160,8 +160,8 @@ C_OPT= -O0 -g
 
 # Compiler warnings
 #
-#WARN_FLAGS= -pedantic -Wall -Wextra
-WARN_FLAGS= -pedantic -Wall -Wextra -Werror
+WARN_FLAGS= -pedantic -Wall -Wextra
+#WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
 # linker options
 #

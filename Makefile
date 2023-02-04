@@ -143,10 +143,6 @@ MAKE_CD_Q= --no-print-directory
 # How to compile #
 ##################
 
-# linker options
-#
-LDFLAGS=
-
 # C source standards being used
 #
 # This repo supports c11 and later.
@@ -174,9 +170,12 @@ C_OPT= -O0 -g
 
 # Compiler warnings
 #
-#WARN_FLAGS= -Wall -Wextra	# TODO - this will be the production release value - TODO #
-WARN_FLAGS= -Wall -Wextra -Werror
+WARN_FLAGS= -Wall -Wextra
+#WARN_FLAGS= -Wall -Wextra -Werror
 
+# linker options
+#
+LDFLAGS=
 
 # how to compile
 #
