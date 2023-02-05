@@ -298,6 +298,8 @@ for changes in MIN_TIMESTAMP made by prior use of the
 Added MKIOCCCENTRY_REPO_VERSION "1.0.0 2023-02-04" to the
 `soup/version.h` file.
 
+Fix `soup/Makefile` _clobber_ rule to remove the `soup/ref` tree.
+
 Version 1.0.0 code freeze.
 
 

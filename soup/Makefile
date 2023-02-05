@@ -774,6 +774,7 @@ clobber: legacy_clobber clean
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${RM} -f .all_ref.*
 	${RM} -f ${TARGETS}
+	${RM} -rf ref
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
