@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH verge 8 "30 January 2023" "verge" "IOCCC tools"
+.TH verge 8 "05 February 2023" "verge" "IOCCC tools"
 .SH NAME
 .B verge
 \- determine if first version >= second version
@@ -87,7 +87,7 @@ is \(>= the second version,
 .RS
 .ft B
  ./verge 1.1.3 1.1.4
- [[ $? \-eq 0 ]] && echo 'first version, 1.1.3, is >= second version, 1.1.4'
+ [[ $? \-eq 0 ]] && echo \(aqfirst version, 1.1.3, is >= second version, 1.1.4\(aq
 .ft R
 .RE
 .PP
@@ -101,7 +101,7 @@ is < the second version,
 .RS
 .ft B
  ./verge 1.1.3 1.1.4
- [[ $? \-eq 1 ]] && echo 'first version, 1.1.3, is < second version, 1.1.4'
+ [[ $? \-eq 1 ]] && echo \(aqfirst version, 1.1.3, is < second version, 1.1.4\(aq
 .ft R
 .RE
 .PP
