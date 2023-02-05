@@ -231,10 +231,6 @@ The `make tags` now forms both local directory tags files by the name of
 .local.dir.tags as well as a tags file from the accumulation of tags from
 related source directories.
 
-Major updates to CHANGES.md. See
-[CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
-for details. :-)
-
 Changed `soup/vermod.sh` default JSON tree from "../test_ioccc/test_JSON" to "test_ioccc/test_JSON" and default limit.sh from "./limit_ioccc.sh" to "soup/limit_ioccc.sh" so that `soup/vermod.sh` may be executed from the top level source directory without the need for using `-d test_dir` nor `-i limit.sh`.
 
 Update versions prior to code freeze.
@@ -303,6 +299,20 @@ Fix `soup/Makefile` _clobber_ rule to remove the `soup/ref` tree.
 Have the `test_ioccc/Makefile` _clobber_ rule remove
 `test_iocccsize/`, `test_src/`, and `test_work/` directory
 trees from from under the `test_ioccc/` directory.
+
+Improved mkiocccentry_test.sh so that one can specify the path to various tools
+that mkiocccentry needs.
+Made txzchk_test.sh -t/-t consistent with mkiocccentry.
+Added option to ioccc_test.sh to let one specify path to tar.
+Changed IOCCC_TEST_VERSION from "1.0 2023-02-04" to "1.0.1 2023-02-05".
+Changed MKIOCCCENTRY_TEST_VERSION from "1.0 2023-02-04" to "1.0.1 2023-02-05".
+Changed TXZCHK_TEST_VERSION from "1.0 2023-02-04" to "1.0.1 2023-02-05".
+
+Fixed chkentry_test.sh so it will work when running it directly.
+
+Major updates to CHANGES.md. See
+[CHANGES.md](https://github.com/ioccc-src/mkiocccentry/blob/master/CHANGES.md)
+for details. :-)
 
 Version 1.0.0 code freeze.
 
