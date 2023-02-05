@@ -20,13 +20,81 @@
 
 # setup
 #
-export MKIOCCCENTRY_TEST_VERSION="1.0 2023-02-04"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-Z topdir]
+
+# attempt to fetch system specific path to the tools we need
+# get cp path
+CP="$(type -P cp 2>/dev/null)"
+# Make sure CP is set:
+#
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# could make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${CP:=/usr/bin/CP} 2>/dev/null
+#
+# but due to the reasons cited above we must rely on the more complicated form:
+if [[ -z "$CP" ]]; then
+    CP="/usr/bin/cp"
+fi
+
+
+# get tar path
+TAR="$(type -P tar 2>/dev/null)"
+# Make sure TAR is set:
+#
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# could make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${TAR:=/usr/bin/tar} 2>/dev/null
+#
+# but due to the reasons cited above we must rely on the more complicated form:
+if [[ -z "$TAR" ]]; then
+    TAR="/usr/bin/tar"
+fi
+
+# get ls path
+LS="$(type -P ls 2>/dev/null)"
+# Make sure LS is set:
+#
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# could make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${LS:=/bin/ls} 2>/dev/null
+#
+# but due to the reasons cited above we must rely on the more complicated form:
+if [[ -z "$LS" ]]; then
+    LS="/bin/ls"
+fi
+
+export TXZCHK="./txzchk"
+export FNAMCHK="./test_ioccc/fnamchk"
+
+export MKIOCCCENTRY_TEST_VERSION="1.0.1 2023-02-05"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-c cp] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
     -V              print version and exit
     -v level        flag ignored
     -J level	    set JSON verbosity level
+    -t tar	    path to tar that accepts -J option (def: $TAR)
+    -T txzchk	    path to tar (def: $TXZCHK)
+    -l ls	    path to ls executable (def: $LS)
+    -c cp	    path to cp executable (def: $CP)
+    -F fnamchk	    path to fnamchk executable (def: $FNAMCHK)
     -Z topdir	    top level build directory (def: try . or ..)
 
 Exit codes:
@@ -44,7 +112,7 @@ export TOPDIR=
 
 # parse args
 #
-while getopts :hv:J:VZ: flag; do
+while getopts :hv:J:Vt:T:l:c:F:Z: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -57,6 +125,16 @@ while getopts :hv:J:VZ: flag; do
     J)	J_FLAG="$OPTARG";
 	;;
     Z)	TOPDIR="$OPTARG";
+	;;
+    t)  TAR="$OPTARG";
+	;;
+    T)	TXZCHK="$OPTARG";
+	;;
+    l)	LS="$OPTARG";
+	;;
+    c)	CP="$OPTARG";
+	;;
+    F)	FNAMCHK="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
@@ -139,16 +217,52 @@ fi
 
 # firewall
 #
+# we need a working directory
 if [[ ! -d ${work_dir} ]]; then
     echo "$0: ERROR: work_dir not found: ${work_dir}" 1>&2
     exit 9
 fi
+# we also need the source directory
 if [[ ! -d ${src_dir} ]]; then
     echo "$0: ERROR: src_dir not found: ${src_dir}" 1>&2
     exit 9
 fi
+
+# if we are testing mkiocccentry we best have mkiocccentry! :-)
 if [[ ! -x ./mkiocccentry ]]; then
     echo "$0: ERROR: executable not found: ./mkiocccentry" 1>&2
+    exit 9
+fi
+
+# we need fnamchk
+if [[ ! -x "${FNAMCHK}" ]]; then
+    echo "$0: ERROR: fnamchk executable not found: ${FNAMCHK}" 1>&2
+    exit 9
+fi
+
+# we need access to ls as well
+if [[ ! -x "${LS}" ]]; then
+    echo "$0: ERROR: executable ls not found: $LS" 1>&2
+    exit 9
+fi
+# we need cp
+if [[ ! -x "${CP}" ]]; then
+    echo "$0: ERROR: executable cp not found: $CP" 1>&2
+    exit 9
+fi
+
+# we need txzchk as well
+if [[ ! -x "${TXZCHK}" ]]; then
+    echo "$0: ERROR: executable not found: $TXZCHK" 1>&2
+    exit 9
+fi
+
+# And we certainly need some tar to throw some feathers on!
+#
+# Well actually we DON'T want to throw feathers on it but we can't test txzchk
+# without some tar now can we? :-)
+if [[ ! -x "${TAR}" ]]; then
+    echo "$0: ERROR: executable not found: $TAR" 1>&2
     exit 9
 fi
 
@@ -246,7 +360,7 @@ find "${work_dir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/empty.c
 :> "${src_dir}"/empty.c
 # test empty prog.c, ignoring the warning about it
-yes | ./mkiocccentry -q -W -i answers.txt -F test_ioccc/fnamchk -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -340,7 +454,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -F test_ioccc/fnamchk -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -424,7 +538,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -F test_ioccc/fnamchk -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
+yes | ./mkiocccentry -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2

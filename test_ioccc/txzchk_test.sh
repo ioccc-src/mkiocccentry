@@ -56,17 +56,17 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export TXZCHK_TEST_VERSION="1.0 2023-02-04"
+export TXZCHK_TEST_VERSION="1.0.1 2023-02-05"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree] [-Z topdir] [-k]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-t tar] [-T txzchk] [-F fnamchk] [-d txzchk_tree] [-Z topdir] [-k]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
-    -t txzchk		    path to txzchk executable (def: $TXZCHK)
-    -T tar		    path to tar that accepts -J option (def: $TAR)
+    -t tar		    path to tar that accepts -J option (def: $TAR)
+    -T txzchk		    path to txzchk executable (def: $TXZCHK)
     -F fnamchk	            path to fnamchk (def: $FNAMCHK)
 
     -d txzchk_tree	    tree where txzchk test files are to be found (def: $TXZCHK_TREE)
@@ -106,13 +106,13 @@ while getopts :hVv:t:d:T:F:Z:k flag; do
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
-    t)	TXZCHK="$OPTARG";
+    t)	TAR="$OPTARG";
 	;;
     d)	TXZCHK_TREE="$OPTARG";
 	;;
     F)	FNAMCHK="$OPTARG";
 	;;
-    T)	TAR="$OPTARG";
+    T)	TXZCHK="$OPTARG";
 	;;
     Z)  TOPDIR="$OPTARG";
         ;;

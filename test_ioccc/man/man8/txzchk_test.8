@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk_test 8 "30 January 2023" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "05 February 2023" "txzchk_test" "IOCCC tools"
 .SH NAME
 .B txzchk_test.sh
 \- test suite for
@@ -38,9 +38,9 @@
 .RB [\| \-v
 .IR level \|]
 .RB [\| \-t
-.IR txzchk \|]
-.RB [\| \-T
 .IR tar \|]
+.RB [\| \-T
+.IR txzchk \|]
 .RB [\| \-F
 .IR fnamchk \|]
 .RB [\| \-d
@@ -51,7 +51,7 @@
 .SH DESCRIPTION
 .B txzchk_test.sh
 runs
-.B txzchk
+.BR txzchk (1)
 in text file mode on pseudo\-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
 For the bad files it checks that the issues reported are the same as expected.
 The script enforces that bad files have an associated error file to compare with the errors reported by
@@ -85,26 +85,33 @@ Set verbosity level to
 .I level
 (def: 0).
 .TP
-.BI \-t\  txzchk
+.BI \-T\  txzchk
 Set
-.B txzchk
+.BR txzchk (1)
 path to
 .IR txzchk .
 .TP
-.BI \-T\  tar
+.BI \-t\  tar
 Set
-.B tar
+.BR tar (1)
 path to
 .IR tar .
+The
+.BR tar (1)
+command must support the
+.B \-J
+option and the
+.B v7
+format.
 .TP
 .BI \-F\  fnamchk
 Set
 .B fnamchk
 path to
-.IR fnamchk .
-.B txzchk
+.IR fnamchk (1).
+.BR txzchk (1)
 uses
-.B fnamchk
+.BR fnamchk (1)
 to test if the tarball is validly named and if the files listed are in the correct directory.
 .TP
 .BI \-d\  txzchk_tree
@@ -179,7 +186,7 @@ It will be removed prior to each time the script is run to keep the state of the
 .RE
 .SH NOTES
 .PP
-.B txzchk
+.BR txzchk (1)
 was written by Cody Boone Ferguson after discussion with Landon Curt Noll (one of the IOCCC Judges) in support of IOCCCMOCK, IOCCC28 and beyond.
 In order to test different tarballs and tar listing formats Cody added the text file mode early on to help in development.
 That fact coupled with the fact there is the need to test that the tool works properly is what inspired him to create this script.
@@ -217,6 +224,9 @@ is supposed to check all issues this would have to be done differently from the 
 Additionally if this was done it would make it necessary to have only one issue in each test file which is not a good idea as it's easier to miss feathered tarballs by the simple fact that one has to be sure to have enough test files (there are a lot of checks that
 .BR txzchk (1)
 performs!).
+.PP
+When the minimum timestamp changes this script will fail unless the filenames of the good files are changed.
+This probably should be fixed or dealt with in some manner.
 .PP
 Perhaps there should be more tests done with the exit code of
 .BR txzchk (1)

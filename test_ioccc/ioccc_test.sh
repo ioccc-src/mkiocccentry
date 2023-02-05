@@ -17,13 +17,36 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="1.0 2023-02-04"
+export IOCCC_TEST_VERSION="1.0.1 2023-02-05"
 
-export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V] [-Z topdir]
+# attempt to fetch system specific path to the tools we need
+#
+# get tar path
+TAR="$(type -P tar 2>/dev/null)"
+# Make sure TAR is set:
+#
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# could make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${TAR:=/usr/bin/tar} 2>/dev/null
+#
+# but due to the reasons cited above we must rely on the more complicated form:
+if [[ -z "$TAR" ]]; then
+    TAR="/usr/bin/tar"
+fi
+
+
+export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-t tar] [-V] [-Z topdir]
 
     -h              print help and exit
     -v level        set debug level (def: 0)
     -J json_level   set json debug level (def: 0)
+    -t tar	    path to tar that accepts -J option (def: $TAR)
     -V              print version and exit
     -Z topdir	    top level build directory (def: try . or ..)
 
@@ -46,7 +69,7 @@ export TOPDIR=
 
 # parse args
 #
-while getopts :hv:J:VZ: flag; do
+while getopts :hv:J:VZ:t: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -60,6 +83,8 @@ while getopts :hv:J:VZ: flag; do
 	;;
     Z)  TOPDIR="$OPTARG";
         ;;
+    t)	TAR="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -284,6 +309,18 @@ elif [[ ! -x chkentry ]]; then
     echo "$0: ERROR: chkentry is not executable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
+# tar
+if [[ ! -e "$TAR" ]]; then
+    echo "$0: ERROR: tar file not found: $TAR" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f "$TAR" ]]; then
+    echo "$0: ERROR: tar is not a regular file: $TAR" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x "$TAR" ]]; then
+    echo "$0: ERROR: tar is not executable: $TAR" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+
 # test_txzchk
 if [[ ! -e test_ioccc/test_txzchk ]]; then
     echo "$0: ERROR: test_ioccc/test_txzchk file not found" | tee -a -- "$LOGFILE"
@@ -373,8 +410,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/mkiocccentry_test.sh -Z $TOPDIR" | tee -a -- "$LOGFILE"
-test_ioccc/mkiocccentry_test.sh -Z "$TOPDIR" | tee -a -- "$LOGFILE"
+echo "test_ioccc/mkiocccentry_test.sh -Z $TOPDIR -t $TAR" | tee -a -- "$LOGFILE"
+test_ioccc/mkiocccentry_test.sh -Z "$TOPDIR" -t "$TAR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
@@ -516,8 +553,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/txzchk_test.sh -t ./txzchk -F ./test_ioccc/fnamchk -d test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
-test_ioccc/txzchk_test.sh -t ./txzchk -F ./test_ioccc/fnamchk -d ./test_ioccc/test_txzchk -Z "$TOPDIR" | tee -a -- "$LOGFILE"
+echo "test_ioccc/txzchk_test.sh -t $TAR -T ./txzchk -F ./test_ioccc/fnamchk -d test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
+test_ioccc/txzchk_test.sh -t "$TAR" -T ./txzchk -F ./test_ioccc/fnamchk -d ./test_ioccc/test_txzchk -Z "$TOPDIR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/txzchk_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
