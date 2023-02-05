@@ -1,0 +1,5 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1675547788.txt: no .info.json found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1675547788.txt: no .auth.json found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1675547788.txt: no prog.c found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1675547788.txt: no remarks.md found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1675547788.txt: found 4 feathers stuck in the tarball
