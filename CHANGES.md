@@ -279,7 +279,8 @@ Changed UTF8_TEST_VERSION from "1.1 2022-10-17" to "1.3 2023-02-04".
 Changed VERGE_VERSION from "0.1 2022-04-02" to "1.0 2023-02-04".
 Changed VERMOD_VERSION from "0.1 2022-03-15" to "1.0 2023-02-04".
 
-Updated test_ioccc/test_JSON for new:
+Updated test_ioccc/test_JSON test files to account for changes
+in the following versions:
 
 - AUTH_VERSION
 - CHKENTRY_VERSION
@@ -289,6 +290,15 @@ Updated test_ioccc/test_JSON for new:
 - IOCCC_YEAR
 - MKIOCCCENTRY_VERSION
 - TXZCHK_VERSION
+
+Updated selective `test_ioccc/test_txzchk` test files to account
+for changes in MIN_TIMESTAMP made by prior use of the
+`soup/reset_tstamp.sh` tool.
+
+Added MKIOCCCENTRY_REPO_VERSION "1.0.0 2023-02-04" to the
+`soup/version.h` file.
+
+Version 1.0.0 code freeze.
 
 
 ## Release 0.9.9 2022-12-31

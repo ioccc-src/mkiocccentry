@@ -62,6 +62,13 @@
 
 
 /*
+ * official mkiocccentry repo release
+ *
+ * NOTE: This should match the latest Release string in CHANGES.md
+ */
+#define MKIOCCCENTRY_REPO_VERSION "1.0.0 2023-02-04"	/* special release format: major.minor.patch YYYY-MM-DD */
+
+/*
  * official soup version (aka recipe :-) )
  */
 #define SOUP_VERSION "1.1 2023-02-04"		/* format: major.minor YYYY-MM-DD */
