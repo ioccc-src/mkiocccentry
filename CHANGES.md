@@ -300,6 +300,10 @@ Added MKIOCCCENTRY_REPO_VERSION "1.0.0 2023-02-04" to the
 
 Fix `soup/Makefile` _clobber_ rule to remove the `soup/ref` tree.
 
+Have the `test_ioccc/Makefile` _clobber_ rule remove
+`test_iocccsize/`, `test_src/`, and `test_work/` directory
+trees from from under the `test_ioccc/` directory.
+
 Version 1.0.0 code freeze.
 
 

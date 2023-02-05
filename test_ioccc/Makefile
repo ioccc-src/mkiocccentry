@@ -605,6 +605,7 @@ clobber: legacy_clobber clean
 	${RM} -f ${TARGETS}
 	${RM} -f test_ioccc.log chkentry_test.log txzchk_test.log
 	${RM} -f tags ${LOCAL_DIR_TAGS}
+	${RM} -rf test_iocccsize test_src test_work
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
