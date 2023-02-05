@@ -37,7 +37,7 @@ export EXIT_CODE=0
 export INVALID_JSON_FOUND=""
 export UNEXPECTED_SEMANTIC_ERROR=""
 export SEMANTIC_ERROR_MISSED=""
-export JSON_TREE="./jparse/test_jparse/test_JSON"
+export JSON_TREE="./test_ioccc/test_JSON"
 
 export CHKENTRY_TEST_VERSION="1.0 2023-02-04"
 
