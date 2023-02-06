@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry_test.sh 8 "30 January 2023" "mkiocccentry_test.sh" "IOCCC tools"
+.TH mkiocccentry_test.sh 8 "05 February 2023" "mkiocccentry_test.sh" "IOCCC tools"
 .SH NAME
 .B mkiocccentry_test.sh
 \- run several invocations of
@@ -23,6 +23,16 @@ to test that it functions well
 .IR level \|]
 .RB [\| \-J
 .IR level \|]
+.RB [\| \-t
+.IR tar \|]
+.RB [\| \-T
+.IR txzchk \|]
+.RB [\| \-l
+.IR ls \|]
+.RB [\| \-c
+.IR cp \|]
+.RB [\| \-F
+.IR fnamchk \|]
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
@@ -46,6 +56,33 @@ Set verbosity level to
 .BI \-J\  level
 Set JSON verbosity level to
 .IR level .
+.TP
+.BI \-t\  tar
+Set path to
+.BR tar (1).
+The
+.BR tar (1)
+command must support the
+.B \-J
+option and the
+.B v7
+format.
+.TP
+.BI \-T\  txzchk
+Set path to
+.BR txzchk (1).
+.TP
+.BI \-l\  ls
+Set path to
+.BR ls (1).
+.TP
+.BI \-c\  cp
+Set path to
+.BR cp (1).
+.TP
+.BI \-F\  fnamchk
+Set path to
+.BR fnamchk (1).
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
@@ -97,7 +134,7 @@ not executable.
 error code.
 .SH BUGS
 .PP
-This script does not let one set the path to the needed tools like the other scripts do and so requires that one is in the clone of the repo directory to successfully run this script.
+This script does not let one set the path to some of the needed tools like the other scripts do and so requires that one is in the clone of the repo directory to successfully run this script.
 .SH SEE ALSO
 .BR ioccc_test (8),
 .BR iocccsize_test (8)

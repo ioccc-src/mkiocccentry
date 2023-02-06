@@ -1093,6 +1093,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
+	${RM} -f .build.*
 	${RM} -f answers.txt
 	${RM} -f ${TARGETS}
 	${RM} -rf man

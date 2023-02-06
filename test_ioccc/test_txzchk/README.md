@@ -62,5 +62,5 @@ then do:
     git add ./test_txzchk/bad/*.txt ./test_txzchk/bad/*.err
 
 (assuming that there aren't any other files with those extensions that should
-not be there). We could have the `test_txzchk.sh` script do this but the problem
+not be there). We could have the `txzchk_test.sh` script do this but the problem
 is we need to manually inspect that the errors are correct.

@@ -253,6 +253,10 @@ which does have such a tar or you can try downloading GNU Tar from
 the [GNU website](https://www.gnu.org/software/tar/) and after extracting it,
 compile it and then install it so that the tools may find it.
 
+Some systems have a `GNU tar` that you can use. For instance FreeBSD has a
+`gtar` command so if necessary you can use that. Note that you'll have to
+specify in the tools the `-t tar` option to make this work.
+
 
 ## 10. <a name="markdown">Where can I find help with formatting markdown files for my entry?</a>
 
