@@ -316,6 +316,8 @@ for details. :-)
 
 Version 1.0.0 code freeze.
 
+Formal version 1.0.0 release.
+
 
 ## Release 0.9.9 2022-12-31
 
