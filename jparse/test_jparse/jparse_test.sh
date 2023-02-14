@@ -442,7 +442,7 @@ if [[ $# -gt 0 ]]; then
 	    done < "$CHK_TEST_FILE"
 	fi
     done
-elif [[ ! -z "$CHK_TEST_FILE" ]]; then
+elif [[ -n "$CHK_TEST_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
 	fi

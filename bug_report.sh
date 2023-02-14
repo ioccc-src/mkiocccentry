@@ -518,7 +518,7 @@ get_version_optional()
 	# well even if what(1) succeeds. If either succeeds we will not try
 	# strings(1).
 	#
-	if [[ ! -z "$WHAT" ]]; then
+	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -534,7 +534,7 @@ get_version_optional()
 	# The same or similar caveats for what(1) might apply here too but I have no
 	# way to test this.
 	#
-	if [[ ! -z "$IDENT" ]]; then
+	if [[ -n "$IDENT" ]]; then
 	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -563,7 +563,7 @@ get_version_optional()
 	# This is why we warn that there's a possible unknown version and only if
 	# strings fails do we report positively that the version is unknown.
 	#
-	if [[ ! -z "$STRINGS" ]]; then
+	if [[ -n "$STRINGS" ]]; then
 	    write_echo "$0: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
 	    Notice: unknown version for $COMMAND: trying strings"
@@ -732,7 +732,7 @@ get_version()
 	# not something that will work in all cases instead we will try ident(1) as
 	# well even if this succeeds. If either succeeds we will not try strings(1).
 	#
-	if [[ ! -z "$WHAT" ]]; then
+	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -748,7 +748,7 @@ get_version()
 	# The same or similar caveats for what(1) might apply here too but I have no
 	# way to test this.
 	#
-	if [[ ! -z "$IDENT" ]]; then
+	if [[ -n "$IDENT" ]]; then
 	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -777,7 +777,7 @@ get_version()
 	# This is why we warn that there's a possible unknown version and only if
 	# strings fails do we report positively that the version is unknown.
 	#
-	if [[ ! -z "$STRINGS" ]]; then
+	if [[ -n "$STRINGS" ]]; then
 	    write_echo "Notice: unknown version for $COMMAND: trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
 	    Notice: unknown version for $COMMAND: trying strings"
@@ -885,7 +885,7 @@ get_version_minimal()
 	# not something that will work in all cases instead we will try ident(1) as
 	# well even if this succeeds.
 	#
-	if [[ ! -z "$WHAT" ]]; then
+	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -901,7 +901,7 @@ get_version_minimal()
 	# The same or similar caveats for what(1) might apply here too but I have no
 	# way to test this.
 	#
-	if [[ ! -z "$IDENT" ]]; then
+	if [[ -n "$IDENT" ]]; then
 	    $IDENT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
@@ -1703,7 +1703,7 @@ write_echo ""
 # final report #
 ################
 
-if [[ ! -z "$NOTICE_SUMMARY" ]]; then
+if [[ -n "$NOTICE_SUMMARY" ]]; then
     write_echo 1>&2
     write_echo "One or more POSSIBLE issues noticed:"
     write_echo ""

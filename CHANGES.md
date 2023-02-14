@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.1 2023-02-14
+
+Fix minor shellcheck nits in `bug_report.sh` and
+`jparse/test_jparse/jparse_test.sh` so that the `make prep` phase
+_25 shellcheck_ will pass as OK.
+
+
 ## Release 1.0.0 2023-02-04
 
 Resolved all macOS -Weverything issues worth addressing.  See
