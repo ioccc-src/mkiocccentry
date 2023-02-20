@@ -7,8 +7,10 @@ Fix minor shellcheck nits in `bug_report.sh` and
 `jparse/test_jparse/jparse_test.sh` so that the `make prep` phase
 _25 shellcheck_ will pass as OK.
 
-Test if ctags is available before attempting to run ctags
-in Makefile rules.
+Test if ctags is available before attempting to run ctags in Makefile rules.
+
+The `jparse/Makefile` `make clobber` rule will call the same rule in
+`jparse/Makefile/test_jparse` as well.
 
 
 ## Release 1.0.0 2023-02-04

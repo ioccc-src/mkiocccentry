@@ -876,6 +876,7 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output lex.yy.c jparse.c
 	${RM} -f jsemcgen.out.*
