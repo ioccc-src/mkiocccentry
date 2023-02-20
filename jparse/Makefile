@@ -769,6 +769,17 @@ tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
+	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
+	    echo 'The ${CTAGS} command is required to run the $@ rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'Use the package manager from your OS to install the ${CTAGS} package.' 1>&2; \
+	    echo 'The following GitHub repo may be a useful ${CTAGS} alternative:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/universal-ctags/ctags'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	fi
 	${Q} for dir in ../dbg ../dyn_alloc; do \
 	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
@@ -788,6 +799,17 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
+	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
+	    echo 'The ${CTAGS} command is required to run the $@ rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'Use the package manager from your OS to install the ${CTAGS} package.' 1>&2; \
+	    echo 'The following GitHub repo may be a useful ${CTAGS} alternative:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/universal-ctags/ctags'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	fi
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${Q} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
