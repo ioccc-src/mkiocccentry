@@ -63,7 +63,7 @@ CC="$(type -P cc 2>/dev/null)"
 if [[ -z $CC ]]; then
     CC="/usr/bin/cc"
 fi
-export HOSTCHK_VERSION="1.0 2023-02-04"
+export HOSTCHK_VERSION="1.0.1 2023-02-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f] [-Z topdir]
 
     -h			    Print help and exit
@@ -234,11 +234,9 @@ if [[ -n $F_FLAG ]]; then
 
     # test compile
     #
-    # NOTE: if your grep does not have -o this will fail. If this happens please
-    # submit a bug report and we'll add a workaround.
-    printf "%s\\n%s\\n" "$(grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
+    printf "%s\\n%s\\n" "$(grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
 	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
-	"$TOPDIR"/jparse/test_jparse/*.[hc] |sort -u)" "int main(void) { return 0; }" |
+	"$TOPDIR"/jparse/test_jparse/*.[hc] |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -273,16 +271,14 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 
     # test each required system include file
     #
-    # NOTE: if your grep does not have -o this will fail. If this happens please
-    # submit a bug report and we'll add a workaround.
-    grep -h -o '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
+    grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
         "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] | \
-	sort -u | while read -r h; do
+	cut -f 2- -d:|sort -u| while read -r h; do
 
 	# form C prog
 	#
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "Compiling code with $h" 1>&2
+	    echo "Compiling code with \"$h\"" 1>&2
 	fi
 	rm -f "$PROG_FILE"
 	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
@@ -303,7 +299,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 		INCLUDE_TEST_SUCCESS="false"
 	    else
 		if [[ $V_FLAG -gt 1 ]]; then
-		    echo "$0: Running executable compiled using: $h: success"
+		    echo "$0: Running executable compiled using: \"$h\": success"
 		fi
 	    fi
 	else
