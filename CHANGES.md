@@ -12,6 +12,9 @@ Test if ctags is available before attempting to run ctags in Makefile rules.
 The `jparse/Makefile` `make clobber` rule will call the same rule in
 `jparse/Makefile/test_jparse` as well.
 
+Make `hostchk.sh` grep usage POSIX compliant. This means it no longer uses the
+either of the `-o` or `-h` options.
+
 
 ## Release 1.0.0 2023-02-04
 
