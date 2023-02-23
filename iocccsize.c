@@ -4,7 +4,7 @@
  *	"You are not expected to understand this" :-)
  *
  *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
- *	With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
+ *	With IOCCC mods in 2019-2023 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
@@ -35,8 +35,9 @@
  *	bytes in length.
  *
  *	The entry's net size in bytes must be less than equal to 2503
- *	bytes (first prime after 2048).  The net size is computed as
- *	follows:
+ *	bytes.  FYI: 2503 is largest prime that can be expressed as the sum
+ *	of three different 3-decimal digit zeroless palindromic primes.
+ *	(2503 = 787 + 797 + 919)  The net size is computed as follows:
  *
  *	The size tool counts most C reserved words (keyword, secondary,
  *	and selected preprocessor keywords) as 1.  The size tool counts all

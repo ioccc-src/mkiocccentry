@@ -15,6 +15,10 @@ The `jparse/Makefile` `make clobber` rule will call the same rule in
 Make `hostchk.sh` grep usage POSIX compliant. This means it no longer uses the
 either of the `-o` or `-h` options.
 
+Corrected the comment about the Rule 2b value 2503.  The previous
+comment, as noted by Nicholas Carlini (GitHub user @carlini), was
+an out of date comment related to the previous prime 2053 value.
+
 
 ## Release 1.0.0 2023-02-04
 
