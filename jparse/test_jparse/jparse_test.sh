@@ -14,7 +14,7 @@
 # that directory tests as an invalid JSON file, this script will exit non-zero.
 #
 # All files under json_tree/tree/subdir/bad must be valid JSON.  If any file under
-# that directory tests as an valid JSON file, this script will exit non-zero.
+# that directory tests as a valid JSON file, this script will exit non-zero.
 #
 # Without "-d json_tree -s subdir" a list of files in the command line are
 # tested to see if they are valid JSON files.  With no arguments, or - the
