@@ -86,20 +86,28 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_JPARSE_TAB_H_INCLUDED
-# define YY_YY_JPARSE_TAB_H_INCLUDED
+#ifndef YY_JPARSE_JPARSE_TAB_H_INCLUDED
+# define YY_JPARSE_JPARSE_TAB_H_INCLUDED
 /* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
+#ifndef JPARSE_DEBUG
+# if defined YYDEBUG
 #if YYDEBUG
-extern int yydebug;
+#   define JPARSE_DEBUG 1
+#  else
+#   define JPARSE_DEBUG 0
+#  endif
+# else /* ! defined YYDEBUG */
+#  define JPARSE_DEBUG 0
+# endif /* ! defined YYDEBUG */
+#endif  /* ! defined JPARSE_DEBUG */
+#if JPARSE_DEBUG
+extern int jparse_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 76 "./jparse.y"
+#line 88 "./jparse.y"
 
-    #if !defined(YYLTYPE_IS_DECLARED)
-    struct YYLTYPE
+    #if !defined(JPARSE_LTYPE_IS_DECLARED)
+    struct JPARSE_LTYPE
     {
 	int first_line;
 	int first_column;
@@ -107,8 +115,8 @@ extern int yydebug;
 	int last_column;
 	char const *filename;
     };
-    typedef struct YYLTYPE YYLTYPE;
-    #define YYLTYPE_IS_DECLARED 1
+    typedef struct JPARSE_LTYPE JPARSE_LTYPE;
+    #define JPARSE_LTYPE_IS_DECLARED 1
     #define YYLLOC_DEFAULT(Current, Rhs, N)                             \
     do                                                                  \
       if (N)                                                            \
@@ -128,20 +136,22 @@ extern int yydebug;
 	  (Current).filename = NULL;					\
         }                                                               \
     while (0)
+
     #endif
     typedef void * yyscan_t;
 
-#line 84 "jparse.tab.h"
+
+#line 94 "jparse.tab.h"
 
 /* Token kinds.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
+#ifndef JPARSE_TOKENTYPE
+# define JPARSE_TOKENTYPE
+  enum jparse_tokentype
   {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
+    JPARSE_EMPTY = -2,
+    JPARSE_EOF = 0,                /* "end of file"  */
+    JPARSE_error = 256,            /* error  */
+    JPARSE_UNDEF = 257,            /* "invalid token"  */
     JSON_OPEN_BRACE = 258,         /* "{"  */
     JSON_CLOSE_BRACE = 259,        /* "}"  */
     JSON_OPEN_BRACKET = 260,       /* "["  */
@@ -155,34 +165,44 @@ extern int yydebug;
     JSON_NUMBER = 268,             /* JSON_NUMBER  */
     token = 269                    /* token  */
   };
-  typedef enum yytokentype yytoken_kind_t;
+  typedef enum jparse_tokentype jparse_token_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef struct json * YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+#if ! defined JPARSE_STYPE && ! defined JPARSE_STYPE_IS_DECLARED
+typedef struct json * JPARSE_STYPE;
+# define JPARSE_STYPE_IS_TRIVIAL 1
+# define JPARSE_STYPE_IS_DECLARED 1
 #endif
 
 /* Location type.  */
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE
+#if ! defined JPARSE_LTYPE && ! defined JPARSE_LTYPE_IS_DECLARED
+typedef struct JPARSE_LTYPE JPARSE_LTYPE;
+struct JPARSE_LTYPE
 {
   int first_line;
   int first_column;
   int last_line;
   int last_column;
 };
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
+# define JPARSE_LTYPE_IS_DECLARED 1
+# define JPARSE_LTYPE_IS_TRIVIAL 1
 #endif
 
 
 
 
-int yyparse (struct json **tree, yyscan_t scanner);
+int jparse_parse (struct json **tree, yyscan_t scanner);
 
+/* "%code provides" blocks.  */
+#line 80 "./jparse.y"
 
-#endif /* !YY_YY_JPARSE_TAB_H_INCLUDED  */
+#ifndef YY_DECL
+#define YY_DECL int jparse_lex(JPARSE_STYPE *yylval_param, JPARSE_LTYPE *yylloc_param, yyscan_t yyscanner)
+
+YY_DECL;
+#endif
+
+#line 156 "jparse.tab.h"
+
+#endif /* !YY_JPARSE_JPARSE_TAB_H_INCLUDED  */

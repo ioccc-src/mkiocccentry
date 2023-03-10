@@ -30,6 +30,7 @@
 %option nodefault nounput noinput
 %option yylineno 8bit
 %option bison-bridge bison-locations reentrant
+%option prefix="jparse_"
 %option header-file="jparse.lex.h"
 %option extra-type="struct json_extra *"
 
@@ -45,7 +46,7 @@
  */
 #include "jparse.h"
 
-
+extern int jparse_lex(JPARSE_STYPE *yylval_param, JPARSE_LTYPE *yylloc_param, yyscan_t scanner);
 static YY_BUFFER_STATE bs;
 
 /*
@@ -54,9 +55,9 @@ static YY_BUFFER_STATE bs;
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
-			yylloc->first_column = yyget_column(yyscanner); \
-			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
-			yyset_column(yyget_leng(yyscanner), yyscanner);
+			yylloc->first_column = jparse_get_column(yyscanner); \
+			yylloc->last_column = jparse_get_column(yyscanner)+jparse_get_leng(yyscanner)-1; \
+			jparse_set_column(jparse_get_leng(yyscanner), yyscanner);
 %}
 
 /*
@@ -451,7 +452,7 @@ struct json *
 parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
-    int ret = 0;			/* yyparse() return value */
+    int ret = 0;			/* jparse_parse() return value */
     yyscan_t scanner;			/* scanner instance: is a void * */
     struct json_extra extra;
 
@@ -501,9 +502,9 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
      * initialise scanner
      */
     errno = 0;
-    ret = yylex_init_extra(&extra, &scanner);
+    ret = jparse_lex_init_extra(&extra, &scanner);
     if (ret != 0) {
-	werrp(40, __func__, "yylex_init_extra failed");
+	werrp(40, __func__, "jparse_lex_init_extra failed");
 	return NULL;
     }
     extra.filename = filename;
@@ -527,7 +528,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
-	yylex_destroy(scanner);
+	jparse_lex_destroy(scanner);
 	return tree;
     }
 
@@ -551,7 +552,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node and scanner
      */
-    ret = yyparse(&tree, scanner);
+    ret = jparse_parse(&tree, scanner);
 
     /*
      * free memory associated with bytes scanned by yy_scan_bytes()
@@ -570,7 +571,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
      * report scanner / parser success or failure
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
-	json_dbg(JSON_DBG_VVHIGH, __func__, "yyparse() returned: %d", ret);
+	json_dbg(JSON_DBG_VVHIGH, __func__, "jparse_parse() returned: %d", ret);
     }
     if (ret == 0) {
 	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
@@ -585,7 +586,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     }
 
     /* free scanner */
-    yylex_destroy(scanner);
+    jparse_lex_destroy(scanner);
 
     /*
      * return parse tree

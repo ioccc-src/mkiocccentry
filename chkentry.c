@@ -472,12 +472,12 @@ main(int argc, char *argv[])
 	err(26, __func__, "we should not get here; please report, making sure to use make bug_report");
 	not_reached();
     }
-    info_path = malloc_path(entry_dir, info_filename);
+    info_path = calloc_path(entry_dir, info_filename);
     if (info_path == NULL) {
 	err(27, __func__, "info_path is NULL");
 	not_reached();
     }
-    auth_path = malloc_path(entry_dir, auth_filename);
+    auth_path = calloc_path(entry_dir, auth_filename);
     if (auth_path == NULL) {
 	err(28, __func__, "auth_path is NULL");
 	not_reached();

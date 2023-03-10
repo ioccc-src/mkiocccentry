@@ -65,28 +65,238 @@
 #define FLEX_BETA
 #endif
 
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
+#ifdef yy_create_buffer
+#define jparse__create_buffer_ALREADY_DEFINED
 #else
-#define yyget_lval yyget_lval
+#define yy_create_buffer jparse__create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define jparse__delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer jparse__delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define jparse__scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer jparse__scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define jparse__scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string jparse__scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define jparse__scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes jparse__scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define jparse__init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer jparse__init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define jparse__flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer jparse__flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define jparse__load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state jparse__load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define jparse__switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer jparse__switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define jparse_push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state jparse_push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define jparse_pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state jparse_pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define jparse_ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack jparse_ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define jparse_lex_ALREADY_DEFINED
+#else
+#define yylex jparse_lex
+#endif
+
+#ifdef yyrestart
+#define jparse_restart_ALREADY_DEFINED
+#else
+#define yyrestart jparse_restart
+#endif
+
+#ifdef yylex_init
+#define jparse_lex_init_ALREADY_DEFINED
+#else
+#define yylex_init jparse_lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define jparse_lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra jparse_lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define jparse_lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy jparse_lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define jparse_get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug jparse_get_debug
+#endif
+
+#ifdef yyset_debug
+#define jparse_set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug jparse_set_debug
+#endif
+
+#ifdef yyget_extra
+#define jparse_get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra jparse_get_extra
+#endif
+
+#ifdef yyset_extra
+#define jparse_set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra jparse_set_extra
+#endif
+
+#ifdef yyget_in
+#define jparse_get_in_ALREADY_DEFINED
+#else
+#define yyget_in jparse_get_in
+#endif
+
+#ifdef yyset_in
+#define jparse_set_in_ALREADY_DEFINED
+#else
+#define yyset_in jparse_set_in
+#endif
+
+#ifdef yyget_out
+#define jparse_get_out_ALREADY_DEFINED
+#else
+#define yyget_out jparse_get_out
+#endif
+
+#ifdef yyset_out
+#define jparse_set_out_ALREADY_DEFINED
+#else
+#define yyset_out jparse_set_out
+#endif
+
+#ifdef yyget_leng
+#define jparse_get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng jparse_get_leng
+#endif
+
+#ifdef yyget_text
+#define jparse_get_text_ALREADY_DEFINED
+#else
+#define yyget_text jparse_get_text
+#endif
+
+#ifdef yyget_lineno
+#define jparse_get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno jparse_get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define jparse_set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno jparse_set_lineno
+#endif
+
+#ifdef yyget_column
+#define jparse_get_column_ALREADY_DEFINED
+#else
+#define yyget_column jparse_get_column
+#endif
+
+#ifdef yyset_column
+#define jparse_set_column_ALREADY_DEFINED
+#else
+#define yyset_column jparse_set_column
+#endif
+
+#ifdef yywrap
+#define jparse_wrap_ALREADY_DEFINED
+#else
+#define yywrap jparse_wrap
+#endif
+
+#ifdef yyget_lval
+#define jparse_get_lval_ALREADY_DEFINED
+#else
+#define yyget_lval jparse_get_lval
 #endif
 
 #ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
+#define jparse_set_lval_ALREADY_DEFINED
 #else
-#define yyset_lval yyset_lval
+#define yyset_lval jparse_set_lval
 #endif
 
 #ifdef yyget_lloc
-#define yyget_lloc_ALREADY_DEFINED
+#define jparse_get_lloc_ALREADY_DEFINED
 #else
-#define yyget_lloc yyget_lloc
+#define yyget_lloc jparse_get_lloc
 #endif
 
 #ifdef yyset_lloc
-#define yyset_lloc_ALREADY_DEFINED
+#define jparse_set_lloc_ALREADY_DEFINED
 #else
-#define yyset_lloc yyset_lloc
+#define yyset_lloc jparse_set_lloc
+#endif
+
+#ifdef yyalloc
+#define jparse_alloc_ALREADY_DEFINED
+#else
+#define yyalloc jparse_alloc
+#endif
+
+#ifdef yyrealloc
+#define jparse_realloc_ALREADY_DEFINED
+#else
+#define yyrealloc jparse_realloc
+#endif
+
+#ifdef yyfree
+#define jparse_free_ALREADY_DEFINED
+#else
+#define yyfree jparse_free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -411,7 +621,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define jparse_wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
@@ -581,7 +791,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  * unnecessary.
  */
 #define YY_NO_INPUT 1
-#line 37 "./jparse.l"
+#line 38 "./jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -593,7 +803,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  */
 #include "jparse.h"
 
-
+extern int jparse_lex(JPARSE_STYPE *yylval_param, JPARSE_LTYPE *yylloc_param, yyscan_t scanner);
 static YY_BUFFER_STATE bs;
 
 /*
@@ -602,10 +812,10 @@ static YY_BUFFER_STATE bs;
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
-			yylloc->first_column = yyget_column(yyscanner); \
-			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
-			yyset_column(yyget_leng(yyscanner), yyscanner);
-#line 557 "jparse.c"
+			yylloc->first_column = jparse_get_column(yyscanner); \
+			yylloc->last_column = jparse_get_column(yyscanner)+jparse_get_leng(yyscanner)-1; \
+			jparse_set_column(jparse_get_leng(yyscanner), yyscanner);
+#line 767 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -626,7 +836,7 @@ static YY_BUFFER_STATE bs;
  *	    \"([^\n"]|\\\")*\"
  */
 /* Actions. */
-#line 578 "jparse.c"
+#line 788 "jparse.c"
 
 #define INITIAL 0
 
@@ -906,9 +1116,9 @@ YY_DECL
 		}
 
 	{
-#line 100 "./jparse.l"
+#line 101 "./jparse.l"
 
-#line 860 "jparse.c"
+#line 1070 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -979,7 +1189,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 101 "./jparse.l"
+#line 102 "./jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -999,14 +1209,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 117 "./jparse.l"
+#line 118 "./jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 121 "./jparse.l"
+#line 122 "./jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1014,7 +1224,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 126 "./jparse.l"
+#line 127 "./jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1022,7 +1232,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 131 "./jparse.l"
+#line 132 "./jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1030,7 +1240,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 136 "./jparse.l"
+#line 137 "./jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1038,7 +1248,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 140 "./jparse.l"
+#line 141 "./jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1046,7 +1256,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 145 "./jparse.l"
+#line 146 "./jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1054,7 +1264,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 149 "./jparse.l"
+#line 150 "./jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1062,7 +1272,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 154 "./jparse.l"
+#line 155 "./jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1070,7 +1280,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 158 "./jparse.l"
+#line 159 "./jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1078,7 +1288,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 163 "./jparse.l"
+#line 164 "./jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1086,7 +1296,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 168 "./jparse.l"
+#line 169 "./jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1094,7 +1304,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 173 "./jparse.l"
+#line 174 "./jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1130,10 +1340,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 206 "./jparse.l"
+#line 207 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1085 "jparse.c"
+#line 1295 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2295,7 +2505,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 206 "./jparse.l"
+#line 207 "./jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2544,7 +2754,7 @@ struct json *
 parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
-    int ret = 0;			/* yyparse() return value */
+    int ret = 0;			/* jparse_parse() return value */
     yyscan_t scanner;			/* scanner instance: is a void * */
     struct json_extra extra;
 
@@ -2594,9 +2804,9 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
      * initialise scanner
      */
     errno = 0;
-    ret = yylex_init_extra(&extra, &scanner);
+    ret = jparse_lex_init_extra(&extra, &scanner);
     if (ret != 0) {
-	werrp(40, __func__, "yylex_init_extra failed");
+	werrp(40, __func__, "jparse_lex_init_extra failed");
 	return NULL;
     }
     extra.filename = filename;
@@ -2620,7 +2830,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
-	yylex_destroy(scanner);
+	jparse_lex_destroy(scanner);
 	return tree;
     }
 
@@ -2644,7 +2854,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node and scanner
      */
-    ret = yyparse(&tree, scanner);
+    ret = jparse_parse(&tree, scanner);
 
     /*
      * free memory associated with bytes scanned by yy_scan_bytes()
@@ -2663,7 +2873,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
      * report scanner / parser success or failure
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
-	json_dbg(JSON_DBG_VVHIGH, __func__, "yyparse() returned: %d", ret);
+	json_dbg(JSON_DBG_VVHIGH, __func__, "jparse_parse() returned: %d", ret);
     }
     if (ret == 0) {
 	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
@@ -2678,7 +2888,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     }
 
     /* free scanner */
-    yylex_destroy(scanner);
+    jparse_lex_destroy(scanner);
 
     /*
      * return parse tree

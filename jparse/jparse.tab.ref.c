@@ -114,11 +114,18 @@
 /* Pull parsers.  */
 #define YYPULL 1
 
-
-
+/* Substitute the type names.  */
+#define YYSTYPE         JPARSE_STYPE
+#define YYLTYPE         JPARSE_LTYPE
+/* Substitute the variable and function names.  */
+#define yyparse         jparse_parse
+#define yylex           jparse_lex
+#define yyerror         jparse_error
+#define yydebug         jparse_debug
+#define yynerrs         jparse_nerrs
 
 /* First part of user prologue.  */
-#line 47 "./jparse.y"
+#line 51 "./jparse.y"
 
 
 
@@ -138,7 +145,7 @@
 /*
  * bison debug information for development
  */
-int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
+int jparse_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 /*
  * JSON parser library version
@@ -147,7 +154,7 @@ const char *const json_parser_version = JSON_PARSER_VERSION;	/* library version 
 const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
 
 
-#line 100 "jparse.tab.c"
+#line 107 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -444,8 +451,8 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-         || (defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL \
-             && defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+         || (defined JPARSE_LTYPE_IS_TRIVIAL && JPARSE_LTYPE_IS_TRIVIAL \
+             && defined JPARSE_STYPE_IS_TRIVIAL && JPARSE_STYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -563,20 +570,20 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
-#if YYDEBUG
+#if JPARSE_DEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   165,   165,   223,   254,   285,   316,   347,   377,   407,
-     439,   470,   500,   534,   573,   609,   640,   670,   704,   742,
-     775,   807
+       0,   179,   179,   237,   268,   299,   330,   361,   391,   421,
+     453,   484,   514,   548,   587,   623,   654,   684,   718,   756,
+     789,   821
 };
 #endif
 
 /** Accessing symbol of state STATE.  */
 #define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
 
-#if YYDEBUG || 0
+#if JPARSE_DEBUG || 0
 /* The user-facing name of the symbol whose (internal) number is
    YYSYMBOL.  No bounds checking.  */
 static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
@@ -693,7 +700,7 @@ static const yytype_int8 yyr2[] =
 enum { YYENOMEM = -2 };
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = YYEMPTY)
+#define yyclearin       (yychar = JPARSE_EMPTY)
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -705,7 +712,7 @@ enum { YYENOMEM = -2 };
 
 #define YYBACKUP(Token, Value)                                    \
   do                                                              \
-    if (yychar == YYEMPTY)                                        \
+    if (yychar == JPARSE_EMPTY)                                        \
       {                                                           \
         yychar = (Token);                                         \
         yylval = (Value);                                         \
@@ -722,8 +729,8 @@ enum { YYENOMEM = -2 };
   while (0)
 
 /* Backward compatibility with an undocumented macro.
-   Use YYerror or YYUNDEF. */
-#define YYERRCODE YYUNDEF
+   Use JPARSE_error or JPARSE_UNDEF. */
+#define YYERRCODE JPARSE_UNDEF
 
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
@@ -753,7 +760,7 @@ enum { YYENOMEM = -2 };
 
 
 /* Enable debugging if requested.  */
-#if YYDEBUG
+#if JPARSE_DEBUG
 
 # ifndef YYFPRINTF
 #  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
@@ -779,7 +786,7 @@ do {                                            \
       undocumented and private YY_LOCATION_PRINT macros.  */
 #   define YYLOCATION_PRINT(File, Loc)  YY_LOCATION_PRINT(File, *(Loc))
 
-#  elif defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+#  elif defined JPARSE_LTYPE_IS_TRIVIAL && JPARSE_LTYPE_IS_TRIVIAL
 
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
@@ -934,12 +941,12 @@ do {                                    \
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
 int yydebug;
-#else /* !YYDEBUG */
+#else /* !JPARSE_DEBUG */
 # define YYDPRINTF(Args) ((void) 0)
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
-#endif /* !YYDEBUG */
+#endif /* !JPARSE_DEBUG */
 
 
 /* YYINITDEPTH -- initial size of the parser's stacks.  */
@@ -971,7 +978,7 @@ int yydebug;
    required.  Return YYENOMEM if memory is exhausted.  */
 static int
 yy_lac_stack_realloc (YYPTRDIFF_T *yycapacity, YYPTRDIFF_T yyadd,
-#if YYDEBUG
+#if JPARSE_DEBUG
                       char const *yydebug_prefix,
                       char const *yydebug_suffix,
 #endif
@@ -1075,7 +1082,7 @@ do {                                                                    \
    the parser stacks to try to find a new initial context in which the
    current lookahead is syntactically acceptable.  If it fails to find
    such a context, it discards the lookahead.  */
-#if YYDEBUG
+#if JPARSE_DEBUG
 # define YY_LAC_DISCARD(Event)                                           \
 do {                                                                     \
   if (yy_lac_established)                                                \
@@ -1185,7 +1192,7 @@ yy_lac (yy_state_t *yyesa, yy_state_t **yyes,
         else
           {
             if (yy_lac_stack_realloc (yyes_capacity, 1,
-#if YYDEBUG
+#if JPARSE_DEBUG
                                       " (", ")",
 #endif
                                       yyes, yyesa, &yyesp, yyes_prev))
@@ -1251,7 +1258,7 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
 
 /* Location data for the lookahead symbol.  */
 static YYLTYPE yyloc_default
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if defined JPARSE_LTYPE_IS_TRIVIAL && JPARSE_LTYPE_IS_TRIVIAL
   = { 1, 1, 1, 1 }
 # endif
 ;
@@ -1314,7 +1321,7 @@ YYLTYPE yylloc = yyloc_default;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yychar = YYEMPTY; /* Cause a token to be read.  */
+  yychar = JPARSE_EMPTY; /* Cause a token to be read.  */
 
   yylsp[0] = yylloc;
   goto yysetstate;
@@ -1430,25 +1437,25 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == YYEMPTY)
+  if (yychar == JPARSE_EMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex (&yylval, &yylloc, scanner);
     }
 
-  if (yychar <= YYEOF)
+  if (yychar <= JPARSE_EOF)
     {
-      yychar = YYEOF;
+      yychar = JPARSE_EOF;
       yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
-  else if (yychar == YYerror)
+  else if (yychar == JPARSE_error)
     {
       /* The scanner already issued an error message, process directly
          to error recovery.  But do not keep the error token as
          lookahead, it is too special and may lead us to an endless
          loop in error recovery. */
-      yychar = YYUNDEF;
+      yychar = JPARSE_UNDEF;
       yytoken = YYSYMBOL_YYerror;
       yyerror_range[1] = yylloc;
       goto yyerrlab1;
@@ -1491,7 +1498,7 @@ yybackup:
   *++yylsp = yylloc;
 
   /* Discard the shifted token.  */
-  yychar = YYEMPTY;
+  yychar = JPARSE_EMPTY;
   YY_LAC_DISCARD ("shift");
   goto yynewstate;
 
@@ -1532,7 +1539,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 166 "./jparse.y"
+#line 180 "./jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1579,18 +1586,18 @@ yyreduce:
 	     * not NULL, however, *tree will be set to the parse tree itself
 	     * ($json).
 	     */
-	    *tree = yyval;	/* more magic: set yyparse(tree) arg to point to JSON parse tree */
+	    *tree = yyval;	/* more magic: set jparse_parse(tree) arg to point to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
 					      "json: json_element");
 	}
     }
-#line 1539 "jparse.tab.c"
+#line 1546 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 224 "./jparse.y"
+#line 238 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1619,11 +1626,11 @@ yyreduce:
 					       "json_value: json_object");
 	}
     }
-#line 1572 "jparse.tab.c"
+#line 1579 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 255 "./jparse.y"
+#line 269 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1652,11 +1659,11 @@ yyreduce:
 					       "json_value: json_array");
 	}
     }
-#line 1605 "jparse.tab.c"
+#line 1612 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 286 "./jparse.y"
+#line 300 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1685,11 +1692,11 @@ yyreduce:
 					       "json_value: json_string");
 	}
     }
-#line 1638 "jparse.tab.c"
+#line 1645 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 317 "./jparse.y"
+#line 331 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1718,11 +1725,11 @@ yyreduce:
 					       "json_value: json_number");
 	}
     }
-#line 1671 "jparse.tab.c"
+#line 1678 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 348 "./jparse.y"
+#line 362 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1732,14 +1739,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(yyget_text(scanner));");
+					       "$json_value = parse_json_bool(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = parse_json_bool(yyget_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1750,11 +1757,11 @@ yyreduce:
 					       "json_value: JSON_TRUE");
 	}
     }
-#line 1703 "jparse.tab.c"
+#line 1710 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 378 "./jparse.y"
+#line 392 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1764,14 +1771,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(yyget_text(scanner))");
+					       "$json_value = parse_json_bool(jparse_get_text(scanner))");
 	}
 
 	/* action */
-	yyval = parse_json_bool(yyget_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1782,11 +1789,11 @@ yyreduce:
 					     "json_value: JSON_FALSE");
 	}
     }
-#line 1735 "jparse.tab.c"
+#line 1742 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 408 "./jparse.y"
+#line 422 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1796,14 +1803,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_null(yyget_text(scanner));");
+					       "$json_value = parse_json_null(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = parse_json_null(yyget_text(scanner)); /* magic: json_value becomes JTYPE_NULL type */
+	yyval = parse_json_null(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1814,11 +1821,11 @@ yyreduce:
 					       "json_value: JSON_NULL");
 	}
     }
-#line 1767 "jparse.tab.c"
+#line 1774 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 440 "./jparse.y"
+#line 454 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1847,11 +1854,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
 	}
     }
-#line 1800 "jparse.tab.c"
+#line 1807 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 471 "./jparse.y"
+#line 485 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1877,11 +1884,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
 	}
     }
-#line 1830 "jparse.tab.c"
+#line 1837 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 501 "./jparse.y"
+#line 515 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1913,11 +1920,11 @@ yyreduce:
 					      "json_members: json_member");
 	}
     }
-#line 1866 "jparse.tab.c"
+#line 1873 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 535 "./jparse.y"
+#line 549 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1952,11 +1959,11 @@ yyreduce:
 					       "json_members: json_members JSON_COMMA json_member");
 	}
     }
-#line 1905 "jparse.tab.c"
+#line 1912 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 574 "./jparse.y"
+#line 588 "./jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -1988,11 +1995,11 @@ yyreduce:
 					       "json_member: json_string JSON_COLON json_element");
 	}
     }
-#line 1941 "jparse.tab.c"
+#line 1948 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 610 "./jparse.y"
+#line 624 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2021,11 +2028,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
 	}
     }
-#line 1974 "jparse.tab.c"
+#line 1981 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 641 "./jparse.y"
+#line 655 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2051,11 +2058,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
 	}
     }
-#line 2004 "jparse.tab.c"
+#line 2011 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 671 "./jparse.y"
+#line 685 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2087,11 +2094,11 @@ yyreduce:
 					       "json_elements: json_element");
 	}
     }
-#line 2040 "jparse.tab.c"
+#line 2047 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 705 "./jparse.y"
+#line 719 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2125,11 +2132,11 @@ yyreduce:
 					       "json_elements: json_elements JSON_COMMA json_element");
 	}
     }
-#line 2078 "jparse.tab.c"
+#line 2085 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 743 "./jparse.y"
+#line 757 "./jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2158,11 +2165,11 @@ yyreduce:
 					       "json_element: json_value");
 	}
     }
-#line 2111 "jparse.tab.c"
+#line 2118 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 776 "./jparse.y"
+#line 790 "./jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2172,14 +2179,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", yyget_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", yyget_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", jparse_get_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = parse_json_string(yyget_text(scanner), (size_t)yyget_leng(scanner);");
+					       "$json_string = parse_json_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
 	}
 
 	/* action */
-	yyval = parse_json_string(yyget_text(scanner), (size_t)yyget_leng(scanner));
+	yyval = parse_json_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2190,11 +2197,11 @@ yyreduce:
 					       "json_string: JSON_STRING");
 	}
     }
-#line 2143 "jparse.tab.c"
+#line 2150 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 808 "./jparse.y"
+#line 822 "./jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2204,14 +2211,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", yyget_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", yyget_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", jparse_get_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = parse_json_number(yyget_text(scanner));");
+					       "$json_number = parse_json_number(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = parse_json_number(yyget_text(scanner));
+	yyval = parse_json_number(jparse_get_text(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2222,11 +2229,11 @@ yyreduce:
 					       "json_number: JSON_NUMBER");
 	}
     }
-#line 2175 "jparse.tab.c"
+#line 2182 "jparse.tab.c"
     break;
 
 
-#line 2179 "jparse.tab.c"
+#line 2186 "jparse.tab.c"
 
         default: break;
       }
@@ -2272,7 +2279,7 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = yychar == JPARSE_EMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -2286,17 +2293,17 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
          error, discard it.  */
 
-      if (yychar <= YYEOF)
+      if (yychar <= JPARSE_EOF)
         {
           /* Return failure if at end of input.  */
-          if (yychar == YYEOF)
+          if (yychar == JPARSE_EOF)
             YYABORT;
         }
       else
         {
           yydestruct ("Error: discarding",
                       yytoken, &yylval, &yylloc, tree, scanner);
-          yychar = YYEMPTY;
+          yychar = JPARSE_EMPTY;
         }
     }
 
@@ -2405,7 +2412,7 @@ yyexhaustedlab:
 | yyreturnlab -- parsing is finished, clean up and return.  |
 `----------------------------------------------------------*/
 yyreturnlab:
-  if (yychar != YYEMPTY)
+  if (yychar != JPARSE_EMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
@@ -2433,7 +2440,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 838 "./jparse.y"
+#line 852 "./jparse.y"
 
 
 
@@ -2453,7 +2460,7 @@ yyreturnlab:
  *
  */
 void
-yyerror(YYLTYPE *yyltype, struct json **node, yyscan_t scanner, char const *format, ...)
+yyerror(JPARSE_LTYPE *yyltype, struct json **node, yyscan_t scanner, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
     int ret;		/* libc function return value */
@@ -2484,9 +2491,9 @@ yyerror(YYLTYPE *yyltype, struct json **node, yyscan_t scanner, char const *form
 	    }
 	    fprint(stderr, " at line %d column %d: ", yyltype->first_line, yyltype->first_column);
     }
-    if (yyget_text(scanner) != NULL && *yyget_text(scanner) != '\0') {
-	fprint(stderr, "<%s>\n", yyget_text(scanner));
-    } else if (yyget_text(scanner) == NULL) {
+    if (jparse_get_text(scanner) != NULL && *jparse_get_text(scanner) != '\0') {
+	fprint(stderr, "<%s>\n", jparse_get_text(scanner));
+    } else if (jparse_get_text(scanner) == NULL) {
 	fprstr(stderr, "text == NULL\n");
     } else {
 	fprstr(stderr, "empty text\n");

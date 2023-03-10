@@ -19,6 +19,17 @@ Corrected the comment about the Rule 2b value 2503.  The previous
 comment, as noted by Nicholas Carlini (GitHub user @carlini), was
 an out of date comment related to the previous prime 2053 value.
 
+Fix issue in jparse/Makefile where sometimes one would see:
+
+	make[2]: `jparse.tab.h' is up to date.
+        make[2]: `jparse.lex.h' is up to date.
+
+Added `jparse_` prefix to json parser so that multiple parsers can exist in
+programs that link in the library. New jparse version is 1.0.1 2023-03-10.
+
+Fix jparse/Makefile to have a dependency line for jparse.c (jparse.o). Run make
+depend at the root directory.
+
 
 ## Release 1.0.0 2023-02-04
 
