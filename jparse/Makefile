@@ -560,10 +560,12 @@ man/man8/jparse_test.8:
 #
 parser: jparse.y jparse.l
 	${RM} -f jparse.tab.c jparse.tab.h
-	${E} ${MAKE} jparse.tab.c jparse.tab.h
+	@# make jparse.tab.c implies make jparse.tab.h too
+	${E} ${MAKE} jparse.tab.c
 	${E} ${MAKE} jparse.tab.o
 	${RM} -f jparse.c jparse.lex.h
-	${E} ${MAKE} jparse.c jparse.lex.h
+	@# make jparse.c implies make jparse.lex.h too
+	${E} ${MAKE} jparse.c
 	${E} ${MAKE} jparse.o
 	${RM} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
