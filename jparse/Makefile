@@ -206,7 +206,7 @@ LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: intermediate files to make and removed by make clean
 #
-BUILT_C_SRC= jparse.tab.c
+BUILT_C_SRC= jparse.tab.c jparse.c
 BUILT_H_SRC= jparse.tab.h jparse.lex.h
 ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
@@ -937,6 +937,8 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+jparse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.c jparse.h \
+    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
     jparse.tab.h json_parse.h json_sem.h json_util.h util.h
 jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \

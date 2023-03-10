@@ -378,11 +378,11 @@ main(int argc, char **argv)
      * enable bison internal debugging if -J is verbose enough
      */
     if (json_dbg_allowed(JSON_DBG_VHIGH)) {
-	yydebug = 1;	/* verbose bison debug on */
-	dbg(DBG_VHIGH, "yydebug: enabled");
+	jparse_debug = 1;	/* verbose bison debug on */
+	dbg(DBG_VHIGH, "jparse_debug: enabled");
     } else {
-	yydebug = 0;	/* verbose bison debug off */
-	dbg(DBG_VHIGH, "yydebug: disabled");
+	jparse_debug = 0;	/* verbose bison debug off */
+	dbg(DBG_VHIGH, "jparse_debug: disabled");
     }
 
     /*

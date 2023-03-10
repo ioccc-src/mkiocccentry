@@ -49,9 +49,9 @@
  *	accordingly.
  */
 #line 1 "./jparse.lex.h"
-#ifndef yyHEADER_H
-#define yyHEADER_H 1
-#define yyIN_HEADER 1
+#ifndef jparse_HEADER_H
+#define jparse_HEADER_H 1
+#define jparse_IN_HEADER 1
 
 #line 5 "jparse.lex.h"
 
@@ -69,28 +69,238 @@
 #define FLEX_BETA
 #endif
 
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
+#ifdef yy_create_buffer
+#define jparse__create_buffer_ALREADY_DEFINED
 #else
-#define yyget_lval yyget_lval
+#define yy_create_buffer jparse__create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define jparse__delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer jparse__delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define jparse__scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer jparse__scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define jparse__scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string jparse__scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define jparse__scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes jparse__scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define jparse__init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer jparse__init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define jparse__flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer jparse__flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define jparse__load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state jparse__load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define jparse__switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer jparse__switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define jparse_push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state jparse_push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define jparse_pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state jparse_pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define jparse_ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack jparse_ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define jparse_lex_ALREADY_DEFINED
+#else
+#define yylex jparse_lex
+#endif
+
+#ifdef yyrestart
+#define jparse_restart_ALREADY_DEFINED
+#else
+#define yyrestart jparse_restart
+#endif
+
+#ifdef yylex_init
+#define jparse_lex_init_ALREADY_DEFINED
+#else
+#define yylex_init jparse_lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define jparse_lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra jparse_lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define jparse_lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy jparse_lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define jparse_get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug jparse_get_debug
+#endif
+
+#ifdef yyset_debug
+#define jparse_set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug jparse_set_debug
+#endif
+
+#ifdef yyget_extra
+#define jparse_get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra jparse_get_extra
+#endif
+
+#ifdef yyset_extra
+#define jparse_set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra jparse_set_extra
+#endif
+
+#ifdef yyget_in
+#define jparse_get_in_ALREADY_DEFINED
+#else
+#define yyget_in jparse_get_in
+#endif
+
+#ifdef yyset_in
+#define jparse_set_in_ALREADY_DEFINED
+#else
+#define yyset_in jparse_set_in
+#endif
+
+#ifdef yyget_out
+#define jparse_get_out_ALREADY_DEFINED
+#else
+#define yyget_out jparse_get_out
+#endif
+
+#ifdef yyset_out
+#define jparse_set_out_ALREADY_DEFINED
+#else
+#define yyset_out jparse_set_out
+#endif
+
+#ifdef yyget_leng
+#define jparse_get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng jparse_get_leng
+#endif
+
+#ifdef yyget_text
+#define jparse_get_text_ALREADY_DEFINED
+#else
+#define yyget_text jparse_get_text
+#endif
+
+#ifdef yyget_lineno
+#define jparse_get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno jparse_get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define jparse_set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno jparse_set_lineno
+#endif
+
+#ifdef yyget_column
+#define jparse_get_column_ALREADY_DEFINED
+#else
+#define yyget_column jparse_get_column
+#endif
+
+#ifdef yyset_column
+#define jparse_set_column_ALREADY_DEFINED
+#else
+#define yyset_column jparse_set_column
+#endif
+
+#ifdef yywrap
+#define jparse_wrap_ALREADY_DEFINED
+#else
+#define yywrap jparse_wrap
+#endif
+
+#ifdef yyget_lval
+#define jparse_get_lval_ALREADY_DEFINED
+#else
+#define yyget_lval jparse_get_lval
 #endif
 
 #ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
+#define jparse_set_lval_ALREADY_DEFINED
 #else
-#define yyset_lval yyset_lval
+#define yyset_lval jparse_set_lval
 #endif
 
 #ifdef yyget_lloc
-#define yyget_lloc_ALREADY_DEFINED
+#define jparse_get_lloc_ALREADY_DEFINED
 #else
-#define yyget_lloc yyget_lloc
+#define yyget_lloc jparse_get_lloc
 #endif
 
 #ifdef yyset_lloc
-#define yyset_lloc_ALREADY_DEFINED
+#define jparse_set_lloc_ALREADY_DEFINED
 #else
-#define yyset_lloc yyset_lloc
+#define yyset_lloc jparse_set_lloc
+#endif
+
+#ifdef yyalloc
+#define jparse_alloc_ALREADY_DEFINED
+#else
+#define yyalloc jparse_alloc
+#endif
+
+#ifdef yyrealloc
+#define jparse_realloc_ALREADY_DEFINED
+#else
+#define yyrealloc jparse_realloc
+#endif
+
+#ifdef yyfree
+#define jparse_free_ALREADY_DEFINED
+#else
+#define yyfree jparse_free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -291,7 +501,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define jparse_wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -422,154 +632,154 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#ifndef yy_create_buffer_ALREADY_DEFINED
+#ifndef jparse__create_buffer_ALREADY_DEFINED
 #undef yy_create_buffer
 #endif
-#ifndef yy_delete_buffer_ALREADY_DEFINED
+#ifndef jparse__delete_buffer_ALREADY_DEFINED
 #undef yy_delete_buffer
 #endif
-#ifndef yy_scan_buffer_ALREADY_DEFINED
+#ifndef jparse__scan_buffer_ALREADY_DEFINED
 #undef yy_scan_buffer
 #endif
-#ifndef yy_scan_string_ALREADY_DEFINED
+#ifndef jparse__scan_string_ALREADY_DEFINED
 #undef yy_scan_string
 #endif
-#ifndef yy_scan_bytes_ALREADY_DEFINED
+#ifndef jparse__scan_bytes_ALREADY_DEFINED
 #undef yy_scan_bytes
 #endif
-#ifndef yy_init_buffer_ALREADY_DEFINED
+#ifndef jparse__init_buffer_ALREADY_DEFINED
 #undef yy_init_buffer
 #endif
-#ifndef yy_flush_buffer_ALREADY_DEFINED
+#ifndef jparse__flush_buffer_ALREADY_DEFINED
 #undef yy_flush_buffer
 #endif
-#ifndef yy_load_buffer_state_ALREADY_DEFINED
+#ifndef jparse__load_buffer_state_ALREADY_DEFINED
 #undef yy_load_buffer_state
 #endif
-#ifndef yy_switch_to_buffer_ALREADY_DEFINED
+#ifndef jparse__switch_to_buffer_ALREADY_DEFINED
 #undef yy_switch_to_buffer
 #endif
-#ifndef yypush_buffer_state_ALREADY_DEFINED
+#ifndef jparse_push_buffer_state_ALREADY_DEFINED
 #undef yypush_buffer_state
 #endif
-#ifndef yypop_buffer_state_ALREADY_DEFINED
+#ifndef jparse_pop_buffer_state_ALREADY_DEFINED
 #undef yypop_buffer_state
 #endif
-#ifndef yyensure_buffer_stack_ALREADY_DEFINED
+#ifndef jparse_ensure_buffer_stack_ALREADY_DEFINED
 #undef yyensure_buffer_stack
 #endif
-#ifndef yylex_ALREADY_DEFINED
+#ifndef jparse_lex_ALREADY_DEFINED
 #undef yylex
 #endif
-#ifndef yyrestart_ALREADY_DEFINED
+#ifndef jparse_restart_ALREADY_DEFINED
 #undef yyrestart
 #endif
-#ifndef yylex_init_ALREADY_DEFINED
+#ifndef jparse_lex_init_ALREADY_DEFINED
 #undef yylex_init
 #endif
-#ifndef yylex_init_extra_ALREADY_DEFINED
+#ifndef jparse_lex_init_extra_ALREADY_DEFINED
 #undef yylex_init_extra
 #endif
-#ifndef yylex_destroy_ALREADY_DEFINED
+#ifndef jparse_lex_destroy_ALREADY_DEFINED
 #undef yylex_destroy
 #endif
-#ifndef yyget_debug_ALREADY_DEFINED
+#ifndef jparse_get_debug_ALREADY_DEFINED
 #undef yyget_debug
 #endif
-#ifndef yyset_debug_ALREADY_DEFINED
+#ifndef jparse_set_debug_ALREADY_DEFINED
 #undef yyset_debug
 #endif
-#ifndef yyget_extra_ALREADY_DEFINED
+#ifndef jparse_get_extra_ALREADY_DEFINED
 #undef yyget_extra
 #endif
-#ifndef yyset_extra_ALREADY_DEFINED
+#ifndef jparse_set_extra_ALREADY_DEFINED
 #undef yyset_extra
 #endif
-#ifndef yyget_in_ALREADY_DEFINED
+#ifndef jparse_get_in_ALREADY_DEFINED
 #undef yyget_in
 #endif
-#ifndef yyset_in_ALREADY_DEFINED
+#ifndef jparse_set_in_ALREADY_DEFINED
 #undef yyset_in
 #endif
-#ifndef yyget_out_ALREADY_DEFINED
+#ifndef jparse_get_out_ALREADY_DEFINED
 #undef yyget_out
 #endif
-#ifndef yyset_out_ALREADY_DEFINED
+#ifndef jparse_set_out_ALREADY_DEFINED
 #undef yyset_out
 #endif
-#ifndef yyget_leng_ALREADY_DEFINED
+#ifndef jparse_get_leng_ALREADY_DEFINED
 #undef yyget_leng
 #endif
-#ifndef yyget_text_ALREADY_DEFINED
+#ifndef jparse_get_text_ALREADY_DEFINED
 #undef yyget_text
 #endif
-#ifndef yyget_lineno_ALREADY_DEFINED
+#ifndef jparse_get_lineno_ALREADY_DEFINED
 #undef yyget_lineno
 #endif
-#ifndef yyset_lineno_ALREADY_DEFINED
+#ifndef jparse_set_lineno_ALREADY_DEFINED
 #undef yyset_lineno
 #endif
-#ifndef yyget_column_ALREADY_DEFINED
+#ifndef jparse_get_column_ALREADY_DEFINED
 #undef yyget_column
 #endif
-#ifndef yyset_column_ALREADY_DEFINED
+#ifndef jparse_set_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
-#ifndef yywrap_ALREADY_DEFINED
+#ifndef jparse_wrap_ALREADY_DEFINED
 #undef yywrap
 #endif
-#ifndef yyget_lval_ALREADY_DEFINED
+#ifndef jparse_get_lval_ALREADY_DEFINED
 #undef yyget_lval
 #endif
-#ifndef yyset_lval_ALREADY_DEFINED
+#ifndef jparse_set_lval_ALREADY_DEFINED
 #undef yyset_lval
 #endif
-#ifndef yyget_lloc_ALREADY_DEFINED
+#ifndef jparse_get_lloc_ALREADY_DEFINED
 #undef yyget_lloc
 #endif
-#ifndef yyset_lloc_ALREADY_DEFINED
+#ifndef jparse_set_lloc_ALREADY_DEFINED
 #undef yyset_lloc
 #endif
-#ifndef yyalloc_ALREADY_DEFINED
+#ifndef jparse_alloc_ALREADY_DEFINED
 #undef yyalloc
 #endif
-#ifndef yyrealloc_ALREADY_DEFINED
+#ifndef jparse_realloc_ALREADY_DEFINED
 #undef yyrealloc
 #endif
-#ifndef yyfree_ALREADY_DEFINED
+#ifndef jparse_free_ALREADY_DEFINED
 #undef yyfree
 #endif
-#ifndef yytext_ALREADY_DEFINED
+#ifndef jparse_text_ALREADY_DEFINED
 #undef yytext
 #endif
-#ifndef yyleng_ALREADY_DEFINED
+#ifndef jparse_leng_ALREADY_DEFINED
 #undef yyleng
 #endif
-#ifndef yyin_ALREADY_DEFINED
+#ifndef jparse_in_ALREADY_DEFINED
 #undef yyin
 #endif
-#ifndef yyout_ALREADY_DEFINED
+#ifndef jparse_out_ALREADY_DEFINED
 #undef yyout
 #endif
-#ifndef yy_flex_debug_ALREADY_DEFINED
+#ifndef jparse__flex_debug_ALREADY_DEFINED
 #undef yy_flex_debug
 #endif
-#ifndef yylineno_ALREADY_DEFINED
+#ifndef jparse_lineno_ALREADY_DEFINED
 #undef yylineno
 #endif
-#ifndef yytables_fload_ALREADY_DEFINED
+#ifndef jparse_tables_fload_ALREADY_DEFINED
 #undef yytables_fload
 #endif
-#ifndef yytables_destroy_ALREADY_DEFINED
+#ifndef jparse_tables_destroy_ALREADY_DEFINED
 #undef yytables_destroy
 #endif
-#ifndef yyTABLES_NAME_ALREADY_DEFINED
+#ifndef jparse_TABLES_NAME_ALREADY_DEFINED
 #undef yyTABLES_NAME
 #endif
 
-#line 206 "./jparse.l"
+#line 207 "./jparse.l"
 
 
-#line 522 "jparse.lex.h"
-#undef yyIN_HEADER
-#endif /* yyHEADER_H */
+#line 732 "jparse.lex.h"
+#undef jparse_IN_HEADER
+#endif /* jparse_HEADER_H */
