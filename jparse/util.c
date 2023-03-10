@@ -3559,7 +3559,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
 
 
 /*
- * malloc_path - malloc a JSON file path
+ * calloc_path - malloc a JSON file path
  *
  * given:
  *	dirname		directory containing file, or NULL ==> file is by itself
@@ -3572,7 +3572,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
  * NOTE: This function will not return NULL.
  */
 char *
-malloc_path(char const *dirname, char const *filename)
+calloc_path(char const *dirname, char const *filename)
 {
     int ret = -1;		/* libc return status */
     char *buf = NULL;		/* malloced string to return */
