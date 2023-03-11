@@ -263,8 +263,8 @@ JSON_COMMA		","
  * the line, and byte value.  To avoid printing a huge flood of warning messages
  * (say should a large block of NUL (\x00) and SOM (\x01) bytes are
  * encountered), we limit the number of NUL (\x00) byte warnings to the first
- * MAX_NUL_REPORTED, and limit the number of low ([\x01-\x08\x0e-\x1f]) byte
- * warnings to the first MAX_LOW_REPORTED.  Should we find more warnings that
+ * MAX_NUL_BYTES_REPORTED, and limit the number of low ([\x01-\x08\x0e-\x1f]) byte
+ * warnings to the first MAX_LOW_BYTES_REPORTED.  Should we find more warnings that
  * the limit, a one time "too many" warning is issues.
  *
  * given:
@@ -338,7 +338,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
 	    /*
 	     * case below the report limit
 	     */
-	    if (*nul_bytes <= MAX_NUL_REPORTED) {
+	    if (*nul_bytes <= MAX_NUL_BYTES_REPORTED) {
 		werr(34, __func__, "invalid NUL (0) byte detected in line: %zu byte position: %zu",
 			 linenum, byte_pos);
 
@@ -388,7 +388,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
 	    /*
 	     * case below the report limit
 	     */
-	    if (*low_bytes <= MAX_LOW_REPORTED) {
+	    if (*low_bytes <= MAX_LOW_BYTES_REPORTED) {
 		werr(36, __func__, "invalid LOW byte 0x%02x detected in line: %zu byte position: %zu",
 			 data[i], linenum, byte_pos);
 

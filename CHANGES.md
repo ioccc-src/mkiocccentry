@@ -30,6 +30,19 @@ programs that link in the library. New jparse version is 1.0.1 2023-03-10.
 Fix jparse/Makefile to have a dependency line for jparse.c (jparse.o). Run make
 depend at the root directory.
 
+Change `malloc_path()` to `calloc_path()` as it uses `calloc(3)` not
+`malloc(3)`.
+
+Rename macro `MAX_NUL_REPORTED` -> `MAX_NUL_BYTES_REPORTED` and allow overriding
+it (default is 5; uses `#if !defined (MAX_NUL_BYTES_REPORTED)`.
+
+Rename macro `MAX_LOW_REPORTED` `MAX_LOW_BYTES_REPORTED` and allow overriding it
+(default is 5; uses `#if !defined (MAX_LOW_BYTES_REPORTED)`.
+
+Fix version of jparse; the prefix added was supposed to be `1.0.1 2023-03-10`
+and was changed initially but when trying to get a problem resolved it must have
+been undone. Now it's instead `1.0.2 2023-03-11`.
+
 
 ## Release 1.0.0 2023-02-04
 
