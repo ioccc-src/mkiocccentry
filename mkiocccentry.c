@@ -614,7 +614,10 @@ main(int argc, char *argv[])
 		"%s\n"	/* alt_url */
 		"%s\n"	/* mastodon handle */
 		"%s\n"	/* GitHub */
-		"%s\n",	/* affiliation */
+		"%s\n"	/* affiliation */
+		"%s\n"  /* past winner */
+		"%s\n"  /* author_handle */
+		,
 		author_set[i].name,
 		author_set[i].location_code,
 		author_set[i].email,
@@ -622,9 +625,11 @@ main(int argc, char *argv[])
 		author_set[i].alt_url,
 		author_set[i].mastodon,
 		author_set[i].github,
-		author_set[i].affiliation);
+		author_set[i].affiliation,
+		author_set[i].past_winner?"y":"n",
+		author_set[i].author_handle);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author info the answers file");
+		warnp(__func__, "fprintf error printing author info to the answers file");
 		++answers_errors;
 	    }
 	}
