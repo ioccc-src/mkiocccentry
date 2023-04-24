@@ -2271,7 +2271,7 @@ is_decimal(char const *ptr, size_t len)
  *		    NULL or str is empty
  *
  * NOTE: This function calls is_decimal().  See that function for details on
- *	 what is or is not considered an integer.
+ *	 what is and is not considered an integer.
  */
 bool
 is_decimal_str(char const *str, size_t *retlen)
@@ -2318,7 +2318,7 @@ is_decimal_str(char const *str, size_t *retlen)
  *
  *		^[/0-9a-z][0-9a-z._+-]*$
  *
- *	   If lower_only is false, then the string must match:
+ *	    If lower_only is false, then the string must match:
  *
  *		^[/0-9A-Za-z][0-9A-Za-z._+-]*$
  *
@@ -2328,7 +2328,7 @@ is_decimal_str(char const *str, size_t *retlen)
  *
  *		^[/0-9a-z._+-]*$
  *
- *	   If lower_only is false, then the string must match:
+ *	    If lower_only is false, then the string must match:
  *
  *		^[/0-9A-Za-z._+-]*$
  *

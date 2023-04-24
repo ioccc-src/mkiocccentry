@@ -145,7 +145,7 @@ C_OPT= -O3 -g3
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra
+WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unused-but-set-variable
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
 # linker options
