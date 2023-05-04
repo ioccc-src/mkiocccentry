@@ -126,7 +126,7 @@ json_dbg_allowed(int json_dbg_lvl)
  *	true ==> allowed, false ==> disabled
  */
 bool
-json_warn_allowed()
+json_warn_allowed(void)
 {
     /*
      * determine if a JSON warning message is allowed
