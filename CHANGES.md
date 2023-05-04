@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.2 2023-04-14
+
+Fix mkiocccentry to write past winner and author handle to the answer file. It
+already read from these from the file but did not write them and therefore using
+a new answers file did not work at the point that these fields were added to the
+tool.
 
 ## Release 1.0.1 2023-02-14
 
