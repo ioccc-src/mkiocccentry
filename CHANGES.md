@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.3 2023-05-22
+
+Added [remarks.example.md](remarks.example.md) which has instructions for
+writing `remarks.md` files in the same vein as the
+[Makefile.example](Makefile.example).
+
 ## Release 1.0.2 2023-04-14
 
 Fix mkiocccentry to write past winner and author handle to the answer file. It
