@@ -7,6 +7,26 @@ already read from these from the file but did not write them and therefore using
 a new answers file did not work at the point that these fields were added to the
 tool.
 
+Improved the algorithm for UTF-8 strings to ASCII POSIX safe characters.
+The `utf8_posix_map hmap[]` was changed to no longer map UTF-8 to
+ASCII characters '.' NOR '+' NOR '-'.  The `default_handle()` function
+was changed to NOT produce more than one '_' (underscore) in a row.
+Before these changes, the function produced handles of the form:
+
+```re
+^[0-9a-z][0-9a-z._+-]*$
+```
+
+Now, handles conform to the following regexp:
+
+```re
+^[0-9a-z][0-9a-z_]*$
+```
+
+Moreover, default handles will NOT contain 2 or more '_' (underscore)
+characters in a row.
+
+
 ## Release 1.0.1 2023-02-14
 
 Fix minor shellcheck nits in `bug_report.sh` and

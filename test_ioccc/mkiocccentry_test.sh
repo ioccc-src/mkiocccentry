@@ -298,7 +298,7 @@ UK
 
 
 n
-replaced-author1-handle
+replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
 printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
@@ -321,7 +321,7 @@ https://f.host0.example.com/index.html
 @github3
 an affiliation for #3 author
 y
-author3-last3
+author3_last3
 @#$%^
 AU
 user0@example.com
@@ -404,7 +404,7 @@ UK
 
 
 n
-replaced-author1-handle
+replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
 printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
@@ -427,7 +427,7 @@ https://l.host0.example.com/index.html
 @github3
 an affiliation for #3 author
 y
-author3-last3
+author3_last3
 @#$%^
 AU
 user0@example.com
@@ -488,7 +488,7 @@ UK
 
 
 n
-replaced-author1-handle
+replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
 printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
@@ -511,7 +511,7 @@ https://r.host0.example.com/index.html
 @github3
 an affiliation for #3 author
 y
-author3-last3
+author3_last3
 @#$%^
 AU
 user0@example.com

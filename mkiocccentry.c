@@ -3992,8 +3992,8 @@ get_author_info(struct author **author_set_p)
 	    author_set[i].alt_url = NULL;
 	    author_set[i].alt_url =
 		prompt(need_hints ?
-		    "Enter second author URL (starting with http:// or https://), or press return to skip" :
-		    "Enter second author URL", &len);
+		    "Enter second URL (starting with http:// or https://), or press return to skip" :
+		    "Enter second URL", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "URL withheld");
 	    } else {
@@ -4381,7 +4381,7 @@ get_author_info(struct author **author_set_p)
 		      "",
 		      "The IOCCC author handle must match the following regexp:",
 		      "",
-		      "    ^[0-9a-z][0-9a-z._+-]*$",
+		      "    ^[0-9a-z][0-9a-z_]*$",
 		      "",
 		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */

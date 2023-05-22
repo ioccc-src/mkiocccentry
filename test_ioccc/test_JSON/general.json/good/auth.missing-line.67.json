@@ -64,7 +64,7 @@
 			"github" : "@github3",
 			"affiliation" : "an affiliation for #3 author",
 			"default_handle" : false,
-			"author_handle" : "author3-last3",
+			"author_handle" : "author3_last3",
 			"author_number" : 3
 		},
 		{

@@ -13,9 +13,9 @@
  * The author_handle (and winner_handle) must fit the following
  * regular expression:
  *
- *	^[0-9a-z][0-9a-z._+-]*$
+ *	^[0-9a-z][0-9a-z_]*$
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2022,2023 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -52,6 +52,7 @@
 #include <strings.h> /* strncasecmp */
 #include <sys/time.h>
 #include <unistd.h>
+#include <ctype.h>
 
 
 /*
@@ -65,15 +66,15 @@
  * POSIX portable filenames plus +.  This table helps us convert
  * certain UTF-8 strings into strings that match this regular expression:
  *
- *	^[0-9a-z][0-9a-z._+-]*$
+ *	^[0-9a-z][0-9a-z_]*$
  *
  * This table is NOT linguistic.  This table is NOT intended to be
  * an accurate translation of alphabets.  This table maps some UTF-8 byte
- * strings into characters that look somewhat like lower case POSIX portable
- * filenames plus +.
+ * strings into characters that are a subset of lower case POSIX portable
+ * filenames.
  *
  * We use this table to convert author handles into some ASCII that
- * can be used as a POSIX portable filenames plus +, in lower case.
+ * can be used as a POSIX portable filenames.
  *
  * With that in mind, feel free to suggest modifications or additions,
  * in the form of a GitHub pull request, to the table below.
@@ -87,60 +88,60 @@
 struct utf8_posix_map hmap[] =
 {
     /* \x00 - special case */
-    {"\x00", "",  0,  0},		/* NUL */
+    {"\x00", "",  0,  0},		/* NUL - ignored character */
 
     /* \x01 -\x0f */
-    {"\x01", "", -1, -1},		/* SOH */
-    {"\x02", "", -1, -1},		/* STX */
-    {"\x03", "", -1, -1},		/* ETX */
-    {"\x04", "", -1, -1},		/* EOT */
-    {"\x05", "", -1, -1},		/* EOT */
-    {"\x06", "", -1, -1},		/* ENQ */
-    {"\x07", "", -1, -1},		/* BEL (\a) */
-    {"\x08", "", -1, -1},		/* BS (\b) */
+    {"\x01", "", -1, -1},		/* SOH - ignored character */
+    {"\x02", "", -1, -1},		/* STX - ignored character */
+    {"\x03", "", -1, -1},		/* ETX - ignored character */
+    {"\x04", "", -1, -1},		/* EOT - ignored character */
+    {"\x05", "", -1, -1},		/* EOT - ignored character */
+    {"\x06", "", -1, -1},		/* ENQ - ignored character */
+    {"\x07", "", -1, -1},		/* BEL (\a) - ignored character */
+    {"\x08", "", -1, -1},		/* BS (\b) - ignored character */
     {"\x09", "_", -1, -1},		/* HT (\t) */
     {"\x0a", "_", -1, -1},		/* LF (\n) */
     {"\x0b", "_", -1, -1},		/* VT (\v) */
     {"\x0c", "_", -1, -1},		/* FF (\f) */
     {"\x0d", "_", -1, -1},		/* CR (\r) */
-    {"\x0e", "", -1, -1},		/* SO */
-    {"\x0f", "", -1, -1},		/* SI */
+    {"\x0e", "", -1, -1},		/* SO - ignored character */
+    {"\x0f", "", -1, -1},		/* SI - ignored character */
 
     /* \x10 -\x1f */
-    {"\x10", "", -1, -1},		/* DLE */
-    {"\x11", "", -1, -1},		/* DC1 */
-    {"\x12", "", -1, -1},		/* DC2 */
-    {"\x13", "", -1, -1},		/* DC3 */
-    {"\x14", "", -1, -1},		/* DC4 */
-    {"\x15", "", -1, -1},		/* NAK */
-    {"\x16", "", -1, -1},		/* SYN */
-    {"\x17", "", -1, -1},		/* ETB */
-    {"\x18", "", -1, -1},		/* CAN */
-    {"\x19", "", -1, -1},		/* EM */
-    {"\x1a", "", -1, -1},		/* SUB */
-    {"\x1b", "", -1, -1},		/* ESC */
-    {"\x1c", "", -1, -1},		/* FS */
-    {"\x1d", "", -1, -1},		/* GS */
-    {"\x1e", "", -1, -1},		/* RS */
-    {"\x1f", "", -1, -1},		/* US */
+    {"\x10", "", -1, -1},		/* DLE - ignored character */
+    {"\x11", "", -1, -1},		/* DC1 - ignored character */
+    {"\x12", "", -1, -1},		/* DC2 - ignored character */
+    {"\x13", "", -1, -1},		/* DC3 - ignored character */
+    {"\x14", "", -1, -1},		/* DC4 - ignored character */
+    {"\x15", "", -1, -1},		/* NAK - ignored character */
+    {"\x16", "", -1, -1},		/* SYN - ignored character */
+    {"\x17", "", -1, -1},		/* ETB - ignored character */
+    {"\x18", "", -1, -1},		/* CAN - ignored character */
+    {"\x19", "", -1, -1},		/* EM - ignored character */
+    {"\x1a", "", -1, -1},		/* SUB - ignored character */
+    {"\x1b", "", -1, -1},		/* ESC - ignored character */
+    {"\x1c", "", -1, -1},		/* FS - ignored character */
+    {"\x1d", "", -1, -1},		/* GS - ignored character */
+    {"\x1e", "", -1, -1},		/* RS - ignored character */
+    {"\x1f", "", -1, -1},		/* US - ignored character */
 
     /* \x20 -\x2f */
     {" ", "_", -1, -1},			/* SP */
-    {"!", "", -1, -1},			/* ! */
-    {"\"", "", -1, -1},			/* " */
-    {"#", "", -1, -1},			/* # */
-    {"$", "", -1, -1},			/* $ */
-    {"%", "", -1, -1},			/* % */
-    {"&", "", -1, -1},			/* & */
-    {"\'", "", -1, -1},			/* ' */
-    {"(", "", -1, -1},			/* ( */
-    {")", "", -1, -1},			/* ) */
-    {"*", "", -1, -1},			/* * */
-    {"+", "+", -1, -1},			/* + - allowed character */
-    {",", "", -1, -1},			/* , */
-    {"-", "-", -1, -1},			/* - - allowed character */
-    {".", ".", -1, -1},			/* . - allowed character */
-    {"/", "", -1, -1},			/* / */
+    {"!", "_", -1, -1},			/* ! */
+    {"\"", "_", -1, -1},		/* " */
+    {"#", "_", -1, -1},			/* # */
+    {"$", "_", -1, -1},			/* $ */
+    {"%", "_", -1, -1},			/* % */
+    {"&", "_", -1, -1},			/* & */
+    {"\'", "_", -1, -1},		/* ' */
+    {"(", "_", -1, -1},			/* ( */
+    {")", "_", -1, -1},			/* ) */
+    {"*", "_", -1, -1},			/* * */
+    {"+", "_", -1, -1},			/* + */
+    {",", "_", -1, -1},			/* , */
+    {"-", "_", -1, -1},			/* - */
+    {".", "_", -1, -1},			/* . */
+    {"/", "_", -1, -1},			/* / */
 
     /* \x30 -\x3f */
     {"0", "0", -1, -1},			/* 0 - allowed character */
@@ -153,15 +154,15 @@ struct utf8_posix_map hmap[] =
     {"7", "7", -1, -1},			/* 7 - allowed character */
     {"8", "8", -1, -1},			/* 8 - allowed character */
     {"9", "9", -1, -1},			/* 9 - allowed character */
-    {":", "", -1, -1},			/* & */
-    {";", "", -1, -1},			/* ; */
-    {"<", "", -1, -1},			/* < */
-    {"=", "", -1, -1},			/* = */
-    {">", "", -1, -1},			/* > */
-    {"?", "", -1, -1},			/* ? */
+    {":", "_", -1, -1},			/* & */
+    {";", "_", -1, -1},			/* ; */
+    {"<", "_", -1, -1},			/* < */
+    {"=", "_", -1, -1},			/* = */
+    {">", "_", -1, -1},			/* > */
+    {"?", "_", -1, -1},			/* ? */
 
     /* \x40 -\x4f */
-    {"@", "", -1, -1},			/* @ */
+    {"@", "_", -1, -1},			/* @ */
     {"A", "a", -1, -1},			/* A - converted to lower case character */
     {"B", "b", -1, -1},			/* B - converted to lower case character */
     {"C", "c", -1, -1},			/* C - converted to lower case character */
@@ -190,14 +191,14 @@ struct utf8_posix_map hmap[] =
     {"X", "x", -1, -1},			/* X - converted to lower case character */
     {"Y", "y", -1, -1},			/* Y - converted to lower case character */
     {"Z", "z", -1, -1},			/* Z - converted to lower case character */
-    {"[", "", -1, -1},			/* [ */
-    {"\\", "", -1, -1},			/* \ */
-    {"]", "", -1, -1},			/* ] */
-    {"^", "", -1, -1},			/* ^ */
-    {"_", "_", -1, -1},			/* _ - allowed character */
+    {"[", "_", -1, -1},			/* [ */
+    {"\\", "_", -1, -1},		/* \ */
+    {"]", "_", -1, -1},			/* ] */
+    {"^", "_", -1, -1},			/* ^ */
+    {"_", "_", -1, -1},			/* _ (underscore) - allowed character */
 
     /* \x60 -\x6f */
-    {"`", "", -1, -1},			/* ` */
+    {"`", "_", -1, -1},			/* ` */
     {"a", "a", -1, -1},			/* a - allowed character */
     {"b", "b", -1, -1},			/* b - allowed character */
     {"c", "c", -1, -1},			/* c - allowed character */
@@ -226,77 +227,77 @@ struct utf8_posix_map hmap[] =
     {"x", "x", -1, -1},			/* x - allowed character */
     {"y", "y", -1, -1},			/* y - allowed character */
     {"z", "z", -1, -1},			/* z - allowed character */
-    {"{", "", -1, -1},			/* { */
-    {"|", "", -1, -1},			/* | */
-    {"}", "", -1, -1},			/* } */
-    {"~", "", -1, -1},			/* ^ */
-    {"\x7f", "", -1, -1},		/* DEL */
+    {"{", "", -1, -1},			/* { - ignored character */
+    {"|", "", -1, -1},			/* | - ignored character */
+    {"}", "", -1, -1},			/* } - ignored character */
+    {"~", "", -1, -1},			/* ^ - ignored character */
+    {"\x7f", "", -1, -1},		/* DEL - ignored character */
 
     /* U+0080 through U+058f */
-    { "\xc2\x80", "" , -1, -1},		/*  U+0080 -   - <control> */
-    { "\xc2\x81", "" , -1, -1},		/*  U+0081 -   - <control> */
-    { "\xc2\x82", "" , -1, -1},		/*  U+0082 -   - <control> */
-    { "\xc2\x83", "" , -1, -1},		/*  U+0083 -   - <control> */
-    { "\xc2\x84", "" , -1, -1},		/*  U+0084 -   - <control> */
-    { "\xc2\x85", "" , -1, -1},		/*  U+0085 -   - <control> */
-    { "\xc2\x86", "" , -1, -1},		/*  U+0086 -   - <control> */
-    { "\xc2\x87", "" , -1, -1},		/*  U+0087 -   - <control> */
-    { "\xc2\x88", "" , -1, -1},		/*  U+0088 -   - <control> */
-    { "\xc2\x89", "" , -1, -1},		/*  U+0089 -   - <control> */
-    { "\xc2\x8a", "" , -1, -1},		/*  U+008A -   - <control> */
-    { "\xc2\x8b", "" , -1, -1},		/*  U+008B -   - <control> */
-    { "\xc2\x8c", "" , -1, -1},		/*  U+008C -   - <control> */
-    { "\xc2\x8d", "" , -1, -1},		/*  U+008D -   - <control> */
-    { "\xc2\x8e", "" , -1, -1},		/*  U+008E -   - <control> */
-    { "\xc2\x8f", "" , -1, -1},		/*  U+008F -   - <control> */
-    { "\xc2\x90", "" , -1, -1},		/*  U+0090 -   - <control> */
-    { "\xc2\x91", "" , -1, -1},		/*  U+0091 -   - <control> */
-    { "\xc2\x92", "" , -1, -1},		/*  U+0092 -   - <control> */
-    { "\xc2\x93", "" , -1, -1},		/*  U+0093 -   - <control> */
-    { "\xc2\x94", "" , -1, -1},		/*  U+0094 -   - <control> */
-    { "\xc2\x95", "" , -1, -1},		/*  U+0095 -   - <control> */
-    { "\xc2\x96", "" , -1, -1},		/*  U+0096 -   - <control> */
-    { "\xc2\x97", "" , -1, -1},		/*  U+0097 -   - <control> */
-    { "\xc2\x98", "" , -1, -1},		/*  U+0098 -   - <control> */
-    { "\xc2\x99", "" , -1, -1},		/*  U+0099 -   - <control> */
-    { "\xc2\x9a", "" , -1, -1},		/*  U+009A -   - <control> */
-    { "\xc2\x9b", "" , -1, -1},		/*  U+009B -   - <control> */
-    { "\xc2\x9c", "" , -1, -1},		/*  U+009C -   - <control> */
-    { "\xc2\x9d", "" , -1, -1},		/*  U+009D -   - <control> */
-    { "\xc2\x9e", "" , -1, -1},		/*  U+009E -   - <control> */
-    { "\xc2\x9f", "" , -1, -1},		/*  U+009F -   - <control> */
+    { "\xc2\x80", "", -1, -1},		/*  U+0080 -   - <control> - ignored character */
+    { "\xc2\x81", "", -1, -1},		/*  U+0081 -   - <control> - ignored character */
+    { "\xc2\x82", "", -1, -1},		/*  U+0082 -   - <control> - ignored character */
+    { "\xc2\x83", "", -1, -1},		/*  U+0083 -   - <control> - ignored character */
+    { "\xc2\x84", "", -1, -1},		/*  U+0084 -   - <control> - ignored character */
+    { "\xc2\x85", "", -1, -1},		/*  U+0085 -   - <control> - ignored character */
+    { "\xc2\x86", "", -1, -1},		/*  U+0086 -   - <control> - ignored character */
+    { "\xc2\x87", "", -1, -1},		/*  U+0087 -   - <control> - ignored character */
+    { "\xc2\x88", "", -1, -1},		/*  U+0088 -   - <control> - ignored character */
+    { "\xc2\x89", "", -1, -1},		/*  U+0089 -   - <control> - ignored character */
+    { "\xc2\x8a", "", -1, -1},		/*  U+008A -   - <control> - ignored character */
+    { "\xc2\x8b", "", -1, -1},		/*  U+008B -   - <control> - ignored character */
+    { "\xc2\x8c", "", -1, -1},		/*  U+008C -   - <control> - ignored character */
+    { "\xc2\x8d", "", -1, -1},		/*  U+008D -   - <control> - ignored character */
+    { "\xc2\x8e", "", -1, -1},		/*  U+008E -   - <control> - ignored character */
+    { "\xc2\x8f", "", -1, -1},		/*  U+008F -   - <control> - ignored character */
+    { "\xc2\x90", "", -1, -1},		/*  U+0090 -   - <control> - ignored character */
+    { "\xc2\x91", "", -1, -1},		/*  U+0091 -   - <control> - ignored character */
+    { "\xc2\x92", "", -1, -1},		/*  U+0092 -   - <control> - ignored character */
+    { "\xc2\x93", "", -1, -1},		/*  U+0093 -   - <control> - ignored character */
+    { "\xc2\x94", "", -1, -1},		/*  U+0094 -   - <control> - ignored character */
+    { "\xc2\x95", "", -1, -1},		/*  U+0095 -   - <control> - ignored character */
+    { "\xc2\x96", "", -1, -1},		/*  U+0096 -   - <control> - ignored character */
+    { "\xc2\x97", "", -1, -1},		/*  U+0097 -   - <control> - ignored character */
+    { "\xc2\x98", "", -1, -1},		/*  U+0098 -   - <control> - ignored character */
+    { "\xc2\x99", "", -1, -1},		/*  U+0099 -   - <control> - ignored character */
+    { "\xc2\x9a", "", -1, -1},		/*  U+009A -   - <control> - ignored character */
+    { "\xc2\x9b", "", -1, -1},		/*  U+009B -   - <control> - ignored character */
+    { "\xc2\x9c", "", -1, -1},		/*  U+009C -   - <control> - ignored character */
+    { "\xc2\x9d", "", -1, -1},		/*  U+009D -   - <control> - ignored character */
+    { "\xc2\x9e", "", -1, -1},		/*  U+009E -   - <control> - ignored character */
+    { "\xc2\x9f", "", -1, -1},		/*  U+009F -   - <control> - ignored character */
     { "\xc2\xa0", "_" , -1, -1},	/*  U+00A0 -   - NO-BREAK SPACE */
-    { "\xc2\xa1", "" , -1, -1},		/*  U+00A1 - ¡ - INVERTED EXCLAMATION MARK */
+    { "\xc2\xa1", "_", -1, -1},		/*  U+00A1 - ¡ - INVERTED EXCLAMATION MARK */
     { "\xc2\xa2", "c" , -1, -1},	/*  U+00A2 - ¢ - CENT SIGN */
     { "\xc2\xa3", "f" , -1, -1},	/*  U+00A3 - £ - POUND SIGN */
     { "\xc2\xa4", "o" , -1, -1},	/*  U+00A4 - ¤ - CURRENCY SIGN */
     { "\xc2\xa5", "y" , -1, -1},	/*  U+00A5 - ¥ - YEN SIGN */
-    { "\xc2\xa6", "" , -1, -1},		/*  U+00A6 - ¦ - BROKEN BAR */
+    { "\xc2\xa6", "_" , -1, -1},	/*  U+00A6 - ¦ - BROKEN BAR */
     { "\xc2\xa7", "s" , -1, -1},	/*  U+00A7 - § - SECTION SIGN */
-    { "\xc2\xa8", "" , -1, -1},		/*  U+00A8 - ¨ - DIAERESIS */
+    { "\xc2\xa8", "", -1, -1},		/*  U+00A8 - ¨ - DIAERESIS - ignored character */
     { "\xc2\xa9", "o" , -1, -1},	/*  U+00A9 - © - COPYRIGHT SIGN */
     { "\xc2\xaa", "o" , -1, -1},	/*  U+00AA - ª - FEMININE ORDINAL INDICATOR */
-    { "\xc2\xab", "" , -1, -1},		/*  U+00AB - « - LEFT-POINTING DOUBLE ANGLE QUOTATION MARK */
-    { "\xc2\xac", "-" , -1, -1},	/*  U+00AC - ¬ - NOT SIGN */
-    { "\xc2\xad", "-" , -1, -1},	/*  U+00AD - ­ - SOFT HYPHEN */
-    { "\xc2\xae", "" , -1, -1},		/*  U+00AE - ® - REGISTERED SIGN */
-    { "\xc2\xaf", "-" , -1, -1},	/*  U+00AF - ¯ - MACRON */
+    { "\xc2\xab", "_" , -1, -1},	/*  U+00AB - « - LEFT-POINTING DOUBLE ANGLE QUOTATION MARK */
+    { "\xc2\xac", "_" , -1, -1},	/*  U+00AC - ¬ - NOT SIGN */
+    { "\xc2\xad", "_" , -1, -1},	/*  U+00AD - ­ - SOFT HYPHEN */
+    { "\xc2\xae", "_" , -1, -1},	/*  U+00AE - ® - REGISTERED SIGN */
+    { "\xc2\xaf", "_" , -1, -1},	/*  U+00AF - ¯ - MACRON */
     { "\xc2\xb0", "o" , -1, -1},	/*  U+00B0 - ° - DEGREE SIGN */
     { "\xc2\xb1", "+" , -1, -1},	/*  U+00B1 - ± - PLUS-MINUS SIGN */
     { "\xc2\xb2", "2" , -1, -1},	/*  U+00B2 - ² - SUPERSCRIPT TWO */
     { "\xc2\xb3", "3" , -1, -1},	/*  U+00B3 - ³ - SUPERSCRIPT THREE */
-    { "\xc2\xb4", "" , -1, -1},		/*  U+00B4 - ´ - ACUTE ACCENT */
+    { "\xc2\xb4", "", -1, -1},		/*  U+00B4 - ´ - ACUTE ACCENT - ignored character */
     { "\xc2\xb5", "u" , -1, -1},	/*  U+00B5 - µ - MICRO SIGN */
     { "\xc2\xb6", "p" , -1, -1},	/*  U+00B6 - ¶ - PILCROW SIGN */
-    { "\xc2\xb7", "." , -1, -1},	/*  U+00B7 - · - MIDDLE DOT */
-    { "\xc2\xb8", "" , -1, -1},		/*  U+00B8 - ¸ - CEDILLA */
+    { "\xc2\xb7", "", -1, -1},		/*  U+00B7 - · - MIDDLE DOT - ignored character */
+    { "\xc2\xb8", "", -1, -1},		/*  U+00B8 - ¸ - CEDILLA - ignored character */
     { "\xc2\xb9", "1" , -1, -1},	/*  U+00B9 - ¹ - SUPERSCRIPT ONE */
     { "\xc2\xba", "o" , -1, -1},	/*  U+00BA - º - MASCULINE ORDINAL INDICATOR */
-    { "\xc2\xbb", "" , -1, -1},		/*  U+00BB - » - RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK */
+    { "\xc2\xbb", "_" , -1, -1},	/*  U+00BB - » - RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK */
     { "\xc2\xbc", "1" , -1, -1},	/*  U+00BC - ¼ - VULGAR FRACTION ONE QUARTER */
     { "\xc2\xbd", "2" , -1, -1},	/*  U+00BD - ½ - VULGAR FRACTION ONE HALF */
     { "\xc2\xbe", "3" , -1, -1},	/*  U+00BE - ¾ - VULGAR FRACTION THREE QUARTERS */
-    { "\xc2\xbf", "" , -1, -1},		/*  U+00BF - ¿ - INVERTED QUESTION MARK */
+    { "\xc2\xbf", "_" , -1, -1},	/*  U+00BF - ¿ - INVERTED QUESTION MARK */
     { "\xc3\x80", "a" , -1, -1},	/*  U+00C0 - À - LATIN CAPITAL LETTER A WITH GRAVE */
     { "\xc3\x81", "a" , -1, -1},	/*  U+00C1 - Á - LATIN CAPITAL LETTER A WITH ACUTE */
     { "\xc3\x82", "a" , -1, -1},	/*  U+00C2 - Â - LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
@@ -555,8 +556,8 @@ struct utf8_posix_map hmap[] =
     { "\xc6\xbf", "p" , -1, -1},	/*  U+01BF - ƿ - LATIN LETTER WYNN */
     { "\xc7\x80", "l" , -1, -1},	/*  U+01C0 - ǀ - LATIN LETTER DENTAL CLICK */
     { "\xc7\x81", "ll" , -1, -1},	/*  U+01C1 - ǁ - LATIN LETTER LATERAL CLICK */
-    { "\xc7\x82", "+" , -1, -1},	/*  U+01C2 - ǂ - LATIN LETTER ALVEOLAR CLICK */
-    { "\xc7\x83", "" , -1, -1},		/*  U+01C3 - ǃ - LATIN LETTER RETROFLEX CLICK */
+    { "\xc7\x82", "_" , -1, -1},	/*  U+01C2 - ǂ - LATIN LETTER ALVEOLAR CLICK */
+    { "\xc7\x83", "_" , -1, -1},	/*  U+01C3 - ǃ - LATIN LETTER RETROFLEX CLICK */
     { "\xc7\x84", "dz" , -1, -1},	/*  U+01C4 - Ǆ - LATIN CAPITAL LETTER DZ WITH CARON */
     { "\xc7\x85", "dz" , -1, -1},	/*  U+01C5 - ǅ - LATIN CAPITAL LETTER D WITH SMALL LETTER Z WITH CARON */
     { "\xc7\x86", "dz" , -1, -1},	/*  U+01C6 - ǆ - LATIN SMALL LETTER DZ WITH CARON */
@@ -765,9 +766,9 @@ struct utf8_posix_map hmap[] =
     { "\xca\x91", "z" , -1, -1},	/*  U+0291 - ʑ - LATIN SMALL LETTER Z WITH CURL */
     { "\xca\x92", "3" , -1, -1},	/*  U+0292 - ʒ - LATIN SMALL LETTER EZH */
     { "\xca\x93", "3" , -1, -1},	/*  U+0293 - ʓ - LATIN SMALL LETTER EZH WITH CURL */
-    { "\xca\x94", "" , -1, -1},		/*  U+0294 - ʔ - LATIN LETTER GLOTTAL STOP */
-    { "\xca\x95", "" , -1, -1},		/*  U+0295 - ʕ - LATIN LETTER PHARYNGEAL VOICED FRICATIVE */
-    { "\xca\x96", "" , -1, -1},		/*  U+0296 - ʖ - LATIN LETTER INVERTED GLOTTAL STOP */
+    { "\xca\x94", "_" , -1, -1},	/*  U+0294 - ʔ - LATIN LETTER GLOTTAL STOP */
+    { "\xca\x95", "_" , -1, -1},	/*  U+0295 - ʕ - LATIN LETTER PHARYNGEAL VOICED FRICATIVE */
+    { "\xca\x96", "_" , -1, -1},	/*  U+0296 - ʖ - LATIN LETTER INVERTED GLOTTAL STOP */
     { "\xca\x97", "c" , -1, -1},	/*  U+0297 - ʗ - LATIN LETTER STRETCHED C */
     { "\xca\x98", "0" , -1, -1},	/*  U+0298 - ʘ - LATIN LETTER BILABIAL CLICK */
     { "\xca\x99", "b" , -1, -1},	/*  U+0299 - ʙ - LATIN LETTER SMALL CAPITAL B */
@@ -778,8 +779,8 @@ struct utf8_posix_map hmap[] =
     { "\xca\x9e", "k" , -1, -1},	/*  U+029E - ʞ - LATIN SMALL LETTER TURNED K */
     { "\xca\x9f", "l" , -1, -1},	/*  U+029F - ʟ - LATIN LETTER SMALL CAPITAL L */
     { "\xca\xa0", "p" , -1, -1},	/*  U+02A0 - ʠ - LATIN SMALL LETTER Q WITH HOOK */
-    { "\xca\xa1", "" , -1, -1},		/*  U+02A1 - ʡ - LATIN LETTER GLOTTAL STOP WITH STROKE */
-    { "\xca\xa2", "" , -1, -1},		/*  U+02A2 - ʢ - LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE */
+    { "\xca\xa1", "_" , -1, -1},	/*  U+02A1 - ʡ - LATIN LETTER GLOTTAL STOP WITH STROKE */
+    { "\xca\xa2", "_" , -1, -1},	/*  U+02A2 - ʢ - LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE */
     { "\xca\xa3", "dz" , -1, -1},	/*  U+02A3 - ʣ - LATIN SMALL LETTER DZ DIGRAPH */
     { "\xca\xa4", "dz" , -1, -1},	/*  U+02A4 - ʤ - LATIN SMALL LETTER DEZH DIGRAPH */
     { "\xca\xa5", "dz" , -1, -1},	/*  U+02A5 - ʥ - LATIN SMALL LETTER DZ DIGRAPH WITH CURL */
@@ -793,228 +794,228 @@ struct utf8_posix_map hmap[] =
     { "\xca\xad", "nn" , -1, -1},	/*  U+02AD - ʭ - LATIN LETTER BIDENTAL PERCUSSIVE */
     { "\xca\xae", "y" , -1, -1},	/*  U+02AE - ʮ - LATIN SMALL LETTER TURNED H WITH FISHHOOK */
     { "\xca\xaf", "y" , -1, -1},	/*  U+02AF - ʯ - LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL */
-    { "\xca\xb0", "" , -1, -1},		/*  U+02B0 - ʰ - MODIFIER LETTER SMALL H */
-    { "\xca\xb1", "" , -1, -1},		/*  U+02B1 - ʱ - MODIFIER LETTER SMALL H WITH HOOK */
-    { "\xca\xb2", "" , -1, -1},		/*  U+02B2 - ʲ - MODIFIER LETTER SMALL J */
-    { "\xca\xb3", "" , -1, -1},		/*  U+02B3 - ʳ - MODIFIER LETTER SMALL R */
-    { "\xca\xb4", "" , -1, -1},		/*  U+02B4 - ʴ - MODIFIER LETTER SMALL TURNED R */
-    { "\xca\xb5", "" , -1, -1},		/*  U+02B5 - ʵ - MODIFIER LETTER SMALL TURNED R WITH HOOK */
-    { "\xca\xb6", "" , -1, -1},		/*  U+02B6 - ʶ - MODIFIER LETTER SMALL CAPITAL INVERTED R */
-    { "\xca\xb7", "" , -1, -1},		/*  U+02B7 - ʷ - MODIFIER LETTER SMALL W */
-    { "\xca\xb8", "" , -1, -1},		/*  U+02B8 - ʸ - MODIFIER LETTER SMALL Y */
-    { "\xca\xb9", "" , -1, -1},		/*  U+02B9 - ʹ - MODIFIER LETTER PRIME */
-    { "\xca\xba", "" , -1, -1},		/*  U+02BA - ʺ - MODIFIER LETTER DOUBLE PRIME */
-    { "\xca\xbb", "" , -1, -1},		/*  U+02BB - ʻ - MODIFIER LETTER TURNED COMMA */
-    { "\xca\xbc", "" , -1, -1},		/*  U+02BC - ʼ - MODIFIER LETTER APOSTROPHE */
-    { "\xca\xbd", "" , -1, -1},		/*  U+02BD - ʽ - MODIFIER LETTER REVERSED COMMA */
-    { "\xca\xbe", "" , -1, -1},		/*  U+02BE - ʾ - MODIFIER LETTER RIGHT HALF RING */
-    { "\xca\xbf", "" , -1, -1},		/*  U+02BF - ʿ - MODIFIER LETTER LEFT HALF RING */
-    { "\xcb\x80", "" , -1, -1},		/*  U+02C0 - ˀ - MODIFIER LETTER GLOTTAL STOP */
-    { "\xcb\x81", "" , -1, -1},		/*  U+02C1 - ˁ - MODIFIER LETTER REVERSED GLOTTAL STOP */
-    { "\xcb\x82", "" , -1, -1},		/*  U+02C2 - ˂ - MODIFIER LETTER LEFT ARROWHEAD */
-    { "\xcb\x83", "" , -1, -1},		/*  U+02C3 - ˃ - MODIFIER LETTER RIGHT ARROWHEAD */
-    { "\xcb\x84", "" , -1, -1},		/*  U+02C4 - ˄ - MODIFIER LETTER UP ARROWHEAD */
-    { "\xcb\x85", "" , -1, -1},		/*  U+02C5 - ˅ - MODIFIER LETTER DOWN ARROWHEAD */
-    { "\xcb\x86", "" , -1, -1},		/*  U+02C6 - ˆ - MODIFIER LETTER CIRCUMFLEX ACCENT */
-    { "\xcb\x87", "" , -1, -1},		/*  U+02C7 - ˇ - CARON */
-    { "\xcb\x88", "" , -1, -1},		/*  U+02C8 - ˈ - MODIFIER LETTER VERTICAL LINE */
-    { "\xcb\x89", "" , -1, -1},		/*  U+02C9 - ˉ - MODIFIER LETTER MACRON */
-    { "\xcb\x8a", "" , -1, -1},		/*  U+02CA - ˊ - MODIFIER LETTER ACUTE ACCENT */
-    { "\xcb\x8b", "" , -1, -1},		/*  U+02CB - ˋ - MODIFIER LETTER GRAVE ACCENT */
-    { "\xcb\x8c", "" , -1, -1},		/*  U+02CC - ˌ - MODIFIER LETTER LOW VERTICAL LINE */
-    { "\xcb\x8d", "" , -1, -1},		/*  U+02CD - ˍ - MODIFIER LETTER LOW MACRON */
-    { "\xcb\x8e", "" , -1, -1},		/*  U+02CE - ˎ - MODIFIER LETTER LOW GRAVE ACCENT */
-    { "\xcb\x8f", "" , -1, -1},		/*  U+02CF - ˏ - MODIFIER LETTER LOW ACUTE ACCENT */
-    { "\xcb\x90", "" , -1, -1},		/*  U+02D0 - ː - MODIFIER LETTER TRIANGULAR COLON */
-    { "\xcb\x91", "" , -1, -1},		/*  U+02D1 - ˑ - MODIFIER LETTER HALF TRIANGULAR COLON */
-    { "\xcb\x92", "" , -1, -1},		/*  U+02D2 - ˒ - MODIFIER LETTER CENTRED RIGHT HALF RING */
-    { "\xcb\x93", "" , -1, -1},		/*  U+02D3 - ˓ - MODIFIER LETTER CENTRED LEFT HALF RING */
-    { "\xcb\x94", "" , -1, -1},		/*  U+02D4 - ˔ - MODIFIER LETTER UP TACK */
-    { "\xcb\x95", "" , -1, -1},		/*  U+02D5 - ˕ - MODIFIER LETTER DOWN TACK */
-    { "\xcb\x96", "" , -1, -1},		/*  U+02D6 - ˖ - MODIFIER LETTER PLUS SIGN */
-    { "\xcb\x97", "" , -1, -1},		/*  U+02D7 - ˗ - MODIFIER LETTER MINUS SIGN */
-    { "\xcb\x98", "" , -1, -1},		/*  U+02D8 - ˘ - BREVE */
-    { "\xcb\x99", "" , -1, -1},		/*  U+02D9 - ˙ - DOT ABOVE */
-    { "\xcb\x9a", "" , -1, -1},		/*  U+02DA - ˚ - RING ABOVE */
-    { "\xcb\x9b", "" , -1, -1},		/*  U+02DB - ˛ - OGONEK */
-    { "\xcb\x9c", "" , -1, -1},		/*  U+02DC - ˜ - SMALL TILDE */
-    { "\xcb\x9d", "" , -1, -1},		/*  U+02DD - ˝ - DOUBLE ACUTE ACCENT */
-    { "\xcb\x9e", "" , -1, -1},		/*  U+02DE - ˞ - MODIFIER LETTER RHOTIC HOOK */
-    { "\xcb\x9f", "" , -1, -1},		/*  U+02DF - ˟ - MODIFIER LETTER CROSS ACCENT */
-    { "\xcb\xa0", "" , -1, -1},		/*  U+02E0 - ˠ - MODIFIER LETTER SMALL GAMMA */
-    { "\xcb\xa1", "" , -1, -1},		/*  U+02E1 - ˡ - MODIFIER LETTER SMALL L */
-    { "\xcb\xa2", "" , -1, -1},		/*  U+02E2 - ˢ - MODIFIER LETTER SMALL S */
-    { "\xcb\xa3", "" , -1, -1},		/*  U+02E3 - ˣ - MODIFIER LETTER SMALL X */
-    { "\xcb\xa4", "" , -1, -1},		/*  U+02E4 - ˤ - MODIFIER LETTER SMALL REVERSED GLOTTAL STOP */
-    { "\xcb\xa5", "" , -1, -1},		/*  U+02E5 - ˥ - MODIFIER LETTER EXTRA-HIGH TONE BAR */
-    { "\xcb\xa6", "" , -1, -1},		/*  U+02E6 - ˦ - MODIFIER LETTER HIGH TONE BAR */
-    { "\xcb\xa7", "" , -1, -1},		/*  U+02E7 - ˧ - MODIFIER LETTER MID TONE BAR */
-    { "\xcb\xa8", "" , -1, -1},		/*  U+02E8 - ˨ - MODIFIER LETTER LOW TONE BAR */
-    { "\xcb\xa9", "" , -1, -1},		/*  U+02E9 - ˩ - MODIFIER LETTER EXTRA-LOW TONE BAR */
-    { "\xcb\xaa", "" , -1, -1},		/*  U+02EA - ˪ - MODIFIER LETTER YIN DEPARTING TONE MARK */
-    { "\xcb\xab", "" , -1, -1},		/*  U+02EB - ˫ - MODIFIER LETTER YANG DEPARTING TONE MARK */
-    { "\xcb\xac", "" , -1, -1},		/*  U+02EC - ˬ - MODIFIER LETTER VOICING */
-    { "\xcb\xad", "" , -1, -1},		/*  U+02ED - ˭ - MODIFIER LETTER UNASPIRATED */
-    { "\xcb\xae", "" , -1, -1},		/*  U+02EE - ˮ - MODIFIER LETTER DOUBLE APOSTROPHE */
-    { "\xcb\xaf", "" , -1, -1},		/*  U+02EF - ˯ - MODIFIER LETTER LOW DOWN ARROWHEAD */
-    { "\xcb\xb0", "" , -1, -1},		/*  U+02F0 - ˰ - MODIFIER LETTER LOW UP ARROWHEAD */
-    { "\xcb\xb1", "" , -1, -1},		/*  U+02F1 - ˱ - MODIFIER LETTER LOW LEFT ARROWHEAD */
-    { "\xcb\xb2", "" , -1, -1},		/*  U+02F2 - ˲ - MODIFIER LETTER LOW RIGHT ARROWHEAD */
-    { "\xcb\xb3", "" , -1, -1},		/*  U+02F3 - ˳ - MODIFIER LETTER LOW RING */
-    { "\xcb\xb4", "" , -1, -1},		/*  U+02F4 - ˴ - MODIFIER LETTER MIDDLE GRAVE ACCENT */
-    { "\xcb\xb5", "" , -1, -1},		/*  U+02F5 - ˵ - MODIFIER LETTER MIDDLE DOUBLE GRAVE ACCENT */
-    { "\xcb\xb6", "" , -1, -1},		/*  U+02F6 - ˶ - MODIFIER LETTER MIDDLE DOUBLE ACUTE ACCENT */
-    { "\xcb\xb7", "" , -1, -1},		/*  U+02F7 - ˷ - MODIFIER LETTER LOW TILDE */
-    { "\xcb\xb8", "" , -1, -1},		/*  U+02F8 - ˸ - MODIFIER LETTER RAISED COLON */
-    { "\xcb\xb9", "" , -1, -1},		/*  U+02F9 - ˹ - MODIFIER LETTER BEGIN HIGH TONE */
-    { "\xcb\xba", "" , -1, -1},		/*  U+02FA - ˺ - MODIFIER LETTER END HIGH TONE */
-    { "\xcb\xbb", "" , -1, -1},		/*  U+02FB - ˻ - MODIFIER LETTER BEGIN LOW TONE */
-    { "\xcb\xbc", "" , -1, -1},		/*  U+02FC - ˼ - MODIFIER LETTER END LOW TONE */
-    { "\xcb\xbd", "" , -1, -1},		/*  U+02FD - ˽ - MODIFIER LETTER SHELF */
-    { "\xcb\xbe", "" , -1, -1},		/*  U+02FE - ˾ - MODIFIER LETTER OPEN SHELF */
-    { "\xcb\xbf", "" , -1, -1},		/*  U+02FF - ˿ - MODIFIER LETTER LOW LEFT ARROW */
-    { "\xcc\x80", "" , -1, -1},		/*  U+0300 - >̀ - COMBINING GRAVE ACCENT */
-    { "\xcc\x81", "" , -1, -1},		/*  U+0301 - >́ - COMBINING ACUTE ACCENT */
-    { "\xcc\x82", "" , -1, -1},		/*  U+0302 - >̂ - COMBINING CIRCUMFLEX ACCENT */
-    { "\xcc\x83", "" , -1, -1},		/*  U+0303 - >̃ - COMBINING TILDE */
-    { "\xcc\x84", "" , -1, -1},		/*  U+0304 - >̄ - COMBINING MACRON */
-    { "\xcc\x85", "" , -1, -1},		/*  U+0305 - >̅ - COMBINING OVERLINE */
-    { "\xcc\x86", "" , -1, -1},		/*  U+0306 - >̆ - COMBINING BREVE */
-    { "\xcc\x87", "" , -1, -1},		/*  U+0307 - >̇ - COMBINING DOT ABOVE */
-    { "\xcc\x88", "" , -1, -1},		/*  U+0308 - >̈ - COMBINING DIAERESIS */
-    { "\xcc\x89", "" , -1, -1},		/*  U+0309 - >̉ - COMBINING HOOK ABOVE */
-    { "\xcc\x8a", "" , -1, -1},		/*  U+030A - >̊ - COMBINING RING ABOVE */
-    { "\xcc\x8b", "" , -1, -1},		/*  U+030B - >̋ - COMBINING DOUBLE ACUTE ACCENT */
-    { "\xcc\x8c", "" , -1, -1},		/*  U+030C - >̌ - COMBINING CARON */
-    { "\xcc\x8d", "" , -1, -1},		/*  U+030D - >̍ - COMBINING VERTICAL LINE ABOVE */
-    { "\xcc\x8e", "" , -1, -1},		/*  U+030E - >̎ - COMBINING DOUBLE VERTICAL LINE ABOVE */
-    { "\xcc\x8f", "" , -1, -1},		/*  U+030F - >̏ - COMBINING DOUBLE GRAVE ACCENT */
-    { "\xcc\x90", "" , -1, -1},		/*  U+0310 - >̐ - COMBINING CANDRABINDU */
-    { "\xcc\x91", "" , -1, -1},		/*  U+0311 - >̑ - COMBINING INVERTED BREVE */
-    { "\xcc\x92", "" , -1, -1},		/*  U+0312 - >̒ - COMBINING TURNED COMMA ABOVE */
-    { "\xcc\x93", "" , -1, -1},		/*  U+0313 - >̓ - COMBINING COMMA ABOVE */
-    { "\xcc\x94", "" , -1, -1},		/*  U+0314 - >̔ - COMBINING REVERSED COMMA ABOVE */
-    { "\xcc\x95", "" , -1, -1},		/*  U+0315 - >̕ - COMBINING COMMA ABOVE RIGHT */
-    { "\xcc\x96", "" , -1, -1},		/*  U+0316 - >̖ - COMBINING GRAVE ACCENT BELOW */
-    { "\xcc\x97", "" , -1, -1},		/*  U+0317 - >̗ - COMBINING ACUTE ACCENT BELOW */
-    { "\xcc\x98", "" , -1, -1},		/*  U+0318 - >̘ - COMBINING LEFT TACK BELOW */
-    { "\xcc\x99", "" , -1, -1},		/*  U+0319 - >̙ - COMBINING RIGHT TACK BELOW */
-    { "\xcc\x9a", "" , -1, -1},		/*  U+031A - >̚ - COMBINING LEFT ANGLE ABOVE */
-    { "\xcc\x9b", "" , -1, -1},		/*  U+031B - >̛ - COMBINING HORN */
-    { "\xcc\x9c", "" , -1, -1},		/*  U+031C - >̜ - COMBINING LEFT HALF RING BELOW */
-    { "\xcc\x9d", "" , -1, -1},		/*  U+031D - >̝ - COMBINING UP TACK BELOW */
-    { "\xcc\x9e", "" , -1, -1},		/*  U+031E - >̞ - COMBINING DOWN TACK BELOW */
-    { "\xcc\x9f", "" , -1, -1},		/*  U+031F - >̟ - COMBINING PLUS SIGN BELOW */
-    { "\xcc\xa0", "" , -1, -1},		/*  U+0320 - >̠ - COMBINING MINUS SIGN BELOW */
-    { "\xcc\xa1", "" , -1, -1},		/*  U+0321 - >̡ - COMBINING PALATALIZED HOOK BELOW */
-    { "\xcc\xa2", "" , -1, -1},		/*  U+0322 - >̢ - COMBINING RETROFLEX HOOK BELOW */
-    { "\xcc\xa3", "" , -1, -1},		/*  U+0323 - >̣ - COMBINING DOT BELOW */
-    { "\xcc\xa4", "" , -1, -1},		/*  U+0324 - >̤ - COMBINING DIAERESIS BELOW */
-    { "\xcc\xa5", "" , -1, -1},		/*  U+0325 - >̥ - COMBINING RING BELOW */
-    { "\xcc\xa6", "" , -1, -1},		/*  U+0326 - >̦ - COMBINING COMMA BELOW */
-    { "\xcc\xa7", "" , -1, -1},		/*  U+0327 - >̧ - COMBINING CEDILLA */
-    { "\xcc\xa8", "" , -1, -1},		/*  U+0328 - >̨ - COMBINING OGONEK */
-    { "\xcc\xa9", "" , -1, -1},		/*  U+0329 - >̩ - COMBINING VERTICAL LINE BELOW */
-    { "\xcc\xaa", "" , -1, -1},		/*  U+032A - >̪ - COMBINING BRIDGE BELOW */
-    { "\xcc\xab", "" , -1, -1},		/*  U+032B - >̫ - COMBINING INVERTED DOUBLE ARCH BELOW */
-    { "\xcc\xac", "" , -1, -1},		/*  U+032C - >̬ - COMBINING CARON BELOW */
-    { "\xcc\xad", "" , -1, -1},		/*  U+032D - >̭ - COMBINING CIRCUMFLEX ACCENT BELOW */
-    { "\xcc\xae", "" , -1, -1},		/*  U+032E - >̮ - COMBINING BREVE BELOW */
-    { "\xcc\xaf", "" , -1, -1},		/*  U+032F - >̯ - COMBINING INVERTED BREVE BELOW */
-    { "\xcc\xb0", "" , -1, -1},		/*  U+0330 - >̰ - COMBINING TILDE BELOW */
-    { "\xcc\xb1", "" , -1, -1},		/*  U+0331 - >̱ - COMBINING MACRON BELOW */
-    { "\xcc\xb2", "" , -1, -1},		/*  U+0332 - >̲ - COMBINING LOW LINE */
-    { "\xcc\xb3", "" , -1, -1},		/*  U+0333 - >̳ - COMBINING DOUBLE LOW LINE */
-    { "\xcc\xb4", "" , -1, -1},		/*  U+0334 - >̴ - COMBINING TILDE OVERLAY */
-    { "\xcc\xb5", "" , -1, -1},		/*  U+0335 - >̵ - COMBINING SHORT STROKE OVERLAY */
-    { "\xcc\xb6", "" , -1, -1},		/*  U+0336 - >̶ - COMBINING LONG STROKE OVERLAY */
-    { "\xcc\xb7", "" , -1, -1},		/*  U+0337 - >̷ - COMBINING SHORT SOLIDUS OVERLAY */
-    { "\xcc\xb8", "" , -1, -1},		/*  U+0338 - ≯ - COMBINING LONG SOLIDUS OVERLAY */
-    { "\xcc\xb9", "" , -1, -1},		/*  U+0339 - >̹ - COMBINING RIGHT HALF RING BELOW */
-    { "\xcc\xba", "" , -1, -1},		/*  U+033A - >̺ - COMBINING INVERTED BRIDGE BELOW */
-    { "\xcc\xbb", "" , -1, -1},		/*  U+033B - >̻ - COMBINING SQUARE BELOW */
-    { "\xcc\xbc", "" , -1, -1},		/*  U+033C - >̼ - COMBINING SEAGULL BELOW */
-    { "\xcc\xbd", "" , -1, -1},		/*  U+033D - >̽ - COMBINING X ABOVE */
-    { "\xcc\xbe", "" , -1, -1},		/*  U+033E - >̾ - COMBINING VERTICAL TILDE */
-    { "\xcc\xbf", "" , -1, -1},		/*  U+033F - >̿ - COMBINING DOUBLE OVERLINE */
-    { "\xcd\x80", "" , -1, -1},		/*  U+0340 - >̀ - COMBINING GRAVE TONE MARK */
-    { "\xcd\x81", "" , -1, -1},		/*  U+0341 - >́ - COMBINING ACUTE TONE MARK */
-    { "\xcd\x82", "" , -1, -1},		/*  U+0342 - >͂ - COMBINING GREEK PERISPOMENI */
-    { "\xcd\x83", "" , -1, -1},		/*  U+0343 - >̓ - COMBINING GREEK KORONIS */
-    { "\xcd\x84", "" , -1, -1},		/*  U+0344 - >̈́ - COMBINING GREEK DIALYTIKA TONOS */
-    { "\xcd\x85", "" , -1, -1},		/*  U+0345 - >ͅ - COMBINING GREEK YPOGEGRAMMENI */
-    { "\xcd\x86", "" , -1, -1},		/*  U+0346 - >͆ - COMBINING BRIDGE ABOVE */
-    { "\xcd\x87", "" , -1, -1},		/*  U+0347 - >͇ - COMBINING EQUALS SIGN BELOW */
-    { "\xcd\x88", "" , -1, -1},		/*  U+0348 - >͈ - COMBINING DOUBLE VERTICAL LINE BELOW */
-    { "\xcd\x89", "" , -1, -1},		/*  U+0349 - >͉ - COMBINING LEFT ANGLE BELOW */
-    { "\xcd\x8a", "" , -1, -1},		/*  U+034A - >͊ - COMBINING NOT TILDE ABOVE */
-    { "\xcd\x8b", "" , -1, -1},		/*  U+034B - >͋ - COMBINING HOMOTHETIC ABOVE */
-    { "\xcd\x8c", "" , -1, -1},		/*  U+034C - >͌ - COMBINING ALMOST EQUAL TO ABOVE */
-    { "\xcd\x8d", "" , -1, -1},		/*  U+034D - >͍ - COMBINING LEFT RIGHT ARROW BELOW */
-    { "\xcd\x8e", "" , -1, -1},		/*  U+034E - >͎ - COMBINING UPWARDS ARROW BELOW */
-    { "\xcd\x8f", "" , -1, -1},		/*  U+034F - >͏ - COMBINING GRAPHEME JOINER */
-    { "\xcd\x90", "" , -1, -1},		/*  U+0350 - >͐ - COMBINING RIGHT ARROWHEAD ABOVE */
-    { "\xcd\x91", "" , -1, -1},		/*  U+0351 - >͑ - COMBINING LEFT HALF RING ABOVE */
-    { "\xcd\x92", "" , -1, -1},		/*  U+0352 - >͒ - COMBINING FERMATA */
-    { "\xcd\x93", "" , -1, -1},		/*  U+0353 - >͓ - COMBINING X BELOW */
-    { "\xcd\x94", "" , -1, -1},		/*  U+0354 - >͔ - COMBINING LEFT ARROWHEAD BELOW */
-    { "\xcd\x95", "" , -1, -1},		/*  U+0355 - >͕ - COMBINING RIGHT ARROWHEAD BELOW */
-    { "\xcd\x96", "" , -1, -1},		/*  U+0356 - >͖ - COMBINING RIGHT ARROWHEAD AND UP ARROWHEAD BELOW */
-    { "\xcd\x97", "" , -1, -1},		/*  U+0357 - >͗ - COMBINING RIGHT HALF RING ABOVE */
-    { "\xcd\x98", "" , -1, -1},		/*  U+0358 - >͘ - COMBINING DOT ABOVE RIGHT */
-    { "\xcd\x99", "" , -1, -1},		/*  U+0359 - >͙ - COMBINING ASTERISK BELOW */
-    { "\xcd\x9a", "" , -1, -1},		/*  U+035A - >͚ - COMBINING DOUBLE RING BELOW */
-    { "\xcd\x9b", "" , -1, -1},		/*  U+035B - >͛ - COMBINING ZIGZAG ABOVE */
-    { "\xcd\x9c", "" , -1, -1},		/*  U+035C - >͜ - COMBINING DOUBLE BREVE BELOW */
-    { "\xcd\x9d", "" , -1, -1},		/*  U+035D - >͝ - COMBINING DOUBLE BREVE */
-    { "\xcd\x9e", "" , -1, -1},		/*  U+035E - >͞ - COMBINING DOUBLE MACRON */
-    { "\xcd\x9f", "" , -1, -1},		/*  U+035F - >͟ - COMBINING DOUBLE MACRON BELOW */
-    { "\xcd\xa0", "" , -1, -1},		/*  U+0360 - >͠ - COMBINING DOUBLE TILDE */
-    { "\xcd\xa1", "" , -1, -1},		/*  U+0361 - >͡ - COMBINING DOUBLE INVERTED BREVE */
-    { "\xcd\xa2", "" , -1, -1},		/*  U+0362 - >͢ - COMBINING DOUBLE RIGHTWARDS ARROW BELOW */
-    { "\xcd\xa3", "" , -1, -1},		/*  U+0363 - >ͣ - COMBINING LATIN SMALL LETTER A */
-    { "\xcd\xa4", "" , -1, -1},		/*  U+0364 - >ͤ - COMBINING LATIN SMALL LETTER E */
-    { "\xcd\xa5", "" , -1, -1},		/*  U+0365 - >ͥ - COMBINING LATIN SMALL LETTER I */
-    { "\xcd\xa6", "" , -1, -1},		/*  U+0366 - >ͦ - COMBINING LATIN SMALL LETTER O */
-    { "\xcd\xa7", "" , -1, -1},		/*  U+0367 - >ͧ - COMBINING LATIN SMALL LETTER U */
-    { "\xcd\xa8", "" , -1, -1},		/*  U+0368 - >ͨ - COMBINING LATIN SMALL LETTER C */
-    { "\xcd\xa9", "" , -1, -1},		/*  U+0369 - >ͩ - COMBINING LATIN SMALL LETTER D */
-    { "\xcd\xaa", "" , -1, -1},		/*  U+036A - >ͪ - COMBINING LATIN SMALL LETTER H */
-    { "\xcd\xab", "" , -1, -1},		/*  U+036B - >ͫ - COMBINING LATIN SMALL LETTER M */
-    { "\xcd\xac", "" , -1, -1},		/*  U+036C - >ͬ - COMBINING LATIN SMALL LETTER R */
-    { "\xcd\xad", "" , -1, -1},		/*  U+036D - >ͭ - COMBINING LATIN SMALL LETTER T */
-    { "\xcd\xae", "" , -1, -1},		/*  U+036E - >ͮ - COMBINING LATIN SMALL LETTER V */
-    { "\xcd\xaf", "" , -1, -1},		/*  U+036F - >ͯ - COMBINING LATIN SMALL LETTER X */
+    { "\xca\xb0", "_" , -1, -1},	/*  U+02B0 - ʰ - MODIFIER LETTER SMALL H */
+    { "\xca\xb1", "_" , -1, -1},	/*  U+02B1 - ʱ - MODIFIER LETTER SMALL H WITH HOOK */
+    { "\xca\xb2", "_" , -1, -1},	/*  U+02B2 - ʲ - MODIFIER LETTER SMALL J */
+    { "\xca\xb3", "_" , -1, -1},	/*  U+02B3 - ʳ - MODIFIER LETTER SMALL R */
+    { "\xca\xb4", "_" , -1, -1},	/*  U+02B4 - ʴ - MODIFIER LETTER SMALL TURNED R */
+    { "\xca\xb5", "_" , -1, -1},	/*  U+02B5 - ʵ - MODIFIER LETTER SMALL TURNED R WITH HOOK */
+    { "\xca\xb6", "_" , -1, -1},	/*  U+02B6 - ʶ - MODIFIER LETTER SMALL CAPITAL INVERTED R */
+    { "\xca\xb7", "_" , -1, -1},	/*  U+02B7 - ʷ - MODIFIER LETTER SMALL W */
+    { "\xca\xb8", "_" , -1, -1},	/*  U+02B8 - ʸ - MODIFIER LETTER SMALL Y */
+    { "\xca\xb9", "_" , -1, -1},	/*  U+02B9 - ʹ - MODIFIER LETTER PRIME */
+    { "\xca\xba", "_" , -1, -1},	/*  U+02BA - ʺ - MODIFIER LETTER DOUBLE PRIME */
+    { "\xca\xbb", "_" , -1, -1},	/*  U+02BB - ʻ - MODIFIER LETTER TURNED COMMA */
+    { "\xca\xbc", "_" , -1, -1},	/*  U+02BC - ʼ - MODIFIER LETTER APOSTROPHE */
+    { "\xca\xbd", "_" , -1, -1},	/*  U+02BD - ʽ - MODIFIER LETTER REVERSED COMMA */
+    { "\xca\xbe", "_" , -1, -1},	/*  U+02BE - ʾ - MODIFIER LETTER RIGHT HALF RING */
+    { "\xca\xbf", "_" , -1, -1},	/*  U+02BF - ʿ - MODIFIER LETTER LEFT HALF RING */
+    { "\xcb\x80", "_" , -1, -1},	/*  U+02C0 - ˀ - MODIFIER LETTER GLOTTAL STOP */
+    { "\xcb\x81", "_" , -1, -1},	/*  U+02C1 - ˁ - MODIFIER LETTER REVERSED GLOTTAL STOP */
+    { "\xcb\x82", "_" , -1, -1},	/*  U+02C2 - ˂ - MODIFIER LETTER LEFT ARROWHEAD */
+    { "\xcb\x83", "_" , -1, -1},	/*  U+02C3 - ˃ - MODIFIER LETTER RIGHT ARROWHEAD */
+    { "\xcb\x84", "_" , -1, -1},	/*  U+02C4 - ˄ - MODIFIER LETTER UP ARROWHEAD */
+    { "\xcb\x85", "_" , -1, -1},	/*  U+02C5 - ˅ - MODIFIER LETTER DOWN ARROWHEAD */
+    { "\xcb\x86", "_" , -1, -1},	/*  U+02C6 - ˆ - MODIFIER LETTER CIRCUMFLEX ACCENT */
+    { "\xcb\x87", "_" , -1, -1},	/*  U+02C7 - ˇ - CARON */
+    { "\xcb\x88", "_" , -1, -1},	/*  U+02C8 - ˈ - MODIFIER LETTER VERTICAL LINE */
+    { "\xcb\x89", "_" , -1, -1},	/*  U+02C9 - ˉ - MODIFIER LETTER MACRON */
+    { "\xcb\x8a", "_" , -1, -1},	/*  U+02CA - ˊ - MODIFIER LETTER ACUTE ACCENT */
+    { "\xcb\x8b", "_" , -1, -1},	/*  U+02CB - ˋ - MODIFIER LETTER GRAVE ACCENT */
+    { "\xcb\x8c", "_" , -1, -1},	/*  U+02CC - ˌ - MODIFIER LETTER LOW VERTICAL LINE */
+    { "\xcb\x8d", "_" , -1, -1},	/*  U+02CD - ˍ - MODIFIER LETTER LOW MACRON */
+    { "\xcb\x8e", "_" , -1, -1},	/*  U+02CE - ˎ - MODIFIER LETTER LOW GRAVE ACCENT */
+    { "\xcb\x8f", "_" , -1, -1},	/*  U+02CF - ˏ - MODIFIER LETTER LOW ACUTE ACCENT */
+    { "\xcb\x90", "_" , -1, -1},	/*  U+02D0 - ː - MODIFIER LETTER TRIANGULAR COLON */
+    { "\xcb\x91", "_" , -1, -1},	/*  U+02D1 - ˑ - MODIFIER LETTER HALF TRIANGULAR COLON */
+    { "\xcb\x92", "_" , -1, -1},	/*  U+02D2 - ˒ - MODIFIER LETTER CENTRED RIGHT HALF RING */
+    { "\xcb\x93", "_" , -1, -1},	/*  U+02D3 - ˓ - MODIFIER LETTER CENTRED LEFT HALF RING */
+    { "\xcb\x94", "_" , -1, -1},	/*  U+02D4 - ˔ - MODIFIER LETTER UP TACK */
+    { "\xcb\x95", "_" , -1, -1},	/*  U+02D5 - ˕ - MODIFIER LETTER DOWN TACK */
+    { "\xcb\x96", "_" , -1, -1},	/*  U+02D6 - ˖ - MODIFIER LETTER PLUS SIGN */
+    { "\xcb\x97", "_" , -1, -1},	/*  U+02D7 - ˗ - MODIFIER LETTER MINUS SIGN */
+    { "\xcb\x98", "_" , -1, -1},	/*  U+02D8 - ˘ - BREVE */
+    { "\xcb\x99", "_" , -1, -1},	/*  U+02D9 - ˙ - DOT ABOVE */
+    { "\xcb\x9a", "_" , -1, -1},	/*  U+02DA - ˚ - RING ABOVE */
+    { "\xcb\x9b", "_" , -1, -1},	/*  U+02DB - ˛ - OGONEK */
+    { "\xcb\x9c", "_" , -1, -1},	/*  U+02DC - ˜ - SMALL TILDE */
+    { "\xcb\x9d", "_" , -1, -1},	/*  U+02DD - ˝ - DOUBLE ACUTE ACCENT */
+    { "\xcb\x9e", "_" , -1, -1},	/*  U+02DE - ˞ - MODIFIER LETTER RHOTIC HOOK */
+    { "\xcb\x9f", "_" , -1, -1},	/*  U+02DF - ˟ - MODIFIER LETTER CROSS ACCENT */
+    { "\xcb\xa0", "_" , -1, -1},	/*  U+02E0 - ˠ - MODIFIER LETTER SMALL GAMMA */
+    { "\xcb\xa1", "_" , -1, -1},	/*  U+02E1 - ˡ - MODIFIER LETTER SMALL L */
+    { "\xcb\xa2", "_" , -1, -1},	/*  U+02E2 - ˢ - MODIFIER LETTER SMALL S */
+    { "\xcb\xa3", "_" , -1, -1},	/*  U+02E3 - ˣ - MODIFIER LETTER SMALL X */
+    { "\xcb\xa4", "_" , -1, -1},	/*  U+02E4 - ˤ - MODIFIER LETTER SMALL REVERSED GLOTTAL STOP */
+    { "\xcb\xa5", "_" , -1, -1},	/*  U+02E5 - ˥ - MODIFIER LETTER EXTRA-HIGH TONE BAR */
+    { "\xcb\xa6", "_" , -1, -1},	/*  U+02E6 - ˦ - MODIFIER LETTER HIGH TONE BAR */
+    { "\xcb\xa7", "_" , -1, -1},	/*  U+02E7 - ˧ - MODIFIER LETTER MID TONE BAR */
+    { "\xcb\xa8", "_" , -1, -1},	/*  U+02E8 - ˨ - MODIFIER LETTER LOW TONE BAR */
+    { "\xcb\xa9", "_" , -1, -1},	/*  U+02E9 - ˩ - MODIFIER LETTER EXTRA-LOW TONE BAR */
+    { "\xcb\xaa", "_" , -1, -1},	/*  U+02EA - ˪ - MODIFIER LETTER YIN DEPARTING TONE MARK */
+    { "\xcb\xab", "_" , -1, -1},	/*  U+02EB - ˫ - MODIFIER LETTER YANG DEPARTING TONE MARK */
+    { "\xcb\xac", "_" , -1, -1},	/*  U+02EC - ˬ - MODIFIER LETTER VOICING */
+    { "\xcb\xad", "_" , -1, -1},	/*  U+02ED - ˭ - MODIFIER LETTER UNASPIRATED */
+    { "\xcb\xae", "_" , -1, -1},	/*  U+02EE - ˮ - MODIFIER LETTER DOUBLE APOSTROPHE */
+    { "\xcb\xaf", "_" , -1, -1},	/*  U+02EF - ˯ - MODIFIER LETTER LOW DOWN ARROWHEAD */
+    { "\xcb\xb0", "_" , -1, -1},	/*  U+02F0 - ˰ - MODIFIER LETTER LOW UP ARROWHEAD */
+    { "\xcb\xb1", "_" , -1, -1},	/*  U+02F1 - ˱ - MODIFIER LETTER LOW LEFT ARROWHEAD */
+    { "\xcb\xb2", "_" , -1, -1},	/*  U+02F2 - ˲ - MODIFIER LETTER LOW RIGHT ARROWHEAD */
+    { "\xcb\xb3", "_" , -1, -1},	/*  U+02F3 - ˳ - MODIFIER LETTER LOW RING */
+    { "\xcb\xb4", "_" , -1, -1},	/*  U+02F4 - ˴ - MODIFIER LETTER MIDDLE GRAVE ACCENT */
+    { "\xcb\xb5", "_" , -1, -1},	/*  U+02F5 - ˵ - MODIFIER LETTER MIDDLE DOUBLE GRAVE ACCENT */
+    { "\xcb\xb6", "_" , -1, -1},	/*  U+02F6 - ˶ - MODIFIER LETTER MIDDLE DOUBLE ACUTE ACCENT */
+    { "\xcb\xb7", "_" , -1, -1},	/*  U+02F7 - ˷ - MODIFIER LETTER LOW TILDE */
+    { "\xcb\xb8", "_" , -1, -1},	/*  U+02F8 - ˸ - MODIFIER LETTER RAISED COLON */
+    { "\xcb\xb9", "_" , -1, -1},	/*  U+02F9 - ˹ - MODIFIER LETTER BEGIN HIGH TONE */
+    { "\xcb\xba", "_" , -1, -1},	/*  U+02FA - ˺ - MODIFIER LETTER END HIGH TONE */
+    { "\xcb\xbb", "_" , -1, -1},	/*  U+02FB - ˻ - MODIFIER LETTER BEGIN LOW TONE */
+    { "\xcb\xbc", "_" , -1, -1},	/*  U+02FC - ˼ - MODIFIER LETTER END LOW TONE */
+    { "\xcb\xbd", "_" , -1, -1},	/*  U+02FD - ˽ - MODIFIER LETTER SHELF */
+    { "\xcb\xbe", "_" , -1, -1},	/*  U+02FE - ˾ - MODIFIER LETTER OPEN SHELF */
+    { "\xcb\xbf", "_" , -1, -1},	/*  U+02FF - ˿ - MODIFIER LETTER LOW LEFT ARROW */
+    { "\xcc\x80", "_" , -1, -1},	/*  U+0300 - >̀ - COMBINING GRAVE ACCENT */
+    { "\xcc\x81", "_" , -1, -1},	/*  U+0301 - >́ - COMBINING ACUTE ACCENT */
+    { "\xcc\x82", "_" , -1, -1},	/*  U+0302 - >̂ - COMBINING CIRCUMFLEX ACCENT */
+    { "\xcc\x83", "_" , -1, -1},	/*  U+0303 - >̃ - COMBINING TILDE */
+    { "\xcc\x84", "_" , -1, -1},	/*  U+0304 - >̄ - COMBINING MACRON */
+    { "\xcc\x85", "_" , -1, -1},	/*  U+0305 - >̅ - COMBINING OVERLINE */
+    { "\xcc\x86", "_" , -1, -1},	/*  U+0306 - >̆ - COMBINING BREVE */
+    { "\xcc\x87", "_" , -1, -1},	/*  U+0307 - >̇ - COMBINING DOT ABOVE */
+    { "\xcc\x88", "_" , -1, -1},	/*  U+0308 - >̈ - COMBINING DIAERESIS */
+    { "\xcc\x89", "_" , -1, -1},	/*  U+0309 - >̉ - COMBINING HOOK ABOVE */
+    { "\xcc\x8a", "_" , -1, -1},	/*  U+030A - >̊ - COMBINING RING ABOVE */
+    { "\xcc\x8b", "_" , -1, -1},	/*  U+030B - >̋ - COMBINING DOUBLE ACUTE ACCENT */
+    { "\xcc\x8c", "_" , -1, -1},	/*  U+030C - >̌ - COMBINING CARON */
+    { "\xcc\x8d", "_" , -1, -1},	/*  U+030D - >̍ - COMBINING VERTICAL LINE ABOVE */
+    { "\xcc\x8e", "_" , -1, -1},	/*  U+030E - >̎ - COMBINING DOUBLE VERTICAL LINE ABOVE */
+    { "\xcc\x8f", "_" , -1, -1},	/*  U+030F - >̏ - COMBINING DOUBLE GRAVE ACCENT */
+    { "\xcc\x90", "_" , -1, -1},	/*  U+0310 - >̐ - COMBINING CANDRABINDU */
+    { "\xcc\x91", "_" , -1, -1},	/*  U+0311 - >̑ - COMBINING INVERTED BREVE */
+    { "\xcc\x92", "_" , -1, -1},	/*  U+0312 - >̒ - COMBINING TURNED COMMA ABOVE */
+    { "\xcc\x93", "_" , -1, -1},	/*  U+0313 - >̓ - COMBINING COMMA ABOVE */
+    { "\xcc\x94", "_" , -1, -1},	/*  U+0314 - >̔ - COMBINING REVERSED COMMA ABOVE */
+    { "\xcc\x95", "_" , -1, -1},	/*  U+0315 - >̕ - COMBINING COMMA ABOVE RIGHT */
+    { "\xcc\x96", "_" , -1, -1},	/*  U+0316 - >̖ - COMBINING GRAVE ACCENT BELOW */
+    { "\xcc\x97", "_" , -1, -1},	/*  U+0317 - >̗ - COMBINING ACUTE ACCENT BELOW */
+    { "\xcc\x98", "_" , -1, -1},	/*  U+0318 - >̘ - COMBINING LEFT TACK BELOW */
+    { "\xcc\x99", "_" , -1, -1},	/*  U+0319 - >̙ - COMBINING RIGHT TACK BELOW */
+    { "\xcc\x9a", "_" , -1, -1},	/*  U+031A - >̚ - COMBINING LEFT ANGLE ABOVE */
+    { "\xcc\x9b", "_" , -1, -1},	/*  U+031B - >̛ - COMBINING HORN */
+    { "\xcc\x9c", "_" , -1, -1},	/*  U+031C - >̜ - COMBINING LEFT HALF RING BELOW */
+    { "\xcc\x9d", "_" , -1, -1},	/*  U+031D - >̝ - COMBINING UP TACK BELOW */
+    { "\xcc\x9e", "_" , -1, -1},	/*  U+031E - >̞ - COMBINING DOWN TACK BELOW */
+    { "\xcc\x9f", "_" , -1, -1},	/*  U+031F - >̟ - COMBINING PLUS SIGN BELOW */
+    { "\xcc\xa0", "_" , -1, -1},	/*  U+0320 - >̠ - COMBINING MINUS SIGN BELOW */
+    { "\xcc\xa1", "_" , -1, -1},	/*  U+0321 - >̡ - COMBINING PALATALIZED HOOK BELOW */
+    { "\xcc\xa2", "_" , -1, -1},	/*  U+0322 - >̢ - COMBINING RETROFLEX HOOK BELOW */
+    { "\xcc\xa3", "_" , -1, -1},	/*  U+0323 - >̣ - COMBINING DOT BELOW */
+    { "\xcc\xa4", "_" , -1, -1},	/*  U+0324 - >̤ - COMBINING DIAERESIS BELOW */
+    { "\xcc\xa5", "_" , -1, -1},	/*  U+0325 - >̥ - COMBINING RING BELOW */
+    { "\xcc\xa6", "_" , -1, -1},	/*  U+0326 - >̦ - COMBINING COMMA BELOW */
+    { "\xcc\xa7", "_" , -1, -1},	/*  U+0327 - >̧ - COMBINING CEDILLA */
+    { "\xcc\xa8", "_" , -1, -1},	/*  U+0328 - >̨ - COMBINING OGONEK */
+    { "\xcc\xa9", "_" , -1, -1},	/*  U+0329 - >̩ - COMBINING VERTICAL LINE BELOW */
+    { "\xcc\xaa", "_" , -1, -1},	/*  U+032A - >̪ - COMBINING BRIDGE BELOW */
+    { "\xcc\xab", "_" , -1, -1},	/*  U+032B - >̫ - COMBINING INVERTED DOUBLE ARCH BELOW */
+    { "\xcc\xac", "_" , -1, -1},	/*  U+032C - >̬ - COMBINING CARON BELOW */
+    { "\xcc\xad", "_" , -1, -1},	/*  U+032D - >̭ - COMBINING CIRCUMFLEX ACCENT BELOW */
+    { "\xcc\xae", "_" , -1, -1},	/*  U+032E - >̮ - COMBINING BREVE BELOW */
+    { "\xcc\xaf", "_" , -1, -1},	/*  U+032F - >̯ - COMBINING INVERTED BREVE BELOW */
+    { "\xcc\xb0", "_" , -1, -1},	/*  U+0330 - >̰ - COMBINING TILDE BELOW */
+    { "\xcc\xb1", "_" , -1, -1},	/*  U+0331 - >̱ - COMBINING MACRON BELOW */
+    { "\xcc\xb2", "_" , -1, -1},	/*  U+0332 - >̲ - COMBINING LOW LINE */
+    { "\xcc\xb3", "_" , -1, -1},	/*  U+0333 - >̳ - COMBINING DOUBLE LOW LINE */
+    { "\xcc\xb4", "_" , -1, -1},	/*  U+0334 - >̴ - COMBINING TILDE OVERLAY */
+    { "\xcc\xb5", "_" , -1, -1},	/*  U+0335 - >̵ - COMBINING SHORT STROKE OVERLAY */
+    { "\xcc\xb6", "_" , -1, -1},	/*  U+0336 - >̶ - COMBINING LONG STROKE OVERLAY */
+    { "\xcc\xb7", "_" , -1, -1},	/*  U+0337 - >̷ - COMBINING SHORT SOLIDUS OVERLAY */
+    { "\xcc\xb8", "_" , -1, -1},	/*  U+0338 - ≯ - COMBINING LONG SOLIDUS OVERLAY */
+    { "\xcc\xb9", "_" , -1, -1},	/*  U+0339 - >̹ - COMBINING RIGHT HALF RING BELOW */
+    { "\xcc\xba", "_" , -1, -1},	/*  U+033A - >̺ - COMBINING INVERTED BRIDGE BELOW */
+    { "\xcc\xbb", "_" , -1, -1},	/*  U+033B - >̻ - COMBINING SQUARE BELOW */
+    { "\xcc\xbc", "_" , -1, -1},	/*  U+033C - >̼ - COMBINING SEAGULL BELOW */
+    { "\xcc\xbd", "_" , -1, -1},	/*  U+033D - >̽ - COMBINING X ABOVE */
+    { "\xcc\xbe", "_" , -1, -1},	/*  U+033E - >̾ - COMBINING VERTICAL TILDE */
+    { "\xcc\xbf", "_" , -1, -1},	/*  U+033F - >̿ - COMBINING DOUBLE OVERLINE */
+    { "\xcd\x80", "_" , -1, -1},	/*  U+0340 - >̀ - COMBINING GRAVE TONE MARK */
+    { "\xcd\x81", "_" , -1, -1},	/*  U+0341 - >́ - COMBINING ACUTE TONE MARK */
+    { "\xcd\x82", "_" , -1, -1},	/*  U+0342 - >͂ - COMBINING GREEK PERISPOMENI */
+    { "\xcd\x83", "_" , -1, -1},	/*  U+0343 - >̓ - COMBINING GREEK KORONIS */
+    { "\xcd\x84", "_" , -1, -1},	/*  U+0344 - >̈́ - COMBINING GREEK DIALYTIKA TONOS */
+    { "\xcd\x85", "_" , -1, -1},	/*  U+0345 - >ͅ - COMBINING GREEK YPOGEGRAMMENI */
+    { "\xcd\x86", "_" , -1, -1},	/*  U+0346 - >͆ - COMBINING BRIDGE ABOVE */
+    { "\xcd\x87", "_" , -1, -1},	/*  U+0347 - >͇ - COMBINING EQUALS SIGN BELOW */
+    { "\xcd\x88", "_" , -1, -1},	/*  U+0348 - >͈ - COMBINING DOUBLE VERTICAL LINE BELOW */
+    { "\xcd\x89", "_" , -1, -1},	/*  U+0349 - >͉ - COMBINING LEFT ANGLE BELOW */
+    { "\xcd\x8a", "_" , -1, -1},	/*  U+034A - >͊ - COMBINING NOT TILDE ABOVE */
+    { "\xcd\x8b", "_" , -1, -1},	/*  U+034B - >͋ - COMBINING HOMOTHETIC ABOVE */
+    { "\xcd\x8c", "_" , -1, -1},	/*  U+034C - >͌ - COMBINING ALMOST EQUAL TO ABOVE */
+    { "\xcd\x8d", "_" , -1, -1},	/*  U+034D - >͍ - COMBINING LEFT RIGHT ARROW BELOW */
+    { "\xcd\x8e", "_" , -1, -1},	/*  U+034E - >͎ - COMBINING UPWARDS ARROW BELOW */
+    { "\xcd\x8f", "_" , -1, -1},	/*  U+034F - >͏ - COMBINING GRAPHEME JOINER */
+    { "\xcd\x90", "_" , -1, -1},	/*  U+0350 - >͐ - COMBINING RIGHT ARROWHEAD ABOVE */
+    { "\xcd\x91", "_" , -1, -1},	/*  U+0351 - >͑ - COMBINING LEFT HALF RING ABOVE */
+    { "\xcd\x92", "_" , -1, -1},	/*  U+0352 - >͒ - COMBINING FERMATA */
+    { "\xcd\x93", "_" , -1, -1},	/*  U+0353 - >͓ - COMBINING X BELOW */
+    { "\xcd\x94", "_" , -1, -1},	/*  U+0354 - >͔ - COMBINING LEFT ARROWHEAD BELOW */
+    { "\xcd\x95", "_" , -1, -1},	/*  U+0355 - >͕ - COMBINING RIGHT ARROWHEAD BELOW */
+    { "\xcd\x96", "_" , -1, -1},	/*  U+0356 - >͖ - COMBINING RIGHT ARROWHEAD AND UP ARROWHEAD BELOW */
+    { "\xcd\x97", "_" , -1, -1},	/*  U+0357 - >͗ - COMBINING RIGHT HALF RING ABOVE */
+    { "\xcd\x98", "_" , -1, -1},	/*  U+0358 - >͘ - COMBINING DOT ABOVE RIGHT */
+    { "\xcd\x99", "_" , -1, -1},	/*  U+0359 - >͙ - COMBINING ASTERISK BELOW */
+    { "\xcd\x9a", "_" , -1, -1},	/*  U+035A - >͚ - COMBINING DOUBLE RING BELOW */
+    { "\xcd\x9b", "_" , -1, -1},	/*  U+035B - >͛ - COMBINING ZIGZAG ABOVE */
+    { "\xcd\x9c", "_" , -1, -1},	/*  U+035C - >͜ - COMBINING DOUBLE BREVE BELOW */
+    { "\xcd\x9d", "_" , -1, -1},	/*  U+035D - >͝ - COMBINING DOUBLE BREVE */
+    { "\xcd\x9e", "_" , -1, -1},	/*  U+035E - >͞ - COMBINING DOUBLE MACRON */
+    { "\xcd\x9f", "_" , -1, -1},	/*  U+035F - >͟ - COMBINING DOUBLE MACRON BELOW */
+    { "\xcd\xa0", "_" , -1, -1},	/*  U+0360 - >͠ - COMBINING DOUBLE TILDE */
+    { "\xcd\xa1", "_" , -1, -1},	/*  U+0361 - >͡ - COMBINING DOUBLE INVERTED BREVE */
+    { "\xcd\xa2", "_" , -1, -1},	/*  U+0362 - >͢ - COMBINING DOUBLE RIGHTWARDS ARROW BELOW */
+    { "\xcd\xa3", "_" , -1, -1},	/*  U+0363 - >ͣ - COMBINING LATIN SMALL LETTER A */
+    { "\xcd\xa4", "_" , -1, -1},	/*  U+0364 - >ͤ - COMBINING LATIN SMALL LETTER E */
+    { "\xcd\xa5", "_" , -1, -1},	/*  U+0365 - >ͥ - COMBINING LATIN SMALL LETTER I */
+    { "\xcd\xa6", "_" , -1, -1},	/*  U+0366 - >ͦ - COMBINING LATIN SMALL LETTER O */
+    { "\xcd\xa7", "_" , -1, -1},	/*  U+0367 - >ͧ - COMBINING LATIN SMALL LETTER U */
+    { "\xcd\xa8", "_" , -1, -1},	/*  U+0368 - >ͨ - COMBINING LATIN SMALL LETTER C */
+    { "\xcd\xa9", "_" , -1, -1},	/*  U+0369 - >ͩ - COMBINING LATIN SMALL LETTER D */
+    { "\xcd\xaa", "_" , -1, -1},	/*  U+036A - >ͪ - COMBINING LATIN SMALL LETTER H */
+    { "\xcd\xab", "_" , -1, -1},	/*  U+036B - >ͫ - COMBINING LATIN SMALL LETTER M */
+    { "\xcd\xac", "_" , -1, -1},	/*  U+036C - >ͬ - COMBINING LATIN SMALL LETTER R */
+    { "\xcd\xad", "_" , -1, -1},	/*  U+036D - >ͭ - COMBINING LATIN SMALL LETTER T */
+    { "\xcd\xae", "_" , -1, -1},	/*  U+036E - >ͮ - COMBINING LATIN SMALL LETTER V */
+    { "\xcd\xaf", "_" , -1, -1},	/*  U+036F - >ͯ - COMBINING LATIN SMALL LETTER X */
     { "\xcd\xb0", "i" , -1, -1},	/*  U+0370 - Ͱ - GREEK CAPITAL LETTER HETA */
     { "\xcd\xb1", "i" , -1, -1},	/*  U+0371 - ͱ - GREEK SMALL LETTER HETA */
     { "\xcd\xb2", "t" , -1, -1},	/*  U+0372 - Ͳ - GREEK CAPITAL LETTER ARCHAIC SAMPI */
     { "\xcd\xb3", "r" , -1, -1},	/*  U+0373 - ͳ - GREEK SMALL LETTER ARCHAIC SAMPI */
-    { "\xcd\xb4", "" , -1, -1},		/*  U+0374 - ʹ - GREEK NUMERAL SIGN */
-    { "\xcd\xb5", "" , -1, -1},		/*  U+0375 - ͵ - GREEK LOWER NUMERAL SIGN */
+    { "\xcd\xb4", "_", -1, -1},		/*  U+0374 - ʹ - GREEK NUMERAL SIGN */
+    { "\xcd\xb5", "_", -1, -1},		/*  U+0375 - ͵ - GREEK LOWER NUMERAL SIGN */
     { "\xcd\xb6", "n" , -1, -1},	/*  U+0376 - Ͷ - GREEK CAPITAL LETTER PAMPHYLIAN DIGAMMA */
     { "\xcd\xb7", "n" , -1, -1},	/*  U+0377 - ͷ - GREEK SMALL LETTER PAMPHYLIAN DIGAMMA */
-    { "\xcd\xb8", "" , -1, -1},		/*  U+0378 - ͸ -  */
-    { "\xcd\xb9", "" , -1, -1},		/*  U+0379 - ͹ -  */
-    { "\xcd\xba", "." , -1, -1},	/*  U+037A - ͺ - GREEK YPOGEGRAMMENI */
+    { "\xcd\xb8", "_", -1, -1},		/*  U+0378 - ͸ -  */
+    { "\xcd\xb9", "_", -1, -1},		/*  U+0379 - ͹ -  */
+    { "\xcd\xba", "_", -1, -1},		/*  U+037A - ͺ - GREEK YPOGEGRAMMENI */
     { "\xcd\xbb", "c" , -1, -1},	/*  U+037B - ͻ - GREEK SMALL REVERSED LUNATE SIGMA SYMBOL */
     { "\xcd\xbc", "c" , -1, -1},	/*  U+037C - ͼ - GREEK SMALL DOTTED LUNATE SIGMA SYMBOL */
     { "\xcd\xbd", "c" , -1, -1},	/*  U+037D - ͽ - GREEK SMALL REVERSED DOTTED LUNATE SIGMA SYMBOL */
-    { "\xcd\xbe", "" , -1, -1},		/*  U+037E - ; - GREEK QUESTION MARK */
+    { "\xcd\xbe", "_", -1, -1},		/*  U+037E - ; - GREEK QUESTION MARK */
     { "\xcd\xbf", "j" , -1, -1},	/*  U+037F - Ϳ - GREEK CAPITAL LETTER YOT */
-    { "\xce\x80", "" , -1, -1},		/*  U+0380 - ΀ -  */
-    { "\xce\x81", "" , -1, -1},		/*  U+0381 - ΁ -  */
-    { "\xce\x82", "" , -1, -1},		/*  U+0382 - ΂ -  */
-    { "\xce\x83", "" , -1, -1},		/*  U+0383 - ΃ -  */
-    { "\xce\x84", "" , -1, -1},		/*  U+0384 - ΄ - GREEK TONOS */
-    { "\xce\x85", ".." , -1, -1},	/*  U+0385 - ΅ - GREEK DIALYTIKA TONOS */
+    { "\xce\x80", "_", -1, -1},		/*  U+0380 - ΀ -  */
+    { "\xce\x81", "_", -1, -1},		/*  U+0381 - ΁ -  */
+    { "\xce\x82", "_", -1, -1},		/*  U+0382 - ΂ -  */
+    { "\xce\x83", "_", -1, -1},		/*  U+0383 - ΃ -  */
+    { "\xce\x84", "_", -1, -1},		/*  U+0384 - ΄ - GREEK TONOS */
+    { "\xce\x85", "_" , -1, -1},	/*  U+0385 - ΅ - GREEK DIALYTIKA TONOS */
     { "\xce\x86", "a" , -1, -1},	/*  U+0386 - Ά - GREEK CAPITAL LETTER ALPHA WITH TONOS */
-    { "\xce\x87", "." , -1, -1},	/*  U+0387 - · - GREEK ANO TELEIA */
+    { "\xce\x87", "_", -1, -1},		/*  U+0387 - · - GREEK ANO TELEIA */
     { "\xce\x88", "e" , -1, -1},	/*  U+0388 - Έ - GREEK CAPITAL LETTER EPSILON WITH TONOS */
     { "\xce\x89", "h" , -1, -1},	/*  U+0389 - Ή - GREEK CAPITAL LETTER ETA WITH TONOS */
     { "\xce\x8a", "i" , -1, -1},	/*  U+038A - Ί - GREEK CAPITAL LETTER IOTA WITH TONOS */
-    { "\xce\x8b", "" , -1, -1},		/*  U+038B - ΋ -  */
+    { "\xce\x8b", "_", -1, -1},		/*  U+038B - ΋ -  */
     { "\xce\x8c", "o" , -1, -1},	/*  U+038C - Ό - GREEK CAPITAL LETTER OMICRON WITH TONOS */
-    { "\xce\x8d", "" , -1, -1},		/*  U+038D - ΍ -  */
+    { "\xce\x8d", "_", -1, -1},		/*  U+038D - ΍ -  */
     { "\xce\x8e", "y" , -1, -1},	/*  U+038E - Ύ - GREEK CAPITAL LETTER UPSILON WITH TONOS */
     { "\xce\x8f", "n" , -1, -1},	/*  U+038F - Ώ - GREEK CAPITAL LETTER OMEGA WITH TONOS */
     { "\xce\x90", "l" , -1, -1},	/*  U+0390 - ΐ - GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS */
@@ -1031,11 +1032,11 @@ struct utf8_posix_map hmap[] =
     { "\xce\x9b", "l" , -1, -1},	/*  U+039B - Λ - GREEK CAPITAL LETTER LAMBDA */
     { "\xce\x9c", "m" , -1, -1},	/*  U+039C - Μ - GREEK CAPITAL LETTER MU */
     { "\xce\x9d", "n" , -1, -1},	/*  U+039D - Ν - GREEK CAPITAL LETTER NU */
-    { "\xce\x9e", "-" , -1, -1},	/*  U+039E - Ξ - GREEK CAPITAL LETTER XI */
+    { "\xce\x9e", "_" , -1, -1},	/*  U+039E - Ξ - GREEK CAPITAL LETTER XI */
     { "\xce\x9f", "o" , -1, -1},	/*  U+039F - Ο - GREEK CAPITAL LETTER OMICRON */
     { "\xce\xa0", "p" , -1, -1},	/*  U+03A0 - Π - GREEK CAPITAL LETTER PI */
     { "\xce\xa1", "r" , -1, -1},	/*  U+03A1 - Ρ - GREEK CAPITAL LETTER RHO */
-    { "\xce\xa2", "" , -1, -1},		/*  U+03A2 - ΢ -  */
+    { "\xce\xa2", "_", -1, -1},		/*  U+03A2 - ΢ -  */
     { "\xce\xa3", "e" , -1, -1},	/*  U+03A3 - Σ - GREEK CAPITAL LETTER SIGMA */
     { "\xce\xa4", "t" , -1, -1},	/*  U+03A4 - Τ - GREEK CAPITAL LETTER TAU */
     { "\xce\xa5", "y" , -1, -1},	/*  U+03A5 - Υ - GREEK CAPITAL LETTER UPSILON */
@@ -1110,7 +1111,7 @@ struct utf8_posix_map hmap[] =
     { "\xcf\xaa", "x" , -1, -1},	/*  U+03EA - Ϫ - COPTIC CAPITAL LETTER GANGIA */
     { "\xcf\xab", "x" , -1, -1},	/*  U+03EB - ϫ - COPTIC SMALL LETTER GANGIA */
     { "\xcf\xac", "o" , -1, -1},	/*  U+03EC - Ϭ - COPTIC CAPITAL LETTER SHIMA */
-    { "\xcf\xad", "." , -1, -1},	/*  U+03ED - ϭ - COPTIC SMALL LETTER SHIMA */
+    { "\xcf\xad", "_", -1, -1},		/*  U+03ED - ϭ - COPTIC SMALL LETTER SHIMA */
     { "\xcf\xae", "t" , -1, -1},	/*  U+03EE - Ϯ - COPTIC CAPITAL LETTER DEI */
     { "\xcf\xaf", "t" , -1, -1},	/*  U+03EF - ϯ - COPTIC SMALL LETTER DEI */
     { "\xcf\xb0", "x" , -1, -1},	/*  U+03F0 - ϰ - GREEK KAPPA SYMBOL */
@@ -1253,20 +1254,20 @@ struct utf8_posix_map hmap[] =
     { "\xd1\xb9", "oy" , -1, -1},	/*  U+0479 - ѹ - CYRILLIC SMALL LETTER UK */
     { "\xd1\xba", "o" , -1, -1},	/*  U+047A - Ѻ - CYRILLIC CAPITAL LETTER ROUND OMEGA */
     { "\xd1\xbb", "o" , -1, -1},	/*  U+047B - ѻ - CYRILLIC SMALL LETTER ROUND OMEGA */
-    { "\xd1\xbc", "" , -1, -1},		/*  U+047C - Ѽ - CYRILLIC CAPITAL LETTER OMEGA WITH TITLO */
-    { "\xd1\xbd", "" , -1, -1},		/*  U+047D - ѽ - CYRILLIC SMALL LETTER OMEGA WITH TITLO */
-    { "\xd1\xbe", "" , -1, -1},		/*  U+047E - Ѿ - CYRILLIC CAPITAL LETTER OT */
+    { "\xd1\xbc", "_", -1, -1},		/*  U+047C - Ѽ - CYRILLIC CAPITAL LETTER OMEGA WITH TITLO */
+    { "\xd1\xbd", "_", -1, -1},		/*  U+047D - ѽ - CYRILLIC SMALL LETTER OMEGA WITH TITLO */
+    { "\xd1\xbe", "_", -1, -1},		/*  U+047E - Ѿ - CYRILLIC CAPITAL LETTER OT */
     { "\xd1\xbf", "w" , -1, -1},	/*  U+047F - ѿ - CYRILLIC SMALL LETTER OT */
     { "\xd2\x80", "c" , -1, -1},	/*  U+0480 - Ҁ - CYRILLIC CAPITAL LETTER KOPPA */
     { "\xd2\x81", "c" , -1, -1},	/*  U+0481 - ҁ - CYRILLIC SMALL LETTER KOPPA */
     { "\xd2\x82", "+" , -1, -1},	/*  U+0482 - ҂ - CYRILLIC THOUSANDS SIGN */
-    { "\xd2\x83", "" , -1, -1},		/*  U+0483 - >҃ - COMBINING CYRILLIC TITLO */
-    { "\xd2\x84", "" , -1, -1},		/*  U+0484 - >҄ - COMBINING CYRILLIC PALATALIZATION */
+    { "\xd2\x83", "_", -1, -1},		/*  U+0483 - >҃ - COMBINING CYRILLIC TITLO */
+    { "\xd2\x84", "_", -1, -1},		/*  U+0484 - >҄ - COMBINING CYRILLIC PALATALIZATION */
     { "\xd2\x85", "t" , -1, -1},	/*  U+0485 - >҅ - COMBINING CYRILLIC DASIA PNEUMATA */
     { "\xd2\x86", "t" , -1, -1},	/*  U+0486 - >҆ - COMBINING CYRILLIC PSILI PNEUMATA */
-    { "\xd2\x87", "" , -1, -1},		/*  U+0487 - >҇ - COMBINING CYRILLIC POKRYTIE */
-    { "\xd2\x88", "" , -1, -1},		/*  U+0488 - >҈ - COMBINING CYRILLIC HUNDRED THOUSANDS SIGN */
-    { "\xd2\x89", "" , -1, -1},		/*  U+0489 - >҉ - COMBINING CYRILLIC MILLIONS SIGN */
+    { "\xd2\x87", "_", -1, -1},		/*  U+0487 - >҇ - COMBINING CYRILLIC POKRYTIE */
+    { "\xd2\x88", "_", -1, -1},		/*  U+0488 - >҈ - COMBINING CYRILLIC HUNDRED THOUSANDS SIGN */
+    { "\xd2\x89", "_", -1, -1},		/*  U+0489 - >҉ - COMBINING CYRILLIC MILLIONS SIGN */
     { "\xd2\x8a", "n" , -1, -1},	/*  U+048A - Ҋ - CYRILLIC CAPITAL LETTER SHORT I WITH TAIL */
     { "\xd2\x8b", "n" , -1, -1},	/*  U+048B - ҋ - CYRILLIC SMALL LETTER SHORT I WITH TAIL */
     { "\xd2\x8c", "b" , -1, -1},	/*  U+048C - Ҍ - CYRILLIC CAPITAL LETTER SEMISOFT SIGN */
@@ -1433,7 +1434,7 @@ struct utf8_posix_map hmap[] =
     { "\xd4\xad", "ya" , -1, -1},	/*  U+052D - ԭ - CYRILLIC SMALL LETTER DCHE */
     { "\xd4\xae", "n" , -1, -1},	/*  U+052E - Ԯ - CYRILLIC CAPITAL LETTER EL WITH DESCENDER */
     { "\xd4\xaf", "n" , -1, -1},	/*  U+052F - ԯ - CYRILLIC SMALL LETTER EL WITH DESCENDER */
-    { "\xd4\xb0", "" , -1, -1},		/*  U+0530 - ԰ -  */
+    { "\xd4\xb0", "_", -1, -1},		/*  U+0530 - ԰ -  */
     { "\xd4\xb1", "u" , -1, -1},	/*  U+0531 - Ա - ARMENIAN CAPITAL LETTER AYB */
     { "\xd4\xb2", "f" , -1, -1},	/*  U+0532 - Բ - ARMENIAN CAPITAL LETTER BEN */
     { "\xd4\xb3", "q" , -1, -1},	/*  U+0533 - Գ - ARMENIAN CAPITAL LETTER GIM */
@@ -1472,16 +1473,16 @@ struct utf8_posix_map hmap[] =
     { "\xd5\x94", "p" , -1, -1},	/*  U+0554 - Ք - ARMENIAN CAPITAL LETTER KEH */
     { "\xd5\x95", "o" , -1, -1},	/*  U+0555 - Օ - ARMENIAN CAPITAL LETTER OH */
     { "\xd5\x96", "s" , -1, -1},	/*  U+0556 - Ֆ - ARMENIAN CAPITAL LETTER FEH */
-    { "\xd5\x97", "" , -1, -1},		/*  U+0557 - ՗ -  */
-    { "\xd5\x98", "" , -1, -1},		/*  U+0558 - ՘ -  */
-    { "\xd5\x99", "" , -1, -1},		/*  U+0559 - ՙ - ARMENIAN MODIFIER LETTER LEFT HALF RING */
-    { "\xd5\x9a", "" , -1, -1},		/*  U+055A - ՚ - ARMENIAN APOSTROPHE */
-    { "\xd5\x9b", "" , -1, -1},		/*  U+055B - ՛ - ARMENIAN EMPHASIS MARK */
-    { "\xd5\x9c", "" , -1, -1},		/*  U+055C - ՜ - ARMENIAN EXCLAMATION MARK */
-    { "\xd5\x9d", "" , -1, -1},		/*  U+055D - ՝ - ARMENIAN COMMA */
-    { "\xd5\x9e", "" , -1, -1},		/*  U+055E - ՞ - ARMENIAN QUESTION MARK */
-    { "\xd5\x9f", "" , -1, -1},		/*  U+055F - ՟ - ARMENIAN ABBREVIATION MARK */
-    { "\xd5\xa0", "" , -1, -1},		/*  U+0560 - ՠ - ARMENIAN SMALL LETTER TURNED AYB */
+    { "\xd5\x97", "_", -1, -1},		/*  U+0557 - ՗ -  */
+    { "\xd5\x98", "_", -1, -1},		/*  U+0558 - ՘ -  */
+    { "\xd5\x99", "_", -1, -1},		/*  U+0559 - ՙ - ARMENIAN MODIFIER LETTER LEFT HALF RING */
+    { "\xd5\x9a", "_", -1, -1},		/*  U+055A - ՚ - ARMENIAN APOSTROPHE */
+    { "\xd5\x9b", "_", -1, -1},		/*  U+055B - ՛ - ARMENIAN EMPHASIS MARK */
+    { "\xd5\x9c", "_", -1, -1},		/*  U+055C - ՜ - ARMENIAN EXCLAMATION MARK */
+    { "\xd5\x9d", "_", -1, -1},		/*  U+055D - ՝ - ARMENIAN COMMA */
+    { "\xd5\x9e", "_", -1, -1},		/*  U+055E - ՞ - ARMENIAN QUESTION MARK */
+    { "\xd5\x9f", "_", -1, -1},		/*  U+055F - ՟ - ARMENIAN ABBREVIATION MARK */
+    { "\xd5\xa0", "_", -1, -1},		/*  U+0560 - ՠ - ARMENIAN SMALL LETTER TURNED AYB */
     { "\xd5\xa1", "w" , -1, -1},	/*  U+0561 - ա - ARMENIAN SMALL LETTER AYB */
     { "\xd5\xa2", "r" , -1, -1},	/*  U+0562 - բ - ARMENIAN SMALL LETTER BEN */
     { "\xd5\xa3", "q" , -1, -1},	/*  U+0563 - գ - ARMENIAN SMALL LETTER GIM */
@@ -1506,7 +1507,7 @@ struct utf8_posix_map hmap[] =
     { "\xd5\xb6", "u" , -1, -1},	/*  U+0576 - ն - ARMENIAN SMALL LETTER NOW */
     { "\xd5\xb7", "2" , -1, -1},	/*  U+0577 - շ - ARMENIAN SMALL LETTER SHA */
     { "\xd5\xb8", "n" , -1, -1},	/*  U+0578 - ո - ARMENIAN SMALL LETTER VO */
-    { "\xd5\xb9", "" , -1, -1},		/*  U+0579 - չ - ARMENIAN SMALL LETTER CHA */
+    { "\xd5\xb9", "_", -1, -1},		/*  U+0579 - չ - ARMENIAN SMALL LETTER CHA */
     { "\xd5\xba", "w" , -1, -1},	/*  U+057A - պ - ARMENIAN SMALL LETTER PEH */
     { "\xd5\xbb", "q" , -1, -1},	/*  U+057B - ջ - ARMENIAN SMALL LETTER JHEH */
     { "\xd5\xbc", "n" , -1, -1},	/*  U+057C - ռ - ARMENIAN SMALL LETTER RA */
@@ -1521,14 +1522,14 @@ struct utf8_posix_map hmap[] =
     { "\xd6\x85", "o" , -1, -1},	/*  U+0585 - օ - ARMENIAN SMALL LETTER OH */
     { "\xd6\x86", "s" , -1, -1},	/*  U+0586 - ֆ - ARMENIAN SMALL LETTER FEH */
     { "\xd6\x87", "u" , -1, -1},	/*  U+0587 - և - ARMENIAN SMALL LIGATURE ECH YIWN */
-    { "\xd6\x88", "" , -1, -1},		/*  U+0588 - ֈ - ARMENIAN SMALL LETTER YI WITH STROKE */
-    { "\xd6\x89", "" , -1, -1},		/*  U+0589 - ։ - ARMENIAN FULL STOP */
-    { "\xd6\x8a", "" , -1, -1},		/*  U+058A - ֊ - ARMENIAN HYPHEN */
-    { "\xd6\x8b", "" , -1, -1},		/*  U+058B - ֋ -  */
-    { "\xd6\x8c", "" , -1, -1},		/*  U+058C - ֌ -  */
-    { "\xd6\x8d", "" , -1, -1},		/*  U+058D - ֍ - RIGHT-FACING ARMENIAN ETERNITY SIGN */
-    { "\xd6\x8e", "" , -1, -1},		/*  U+058E - ֎ - LEFT-FACING ARMENIAN ETERNITY SIGN */
-    { "\xd6\x8f", "" , -1, -1},		/*  U+058F - ֏ - ARMENIAN DRAM SIGN */
+    { "\xd6\x88", "_", -1, -1},		/*  U+0588 - ֈ - ARMENIAN SMALL LETTER YI WITH STROKE */
+    { "\xd6\x89", "_", -1, -1},		/*  U+0589 - ։ - ARMENIAN FULL STOP */
+    { "\xd6\x8a", "_", -1, -1},		/*  U+058A - ֊ - ARMENIAN HYPHEN */
+    { "\xd6\x8b", "_", -1, -1},		/*  U+058B - ֋ -  */
+    { "\xd6\x8c", "_", -1, -1},		/*  U+058C - ֌ -  */
+    { "\xd6\x8d", "_", -1, -1},		/*  U+058D - ֍ - RIGHT-FACING ARMENIAN ETERNITY SIGN */
+    { "\xd6\x8e", "_", -1, -1},		/*  U+058E - ֎ - LEFT-FACING ARMENIAN ETERNITY SIGN */
+    { "\xd6\x8f", "_", -1, -1},		/*  U+058F - ֏ - ARMENIAN DRAM SIGN */
 
     /* more UTF-8 table entries can be added here */
 
@@ -1656,6 +1657,7 @@ default_handle(char const *name)
     size_t len = 0;		/* string length of computed default handle */
     int cret;			/* gettimeofday() or snprintf() return value */
     char *pret;			/* strncpy() return */
+    bool prev_under = false;	/* previous character maps to _ (underscore) */
     size_t i;
 
     /*
@@ -1708,6 +1710,36 @@ default_handle(char const *name)
 		continue;
 	    }
 
+	    /*
+	     * NOTE: hmap[] table match found for the i-th character
+	     */
+
+	    /* case: previous character mapped to _ (underscore) */
+	    if (prev_under == true) {
+
+		/* ignore _ (underscore) if previous character mapped to _ (underscore) */
+		if (name[i] == '_') {
+		    continue;
+		}
+
+		/* ignore if character maps to _ (underscore) if previous character also mapped to _ (underscore) */
+		if (strcmp(m->posix_str, "_") == 0) {
+		    continue;
+		}
+	    }
+
+	    /* case: 1st character map */
+	    if (def_len == 0) {
+
+		/* ignore if 1st mapped character is not an ASCII [0-9a-z] character */
+		if (!isascii(m->posix_str[0])) {
+		    continue;
+		}
+		if (!islower(m->posix_str[0]) && !isdigit(m->posix_str[0])) {
+		    continue;
+		}
+	    }
+
 	    /* match found: add to default handle length */
 	    def_len += (uintmax_t)m->posix_str_len;
 
@@ -1715,6 +1747,9 @@ default_handle(char const *name)
 	     * advance string position
 	     */
 	    i += (uintmax_t)m->utf8_str_len;
+
+	    /* if this character maps to _ (underscore), note this for the next mapper character */
+	    prev_under = (strcmp(m->posix_str, "_") == 0) ? true : false;
 
 	    /* stop hmap[] scan on this match */
 	    break;
@@ -1834,6 +1869,7 @@ default_handle(char const *name)
 	 */
 	cur_len = 0;
 	i = 0;
+	prev_under = false;
 	while (i < namelen) {
 
 	    /*
@@ -1862,9 +1898,39 @@ default_handle(char const *name)
 		}
 
 		/*
-		 * match found: copy translated chars to handle, if there are any
+		 * NOTE: hmap[] table match found for the i-th character
+		 */
+
+		/* case: previous character mapped to _ (underscore) */
+		if (prev_under == true) {
+
+		    /* ignore _ (underscore) if previous character mapped to _ (underscore) */
+		    if (name[i] == '_') {
+			continue;
+		    }
+
+		    /* ignore if character maps to _ (underscore) if previous character also mapped to _ (underscore) */
+		    if (strcmp(m->posix_str, "_") == 0) {
+			continue;
+		    }
+		}
+
+		/*
+		 * copy translated chars to handle, if there are any
 		 */
 		if (m->posix_str_len > 0) {
+
+		    /* case: 1st character map */
+		    if (cur_len == 0) {
+
+			/* ignore if 1st mapped character is not an ASCII [0-9a-z] character */
+			if (!isascii(m->posix_str[0])) {
+			    continue;
+			}
+			if (!islower(m->posix_str[0]) && !isdigit(m->posix_str[0])) {
+			    continue;
+			}
+		    }
 
 		    /*
 		     * firewall - do not copy beyond end of allocated buffer
@@ -1889,6 +1955,9 @@ default_handle(char const *name)
 		     * advance our copy position
 		     */
 		    cur_len += (uintmax_t)m->posix_str_len;
+
+		    /* if this character maps to _ (underscore), note this for the next mapper character */
+		    prev_under = (strcmp(m->posix_str, "_") == 0) ? true : false;
 		}
 
 		/*
