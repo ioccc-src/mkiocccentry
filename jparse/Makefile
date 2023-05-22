@@ -880,7 +880,7 @@ clobber: legacy_clobber clean
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	${RM} -f ${TARGETS}
-	${RM} -f jparse.output lex.yy.c jparse.c
+	${RM} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo

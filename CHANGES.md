@@ -6,6 +6,10 @@ Added [remarks.example.md](remarks.example.md) which has instructions for
 writing `remarks.md` files in the same vein as the
 [Makefile.example](Makefile.example).
 
+Fix `bug_report.sh` and `make clobber` (in `jparse/`) to remove bogus file
+`jparse/lex.jparse_.c` after completion of one of the steps.
+
+
 ## Release 1.0.2 2023-04-14
 
 Fix mkiocccentry to write past winner and author handle to the answer file. It

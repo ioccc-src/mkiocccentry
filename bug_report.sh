@@ -90,7 +90,7 @@ export SUBDIRS="
     ./test_ioccc
     "
 
-export BUG_REPORT_VERSION="1.0 2023-02-04"
+export BUG_REPORT_VERSION="1.0.1 2023-05-22"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1761,7 +1761,7 @@ fi
 
 # final cleanup
 #
-rm -f jparse/lex.yy.c
+rm -f jparse/lex.yy.c jparse/lex.jparse_.c
 
 # All Done!!! -- Jessica Noll, Age 2
 #
