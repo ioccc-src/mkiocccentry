@@ -5,11 +5,12 @@ guide](https://www.markdownguide.org/basic-syntax/).
 
 ## Sections and subsections
 
-For sections you should use heading levels i.e. lines that start with `#`
+For section titles you should use heading levels i.e. lines that start with `#`
 followed by a space. Please start out at three (`###`). For subsections increase
 the number of `#`s up to a maximum of six.
 
-You may go down for new sections, increasing again for subsections.
+For each new section you can go down to three `#`s again, increasing for each
+subsection of that section.
 
 You need not start your remarks with a heading but you may if you wish.
 
