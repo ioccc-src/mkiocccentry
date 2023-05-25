@@ -34,6 +34,7 @@ jparse.tab.c
 jparse.tab.h
 jparse.xml
 jparse/jparse
+jparse/jprint
 jparse/lex.yy.c
 jparse_test.log
 jsemtblgen
