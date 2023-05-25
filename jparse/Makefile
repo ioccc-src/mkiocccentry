@@ -164,10 +164,10 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jprint.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
-       jparse.tab.ref.h
+       jparse.tab.ref.h jprint.h
 
 # source files that do not conform to strict picky standards
 #
@@ -362,7 +362,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jprint
 
 # include files NOT to removed by clobber
 #
@@ -455,6 +455,13 @@ jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
+
+jprint.o: jprint.c
+	${CC} ${CFLAGS} jprint.c -c
+
+jprint: jprint.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+	${CC} ${CFLAGS} $^ -lm -o $@
+
 
 # How to create jparse.tab.c and jparse.tab.h
 #
@@ -948,6 +955,8 @@ jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
     json_util.h util.h
 jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
     jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
+jprint.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jprint.c jprint.h \
+    util.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
     jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
     json_util.h util.h
