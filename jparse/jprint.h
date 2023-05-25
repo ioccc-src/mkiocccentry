@@ -1,5 +1,5 @@
 /*
- * jprint - JSON parser printer
+ * jprint - JSON printer
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -8,12 +8,10 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * The JSON parser was co-developed in 2022 by:
- *
- *	Cody Boone Ferguson
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * The JSON parser was co-developed in 2022 by Cody and Landon.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -26,9 +24,14 @@
 #    define  INCLUDE_JPARSE_H
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "jparse.h"
 
 #include "util.h"
+
+#include "json_util.h"
+
+#define JPRINT_VERSION "0.0.0 2023-05-25"		/* format: major.minor YYYY-MM-DD */
 
 #endif
