@@ -539,7 +539,10 @@ mkchk_sem: chk_sem_info.c chk_sem_info.h chk_sem_auth.c chk_sem_auth.h
 
 soup:
 	-${Q} if [[ -r .soup ]]; then \
-	    echo "Soup already cooked. Don't forget to eat it before it goes cold!"; \
+	    echo "As you add more ingredients to the pot, the soup overflows, burns" ; \
+	    echo "you and falls to the floor! Next time try eating the soup BEFORE you"; \
+	    echo "cook more in the SAME pot!" ; \
+	    ${RM} -f .soup; \
         else \
 	    echo "Mixing the ingredients..."; \
 	    echo "Cooking the soup..."; \
@@ -551,6 +554,7 @@ soup:
 eat eating eat_soup eating_soup: all
 	-${Q} if [[ -r .soup ]]; then \
 	    echo "That was mighty delicous soup but now you feel bloated! :-("; \
+	    ${SLEEP} 2; \
 	    ${RM} -f .soup; \
 	else \
 	    echo "How can you eat soup that you haven't made yet?"; \
