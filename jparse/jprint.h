@@ -32,6 +32,6 @@
 
 #include "json_util.h"
 
-#define JPRINT_VERSION "0.0.0 2023-05-25"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.1 2023-06-02"		/* format: major.minor YYYY-MM-DD */
 
 #endif

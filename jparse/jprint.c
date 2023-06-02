@@ -23,7 +23,13 @@
 #include "jprint.h"
 
 /*
- * globals
+ * definitions
+ */
+#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
+
+
+/*
+ * static globals
  */
 static bool quiet = false;				/* true ==> quiet mode */
 
@@ -33,15 +39,20 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] file.json\n"
+    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q]\n"
+    "\t\t[-j lvl] [-i cnt] [-N num] [-p {n,v,b}] [-b {t,number}] [-L]\n"
+    "\t\t[-c] [-C] [-B] [-I {t,number}] [-j] [-E] [-I] [-S] [-g]\n"
+    "\t\tfile.json [name_arg ...]\n"
     "\n"
-    "\t-h\t\tprint help message and exit\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-J level\tset JSON verbosity level (def level: %d)\n"
-    "\t-V\t\tprint version string and exit\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
-    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\t-h\t\tprint help and exit\n"
+    "\t-V\t\tprint version and exit\n"
+    "\t-v level\tverbosity level (def: %d)\n"
+    "\t-J level\tJSON verbosity level (def: %d)\n"
+    "\t-e\t\tprint JSON strings as encoded strings (def: decode JSON strings)\n"
+    "\t-Q\t\tprint JSON strings surrounded by double quotes (def: do not)\n"
     "\n"
+    "\tfile.json\tJSON file to parse\n"
+    "\tname_arg\tJSON element to print\n"
     "jprint version: %s";
 
 
@@ -97,6 +108,13 @@ int main(int argc, char **argv)
 	    break;
 	}
     }
+
+    /* must have the exact required number of args */
+    if (argc - optind != REQUIRED_ARGS) {
+	usage(3, program, "wrong number of arguments"); /*ooo*/
+	not_reached();
+    }
+
     argc -= optind;
     argv += optind;
 
