@@ -1,5 +1,5 @@
 /*
- * jparse_main - main function for the JSON parser demo tool
+ * jparse_main - main function for the JSON parser
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
