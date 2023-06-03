@@ -285,7 +285,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(-1, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(exitcode, stderr, usage_msg1, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
