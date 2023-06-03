@@ -221,14 +221,18 @@ int main(int argc, char **argv)
 
     /*
      * XXX this will probably change to a dbg() message when a name_arg is
-     * specified but it can probably stay msg() if no name_arg specified. This
-     * is TBD at a later date.
+     * specified but it can maybe stay msg() if no name_arg specified. Or it
+     * might be removed and the exit status alone will tell the user if the file
+     * was valid or invalid. This is TBD at a later date.
      */
     msg("valid JSON");
 
     if (argv[1] != NULL) {
 	/* TODO process name_args */
 
+	/*
+	 * XXX this message is temporary
+	 */
 	msg("\npattern requested: %s", argv[1]);
 	/*
 	 * XXX if matches found exit 0 but currently no matches checked. In

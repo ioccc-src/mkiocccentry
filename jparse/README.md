@@ -121,6 +121,11 @@ check that the json file passed into the program exists, is a regular file and
 is valid json, reporting errors or valid JSON, assuming that the file name is
 specified.
 
+NOTE: this tool is not to check for valid JSON as such but instead to print
+information in valid JSON files. For now it does report it as valid or invalid
+as all the code does for now is attempt to parse the JSON so that in future
+commits (after discussions) it can either exit with an error code or else
+process the `name_arg`s.
 
 # History
 
