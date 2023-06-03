@@ -26,12 +26,32 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "jparse.h"
+/*
+ * dbg - info, debug, warning, error, and usage message facility
+ */
+#include "../dbg/dbg.h"
 
+/*
+ * util - entry common utility functions for the IOCCC toolkit
+ */
 #include "util.h"
 
+/*
+ * json_parse - JSON parser support code
+ */
+#include "json_parse.h"
+
+/*
+ * json_util - general JSON parser utility support functions
+ */
 #include "json_util.h"
 
+/*
+ * jparse - JSON parser
+ */
+#include "jparse.h"
+
+/* jprint version string */
 #define JPRINT_VERSION "0.0.1 2023-06-03"		/* format: major.minor YYYY-MM-DD */
 
-#endif
+#endif /* !defined JPRINT_H */
