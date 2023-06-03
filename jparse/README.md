@@ -27,7 +27,7 @@ We also have some additional tools, some of which will be documented later and
 some of which are documented below, namely `jstrencode` and `jstrdecode`.
 
 
-# Compiling
+## Compiling
 
 We determine if you have a recent enough `flex(1)` and `bison(1)`. If you do not
 we use backup files. Either way, to compile you need only run:
@@ -104,6 +104,22 @@ If it's not clear this means that having more than one parse active in the same
 process at the same time is not tested so even though it should be okay there
 might be some issues that have yet to be discovered.
 
+## `jprint`: a JSON printer
+
+This tool is currently being developed by:
+
+*@xexyl* (**Cody Boone Ferguson**). See
+[https://xexyl.net](https://xexyl.net) and
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net).
+
+and:
+
+**chongo** (**Landon Curt Noll**, <http://www.isthe.com/chongo/index.html>) /\oo/\
+
+but much, much more needs to be done. As of 03 June 2023 the most it does is
+check that the json file passed into the program exists, is a regular file and
+is valid json, reporting errors or valid JSON, assuming that the file name is
+specified.
 
 
 # History

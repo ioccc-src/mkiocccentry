@@ -25,7 +25,7 @@
 /*
  * definitions
  */
-#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
 /*
@@ -135,6 +135,9 @@ int main(int argc, char **argv)
     char const *program = NULL;		/* our name */
     extern char *optarg;
     extern int optind;
+    struct json *json_tree = NULL;	/* json tree */
+    bool is_valid = true;		/* if file is valid json */
+    FILE *json_file = NULL;		/* file pointer for json file */
     int i;
 
     /*
@@ -179,7 +182,7 @@ int main(int argc, char **argv)
     }
 
     /* must have the exact required number of args */
-    if (argc - optind != REQUIRED_ARGS) {
+    if (argc - optind < REQUIRED_ARGS) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
@@ -187,8 +190,62 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
+    /* check that first arg exists and is a regular file */
+    if (!exists(argv[0])) {
+	err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
+	not_reached();
+    } else if (!is_file(argv[0])) {
+	err(5, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
+	not_reached();
+    }
 
-    exit(0);
+    errno = 0; /* pre-clear errno for errp() */
+    json_file = fopen(argv[0], "r");
+    if (json_file == NULL) {
+	errp(6, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
+	not_reached();
+    }
+
+    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
+    if (!is_valid) {
+	fclose(json_file);  /* close file prior to exiting */
+	json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+
+	err(7, "jprint", "%s not valid JSON", argv[0]); /*ooo*/
+	not_reached();
+    }
+
+    /* close the JSON file */
+    fclose(json_file);
+    json_file = NULL;
+
+    /*
+     * XXX this will probably change to a dbg() message when a name_arg is
+     * specified but it can probably stay msg() if no name_arg specified. This
+     * is TBD at a later date.
+     */
+    msg("valid JSON");
+
+    if (argv[1] != NULL) {
+	/* TODO process name_args */
+
+	msg("\npattern requested: %s", argv[1]);
+	/*
+	 * XXX if matches found exit 0 but currently no matches checked. In
+	 * other words in the future the call to exit() here will only be called
+	 * if a pattern is matched: otherwise the exit(1) below will be called.
+	 */
+	exit(0); /*ooo*/
+    }
+
+    /*
+     * XXX remove this informative message once processing is implemented
+     */
+    msg("\nno pattern requested");
+    /*
+     * exit with 1 due to no pattern requested OR no matches found
+     */
+    exit(1); /*ooo*/
 }
 
 /*

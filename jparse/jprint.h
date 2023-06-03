@@ -1,5 +1,4 @@
-/*
- * jprint - JSON printer
+/* jprint - JSON printer
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -20,8 +19,8 @@
  */
 
 
-#if !defined(INCLUDE_JPARSE_H)
-#    define  INCLUDE_JPARSE_H
+#if !defined(INCLUDE_JPRINT_H)
+#    define  INCLUDE_JPRINT_H
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -52,6 +51,6 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.1 2023-06-03"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.3 2023-06-03"		/* format: major.minor YYYY-MM-DD */
 
-#endif /* !defined JPRINT_H */
+#endif /* !defined INCLUDE_JPRINT_H */
