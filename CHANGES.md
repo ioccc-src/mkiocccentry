@@ -1,5 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.4 2023-06-03
+
+Release initial `jprint` tool. Current version "0.0.3 2023-06-03". Current
+functionality is limited to:
+
+- accepting SOME Of the options but not parsing any except `-h`.
+- if not enough args (at least 1 arg - the file to parse) it prints usage string
+(same as `-h` but with error message about not enough args).
+- checks that first arg exists and is a regular file and if so it tries to parse
+it as a JSON file. Depending on status of whether it's valid or json it will
+report an error or report valid json.
+
+Updated [jparse/README.md](jparse/README.md) to note the `jprint` tool.
+
+**MUCH MORE** has to be done but this is a great start for a very important tool. We
+believe that after the tool is finished and tested (including added to the
+overall test suite + the `bug_report.sh` script!) we (i.e. Cody/@xexyl) can
+import the jparse parser and tools into the [jparse
+repo](https://github.com/xexyl/jparse).
+
+
 ## Release 1.0.3 2023-05-22
 
 Added [remarks.example.md](remarks.example.md) which has instructions for
