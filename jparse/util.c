@@ -2127,9 +2127,74 @@ string_to_intmax(char const *str, intmax_t *ret)
     /*
      * store conversion and report success
      */
-    *ret = num;
+    if (ret != NULL) {
+	*ret = num;
+    }
+
     return true;
 }
+
+/*
+ * string_to_uintmax - convert base 10 str to uintmax_t and check for errors
+ *
+ * given:
+ *	str	- the string to convert to an uintmax_t
+ *	*ret	- pointer to converted uintmax_t if return is true
+ *
+ * returns:
+ *	true ==> conversion into *ret was successful,
+ *	false ==> unable to convert / not a valid base 10 integer, NULL pointer or internal error
+ */
+bool
+string_to_uintmax(char const *str, uintmax_t *ret)
+{
+    uintmax_t num = 0;
+    int saved_errno = 0;
+    char *endptr = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    if (ret == NULL) {
+	warn(__func__, "ret is NULL");
+	return false;
+    }
+
+    /*
+     * perform the conversion
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    num = strtoumax(str, &endptr, 10);
+    saved_errno = errno;
+    if (endptr == str) {
+	warn(__func__, "string %s has no digits", str);
+	return false;
+    } else if (*endptr != '\0') {
+	warn(__func__, "number %s has invalid characters", str);
+	return false;
+    } else if (saved_errno != 0) {
+	errno = saved_errno;
+	warnp(__func__, "error converting string <%s> to uintmax_t", str);
+	return false;
+    } else if (num < 0 || num >= UINTMAX_MAX) {
+	warn(__func__, "number %s out of range for uintmax_t (must be >= %jd && < %jd)", str, (uintmax_t)0, UINTMAX_MAX);
+	return false;
+    }
+
+    /*
+     * store conversion and report success
+     */
+    if (ret != NULL) {
+	*ret = num;
+    }
+
+    return true;
+}
+
 
 /*
  * parse_verbosity - parse -v option for our tools

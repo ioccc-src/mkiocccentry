@@ -205,6 +205,7 @@ extern void *read_all(FILE *stream, size_t *psize);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern bool string_to_intmax(char const *str, intmax_t *ret);
+extern bool string_to_uintmax(char const *str, uintmax_t *ret);
 extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_decimal(char const *ptr, size_t len);
 extern bool is_decimal_str(char const *str, size_t *retlen);
