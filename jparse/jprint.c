@@ -86,7 +86,7 @@ static const char * const usage_msg1 =
     "\t\t\tthen the key, value or both are not printed.\n"
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
-    "\t-p both\t\tAlias '-p v'.\n\n"
+    "\t-p both\t\tAlias for '-p n,v'.\n\n"
     "\t-b {t,number}\tprint between name and value (def: 1)\n"
     "\t\t\tprint a tab or spaces (i.e. '-b 4') between the name and value.\n"
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
