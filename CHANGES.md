@@ -17,11 +17,13 @@ functionality is limited to:
 - accepting SOME Of the options but not parsing any except `-h`.
 - if not enough args (at least 1 arg - the file to parse) it prints usage string
 (same as `-h` but with error message about not enough args).
-- checks that first arg exists and is a regular file and if so it tries to parse
-it as a JSON file. Depending on status of whether it's valid or json it will
-report an error or report valid json.
+- checks that first arg exists and is a regular file (or `stdin`) and if so it
+tries to parse it as a JSON file. Depending on status of whether it's valid or
+json it will report an error or report valid json. Later it will only report
+valid JSON as a debug message.
 - parsing options except that only the basic option arguments are parsed.
 - note that `jprint` will make use of the `regex(3)` library.
+- frees the parse tree prior to exiting.
 
 Updated [jparse/README.md](jparse/README.md) to note the `jprint` tool.
 
