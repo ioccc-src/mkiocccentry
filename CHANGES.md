@@ -20,6 +20,8 @@ functionality is limited to:
 - checks that first arg exists and is a regular file and if so it tries to parse
 it as a JSON file. Depending on status of whether it's valid or json it will
 report an error or report valid json.
+- parsing options except that only the basic option arguments are parsed.
+- note that `jprint` will make use of the `regex(3)` library.
 
 Updated [jparse/README.md](jparse/README.md) to note the `jprint` tool.
 
