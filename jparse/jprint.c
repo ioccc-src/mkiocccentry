@@ -197,7 +197,12 @@ int main(int argc, char **argv)
     } else if (!is_file(argv[0])) {
 	err(5, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
 	not_reached();
+    } else if (!is_read(argv[0])) {
+	err(6, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
+	not_reached();
     }
+
+
 
     errno = 0; /* pre-clear errno for errp() */
     json_file = fopen(argv[0], "r");
@@ -211,7 +216,7 @@ int main(int argc, char **argv)
 	fclose(json_file);  /* close file prior to exiting */
 	json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 
-	err(7, "jprint", "%s not valid JSON", argv[0]); /*ooo*/
+	err(7, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
 	not_reached();
     }
 
