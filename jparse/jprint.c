@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 	}
     }
 
-    /* must have the exact required number of args */
+    /* must have at least REQUIRED_ARGS args */
     if (argc - optind < REQUIRED_ARGS) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
