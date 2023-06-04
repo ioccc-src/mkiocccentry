@@ -48,6 +48,7 @@ mkiocccentry
 oebxergfB.txt
 orig.iocccsize
 soup/.soup
+soup/location
 soup/ref/
 tags
 test_ioccc/test_ioccc.log

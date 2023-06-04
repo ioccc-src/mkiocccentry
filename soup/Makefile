@@ -179,7 +179,7 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_time.c entry_util.c \
-	location.c sanity.c rule_count.c
+	location_tbl.c location_util.c location_main.c sanity.c rule_count.c
 H_SRC= chk_validate.h soup.h entry_time.h entry_util.h foo.h limit_ioccc.h location.h \
 	sanity.h utf8_posix_map.h version.h iocccsize_err.h
 
@@ -196,7 +196,7 @@ SH_FILES= all_sem_ref.sh run_usage.sh vermod.sh \
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES= man/man1/bug_report.1 man/man1/bug_report.sh.1 man/man1/chkentry.1 man/man1/iocccsize.1 \
-	man/man1/mkiocccentry.1 man/man1/txzchk.1
+	man/man1/mkiocccentry.1 man/man1/txzchk.1 man/man1/location.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/reset_tstamp.8 man/man8/run_usage.8 man/man8/vermod.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
@@ -213,11 +213,11 @@ LOCAL_DIR_TAGS= .local.dir.tags
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_time.o entry_util.o \
-	location.o sanity.o foo.o utf8_posix_map.o rule_count.o
+	location_tbl.o location_util.o sanity.o foo.o utf8_posix_map.o rule_count.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS=
+OTHER_OBJS= location_main.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -299,7 +299,7 @@ SH_TARGETS= run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS=
+PROG_TARGETS= location
 
 # what to make by all but NOT to removed by clobber
 #
@@ -368,8 +368,17 @@ entry_time.o: entry_time.c
 entry_util.o: entry_util.c
 	${CC} ${CFLAGS} entry_util.c -c
 
-location.o: location.c
-	${CC} ${CFLAGS} location.c -c
+location_tbl.o: location_tbl.c
+	${CC} ${CFLAGS} location_tbl.c -c
+
+location_util.o: location_util.c
+	${CC} ${CFLAGS} location_util.c -c
+
+location_main.o: location_main.c
+	${CC} ${CFLAGS} location_main.c -c
+
+location: location_main.o location_tbl.o location_util.o ../dbg/dbg.a
+	${CC} ${CFLAGS} $^ -o $@
 
 foo.o: foo.c
 	${CC} ${CFLAGS} foo.c -c
@@ -872,9 +881,15 @@ entry_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/json_util.h ../jparse/util.h entry_time.h entry_util.c \
     entry_util.h limit_ioccc.h location.h version.h
 foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
-location.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+location_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h location.c location.h
+    ../jparse/json_util.h ../jparse/util.h location.h location_main.c
+location_tbl.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h location.h location_tbl.c
+location_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h location.h location_util.c
 rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \

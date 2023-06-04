@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 1.0.4 2023-06-03
+## Release 1.0.4 2023-06-05
+
+Split the location table into `soup/location_tbl.c` and
+the location table related utilities into c`soup/location_util.c`.
+
+Updated location table `tbl[]` in `soup/location_tbl.c`
+as of 2023 June 05.
+
+Added `soup/location` utility to look up locations ISO 3166 code(s),
+location names, of print the entire location table.
 
 Release initial `jprint` tool. Current version "0.0.3 2023-06-03". Current
 functionality is limited to:

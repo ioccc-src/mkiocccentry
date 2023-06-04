@@ -1,0 +1,186 @@
+.\" section 1 man page for location
+.\"
+.\" This man page was first written by Landon Curt Noll the IOCCC
+.\" in 2023.
+.\"
+.\" Location is relative. :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH location 1 "04 June 2023" "location" "IOCCC tools"
+.SH NAME
+.B location
+\- lookup ISO 3166 codes, location names or print the table
+.SH SYNOPSIS
+.B location
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V \|]
+.RB [\| \-N \|]
+.RI [\| location
+.IR ... \|]
+.SH DESCRIPTION
+.B location
+without any arguments will print the entire table of
+ISO 3166 code, followed by a tab, followed by the formal location name
+for the given ISO 3166 code.
+.sp 1
+Given arguments,
+.B location
+tool will assume the arguments are ISO 3166 code(s) and print with
+corresponding formal location name(s).
+.sp 1
+Arguments are case insensitive.
+.sp 1
+ISO 3166 code(s) are Alpha-2 codes: two UPPER case characters.
+.sp 1
+With
+.BR \-N ,
+the arguments
+are assumed to be the formal location name(s).
+The
+.B location
+tool will print their corresponding ISO 3166 code(s).
+.SH OPTIONS
+.TP
+.B \-h
+Show help and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.B \-V
+Show version and exit.
+.TP
+.B \-N
+Assume the arguments are formal location name(s) and print
+their corresponding ISO 3166 code(s).
+.sp
+By default the arguments are ISO 3166 code(s)
+and their corresponding formal location name(s) are printed.
+.sp
+The use of
+.B \-N
+requires at least one argument.
+.SH EXIT STATUS
+.TP
+0
+All is OK
+.TQ
+1
+At least one location argument could not be found
+.TQ
+2
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
+.TQ
+3
+command line error
+.TQ
+>= 4
+internal error
+.SH BUGS
+.PP
+If you have an issue with the tool you can report it at
+.br
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+.SH EXAMPLES
+.PP
+Print the entire location table:
+.sp
+.RS
+.ft B
+ ./location
+.ft R
+.RE
+.sp
+The table is printed as a two character ISO 3166 code
+(in UPPER CASE), followed by a tab, followed by
+the corresponding formal location name.
+.PP
+.PP
+Print the formal location name given ISO 3166 codes:
+.sp
+.RS
+.B ./location AU CA UA US XX
+.RE
+.PP
+The ISO 3166 codes may be in any case:
+.sp
+.RS
+.B ./location CX Gu um
+.RE
+.sp
+.PP
+Print the ISO 3166 codes given a formal location name:
+.sp
+.RS
+.B ./location 'Equatorial Guinea'
+.RE
+.SH EDITORIAL NOTES
+.sp
+The primary source of the location table is:
+.sp
+.in +0.5i
+.IR \<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Decoding_table\> .
+.in -0.5i
+.sp
+Additional information may be found at:
+.sp
+.in +0.5i
+.IR \<https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements\>
+.br
+.IR \<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2\>
+.br
+.IR \<https://www.iso.org/obp/ui/#iso:pub:PUB500001:en\>
+.br
+.IR \<https://www.iso.org/glossary-for-iso-3166.html\>
+.br
+.IR \<https://www.iso.org/obp/ui/#search\>
+.in -0.5i
+.sp
+The location table was initially compiled on 2023 June 04
+as follows:
+We added all Officially assigned code elements,
+all Exceptionally reserved code elements,
+all Transitionally reserved code elements,
+all Indeterminately reserved code elements,
+all Formerly assigned code elements,
+and all User-assigned code elements.
+.sp
+This means you will find a few codes that belong to
+entities that no longer are recognized, entities
+that are/were temporary, codes that are reserved for
+future use, codes for Road Traffic Conventions,
+codes for Property Organizations, duplicate codes, etc.
+.sp
+We do not list WIPO codes as they are not formally reserved.
+They refer to Patent and related WIPO
+organizations: as such they do not represent places
+where an IOCCC winner would live.
+.sp
+In a number of cases, the common name is used in
+place of a longer formal location name.
+.sp
+Because
+.BR mkiocccentry (1)
+recommends using the ISO 3166 codes
+.B XX
+for specifying an anonymous location,
+the formal name
+.B User-assigned code XX
+was renamed:
+.BR Anonymous location .
+.sp
+We mean no offense by this list: we simply tried to
+include all ISO 3166 codes.
+Please pardon any typos.
+.SH SEE ALSO
+.PP
+.BR mkiocccentry (1).
