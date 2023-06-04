@@ -40,8 +40,8 @@ static bool quiet = false;				/* true ==> quiet mode */
  */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-i count]\n"
-    "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-c] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] file.json [name_arg ...]\n\n"
+    "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
+    "\t\t[-I] [-S] [-g] [-c] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -93,7 +93,7 @@ static const char * const usage_msg1 =
     "\t-b tab\t\tAlias for '-b t'.\n\n"
     "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n"
-    "\t-c\t\tWhen printing -j both, separate name/value by a : (colon) (def: do not)\n"
+    "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
     "\t\t\tand separate : (colon) from the value by the same.\n\n"
@@ -119,9 +119,17 @@ static const char * const usage_msg1 =
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
     "\t\t\tUse of -g conflicts with -S.\n"
+    "\t-c\t\tOnly show count of matches found\n"
     "\n"
     "\tfile.json\tJSON file to parse\n"
-    "\tname_arg\tJSON element to print\n"
+    "\tname_arg\tJSON element to print\n\n"
+    "\tExit codes:\n"
+    "\t\t0\tall is OK, file is valid JSON, match(s) found or no name_arg given\n"
+    "\t\t1\tfile is valid JSON, name_arg given but no matches found\n"
+    "\t\t2\t-h and help string printed or -V and version string printed\n"
+    "\t\t3\tinvalid command line, invalid option or option missing an argument\n"
+    "\t\t4\tfile does not exist, not a file, or unable to read the file\n"
+    "\t\t5\tfile contents is not valid JSON\n\n"
     "jprint version: %s";
 
 
@@ -137,17 +145,42 @@ int main(int argc, char **argv)
     extern int optind;
     struct json *json_tree = NULL;	/* json tree */
     bool is_valid = true;		/* if file is valid json */
+    bool match_found = false;		/* true if a pattern is specified and there is a match */
+    bool pattern_specified = false;	/* true if a pattern was specified */
     FILE *json_file = NULL;		/* file pointer for json file */
+    bool encode_strings = false;	/* -e used */
+    bool quote_strings = false;		/* -Q used */
+    char const *type = NULL;		/* -t type used */
+    uintmax_t max_matches = 0;	/* -i count specified - don't show more than this many matches */
+    uintmax_t min_matches = 0;	/* -N count specified - minimum matches required */
+    char const *print_type = NULL;	/* -p type specified */
+    uintmax_t num_spaces = 0;		/* -b specified */
+    bool print_json_levels = false;	/* -L specified */
+    bool print_colons = false;		/* -T specified */
+    bool print_commas = false;		/* -C specified */
+    bool print_braces = false;		/* -B specified */
+    uintmax_t indent_level = 0;	/* -I specified */
+    bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    bool match_encoded = false;		/* -E used, match encoded name */
+    bool substrings_okay = false;	/* -S used, matching substrings okay */
+    bool grep_ere = false;		/* -g used, allow grep EREs */
+    bool count_only = false;		/* -c used, only show count */
+
     int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vq")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgc")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
+	    not_reached();
+	    break;
+	case 'V':		/* -V - print version and exit */
+	    print("%s\n", JPRINT_VERSION);
+	    exit(2);		/*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -162,10 +195,73 @@ int main(int argc, char **argv)
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
-	case 'V':		/* -V - print version and exit */
-	    print("%s\n", JPRINT_VERSION);
-	    exit(2);		/*ooo*/
-	    not_reached();
+	case 'e':
+	    encode_strings = true; 
+	    break;
+	case 'Q':
+	    quote_strings = true;
+	    break;
+	case 't':
+	    type = optarg; /* XXX this has to be parsed and type might be a JTYPE_ instead */
+	    break;
+	case 'i':
+	    if (!string_to_uintmax(optarg, &max_matches)) {
+		err(3, "jprint", "couldn't parse -i count"); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'N':
+	    if (!string_to_uintmax(optarg, &min_matches)) {
+		err(3, "jprint", "couldn't parse -N count"); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'p':
+	    /* XXX the type of this variable might have to change and in any
+	     * event must be parsed.
+	     */
+	    print_type = optarg;
+	    break;
+	case 'b':
+	    /* XXX - is this the right idea ? - XXX */
+	    if (!string_to_uintmax(optarg, &num_spaces)) {
+		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'L':
+	    print_json_levels = true;
+	    break;
+	case 'T':
+	    print_colons = true;
+	    break;
+	case 'C':
+	    print_commas = true;
+	    break;
+	case 'B':
+	    print_braces = true;
+	    break;
+	case 'I':
+	    if (!string_to_uintmax(optarg, &indent_level)) {
+		err(3, "jprint", "couldn't parse -I indent_level"); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'j':
+	    /* TODO need to set the options of -p b -b 1 -c -e -Q -I 4 -t any */
+	    print_syntax = true;
+	    break;
+	case 'E':
+	    match_encoded = true;
+	    break;
+	case 'S':
+	    substrings_okay = true;
+	    break;
+	case 'g':   /* allow grep ERE */
+	    grep_ere = true;
+	    break;
+	case 'c':
+	    count_only = true;
 	    break;
 	case 'q':
 	    quiet = true;
@@ -195,19 +291,17 @@ int main(int argc, char **argv)
 	err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
 	not_reached();
     } else if (!is_file(argv[0])) {
-	err(5, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
+	err(4, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
 	not_reached();
     } else if (!is_read(argv[0])) {
-	err(6, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
+	err(4, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
 	not_reached();
     }
-
-
 
     errno = 0; /* pre-clear errno for errp() */
     json_file = fopen(argv[0], "r");
     if (json_file == NULL) {
-	errp(6, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
+	errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
 	not_reached();
     }
 
@@ -216,7 +310,7 @@ int main(int argc, char **argv)
 	fclose(json_file);  /* close file prior to exiting */
 	json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 
-	err(7, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
+	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
 	not_reached();
     }
 
@@ -232,29 +326,40 @@ int main(int argc, char **argv)
      */
     msg("valid JSON");
 
-    if (argv[1] != NULL) {
-	/* TODO process name_args */
+    /* TODO process name_args */
+    for (i = 1; argv[i] != NULL; ++i) {
+	pattern_specified = true;
 
 	/*
-	 * XXX this message is temporary
+	 * XXX either change the debug level or remove this message once
+	 * processing is complete
 	 */
-	msg("\npattern requested: %s", argv[1]);
+	dbg(DBG_NONE,"pattern requested: %s", argv[i]);
 	/*
-	 * XXX if matches found exit 0 but currently no matches checked. In
-	 * other words in the future the call to exit() here will only be called
-	 * if a pattern is matched: otherwise the exit(1) below will be called.
+	 * XXX if matches found we set the boolean match_found to true to
+	 * indicate exit code of 0 but currently no matches are checked. In
+	 * other words in the future this setting of match_found will not always
+	 * happen.
 	 */
-	exit(0); /*ooo*/
+	match_found = true;
     }
 
     /*
-     * XXX remove this informative message once processing is implemented
+     * XXX remove this informative message or change debug level once processing
+     * is implemented.
      */
-    msg("\nno pattern requested");
+    if (!pattern_specified) {
+	dbg(DBG_NONE,"no pattern requested");
+    }
+
     /*
      * exit with 1 due to no pattern requested OR no matches found
      */
-    exit(1); /*ooo*/
+    if (match_found) {
+	exit(0); /*ooo*/
+    } else {
+	exit(1); /*ooo*/
+    }
 }
 
 /*
