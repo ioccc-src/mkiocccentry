@@ -121,7 +121,7 @@ static const char * const usage_msg1 =
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\n"
-    "\tfile.json\tJSON file to parse\n"
+    "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "\tExit codes:\n"
     "\t\t0\tall is OK, file is valid JSON, match(s) found or no name_arg given\n"
@@ -144,6 +144,7 @@ int main(int argc, char **argv)
     extern char *optarg;
     extern int optind;
     struct json *json_tree = NULL;	/* json tree */
+    bool is_stdin = false;		/* reading from stdin */
     bool is_valid = true;		/* if file is valid json */
     bool match_found = false;		/* true if a pattern is specified and there is a match */
     bool pattern_specified = false;	/* true if a pattern was specified */
@@ -286,44 +287,48 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    /* check that first arg exists and is a regular file */
-    if (!exists(argv[0])) {
-	err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
-	not_reached();
-    } else if (!is_file(argv[0])) {
-	err(4, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
-	not_reached();
-    } else if (!is_read(argv[0])) {
-	err(4, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
-	not_reached();
-    }
+    if (*argv[0] != '-') {
+        /* check that first arg exists and is a regular file */
+	if (!exists(argv[0])) {
+	    err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
+	    not_reached();
+	} else if (!is_file(argv[0])) {
+	    err(4, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
+	    not_reached();
+	} else if (!is_read(argv[0])) {
+	    err(4, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
+	    not_reached();
+	}
 
-    errno = 0; /* pre-clear errno for errp() */
-    json_file = fopen(argv[0], "r");
-    if (json_file == NULL) {
-	errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
-	not_reached();
+	errno = 0; /* pre-clear errno for errp() */
+	json_file = fopen(argv[0], "r");
+	if (json_file == NULL) {
+	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
+	    not_reached();
+	}
+    } else {
+	is_stdin = true;
+	json_file = stdin;
     }
 
     json_tree = parse_json_stream(json_file, argv[0], &is_valid);
     if (!is_valid) {
-	fclose(json_file);  /* close file prior to exiting */
-	json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+	if (json_file != stdin) {
+	    fclose(json_file);  /* close file prior to exiting */
+	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+	}
 
 	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
 	not_reached();
     }
 
-    /* close the JSON file */
-    fclose(json_file);
-    json_file = NULL;
+    /* close the JSON file if not stdin */
+    if (json_file != stdin) {
+	fclose(json_file);
+	json_file = NULL;
+    }
 
-    /*
-     * XXX this will probably change to a dbg() message when a name_arg is
-     * specified but it can maybe stay msg() if no name_arg specified. Or it
-     * might be removed and the exit status alone will tell the user if the file
-     * was valid or invalid. This is TBD at a later date.
-     */
+    /* this will change to a debug message at a later time */
     msg("valid JSON");
 
     /* TODO process name_args */
@@ -352,12 +357,15 @@ int main(int argc, char **argv)
 	dbg(DBG_NONE,"no pattern requested");
     }
 
-    /*
-     * exit with 1 due to no pattern requested OR no matches found
-     */
+    /* free tree */
+    json_tree_free(json_tree, JSON_DEFAULT_MAX_DEPTH);
+
     if (match_found) {
 	exit(0); /*ooo*/
     } else {
+	/*
+	 * exit with 1 due to no pattern requested OR no matches found
+	 */
 	exit(1); /*ooo*/
     }
 }
