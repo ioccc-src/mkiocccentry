@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <regex.h> /* for regular expression matching */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -51,6 +52,6 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.3 2023-06-03"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.4 2023-06-04"		/* format: major.minor YYYY-MM-DD */
 
 #endif /* !defined INCLUDE_JPRINT_H */
