@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'e':
-	    encode_strings = true; 
+	    encode_strings = true;
 	    break;
 	case 'Q':
 	    quote_strings = true;
