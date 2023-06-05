@@ -8,6 +8,10 @@ depth to traverse the json tree, assuming it's valid JSON. Defaults to
 to a higher level once the tool is complete or closer to being complete) says
 what the limit is, indicating that 0 is no limit and 256 is the default.
 
+`jprint` now parses the `-t type` comma-separated option. Currently is a
+bitvector but this might change as more is developed (bitvector was not the
+first thought).
+
 
 ## Release 1.0.4 2023-06-04
 
