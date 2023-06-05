@@ -162,19 +162,19 @@ int main(int argc, char **argv)
     bool encode_strings = false;	/* -e used */
     bool quote_strings = false;		/* -Q used */
     char const *type = NULL;		/* -t type used */
-    uintmax_t max_matches = 0;	/* -i count specified - don't show more than this many matches */
-    uintmax_t min_matches = 0;	/* -N count specified - minimum matches required */
+    uintmax_t max_matches = 0;		/* -i count specified - don't show more than this many matches */
+    uintmax_t min_matches = 0;		/* -N count specified - minimum matches required */
     char const *print_type = NULL;	/* -p type specified */
     uintmax_t num_spaces = 0;		/* -b specified */
     bool print_json_levels = false;	/* -L specified */
     bool print_colons = false;		/* -T specified */
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
-    uintmax_t indent_level = 0;	/* -I specified */
+    uintmax_t indent_level = 0;		/* -I specified */
     bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded = false;		/* -E used, match encoded name */
     bool substrings_okay = false;	/* -S used, matching substrings okay */
-    bool grep_ere = false;		/* -g used, allow grep EREs */
+    bool use_regexps = false;		/* -g used, allow grep-like regexps */
     bool count_only = false;		/* -c used, only show count */
     uintmax_t max_depth = JSON_DEFAULT_MAX_DEPTH; /* max depth to traverse set by -m depth */
     int i;
@@ -268,8 +268,8 @@ int main(int argc, char **argv)
 	case 'S':
 	    substrings_okay = true;
 	    break;
-	case 'g':   /* allow grep ERE */
-	    grep_ere = true;
+	case 'g':   /* allow grep-like ERE */
+	    use_regexps = true;
 	    break;
 	case 'c':
 	    count_only = true;
@@ -303,6 +303,7 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
+    /* if *argv[0] != '-' we will attempt to read from a regular file */
     if (*argv[0] != '-') {
         /* check that first arg exists and is a regular file */
 	if (!exists(argv[0])) {
@@ -322,7 +323,7 @@ int main(int argc, char **argv)
 	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
 	    not_reached();
 	}
-    } else {
+    } else { /* *argv[0] == '-', read from stdin */
 	is_stdin = true;
 	json_file = stdin;
     }
@@ -347,6 +348,7 @@ int main(int argc, char **argv)
     /* this will change to a debug message at a later time */
     msg("valid JSON");
 
+    /* the debug level will be increased at a later time */
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", max_depth, (max_depth == 0?" (no limit)":
 		max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
@@ -359,7 +361,7 @@ int main(int argc, char **argv)
 	 * processing is complete
 	 */
 	dbg(DBG_NONE,"pattern requested: %s", argv[i]);
-	/*\n"
+	/*
 	 * XXX if matches found we set the boolean match_found to true to
 	 * indicate exit code of 0 but currently no matches are checked. In
 	 * other words in the future this setting of match_found will not always
