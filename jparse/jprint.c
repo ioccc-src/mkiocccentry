@@ -125,6 +125,13 @@ static const char * const usage_msg2 =
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
 
+/*
+ * NOTE: this next one should be the last number; if any additional usage message strings
+ * have to be added the first additional one should be the number this is and this one
+ * should be changed to be the final string before this one + 1. Similarly if a
+ * string can be removed this one should have its number changed to be + 1 from
+ * the last one before it.
+ */
 static const char * const usage_msg3 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
