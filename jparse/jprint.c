@@ -104,7 +104,7 @@ static const char * const usage_msg2 =
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
     "\t\t\tUse of -B without -j has no effect.\n\n"
     "\t-I {t,number}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
-    "\t\t\tIndent levels by tab or spaces (i.e. '-t 4').\n"
+    "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
     "\t\t\tUse of -I {t,number} without -j has no effect.\n"
     "\t-I tab\t\tAlias for '-I t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
