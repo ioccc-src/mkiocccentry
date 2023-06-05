@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 	 * processing is complete
 	 */
 	dbg(DBG_NONE,"pattern requested: %s", argv[i]);
-	/*
+	/*\n"
 	 * XXX if matches found we set the boolean match_found to true to
 	 * indicate exit code of 0 but currently no matches are checked. In
 	 * other words in the future this setting of match_found will not always
