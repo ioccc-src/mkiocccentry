@@ -24,12 +24,17 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <regex.h> /* for regular expression matching */
+#include <regex.h> /* for -g, regular expression matching */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "../dbg/dbg.h"
+
+/*
+ * dyn_array - dynamic array facility
+ */
+#include "../dyn_array/dyn_array.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
@@ -52,6 +57,6 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.4 2023-06-04"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.5 2023-06-05"		/* format: major.minor YYYY-MM-DD */
 
 #endif /* !defined INCLUDE_JPRINT_H */

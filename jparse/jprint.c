@@ -41,7 +41,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-i count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] [-c] file.json [name_arg ...]\n\n"
+    "\t\t[-I] [-S] [-g] [-c] [-m depth] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -92,7 +92,9 @@ static const char * const usage_msg1 =
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
     "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
-    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n"
+    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n";
+
+static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
@@ -120,7 +122,10 @@ static const char * const usage_msg1 =
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
-    "\n"
+    "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
+    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
+
+static const char * const usage_msg3 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "\tExit codes:\n"
@@ -166,14 +171,14 @@ int main(int argc, char **argv)
     bool substrings_okay = false;	/* -S used, matching substrings okay */
     bool grep_ere = false;		/* -g used, allow grep EREs */
     bool count_only = false;		/* -c used, only show count */
-
+    uintmax_t max_depth = JSON_DEFAULT_MAX_DEPTH; /* max depth to traverse set by -m depth */
     int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgc")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgcm:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -268,6 +273,12 @@ int main(int argc, char **argv)
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
+	case 'm': /* set maximum depth to traverse json tree */
+	    if (!string_to_uintmax(optarg, &max_depth)) {
+		err(3, "jprint", "couldn't parse -m depth"); /*ooo*/
+		not_reached();
+	    }
+	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -331,6 +342,9 @@ int main(int argc, char **argv)
     /* this will change to a debug message at a later time */
     msg("valid JSON");
 
+    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", max_depth, (max_depth == 0?" (no limit)":
+		max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+
     /* TODO process name_args */
     for (i = 1; argv[i] != NULL; ++i) {
 	pattern_specified = true;
@@ -358,7 +372,7 @@ int main(int argc, char **argv)
     }
 
     /* free tree */
-    json_tree_free(json_tree, JSON_DEFAULT_MAX_DEPTH);
+    json_tree_free(json_tree, max_depth);
 
     if (match_found) {
 	exit(0); /*ooo*/
@@ -408,7 +422,9 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
-    fprintf_usage(exitcode, stderr, usage_msg1, JPRINT_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2);
+    fprintf_usage(exitcode, stderr, usage_msg3, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

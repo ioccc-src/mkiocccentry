@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 1.0.4 2023-06-05
+## Release 1.0.5 2023-06-05
+
+`jprint` now accepts a `-m max_depth` option to allow for one to specify maximum
+depth to traverse the json tree, assuming it's valid JSON. Defaults to
+`JSON_DEFAULT_MAX_DEPTH == 256`. With debug level `DBG_NONE` (this will change
+to a higher level once the tool is complete or closer to being complete) says
+what the limit is, indicating that 0 is no limit and 256 is the default.
+
+
+## Release 1.0.4 2023-06-04
 
 Split the location table into `soup/location_tbl.c` and
 the location table related utilities into c`soup/location_util.c`.

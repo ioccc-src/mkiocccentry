@@ -456,7 +456,7 @@ jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
 
-jprint.o: jprint.c jparse.h json_parse.h json_util.h util.h
+jprint.o: jprint.c jparse.h json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
 	${CC} ${CFLAGS} jprint.c -c
 
 jprint: jprint.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
