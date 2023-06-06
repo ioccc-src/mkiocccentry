@@ -163,7 +163,7 @@ int main(int argc, char **argv)
     uintmax_t type = JPRINT_TYPE_SIMPLE;/* -t type used */
     uintmax_t max_matches = 0;		/* -i count specified - don't show more than this many matches */
     uintmax_t min_matches = 0;		/* -N count specified - minimum matches required */
-    char const *print_type = NULL;	/* -p type specified */
+    uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
     uintmax_t num_spaces = 0;		/* -b specified */
     bool print_json_levels = false;	/* -L specified */
     bool print_colons = false;		/* -T specified */
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 	    /* XXX the type of this variable might have to change and in any
 	     * event must be parsed.
 	     */
-	    print_type = optarg;
+	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
 	    /* XXX - is this the right idea ? - XXX */

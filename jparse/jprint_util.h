@@ -73,6 +73,10 @@
 /* JPRINT_TYPE_COMPOUND is bitwise OR of object and array */
 #define JPRINT_TYPE_COMPOUND (JPRINT_TYPE_OBJECT|JPRINT_TYPE_ARRAY)
 
+/* print types for -p option */
+#define JPRINT_PRINT_NAME   (1)
+#define JPRINT_PRINT_VALUE  (2)
+#define JPRINT_PRINT_BOTH   (JPRINT_PRINT_NAME | JPRINT_PRINT_VALUE)
 
 /* function prototypes */
 
@@ -91,6 +95,7 @@ bool jprint_match_any(uintmax_t types);
 bool jprint_match_simple(uintmax_t types);
 bool jprint_match_compound(uintmax_t types);
 
-
+/* what to print - -p option */
+uintmax_t jprint_parse_print_option(char *optarg);
 
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */
