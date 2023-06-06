@@ -456,7 +456,10 @@ jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
 
-jprint.o: jprint.c jparse.h json_parse.h json_util.h util.h
+jprint_util.o: jprint_util.c jprint_util.h jparse.h json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
+	${CC} ${CFLAGS} jprint_util.c -c
+
+jprint.o: jprint.c jparse.h jprint_util.o json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
 	${CC} ${CFLAGS} jprint.c -c
 
 jprint: jprint.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
@@ -956,7 +959,8 @@ jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
 jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
     jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
 jprint.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jprint.c jprint.h json_parse.h json_sem.h json_util.h util.h
+    jprint.c jprint.h jprint_util.h json_parse.h json_sem.h json_util.h \
+    util.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
     jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
     json_util.h util.h

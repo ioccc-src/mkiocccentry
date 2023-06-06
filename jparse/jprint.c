@@ -8,8 +8,6 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- * and:
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * The JSON parser was co-developed in 2022 by Cody and Landon.
  *
@@ -41,7 +39,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-i count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] [-c] file.json [name_arg ...]\n\n"
+    "\t\t[-I] [-S] [-g] [-c] [-m depth] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -92,7 +90,9 @@ static const char * const usage_msg1 =
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
     "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
-    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n"
+    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n";
+
+static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
@@ -102,7 +102,7 @@ static const char * const usage_msg1 =
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
     "\t\t\tUse of -B without -j has no effect.\n\n"
     "\t-I {t,number}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
-    "\t\t\tIndent levels by tab or spaces (i.e. '-t 4').\n"
+    "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
     "\t\t\tUse of -I {t,number} without -j has no effect.\n"
     "\t-I tab\t\tAlias for '-I t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
@@ -120,11 +120,21 @@ static const char * const usage_msg1 =
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
-    "\n"
+    "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
+    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
+
+/*
+ * NOTE: this next one should be the last number; if any additional usage message strings
+ * have to be added the first additional one should be the number this is and this one
+ * should be changed to be the final string before this one + 1. Similarly if a
+ * string can be removed this one should have its number changed to be + 1 from
+ * the last one before it.
+ */
+static const char * const usage_msg3 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "\tExit codes:\n"
-    "\t\t0\tall is OK, file is valid JSON, match(s) found or no name_arg given\n"
+    "\t\t0\tall is OK, file is valid JSON, match(es) found or no name_arg given\n"
     "\t\t1\tfile is valid JSON, name_arg given but no matches found\n"
     "\t\t2\t-h and help string printed or -V and version string printed\n"
     "\t\t3\tinvalid command line, invalid option or option missing an argument\n"
@@ -132,11 +142,11 @@ static const char * const usage_msg1 =
     "\t\t5\tfile contents is not valid JSON\n\n"
     "jprint version: %s";
 
-
 /*
  * functions
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
+static uintmax_t parse_types_option(char *optarg);
 
 int main(int argc, char **argv)
 {
@@ -151,29 +161,29 @@ int main(int argc, char **argv)
     FILE *json_file = NULL;		/* file pointer for json file */
     bool encode_strings = false;	/* -e used */
     bool quote_strings = false;		/* -Q used */
-    char const *type = NULL;		/* -t type used */
-    uintmax_t max_matches = 0;	/* -i count specified - don't show more than this many matches */
-    uintmax_t min_matches = 0;	/* -N count specified - minimum matches required */
+    uintmax_t type = JPRINT_TYPE_SIMPLE;/* -t type used */
+    uintmax_t max_matches = 0;		/* -i count specified - don't show more than this many matches */
+    uintmax_t min_matches = 0;		/* -N count specified - minimum matches required */
     char const *print_type = NULL;	/* -p type specified */
     uintmax_t num_spaces = 0;		/* -b specified */
     bool print_json_levels = false;	/* -L specified */
     bool print_colons = false;		/* -T specified */
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
-    uintmax_t indent_level = 0;	/* -I specified */
+    uintmax_t indent_level = 0;		/* -I specified */
     bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded = false;		/* -E used, match encoded name */
     bool substrings_okay = false;	/* -S used, matching substrings okay */
-    bool grep_ere = false;		/* -g used, allow grep EREs */
+    bool use_regexps = false;		/* -g used, allow grep-like regexps */
     bool count_only = false;		/* -c used, only show count */
-
+    uintmax_t max_depth = JSON_DEFAULT_MAX_DEPTH; /* max depth to traverse set by -m depth */
     int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgc")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgcm:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -203,7 +213,7 @@ int main(int argc, char **argv)
 	    quote_strings = true;
 	    break;
 	case 't':
-	    type = optarg; /* XXX this has to be parsed and type might be a JTYPE_ instead */
+	    type = parse_types_option(optarg);
 	    break;
 	case 'i':
 	    if (!string_to_uintmax(optarg, &max_matches)) {
@@ -258,8 +268,8 @@ int main(int argc, char **argv)
 	case 'S':
 	    substrings_okay = true;
 	    break;
-	case 'g':   /* allow grep ERE */
-	    grep_ere = true;
+	case 'g':   /* allow grep-like ERE */
+	    use_regexps = true;
 	    break;
 	case 'c':
 	    count_only = true;
@@ -267,6 +277,12 @@ int main(int argc, char **argv)
 	case 'q':
 	    quiet = true;
 	    msg_warn_silent = true;
+	    break;
+	case 'm': /* set maximum depth to traverse json tree */
+	    if (!string_to_uintmax(optarg, &max_depth)) {
+		err(3, "jprint", "couldn't parse -m depth"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -287,6 +303,7 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
+    /* if *argv[0] != '-' we will attempt to read from a regular file */
     if (*argv[0] != '-') {
         /* check that first arg exists and is a regular file */
 	if (!exists(argv[0])) {
@@ -306,7 +323,7 @@ int main(int argc, char **argv)
 	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
 	    not_reached();
 	}
-    } else {
+    } else { /* *argv[0] == '-', read from stdin */
 	is_stdin = true;
 	json_file = stdin;
     }
@@ -330,6 +347,10 @@ int main(int argc, char **argv)
 
     /* this will change to a debug message at a later time */
     msg("valid JSON");
+
+    /* the debug level will be increased at a later time */
+    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", max_depth, (max_depth == 0?" (no limit)":
+		max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /* TODO process name_args */
     for (i = 1; argv[i] != NULL; ++i) {
@@ -358,7 +379,7 @@ int main(int argc, char **argv)
     }
 
     /* free tree */
-    json_tree_free(json_tree, JSON_DEFAULT_MAX_DEPTH);
+    json_tree_free(json_tree, max_depth);
 
     if (match_found) {
 	exit(0); /*ooo*/
@@ -369,6 +390,61 @@ int main(int argc, char **argv)
 	exit(1); /*ooo*/
     }
 }
+
+static uintmax_t
+parse_types_option(char *optarg)
+{
+    char *p = NULL;	    /* for strtok_r() */
+    char *saveptr = NULL;   /* for strtok_r() */
+
+    uintmax_t type = JPRINT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
+
+    if (optarg == NULL || !*optarg) {
+	/* NULL or empty optarg, assume simple */
+	return type;
+    }
+
+    /*
+     * Go through comma-separated list of types, setting each as a bitvector
+     *
+     * NOTE: the way this is done might change if it proves there is a better
+     * way (and there might be - I've thought of a number of ways already).
+     */
+    for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+	if (!strcmp(p, "int")) {
+	    type |= JPRINT_TYPE_INT;
+	} else if (!strcmp(p, "float")) {
+	    type |= JPRINT_TYPE_FLOAT;
+	} else if (!strcmp(p, "exp")) {
+	    type |= JPRINT_TYPE_EXP;
+	} else if (!strcmp(p, "num")) {
+	    type |= JPRINT_TYPE_NUM;
+	} else if (!strcmp(p, "bool")) {
+	    type |= JPRINT_TYPE_BOOL;
+	} else if (!strcmp(p, "str")) {
+	    type |= JPRINT_TYPE_STR;
+	} else if (!strcmp(p, "null")) {
+	    type |= JPRINT_TYPE_NULL;
+	} else if (!strcmp(p, "object")) {
+	    type |= JPRINT_TYPE_OBJECT;
+	} else if (!strcmp(p, "array")) {
+	    type |= JPRINT_TYPE_ARRAY;
+	} else if (!strcmp(p, "simple")) {
+	    type |= JPRINT_TYPE_SIMPLE;
+	} else if (!strcmp(p, "compound")) {
+	    type |= JPRINT_TYPE_COMPOUND;
+	} else if (!strcmp(p, "any")) {
+	    type |= JPRINT_TYPE_ANY;
+	} else {
+	    /* unknown type */
+	    err(11, __func__, "unknown type '%s'", p);
+	    not_reached();
+	}
+    }
+
+    return type;
+}
+
 
 /*
  * usage - print usage to stderr
@@ -408,7 +484,9 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
-    fprintf_usage(exitcode, stderr, usage_msg1, JPRINT_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2);
+    fprintf_usage(exitcode, stderr, usage_msg3, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

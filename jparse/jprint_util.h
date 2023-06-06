@@ -1,4 +1,4 @@
-/* jprint - JSON printer
+/* jprint_util - utility functions for JSON printer jprint
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -17,8 +17,8 @@
  */
 
 
-#if !defined(INCLUDE_JPRINT_H)
-#    define  INCLUDE_JPRINT_H
+#if !defined(INCLUDE_JPRINT_UTIL_H)
+#    define  INCLUDE_JPRINT_UTIL_H
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,34 +50,8 @@
 #include "json_util.h"
 
 /*
- * jprint_util - utilities we will need
- */
-#include "jprint_util.h"
-
-/*
  * jparse - JSON parser
  */
 #include "jparse.h"
 
-/* jprint version string */
-#define JPRINT_VERSION "0.0.5 2023-06-05"		/* format: major.minor YYYY-MM-DD */
-
-/* -t types */
-#define JPRINT_TYPE_NONE    (0)
-#define JPRINT_TYPE_INT	    (1)
-#define JPRINT_TYPE_FLOAT   (2)
-#define JPRINT_TYPE_EXP	    (4)
-#define JPRINT_TYPE_NUM	    (8)
-#define JPRINT_TYPE_BOOL    (16)
-#define JPRINT_TYPE_STR	    (32)
-#define JPRINT_TYPE_NULL    (64)
-#define JPRINT_TYPE_OBJECT  (128)
-#define JPRINT_TYPE_ARRAY   (256)
-#define JPRINT_TYPE_ANY	    (511) /* bitwise OR of the above values */
-/* JPRINT_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
-#define JPRINT_TYPE_SIMPLE  (JPRINT_TYPE_NUM|JPRINT_TYPE_BOOL|JPRINT_TYPE_STR|JPRINT_TYPE_NULL)
-/* JPRINT_TYPE_COMPOUND is bitwise OR of object and array */
-#define JPRINT_TYPE_COMPOUND (JPRINT_TYPE_OBJECT|JPRINT_TYPE_ARRAY)
-
-
-#endif /* !defined INCLUDE_JPRINT_H */
+#endif /* !defined INCLUDE_JPRINT_UTIL_H */
