@@ -59,7 +59,7 @@ static const char * const usage_msg0 =
     "\t\t\t\tobject\t\tJSON objects\n"
     "\t\t\t\tarray\t\tJSON array\n"
     "\t\t\t\tcompound\talias for object,array\n"
-    "\t\t\t\tany\t\tany type of value\n\n";
+    "\t\t\t\tany\t\tany type of value\n";
 
 static const char * const usage_msg1 =
     "\t-q\t\tQuiet mode (def: print stuff to stdout)\n\n"
@@ -90,7 +90,7 @@ static const char * const usage_msg1 =
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
     "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
-    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n\n";
+    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
 static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
