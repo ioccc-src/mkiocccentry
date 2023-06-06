@@ -462,7 +462,7 @@ jprint_util.o: jprint_util.c jprint_util.h jparse.h json_parse.h json_util.h uti
 jprint.o: jprint.c jparse.h jprint_util.o json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
 	${CC} ${CFLAGS} jprint.c -c
 
-jprint: jprint.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+jprint: jprint.o jparse.a jprint_util.o ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 
