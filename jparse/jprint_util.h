@@ -75,19 +75,21 @@
 
 
 /* function prototypes */
+
+/* JSON types - -t option*/
 uintmax_t jprint_parse_types_option(char *optarg);
-bool match_none(uintmax_t types);
-bool match_int(uintmax_t types);
-bool match_float(uintmax_t types);
-bool match_exp(uintmax_t types);
-bool match_bool(uintmax_t types);
-bool match_string(uintmax_t types);
-bool match_null(uintmax_t types);
-bool match_object(uintmax_t types);
-bool match_array(uintmax_t types);
-bool match_any(uintmax_t types);
-bool match_simple(uintmax_t types);
-bool match_compound(uintmax_t types);
+bool jprint_match_none(uintmax_t types);
+bool jprint_match_int(uintmax_t types);
+bool jprint_match_float(uintmax_t types);
+bool jprint_match_exp(uintmax_t types);
+bool jprint_match_bool(uintmax_t types);
+bool jprint_match_string(uintmax_t types);
+bool jprint_match_null(uintmax_t types);
+bool jprint_match_object(uintmax_t types);
+bool jprint_match_array(uintmax_t types);
+bool jprint_match_any(uintmax_t types);
+bool jprint_match_simple(uintmax_t types);
+bool jprint_match_compound(uintmax_t types);
 
 
 
