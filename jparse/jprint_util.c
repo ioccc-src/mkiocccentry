@@ -20,6 +20,191 @@
 
 #include "jprint_util.h"
 
+/*
+ * match_none	- if no types should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types == 0.
+ */
+bool
+match_none(uintmax_t types)
+{
+    return types == JPRINT_TYPE_NONE;
+}
+/*
+ * match_int	- if ints should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_INT set.
+ */
+bool
+match_int(uintmax_t types)
+{
+    return types & JPRINT_TYPE_INT;
+}
+/*
+ * match_float	- if floats should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_FLOAT set.
+ */
+bool
+match_float(uintmax_t types)
+{
+    return types & JPRINT_TYPE_FLOAT;
+}
+/*
+ * match_exp	- if exponents should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_EXP set.
+ */
+bool
+match_exp(uintmax_t types)
+{
+    return types & JPRINT_TYPE_EXP;
+}
+/*
+ * match_bool	- if booleans should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_BOOL set.
+ */
+bool
+match_bool(uintmax_t types)
+{
+    return types & JPRINT_TYPE_BOOL;
+}
+/*
+ * match_string	    - if strings should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_STR set.
+ */
+bool
+match_string(uintmax_t types)
+{
+    return types & JPRINT_TYPE_STR;
+}
+/*
+ * match_null	- if null should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_NULL set.
+ */
+bool
+match_null(uintmax_t types)
+{
+    return types & JPRINT_TYPE_NULL;
+}
+/*
+ * match_object	    - if objects should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_OBJECT set.
+ */
+bool
+match_object(uintmax_t types)
+{
+    return types & JPRINT_TYPE_OBJECT;
+}
+/*
+ * match_array	    - if arrays should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_ARRAY set.
+ */
+bool
+match_array(uintmax_t types)
+{
+    return types & JPRINT_TYPE_ARRAY;
+}
+/*
+ * match_any	- if any type should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has any type set.
+ */
+bool
+match_any(uintmax_t types)
+{
+    return types & JPRINT_TYPE_ANY;
+}
+/*
+ * match_simple	- if simple types should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Simple is defined as a number, a bool, a string or a null.
+ *
+ * Returns true if types has JPRINT_TYPE_SIMPLE set.
+ */
+bool
+match_simple(uintmax_t types)
+{
+    return types & JPRINT_TYPE_SIMPLE;
+}
+/*
+ * match_compound   - if compounds should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * A compound is defined as an object or array.
+ *
+ * Returns true if types has JPRINT_TYPE_COMPOUND set.
+ */
+bool
+match_compound(uintmax_t types)
+{
+    return types & JPRINT_TYPE_COMPOUND;
+}
+
+/*
+ * jprint_parse_types_option	- parse -t types list
+ *
+ * given:
+ *
+ *	optarg	    - option argument to -t option
+ *
+ * Returns: bitvector of types requested.
+ *
+ * NOTE: if optarg is NULL (which should never happen) or empty it returns the
+ * default, JPRINT_TYPE_SIMPLE (as if '-t simple').
+ */
 uintmax_t
 jprint_parse_types_option(char *optarg)
 {
