@@ -259,4 +259,52 @@ jprint_parse_types_option(char *optarg)
     return type;
 }
 
+/*
+ * jprint_parse_print_option	- parse -p option list
+ *
+ * given:
+ *
+ *	optarg	    - option argument to -p option
+ *
+ * Returns: bitvector of types to print.
+ *
+ * NOTE: if optarg is NULL (which should never happen) or empty it returns the
+ * default, JPRINT_PRINT_VALUE (as if '-p v').
+ */
+uintmax_t
+jprint_parse_print_option(char *optarg)
+{
+    char *p = NULL;	    /* for strtok_r() */
+    char *saveptr = NULL;   /* for strtok_r() */
+
+    uintmax_t print = JPRINT_PRINT_VALUE; /* default is to print values */
+
+    if (optarg == NULL || !*optarg) {
+	/* NULL or empty optarg, assume simple */
+	return print;
+    }
+
+    /*
+     * Go through comma-separated list of what to print, setting each as a bitvector
+     *
+     * NOTE: the way this is done might change if it proves there is a better
+     * way (and there might very well be).
+     */
+    for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+	if (!strcmp(p, "v") || !strcmp(p, "value")) {
+	    print |= JPRINT_PRINT_VALUE;
+	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
+	    print |= JPRINT_PRINT_NAME;
+	} else if (!strcmp(p, "both")) {
+	    print |= JPRINT_PRINT_BOTH;
+	} else {
+	    /* unknown keyword */
+	    err(12, __func__, "unknown keyword '%s'", p);
+	    not_reached();
+	}
+    }
+
+    return print;
+}
+
 
