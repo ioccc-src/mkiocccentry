@@ -120,6 +120,9 @@ bool jprint_match_compound(uintmax_t types);
 
 /* what to print - -p option */
 uintmax_t jprint_parse_print_option(char *optarg);
+bool jprint_print_name(uintmax_t types);
+bool jprint_print_value(uintmax_t types);
+bool jprint_print_name_value(uintmax_t types);
 
 /* for number range options: -l, -n, -n */
 bool jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number);

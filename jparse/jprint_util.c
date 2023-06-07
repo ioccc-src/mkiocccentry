@@ -34,6 +34,7 @@ jprint_match_none(uintmax_t types)
 {
     return types == JPRINT_TYPE_NONE;
 }
+
 /*
  * jprint_match_int	- if ints should match
  *
@@ -260,6 +261,50 @@ jprint_parse_types_option(char *optarg)
 }
 
 /*
+ * jprint_print_name	- if only names should be printed
+ *
+ * given:
+ *
+ *	types	- print types set
+ *
+ * Returns true if types only has JPRINT_PRINT_NAME set.
+ */
+bool
+jprint_print_name(uintmax_t types)
+{
+    return (types & JPRINT_PRINT_NAME) && !(types & JPRINT_PRINT_VALUE);
+}
+/*
+ * jprint_print_value	- if only values should be printed
+ *
+ * given:
+ *
+ *	types	- print types set
+ *
+ * Returns true if types only has JPRINT_PRINT_VALUE set.
+ */
+bool
+jprint_print_value(uintmax_t types)
+{
+    return (types & JPRINT_PRINT_VALUE) && !(types & JPRINT_PRINT_NAME);
+}
+/*
+ * jprint_print_both	- if names AND values should be printed
+ *
+ * given:
+ *
+ *	types	- print types set
+ *
+ * Returns true if types has JPRINT_PRINT_BOTH set.
+ */
+bool
+jprint_print_name_value(uintmax_t types)
+{
+    return types == JPRINT_PRINT_BOTH;
+}
+
+
+/*
  * jprint_parse_print_option	- parse -p option list
  *
  * given:
@@ -277,11 +322,11 @@ jprint_parse_print_option(char *optarg)
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
 
-    uintmax_t print_types = JPRINT_PRINT_VALUE; /* default is to print values */
+    uintmax_t print_types = 0; /* default is to print values */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
-	return print_types;
+	return JPRINT_PRINT_VALUE;
     }
 
     /*
@@ -295,7 +340,7 @@ jprint_parse_print_option(char *optarg)
 	    print_types |= JPRINT_PRINT_VALUE;
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
 	    print_types |= JPRINT_PRINT_NAME;
-	} else if (!strcmp(p, "both")) {
+	} else if (!strcmp(p, "b") || !strcmp(p, "both")) {
 	    print_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
@@ -304,6 +349,15 @@ jprint_parse_print_option(char *optarg)
 	}
     }
 
+    if (jprint_print_name_value(print_types)) {
+	dbg(DBG_NONE, "will print both name and value");
+    }
+    else if (jprint_print_name(print_types)) {
+	dbg(DBG_NONE, "will only print name");
+    }
+    else if (jprint_print_value(print_types)) {
+	dbg(DBG_NONE, "will only print value");
+    }
     return print_types;
 }
 
