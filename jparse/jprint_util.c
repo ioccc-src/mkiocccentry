@@ -277,11 +277,11 @@ jprint_parse_print_option(char *optarg)
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
 
-    uintmax_t print_type = JPRINT_PRINT_VALUE; /* default is to print values */
+    uintmax_t print_types = JPRINT_PRINT_VALUE; /* default is to print values */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
-	return print_type;
+	return print_types;
     }
 
     /*
@@ -292,11 +292,11 @@ jprint_parse_print_option(char *optarg)
      */
     for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "v") || !strcmp(p, "value")) {
-	    print_type |= JPRINT_PRINT_VALUE;
+	    print_types |= JPRINT_PRINT_VALUE;
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
-	    print_type |= JPRINT_PRINT_NAME;
+	    print_types |= JPRINT_PRINT_NAME;
 	} else if (!strcmp(p, "both")) {
-	    print_type |= JPRINT_PRINT_BOTH;
+	    print_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
 	    err(12, __func__, "unknown keyword '%s'", p);
@@ -304,7 +304,7 @@ jprint_parse_print_option(char *optarg)
 	}
     }
 
-    return print_type;
+    return print_types;
 }
 
 /* jprint_parse_number_range	- parse a number range for options -l, -n, -i
@@ -326,7 +326,7 @@ jprint_parse_number_range(char *optarg, struct jprint_number *number)
 {
     /* firewall */
     if (number == NULL) {
-	err(15, __func__, "NULL number struct");
+	err(13, __func__, "NULL number struct");
 	not_reached();
     } else {
 	memset(number, 0, sizeof(struct jprint_number));
