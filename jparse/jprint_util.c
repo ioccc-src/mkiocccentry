@@ -346,6 +346,14 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	not_reached();
     } else {
 	memset(number, 0, sizeof(struct jprint_number));
+
+	/* don't assume everything is 0 */
+	number->exact = false;
+	number->range.min = 0;
+	number->range.max = 0;
+	number->range.inclusive = false;
+	number->range.less_than_equal = false;
+	number->range.greater_than_equal = false;
     }
 
     if (optarg == NULL || *optarg == '\0') {
