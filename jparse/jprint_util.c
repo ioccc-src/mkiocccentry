@@ -159,7 +159,7 @@ jprint_match_array(uintmax_t types)
 bool
 jprint_match_any(uintmax_t types)
 {
-    return types & JPRINT_TYPE_ANY;
+    return types == JPRINT_TYPE_ANY;
 }
 /*
  * jprint_match_simple	- if simple types should match
