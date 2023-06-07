@@ -82,21 +82,20 @@
 /* structs for various options */
 
 /* number ranges for the options -l, -i and -n */
-/* XXX - that these two structs are works in progress - XXX */
 struct jprint_number_range
 {
     intmax_t min;   /* min in range */
     intmax_t max;   /* max in range */
     
-    bool less_than_equal;	/* if number type must be <= min */
-    bool greater_than_equal;	/* if number type must be >= max */
-    bool inclusive;		/* if number type must be >= min && <= max */
+    bool less_than_equal;	/* true if number type must be <= min */
+    bool greater_than_equal;	/* true if number type must be >= max */
+    bool inclusive;		/* true if number type must be >= min && <= max */
 };
 struct jprint_number
 {
     /* exact number if >= 0 */
-    intmax_t number;		/* for exact number (must be >= 0) */
-    bool exact;			/* if an exact match must be found and number != -1 */
+    intmax_t number;		/* exact number exact number (must be >= 0) */
+    bool exact;			/* true if an exact match (number) must be found */
 
     /* for number ranges */
     struct jprint_number_range range;	/* for ranges */
@@ -123,6 +122,6 @@ bool jprint_match_compound(uintmax_t types);
 uintmax_t jprint_parse_print_option(char *optarg);
 
 /* for number range options: -l, -n, -i */
-bool jprint_parse_number_range(char *optarg, struct jprint_number *number);
+bool jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number);
 
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */
