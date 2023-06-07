@@ -81,7 +81,7 @@
 
 /* structs for various options */
 
-/* number ranges for the options -l, -i and -n */
+/* number ranges for the options -l, -n and -n */
 struct jprint_number_range
 {
     intmax_t min;   /* min in range */
@@ -121,7 +121,7 @@ bool jprint_match_compound(uintmax_t types);
 /* what to print - -p option */
 uintmax_t jprint_parse_print_option(char *optarg);
 
-/* for number range options: -l, -n, -i */
+/* for number range options: -l, -n, -n */
 bool jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number);
 
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */

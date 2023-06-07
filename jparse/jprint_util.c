@@ -307,7 +307,7 @@ jprint_parse_print_option(char *optarg)
     return print_types;
 }
 
-/* jprint_parse_number_range	- parse a number range for options -l, -n, -i
+/* jprint_parse_number_range	- parse a number range for options -l, -N, -n
  *
  * given:
  *

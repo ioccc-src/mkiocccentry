@@ -37,7 +37,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-i count]\n"
+    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
     "\t\t[-I] [-S] [-g] [-c] [-m depth] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
@@ -68,17 +68,17 @@ static const char * const usage_msg1 =
     "\t\t\tIf lvl is a number followed by : (e.g. '-l 3:'), level must be >= number\n"
     "\t\t\tIf lvl is a : followed by a number (e.g. '-l :3'), level must be <= number\n"
     "\t\t\tIf lvl is num:num (e.g. '-l 3:5'), level must be inclusively in the range\n\n"
-    "\t-i count\tPrint up to count matches (def: print all matches)\n"
-    "\t\t\tIf count is a number (e.g. '-i 3'), the matches must == number\n"
-    "\t\t\tIf count is a number followed by : (e.g. '-i 3:'), matches must be >= number\n"
-    "\t\t\tIf count is a : followed by a number (e.g. '-i :3'), matches must be <= number\n"
-    "\t\t\tIf count is num:num (e.g. '-i 3:5'), matches must be inclusively in the range\n"
+    "\t-n count\tPrint up to count matches (def: print all matches)\n"
+    "\t\t\tIf count is a number (e.g. '-n 3'), the matches must == number\n"
+    "\t\t\tIf count is a number followed by : (e.g. '-n 3:'), matches must be >= number\n"
+    "\t\t\tIf count is a : followed by a number (e.g. '-n :3'), matches must be <= number\n"
+    "\t\t\tIf count is num:num (e.g. '-n 3:5'), matches must be inclusively in the range\n"
     "\t\t\tNOTE: when number < 0 it refers to the instance from last: -1 is last, -2 second to last ...\n\n"
     "\t-N num\t\tPrint only if there are only a given number of matches (def: do not limit)\n"
     "\t\t\tIf num is only a number (e.g. '-l 1'), there must be only that many matches\n"
     "\t\t\tIf num is a number followed by : (e.g. '-l 3:'), there must >= num matches\n"
-    "\t\t\tIf num is a : followed by a number (e.g. '-i :3'), there must <= num matches\n"
-    "\t\t\tIf num is num:num (e.g. '-i 3:5'), the number of matches must be inclusively in the range\n\n"
+    "\t\t\tIf num is a : followed by a number (e.g. '-n :3'), there must <= num matches\n"
+    "\t\t\tIf num is num:num (e.g. '-n 3:5'), the number of matches must be inclusively in the range\n\n"
     "\t-p {n,v,b}\tprint JSON key, value or both (def: print JSON values)\n"
     "\t\t\tif the type of value does not match the -t type specification,\n"
     "\t\t\tthen the key, value or both are not printed.\n"
@@ -112,7 +112,7 @@ static const char * const usage_msg2 =
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
     "\t\t\tUse of -j conflicts with use of '-p {n,v}'.\n\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
-    "\t-I\t\tIgnore case of name (def: case matters).\n"
+    "\t-i\t\tIgnore case of name (def: case matters).\n"
     "\t-S\t\tSubstrings are used to match (def: the full name must match).\n"
     "\t-g\t\tgrep-like extended regular expressions are used to match (def: name args are not regexps).\n"
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
@@ -156,12 +156,13 @@ int main(int argc, char **argv)
     bool is_stdin = false;		/* reading from stdin */
     bool is_valid = true;		/* if file is valid json */
     bool match_found = false;		/* true if a pattern is specified and there is a match */
+    bool case_insensitive = false;	/* true if -i, case-insensitive */
     bool pattern_specified = false;	/* true if a pattern was specified */
     FILE *json_file = NULL;		/* file pointer for json file */
     bool encode_strings = false;	/* -e used */
     bool quote_strings = false;		/* -Q used */
     uintmax_t type = JPRINT_TYPE_SIMPLE;/* -t type used */
-    struct jprint_number jprint_max_matches = { 0 }; /* -i count specified */
+    struct jprint_number jprint_max_matches = { 0 }; /* -n count specified */
     struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
@@ -183,7 +184,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:i:N:p:b:LTCBI:jEISgcm:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:LTCBI:jEiSgcm:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -218,8 +219,8 @@ int main(int argc, char **argv)
 	case 't':
 	    type = jprint_parse_types_option(optarg);
 	    break;
-	case 'i':
-	    jprint_parse_number_range("-i", optarg, &jprint_max_matches);
+	case 'n':
+	    jprint_parse_number_range("-n", optarg, &jprint_max_matches);
 	    break;
 	case 'N':
 	    jprint_parse_number_range("-N", optarg, &jprint_min_matches);
@@ -252,6 +253,9 @@ int main(int argc, char **argv)
 		err(3, "jprint", "couldn't parse -I indent_level"); /*ooo*/
 		not_reached();
 	    }
+	    break;
+	case 'i':
+	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
 	    /* TODO need to set the options of -p b -b 1 -c -e -Q -I 4 -t any */
