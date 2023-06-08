@@ -60,7 +60,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.5 2023-06-05"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.6 2023-06-07"		/* format: major.minor YYYY-MM-DD */
 
 
 #endif /* !defined INCLUDE_JPRINT_H */

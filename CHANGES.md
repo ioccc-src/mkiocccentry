@@ -12,6 +12,9 @@ what the limit is, indicating that 0 is no limit and 256 is the default.
 bitvector but this might change as more is developed (bitvector was not the
 first thought).
 
+New `jprint` version "0.0.6 2023-06-07". It now parses all options and most test
+functions for options being set are added as well. This version is backdated to
+7 June because this was done on the 7th of June but the version was not updated.
 
 ## Release 1.0.4 2023-06-04
 
