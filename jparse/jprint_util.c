@@ -219,12 +219,21 @@ jprint_parse_types_option(char *optarg)
 {
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
+    char *dup = NULL;	    /* strdup()d copy of optarg */
 
     uintmax_t type = JPRINT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
 	return type;
+    } else {
+	/* pre-clear errno for errp() */
+	errno = 0;
+	dup = strdup(optarg);
+	if (dup == NULL) {
+	    err(13, __func__, "strdup(%s) failed", optarg);
+	    not_reached();
+	}
     }
 
     /*
@@ -233,7 +242,7 @@ jprint_parse_types_option(char *optarg)
      * NOTE: the way this is done might change if it proves there is a better
      * way (and there might be - I've thought of a number of ways already).
      */
-    for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+    for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "int")) {
 	    type |= JPRINT_TYPE_INT;
 	} else if (!strcmp(p, "float")) {
@@ -265,6 +274,10 @@ jprint_parse_types_option(char *optarg)
 	}
     }
 
+    if (dup != NULL) {
+	free(dup);
+	dup = NULL;
+    }
     return type;
 }
 
