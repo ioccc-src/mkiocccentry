@@ -121,8 +121,8 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
-    "\t-K\t\tRun tests on options parsed\n"
-    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
+    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
+    "\t-K\t\tRun tests on jprint constraints\n";
 
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
@@ -135,12 +135,13 @@ static const char * const usage_msg3 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "\tExit codes:\n"
-    "\t\t0\tall is OK: file is valid JSON, match(es) found or no name_arg given\n"
+    "\t\t0\tall is OK: file is valid JSON, match(es) found or no name_arg given OR test mode OK\n"
     "\t\t1\tfile is valid JSON, name_arg given but no matches found\n"
     "\t\t2\t-h and help string printed or -V and version string printed\n"
     "\t\t3\tinvalid command line, invalid option or option missing an argument\n"
     "\t\t4\tfile does not exist, not a file, or unable to read the file\n"
-    "\t\t5\tfile contents is not valid JSON\n\n"
+    "\t\t5\tfile contents is not valid JSON\n"
+    "\t\t6\ttest mode failed\n\n"
     "jprint version: %s";
 
 /*
@@ -289,7 +290,12 @@ int main(int argc, char **argv)
 	    }
 	    break;
 	case 'K': /* run test code */
-	    return jprint_run_tests(); /*ooo*/
+	    if (!jprint_run_tests()) {
+		exit(6); /*ooo*/
+	    }
+	    else {
+		exit(0); /*ooo*/
+	    }
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
