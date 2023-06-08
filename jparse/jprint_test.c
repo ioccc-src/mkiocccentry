@@ -26,7 +26,7 @@
  *
  *	void	    - no args: this function is selfish :-)
  *
- * Returns true if any test failed. Will only return after all tests are run.
+ * Returns false if any test failed. Will only return after all tests are run.
  */
 bool
 jprint_run_tests(void)
