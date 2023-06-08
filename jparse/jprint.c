@@ -39,7 +39,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] [-c] [-m depth] file.json [name_arg ...]\n\n"
+    "\t\t[-I] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -121,6 +121,7 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
+    "\t-K\t\tRun tests on options parsed\n"
     "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
 
 /*
@@ -184,7 +185,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:LTCBI:jEiSgcm:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:LTCBI:jEiSgcm:K")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -286,6 +287,9 @@ int main(int argc, char **argv)
 		err(3, "jprint", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
 	    }
+	    break;
+	case 'K': /* run test code */
+	    return jprint_run_tests(); /*ooo*/
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */

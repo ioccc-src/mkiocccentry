@@ -3,11 +3,14 @@
 
 ## Release 1.0.5 2023-06-08
 
-`jprint` version now "0.0.7 2023-06-08". At this time I (Cody) believe all known
-checks for `jprint` options have been added!
+`jprint` version "0.0.8 2023-06-08". At this time I (Cody) believe all known
+checks for `jprint` options have been added. Also test functions for the number
+range code has been added and run successfully! To run test code pass in `-K` to
+`jprint`.
 
 The next step is to write some test functions (likely printing debug
-messages for different options and their option arguments).
+messages for different options and their option arguments). Currently (as of
+version 0.0.8) the number range test functions are successful.
 
 If all is OK the code to traverse the tree to look for simple matches (this does
 not mean the `JPRINT_TYPE_SIMPLE`) can be added. At first the tool will not
