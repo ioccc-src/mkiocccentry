@@ -251,7 +251,7 @@ jprint_parse_types_option(char *optarg)
 	    type |= JPRINT_TYPE_ANY;
 	} else {
 	    /* unknown type */
-	    err(11, __func__, "unknown type '%s'", p);
+	    err(6, __func__, "unknown type '%s'", p);
 	    not_reached();
 	}
     }
@@ -299,7 +299,7 @@ jprint_parse_print_option(char *optarg)
 	    print_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
-	    err(12, __func__, "unknown keyword '%s'", p);
+	    err(7, __func__, "unknown keyword '%s'", p);
 	    not_reached();
 	}
     }
@@ -311,30 +311,101 @@ jprint_parse_print_option(char *optarg)
  *
  * given:
  *
+ *	option	    - option string (e.g. "-l"). Used for error and debug messages.
  *	optarg	    - the option argument
  *	number	    - pointer to struct number
  *
  * Returns true if successfully parsed.
  *
- * NOTE: this function does not return on syntax error or NULL number.
+ * The following rules apply:
  *
- * NOTE: this function is a work in progress and is currently incomplete. The
- * structs might very well change too.
+ * (0) an exact number is a number optional arg by itself e.g. -l 5 or -l5.
+ * (1) an inclusive range is <min>:<max> e.g. -l 5:10
+ *     (1a) the minimum must be <= the max
+ * (2) a minimum number, that is num >= minimum, is <num>:
+ * (3) a maximum number, that is num <= maximum, is :<num>
+ * (4) anything else is an error
+ *
+ * See also the structs jprint_number_range and jprint_number in jprint_util.h
+ * for more details.
+ *
+ * NOTE: currently (as of 7 June 2023) the numbers are signed. This might or
+ * might not change depending on what is needed.
+ *
+ * NOTE: this function does not return on syntax error or NULL number.
  */
 bool
-jprint_parse_number_range(char *optarg, struct jprint_number *number)
+jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number)
 {
+    intmax_t max = 0;
+    intmax_t min = 0;
+
     /* firewall */
     if (number == NULL) {
-	err(13, __func__, "NULL number struct");
+	err(8, __func__, "NULL number struct for option %s", option);
 	not_reached();
     } else {
 	memset(number, 0, sizeof(struct jprint_number));
+
+	/* don't assume everything is 0 */
+	number->exact = false;
+	number->range.min = 0;
+	number->range.max = 0;
+	number->range.inclusive = false;
+	number->range.less_than_equal = false;
+	number->range.greater_than_equal = false;
     }
 
     if (optarg == NULL || *optarg == '\0') {
-	warn(__func__, "NULL or empty optarg, ignoring");
+	warn(__func__, "NULL or empty optarg for %s, ignoring", option);
 	return false;
+    }
+
+    if (!strchr(optarg, ':')) {
+	if (string_to_intmax(optarg, &number->number)) {
+	    number->exact = true;
+	    number->range.min = 0;
+	    number->range.max = 0;
+	    number->range.inclusive = false;
+	    number->range.less_than_equal = false;
+	    number->range.greater_than_equal = false;
+	    dbg(DBG_NONE, "exact number required for option %s: %jd", option, number->number);
+	} else {
+	    err(9, __func__, "invalid number for option %s: <%s>", option, optarg);
+	    not_reached();
+	}
+    } else if (sscanf(optarg, "%jd:%jd", &min, &max) == 2) {
+	if (min > max) {
+	    err(10, __func__, "invalid inclusive range for option %s: min > max: %jd > %jd", option, min, max);
+	    not_reached();
+	}
+	number->range.min = min;
+	number->range.max = max;
+	number->range.inclusive = true;
+	number->range.less_than_equal = false;
+	number->range.greater_than_equal = false;
+	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min, number->range.max);
+    } else if (sscanf(optarg, "%jd:", &min) == 1) {
+	number->number = 0;
+	number->exact = false;
+	number->range.min = min;
+	number->range.max = number->range.min;
+	number->range.greater_than_equal = true;
+	number->range.less_than_equal = false;
+	number->range.inclusive = false;
+	dbg(DBG_NONE, "minimum number required for option %s: must be >= %jd", option, number->range.min);
+    } else if (sscanf(optarg, ":%jd", &max) == 1) {
+	number->range.max = max;
+	number->range.min = number->range.max;
+	number->number = 0;
+	number->exact = false;
+	number->range.less_than_equal = true;
+	number->range.greater_than_equal = false;
+	number->range.inclusive = false;
+	dbg(DBG_NONE, "maximum number required for option %s: must be <= %jd", option, number->range.max);
+    } else {
+	err(11, __func__, "number range syntax error for option %s: <%s>", option, optarg);
+	not_reached();
     }
 
     return true;

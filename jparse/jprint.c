@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'l':
-	    jprint_parse_number_range(optarg, &jprint_levels);
+	    jprint_parse_number_range("-l", optarg, &jprint_levels);
 	    break;
 	case 'e':
 	    encode_strings = true;
@@ -219,10 +219,10 @@ int main(int argc, char **argv)
 	    type = jprint_parse_types_option(optarg);
 	    break;
 	case 'i':
-	    jprint_parse_number_range(optarg, &jprint_max_matches);
+	    jprint_parse_number_range("-i", optarg, &jprint_max_matches);
 	    break;
 	case 'N':
-	    jprint_parse_number_range(optarg, &jprint_min_matches);
+	    jprint_parse_number_range("-N", optarg, &jprint_min_matches);
 	    break;
 	case 'p':
 	    print_type = jprint_parse_print_option(optarg);
