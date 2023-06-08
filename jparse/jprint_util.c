@@ -219,12 +219,21 @@ jprint_parse_types_option(char *optarg)
 {
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
+    char *dup = NULL;	    /* strdup()d copy of optarg */
 
     uintmax_t type = JPRINT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
 	return type;
+    } else {
+	/* pre-clear errno for errp() */
+	errno = 0;
+	dup = strdup(optarg);
+	if (dup == NULL) {
+	    err(13, __func__, "strdup(%s) failed", optarg);
+	    not_reached();
+	}
     }
 
     /*
@@ -233,7 +242,7 @@ jprint_parse_types_option(char *optarg)
      * NOTE: the way this is done might change if it proves there is a better
      * way (and there might be - I've thought of a number of ways already).
      */
-    for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+    for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "int")) {
 	    type |= JPRINT_TYPE_INT;
 	} else if (!strcmp(p, "float")) {
@@ -265,6 +274,10 @@ jprint_parse_types_option(char *optarg)
 	}
     }
 
+    if (dup != NULL) {
+	free(dup);
+	dup = NULL;
+    }
     return type;
 }
 
@@ -329,6 +342,7 @@ jprint_parse_print_option(char *optarg)
 {
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
+    char *dup = NULL;	    /* strdup()d copy of optarg */
 
     uintmax_t print_types = 0; /* default is to print values */
 
@@ -337,13 +351,20 @@ jprint_parse_print_option(char *optarg)
 	return JPRINT_PRINT_VALUE;
     }
 
+    errno = 0; /* pre-clear errno for errp() */
+    dup = strdup(optarg);
+    if (dup == NULL) {
+	err(15, __func__, "strdup(%s) failed", optarg);
+	not_reached();
+    }
+
     /*
      * Go through comma-separated list of what to print, setting each as a bitvector
      *
      * NOTE: the way this is done might change if it proves there is a better
      * way (and there might very well be).
      */
-    for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+    for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "v") || !strcmp(p, "value")) {
 	    print_types |= JPRINT_PRINT_VALUE;
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
@@ -366,6 +387,12 @@ jprint_parse_print_option(char *optarg)
     else if (jprint_print_value(print_types)) {
 	dbg(DBG_NONE, "will only print value");
     }
+
+    if (dup != NULL) {
+	free(dup);
+	dup = NULL;
+    }
+
     return print_types;
 }
 

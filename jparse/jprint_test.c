@@ -34,6 +34,7 @@ jprint_run_tests(void)
     struct jprint_number number;    /* number range */
     bool test = false;		    /* whether current test passes or fails */
     bool okay = true;	    /* if any test fails set to true, is return value */
+    uintmax_t bits = 0;	    /* for bits tests */
 
     /* set up exact match of 5 */
     jprint_parse_number_range("-l", "5", &number);
@@ -106,6 +107,47 @@ jprint_run_tests(void)
 	okay = false;
     }
 
+    /* now check bits */
+
+    /* set bits to JPRINT_PRINT_BOTH */
+    bits = jprint_parse_print_option("both");
+
+    /* check that JPRINT_PRINT_BOTH is equal to bits */
+    test = jprint_test_bits(true, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test a different way */
+    bits = jprint_parse_print_option("n,v");
+    /* check that JPRINT_PRINT_BOTH is equal to bits */
+    test = jprint_test_bits(true, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
+    if (!test) {
+	okay = false;
+    }
+
+
+    /* set bits to JPRINT_PRINT_NAME */
+    bits = jprint_parse_print_option("name");
+    /* check that only JPRINT_PRINT_NAME is set: both and value are not set */
+    test = jprint_test_bits(true, bits, jprint_print_name, "JPRINT_PRINT_NAME") && 
+	   jprint_test_bits(false, bits, jprint_print_value, "JPRINT_PRINT_VALUE") &&
+	   jprint_test_bits(false, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
+
+    if (!test) {
+	okay = false;
+    }
+    /* set bits to JPRINT_PRINT_VALUE */
+    bits = jprint_parse_print_option("v");
+    /* check that only JPRINT_PRINT_VALUE is set: both and name are not set */
+    test = jprint_test_bits(true, bits, jprint_print_value, "JPRINT_PRINT_VALUE") && 
+	   jprint_test_bits(false, bits, jprint_print_name, "JPRINT_PRINT_NAME") &&
+	   jprint_test_bits(false, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
+
+    if (!test) {
+	okay = false;
+    }
+
     return okay;
 }
 /* jprint_test_number_range_opts
@@ -145,9 +187,43 @@ jprint_test_number_range_opts(bool expected, intmax_t number, struct jprint_numb
 	print("expect number %jd to be <= %jd: ", number, range->range.max);
     }
 
-    if (expected == test) {
-	print("test %s\n", expected == test?"OK":"failed");
-    }
+    print("test %s\n", expected == test?"OK":"failed");
 
     return expected == test;
+}
+
+/* jprint_test_bits    -	test bits code
+ *
+ * given:
+ *
+ *	expected	- whether test should fail or not
+ *	set_bits	- the bits actually set
+ *	check_func	- pointer to function of appropriate check
+ *	name		- name of bits to check
+ *
+ * Returns true if the test succeeds otherwise false.
+ *
+ * NOTE: this function will not return on NULL function pointer or NULL name.
+ */
+bool
+jprint_test_bits(bool expected, uintmax_t set_bits, bool (*check_func)(uintmax_t), const char *name)
+{
+    bool okay = true;	/* assume test will pass */
+    bool test = false;	/* return value of function call */
+
+    /* firewall */
+    if (check_func == NULL) {
+	err(13, __func__, "NULL check_func");
+	not_reached();
+    }
+    print("in function %s: expects %s: ", __func__, expected?"success":"failure");
+    print("expect bits: %s: ", name);
+    test = check_func(set_bits);
+
+    print("test %s\n", expected == test?"OK":"failed");
+    if (expected != test) {
+	okay = false;
+    }
+
+    return okay;
 }
