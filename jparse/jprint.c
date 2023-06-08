@@ -161,8 +161,9 @@ int main(int argc, char **argv)
     bool encode_strings = false;	/* -e used */
     bool quote_strings = false;		/* -Q used */
     uintmax_t type = JPRINT_TYPE_SIMPLE;/* -t type used */
-    uintmax_t max_matches = 0;		/* -i count specified - don't show more than this many matches */
-    uintmax_t min_matches = 0;		/* -N count specified - minimum matches required */
+    struct jprint_number jprint_max_matches = { 0 }; /* -i count specified */
+    struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
+    struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
     uintmax_t num_spaces = 0;		/* -b specified */
     bool print_json_levels = false;	/* -L specified */
@@ -182,7 +183,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:eQt:qj:i:N:p:b:LTCBI:jEISgcm:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:i:N:p:b:LTCBI:jEISgcm:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -205,6 +206,9 @@ int main(int argc, char **argv)
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
+	case 'l':
+	    jprint_parse_number_range(optarg, &jprint_levels);
+	    break;
 	case 'e':
 	    encode_strings = true;
 	    break;
@@ -215,25 +219,17 @@ int main(int argc, char **argv)
 	    type = jprint_parse_types_option(optarg);
 	    break;
 	case 'i':
-	    if (!string_to_uintmax(optarg, &max_matches)) {
-		err(3, "jprint", "couldn't parse -i count"); /*ooo*/
-		not_reached();
-	    }
+	    jprint_parse_number_range(optarg, &jprint_max_matches);
 	    break;
 	case 'N':
-	    if (!string_to_uintmax(optarg, &min_matches)) {
-		err(3, "jprint", "couldn't parse -N count"); /*ooo*/
-		not_reached();
-	    }
+	    jprint_parse_number_range(optarg, &jprint_min_matches);
 	    break;
 	case 'p':
-	    /* XXX the type of this variable might have to change and in any
-	     * event must be parsed.
-	     */
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    /* XXX - is this the right idea ? - XXX */
+	    /* XXX this is incorrect as -b has two modes, tab and space count,
+	     * depending on optarg */
 	    if (!string_to_uintmax(optarg, &num_spaces)) {
 		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
 		not_reached();

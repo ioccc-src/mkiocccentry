@@ -277,11 +277,11 @@ jprint_parse_print_option(char *optarg)
     char *p = NULL;	    /* for strtok_r() */
     char *saveptr = NULL;   /* for strtok_r() */
 
-    uintmax_t print = JPRINT_PRINT_VALUE; /* default is to print values */
+    uintmax_t print_type = JPRINT_PRINT_VALUE; /* default is to print values */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
-	return print;
+	return print_type;
     }
 
     /*
@@ -292,11 +292,11 @@ jprint_parse_print_option(char *optarg)
      */
     for (p = strtok_r(optarg, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "v") || !strcmp(p, "value")) {
-	    print |= JPRINT_PRINT_VALUE;
+	    print_type |= JPRINT_PRINT_VALUE;
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
-	    print |= JPRINT_PRINT_NAME;
+	    print_type |= JPRINT_PRINT_NAME;
 	} else if (!strcmp(p, "both")) {
-	    print |= JPRINT_PRINT_BOTH;
+	    print_type |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
 	    err(12, __func__, "unknown keyword '%s'", p);
@@ -304,7 +304,38 @@ jprint_parse_print_option(char *optarg)
 	}
     }
 
-    return print;
+    return print_type;
 }
 
+/* jprint_parse_number_range	- parse a number range for options -l, -n, -i
+ *
+ * given:
+ *
+ *	optarg	    - the option argument
+ *	number	    - pointer to struct number
+ *
+ * Returns true if successfully parsed.
+ *
+ * NOTE: this function does not return on syntax error or NULL number.
+ *
+ * NOTE: this function is a work in progress and is currently incomplete. The
+ * structs might very well change too.
+ */
+bool
+jprint_parse_number_range(char *optarg, struct jprint_number *number)
+{
+    /* firewall */
+    if (number == NULL) {
+	err(15, __func__, "NULL number struct");
+	not_reached();
+    } else {
+	memset(number, 0, sizeof(struct jprint_number));
+    }
 
+    if (optarg == NULL || *optarg == '\0') {
+	warn(__func__, "NULL or empty optarg, ignoring");
+	return false;
+    }
+
+    return true;
+}
