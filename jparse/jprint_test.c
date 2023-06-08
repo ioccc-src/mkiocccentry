@@ -110,7 +110,7 @@ jprint_run_tests(void)
     /* now check bits */
 
     /* set bits to JPRINT_PRINT_BOTH */
-    bits = JPRINT_PRINT_BOTH;
+    bits = jprint_parse_print_option("both");
 
     /* check that JPRINT_PRINT_BOTH is equal to bits */
     test = jprint_test_bits(true, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
@@ -118,8 +118,17 @@ jprint_run_tests(void)
 	okay = false;
     }
 
+    /* test a different way */
+    bits = jprint_parse_print_option("n,v");
+    /* check that JPRINT_PRINT_BOTH is equal to bits */
+    test = jprint_test_bits(true, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
+    if (!test) {
+	okay = false;
+    }
+
+
     /* set bits to JPRINT_PRINT_NAME */
-    bits = JPRINT_PRINT_NAME;
+    bits = jprint_parse_print_option("name");
     /* check that only JPRINT_PRINT_NAME is set: both and value are not set */
     test = jprint_test_bits(true, bits, jprint_print_name, "JPRINT_PRINT_NAME") && 
 	   jprint_test_bits(false, bits, jprint_print_value, "JPRINT_PRINT_VALUE") &&
@@ -129,7 +138,7 @@ jprint_run_tests(void)
 	okay = false;
     }
     /* set bits to JPRINT_PRINT_VALUE */
-    bits = JPRINT_PRINT_VALUE;
+    bits = jprint_parse_print_option("v");
     /* check that only JPRINT_PRINT_VALUE is set: both and name are not set */
     test = jprint_test_bits(true, bits, jprint_print_value, "JPRINT_PRINT_VALUE") && 
 	   jprint_test_bits(false, bits, jprint_print_name, "JPRINT_PRINT_NAME") &&
