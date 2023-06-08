@@ -135,12 +135,13 @@ static const char * const usage_msg3 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "\tExit codes:\n"
-    "\t\t0\tall is OK: file is valid JSON, match(es) found or no name_arg given\n"
+    "\t\t0\tall is OK: file is valid JSON, match(es) found or no name_arg given OR test mode OK\n"
     "\t\t1\tfile is valid JSON, name_arg given but no matches found\n"
     "\t\t2\t-h and help string printed or -V and version string printed\n"
     "\t\t3\tinvalid command line, invalid option or option missing an argument\n"
     "\t\t4\tfile does not exist, not a file, or unable to read the file\n"
-    "\t\t5\tfile contents is not valid JSON\n\n"
+    "\t\t5\tfile contents is not valid JSON\n"
+    "\t\t6\ttest mode failed\n\n"
     "jprint version: %s";
 
 /*
@@ -289,7 +290,12 @@ int main(int argc, char **argv)
 	    }
 	    break;
 	case 'K': /* run test code */
-	    return jprint_run_tests(); /*ooo*/
+	    if (!jprint_run_tests()) {
+		exit(6); /*ooo*/
+	    }
+	    else {
+		exit(0); /*ooo*/
+	    }
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
