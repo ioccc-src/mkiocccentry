@@ -55,12 +55,17 @@
 #include "jprint_util.h"
 
 /*
+ * jprint_test - test functions
+ */
+#include "jprint_test.h"
+
+/*
  * jparse - JSON parser
  */
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.7 2023-06-08"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.8 2023-06-08"		/* format: major.minor YYYY-MM-DD */
 
 
 #endif /* !defined INCLUDE_JPRINT_H */
