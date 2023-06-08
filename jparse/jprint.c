@@ -121,8 +121,8 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -g conflicts with -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
-    "\t-K\t\tRun tests on options parsed\n"
-    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n";
+    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
+    "\t-K\t\tRun tests on jprint constraints\n";
 
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
