@@ -472,3 +472,58 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 
     return true;
 }
+
+/* jprint_number_in_range   - check if number is in required range
+ *
+ * given:
+ *
+ *	number	    - number to check
+ *	range	    - pointer to struct jprint_number with range
+ *
+ * Returns true if the number is in range.
+ *
+ * NOTE: if range is NULL it will return false.
+ */
+bool
+jprint_number_in_range(intmax_t number, struct jprint_number *range)
+{
+    /* firewall check */
+    if (range == NULL) {
+	return false;
+    }
+
+    /* if exact is set and range->number == number then return true. */
+    if (range->exact && range->number == number) {
+	return true;
+    } else if (range->range.inclusive) {
+	/* if the number must be inclusive in range then we have to make sure
+	 * that number >= min and <= max.
+	 */
+	if (number >= range->range.min && number <= range->range.max) {
+	    return true;
+	} else {
+	    return false;
+	}
+    } else if (range->range.less_than_equal) {
+	/* if number has to be less than equal we check number <= the maximum
+	 * number (range->range.max).
+	 */
+	if (number <= range->range.max) {
+	    return true;
+	} else {
+	    return false;
+	}
+    } else if (range->range.greater_than_equal) {
+	/* if number has to be greater than or equal to the number then we check
+	 * that number >= minimum number (range->range.min).
+	 */
+	if (number >= range->range.min) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    return false; /* no match */
+
+}

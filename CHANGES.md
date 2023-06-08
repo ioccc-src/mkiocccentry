@@ -1,5 +1,34 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.0.5 2023-06-08
+
+`jprint` version now "0.0.7 2023-06-08". At this time I (Cody) believe all known
+checks for `jprint` options have been added!
+
+The next step is to write some test functions (likely printing debug
+messages for different options and their option arguments).
+
+If all is OK the code to traverse the tree to look for simple matches (this does
+not mean the `JPRINT_TYPE_SIMPLE`) can be added. At first the tool will not
+check for the constraints but rather just print the name and value (even though
+the default is value (`JPRINT_PRINT_VALUE`) only I want to make sure that the
+ability to to print both is there).  This will help make sure that the
+traversing works okay before constraints are added. Prior to the following step,
+described below, the grep-like functionality, using `regex.h`, can be added (it
+might be better to instead add the grep-like functionality after the below - the
+constraints - are added but this will be determined at the time).
+
+Once the above is okay the constraints can be added. The tests should be easier
+to do than the traversing and following parts but my hope is that in the coming
+days more than tests can be added.
+
+Once this is all done a comprehensive test script can be added to the repo that
+is called by the entire test suite (including `bug_report.sh`) so that we can
+verify that `jprint` works as expected. Then any issues can be fixed and the
+tests can be run again. This might take more than a few days but hopefully
+things will move along nicely.
+
 ## Release 1.0.5 2023-06-05
 
 `jprint` now accepts a `-m max_depth` option to allow for one to specify maximum
