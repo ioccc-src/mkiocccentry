@@ -229,12 +229,13 @@ int main(int argc, char **argv)
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    /* XXX this is incorrect as -b has two modes, tab and space count,
-	     * depending on optarg */
-	    if (!string_to_uintmax(optarg, &num_spaces)) {
+	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
+		num_spaces = 8;
+	    else if (!string_to_uintmax(optarg, &num_spaces)) {
 		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
 		not_reached();
 	    }
+	    dbg(DBG_NONE, "will print %zu spaces between name and value", num_spaces);
 	    break;
 	case 'L':
 	    print_json_levels = true;
@@ -249,10 +250,13 @@ int main(int argc, char **argv)
 	    print_braces = true;
 	    break;
 	case 'I':
-	    if (!string_to_uintmax(optarg, &indent_level)) {
+	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
+		indent_level = 8;
+	    else if (!string_to_uintmax(optarg, &indent_level)) {
 		err(3, "jprint", "couldn't parse -I indent_level"); /*ooo*/
 		not_reached();
 	    }
+	    dbg(DBG_NONE, "indent level set to %ju spaces", indent_level);
 	    break;
 	case 'i':
 	    case_insensitive = true; /* make case cruel :-) */
