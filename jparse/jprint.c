@@ -39,7 +39,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
-    "[-I {t,number}] [-j] [-E] \t\t[-I] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
+    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -85,11 +85,11 @@ static const char * const usage_msg1 =
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
-    "\t-b <num>[{t,s}}\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
+    "\t-b <num>[{t|s}}\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
     "\t\t\tNot specifying a 't' or 's' implies spaces.\n"
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
-    "\t-L <num>[{t,s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
+    "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
     "\t\t\tNot specifying a 't' or 's' implies spaces.\n"
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
@@ -102,7 +102,7 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -C without -j has no effect.\n\n"
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
     "\t\t\tUse of -B without -j has no effect.\n\n"
-    "\t-I {t,number}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
+    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
     "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
     "\t\t\tUse of -I {t,number} without -j has no effect.\n"
     "\t-I tab\t\tAlias for '-I t'.\n\n"
@@ -179,6 +179,7 @@ int main(int argc, char **argv)
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
     uintmax_t indent_level = 0;		/* -I specified */
+    bool indent_tab = false;		/* -I t{,ab} specified */
     bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded = false;		/* -E used, match encoded name */
     bool substrings_okay = false;	/* -S used, matching substrings okay */
@@ -298,13 +299,28 @@ int main(int argc, char **argv)
 	    print_braces = true;
 	    break;
 	case 'I':
-	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		indent_level = 8;
-	    else if (!string_to_uintmax(optarg, &indent_level)) {
-		err(3, "jprint", "couldn't parse -I indent_level"); /*ooo*/
+	    if (sscanf(optarg, "%ju%c", &indent_level, &ch) == 2) {
+		if (ch == 't') {
+		    indent_tab = true;
+		    dbg(DBG_NONE, "will indent with %ju tab%s after level", indent_level, indent_level==1?"":"s");
+		} else if (ch == 's') {
+		    indent_tab = false; /* ensure it's false in case specified previously */
+		    dbg(DBG_NONE, "will indent with %jd space%s after level", indent_level, indent_level==1?"":"s");
+		} else {
+		    err(3, __func__, "syntax error for -L");
+		    not_reached();
+		}
+	    } else if (!strcmp(optarg, "tab")) {
+		    indent_tab = true;
+		    indent_level = 1;
+		    dbg(DBG_NONE, "will indent with %ju tab%s after level", indent_level, indent_level==1?"":"s");
+	    } else if (!string_to_uintmax(optarg, &indent_level)) {
+		err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
 		not_reached();
+	    } else {
+		indent_tab = false; /* ensure it's false in case specified previously */
+		dbg(DBG_NONE, "will ident with %jd space%s after level", indent_level, indent_level==1?"":"s");
 	    }
-	    dbg(DBG_NONE, "indent level set to %ju spaces", indent_level);
 	    break;
 	case 'i':
 	    case_insensitive = true; /* make case cruel :-) */
