@@ -273,7 +273,7 @@ int main(int argc, char **argv)
 		    print_level_tab = false; /* ensure it's false in case specified previously */
 		    dbg(DBG_NONE, "will print %jd space%s after level", num_level_spaces, num_level_spaces==1?"":"s");
 		} else {
-		    err(3, __func__, "syntax error for -L");
+		    err(4, __func__, "syntax error for -L");
 		    not_reached();
 		}
 	    } else if (!strcmp(optarg, "tab")) {
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
 		    indent_tab = false; /* ensure it's false in case specified previously */
 		    dbg(DBG_NONE, "will indent with %jd space%s after level", indent_level, indent_level==1?"":"s");
 		} else {
-		    err(3, __func__, "syntax error for -L");
+		    err(5, __func__, "syntax error for -L");
 		    not_reached();
 		}
 	    } else if (!strcmp(optarg, "tab")) {
