@@ -192,6 +192,112 @@ jprint_run_tests(void)
 	okay = false;
     }
 
+    /* just exponents */
+    bits = jprint_parse_types_option("exp");
+    /* check that int and float will fail but exp will succeed */
+    test = jprint_test_bits(false, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_float, "JPRINT_TYPE_FLOAT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_exp, "JPRINT_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test all types */
+    bits = jprint_parse_types_option("any");
+    /* verify that it is the any bit */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_any, "JPRINT_TYPE_ANY");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test compound */
+    bits = jprint_parse_types_option("compound");
+    /* verify that the compound type is set by compound match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_compound, "JPRINT_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+    /* verify that the compound type is set by matching all types */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_object, "JPRINT_TYPE_OBJECT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_array, "JPRINT_TYPE_ARRAY");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test simple */
+    bits = jprint_parse_types_option("simple");
+    /* verify that the simple type is set by simple match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_simple, "JPRINT_TYPE_SIMPLE");
+    if (!test) {
+	okay = false;
+    }
+    /* verify that the simple type is set by matching each type */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_num, "JPRINT_TYPE_NUM") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_bool, "JPRINT_TYPE_BOOL") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_string, "JPRINT_TYPE_STR") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_null, "JPRINT_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int */
+    bits = jprint_parse_types_option("int");
+    /* verify that the int type is set by int match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test float */
+    bits = jprint_parse_types_option("float");
+    /* verify that the float type is set by float match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_float, "JPRINT_TYPE_FLOAT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test exp */
+    bits = jprint_parse_types_option("exp");
+    /* verify that the exp type is set by exp match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_exp, "JPRINT_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test bool */
+    bits = jprint_parse_types_option("bool");
+    /* verify that the bool type is set by bool match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_bool, "JPRINT_TYPE_BOOL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test string */
+    bits = jprint_parse_types_option("str");
+    /* verify that the string type is set by string match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_string, "JPRINT_TYPE_STR");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test null */
+    bits = jprint_parse_types_option("null");
+    /* verify that the null type is set by null match function */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_null, "JPRINT_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int,str,null */
+    bits = jprint_parse_types_option("int,str,null");
+    /* verify that the int,str,null types are set by match functions */
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_string, "JPRINT_TYPE_STR") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_null, "JPRINT_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
     return okay;
 }
 
@@ -269,9 +375,13 @@ jprint_test_bits(bool expected, uintmax_t set_bits, intmax_t line, bool (*check_
     if (check_func == NULL) {
 	err(16, __func__, "NULL check_func");
 	not_reached();
+    } else if (name == NULL) {
+	err(17, __func__, "NULL name");
+	not_reached();
     }
-    print("in function %s from line %jd (bits %ju): expects %s: ", __func__, line, set_bits, expected?"success":"failure");
-    print("expect bits: %s: ", name);
+
+    print("in function %s from line %jd (bits %ju): expects %s %s set: ", __func__, line, set_bits,
+	    name, expected?"to be":"to NOT be");
     test = check_func(set_bits);
 
     if (test != expected) {

@@ -111,6 +111,32 @@ jprint_match_exp(uintmax_t types)
     return (types & JPRINT_TYPE_EXP) != 0;
 }
 /*
+ * jprint_match_num	- if numbers of any type should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_NUM (or any of the number types) set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+jprint_match_num(uintmax_t types)
+{
+    return ((types & JPRINT_TYPE_NUM)||(types & JPRINT_TYPE_INT) || (types & JPRINT_TYPE_FLOAT) ||
+	    (types & JPRINT_TYPE_EXP))!= 0;
+}
+/*
  * jprint_match_bool	- if booleans should match
  *
  * given:

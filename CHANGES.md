@@ -24,7 +24,7 @@ Add initial testing of `-t type` option after fixing an issue with the bitwise
 test functions. See `jprint_test.c` for details.
 
 Release `jprint` version "0.0.12 2023-06-09": change semantics of `-I` option to
-match that of `-b` and `-L`.
+match that of `-b` and `-L`. Finished -t type test code.
 
 ## Release 1.0.5 2023-06-08
 
