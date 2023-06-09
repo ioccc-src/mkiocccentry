@@ -61,7 +61,8 @@
 #include "jprint_util.h"
 
 bool jprint_run_tests(void);
-bool jprint_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, struct jprint_number *range);
-bool jprint_test_bits(bool expected, uintmax_t set_bits, bool (*check_func)(uintmax_t), const char *name);
+bool jprint_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches,
+	intmax_t line, struct jprint_number *range);
+bool jprint_test_bits(bool expected, uintmax_t set_bits, intmax_t line, bool (*check_func)(uintmax_t), const char *name);
 
 #endif /* !defined INCLUDE_JPRINT_TEST_H */
