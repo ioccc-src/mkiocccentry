@@ -9,6 +9,10 @@ will print the fifth match up through the third to last match.
 
 Fixed `seqcexit` and `picky` rules for jprint and sequenced exit codes.
 
+Change semantics of `jprint -L` option. It now takes an option argument which is
+the number of spaces or a tab which will be printed after the JSON level is
+printed. Like `-b t` this has to be fixed in that we cannot assume that `t` or
+`tab` is 8 spaces instead of `\t` but this will change later.
 
 ## Release 1.0.5 2023-06-08
 

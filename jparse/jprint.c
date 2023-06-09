@@ -88,7 +88,7 @@ static const char * const usage_msg1 =
     "\t-b {t,number}\tPrint a tab or specified number of spaces between JSON tokens printed via -j (def: 1 space)\n"
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
-    "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
+    "\t-L {t,number}\tPrint JSON level followed by tab or spaces (def: no spaces/tab)\n"
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
 static const char * const usage_msg2 =
@@ -167,8 +167,9 @@ int main(int argc, char **argv)
     struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
-    uintmax_t num_spaces = 0;		/* -b specified */
+    uintmax_t num_token_spaces = 0;		/* -b specified */
     bool print_json_levels = false;	/* -L specified */
+    uintmax_t num_level_spaces = 0;	/* number of spaces or tab for -L */
     bool print_colons = false;		/* -T specified */
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
@@ -185,7 +186,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:LTCBI:jEiSgcm:K")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -230,15 +231,24 @@ int main(int argc, char **argv)
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
+	    /* FIXME - t/tab should print a '\t', not 8 spaces even if '\t' is 8! */
 	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		num_spaces = 8;
-	    else if (!string_to_uintmax(optarg, &num_spaces)) {
+		num_token_spaces = 8;
+	    else if (!string_to_uintmax(optarg, &num_token_spaces)) {
 		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
 		not_reached();
 	    }
-	    dbg(DBG_NONE, "will print %zu spaces between name and value", num_spaces);
+	    dbg(DBG_NONE, "will print %zu spaces between name and value", num_token_spaces);
 	    break;
 	case 'L':
+	    /* FIXME - t/tab should print a '\t', not 8 spaces even if '\t' is 8! */
+	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
+		num_level_spaces = 8;
+	    else if (!string_to_uintmax(optarg, &num_level_spaces)) {
+		err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
+		not_reached();
+	    }
+	    dbg(DBG_NONE, "will print %zu spaces after level before data", num_level_spaces);
 	    print_json_levels = true;
 	    break;
 	case 'T':
