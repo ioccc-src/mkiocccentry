@@ -38,8 +38,8 @@ static bool quiet = false;				/* true ==> quiet mode */
  */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
-    "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
+    "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
+    "[-I {t,number}] [-j] [-E] \t\t[-I] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -85,10 +85,12 @@ static const char * const usage_msg1 =
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
-    "\t-b {t,number}\tPrint a tab or specified number of spaces between JSON tokens printed via -j (def: 1 space)\n"
+    "\t-b <num>[{t,s}}\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
+    "\t\t\tNot specifying a 't' or 's' implies spaces.\n"
     "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
     "\t-b tab\t\tAlias for '-b t'.\n\n"
-    "\t-L {t,number}\tPrint JSON level followed by tab or spaces (def: no spaces/tab)\n"
+    "\t-L <num>[{t,s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
+    "\t\t\tNot specifying a 't' or 's' implies spaces.\n"
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
 static const char * const usage_msg2 =
@@ -151,6 +153,7 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
 int main(int argc, char **argv)
 {
     char const *program = NULL;		/* our name */
+    char ch = -1;			/* placeholder for some sscanf() calls */
     extern char *optarg;
     extern int optind;
     struct json *json_tree = NULL;	/* json tree */
@@ -168,8 +171,10 @@ int main(int argc, char **argv)
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
     uintmax_t num_token_spaces = 0;		/* -b specified */
+    bool print_token_tab = false;	/* -b tab specified */
     bool print_json_levels = false;	/* -L specified */
     uintmax_t num_level_spaces = 0;	/* number of spaces or tab for -L */
+    bool print_level_tab = false;	/* -L tab option */
     bool print_colons = false;		/* -T specified */
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
@@ -231,24 +236,56 @@ int main(int argc, char **argv)
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    /* FIXME - t/tab should print a '\t', not 8 spaces even if '\t' is 8! */
-	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		num_token_spaces = 8;
-	    else if (!string_to_uintmax(optarg, &num_token_spaces)) {
+	    if (sscanf(optarg, "%ju%c", &num_token_spaces, &ch) == 2) {
+		if (ch == 't') {
+		    print_token_tab = true;
+		    dbg(DBG_NONE, "will print %ju tab%s between name and value", num_token_spaces,
+			num_token_spaces==1?"":"s");
+		} else if (ch == 's') {
+		    print_token_tab = false;
+		    dbg(DBG_NONE, "will print %ju space%s between name and value", num_token_spaces,
+			num_token_spaces==1?"":"s");
+		} else {
+		    err(3, __func__, "syntax error for -b");
+		    not_reached();
+		}
+	    } else if (!strcmp(optarg, "tab")) {
+		print_token_tab = true;
+		num_token_spaces = 1;
+		dbg(DBG_NONE, "will print %ju tab%s between name and value", num_token_spaces,
+		    num_token_spaces==1?"":"s");
+	    } else if (!string_to_uintmax(optarg, &num_token_spaces)) {
 		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
 		not_reached();
+	    } else {
+		print_token_tab = false; /* ensure it's false in case specified previously */
+		dbg(DBG_NONE, "will print %jd space%s between name and value", num_token_spaces,
+			num_token_spaces==1?"":"s");
 	    }
-	    dbg(DBG_NONE, "will print %zu spaces between name and value", num_token_spaces);
 	    break;
 	case 'L':
-	    /* FIXME - t/tab should print a '\t', not 8 spaces even if '\t' is 8! */
-	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		num_level_spaces = 8;
-	    else if (!string_to_uintmax(optarg, &num_level_spaces)) {
+	    if (sscanf(optarg, "%ju%c", &num_level_spaces, &ch) == 2) {
+		if (ch == 't') {
+		    print_level_tab = true;
+		    dbg(DBG_NONE, "will print %ju tab%s after levels", num_level_spaces, num_level_spaces==1?"":"s");
+		} else if (ch == 's') {
+		    print_level_tab = false; /* ensure it's false in case specified previously */
+		    dbg(DBG_NONE, "will print %jd space%s after level", num_level_spaces, num_level_spaces==1?"":"s");
+		} else {
+		    err(3, __func__, "syntax error for -L");
+		    not_reached();
+		}
+	    } else if (!strcmp(optarg, "tab")) {
+		    print_level_tab = true;
+		    num_level_spaces = 1;
+		    dbg(DBG_NONE, "will print %ju tab%s after levels", num_level_spaces, num_level_spaces==1?"":"s");
+	    } else if (!string_to_uintmax(optarg, &num_level_spaces)) {
 		err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
 		not_reached();
+	    } else {
+		print_level_tab = false; /* ensure it's false in case specified previously */
+		dbg(DBG_NONE, "will print %jd space%s after level", num_level_spaces, num_level_spaces==1?"":"s");
 	    }
-	    dbg(DBG_NONE, "will print %zu spaces after level before data", num_level_spaces);
 	    print_json_levels = true;
 	    break;
 	case 'T':

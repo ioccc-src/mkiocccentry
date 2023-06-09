@@ -14,6 +14,12 @@ the number of spaces or a tab which will be printed after the JSON level is
 printed. Like `-b t` this has to be fixed in that we cannot assume that `t` or
 `tab` is 8 spaces instead of `\t` but this will change later.
 
+Further version update of `jprint`, now being  "0.0.11 2023-06-09". Semantics of
+`-L` and `-b` changed further. Can be `-[b|L] <num>[t|s]` where `s` is optional.
+If a number is specified without `t` it implies spaces. If a `s` is specified it
+implies spaces and if nothing is specified it implies spaces. Anything else is a
+syntax error.
+
 ## Release 1.0.5 2023-06-08
 
 `jprint` version "0.0.9 2023-06-08". At this time I (Cody) believe all known
