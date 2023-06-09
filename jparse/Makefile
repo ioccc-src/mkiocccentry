@@ -164,10 +164,11 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jprint.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c \
+       jprint.c jprint_util.c jprint_test.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
-       jparse.tab.ref.h jprint.h
+       jparse.tab.ref.h jprint.h jprint_util.h jprint_test.h
 
 # source files that do not conform to strict picky standards
 #
@@ -964,6 +965,11 @@ jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
 jprint.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
     jprint.c jprint.h jprint_test.h jprint_util.h json_parse.h json_sem.h \
     json_util.h util.h
+jprint_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jprint_test.c jprint_test.h jprint_util.h json_parse.h json_sem.h \
+    json_util.h util.h
+jprint_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jprint_util.c jprint_util.h json_parse.h json_sem.h json_util.h util.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
     jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
     json_util.h util.h
