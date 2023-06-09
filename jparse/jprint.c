@@ -117,7 +117,7 @@ static const char * const usage_msg2 =
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tUse of -g conflicts with -S.\n"
+    "\t\t\tUse of -g disables -S.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
@@ -324,6 +324,11 @@ int main(int argc, char **argv)
 
     argc -= optind;
     argv += optind;
+
+    /* -g conflicts with -S, disable -S if -g specified */
+    if (use_regexps) {
+	substrings_okay = false;
+    }
 
     /* if *argv[0] != '-' we will attempt to read from a regular file */
     if (*argv[0] != '-') {
