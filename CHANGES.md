@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.6 2023-06-09
+
+New `jprint` version "0.0.10 2023-06-09". This version now correctly handles the
+number ranges in the form of e.g. `-l 5:-3` where if there are 10 matches it
+will print the fifth match up through the third to last match.
+
+Fixed `seqcexit` and `picky` rules for jprint and sequenced exit codes.
+
+
 ## Release 1.0.5 2023-06-08
 
 `jprint` version "0.0.9 2023-06-08". At this time I (Cody) believe all known

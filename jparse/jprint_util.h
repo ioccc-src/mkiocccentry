@@ -86,7 +86,7 @@ struct jprint_number_range
 {
     intmax_t min;   /* min in range */
     intmax_t max;   /* max in range */
-    
+
     bool less_than_equal;	/* true if number type must be <= min */
     bool greater_than_equal;	/* true if number type must be >= max */
     bool inclusive;		/* true if number type must be >= min && <= max */
@@ -126,6 +126,6 @@ bool jprint_print_name_value(uintmax_t types);
 
 /* for number range options: -l, -n, -n */
 bool jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number);
-bool jprint_number_in_range(intmax_t number, struct jprint_number *range);
+bool jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_number *range);
 
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */

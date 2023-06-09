@@ -40,13 +40,13 @@ jprint_run_tests(void)
     jprint_parse_number_range("-l", "5", &number);
 
     /* make sure number matches exactly */
-    test = jprint_test_number_range_opts(true, 5, &number);
+    test = jprint_test_number_range_opts(true, 5, 10, &number);
     if (!test) {
 	okay = false;
     }
 
     /* make sure number does NOT match */
-    test = jprint_test_number_range_opts(false, 6, &number);
+    test = jprint_test_number_range_opts(false, 6, 7, &number);
     if (!test) {
 	okay = false;
     }
@@ -54,36 +54,68 @@ jprint_run_tests(void)
     /* set up inclusive range of >= 5 && <= 10 */
     jprint_parse_number_range("-l", "5:10", &number);
     /* make sure that number is in the range >= 5 && <= 10 */
-    test = jprint_test_number_range_opts(true, 6, &number);
+    test = jprint_test_number_range_opts(true, 6, 10, &number);
     if (!test) {
 	okay = false;
     }
     /* make sure that number is NOT in the range >= 5 && <= 10 due to >= max */
-    test = jprint_test_number_range_opts(false, 11, &number);
+    test = jprint_test_number_range_opts(false, 11, 12, &number);
     if (!test) {
 	okay = false;
     }
     /* make sure that number is NOT in the range >= 5 && <= 10 due to < min */
-    test = jprint_test_number_range_opts(false, 4, &number);
+    test = jprint_test_number_range_opts(false, 4, 42, &number);
     if (!test) {
 	okay = false;
     }
 
+    /*
+     * set up inclusive range of >= 5 && <= 10 - 3 (i.e. up through the third to
+     * last match)
+     */
+    jprint_parse_number_range("-l", "5:-3", &number);
+    /* make sure that number is in the range >= 5 && <= 10 - 3 */
+    test = jprint_test_number_range_opts(true, 7, 10, &number);
+    if (!test) {
+	okay = false;
+    }
+    /* make sure that number is NOT in the range >= 5 && <= 10 - 3 due to >=
+     * total_matches
+     */
+    test = jprint_test_number_range_opts(false, 11, 10, &number);
+    if (!test) {
+	okay = false;
+    }
+    /* make sure that number is NOT in the range >= 5 && <= 10 - 3 due to being
+     * > total_matches - -max
+     */
+    test = jprint_test_number_range_opts(false, 8, 10, &number);
+    if (!test) {
+	okay = false;
+    }
+
+    /* make sure that number is NOT in the range >= 5 && <= 10 due to < min */
+    test = jprint_test_number_range_opts(false, 4, 42, &number);
+    if (!test) {
+	okay = false;
+    }
+
+
     /* set up minimum number */
     jprint_parse_number_range("-l", "10:", &number);
     /* make sure that number 10 is in the range >= 10 */
-    test = jprint_test_number_range_opts(true, 10, &number);
+    test = jprint_test_number_range_opts(true, 10, 42, &number);
     if (!test) {
 	okay = false;
     }
     /* make sure that number 11 is in the range >= 10 */
-    test = jprint_test_number_range_opts(true, 11, &number);
+    test = jprint_test_number_range_opts(true, 11, 42, &number);
     if (!test) {
 	okay = false;
     }
 
     /* make sure that number 9 is NOT >= 10 */
-    test = jprint_test_number_range_opts(false, 9, &number);
+    test = jprint_test_number_range_opts(false, 9, 42, &number);
     if (!test) {
 	okay = false;
     }
@@ -91,18 +123,18 @@ jprint_run_tests(void)
     /* set up maximum number */
     jprint_parse_number_range("-l", ":10", &number);
     /* make sure that number 10 is in the range <= 10 */
-    test = jprint_test_number_range_opts(true, 10, &number);
+    test = jprint_test_number_range_opts(true, 10, 42, &number);
     if (!test) {
 	okay = false;
     }
     /* make sure that number 9 is in the range <= 10 */
-    test = jprint_test_number_range_opts(true, 9, &number);
+    test = jprint_test_number_range_opts(true, 9, 42, &number);
     if (!test) {
 	okay = false;
     }
 
     /* make sure that number 11 is NOT <= 10 */
-    test = jprint_test_number_range_opts(false, 11, &number);
+    test = jprint_test_number_range_opts(false, 11, 42, &number);
     if (!test) {
 	okay = false;
     }
@@ -130,7 +162,7 @@ jprint_run_tests(void)
     /* set bits to JPRINT_PRINT_NAME */
     bits = jprint_parse_print_option("name");
     /* check that only JPRINT_PRINT_NAME is set: both and value are not set */
-    test = jprint_test_bits(true, bits, jprint_print_name, "JPRINT_PRINT_NAME") && 
+    test = jprint_test_bits(true, bits, jprint_print_name, "JPRINT_PRINT_NAME") &&
 	   jprint_test_bits(false, bits, jprint_print_value, "JPRINT_PRINT_VALUE") &&
 	   jprint_test_bits(false, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
 
@@ -140,7 +172,7 @@ jprint_run_tests(void)
     /* set bits to JPRINT_PRINT_VALUE */
     bits = jprint_parse_print_option("v");
     /* check that only JPRINT_PRINT_VALUE is set: both and name are not set */
-    test = jprint_test_bits(true, bits, jprint_print_value, "JPRINT_PRINT_VALUE") && 
+    test = jprint_test_bits(true, bits, jprint_print_value, "JPRINT_PRINT_VALUE") &&
 	   jprint_test_bits(false, bits, jprint_print_name, "JPRINT_PRINT_NAME") &&
 	   jprint_test_bits(false, bits, jprint_print_name_value, "JPRINT_PRINT_BOTH");
 
@@ -148,8 +180,27 @@ jprint_run_tests(void)
 	okay = false;
     }
 
+    /* test -t option bits */
+
+    #if 0
+    /*
+     * XXX disabled for the moment as there is a problem with the test but a fix
+     * needs to be put into the code.
+     */
+    /* first int,float,exp */
+    bits = jprint_parse_types_option("int,float,exp");
+    /* check that any number will match */
+    test = jprint_test_bits(true, bits, jprint_match_int, "JPRINT_TYPE_INT") &&
+	   jprint_test_bits(true, bits, jprint_match_float, "JPRINT_TYPE_FLOAT") &&
+	   jprint_test_bits(true, bits, jprint_match_exp, "JPRINT_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+    #endif
+
     return okay;
 }
+
 /* jprint_test_number_range_opts
  *
  * Test that the number range functionality works okay.
@@ -159,6 +210,7 @@ jprint_run_tests(void)
  *	option	     	option that this is testing
  *	expected     	whether test should return true or false
  *	number		number to test
+ *	total_matches	number of total matches
  *	range		range to verify number against
  *
  * Returns true if test is okay.
@@ -166,7 +218,7 @@ jprint_run_tests(void)
  * NOTE: this will not return on NULL pointers.
  */
 bool
-jprint_test_number_range_opts(bool expected, intmax_t number, struct jprint_number *range)
+jprint_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, struct jprint_number *range)
 {
     bool test = false;	    /* result of test */
 
@@ -175,12 +227,18 @@ jprint_test_number_range_opts(bool expected, intmax_t number, struct jprint_numb
 	not_reached();
     }
 
-    test = jprint_number_in_range(number, range);
+    test = jprint_number_in_range(number, total_matches, range);
     print("in function %s: expects %s: ", __func__, expected?"success":"failure");
     if (range->exact) {
 	print("expect exact match for number %jd: ", number);
     } else if (range->range.inclusive) {
-	print("expect number %jd to be >= %jd && <= %jd: ", number, range->range.min, range->range.max);
+	if (range->range.max < 0) {
+	    /* if max is < 0 then it's up through the total_matches - max item */
+	    print("expect number %jd to be >= %jd && <= (%jd - %jd): ", number, range->range.min, total_matches,
+		    -range->range.max);
+	} else {
+	    print("expect number %jd to be >= %jd && <= %jd: ", number, range->range.min, range->range.max);
+	}
     } else if (range->range.greater_than_equal) {
 	print("expect number %jd to be >= %ju: ", number, range->range.min);
     } else if (range->range.less_than_equal) {
@@ -213,12 +271,13 @@ jprint_test_bits(bool expected, uintmax_t set_bits, bool (*check_func)(uintmax_t
 
     /* firewall */
     if (check_func == NULL) {
-	err(13, __func__, "NULL check_func");
+	err(16, __func__, "NULL check_func");
 	not_reached();
     }
     print("in function %s: expects %s: ", __func__, expected?"success":"failure");
     print("expect bits: %s: ", name);
     test = check_func(set_bits);
+
 
     print("test %s\n", expected == test?"OK":"failed");
     if (expected != test) {

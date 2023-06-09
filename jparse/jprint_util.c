@@ -231,7 +231,7 @@ jprint_parse_types_option(char *optarg)
 	errno = 0;
 	dup = strdup(optarg);
 	if (dup == NULL) {
-	    err(13, __func__, "strdup(%s) failed", optarg);
+	    err(7, __func__, "strdup(%s) failed", optarg);
 	    not_reached();
 	}
     }
@@ -269,7 +269,7 @@ jprint_parse_types_option(char *optarg)
 	    type |= JPRINT_TYPE_ANY;
 	} else {
 	    /* unknown type */
-	    err(6, __func__, "unknown type '%s'", p);
+	    err(3, __func__, "unknown type '%s'", p); /*ooo*/
 	    not_reached();
 	}
     }
@@ -354,7 +354,7 @@ jprint_parse_print_option(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	err(15, __func__, "strdup(%s) failed", optarg);
+	err(8, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 
@@ -373,7 +373,7 @@ jprint_parse_print_option(char *optarg)
 	    print_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
-	    err(7, __func__, "unknown keyword '%s'", p);
+	    err(3, __func__, "unknown keyword '%s'", p); /*ooo*/
 	    not_reached();
 	}
     }
@@ -409,8 +409,9 @@ jprint_parse_print_option(char *optarg)
  * The following rules apply:
  *
  * (0) an exact number is a number optional arg by itself e.g. -l 5 or -l5.
- * (1) an inclusive range is <min>:<max> e.g. -l 5:10
- *     (1a) the minimum must be <= the max
+ * (1) an inclusive range is <min>:<max> e.g. -l 5:10 where:
+ *     (1a) the last number can be negative in which case it's up through the
+ *	    count - max.
  * (2) a minimum number, that is num >= minimum, is <num>:
  * (3) a maximum number, that is num <= maximum, is :<num>
  * (4) anything else is an error
@@ -431,7 +432,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 
     /* firewall */
     if (number == NULL) {
-	err(8, __func__, "NULL number struct for option %s", option);
+	err(3, __func__, "NULL number struct for option %s", option); /*ooo*/
 	not_reached();
     } else {
 	memset(number, 0, sizeof(struct jprint_number));
@@ -460,20 +461,24 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	    number->range.greater_than_equal = false;
 	    dbg(DBG_NONE, "exact number required for option %s: %jd", option, number->number);
 	} else {
-	    err(9, __func__, "invalid number for option %s: <%s>", option, optarg);
+	    err(3, __func__, "invalid number for option %s: <%s>", option, optarg); /*ooo*/
 	    not_reached();
 	}
     } else if (sscanf(optarg, "%jd:%jd", &min, &max) == 2) {
-	if (min > max) {
-	    err(10, __func__, "invalid inclusive range for option %s: min > max: %jd > %jd", option, min, max);
-	    not_reached();
-	}
+	/*
+	 * NOTE: we can't check that min >= max because a negative number in the
+	 * maximum means that the range is up through the count - max matches
+	 */
 	number->range.min = min;
 	number->range.max = max;
 	number->range.inclusive = true;
 	number->range.less_than_equal = false;
 	number->range.greater_than_equal = false;
-	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min, number->range.max);
+	/* XXX - this debug message is problematic wrt the negative number
+	 * option
+	 */
+	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
+		number->range.max);
     } else if (sscanf(optarg, "%jd:", &min) == 1) {
 	number->number = 0;
 	number->exact = false;
@@ -493,7 +498,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	number->range.inclusive = false;
 	dbg(DBG_NONE, "maximum number required for option %s: must be <= %jd", option, number->range.max);
     } else {
-	err(11, __func__, "number range syntax error for option %s: <%s>", option, optarg);
+	err(3, __func__, "number range syntax error for option %s: <%s>", option, optarg);/*ooo*/
 	not_reached();
     }
 
@@ -504,15 +509,16 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
  *
  * given:
  *
- *	number	    - number to check
- *	range	    - pointer to struct jprint_number with range
+ *	number		- number to check
+ *	total_matches	- total number of matches found
+ *	range		- pointer to struct jprint_number with range
  *
  * Returns true if the number is in range.
  *
  * NOTE: if range is NULL it will return false.
  */
 bool
-jprint_number_in_range(intmax_t number, struct jprint_number *range)
+jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_number *range)
 {
     /* firewall check */
     if (range == NULL) {
@@ -525,9 +531,20 @@ jprint_number_in_range(intmax_t number, struct jprint_number *range)
     } else if (range->range.inclusive) {
 	/* if the number must be inclusive in range then we have to make sure
 	 * that number >= min and <= max.
+	 *
+	 * NOTE: we have to make a special check for negative numbers because a
+	 * negative number is up through the count of matches - the negative max
+	 * number (rather if there are 10 matches and the string -l 5:-3 is
+	 * specified then the items 5, 6, 7, 8 are to be printed).
 	 */
-	if (number >= range->range.min && number <= range->range.max) {
-	    return true;
+	if (number >= range->range.min) {
+	    if (range->range.max < 0 && number <= total_matches + range->range.max) {
+		return true;
+	    } else if (number <= range->range.max) {
+		return true;
+	    } else {
+		return false;
+	    }
 	} else {
 	    return false;
 	}

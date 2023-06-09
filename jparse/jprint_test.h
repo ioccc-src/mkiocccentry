@@ -56,12 +56,12 @@
 #include "jparse.h"
 
 /*
- * jprint_util - jprint utility functions 
+ * jprint_util - jprint utility functions
  */
 #include "jprint_util.h"
 
 bool jprint_run_tests(void);
-bool jprint_test_number_range_opts(bool expected, intmax_t number, struct jprint_number *range);
+bool jprint_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, struct jprint_number *range);
 bool jprint_test_bits(bool expected, uintmax_t set_bits, bool (*check_func)(uintmax_t), const char *name);
 
 #endif /* !defined INCLUDE_JPRINT_TEST_H */

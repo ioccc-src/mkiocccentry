@@ -73,7 +73,7 @@ static const char * const usage_msg1 =
     "\t\t\tIf count is a number followed by : (e.g. '-n 3:'), matches must be >= number\n"
     "\t\t\tIf count is a : followed by a number (e.g. '-n :3'), matches must be <= number\n"
     "\t\t\tIf count is num:num (e.g. '-n 3:5'), matches must be inclusively in the range\n"
-    "\t\t\tNOTE: when number < 0 it refers to the instance from last: -1 is last, -2 second to last ...\n\n"
+    "\t\t\tNOTE: when number < 0 it refers to up through matches - the positive max\n\n"
     "\t-N num\t\tPrint only if there are only a given number of matches (def: do not limit)\n"
     "\t\t\tIf num is only a number (e.g. '-l 1'), there must be only that many matches\n"
     "\t\t\tIf num is a number followed by : (e.g. '-l 3:'), there must >= num matches\n"
