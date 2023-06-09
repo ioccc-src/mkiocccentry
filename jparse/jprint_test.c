@@ -182,11 +182,6 @@ jprint_run_tests(void)
 
     /* test -t option bits */
 
-    #if 0
-    /*
-     * XXX disabled for the moment as there is a problem with the test but a fix
-     * needs to be put into the code.
-     */
     /* first int,float,exp */
     bits = jprint_parse_types_option("int,float,exp");
     /* check that any number will match */
@@ -196,7 +191,6 @@ jprint_run_tests(void)
     if (!test) {
 	okay = false;
     }
-    #endif
 
     return okay;
 }
@@ -276,15 +270,14 @@ jprint_test_bits(bool expected, uintmax_t set_bits, intmax_t line, bool (*check_
 	err(16, __func__, "NULL check_func");
 	not_reached();
     }
-    print("in function %s from line %jd: expects %s: ", __func__, line, expected?"success":"failure");
+    print("in function %s from line %jd (bits %ju): expects %s: ", __func__, line, set_bits, expected?"success":"failure");
     print("expect bits: %s: ", name);
     test = check_func(set_bits);
 
-
-    print("test %s\n", expected == test?"OK":"failed");
-    if (expected != test) {
+    if (test != expected) {
 	okay = false;
     }
+    print("test %s\n", okay?"OK":"failed");
 
     return okay;
 }

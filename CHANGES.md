@@ -20,6 +20,9 @@ If a number is specified without `t` it implies spaces. If a `s` is specified it
 implies spaces and if nothing is specified it implies spaces. Anything else is a
 syntax error.
 
+Add initial testing of `-t type` option after fixing an issue with the bitwise
+test functions. See `jprint_test.c` for details.
+
 ## Release 1.0.5 2023-06-08
 
 `jprint` version "0.0.9 2023-06-08". At this time I (Cody) believe all known

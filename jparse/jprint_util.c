@@ -43,11 +43,22 @@ jprint_match_none(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_INT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_int(uintmax_t types)
 {
-    return types & JPRINT_TYPE_INT;
+    return (types & JPRINT_TYPE_INT) != 0;
 }
 /*
  * jprint_match_float	- if floats should match
@@ -57,11 +68,22 @@ jprint_match_int(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_FLOAT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_float(uintmax_t types)
 {
-    return types & JPRINT_TYPE_FLOAT;
+    return (types & JPRINT_TYPE_FLOAT) != 0;
 }
 /*
  * jprint_match_exp	- if exponents should match
@@ -71,11 +93,22 @@ jprint_match_float(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_EXP set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_exp(uintmax_t types)
 {
-    return types & JPRINT_TYPE_EXP;
+    return (types & JPRINT_TYPE_EXP) != 0;
 }
 /*
  * jprint_match_bool	- if booleans should match
@@ -85,11 +118,22 @@ jprint_match_exp(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_BOOL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_bool(uintmax_t types)
 {
-    return types & JPRINT_TYPE_BOOL;
+    return (types & JPRINT_TYPE_BOOL) != 0;
 }
 /*
  * jprint_match_string	    - if strings should match
@@ -99,11 +143,22 @@ jprint_match_bool(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_STR set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_string(uintmax_t types)
 {
-    return types & JPRINT_TYPE_STR;
+    return (types & JPRINT_TYPE_STR) != 0;
 }
 /*
  * jprint_match_null	- if null should match
@@ -113,11 +168,22 @@ jprint_match_string(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_NULL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_null(uintmax_t types)
 {
-    return types & JPRINT_TYPE_NULL;
+    return (types & JPRINT_TYPE_NULL) != 0;
 }
 /*
  * jprint_match_object	    - if objects should match
@@ -127,11 +193,22 @@ jprint_match_null(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_OBJECT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_object(uintmax_t types)
 {
-    return types & JPRINT_TYPE_OBJECT;
+    return (types & JPRINT_TYPE_OBJECT) != 0;
 }
 /*
  * jprint_match_array	    - if arrays should match
@@ -141,11 +218,22 @@ jprint_match_object(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_ARRAY set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_array(uintmax_t types)
 {
-    return types & JPRINT_TYPE_ARRAY;
+    return (types & JPRINT_TYPE_ARRAY) != 0;
 }
 /*
  * jprint_match_any	- if any type should match
@@ -179,11 +267,22 @@ jprint_match_any(uintmax_t types)
  * Simple is defined as a number, a bool, a string or a null.
  *
  * Returns true if types has JPRINT_TYPE_SIMPLE set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_simple(uintmax_t types)
 {
-    return types & JPRINT_TYPE_SIMPLE;
+    return (types & JPRINT_TYPE_SIMPLE) != 0;
 }
 /*
  * jprint_match_compound   - if compounds should match
@@ -195,11 +294,22 @@ jprint_match_simple(uintmax_t types)
  * A compound is defined as an object or array.
  *
  * Returns true if types has JPRINT_TYPE_COMPOUND set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_compound(uintmax_t types)
 {
-    return types & JPRINT_TYPE_COMPOUND;
+    return (types & JPRINT_TYPE_COMPOUND) != 0;
 }
 
 /*
@@ -289,11 +399,22 @@ jprint_parse_types_option(char *optarg)
  *	types	- print types set
  *
  * Returns true if types only has JPRINT_PRINT_NAME set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_print_name(uintmax_t types)
 {
-    return (types & JPRINT_PRINT_NAME) && !(types & JPRINT_PRINT_VALUE);
+    return ((types & JPRINT_PRINT_NAME) && !(types & JPRINT_PRINT_VALUE)) != 0;
 }
 /*
  * jprint_print_value	- if only values should be printed
@@ -303,11 +424,22 @@ jprint_print_name(uintmax_t types)
  *	types	- print types set
  *
  * Returns true if types only has JPRINT_PRINT_VALUE set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_print_value(uintmax_t types)
 {
-    return (types & JPRINT_PRINT_VALUE) && !(types & JPRINT_PRINT_NAME);
+    return ((types & JPRINT_PRINT_VALUE) && !(types & JPRINT_PRINT_NAME)) != 0;
 }
 /*
  * jprint_print_both	- if names AND values should be printed
@@ -418,9 +550,6 @@ jprint_parse_print_option(char *optarg)
  *
  * See also the structs jprint_number_range and jprint_number in jprint_util.h
  * for more details.
- *
- * NOTE: currently (as of 7 June 2023) the numbers are signed. This might or
- * might not change depending on what is needed.
  *
  * NOTE: this function does not return on syntax error or NULL number.
  */
@@ -569,5 +698,4 @@ jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_nu
     }
 
     return false; /* no match */
-
 }
