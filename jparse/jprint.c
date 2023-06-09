@@ -88,8 +88,9 @@ static const char * const usage_msg1 =
     "\t-b <num>[{t|s}]\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
     "\t\t\tNot specifying a character after the number implies spaces.\n"
     "\t\t\tUse of -b without -j or -p b has no effect.\n"
-    "\t-b tab\t\tAlias for '-b t'.\n\n"
+    "\t-b tab\t\tAlias for '-b 1t'.\n\n"
     "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
+    "\t-L tab\t\tAlias for '-L 1t'.\n\n"
     "\t\t\tNot specifying a character after the number implies spaces.\n"
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
@@ -105,7 +106,7 @@ static const char * const usage_msg2 =
     "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
     "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
     "\t\t\tUse of -I without -j has no effect.\n"
-    "\t-I tab\t\tAlias for '-I t'.\n\n"
+    "\t-I tab\t\tAlias for '-I 1t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
     "\t\t\tImplies '-p b -b 1 -c -e -Q -I 4 -t any'.\n"
     "\t\t\tSubsequent use of -b {t,number} changes the printing between JSON tokens.\n"
