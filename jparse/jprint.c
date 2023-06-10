@@ -93,8 +93,8 @@ static const char * const usage_msg1 =
     "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: don't print levels)\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
     "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
-    "\t\t\tNOTE: the top JSON level is 0.\n";
-    "\t-L tab\t\tAlias for '-L 1t'.\n"
+    "\t\t\tNOTE: the top JSON level is 0.\n"
+    "\t-L tab\t\tAlias for '-L 1t'.\n";
 
 static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
@@ -309,6 +309,8 @@ int main(int argc, char **argv)
 	    print_syntax = true;
 	    dbg(DBG_NONE, "implying -p both");
 	    print_type = jprint_parse_print_option("both");
+	    dbg(DBG_NONE, "implying -b 1");
+	    jprint_parse_st_tokens_option("1", &num_token_spaces, &print_token_tab);
 	    break;
 	case 'E':
 	    match_encoded = true;
