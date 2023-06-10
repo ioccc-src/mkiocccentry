@@ -111,7 +111,7 @@ static const char * const usage_msg2 =
     "\t\t\tNOTE: the top JSON level is 0.\n"
     "\t-I tab\t\tAlias for '-I 1t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
-    "\t\t\tImplies '-p b -b 1 -c -e -Q -I 4 -t any'.\n"
+    "\t\t\tImplies '-p b -b 1 -e -Q -I 4 -t any'.\n"
     "\t\t\tSubsequent use of -b {t,number} changes the printing between JSON tokens.\n"
     "\t\t\tSubsequent use of -I {t,number} changes how JSON is indented.\n"
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
@@ -278,39 +278,25 @@ int main(int argc, char **argv)
 	    print_braces = true;
 	    break;
 	case 'I':
-	    if (sscanf(optarg, "%ju%c", &indent_level, &ch) == 2) {
-		if (ch == 't') {
-		    indent_tab = true;
-		    dbg(DBG_NONE, "will indent with %ju tab%s after level", indent_level, indent_level==1?"":"s");
-		} else if (ch == 's') {
-		    indent_tab = false; /* ensure it's false in case specified previously */
-		    dbg(DBG_NONE, "will indent with %jd space%s after level", indent_level, indent_level==1?"":"s");
-		} else {
-		    err(5, __func__, "syntax error for -L");
-		    not_reached();
-		}
-	    } else if (!strcmp(optarg, "tab")) {
-		    indent_tab = true;
-		    indent_level = 1;
-		    dbg(DBG_NONE, "will indent with %ju tab%s after level", indent_level, indent_level==1?"":"s");
-	    } else if (!string_to_uintmax(optarg, &indent_level)) {
-		err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
-		not_reached();
-	    } else {
-		indent_tab = false; /* ensure it's false in case specified previously */
-		dbg(DBG_NONE, "will ident with %jd space%s after level", indent_level, indent_level==1?"":"s");
-	    }
+	    jprint_parse_st_indent_option(optarg, &indent_level, &indent_tab);
 	    break;
 	case 'i':
 	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO still need to set the options of -c -e -Q -I 4 -t any */
+	    /* TODO still need to set the options of -t any */
 	    print_syntax = true;
 	    dbg(DBG_NONE, "implying -p both");
 	    print_type = jprint_parse_print_option("both");
 	    dbg(DBG_NONE, "implying -b 1");
 	    jprint_parse_st_tokens_option("1", &num_token_spaces, &print_token_tab);
+	    dbg(DBG_NONE, "implying -e -Q");
+	    encode_strings = true;
+	    quote_strings = true;
+	    dbg(DBG_NONE, "implying -I 4");
+	    jprint_parse_st_indent_option("4", &indent_level, &indent_tab);
+	    dbg(DBG_NONE, "implying -t any");
+	    type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
 	    match_encoded = true;

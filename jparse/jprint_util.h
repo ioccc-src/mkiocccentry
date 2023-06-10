@@ -133,4 +133,6 @@ bool jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jpri
 /* for -b option */
 void jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *print_token_tab);
 
+/* for -I option */
+void jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */

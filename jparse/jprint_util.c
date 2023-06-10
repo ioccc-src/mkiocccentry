@@ -764,7 +764,7 @@ jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *p
 
 	/* make *num_token_spaces == 0 */
 	*num_token_spaces = 0;
-	/* make print_token_tab == false */
+	/* make *print_token_tab == false */
 	*print_token_tab = false;
     }
 
@@ -793,5 +793,72 @@ jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *p
 	*print_token_tab = false; /* ensure it's false in case specified previously */
 	dbg(DBG_NONE, "will print %jd space%s between name and value", *num_token_spaces,
 		*num_token_spaces==1?"":"s");
+    }
+}
+
+/* jprint_parse_st_indent_option    - parse -I [num]{s,t}/-b indent option
+ *
+ * This function parses the -I option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	indent_level	    - pointer to number of indent spaces or tabs
+ *	indent_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (indent_level == NULL) {
+	err(3, __func__, "NULL indent_level"); /*ooo*/
+	not_reached();
+    } else if (indent_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *indent_level == 0 */
+	*indent_level = 0;
+	/* make *ident_tab == false */
+	*indent_tab = false;
+    }
+
+
+    if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
+	if (ch == 't') {
+	    *indent_tab = true;
+	    dbg(DBG_NONE, "will indent with %ju tab%s after level", *indent_level, *indent_level==1?"":"s");
+	} else if (ch == 's') {
+	    *indent_tab = false; /* ensure it's false in case specified previously */
+	    dbg(DBG_NONE, "will indent with %jd space%s after level", *indent_level, *indent_level==1?"":"s");
+	} else {
+	    err(5, __func__, "syntax error for -I");
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	    *indent_tab = true;
+	    *indent_level = 1;
+	    dbg(DBG_NONE, "will indent with %ju tab%s after level", *indent_level, *indent_level==1?"":"s");
+    } else if (!string_to_uintmax(optarg, indent_level)) {
+	err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
+	not_reached();
+    } else {
+	*indent_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will ident with %jd space%s after level", *indent_level, *indent_level==1?"":"s");
     }
 }
