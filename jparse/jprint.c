@@ -271,8 +271,6 @@ int main(int argc, char **argv)
 	    dbg(DBG_NONE, "implying -e -Q");
 	    encode_strings = true;
 	    quote_strings = true;
-	    dbg(DBG_NONE, "implying -I 4");
-	    jprint_parse_st_indent_option("4", &indent_level, &indent_tab);
 	    dbg(DBG_NONE, "implying -t any");
 	    type = jprint_parse_types_option("any");
 	    break;

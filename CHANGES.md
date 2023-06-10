@@ -11,7 +11,7 @@ and it is an error if this condition is true.
 
 Add functions to parse `-I`, `-b` and `-L` options.
 
-Use of `jprint -j` implies `-p b -b 1 -e -Q -I 4 -t any`.
+Use of `jprint -j` implies `-p b -b 1 -e -Q 4 -t any`.
 
 But fix check of number arguments after options in `jprint`. The comparison was
 wrong and could cause invalid number of arguments at command line even when they
