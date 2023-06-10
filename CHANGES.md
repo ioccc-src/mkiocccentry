@@ -1,5 +1,52 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.7 2023-06-10
+
+Release `jprint` version "0.0.13 2023-06-10".
+
+Make `jprint -S -g` a command line error.
+
+Use of `jprint -b [num]t` (or `-b tab`) requires use of `-p b` (or `-p both`)
+and it is an error if this condition is true.
+
+Add functions to parse `-I`, `-b` and `-L` options.
+
+Use of `jprint -j` implies `-p b -b 1 -e -Q 4 -t any`.
+
+But fix check of number arguments after options in `jprint`. The comparison was
+wrong and could cause invalid number of arguments at command line even when they
+are correct.
+
+Clarify use of `jprint` `-I` and `-L` options in help string.
+
+Add more test cases of bits.
+
+Fix potential NULL pointer dereference in parsing of number ranges.
+
+## Release 1.0.6 2023-06-09
+
+New `jprint` version "0.0.10 2023-06-09". This version now correctly handles the
+number ranges in the form of e.g. `-l 5:-3` where if there are 10 matches it
+will print the fifth match up through the third to last match.
+
+Fixed `seqcexit` and `picky` rules for jprint and sequenced exit codes.
+
+Change semantics of `jprint -L` option. It now takes an option argument which is
+the number of spaces or a tab which will be printed after the JSON level is
+printed. Like `-b t` this has to be fixed in that we cannot assume that `t` or
+`tab` is 8 spaces instead of `\t` but this will change later.
+
+Further version update of `jprint`, now being  "0.0.11 2023-06-09". Semantics of
+`-L` and `-b` changed further. Can be `-[b|L] <num>[t|s]` where `s` is optional.
+If a number is specified without `t` it implies spaces. If a `s` is specified it
+implies spaces and if nothing is specified it implies spaces. Anything else is a
+syntax error.
+
+Add initial testing of `-t type` option after fixing an issue with the bitwise
+test functions. See `jprint_test.c` for details.
+
+Release `jprint` version "0.0.12 2023-06-09": change semantics of `-I` option to
+match that of `-b` and `-L`. Finished -t type test code.
 
 ## Release 1.0.5 2023-06-08
 

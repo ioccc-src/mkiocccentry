@@ -2110,10 +2110,10 @@ string_to_intmax(char const *str, intmax_t *ret)
     num = strtoimax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
-	warn(__func__, "string %s has no digits", str);
+	warn(__func__, "string <%s> has no digits", str);
 	return false;
     } else if (*endptr != '\0') {
-	warn(__func__, "number %s has invalid characters", str);
+	warn(__func__, "number <%s> has invalid characters", str);
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;
@@ -2171,10 +2171,10 @@ string_to_uintmax(char const *str, uintmax_t *ret)
     num = strtoumax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
-	warn(__func__, "string %s has no digits", str);
+	warn(__func__, "string <%s> has no digits", str);
 	return false;
     } else if (*endptr != '\0') {
-	warn(__func__, "number %s has invalid characters", str);
+	warn(__func__, "number <%s> has invalid characters", str);
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;

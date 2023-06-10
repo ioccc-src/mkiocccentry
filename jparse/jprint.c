@@ -37,9 +37,9 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
-    "\t\t[-N num] [-p {n,v,b}] [-b {t,number}] [-L] [-T] [-C] [-B] [-I {t,number}] [-j] [-E]\n"
-    "\t\t[-I] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
+    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
+    "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
+    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -73,27 +73,31 @@ static const char * const usage_msg1 =
     "\t\t\tIf count is a number followed by : (e.g. '-n 3:'), matches must be >= number\n"
     "\t\t\tIf count is a : followed by a number (e.g. '-n :3'), matches must be <= number\n"
     "\t\t\tIf count is num:num (e.g. '-n 3:5'), matches must be inclusively in the range\n"
-    "\t\t\tNOTE: when number < 0 it refers to the instance from last: -1 is last, -2 second to last ...\n\n"
+    "\t\t\tNOTE: when number < 0 it refers to up through matches - the positive max\n\n"
     "\t-N num\t\tPrint only if there are only a given number of matches (def: do not limit)\n"
     "\t\t\tIf num is only a number (e.g. '-l 1'), there must be only that many matches\n"
     "\t\t\tIf num is a number followed by : (e.g. '-l 3:'), there must >= num matches\n"
     "\t\t\tIf num is a : followed by a number (e.g. '-n :3'), there must <= num matches\n"
     "\t\t\tIf num is num:num (e.g. '-n 3:5'), the number of matches must be inclusively in the range\n\n"
     "\t-p {n,v,b}\tprint JSON key, value or both (def: print JSON values)\n"
-    "\t\t\tif the type of value does not match the -t type specification,\n"
+    "\t\t\tIf the type of value does not match the -t type specification,\n"
     "\t\t\tthen the key, value or both are not printed.\n"
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
-    "\t-b {t,number}\tprint between name and value (def: 1)\n"
-    "\t\t\tprint a tab or spaces (i.e. '-b 4') between the name and value.\n"
-    "\t\t\tUse of -b {t,number} without -j or -p b has no effect.\n"
-    "\t-b tab\t\tAlias for '-b t'.\n\n"
-    "\t-L\t\tPrint JSON levels, followed by tab (def: do not print levels).\n"
-    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
+    "\t-b <num>[{t|s}]\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
+    "\t\t\tNot specifying a character after the number implies spaces.\n"
+    "\t\t\tNOTE: -b without -j has no effect.\n"
+    "\t\t\tNOTE: it is an error to use -b [num]t without -p b\n"
+    "\t-b tab\t\tAlias for '-b 1t'.\n\n"
+    "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: don't print levels)\n"
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
+    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
+    "\t\t\tNOTE: the top JSON level is 0.\n"
+    "\t-L tab\t\tAlias for '-L 1t'.\n";
 
 static const char * const usage_msg2 =
-    "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
+    "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
     "\t\t\tand separate : (colon) from the value by the same.\n\n"
@@ -101,14 +105,15 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -C without -j has no effect.\n\n"
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
     "\t\t\tUse of -B without -j has no effect.\n\n"
-    "\t-I {t,number}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
-    "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
-    "\t\t\tUse of -I {t,number} without -j has no effect.\n"
-    "\t-I tab\t\tAlias for '-I t'.\n\n"
+    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: don't indent i.e. '-I 0')\n"
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
+    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
+    "\t\t\tNOTE: the top JSON level is 0.\n"
+    "\t-I tab\t\tAlias for '-I 1t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
-    "\t\t\tImplies '-p b -b 1 -c -e -Q -I 4 -t any'.\n"
-    "\t\t\tSubsequent use of -b {t,number} changes the printing between JSON tokens.\n"
-    "\t\t\tSubsequent use of -I {t,number} changes how JSON is indented.\n"
+    "\t\t\tImplies '-p b -b 1 -e -Q -I 4 -t any'.\n"
+    "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens.\n"
+    "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented.\n"
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
     "\t\t\tUse of -j conflicts with use of '-p {n,v}'.\n\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
@@ -118,7 +123,7 @@ static const char * const usage_msg2 =
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tUse of -g conflicts with -S.\n"
+    "\t\t\tNOTE: Use of -g and -S is an error.\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
@@ -168,12 +173,16 @@ int main(int argc, char **argv)
     struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
-    uintmax_t num_spaces = 0;		/* -b specified */
+    uintmax_t num_token_spaces = 0;	/* -b specified number of spaces or tabs */
+    bool print_token_tab = false;	/* -b tab (or -b <num>[t]) specified */
     bool print_json_levels = false;	/* -L specified */
+    uintmax_t num_level_spaces = 0;	/* number of spaces or tab for -L */
+    bool print_level_tab = false;	/* -L tab option */
     bool print_colons = false;		/* -T specified */
     bool print_commas = false;		/* -C specified */
     bool print_braces = false;		/* -B specified */
     uintmax_t indent_level = 0;		/* -I specified */
+    bool indent_tab = false;		/* -I t{,ab} specified */
     bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded = false;		/* -E used, match encoded name */
     bool substrings_okay = false;	/* -S used, matching substrings okay */
@@ -186,7 +195,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:LTCBI:jEiSgcm:K")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -231,16 +240,11 @@ int main(int argc, char **argv)
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		num_spaces = 8;
-	    else if (!string_to_uintmax(optarg, &num_spaces)) {
-		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
-		not_reached();
-	    }
-	    dbg(DBG_NONE, "will print %zu spaces between name and value", num_spaces);
+	    jprint_parse_st_tokens_option(optarg, &num_token_spaces, &print_token_tab);
 	    break;
 	case 'L':
-	    print_json_levels = true;
+	    print_json_levels = true; /* print JSON levels */
+	    jprint_parse_st_level_option(optarg, &num_level_spaces, &print_level_tab);
 	    break;
 	case 'T':
 	    print_colons = true;
@@ -252,20 +256,23 @@ int main(int argc, char **argv)
 	    print_braces = true;
 	    break;
 	case 'I':
-	    if (!strcmp(optarg, "t") || !strcmp(optarg, "tab"))
-		indent_level = 8;
-	    else if (!string_to_uintmax(optarg, &indent_level)) {
-		err(3, "jprint", "couldn't parse -I indent_level"); /*ooo*/
-		not_reached();
-	    }
-	    dbg(DBG_NONE, "indent level set to %ju spaces", indent_level);
+	    jprint_parse_st_indent_option(optarg, &indent_level, &indent_tab);
 	    break;
 	case 'i':
 	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO need to set the options of -p b -b 1 -c -e -Q -I 4 -t any */
+	    /* TODO still need to set the options of -t any */
 	    print_syntax = true;
+	    dbg(DBG_NONE, "implying -p both");
+	    print_type = jprint_parse_print_option("both");
+	    dbg(DBG_NONE, "implying -b 1");
+	    jprint_parse_st_tokens_option("1", &num_token_spaces, &print_token_tab);
+	    dbg(DBG_NONE, "implying -e -Q");
+	    encode_strings = true;
+	    quote_strings = true;
+	    dbg(DBG_NONE, "implying -t any");
+	    type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
 	    match_encoded = true;
@@ -307,14 +314,34 @@ int main(int argc, char **argv)
 	}
     }
 
-    /* must have at least REQUIRED_ARGS args */
-    if (argc - optind < REQUIRED_ARGS) {
-	usage(3, program, "wrong number of arguments"); /*ooo*/
+
+    /*
+     * check for conflicting options prior to changing argc and argv so that the
+     * user will know to correct the options before being told that they have
+     * the wrong number of arguments (if they do).
+     */
+
+    /* use of -g conflicts with -S is an error */
+    if (use_regexps && substrings_okay) {
+	err(3, "jprint", "cannot use both -g and -S"); /*ooo*/
+	not_reached();
+    }
+
+    /* check that if -b [num]t is used then both -p both */
+    if (print_token_tab && !jprint_print_name_value(print_type)) {
+	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
 	not_reached();
     }
 
     argc -= optind;
     argv += optind;
+
+    /* must have at least REQUIRED_ARGS args */
+    if (argc < REQUIRED_ARGS) {
+	usage(3, program, "wrong number of arguments"); /*ooo*/
+	not_reached();
+    }
+
 
     /* if *argv[0] != '-' we will attempt to read from a regular file */
     if (*argv[0] != '-') {
@@ -409,7 +436,7 @@ int main(int argc, char **argv)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, program, "wrong number of arguments");
+ *      usage(3, program, "wrong number of arguments");;
  *
  * given:
  *	exitcode        value to exit with

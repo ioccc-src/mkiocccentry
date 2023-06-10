@@ -43,11 +43,22 @@ jprint_match_none(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_INT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_int(uintmax_t types)
 {
-    return types & JPRINT_TYPE_INT;
+    return (types & JPRINT_TYPE_INT) != 0;
 }
 /*
  * jprint_match_float	- if floats should match
@@ -57,11 +68,22 @@ jprint_match_int(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_FLOAT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_float(uintmax_t types)
 {
-    return types & JPRINT_TYPE_FLOAT;
+    return (types & JPRINT_TYPE_FLOAT) != 0;
 }
 /*
  * jprint_match_exp	- if exponents should match
@@ -71,11 +93,48 @@ jprint_match_float(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_EXP set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_exp(uintmax_t types)
 {
-    return types & JPRINT_TYPE_EXP;
+    return (types & JPRINT_TYPE_EXP) != 0;
+}
+/*
+ * jprint_match_num	- if numbers of any type should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JPRINT_TYPE_NUM (or any of the number types) set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+jprint_match_num(uintmax_t types)
+{
+    return ((types & JPRINT_TYPE_NUM)||(types & JPRINT_TYPE_INT) || (types & JPRINT_TYPE_FLOAT) ||
+	    (types & JPRINT_TYPE_EXP))!= 0;
 }
 /*
  * jprint_match_bool	- if booleans should match
@@ -85,11 +144,22 @@ jprint_match_exp(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_BOOL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_bool(uintmax_t types)
 {
-    return types & JPRINT_TYPE_BOOL;
+    return (types & JPRINT_TYPE_BOOL) != 0;
 }
 /*
  * jprint_match_string	    - if strings should match
@@ -99,11 +169,22 @@ jprint_match_bool(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_STR set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_string(uintmax_t types)
 {
-    return types & JPRINT_TYPE_STR;
+    return (types & JPRINT_TYPE_STR) != 0;
 }
 /*
  * jprint_match_null	- if null should match
@@ -113,11 +194,22 @@ jprint_match_string(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_NULL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_null(uintmax_t types)
 {
-    return types & JPRINT_TYPE_NULL;
+    return (types & JPRINT_TYPE_NULL) != 0;
 }
 /*
  * jprint_match_object	    - if objects should match
@@ -127,11 +219,22 @@ jprint_match_null(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_OBJECT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_object(uintmax_t types)
 {
-    return types & JPRINT_TYPE_OBJECT;
+    return (types & JPRINT_TYPE_OBJECT) != 0;
 }
 /*
  * jprint_match_array	    - if arrays should match
@@ -141,11 +244,22 @@ jprint_match_object(uintmax_t types)
  *	types	- types set
  *
  * Returns true if types has JPRINT_TYPE_ARRAY set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_array(uintmax_t types)
 {
-    return types & JPRINT_TYPE_ARRAY;
+    return (types & JPRINT_TYPE_ARRAY) != 0;
 }
 /*
  * jprint_match_any	- if any type should match
@@ -179,11 +293,22 @@ jprint_match_any(uintmax_t types)
  * Simple is defined as a number, a bool, a string or a null.
  *
  * Returns true if types has JPRINT_TYPE_SIMPLE set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_simple(uintmax_t types)
 {
-    return types & JPRINT_TYPE_SIMPLE;
+    return (types & JPRINT_TYPE_SIMPLE) != 0;
 }
 /*
  * jprint_match_compound   - if compounds should match
@@ -195,11 +320,22 @@ jprint_match_simple(uintmax_t types)
  * A compound is defined as an object or array.
  *
  * Returns true if types has JPRINT_TYPE_COMPOUND set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_match_compound(uintmax_t types)
 {
-    return types & JPRINT_TYPE_COMPOUND;
+    return (types & JPRINT_TYPE_COMPOUND) != 0;
 }
 
 /*
@@ -231,7 +367,7 @@ jprint_parse_types_option(char *optarg)
 	errno = 0;
 	dup = strdup(optarg);
 	if (dup == NULL) {
-	    err(13, __func__, "strdup(%s) failed", optarg);
+	    err(7, __func__, "strdup(%s) failed", optarg);
 	    not_reached();
 	}
     }
@@ -269,7 +405,7 @@ jprint_parse_types_option(char *optarg)
 	    type |= JPRINT_TYPE_ANY;
 	} else {
 	    /* unknown type */
-	    err(6, __func__, "unknown type '%s'", p);
+	    err(3, __func__, "unknown type '%s'", p); /*ooo*/
 	    not_reached();
 	}
     }
@@ -289,11 +425,22 @@ jprint_parse_types_option(char *optarg)
  *	types	- print types set
  *
  * Returns true if types only has JPRINT_PRINT_NAME set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_print_name(uintmax_t types)
 {
-    return (types & JPRINT_PRINT_NAME) && !(types & JPRINT_PRINT_VALUE);
+    return ((types & JPRINT_PRINT_NAME) && !(types & JPRINT_PRINT_VALUE)) != 0;
 }
 /*
  * jprint_print_value	- if only values should be printed
@@ -303,11 +450,22 @@ jprint_print_name(uintmax_t types)
  *	types	- print types set
  *
  * Returns true if types only has JPRINT_PRINT_VALUE set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
  */
 bool
 jprint_print_value(uintmax_t types)
 {
-    return (types & JPRINT_PRINT_VALUE) && !(types & JPRINT_PRINT_NAME);
+    return ((types & JPRINT_PRINT_VALUE) && !(types & JPRINT_PRINT_NAME)) != 0;
 }
 /*
  * jprint_print_both	- if names AND values should be printed
@@ -354,7 +512,7 @@ jprint_parse_print_option(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	err(15, __func__, "strdup(%s) failed", optarg);
+	err(8, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 
@@ -373,7 +531,7 @@ jprint_parse_print_option(char *optarg)
 	    print_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
-	    err(7, __func__, "unknown keyword '%s'", p);
+	    err(3, __func__, "unknown keyword '%s'", p); /*ooo*/
 	    not_reached();
 	}
     }
@@ -409,17 +567,15 @@ jprint_parse_print_option(char *optarg)
  * The following rules apply:
  *
  * (0) an exact number is a number optional arg by itself e.g. -l 5 or -l5.
- * (1) an inclusive range is <min>:<max> e.g. -l 5:10
- *     (1a) the minimum must be <= the max
+ * (1) an inclusive range is <min>:<max> e.g. -l 5:10 where:
+ *     (1a) the last number can be negative in which case it's up through the
+ *	    count - max.
  * (2) a minimum number, that is num >= minimum, is <num>:
  * (3) a maximum number, that is num <= maximum, is :<num>
  * (4) anything else is an error
  *
  * See also the structs jprint_number_range and jprint_number in jprint_util.h
  * for more details.
- *
- * NOTE: currently (as of 7 June 2023) the numbers are signed. This might or
- * might not change depending on what is needed.
  *
  * NOTE: this function does not return on syntax error or NULL number.
  */
@@ -430,8 +586,12 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
     intmax_t min = 0;
 
     /* firewall */
+    if (option == NULL || *option == '\0') {
+	err(3, __func__, "NULL or empty option given"); /*ooo*/
+	not_reached();
+    }
     if (number == NULL) {
-	err(8, __func__, "NULL number struct for option %s", option);
+	err(3, __func__, "NULL number struct for option %s", option); /*ooo*/
 	not_reached();
     } else {
 	memset(number, 0, sizeof(struct jprint_number));
@@ -446,7 +606,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
     }
 
     if (optarg == NULL || *optarg == '\0') {
-	warn(__func__, "NULL or empty optarg for %s, ignoring", option);
+	err(3, __func__, "NULL or empty optarg for %s", option); /*ooo*/
 	return false;
     }
 
@@ -460,20 +620,24 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	    number->range.greater_than_equal = false;
 	    dbg(DBG_NONE, "exact number required for option %s: %jd", option, number->number);
 	} else {
-	    err(9, __func__, "invalid number for option %s: <%s>", option, optarg);
+	    err(3, __func__, "invalid number for option %s: <%s>", option, optarg); /*ooo*/
 	    not_reached();
 	}
     } else if (sscanf(optarg, "%jd:%jd", &min, &max) == 2) {
-	if (min > max) {
-	    err(10, __func__, "invalid inclusive range for option %s: min > max: %jd > %jd", option, min, max);
-	    not_reached();
-	}
+	/*
+	 * NOTE: we can't check that min >= max because a negative number in the
+	 * maximum means that the range is up through the count - max matches
+	 */
 	number->range.min = min;
 	number->range.max = max;
 	number->range.inclusive = true;
 	number->range.less_than_equal = false;
 	number->range.greater_than_equal = false;
-	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min, number->range.max);
+	/* XXX - this debug message is problematic wrt the negative number
+	 * option
+	 */
+	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
+		number->range.max);
     } else if (sscanf(optarg, "%jd:", &min) == 1) {
 	number->number = 0;
 	number->exact = false;
@@ -493,7 +657,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	number->range.inclusive = false;
 	dbg(DBG_NONE, "maximum number required for option %s: must be <= %jd", option, number->range.max);
     } else {
-	err(11, __func__, "number range syntax error for option %s: <%s>", option, optarg);
+	err(3, __func__, "number range syntax error for option %s: <%s>", option, optarg);/*ooo*/
 	not_reached();
     }
 
@@ -504,15 +668,16 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
  *
  * given:
  *
- *	number	    - number to check
- *	range	    - pointer to struct jprint_number with range
+ *	number		- number to check
+ *	total_matches	- total number of matches found
+ *	range		- pointer to struct jprint_number with range
  *
  * Returns true if the number is in range.
  *
  * NOTE: if range is NULL it will return false.
  */
 bool
-jprint_number_in_range(intmax_t number, struct jprint_number *range)
+jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_number *range)
 {
     /* firewall check */
     if (range == NULL) {
@@ -525,9 +690,20 @@ jprint_number_in_range(intmax_t number, struct jprint_number *range)
     } else if (range->range.inclusive) {
 	/* if the number must be inclusive in range then we have to make sure
 	 * that number >= min and <= max.
+	 *
+	 * NOTE: we have to make a special check for negative numbers because a
+	 * negative number is up through the count of matches - the negative max
+	 * number (rather if there are 10 matches and the string -l 5:-3 is
+	 * specified then the items 5, 6, 7, 8 are to be printed).
 	 */
-	if (number >= range->range.min && number <= range->range.max) {
-	    return true;
+	if (number >= range->range.min) {
+	    if (range->range.max < 0 && number <= total_matches + range->range.max) {
+		return true;
+	    } else if (number <= range->range.max) {
+		return true;
+	    } else {
+		return false;
+	    }
 	} else {
 	    return false;
 	}
@@ -552,5 +728,207 @@ jprint_number_in_range(intmax_t number, struct jprint_number *range)
     }
 
     return false; /* no match */
+}
 
+/* jprint_parse_st_tokens_option    - parse -b [num]{s,t}/-b tab option
+ *
+ * This function parses the -b option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	num_token_spaces    - pointer to number of token spaces or tabs
+ *	print_token_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *print_token_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (num_token_spaces == NULL) {
+	err(3, __func__, "NULL num_token_spaces"); /*ooo*/
+	not_reached();
+    } else if (print_token_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *num_token_spaces == 0 */
+	*num_token_spaces = 0;
+	/* make *print_token_tab == false */
+	*print_token_tab = false;
+    }
+
+    if (sscanf(optarg, "%ju%c", num_token_spaces, &ch) == 2) {
+	if (ch == 't') {
+	    *print_token_tab = true;
+	    dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+	} else if (ch == 's') {
+	    *print_token_tab = false;
+	    dbg(DBG_NONE, "will print %ju space%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+	} else {
+	    err(3, __func__, "syntax error for -b <num>[ts]"); /*ooo*/
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	*print_token_tab = true;
+	*num_token_spaces = 1;
+	dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+	    *num_token_spaces==1?"":"s");
+    } else if (!string_to_uintmax(optarg, num_token_spaces)) {
+	err(3, "jprint", "couldn't parse -b <num>[ts]"); /*ooo*/
+	not_reached();
+    } else {
+	*print_token_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will print %jd space%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+    }
+}
+
+/* jprint_parse_st_indent_option    - parse -I [num]{s,t}/-b indent option
+ *
+ * This function parses the -I option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	indent_level	    - pointer to number of indent spaces or tabs
+ *	indent_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (indent_level == NULL) {
+	err(3, __func__, "NULL indent_level"); /*ooo*/
+	not_reached();
+    } else if (indent_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *indent_level == 0 */
+	*indent_level = 0;
+	/* make *ident_tab == false */
+	*indent_tab = false;
+    }
+
+
+    if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
+	if (ch == 't') {
+	    *indent_tab = true;
+	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
+	} else if (ch == 's') {
+	    *indent_tab = false; /* ensure it's false in case specified previously */
+	    dbg(DBG_NONE, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
+	} else {
+	    err(3, __func__, "syntax error for -I"); /*ooo*/
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	    *indent_tab = true;
+	    *indent_level = 1;
+	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
+    } else if (!string_to_uintmax(optarg, indent_level)) {
+	err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
+	not_reached();
+    } else {
+	*indent_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
+    }
+}
+
+/* jprint_parse_st_level_option    - parse -L [num]{s,t}/-b level option
+ *
+ * This function parses the -L option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	num_level_spaces    - pointer to number of spaces or tabs to print after levels
+ *	print_level_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (num_level_spaces == NULL) {
+	err(3, __func__, "NULL num_level_spaces"); /*ooo*/
+	not_reached();
+    } else if (print_level_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *num_level_spaces == 0 */
+	*num_level_spaces = 0;
+	/* make *print_level_tab == false */
+	*print_level_tab = false;
+    }
+
+    if (sscanf(optarg, "%ju%c", num_level_spaces, &ch) == 2) {
+	if (ch == 't') {
+	    *print_level_tab = true;
+	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	} else if (ch == 's') {
+	    *print_level_tab = false; /* ensure it's false in case specified previously */
+	    dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	} else {
+	    err(3, __func__, "syntax error for -L"); /*ooo*/
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	    *print_level_tab = true;
+	    *num_level_spaces = 1;
+	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+    } else if (!string_to_uintmax(optarg, num_level_spaces)) {
+	err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
+	not_reached();
+    } else {
+	*print_level_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+    }
 }
