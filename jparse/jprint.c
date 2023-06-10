@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO still need to set the options of -b 1 -c -e -Q -I 4 -t any */
+	    /* TODO still need to set the options of -c -e -Q -I 4 -t any */
 	    print_syntax = true;
 	    dbg(DBG_NONE, "implying -p both");
 	    print_type = jprint_parse_print_option("both");
