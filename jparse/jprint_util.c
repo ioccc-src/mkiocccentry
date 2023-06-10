@@ -586,6 +586,10 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
     intmax_t min = 0;
 
     /* firewall */
+    if (option == NULL || *option == '\0') {
+	err(3, __func__, "NULL or empty option given");
+	not_reached();
+    }
     if (number == NULL) {
 	err(3, __func__, "NULL number struct for option %s", option); /*ooo*/
 	not_reached();
@@ -602,7 +606,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
     }
 
     if (optarg == NULL || *optarg == '\0') {
-	warn(__func__, "NULL or empty optarg for %s, ignoring", option);
+	err(3, __func__, "NULL or empty optarg for %s", option);
 	return false;
     }
 
