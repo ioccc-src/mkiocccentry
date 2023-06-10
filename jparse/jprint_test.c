@@ -70,7 +70,7 @@ jprint_run_tests(void)
     }
 
     /*
-     * set up inclusive range of >= 5 && <= 10 - 3 (i.e. up through the third to
+     * set up inclusive range of >= 5 && <= max - 3 (i.e. up through the third to
      * last match)
      */
     jprint_parse_number_range("-l", "5:-3", &number);
