@@ -19,6 +19,8 @@ are correct.
 
 Clarify use of `jprint` `-I` and `-L` options in help string.
 
+Add more test cases of bits.
+
 ## Release 1.0.6 2023-06-09
 
 New `jprint` version "0.0.10 2023-06-09". This version now correctly handles the

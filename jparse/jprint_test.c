@@ -150,15 +150,6 @@ jprint_run_tests(void)
 	okay = false;
     }
 
-    /* test a different way */
-    bits = jprint_parse_print_option("n,v");
-    /* check that JPRINT_PRINT_BOTH is equal to bits */
-    test = jprint_test_bits(true, bits, __LINE__, jprint_print_name_value, "JPRINT_PRINT_BOTH");
-    if (!test) {
-	okay = false;
-    }
-
-
     /* set bits to JPRINT_PRINT_NAME */
     bits = jprint_parse_print_option("name");
     /* check that only JPRINT_PRINT_NAME is set: both and value are not set */
@@ -297,6 +288,47 @@ jprint_run_tests(void)
     if (!test) {
 	okay = false;
     }
+
+    /*
+     * test that none of the bits are set not via the match none function but by
+     * each match function
+     */
+    bits = JPRINT_TYPE_NONE;
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_float, "JPRINT_TYPE_FLOAT") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_exp, "JPRINT_TYPE_EXP") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_num, "JPRINT_TYPE_NUM") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_bool, "JPRINT_TYPE_BOOL") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_string, "JPRINT_TYPE_STR") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_null, "JPRINT_TYPE_NULL") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_object, "JPRINT_TYPE_OBJECT") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_array, "JPRINT_TYPE_ARRAY") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_any, "JPRINT_TYPE_ANY") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_simple, "JPRINT_TYPE_SIMPLE") &&
+	   jprint_test_bits(false, bits, __LINE__, jprint_match_compound, "JPRINT_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+
+    /* check all types */
+    bits = jprint_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound");
+    test = jprint_test_bits(true, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_float, "JPRINT_TYPE_FLOAT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_exp, "JPRINT_TYPE_EXP") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_num, "JPRINT_TYPE_NUM") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_bool, "JPRINT_TYPE_BOOL") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_string, "JPRINT_TYPE_STR") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_null, "JPRINT_TYPE_NULL") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_object, "JPRINT_TYPE_OBJECT") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_array, "JPRINT_TYPE_ARRAY") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_any, "JPRINT_TYPE_ANY") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_simple, "JPRINT_TYPE_SIMPLE") &&
+	   jprint_test_bits(true, bits, __LINE__, jprint_match_compound, "JPRINT_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+
+
 
     return okay;
 }
