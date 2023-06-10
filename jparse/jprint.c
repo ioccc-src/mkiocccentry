@@ -90,10 +90,11 @@ static const char * const usage_msg1 =
     "\t\t\tNOTE: -b without -j has no effect.\n"
     "\t\t\tNOTE: it is an error to use -b [num]t without -p b\n"
     "\t-b tab\t\tAlias for '-b 1t'.\n\n"
-    "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
+    "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: don't print levels)\n"
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
+    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
     "\t-L tab\t\tAlias for '-L 1t'.\n\n"
-    "\t\t\tNot specifying a character after the number implies spaces.\n"
-    "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
+    "\t\t\tNOTE: the top JSON level is 0.\n";
 
 static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
@@ -104,9 +105,10 @@ static const char * const usage_msg2 =
     "\t\t\tUse of -C without -j has no effect.\n\n"
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
     "\t\t\tUse of -B without -j has no effect.\n\n"
-    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: do not indent i.e. '-I 0')\n"
-    "\t\t\tIndent levels by tab or spaces (i.e. '-I 4').\n"
-    "\t\t\tUse of -I without -j has no effect.\n"
+    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: don't indent i.e. '-I 0')\n"
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
+    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
+    "\t\t\tNOTE: the top JSON level is 0.\n"
     "\t-I tab\t\tAlias for '-I 1t'.\n\n"
     "\t-j\t\tPrint using JSON syntax (def: do not).\n"
     "\t\t\tImplies '-p b -b 1 -c -e -Q -I 4 -t any'.\n"

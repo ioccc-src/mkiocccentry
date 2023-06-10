@@ -13,6 +13,8 @@ Use of `jprint -j` implies `-p both`. More options must be set as well.
 
 But fix check of number arguments after options in `jprint`.
 
+Clarify use of `jprint` `-I` and `-L` options in help string.
+
 
 ## Release 1.0.6 2023-06-09
 
