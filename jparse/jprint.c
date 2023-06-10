@@ -93,8 +93,8 @@ static const char * const usage_msg1 =
     "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: don't print levels)\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
     "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
-    "\t-L tab\t\tAlias for '-L 1t'.\n\n"
     "\t\t\tNOTE: the top JSON level is 0.\n";
+    "\t-L tab\t\tAlias for '-L 1t'.\n"
 
 static const char * const usage_msg2 =
     "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
