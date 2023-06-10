@@ -1,5 +1,10 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.7 2023-06-10
+
+Release `jprint` version "0.0.13 2023-06-10". Make `jprint -S -g` a command line
+error.
+
 
 ## Release 1.0.6 2023-06-09
 
