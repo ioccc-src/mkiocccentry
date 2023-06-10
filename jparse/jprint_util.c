@@ -587,7 +587,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 
     /* firewall */
     if (option == NULL || *option == '\0') {
-	err(3, __func__, "NULL or empty option given");
+	err(3, __func__, "NULL or empty option given"); /*ooo*/
 	not_reached();
     }
     if (number == NULL) {
@@ -606,7 +606,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
     }
 
     if (optarg == NULL || *optarg == '\0') {
-	err(3, __func__, "NULL or empty optarg for %s", option);
+	err(3, __func__, "NULL or empty optarg for %s", option); /*ooo*/
 	return false;
     }
 
@@ -851,7 +851,7 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
 	    *indent_tab = false; /* ensure it's false in case specified previously */
 	    dbg(DBG_NONE, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
 	} else {
-	    err(5, __func__, "syntax error for -I");
+	    err(3, __func__, "syntax error for -I"); /*ooo*/
 	    not_reached();
 	}
     } else if (!strcmp(optarg, "tab")) {
@@ -917,7 +917,7 @@ jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *pr
 	    *print_level_tab = false; /* ensure it's false in case specified previously */
 	    dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
 	} else {
-	    err(4, __func__, "syntax error for -L");
+	    err(3, __func__, "syntax error for -L"); /*ooo*/
 	    not_reached();
 	}
     } else if (!strcmp(optarg, "tab")) {
