@@ -87,7 +87,8 @@ static const char * const usage_msg1 =
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
     "\t-b <num>[{t|s}]\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
     "\t\t\tNot specifying a character after the number implies spaces.\n"
-    "\t\t\tUse of -b without -j or -p b has no effect.\n"
+    "\t\t\tNOTE: -b without -j has no effect.\n"
+    "\t\t\tNOTE: it is an error to use -b [num]t without -p b\n"
     "\t-b tab\t\tAlias for '-b 1t'.\n\n"
     "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: no spaces/tab)\n"
     "\t-L tab\t\tAlias for '-L 1t'.\n\n"
@@ -171,8 +172,8 @@ int main(int argc, char **argv)
     struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
-    uintmax_t num_token_spaces = 0;		/* -b specified */
-    bool print_token_tab = false;	/* -b tab specified */
+    uintmax_t num_token_spaces = 0;	/* -b specified number of spaces or tabs */
+    bool print_token_tab = false;	/* -b tab (or -b <num>[t]) specified */
     bool print_json_levels = false;	/* -L specified */
     uintmax_t num_level_spaces = 0;	/* number of spaces or tab for -L */
     bool print_level_tab = false;	/* -L tab option */
@@ -380,6 +381,12 @@ int main(int argc, char **argv)
     /* use of -g conflicts with -S is an error */
     if (use_regexps && substrings_okay) {
 	err(3, "jprint", "cannot use both -g and -S");
+	not_reached();
+    }
+
+    /* check that if -b [num]t is used then both -p both */
+    if (print_token_tab && !jprint_print_name_value(print_type)) {
+	err(3, "jparse", "use of -b [num]t cannot be used without -p both");
 	not_reached();
     }
 
