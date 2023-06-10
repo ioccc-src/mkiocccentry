@@ -842,10 +842,10 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
     if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
 	if (ch == 't') {
 	    *indent_tab = true;
-	    dbg(DBG_NONE, "will indent with %ju tab%s after level", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
 	} else if (ch == 's') {
 	    *indent_tab = false; /* ensure it's false in case specified previously */
-	    dbg(DBG_NONE, "will indent with %jd space%s after level", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_NONE, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
 	} else {
 	    err(5, __func__, "syntax error for -I");
 	    not_reached();
@@ -853,12 +853,78 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
     } else if (!strcmp(optarg, "tab")) {
 	    *indent_tab = true;
 	    *indent_level = 1;
-	    dbg(DBG_NONE, "will indent with %ju tab%s after level", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
     } else if (!string_to_uintmax(optarg, indent_level)) {
 	err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
 	not_reached();
     } else {
 	*indent_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_NONE, "will ident with %jd space%s after level", *indent_level, *indent_level==1?"":"s");
+	dbg(DBG_NONE, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
+    }
+}
+
+/* jprint_parse_st_level_option    - parse -L [num]{s,t}/-b level option
+ *
+ * This function parses the -L option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	num_level_spaces    - pointer to number of spaces or tabs to print after levels
+ *	print_level_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (num_level_spaces == NULL) {
+	err(3, __func__, "NULL num_level_spaces"); /*ooo*/
+	not_reached();
+    } else if (print_level_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *num_level_spaces == 0 */
+	*num_level_spaces = 0;
+	/* make *print_level_tab == false */
+	*print_level_tab = false;
+    }
+
+    if (sscanf(optarg, "%ju%c", num_level_spaces, &ch) == 2) {
+	if (ch == 't') {
+	    *print_level_tab = true;
+	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	} else if (ch == 's') {
+	    *print_level_tab = false; /* ensure it's false in case specified previously */
+	    dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	} else {
+	    err(4, __func__, "syntax error for -L");
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	    *print_level_tab = true;
+	    *num_level_spaces = 1;
+	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+    } else if (!string_to_uintmax(optarg, num_level_spaces)) {
+	err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
+	not_reached();
+    } else {
+	*print_level_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
     }
 }

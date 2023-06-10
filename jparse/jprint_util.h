@@ -135,4 +135,8 @@ void jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bo
 
 /* for -I option */
 void jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
+
+/* for -L option */
+void jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
+
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */

@@ -157,7 +157,6 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
 int main(int argc, char **argv)
 {
     char const *program = NULL;		/* our name */
-    char ch = -1;			/* placeholder for some sscanf() calls */
     extern char *optarg;
     extern int optind;
     struct json *json_tree = NULL;	/* json tree */
@@ -244,29 +243,8 @@ int main(int argc, char **argv)
 	    jprint_parse_st_tokens_option(optarg, &num_token_spaces, &print_token_tab);
 	    break;
 	case 'L':
-	    if (sscanf(optarg, "%ju%c", &num_level_spaces, &ch) == 2) {
-		if (ch == 't') {
-		    print_level_tab = true;
-		    dbg(DBG_NONE, "will print %ju tab%s after levels", num_level_spaces, num_level_spaces==1?"":"s");
-		} else if (ch == 's') {
-		    print_level_tab = false; /* ensure it's false in case specified previously */
-		    dbg(DBG_NONE, "will print %jd space%s after level", num_level_spaces, num_level_spaces==1?"":"s");
-		} else {
-		    err(4, __func__, "syntax error for -L");
-		    not_reached();
-		}
-	    } else if (!strcmp(optarg, "tab")) {
-		    print_level_tab = true;
-		    num_level_spaces = 1;
-		    dbg(DBG_NONE, "will print %ju tab%s after levels", num_level_spaces, num_level_spaces==1?"":"s");
-	    } else if (!string_to_uintmax(optarg, &num_level_spaces)) {
-		err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
-		not_reached();
-	    } else {
-		print_level_tab = false; /* ensure it's false in case specified previously */
-		dbg(DBG_NONE, "will print %jd space%s after level", num_level_spaces, num_level_spaces==1?"":"s");
-	    }
-	    print_json_levels = true;
+	    print_json_levels = true; /* print JSON levels */
+	    jprint_parse_st_level_option(optarg, &num_level_spaces, &print_level_tab);
 	    break;
 	case 'T':
 	    print_colons = true;
