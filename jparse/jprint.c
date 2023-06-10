@@ -37,7 +37,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-j lvl] [-n count]\n"
+    "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
@@ -96,7 +96,7 @@ static const char * const usage_msg1 =
     "\t\t\tThe root (top) of the JSON document is defined as level 0.\n";
 
 static const char * const usage_msg2 =
-    "\t-T\t\tWhen printing '-j both', separate name/value by a : (colon) (def: do not)\n"
+    "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
     "\t\t\tand separate : (colon) from the value by the same.\n\n"
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qj:n:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -239,32 +239,7 @@ int main(int argc, char **argv)
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    if (sscanf(optarg, "%ju%c", &num_token_spaces, &ch) == 2) {
-		if (ch == 't') {
-		    print_token_tab = true;
-		    dbg(DBG_NONE, "will print %ju tab%s between name and value", num_token_spaces,
-			num_token_spaces==1?"":"s");
-		} else if (ch == 's') {
-		    print_token_tab = false;
-		    dbg(DBG_NONE, "will print %ju space%s between name and value", num_token_spaces,
-			num_token_spaces==1?"":"s");
-		} else {
-		    err(3, __func__, "syntax error for -b");
-		    not_reached();
-		}
-	    } else if (!strcmp(optarg, "tab")) {
-		print_token_tab = true;
-		num_token_spaces = 1;
-		dbg(DBG_NONE, "will print %ju tab%s between name and value", num_token_spaces,
-		    num_token_spaces==1?"":"s");
-	    } else if (!string_to_uintmax(optarg, &num_token_spaces)) {
-		err(3, "jprint", "couldn't parse -b spaces"); /*ooo*/
-		not_reached();
-	    } else {
-		print_token_tab = false; /* ensure it's false in case specified previously */
-		dbg(DBG_NONE, "will print %jd space%s between name and value", num_token_spaces,
-			num_token_spaces==1?"":"s");
-	    }
+	    jprint_parse_st_tokens_option(optarg, &num_token_spaces, &print_token_tab);
 	    break;
 	case 'L':
 	    if (sscanf(optarg, "%ju%c", &num_level_spaces, &ch) == 2) {
@@ -328,8 +303,9 @@ int main(int argc, char **argv)
 	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO need to set the options of -p b -b 1 -c -e -Q -I 4 -t any */
+	    /* TODO still need to set the options of -b 1 -c -e -Q -I 4 -t any */
 	    print_syntax = true;
+	    print_type = jprint_parse_print_option("both");
 	    break;
 	case 'E':
 	    match_encoded = true;
@@ -380,25 +356,25 @@ int main(int argc, char **argv)
 
     /* use of -g conflicts with -S is an error */
     if (use_regexps && substrings_okay) {
-	err(3, "jprint", "cannot use both -g and -S");
+	err(3, "jprint", "cannot use both -g and -S"); /*ooo*/
 	not_reached();
     }
 
     /* check that if -b [num]t is used then both -p both */
     if (print_token_tab && !jprint_print_name_value(print_type)) {
-	err(3, "jparse", "use of -b [num]t cannot be used without -p both");
-	not_reached();
-    }
-
-
-    /* must have at least REQUIRED_ARGS args */
-    if (argc - optind < REQUIRED_ARGS) {
-	usage(3, program, "wrong number of arguments"); /*ooo*/
+	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
 	not_reached();
     }
 
     argc -= optind;
     argv += optind;
+
+    /* must have at least REQUIRED_ARGS args */
+    if (argc < REQUIRED_ARGS) {
+	usage(3, program, "wrong number of arguments"); /*ooo*/
+	not_reached();
+    }
+
 
     /* if *argv[0] != '-' we will attempt to read from a regular file */
     if (*argv[0] != '-') {
@@ -493,7 +469,7 @@ int main(int argc, char **argv)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, program, "wrong number of arguments");
+ *      usage(3, program, "wrong number of arguments");;
  *
  * given:
  *	exitcode        value to exit with

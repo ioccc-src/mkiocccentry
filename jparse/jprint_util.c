@@ -725,3 +725,73 @@ jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_nu
 
     return false; /* no match */
 }
+
+/* jprint_parse_st_tokens_option    - parse -b [num]{s,t}/-b tab option
+ *
+ * This function parses the -b option. It's necessary to have it this way
+ * because some options like -j imply it and rather than duplicate code we just
+ * have it here once.
+ *
+ * given:
+ *
+ *	optarg		    - option argument to -b option (can be faked)
+ *	num_token_spaces    - pointer to number of token spaces or tabs
+ *	print_token_tab	    - pointer to boolean indicating if tab or spaces are to be used
+ *
+ * Function returns void.
+ *
+ * NOTE: syntax errors are an error just like it was when it was in main().
+ *
+ * NOTE: this function does not return on NULL pointers.
+ */
+void
+jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *print_token_tab)
+{
+    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
+
+    /* firewall checks */
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, __func__, "NULL or empty optarg"); /*ooo*/
+	not_reached();
+    } else if (num_token_spaces == NULL) {
+	err(3, __func__, "NULL num_token_spaces"); /*ooo*/
+	not_reached();
+    } else if (print_token_tab == NULL) {
+	err(3, __func__, "NULL print_token_tab"); /*ooo*/
+	not_reached();
+    } else {
+	/* ensure that the variables are empty */
+
+	/* make *num_token_spaces == 0 */
+	*num_token_spaces = 0;
+	/* make print_token_tab == false */
+	*print_token_tab = false;
+    }
+
+    if (sscanf(optarg, "%ju%c", num_token_spaces, &ch) == 2) {
+	if (ch == 't') {
+	    *print_token_tab = true;
+	    dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+	} else if (ch == 's') {
+	    *print_token_tab = false;
+	    dbg(DBG_NONE, "will print %ju space%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+	} else {
+	    err(3, __func__, "syntax error for -b <num>[ts]"); /*ooo*/
+	    not_reached();
+	}
+    } else if (!strcmp(optarg, "tab")) {
+	*print_token_tab = true;
+	*num_token_spaces = 1;
+	dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+	    *num_token_spaces==1?"":"s");
+    } else if (!string_to_uintmax(optarg, num_token_spaces)) {
+	err(3, "jprint", "couldn't parse -b <num>[ts]"); /*ooo*/
+	not_reached();
+    } else {
+	*print_token_tab = false; /* ensure it's false in case specified previously */
+	dbg(DBG_NONE, "will print %jd space%s between name and value", *num_token_spaces,
+		*num_token_spaces==1?"":"s");
+    }
+}

@@ -9,6 +9,11 @@ Make `jprint -S -g` a command line error.
 Use of `jprint -b [num]t` (or `-b tab`) requires use of `-p b` (or `-p both`)
 and it is an error if this condition is true.
 
+Use of `jprint -j` implies `-p both`. More options must be set as well.
+
+But fix check of number arguments after options in `jprint`.
+
+
 ## Release 1.0.6 2023-06-09
 
 New `jprint` version "0.0.10 2023-06-09". This version now correctly handles the
