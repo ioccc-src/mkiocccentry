@@ -82,6 +82,7 @@ static const char * const usage_msg1 =
     "\t-p {n,v,b}\tprint JSON key, value or both (def: print JSON values)\n"
     "\t\t\tIf the type of value does not match the -t type specification,\n"
     "\t\t\tthen the key, value or both are not printed.\n"
+    "\t\t\tNOTE: it is an error to use both -p and -j\n"
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
@@ -115,7 +116,7 @@ static const char * const usage_msg2 =
     "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens.\n"
     "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented.\n"
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
-    "\t\t\tUse of -j conflicts with use of '-p {n,v}'.\n\n"
+    "\t\t\tNOTE: it is an error to use both -p and -j\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
     "\t-i\t\tIgnore case of name (def: case matters).\n"
     "\t-S\t\tSubstrings are used to match (def: the full name must match).\n"
@@ -173,6 +174,7 @@ int main(int argc, char **argv)
     struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
     struct jprint_number jprint_levels = { 0 }; /* -l level specified */
     uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
+    bool print_type_option = false;	/* -p explicitly used */
     uintmax_t num_token_spaces = 0;	/* -b specified number of spaces or tabs */
     bool print_token_tab = false;	/* -b tab (or -b <num>[t]) specified */
     bool print_json_levels = false;	/* -L specified */
@@ -238,6 +240,7 @@ int main(int argc, char **argv)
 	    jprint_parse_number_range("-N", optarg, &jprint_min_matches);
 	    break;
 	case 'p':
+	    print_type_option = true;
 	    print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
@@ -263,7 +266,6 @@ int main(int argc, char **argv)
 	    case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO still need to set the options of -t any */
 	    print_syntax = true;
 	    dbg(DBG_NONE, "implying -p both");
 	    print_type = jprint_parse_print_option("both");
@@ -331,6 +333,18 @@ int main(int argc, char **argv)
     /* check that if -b [num]t is used then both -p both */
     if (print_token_tab && !jprint_print_name_value(print_type)) {
 	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
+	not_reached();
+    }
+
+    /*
+     * check that -j and -p are not used together.
+     *
+     * NOTE: this means check if -p was explicitly used: the default is -p v but
+     * -j conflicts with it and since -j enables a number of options it is
+     * easier to just make it an error.
+     */
+    if (print_type_option && print_syntax) {
+	err(3, "jparse", "cannot use -j and explicit -p together"); /*ooo*/
 	not_reached();
     }
 

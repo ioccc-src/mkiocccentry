@@ -12,6 +12,8 @@ never a condition that would cause anything but exit code 0 (assuming the json
 file is valid) but it is now more explicit in the code as of 11 June 2023 that
 the entire file will be printed once the printing code is implemented.
 
+It is an error to use `jprint -p {n,v,b}` and `jprint -j` together.
+
 ## Release 1.0.7 2023-06-10
 
 Release `jprint` version "0.0.13 2023-06-10".
