@@ -3,6 +3,9 @@
 First of all if you need help with markdown format please see this [helpful
 guide](https://www.markdownguide.org/basic-syntax/).
 
+Second of all you should copy this file to a `remarks.md` file and edit that
+file.
+
 ## Sections and subsections
 
 For section titles you should use heading levels i.e. lines that start with `#`
@@ -46,10 +49,12 @@ this is not clear!
 
 - leaving the remark section empty.
 
-After doing the above you should rename the file _remarks.md_ and use the file
-as your `remarks.md` when packaging your entry with the `mkiocccentry` tool.
+### Submitting your entry
 
-Thank you!
+When packaging your entry please use the modified `remarks.md` file with the
+`mkiocccentry` tool.
+
+**Thank you!**
 
 # END OF INSTRUCTIONS
 
