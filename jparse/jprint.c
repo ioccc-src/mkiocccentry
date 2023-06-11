@@ -82,6 +82,7 @@ static const char * const usage_msg1 =
     "\t-p {n,v,b}\tprint JSON key, value or both (def: print JSON values)\n"
     "\t\t\tIf the type of value does not match the -t type specification,\n"
     "\t\t\tthen the key, value or both are not printed.\n"
+    "\t\t\tNOTE: it is an error to use both -p and -j\n"
     "\t-p name\t\tAlias for '-p n'.\n"
     "\t-p value\tAlias for '-p v'.\n"
     "\t-p both\t\tAlias for '-p n,v'.\n\n"
@@ -115,7 +116,7 @@ static const char * const usage_msg2 =
     "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens.\n"
     "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented.\n"
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
-    "\t\t\tUse of -j conflicts with use of '-p {n,v}'.\n\n"
+    "\t\t\tNOTE: it is an error to use both -p and -j\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
     "\t-i\t\tIgnore case of name (def: case matters).\n"
     "\t-S\t\tSubstrings are used to match (def: the full name must match).\n"
@@ -159,37 +160,73 @@ int main(int argc, char **argv)
     char const *program = NULL;		/* our name */
     extern char *optarg;
     extern int optind;
-    struct json *json_tree = NULL;	/* json tree */
-    bool is_stdin = false;		/* reading from stdin */
-    bool is_valid = true;		/* if file is valid json */
-    bool match_found = false;		/* true if a pattern is specified and there is a match */
-    bool case_insensitive = false;	/* true if -i, case-insensitive */
-    bool pattern_specified = false;	/* true if a pattern was specified */
+    struct jprint options;	/* struct of all our options */
     FILE *json_file = NULL;		/* file pointer for json file */
-    bool encode_strings = false;	/* -e used */
-    bool quote_strings = false;		/* -Q used */
-    uintmax_t type = JPRINT_TYPE_SIMPLE;/* -t type used */
-    struct jprint_number jprint_max_matches = { 0 }; /* -n count specified */
-    struct jprint_number jprint_min_matches = { 0 }; /* -N count specified */
-    struct jprint_number jprint_levels = { 0 }; /* -l level specified */
-    uintmax_t print_type = JPRINT_PRINT_VALUE;	/* -p type specified */
-    uintmax_t num_token_spaces = 0;	/* -b specified number of spaces or tabs */
-    bool print_token_tab = false;	/* -b tab (or -b <num>[t]) specified */
-    bool print_json_levels = false;	/* -L specified */
-    uintmax_t num_level_spaces = 0;	/* number of spaces or tab for -L */
-    bool print_level_tab = false;	/* -L tab option */
-    bool print_colons = false;		/* -T specified */
-    bool print_commas = false;		/* -C specified */
-    bool print_braces = false;		/* -B specified */
-    uintmax_t indent_level = 0;		/* -I specified */
-    bool indent_tab = false;		/* -I t{,ab} specified */
-    bool print_syntax = false;		/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
-    bool match_encoded = false;		/* -E used, match encoded name */
-    bool substrings_okay = false;	/* -S used, matching substrings okay */
-    bool use_regexps = false;		/* -g used, allow grep-like regexps */
-    bool count_only = false;		/* -c used, only show count */
-    bool print_entire_file = false;	/* no name_arg specified */
-    uintmax_t max_depth = JSON_DEFAULT_MAX_DEPTH; /* max depth to traverse set by -m depth */
+    struct json *json_tree;		/* json tree */
+    bool is_valid = false;		/* if file is valid json */
+
+    /* clear out options struct */
+    memset(&options, 0, sizeof options);
+
+    /* set things to proper and explicit values in options even after memset() */
+    options.is_stdin = false;			/* if it's stdin */
+    is_valid = true;			/* if file is valid json */
+    options.match_found = false;		/* true if a pattern is specified and there is a match */
+    options.case_insensitive = false;		/* true if -i, case-insensitive */
+    options.pattern_specified = false;		/* true if a pattern was specified */
+    options.encode_strings = false;		/* -e used */
+    options.quote_strings = false;		/* -Q used */
+    options.type = JPRINT_TYPE_SIMPLE;		/* -t type used */
+
+    /* number range options, see struct in jprint_util.h for details */
+
+    /* max matches number range */
+    options.jprint_max_matches.number = 0;
+    options.jprint_max_matches.exact = false;
+    options.jprint_max_matches.range.min = 0;
+    options.jprint_max_matches.range.max = 0;
+    options.jprint_max_matches.range.less_than_equal = false;
+    options.jprint_max_matches.range.greater_than_equal = false;
+    options.jprint_max_matches.range.inclusive = false;
+
+    /* min matches number range */
+    options.jprint_min_matches.number = 0;
+    options.jprint_min_matches.exact = false;
+    options.jprint_min_matches.range.min = 0;
+    options.jprint_min_matches.range.max = 0;
+    options.jprint_min_matches.range.less_than_equal = false;
+    options.jprint_min_matches.range.greater_than_equal = false;
+    options.jprint_min_matches.range.inclusive = false;
+
+    /* levels number range */
+    options.jprint_levels.number = 0;
+    options.jprint_levels.exact = false;
+    options.jprint_levels.range.min = 0;
+    options.jprint_levels.range.max = 0;
+    options.jprint_levels.range.less_than_equal = false;
+    options.jprint_levels.range.greater_than_equal = false;
+    options.jprint_levels.range.inclusive = false;
+
+    options.print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
+    options. print_type_option = false;			/* -p explicitly used */
+    options.num_token_spaces = 0;			/* -b specified number of spaces or tabs */
+    options.print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
+    options.print_json_levels = false;			/* -L specified */
+    options.num_level_spaces = 0;			/* number of spaces or tab for -L */
+    options.print_level_tab = false;			/* -L tab option */
+    options.print_colons = false;			/* -T specified */
+    options.print_commas = false;			/* -C specified */
+    options.print_braces = false;			/* -B specified */
+    options.indent_level = 0;				/* -I specified */
+    options.indent_tab = false;				/* -I <num>[{t|s}] specified */
+    options.print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    options.match_encoded = false;			/* -E used, match encoded name */
+    options.substrings_okay = false;			/* -S used, matching substrings okay */
+    options.use_regexps = false;			/* -g used, allow grep-like regexps */
+    options.count_only = false;				/* -c used, only show count */
+    options.print_entire_file = false;			/* no name_arg specified */
+    options.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+
     int i;
 
     /*
@@ -220,79 +257,79 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'l':
-	    jprint_parse_number_range("-l", optarg, &jprint_levels);
+	    jprint_parse_number_range("-l", optarg, &options.jprint_levels);
 	    break;
 	case 'e':
-	    encode_strings = true;
+	    options.encode_strings = true;
 	    break;
 	case 'Q':
-	    quote_strings = true;
+	    options.quote_strings = true;
 	    break;
 	case 't':
-	    type = jprint_parse_types_option(optarg);
+	    options.type = jprint_parse_types_option(optarg);
 	    break;
 	case 'n':
-	    jprint_parse_number_range("-n", optarg, &jprint_max_matches);
+	    jprint_parse_number_range("-n", optarg, &options.jprint_max_matches);
 	    break;
 	case 'N':
-	    jprint_parse_number_range("-N", optarg, &jprint_min_matches);
+	    jprint_parse_number_range("-N", optarg, &options.jprint_min_matches);
 	    break;
 	case 'p':
-	    print_type = jprint_parse_print_option(optarg);
+	    options.print_type_option = true;
+	    options.print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    jprint_parse_st_tokens_option(optarg, &num_token_spaces, &print_token_tab);
+	    jprint_parse_st_tokens_option(optarg, &options.num_token_spaces, &options.print_token_tab);
 	    break;
 	case 'L':
-	    print_json_levels = true; /* print JSON levels */
-	    jprint_parse_st_level_option(optarg, &num_level_spaces, &print_level_tab);
+	    options.print_json_levels = true; /* print JSON levels */
+	    jprint_parse_st_level_option(optarg, &options.num_level_spaces, &options.print_level_tab);
 	    break;
 	case 'T':
-	    print_colons = true;
+	    options.print_colons = true;
 	    break;
 	case 'C':
-	    print_commas = true;
+	    options.print_commas = true;
 	    break;
 	case 'B':
-	    print_braces = true;
+	    options.print_braces = true;
 	    break;
 	case 'I':
-	    jprint_parse_st_indent_option(optarg, &indent_level, &indent_tab);
+	    jprint_parse_st_indent_option(optarg, &options.indent_level, &options.indent_tab);
 	    break;
 	case 'i':
-	    case_insensitive = true; /* make case cruel :-) */
+	    options.case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    /* TODO still need to set the options of -t any */
-	    print_syntax = true;
-	    dbg(DBG_NONE, "implying -p both");
-	    print_type = jprint_parse_print_option("both");
-	    dbg(DBG_NONE, "implying -b 1");
-	    jprint_parse_st_tokens_option("1", &num_token_spaces, &print_token_tab);
-	    dbg(DBG_NONE, "implying -e -Q");
-	    encode_strings = true;
-	    quote_strings = true;
-	    dbg(DBG_NONE, "implying -t any");
-	    type = jprint_parse_types_option("any");
+	    options.print_syntax = true;
+	    dbg(DBG_NONE, "-j, implying -p both");
+	    options.print_type = jprint_parse_print_option("both");
+	    dbg(DBG_NONE, "-j, implying -b 1");
+	    jprint_parse_st_tokens_option("1", &options.num_token_spaces, &options.print_token_tab);
+	    dbg(DBG_NONE, "-j, implying -e -Q");
+	    options.encode_strings = true;
+	    options.quote_strings = true;
+	    dbg(DBG_NONE, "-j, implying -t any");
+	    options.type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
-	    match_encoded = true;
+	    options.match_encoded = true;
 	    break;
 	case 'S':
-	    substrings_okay = true;
+	    options.substrings_okay = true;
 	    break;
 	case 'g':   /* allow grep-like ERE */
-	    use_regexps = true;
+	    options.use_regexps = true;
 	    break;
 	case 'c':
-	    count_only = true;
+	    options.count_only = true;
 	    break;
 	case 'q':
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
 	case 'm': /* set maximum depth to traverse json tree */
-	    if (!string_to_uintmax(optarg, &max_depth)) {
+	    if (!string_to_uintmax(optarg, &options.max_depth)) {
 		err(3, "jprint", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
 	    }
@@ -323,14 +360,26 @@ int main(int argc, char **argv)
      */
 
     /* use of -g conflicts with -S is an error */
-    if (use_regexps && substrings_okay) {
+    if (options.use_regexps && options.substrings_okay) {
 	err(3, "jprint", "cannot use both -g and -S"); /*ooo*/
 	not_reached();
     }
 
     /* check that if -b [num]t is used then both -p both */
-    if (print_token_tab && !jprint_print_name_value(print_type)) {
+    if (options.print_token_tab && !jprint_print_name_value(options.print_type)) {
 	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
+	not_reached();
+    }
+
+    /*
+     * check that -j and -p are not used together.
+     *
+     * NOTE: this means check if -p was explicitly used: the default is -p v but
+     * -j conflicts with it and since -j enables a number of options it is
+     * easier to just make it an error.
+     */
+    if (options.print_type_option && options.print_syntax) {
+	err(3, "jparse", "cannot use -j and explicit -p together"); /*ooo*/
 	not_reached();
     }
 
@@ -365,7 +414,7 @@ int main(int argc, char **argv)
 	    not_reached();
 	}
     } else { /* *argv[0] == '-', read from stdin */
-	is_stdin = true;
+	options.is_stdin = true;
 	json_file = stdin;
     }
 
@@ -390,28 +439,32 @@ int main(int argc, char **argv)
     msg("valid JSON");
 
     /* the debug level will be increased at a later time */
-    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", max_depth, (max_depth == 0?" (no limit)":
-		max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", options.max_depth, (options.max_depth == 0?" (no limit)":
+		options.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /* TODO process name_args */
     if (argv[1] == NULL) {
-	print_entire_file = true;   /* technically this boolean is redundant */
+	options.print_entire_file = true;   /* technically this boolean is redundant */
     } else {
 	for (i = 1; argv[i] != NULL; ++i) {
-	    pattern_specified = true;
+	    options.pattern_specified = true;
 
 	    /*
 	     * XXX either change the debug level or remove this message once
 	     * processing is complete
 	     */
-	    dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    if (options.use_regexps) {
+		dbg(DBG_NONE,"regex requested: %s", argv[i]);
+	    } else {
+		dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    }
 	    /*
 	     * XXX if matches found we set the boolean match_found to true to
 	     * indicate exit code of 0 but currently no matches are checked. In
 	     * other words in the future this setting of match_found will not always
 	     * happen.
 	     */
-	    match_found = true;
+	    options.match_found = true;
 	}
     }
 
@@ -422,14 +475,14 @@ int main(int argc, char **argv)
      * NOTE: if pattern_specified is false then print_entire_file will be true
      * so this check is only here for documentation purposes.
      */
-    if (!pattern_specified || print_entire_file) {
+    if (!options.pattern_specified || options.print_entire_file) {
 	dbg(DBG_NONE,"no pattern requested, will print entire file");
     }
 
     /* free tree */
-    json_tree_free(json_tree, max_depth);
+    json_tree_free(json_tree, options.max_depth);
 
-    if (match_found || !pattern_specified || print_entire_file) {
+    if (options.match_found || !options.pattern_specified || options.print_entire_file) {
 	exit(0); /*ooo*/
     } else {
 	/*
