@@ -54,10 +54,17 @@ static YY_BUFFER_STATE bs;
  */
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
-			yylloc->first_line = yylloc->last_line = yylineno; \
-			yylloc->first_column = jparse_get_column(yyscanner); \
-			yylloc->last_column = jparse_get_column(yyscanner)+jparse_get_leng(yyscanner)-1; \
-			jparse_set_column(jparse_get_leng(yyscanner), yyscanner);
+			yylloc->first_line = yylloc->last_line + 1; \
+			yylloc->first_column = yylloc->last_column; \
+			for(int i = 0; yytext[i]; i++) { \
+			    if(yytext[i] == '\n') { \
+				yylloc->last_line++; \
+				yylloc->last_column = 1; \
+			    } \
+			    else { \
+				yylloc->last_column++; \
+			    } \
+			}
 %}
 
 /*
