@@ -188,6 +188,7 @@ int main(int argc, char **argv)
     bool substrings_okay = false;	/* -S used, matching substrings okay */
     bool use_regexps = false;		/* -g used, allow grep-like regexps */
     bool count_only = false;		/* -c used, only show count */
+    bool print_entire_file = false;	/* no name_arg specified */
     uintmax_t max_depth = JSON_DEFAULT_MAX_DEPTH; /* max depth to traverse set by -m depth */
     int i;
 
@@ -393,35 +394,42 @@ int main(int argc, char **argv)
 		max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /* TODO process name_args */
-    for (i = 1; argv[i] != NULL; ++i) {
-	pattern_specified = true;
+    if (argv[1] == NULL) {
+	print_entire_file = true;   /* technically this boolean is redundant */
+    } else {
+	for (i = 1; argv[i] != NULL; ++i) {
+	    pattern_specified = true;
 
-	/*
-	 * XXX either change the debug level or remove this message once
-	 * processing is complete
-	 */
-	dbg(DBG_NONE,"pattern requested: %s", argv[i]);
-	/*
-	 * XXX if matches found we set the boolean match_found to true to
-	 * indicate exit code of 0 but currently no matches are checked. In
-	 * other words in the future this setting of match_found will not always
-	 * happen.
-	 */
-	match_found = true;
+	    /*
+	     * XXX either change the debug level or remove this message once
+	     * processing is complete
+	     */
+	    dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    /*
+	     * XXX if matches found we set the boolean match_found to true to
+	     * indicate exit code of 0 but currently no matches are checked. In
+	     * other words in the future this setting of match_found will not always
+	     * happen.
+	     */
+	    match_found = true;
+	}
     }
 
     /*
      * XXX remove this informative message or change debug level once processing
      * is implemented.
+     *
+     * NOTE: if pattern_specified is false then print_entire_file will be true
+     * so this check is only here for documentation purposes.
      */
-    if (!pattern_specified) {
-	dbg(DBG_NONE,"no pattern requested");
+    if (!pattern_specified || print_entire_file) {
+	dbg(DBG_NONE,"no pattern requested, will print entire file");
     }
 
     /* free tree */
     json_tree_free(json_tree, max_depth);
 
-    if (match_found || !pattern_specified) {
+    if (match_found || !pattern_specified || print_entire_file) {
 	exit(0); /*ooo*/
     } else {
 	/*

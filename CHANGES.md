@@ -5,6 +5,12 @@
 Fix `jparse` column location calculations where error messages just showed the
 invalid token at column 1 even when the bad token is not on column 1.
 
+Bumped `jprint` version to "0.0.14 2023-06-11".
+
+When no `name_arg` is passed to `jprint` it will print the entire file. It was
+never a condition that would cause anything but exit code 0 (assuming the json
+file is valid) but it is now more explicit in the code as of 11 June 2023 that
+the entire file will be printed once the printing code is implemented.
 
 ## Release 1.0.7 2023-06-10
 
