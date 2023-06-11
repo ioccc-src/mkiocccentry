@@ -69,9 +69,9 @@
 
 
 /*
- * jprint_options - struct that holds all the options and other settings
+ * jprint - struct that holds most of the options, other settings and other data
  */
-struct jprint_options
+struct jprint
 {
     bool is_stdin;				/* reading from stdin */
     bool match_found;				/* true if a pattern is specified and there is a match */

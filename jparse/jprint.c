@@ -160,7 +160,7 @@ int main(int argc, char **argv)
     char const *program = NULL;		/* our name */
     extern char *optarg;
     extern int optind;
-    struct jprint_options options;	/* struct of all our options */
+    struct jprint options;	/* struct of all our options */
     FILE *json_file = NULL;		/* file pointer for json file */
     struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
@@ -453,7 +453,11 @@ int main(int argc, char **argv)
 	     * XXX either change the debug level or remove this message once
 	     * processing is complete
 	     */
-	    dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    if (options.use_regexps) {
+		dbg(DBG_NONE,"regex requested: %s", argv[i]);
+	    } else {
+		dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    }
 	    /*
 	     * XXX if matches found we set the boolean match_found to true to
 	     * indicate exit code of 0 but currently no matches are checked. In
