@@ -14,6 +14,9 @@ the entire file will be printed once the printing code is implemented.
 
 It is an error to use `jprint -p {n,v,b}` and `jprint -j` together.
 
+Move the many options in `jprint`'s `main()` to `struct jprint_options` to
+organise them and to help with passing to necessary callbacks later on.
+
 ## Release 1.0.7 2023-06-10
 
 Release `jprint` version "0.0.13 2023-06-10".

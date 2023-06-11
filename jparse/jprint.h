@@ -68,4 +68,40 @@
 #define JPRINT_VERSION "0.0.14 2023-06-11"		/* format: major.minor YYYY-MM-DD */
 
 
+/*
+ * jprint_options - struct that holds all the options and other settings
+ */
+struct jprint_options
+{
+    bool is_stdin;				/* reading from stdin */
+    bool match_found;				/* true if a pattern is specified and there is a match */
+    bool case_insensitive;			/* true if -i, case-insensitive */
+    bool pattern_specified;			/* true if a pattern was specified */
+    bool encode_strings;			/* -e used */
+    bool quote_strings;				/* -Q used */
+    uintmax_t type;				/* -t type used */
+    struct jprint_number jprint_max_matches;	/* -n count specified */
+    struct jprint_number jprint_min_matches;	/* -N count specified */
+    struct jprint_number jprint_levels;		/* -l level specified */
+    uintmax_t print_type;			/* -p type specified */
+    bool print_type_option;			/* -p explicitly used */
+    uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
+    bool print_token_tab;			/* -b tab (or -b <num>[t]) specified */
+    bool print_json_levels;			/* -L specified */
+    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
+    bool print_level_tab;			/* -L tab option */
+    bool print_colons;				/* -T specified */
+    bool print_commas;				/* -C specified */
+    bool print_braces;				/* -B specified */
+    uintmax_t indent_level;			/* -I specified */
+    bool indent_tab;				/* -I <num>[{t|s}] specified */
+    bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    bool match_encoded;				/* -E used, match encoded name */
+    bool substrings_okay;			/* -S used, matching substrings okay */
+    bool use_regexps;				/* -g used, allow grep-like regexps */
+    bool count_only;				/* -c used, only show count */
+    bool print_entire_file;			/* no name_arg specified */
+    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
+};
+
 #endif /* !defined INCLUDE_JPRINT_H */
