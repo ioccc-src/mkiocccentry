@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.8 2023-06-11
+
+Fix `jparse` column location calculations where error messages just showed the
+invalid token at column 1 even when the bad token is not on column 1.
+
+
 ## Release 1.0.7 2023-06-10
 
 Release `jprint` version "0.0.13 2023-06-10".

@@ -52,7 +52,7 @@
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "1.0.1 2023-03-10"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "1.0.2 2023-06-11"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
