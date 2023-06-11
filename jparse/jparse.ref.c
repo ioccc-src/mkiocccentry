@@ -813,8 +813,8 @@ static YY_BUFFER_STATE bs;
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line + 1; \
 			yylloc->first_column = yylloc->last_column; \
-			for(int i = 0; yytext[i]; i++) { \
-			    if(yytext[i] == '\n') { \
+			for (char *p = yytext; *p; ++p) { \
+			    if (*p == '\n') { \
 				yylloc->last_line++; \
 				yylloc->last_column = 1; \
 			    } \
