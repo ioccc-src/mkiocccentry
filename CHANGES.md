@@ -15,6 +15,12 @@ Fix bug in `jprint` checking of `-` for stdin. It shouldn't be just checking the
 first char as being `-` but rather the entire arg. Without this it results in
 strange behaviour when say `-555` is the file arg.
 
+Added initial `jprint_test.sh` test script. For now it is very much like
+`jparse_test.sh` except it doesn't test the strings file as `jprint` doesn't
+have an option to read args as a string. Whether it might be good to do this or
+to change the script so that it can read from stdin are questions to be answered
+at a later date. Something it additionally does is run `jprint -K` test mode.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
