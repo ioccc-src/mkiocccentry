@@ -11,6 +11,10 @@ hold other information besides options including additional structs. Added
 `free_jprint(struct jprint *jprint)` function to completely free everything in
 it and then itself.
 
+Fix bug in `jprint` checking of `-` for stdin. It shouldn't be just checking the
+first char as being `-` but rather the entire arg. Without this it results in
+strange behaviour when say `-555` is the file arg.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
