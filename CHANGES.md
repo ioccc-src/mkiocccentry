@@ -1,5 +1,9 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.9 2023-06-12
+
+Make `jprint -h` exit codes formatting consistent with `jparse`.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
