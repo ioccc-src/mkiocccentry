@@ -418,7 +418,7 @@ int main(int argc, char **argv)
 
 
     /* if *argv[0] != '-' we will attempt to read from a regular file */
-    if (*argv[0] != '-') {
+    if (!strcmp(argv[0], "-")) {
         /* check that first arg exists and is a regular file */
 	if (!exists(argv[0])) {
 	    free_jprint(jprint);
