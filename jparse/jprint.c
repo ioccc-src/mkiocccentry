@@ -147,7 +147,7 @@ static const char * const usage_msg3 =
     "    3\tinvalid command line, invalid option or option missing an argument\n"
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
-    "    6\ttest mode failed\n\n"
+    "    6\ttest mode failed\n"
     "    >=7\tinternal error\n\n"
     "jprint version: %s";
 
