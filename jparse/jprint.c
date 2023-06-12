@@ -162,6 +162,7 @@ int main(int argc, char **argv)
     extern char *optarg;
     extern int optind;
     struct jprint *jprint = NULL;	/* struct of all our options and other things */
+    struct jprint_pattern *pattern = NULL; /* iterate through patterns list to search for matches */
     FILE *json_file = NULL;		/* file pointer for json file */
     struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
@@ -234,6 +235,8 @@ int main(int argc, char **argv)
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+    /* finally the linked list of patterns */
+    jprint->patterns = NULL;
 
     int i;
 
@@ -417,8 +420,8 @@ int main(int argc, char **argv)
     }
 
 
-    /* if *argv[0] != '-' we will attempt to read from a regular file */
-    if (strcmp(argv[0], "-")) {
+    /* if argv[0] != "-" we will attempt to read from a regular file */
+    if (strcmp(argv[0], "-") != 0) {
         /* check that first arg exists and is a regular file */
 	if (!exists(argv[0])) {
 	    free_jprint(jprint);
@@ -484,14 +487,9 @@ int main(int argc, char **argv)
 	for (i = 1; argv[i] != NULL; ++i) {
 	    jprint->pattern_specified = true;
 
-	    /*
-	     * XXX either change the debug level or remove this message once
-	     * processing is complete
-	     */
-	    if (jprint->use_regexps) {
-		dbg(DBG_NONE,"regex requested: %s", argv[i]);
-	    } else {
-		dbg(DBG_NONE,"pattern requested: %s", argv[i]);
+	    if (add_jprint_pattern(jprint, argv[i]) == NULL) {
+		err(14, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
+		not_reached();
 	    }
 	    /*
 	     * XXX if matches found we set the boolean match_found to true to
@@ -503,6 +501,12 @@ int main(int argc, char **argv)
 	}
     }
 
+
+    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	if (pattern->pattern != NULL && *pattern->pattern) {
+	    dbg(DBG_NONE, "searching for %s '%s'", jprint->use_regexps?"regexp":"pattern", pattern->pattern);
+	}
+    }
     /*
      * XXX remove this informative message or change debug level once processing
      * is implemented.
@@ -532,21 +536,143 @@ int main(int argc, char **argv)
 }
 
 /*
+ * add_jprint_pattern
+ *
+ * Add jprint pattern to the jprint struct pattern list.
+ *
+ * given:
+ *
+ *	jprint	    - pointer to the jprint struct
+ *	str	    - the pattern to be added to the list
+ *
+ * NOTE: this function will not return if jprint is NULL. If str is NULL
+ * this function will not return but if str is empty it will add an empty
+ * string to the list. However the caller will usually check that it's not empty
+ * prior to calling this function.
+ *
+ * Returns a pointer to the newly allocated struct jprint_pattern * that was
+ * added to the jprint patterns list.
+ *
+ * Duplicate patterns will not be added (case sensitive).
+ */
+struct jprint_pattern *
+add_jprint_pattern(struct jprint *jprint, char *str)
+{
+    struct jprint_pattern *pattern = NULL;
+    struct jprint_pattern *tmp = NULL;
+
+    /*
+     * firewall
+     */
+    if (jprint == NULL) {
+	err(9, __func__, "passed NULL jprint struct");
+	not_reached();
+    }
+    if (str == NULL) {
+	err(10, __func__, "passed NULL str");
+	not_reached();
+    }
+
+    /* first make sure the pattern is not already added to the list */
+    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	if (pattern->pattern && !strcmp(pattern->pattern, str)) {
+	    return pattern;
+	}
+    }
+    /*
+     * XXX either change the debug level or remove this message once
+     * processing is complete
+     */
+    if (jprint->use_regexps) {
+	dbg(DBG_NONE,"regex requested: %s", str);
+    } else {
+	dbg(DBG_NONE,"pattern requested: %s", str);
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    pattern = calloc(1, sizeof *pattern);
+    if (pattern == NULL) {
+	errp(11, __func__, "unable to allocate struct jprint_pattern *");
+	not_reached();
+    }
+
+    errno = 0;
+    pattern->pattern = strdup(str);
+    if (pattern->pattern == NULL) {
+	errp(12, __func__, "unable to strdup string '%s' for patterns list", str);
+	not_reached();
+    }
+
+    pattern->regexp = jprint->use_regexps;
+
+    dbg(DBG_NONE, "adding pattern '%s' to patterns list", pattern->pattern);
+
+    for (tmp = jprint->patterns; tmp && tmp->next; tmp = tmp->next)
+	; /* on its own line to silence useless and bogus warning -Wempty-body */
+
+    if (!tmp) {
+	jprint->patterns = pattern;
+    } else {
+	tmp->next = pattern;
+    }
+
+    return pattern;
+}
+
+/* free_jprint_patterns_list	- free patterns list in a struct jprint *
+ *
+ * given:
+ *
+ *	jprint	    - the jprint struct
+ *
+ * If the jprint patterns list is empty this function will do nothing.
+ *
+ * NOTE: this function does not return on a NULL jprint.
+ */
+void
+free_jprint_patterns_list(struct jprint *jprint)
+{
+    struct jprint_pattern *pattern = NULL; /* to iterate through patterns list */
+    struct jprint_pattern *next_pattern = NULL; /* next in list */
+
+    if (jprint == NULL) {
+	err(15, __func__, "passed NULL jprint struct");
+	not_reached();
+    }
+
+    for (pattern = jprint->patterns; pattern != NULL; pattern = next_pattern) {
+	next_pattern = pattern->next;
+	if (pattern->pattern) {
+	    free(pattern->pattern);
+	    pattern->pattern = NULL;
+	}
+
+	free(pattern);
+	pattern = NULL;
+    }
+
+    jprint->patterns = NULL;
+}
+
+/*
  * free_jprint	    - free jprint struct
  *
  * given:
  *
  *	jprint	    - a struct jprint *
  *
- * This function will do nothing on NULL pointer (even though it's safe to free
- * a NULL pointer).
+ * This function will do nothing other than warn on NULL pointer (even though
+ * it's safe to free a NULL pointer).
  */
 void
 free_jprint(struct jprint *jprint)
 {
     if (jprint == NULL) {
+	warn(__func__, "passed NULL struct jprint *");
 	return;
     }
+
+    free_jprint_patterns_list(jprint); /* free patterns list first */
 
     free(jprint);
     jprint = NULL;

@@ -67,6 +67,17 @@
 /* jprint version string */
 #define JPRINT_VERSION "0.0.15 2023-06-12"		/* format: major.minor YYYY-MM-DD */
 
+/*
+ * jprint_pattern - struct for a linked list of patterns requested, held in
+ * struct jprint
+ */
+struct jprint_pattern
+{
+    char *pattern;		    /* the actual pattern or regexp string */
+    bool regexp;		    /* whether -g was used */
+
+    struct jprint_pattern *next;    /* the next in the list */
+};
 
 /*
  * jprint - struct that holds most of the options, other settings and other data
@@ -102,9 +113,14 @@ struct jprint
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
+
+    /* any patterns specified */
+    struct jprint_pattern *patterns;		/* linked list of patterns specified */
 };
 
 /* functions */
 void free_jprint(struct jprint *jprint);
+struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, char *str);
+void free_jprint_patterns_list(struct jprint *jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */

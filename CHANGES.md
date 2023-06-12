@@ -23,6 +23,11 @@ at a later date. Something it additionally does is run `jprint -K` test mode.
 
 Fix incorrect exit codes in help string of `jparse_test.sh`.
 
+Add patterns / regexps to `patterns` linked list in `jprint` struct. For now it
+only iterates through the list, showing that a pattern or regexp will be
+searched for. Functions to add and free the list added. Patterns are appended to
+the list so that the first pattern/regexp specified will be looked for first.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
