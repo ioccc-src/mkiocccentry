@@ -21,6 +21,8 @@ have an option to read args as a string. Whether it might be good to do this or
 to change the script so that it can read from stdin are questions to be answered
 at a later date. Something it additionally does is run `jprint -K` test mode.
 
+Fix incorrect exit codes in help string of `jparse_test.sh`.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
