@@ -38,7 +38,7 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.0 2023-02-04"
+export JPARSE_TEST_VERSION="1.0.1 2023-06-12"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
@@ -69,7 +69,7 @@ Exit codes:
      5	 couldn't create writable log file
      6	 missing directory or directories
      7	 missing JSON file
-  >= 4   internal error
+  >= 10  internal error
 
 jparse_test.sh version: $JPARSE_TEST_VERSION"
 

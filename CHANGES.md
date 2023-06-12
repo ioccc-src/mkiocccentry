@@ -1,5 +1,36 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.9 2023-06-12
+
+New `jprint` version "0.0.15 2023-06-12".
+
+Make `jprint -h` exit codes formatting consistent with `jparse`.
+
+Make `struct jprint options` in jprint.c a `struct jprint *jprint` as it will
+hold other information besides options including additional structs. Added
+`free_jprint(struct jprint *jprint)` function to completely free everything in
+it and then itself.
+
+Fix bug in `jprint` checking of `-` for stdin. It shouldn't be just checking the
+first char as being `-` but rather the entire arg. Without this it results in
+strange behaviour when say `-555` is the file arg.
+
+Added initial `jprint_test.sh` test script. For now it is very much like
+`jparse_test.sh` except it doesn't test the strings file as `jprint` doesn't
+have an option to read args as a string. Whether it might be good to do this or
+to change the script so that it can read from stdin are questions to be answered
+at a later date. Something it additionally does is run `jprint -K` test mode.
+
+Fix incorrect exit codes in help string of `jparse_test.sh`.
+
+Add patterns / regexps to `patterns` linked list in `jprint` struct. For now it
+only iterates through the list, showing that a pattern or regexp will be
+searched for. Functions to add and free the list added. Patterns are appended to
+the list so that the first pattern/regexp specified will be looked for first.
+
+Change exit codes in `jprint` a bit, making 7 exclusive for memory allocation
+errors and >= 15 for other internal errors.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
