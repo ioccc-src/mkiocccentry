@@ -148,7 +148,7 @@ static const char * const usage_msg3 =
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n\n"
-    "    >=7\ttest mode failed\n\n"
+    "    >=7\tinternal error\n\n"
     "jprint version: %s";
 
 /*
@@ -161,72 +161,79 @@ int main(int argc, char **argv)
     char const *program = NULL;		/* our name */
     extern char *optarg;
     extern int optind;
-    struct jprint options;	/* struct of all our options */
+    struct jprint *jprint = NULL;	/* struct of all our options and other things */
     FILE *json_file = NULL;		/* file pointer for json file */
     struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
 
-    /* clear out options struct */
-    memset(&options, 0, sizeof options);
 
-    /* set things to proper and explicit values in options even after memset() */
-    options.is_stdin = false;			/* if it's stdin */
+    /* allocate our struct jprint */
+    jprint = calloc(1, sizeof *jprint);
+
+    /* verify jprint != NULL */
+    if (jprint == NULL) {
+	err(7, "jprint", "failed to allocate jprint struct"); /*ooo*/
+	not_reached();
+    }
+
+    /* set things to proper and explicit values in options even after calloc() */
+    jprint->is_stdin = false;			/* if it's stdin */
     is_valid = true;			/* if file is valid json */
-    options.match_found = false;		/* true if a pattern is specified and there is a match */
-    options.case_insensitive = false;		/* true if -i, case-insensitive */
-    options.pattern_specified = false;		/* true if a pattern was specified */
-    options.encode_strings = false;		/* -e used */
-    options.quote_strings = false;		/* -Q used */
-    options.type = JPRINT_TYPE_SIMPLE;		/* -t type used */
+    jprint->match_found = false;		/* true if a pattern is specified and there is a match */
+    jprint->case_insensitive = false;		/* true if -i, case-insensitive */
+    jprint->pattern_specified = false;		/* true if a pattern was specified */
+    jprint->encode_strings = false;		/* -e used */
+    jprint->quote_strings = false;		/* -Q used */
+    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type used */
 
     /* number range options, see struct in jprint_util.h for details */
 
     /* max matches number range */
-    options.jprint_max_matches.number = 0;
-    options.jprint_max_matches.exact = false;
-    options.jprint_max_matches.range.min = 0;
-    options.jprint_max_matches.range.max = 0;
-    options.jprint_max_matches.range.less_than_equal = false;
-    options.jprint_max_matches.range.greater_than_equal = false;
-    options.jprint_max_matches.range.inclusive = false;
+    jprint->jprint_max_matches.number = 0;
+    jprint->jprint_max_matches.exact = false;
+    jprint->jprint_max_matches.range.min = 0;
+    jprint->jprint_max_matches.range.max = 0;
+    jprint->jprint_max_matches.range.less_than_equal = false;
+    jprint->jprint_max_matches.range.greater_than_equal = false;
+    jprint->jprint_max_matches.range.inclusive = false;
 
     /* min matches number range */
-    options.jprint_min_matches.number = 0;
-    options.jprint_min_matches.exact = false;
-    options.jprint_min_matches.range.min = 0;
-    options.jprint_min_matches.range.max = 0;
-    options.jprint_min_matches.range.less_than_equal = false;
-    options.jprint_min_matches.range.greater_than_equal = false;
-    options.jprint_min_matches.range.inclusive = false;
+    jprint->jprint_min_matches.number = 0;
+    jprint->jprint_min_matches.exact = false;
+    jprint->jprint_min_matches.range.min = 0;
+    jprint->jprint_min_matches.range.max = 0;
+    jprint->jprint_min_matches.range.less_than_equal = false;
+    jprint->jprint_min_matches.range.greater_than_equal = false;
+    jprint->jprint_min_matches.range.inclusive = false;
 
     /* levels number range */
-    options.jprint_levels.number = 0;
-    options.jprint_levels.exact = false;
-    options.jprint_levels.range.min = 0;
-    options.jprint_levels.range.max = 0;
-    options.jprint_levels.range.less_than_equal = false;
-    options.jprint_levels.range.greater_than_equal = false;
-    options.jprint_levels.range.inclusive = false;
+    jprint->jprint_levels.number = 0;
+    jprint->jprint_levels.exact = false;
+    jprint->jprint_levels.range.min = 0;
+    jprint->jprint_levels.range.max = 0;
+    jprint->jprint_levels.range.less_than_equal = false;
+    jprint->jprint_levels.range.greater_than_equal = false;
+    jprint->jprint_levels.range.inclusive = false;
 
-    options.print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
-    options. print_type_option = false;			/* -p explicitly used */
-    options.num_token_spaces = 0;			/* -b specified number of spaces or tabs */
-    options.print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
-    options.print_json_levels = false;			/* -L specified */
-    options.num_level_spaces = 0;			/* number of spaces or tab for -L */
-    options.print_level_tab = false;			/* -L tab option */
-    options.print_colons = false;			/* -T specified */
-    options.print_commas = false;			/* -C specified */
-    options.print_braces = false;			/* -B specified */
-    options.indent_level = 0;				/* -I specified */
-    options.indent_tab = false;				/* -I <num>[{t|s}] specified */
-    options.print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
-    options.match_encoded = false;			/* -E used, match encoded name */
-    options.substrings_okay = false;			/* -S used, matching substrings okay */
-    options.use_regexps = false;			/* -g used, allow grep-like regexps */
-    options.count_only = false;				/* -c used, only show count */
-    options.print_entire_file = false;			/* no name_arg specified */
-    options.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+    jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
+    jprint-> print_type_option = false;			/* -p explicitly used */
+    jprint->num_token_spaces = 0;			/* -b specified number of spaces or tabs */
+    jprint->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
+    jprint->print_json_levels = false;			/* -L specified */
+    jprint->num_level_spaces = 0;			/* number of spaces or tab for -L */
+    jprint->print_level_tab = false;			/* -L tab option */
+    jprint->print_colons = false;			/* -T specified */
+    jprint->print_commas = false;			/* -C specified */
+    jprint->print_braces = false;			/* -B specified */
+    jprint->indent_level = 0;				/* -I specified */
+    jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
+    jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    jprint->match_encoded = false;			/* -E used, match encoded name */
+    jprint->substrings_okay = false;			/* -S used, matching substrings okay */
+    jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
+    jprint->count_only = false;				/* -c used, only show count */
+    jprint->print_entire_file = false;			/* no name_arg specified */
+    jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
 
     int i;
 
@@ -237,10 +244,14 @@ int main(int argc, char **argv)
     while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    usage(2, program, "");	/*ooo*/
 	    not_reached();
 	    break;
 	case 'V':		/* -V - print version and exit */
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    print("%s\n", JPRINT_VERSION);
 	    exit(2);		/*ooo*/
 	    not_reached();
@@ -258,88 +269,94 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'l':
-	    jprint_parse_number_range("-l", optarg, &options.jprint_levels);
+	    jprint_parse_number_range("-l", optarg, &jprint->jprint_levels);
 	    break;
 	case 'e':
-	    options.encode_strings = true;
+	    jprint->encode_strings = true;
 	    break;
 	case 'Q':
-	    options.quote_strings = true;
+	    jprint->quote_strings = true;
 	    break;
 	case 't':
-	    options.type = jprint_parse_types_option(optarg);
+	    jprint->type = jprint_parse_types_option(optarg);
 	    break;
 	case 'n':
-	    jprint_parse_number_range("-n", optarg, &options.jprint_max_matches);
+	    jprint_parse_number_range("-n", optarg, &jprint->jprint_max_matches);
 	    break;
 	case 'N':
-	    jprint_parse_number_range("-N", optarg, &options.jprint_min_matches);
+	    jprint_parse_number_range("-N", optarg, &jprint->jprint_min_matches);
 	    break;
 	case 'p':
-	    options.print_type_option = true;
-	    options.print_type = jprint_parse_print_option(optarg);
+	    jprint->print_type_option = true;
+	    jprint->print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
-	    jprint_parse_st_tokens_option(optarg, &options.num_token_spaces, &options.print_token_tab);
+	    jprint_parse_st_tokens_option(optarg, &jprint->num_token_spaces, &jprint->print_token_tab);
 	    break;
 	case 'L':
-	    options.print_json_levels = true; /* print JSON levels */
-	    jprint_parse_st_level_option(optarg, &options.num_level_spaces, &options.print_level_tab);
+	    jprint->print_json_levels = true; /* print JSON levels */
+	    jprint_parse_st_level_option(optarg, &jprint->num_level_spaces, &jprint->print_level_tab);
 	    break;
 	case 'T':
-	    options.print_colons = true;
+	    jprint->print_colons = true;
 	    break;
 	case 'C':
-	    options.print_commas = true;
+	    jprint->print_commas = true;
 	    break;
 	case 'B':
-	    options.print_braces = true;
+	    jprint->print_braces = true;
 	    break;
 	case 'I':
-	    jprint_parse_st_indent_option(optarg, &options.indent_level, &options.indent_tab);
+	    jprint_parse_st_indent_option(optarg, &jprint->indent_level, &jprint->indent_tab);
 	    break;
 	case 'i':
-	    options.case_insensitive = true; /* make case cruel :-) */
+	    jprint->case_insensitive = true; /* make case cruel :-) */
 	    break;
 	case 'j':
-	    options.print_syntax = true;
+	    jprint->print_syntax = true;
 	    dbg(DBG_NONE, "-j, implying -p both");
-	    options.print_type = jprint_parse_print_option("both");
+	    jprint->print_type = jprint_parse_print_option("both");
 	    dbg(DBG_NONE, "-j, implying -b 1");
-	    jprint_parse_st_tokens_option("1", &options.num_token_spaces, &options.print_token_tab);
+	    jprint_parse_st_tokens_option("1", &jprint->num_token_spaces, &jprint->print_token_tab);
 	    dbg(DBG_NONE, "-j, implying -e -Q");
-	    options.encode_strings = true;
-	    options.quote_strings = true;
+	    jprint->encode_strings = true;
+	    jprint->quote_strings = true;
 	    dbg(DBG_NONE, "-j, implying -t any");
-	    options.type = jprint_parse_types_option("any");
+	    jprint->type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
-	    options.match_encoded = true;
+	    jprint->match_encoded = true;
 	    break;
 	case 'S':
-	    options.substrings_okay = true;
+	    jprint->substrings_okay = true;
 	    break;
 	case 'g':   /* allow grep-like ERE */
-	    options.use_regexps = true;
+	    jprint->use_regexps = true;
 	    break;
 	case 'c':
-	    options.count_only = true;
+	    jprint->count_only = true;
 	    break;
 	case 'q':
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
 	case 'm': /* set maximum depth to traverse json tree */
-	    if (!string_to_uintmax(optarg, &options.max_depth)) {
+	    if (!string_to_uintmax(optarg, &jprint->max_depth)) {
+		free_jprint(jprint);
+		jprint = NULL;
 		err(3, "jprint", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'K': /* run test code */
 	    if (!jprint_run_tests()) {
+		free_jprint(jprint);
+		jprint = NULL;
 		exit(6); /*ooo*/
 	    }
 	    else {
+		free_jprint(jprint);
+		jprint = NULL;
 		exit(0); /*ooo*/
 	    }
 	    break;
@@ -361,13 +378,17 @@ int main(int argc, char **argv)
      */
 
     /* use of -g conflicts with -S is an error */
-    if (options.use_regexps && options.substrings_okay) {
+    if (jprint->use_regexps && jprint->substrings_okay) {
+	free_jprint(jprint);
+	jprint = NULL;
 	err(3, "jprint", "cannot use both -g and -S"); /*ooo*/
 	not_reached();
     }
 
     /* check that if -b [num]t is used then both -p both */
-    if (options.print_token_tab && !jprint_print_name_value(options.print_type)) {
+    if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
+	free_jprint(jprint);
+	jprint = NULL;
 	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
 	not_reached();
     }
@@ -379,7 +400,9 @@ int main(int argc, char **argv)
      * -j conflicts with it and since -j enables a number of options it is
      * easier to just make it an error.
      */
-    if (options.print_type_option && options.print_syntax) {
+    if (jprint->print_type_option && jprint->print_syntax) {
+	free_jprint(jprint);
+	jprint = NULL;
 	err(3, "jparse", "cannot use -j and explicit -p together"); /*ooo*/
 	not_reached();
     }
@@ -398,12 +421,18 @@ int main(int argc, char **argv)
     if (*argv[0] != '-') {
         /* check that first arg exists and is a regular file */
 	if (!exists(argv[0])) {
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
 	    not_reached();
 	} else if (!is_file(argv[0])) {
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    err(4, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
 	    not_reached();
 	} else if (!is_read(argv[0])) {
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    err(4, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
 	    not_reached();
 	}
@@ -411,11 +440,13 @@ int main(int argc, char **argv)
 	errno = 0; /* pre-clear errno for errp() */
 	json_file = fopen(argv[0], "r");
 	if (json_file == NULL) {
+	    free_jprint(jprint);
+	    jprint = NULL;
 	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* *argv[0] == '-', read from stdin */
-	options.is_stdin = true;
+	jprint->is_stdin = true;
 	json_file = stdin;
     }
 
@@ -426,6 +457,9 @@ int main(int argc, char **argv)
 	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 	}
 
+	/* free our jprint struct */
+	free_jprint(jprint);
+	jprint = NULL;
 	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
 	not_reached();
     }
@@ -437,24 +471,24 @@ int main(int argc, char **argv)
     }
 
     /* this will change to a debug message at a later time */
-    msg("valid JSON");
+    dbg(JSON_DBG_NONE, "valid JSON");
 
     /* the debug level will be increased at a later time */
-    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", options.max_depth, (options.max_depth == 0?" (no limit)":
-		options.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
+		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /* TODO process name_args */
     if (argv[1] == NULL) {
-	options.print_entire_file = true;   /* technically this boolean is redundant */
+	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     } else {
 	for (i = 1; argv[i] != NULL; ++i) {
-	    options.pattern_specified = true;
+	    jprint->pattern_specified = true;
 
 	    /*
 	     * XXX either change the debug level or remove this message once
 	     * processing is complete
 	     */
-	    if (options.use_regexps) {
+	    if (jprint->use_regexps) {
 		dbg(DBG_NONE,"regex requested: %s", argv[i]);
 	    } else {
 		dbg(DBG_NONE,"pattern requested: %s", argv[i]);
@@ -465,7 +499,7 @@ int main(int argc, char **argv)
 	     * other words in the future this setting of match_found will not always
 	     * happen.
 	     */
-	    options.match_found = true;
+	    jprint->match_found = true;
 	}
     }
 
@@ -476,23 +510,47 @@ int main(int argc, char **argv)
      * NOTE: if pattern_specified is false then print_entire_file will be true
      * so this check is only here for documentation purposes.
      */
-    if (!options.pattern_specified || options.print_entire_file) {
+    if (!jprint->pattern_specified || jprint->print_entire_file) {
 	dbg(DBG_NONE,"no pattern requested, will print entire file");
     }
 
     /* free tree */
-    json_tree_free(json_tree, options.max_depth);
+    json_tree_free(json_tree, jprint->max_depth);
 
-    if (options.match_found || !options.pattern_specified || options.print_entire_file) {
+    if (jprint->match_found || !jprint->pattern_specified || jprint->print_entire_file) {
+	free_jprint(jprint);	/* free jprint struct */
+	jprint = NULL;	/* set jprint to NULL even though we're just about to exit */
 	exit(0); /*ooo*/
     } else {
+	free_jprint(jprint);	/* free jprint struct */
+	jprint = NULL;	/* set jprint to NULL even though we're just about to exit */
 	/*
-	 * exit with 1 due to no pattern requested OR no matches found
+	 * exit with 1 due to no pattern found
 	 */
 	exit(1); /*ooo*/
     }
 }
 
+/*
+ * free_jprint	    - free jprint struct
+ *
+ * given:
+ *
+ *	jprint	    - a struct jprint *
+ *
+ * This function will do nothing on NULL pointer (even though it's safe to free
+ * a NULL pointer).
+ */
+void
+free_jprint(struct jprint *jprint)
+{
+    if (jprint == NULL) {
+	return;
+    }
+
+    free(jprint);
+    jprint = NULL;
+}
 
 /*
  * usage - print usage to stderr

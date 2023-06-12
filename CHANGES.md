@@ -2,7 +2,14 @@
 
 ## Release 1.0.9 2023-06-12
 
+New `jprint` version "0.0.15 2023-06-12".
+
 Make `jprint -h` exit codes formatting consistent with `jparse`.
+
+Make `struct jprint options` in jprint.c a `struct jprint *jprint` as it will
+hold other information besides options including additional structs. Added
+`free_jprint(struct jprint *jprint)` function to completely free everything in
+it and then itself.
 
 ## Release 1.0.8 2023-06-11
 

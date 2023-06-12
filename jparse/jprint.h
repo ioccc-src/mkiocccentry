@@ -65,7 +65,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.14 2023-06-11"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.15 2023-06-12"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -103,5 +103,9 @@ struct jprint
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
 };
+
+/* functions */
+
+void free_jprint(struct jprint *jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */

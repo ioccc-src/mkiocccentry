@@ -261,22 +261,11 @@ BISON_DIRS= \
 
 # Additional flags to pass to bison
 #
-# For --report all it will generate upon execution (if bison successfully
-# generates the code) the file jparse.output. With --report all --html it will
-# generate a html file which is easier to follow but I'm not sure how portable
-# this is; under CentOS (which does not have the right version but actually
-# normally generates code fine) the error:
-#
-#   jparse.y: error: xsltproc failed with status 127
-#
-# is thrown and since this could happen on other systems even with the
-# appropriate version I have not enabled this.
-#
 # For the -Wcounterexamples it gives counter examples if there are ever
 # shift/reduce conflicts in the grammar. The other warnings are of use as well.
 #
 BISON_FLAGS= -Werror -Wcounterexamples -Wmidrule-values -Wprecedence -Wdeprecated \
-	      --report all --header
+	      --header
 
 # the basename of flex (or lex) to look for
 #
