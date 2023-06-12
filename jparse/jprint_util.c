@@ -367,7 +367,7 @@ jprint_parse_types_option(char *optarg)
 	errno = 0;
 	dup = strdup(optarg);
 	if (dup == NULL) {
-	    err(7, __func__, "strdup(%s) failed", optarg);
+	    err(7, __func__, "strdup(%s) failed", optarg); /*ooo*/
 	    not_reached();
 	}
     }
@@ -512,7 +512,7 @@ jprint_parse_print_option(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	err(8, __func__, "strdup(%s) failed", optarg);
+	err(7, __func__, "strdup(%s) failed", optarg); /*ooo*/
 	not_reached();
     }
 

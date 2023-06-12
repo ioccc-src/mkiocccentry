@@ -148,7 +148,8 @@ static const char * const usage_msg3 =
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
-    "    >=7\tinternal error\n\n"
+    "    7\tmemory allocation error\n"
+    " >=15\tinternal error\n\n"
     "JSON parser version: %s\n"
     "jprint version: %s";
 
@@ -466,22 +467,18 @@ int main(int argc, char **argv)
 	jprint = NULL;
 	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
 	not_reached();
-    }
-
-    /* close the JSON file if not stdin */
-    if (json_file != stdin) {
+    } else if (json_file != stdin) {
+	/* close the JSON file if not stdin */
 	fclose(json_file);
 	json_file = NULL;
     }
 
-    /* this will change to a debug message at a later time */
     dbg(DBG_MED, "valid JSON");
 
     /* the debug level will be increased at a later time */
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
-    /* TODO process name_args */
     if (argv[1] == NULL) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     } else {
@@ -489,9 +486,15 @@ int main(int argc, char **argv)
 	    jprint->pattern_specified = true;
 
 	    if (add_jprint_pattern(jprint, argv[i]) == NULL) {
-		err(14, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
+		err(15, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
 		not_reached();
 	    }
+	}
+    }
+
+    /* TODO process name_args */
+    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	if (pattern->pattern != NULL && *pattern->pattern) {
 	    /*
 	     * XXX if matches found we set the boolean match_found to true to
 	     * indicate exit code of 0 but currently no matches are checked. In
@@ -499,12 +502,7 @@ int main(int argc, char **argv)
 	     * happen.
 	     */
 	    jprint->match_found = true;
-	}
-    }
 
-
-    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern != NULL && *pattern->pattern) {
 	    dbg(DBG_NONE, "searching for %s '%s'", jprint->use_regexps?"regexp":"pattern", pattern->pattern);
 	}
     }
@@ -566,11 +564,11 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * firewall
      */
     if (jprint == NULL) {
-	err(9, __func__, "passed NULL jprint struct");
+	err(16, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(10, __func__, "passed NULL str");
+	err(17, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -593,14 +591,14 @@ add_jprint_pattern(struct jprint *jprint, char *str)
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(11, __func__, "unable to allocate struct jprint_pattern *");
+	errp(18, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(12, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(19, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -637,7 +635,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(15, __func__, "passed NULL jprint struct");
+	err(20, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 

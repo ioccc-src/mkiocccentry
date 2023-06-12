@@ -28,6 +28,9 @@ only iterates through the list, showing that a pattern or regexp will be
 searched for. Functions to add and free the list added. Patterns are appended to
 the list so that the first pattern/regexp specified will be looked for first.
 
+Change exit codes in `jprint` a bit, making 7 exclusive for memory allocation
+errors and >= 15 for other internal errors.
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
