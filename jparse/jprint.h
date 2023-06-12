@@ -105,7 +105,6 @@ struct jprint
 };
 
 /* functions */
-
 void free_jprint(struct jprint *jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */

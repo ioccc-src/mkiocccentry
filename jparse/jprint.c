@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
 	    not_reached();
 	}
-    } else { /* *argv[0] == '-', read from stdin */
+    } else { /* argv[0] is "-": will read from stdin */
 	jprint->is_stdin = true;
 	json_file = stdin;
     }
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
     }
 
     /* this will change to a debug message at a later time */
-    dbg(JSON_DBG_NONE, "valid JSON");
+    dbg(DBG_MED, "valid JSON");
 
     /* the debug level will be increased at a later time */
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
