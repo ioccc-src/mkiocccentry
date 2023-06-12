@@ -149,6 +149,7 @@ static const char * const usage_msg3 =
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
     "    >=7\tinternal error\n\n"
+    "JSON parser version: %s\n"
     "jprint version: %s";
 
 /*
@@ -718,7 +719,7 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2);
-    fprintf_usage(exitcode, stderr, usage_msg3, JPRINT_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg3, json_parser_version, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
