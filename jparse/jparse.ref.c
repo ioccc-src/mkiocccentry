@@ -818,11 +818,14 @@ static YY_BUFFER_STATE bs;
 				yylloc->last_line++; \
 				yylloc->last_column = 1; \
 			    } \
+			    else if (*p == '\t') { \
+				yylloc->last_column += 8; \
+			    } \
 			    else { \
 				yylloc->last_column++; \
 			    } \
 			}
-#line 774 "jparse.c"
+#line 777 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -843,7 +846,7 @@ static YY_BUFFER_STATE bs;
  *	    \"([^\n"]|\\\")*\"
  */
 /* Actions. */
-#line 795 "jparse.c"
+#line 798 "jparse.c"
 
 #define INITIAL 0
 
@@ -1123,9 +1126,9 @@ YY_DECL
 		}
 
 	{
-#line 108 "./jparse.l"
+#line 111 "./jparse.l"
 
-#line 1077 "jparse.c"
+#line 1080 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1196,7 +1199,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 109 "./jparse.l"
+#line 112 "./jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -1216,14 +1219,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 125 "./jparse.l"
+#line 128 "./jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 129 "./jparse.l"
+#line 132 "./jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1231,7 +1234,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 134 "./jparse.l"
+#line 137 "./jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1239,7 +1242,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 139 "./jparse.l"
+#line 142 "./jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1247,7 +1250,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 144 "./jparse.l"
+#line 147 "./jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1255,7 +1258,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 148 "./jparse.l"
+#line 151 "./jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1263,7 +1266,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 153 "./jparse.l"
+#line 156 "./jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1271,7 +1274,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 157 "./jparse.l"
+#line 160 "./jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1279,7 +1282,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 162 "./jparse.l"
+#line 165 "./jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1287,7 +1290,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 166 "./jparse.l"
+#line 169 "./jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1295,7 +1298,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 171 "./jparse.l"
+#line 174 "./jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1303,7 +1306,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 176 "./jparse.l"
+#line 179 "./jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1311,7 +1314,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 181 "./jparse.l"
+#line 184 "./jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1347,10 +1350,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 214 "./jparse.l"
+#line 217 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1302 "jparse.c"
+#line 1305 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2512,7 +2515,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 214 "./jparse.l"
+#line 217 "./jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

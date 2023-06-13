@@ -1,5 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.10 2023-06-13
+
+New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4
+2023-06-12". The json parser version was bumped by .2 rather than .1 since it
+should have been updated the other day when `jparse` was updated and it might be
+that `jparse` itself did not need to be updated: that's not necessarily true
+either way. The significant change here is that when encountering a `\t` we
+increment the column by 8. This appears to be what a tab is but it might not be
+perfect as there might be other cases where a `\t` is some other count. This has
+to be tested further.
+
+
 ## Release 1.0.9 2023-06-12
 
 New `jprint` version "0.0.15 2023-06-12".
