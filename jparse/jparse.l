@@ -61,6 +61,9 @@ static YY_BUFFER_STATE bs;
 				yylloc->last_line++; \
 				yylloc->last_column = 1; \
 			    } \
+			    else if (*p == '\t') { \
+				yylloc->last_column += 8; \
+			    } \
 			    else { \
 				yylloc->last_column++; \
 			    } \
