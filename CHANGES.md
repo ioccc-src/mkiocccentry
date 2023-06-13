@@ -23,6 +23,27 @@ which explains what one **MUST** do after adding a new invalid JSON file under
 `jparse/test_jparse/test_JSON/bad_loc`. This information is also in the man page
 `jparse(8)`.
 
+New `jprint` version "0.0.16 2023-06-13" with new option. Using `-Y type` one
+will be able to search by value instead of name. Currently it does not check for
+only one value but this will likely change in a future update. Code does not yet
+check that the type matches either. In other words if one specifies `-Y int` it
+does not verify that the `name_arg` is actually an int. It might not be
+necessary either since the JSON parser has the values and names as original
+strings. This is TBD later. But an important question has to be answered right
+now.
+
+```
+/*
+ * Why is this option -Y? Why not Y? Because Y, that's why! Why
+ * besides, all the other good options were already taken. :-)
+ * Specifically the letter Y has a V in it and V would have been the
+ * obvious choice but both v and V are taken. This is why you'll
+ * have to believe us when we tell you that this is a good enough
+ * reason why! :-)
+ */
+```	
+
+
 ## Release 1.0.9 2023-06-12
 
 New `jprint` version "0.0.15 2023-06-12".

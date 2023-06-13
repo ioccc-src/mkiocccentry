@@ -120,6 +120,9 @@ bool jprint_match_any(uintmax_t types);
 bool jprint_match_simple(uintmax_t types);
 bool jprint_match_compound(uintmax_t types);
 
+/* -Y type option */
+uintmax_t jprint_parse_value_type_option(char *optarg);
+
 /* what to print - -p option */
 uintmax_t jprint_parse_print_option(char *optarg);
 bool jprint_print_name(uintmax_t types);
