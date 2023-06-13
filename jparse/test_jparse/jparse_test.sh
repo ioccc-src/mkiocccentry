@@ -38,12 +38,12 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.0.1 2023-06-12"
+export JPARSE_TEST_VERSION="1.0.2 2023-06-13"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
 export SUBDIR="."
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [-k] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -57,6 +57,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
 				json_tree/tree/subdir/bad
 				json_tree/tree/subdir/good
     -s subdir		subdirectory under json_tree to find the good and bad subdirectories (def: $SUBDIR)
+    -k			keep temporary files on exit (def: remove temporary files before exiting)
     [file ...]		read JSON documents, one per line, from these files, - means stdin (def: $CHK_TEST_FILE)
 			NOTE: To use stdin, end the command line with: -- -
 
@@ -81,10 +82,11 @@ export LOGFILE="./jparse_test.log"
 export EXIT_CODE=0
 export FILE_FAILURE_SUMMARY=""
 export STRING_FAILURE_SUMMARY=""
+export K_FLAG=""
 
 # parse args
 #
-while getopts :hVv:D:J:qj:d:s: flag; do
+while getopts :hVv:D:J:qj:d:s:k flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -106,6 +108,8 @@ while getopts :hVv:D:J:qj:d:s: flag; do
 	;;
     s)  SUBDIR="$OPTARG"
 	;;
+    k)  K_FLAG="true";
+        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -138,6 +142,7 @@ fi
 shift $(( OPTIND - 1 ));
 export JSON_GOOD_TREE="$JSON_TREE/$SUBDIR/good"
 export JSON_BAD_TREE="$JSON_TREE/$SUBDIR/bad"
+export JSON_BAD_LOC_TREE="$JSON_TREE/$SUBDIR/bad_loc"
 
 # firewall
 #
@@ -199,6 +204,41 @@ if [[ ! -r $JSON_BAD_TREE ]]; then
     exit 6
 fi
 
+# bad location tree
+#
+if [[ ! -e $JSON_BAD_LOC_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_LOC_TREE" 1>&2
+    exit 6
+fi
+if [[ ! -d $JSON_BAD_LOC_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_LOC_TREE" 1>&2
+    exit 6
+fi
+if [[ ! -r $JSON_BAD_LOC_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_LOC_TREE" 1>&2
+    exit 6
+fi
+
+
+# We need a file to write the output of jparse to in order to compare it
+# with any error file. This is needed for the files that are supposed to
+# fail but it's possible that there could be a use for good files too.
+TMP_STDERR_FILE=$(mktemp -u .jparse_test.stderr.XXXXXXXXXX)
+# delete the temporary file in the off chance it already exists
+rm -f "$TMP_STDERR_FILE"
+# now let's make sure we can create it as well: if we can't or it's not
+# writable there's an issue.
+#
+touch "$TMP_STDERR_FILE"
+if [[ ! -e "$TMP_STDERR_FILE" ]]; then
+    echo "$0: could not create output file: $TMP_STDERR_FILE"
+    exit 35
+fi
+if [[ ! -w "$TMP_STDERR_FILE" ]]; then
+    echo "$0: output file not writable: $TMP_STDERR_FILE"
+    exit 36
+fi
+
 
 # remove logfile so that each run starts out with an empty file
 #
@@ -212,6 +252,102 @@ if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
     exit 5
 fi
+
+# remove or keep (some) temporary files
+#
+if [[ -z $K_FLAG ]]; then
+    trap "rm -f \$TMP_STDERR_FILE; exit" 0 1 2 3 15
+else
+    trap "rm -f \$TMP_STDERR_FILE; exit" 1 2 3 15
+fi
+
+# run_location_err_test - run a single test
+#
+# usage:
+#	run_location_err_test jparse_test_file
+#
+#	run_location_err_test	    - our function name
+#	jparse_test_file    - the jparse text file to give to jparse
+#
+run_location_err_test()
+{
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: expected 1 arg to run_location_err_test, found $#" 1>&2
+	exit 37
+    fi
+    declare jparse_test_file="$1"
+    declare jparse_err_file="$jparse_test_file.err"
+
+    if [[ ! -e $jparse_test_file ]]; then
+	echo "$0: in run_location_err_test: jparse_test_file not found: $jparse_test_file"
+	exit 38
+    fi
+    if [[ ! -f $jparse_test_file ]]; then
+	echo "$0: in run_location_err_test: jparse_test_file not a regular file: $jparse_test_file"
+	exit 39
+    fi
+    if [[ ! -r $jparse_test_file ]]; then
+	echo "$0: in run_location_err_test: jparse_test_file not readable: $jparse_test_file"
+	exit 40
+    fi
+
+    if [[ ! -e $jparse_err_file ]]; then
+	echo "$0: in run_location_err_test: jparse_err_file not found for test that must fail: $jparse_err_file"
+	exit 41
+    fi
+    if [[ ! -f $jparse_err_file ]]; then
+	echo "$0: in run_location_err_test: jparse_err_file not a regular file for test that must fail: $jparse_err_file"
+	exit 42
+    fi
+    if [[ ! -r $jparse_err_file ]]; then
+	echo "$0: in run_location_err_test: jparse_err_file not readable for test that must fail: $jparse_err_file"
+	exit 43
+    fi
+    # debugging
+    #
+    if [[ $V_FLAG -ge 9 ]]; then
+	echo "$0: debug[9]: in run_location_err_test: test must fail"
+	echo "$0: debug[9]: in run_location_err_test: jparse: $JPARSE" 1>&2
+	echo "$0: debug[9]: in run_location_err_test: jparse_test_file: $jparse_test_file" 1>&2
+	if [[ $pass_fail = fail ]]; then
+	    echo "$0: debug[9]: in run_location_err_test: jparse_err_file: $jparse_err_file" 1>&2
+	fi
+    fi
+
+    echo "$0: debug[3]: about to run test that must fail: $JPARSE -- $jparse_test_file >> ${LOGFILE} 2>$TMP_STDERR_FILE" 1>&2
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: in run_test: about to run: $JPARSE -- $jparse_test_file -- $jparse_test_file 2>$TMP_STDERR_FILE | tee -a -- ${LOGFILE}"
+    fi
+
+    "$JPARSE" -- "$jparse_test_file" 2>"$TMP_STDERR_FILE" | tee -a -- "${LOGFILE}"
+
+    if [[ $V_FLAG -ge 7 ]]; then
+	echo "$0: debug[7]: in run_location_err_test: jparse exit code: $status" 1>&2
+    fi
+
+    # examine test result
+    #
+    # if we have an error file (expected errors) and the output of the above
+    # command does not match it is a fail.
+    if ! cmp -s "$jparse_err_file" "$TMP_STDERR_FILE"; then
+	echo "$0: Warning: in run_location_err_test: FAIL: $JPARSE -- $jparse_test_file 2>$TMP_STDERR_FILE | tee -a -- ${LOGFILE}" 2>&1
+	echo "$0: Warning: in run_location_err_test: expected errors: $jparse_err_file do not match result of test: $TMP_STDERR_FILE" 1>&2
+
+	if [[ $V_FLAG -lt 3 ]]; then
+	    echo "$0: Warning: for more details try: $JPARSE -- $jparse_test_file" | tee -a -- "$LOGFILE" 1>&2
+	fi
+
+	echo | tee -a -- "${LOGFILE}" 1>&2
+	EXIT_CODE=1
+    fi
+
+    # return
+    #
+    return
+}
+
 
 # run_file_test - run a single jparse test on a file
 #
@@ -488,6 +624,9 @@ while read -r file; do
     run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
 done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
+while read -r file; do
+    run_location_err_test "$file"
+done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
 
 if [[ -n "$FILE_FAILURE_SUMMARY" ]]; then
     echo "The following files failed: " | tee -a -- "${LOGFILE}"
@@ -501,6 +640,23 @@ if [[ -n "$STRING_FAILURE_SUMMARY" ]]; then
     echo "$STRING_FAILURE_SUMMARY" | tee -a -- "${LOGFILE}"
     echo "--" | tee -a -- "${LOGFILE}"
 fi
+
+# explicitly delete the temporary files
+if [[ -z $K_FLAG ]]; then
+    rm -f "$TMP_STDERR_FILE"
+else
+    echo
+    echo "$0: keeping temporary files due to use of -k"
+    echo
+    echo "$0: to remove the temporary files:"
+    echo
+    echo -n "rm -f"
+    if [[ -e $TMP_STDERR_FILE ]]; then
+	echo -n " $TMP_STDERR_FILE"
+    fi
+    echo
+fi
+
 
 # All Done!!! -- Jessica Noll, Age 2
 #
