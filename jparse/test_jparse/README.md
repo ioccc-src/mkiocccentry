@@ -4,8 +4,8 @@ If ever a file is added to the `test_JSON/bad_loc` directory then one **MUST**
 run from `jparse/test_jparse/` the following commands exactly:
 
 ```sh
-rm ./test_JSON/bad_loc/*.err
-for i in ./test_JSON/bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
+rm test_JSON/bad_loc/*.err
+for i in test_JSON/./bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
 ```
 
 Then run from the top level directory `make test`. If all is okay then you must

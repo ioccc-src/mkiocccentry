@@ -1,0 +1,2 @@
+syntax error node type JTYPE_OBJECT in file test_JSON/./bad_loc/comma-eof.json at line 1 column 2: <,>
+ERROR[1]: ../jparse: invalid JSON

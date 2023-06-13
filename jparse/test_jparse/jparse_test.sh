@@ -43,7 +43,7 @@ export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
 export SUBDIR="."
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [-k] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [-k] [-L] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -58,6 +58,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
 				json_tree/tree/subdir/good
     -s subdir		subdirectory under json_tree to find the good and bad subdirectories (def: $SUBDIR)
     -k			keep temporary files on exit (def: remove temporary files before exiting)
+    -L			run error location reporting test
     [file ...]		read JSON documents, one per line, from these files, - means stdin (def: $CHK_TEST_FILE)
 			NOTE: To use stdin, end the command line with: -- -
 
@@ -83,10 +84,11 @@ export EXIT_CODE=0
 export FILE_FAILURE_SUMMARY=""
 export STRING_FAILURE_SUMMARY=""
 export K_FLAG=""
+export L_FLAG=""
 
 # parse args
 #
-while getopts :hVv:D:J:qj:d:s:k flag; do
+while getopts :hVv:D:J:qj:d:s:kL flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -109,6 +111,8 @@ while getopts :hVv:D:J:qj:d:s:k flag; do
     s)  SUBDIR="$OPTARG"
 	;;
     k)  K_FLAG="true";
+        ;;
+    L)  L_FLAG="true";
         ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
@@ -206,39 +210,39 @@ fi
 
 # bad location tree
 #
-if [[ ! -e $JSON_BAD_LOC_TREE ]]; then
-    echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_LOC_TREE" 1>&2
-    exit 6
-fi
-if [[ ! -d $JSON_BAD_LOC_TREE ]]; then
-    echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_LOC_TREE" 1>&2
-    exit 6
-fi
-if [[ ! -r $JSON_BAD_LOC_TREE ]]; then
-    echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_LOC_TREE" 1>&2
-    exit 6
-fi
+if [[ -n "$L_FLAG" ]]; then
+    if [[ ! -e $JSON_BAD_LOC_TREE ]]; then
+	echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_LOC_TREE" 1>&2
+	exit 6
+    fi
+    if [[ ! -d $JSON_BAD_LOC_TREE ]]; then
+	echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_LOC_TREE" 1>&2
+	exit 6
+    fi
+    if [[ ! -r $JSON_BAD_LOC_TREE ]]; then
+	echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_LOC_TREE" 1>&2
+	exit 6
+    fi
 
-
-# We need a file to write the output of jparse to in order to compare it
-# with any error file. This is needed for the files that are supposed to
-# fail but it's possible that there could be a use for good files too.
-TMP_STDERR_FILE=$(mktemp -u .jparse_test.stderr.XXXXXXXXXX)
-# delete the temporary file in the off chance it already exists
-rm -f "$TMP_STDERR_FILE"
-# now let's make sure we can create it as well: if we can't or it's not
-# writable there's an issue.
-#
-touch "$TMP_STDERR_FILE"
-if [[ ! -e "$TMP_STDERR_FILE" ]]; then
-    echo "$0: could not create output file: $TMP_STDERR_FILE"
-    exit 35
+    # We need a file to write the output of jparse to in order to compare it
+    # with any error file. This is needed for the files that are supposed to
+    # fail but it's possible that there could be a use for good files too.
+    TMP_STDERR_FILE=$(mktemp -u .jparse_test.stderr.XXXXXXXXXX)
+    # delete the temporary file in the off chance it already exists
+    rm -f "$TMP_STDERR_FILE"
+    # now let's make sure we can create it as well: if we can't or it's not
+    # writable there's an issue.
+    #
+    touch "$TMP_STDERR_FILE"
+    if [[ ! -e "$TMP_STDERR_FILE" ]]; then
+	echo "$0: could not create output file: $TMP_STDERR_FILE"
+	exit 35
+    fi
+    if [[ ! -w "$TMP_STDERR_FILE" ]]; then
+	echo "$0: output file not writable: $TMP_STDERR_FILE"
+	exit 36
+    fi
 fi
-if [[ ! -w "$TMP_STDERR_FILE" ]]; then
-    echo "$0: output file not writable: $TMP_STDERR_FILE"
-    exit 36
-fi
-
 
 # remove logfile so that each run starts out with an empty file
 #
@@ -253,12 +257,14 @@ if [[ ! -w "${LOGFILE}" ]]; then
     exit 5
 fi
 
-# remove or keep (some) temporary files
-#
-if [[ -z $K_FLAG ]]; then
-    trap "rm -f \$TMP_STDERR_FILE; exit" 0 1 2 3 15
-else
-    trap "rm -f \$TMP_STDERR_FILE; exit" 1 2 3 15
+if [[ -n "$L_FLAG" ]]; then
+    # remove or keep (some) temporary files
+    #
+    if [[ -z $K_FLAG ]]; then
+	trap "rm -f \$TMP_STDERR_FILE; exit" 0 1 2 3 15
+    else
+	trap "rm -f \$TMP_STDERR_FILE; exit" 1 2 3 15
+    fi
 fi
 
 # run_location_err_test - run a single test
@@ -340,7 +346,7 @@ run_location_err_test()
 	fi
 
 	echo | tee -a -- "${LOGFILE}" 1>&2
-	EXIT_CODE=1
+	EXIT_CODE=50
     fi
 
     # return
@@ -624,9 +630,11 @@ while read -r file; do
     run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
 done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
-while read -r file; do
-    run_location_err_test "$file"
-done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
+if [[ -n "$L_FLAG" ]]; then
+    while read -r file; do
+	run_location_err_test "$file"
+    done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
+fi
 
 if [[ -n "$FILE_FAILURE_SUMMARY" ]]; then
     echo "The following files failed: " | tee -a -- "${LOGFILE}"
@@ -642,21 +650,22 @@ if [[ -n "$STRING_FAILURE_SUMMARY" ]]; then
 fi
 
 # explicitly delete the temporary files
-if [[ -z $K_FLAG ]]; then
-    rm -f "$TMP_STDERR_FILE"
-else
-    echo
-    echo "$0: keeping temporary files due to use of -k"
-    echo
-    echo "$0: to remove the temporary files:"
-    echo
-    echo -n "rm -f"
-    if [[ -e $TMP_STDERR_FILE ]]; then
-	echo -n " $TMP_STDERR_FILE"
+if [[ -n "$L_FLAG" ]]; then
+    if [[ -z $K_FLAG ]]; then
+	rm -f "$TMP_STDERR_FILE"
+    else
+	echo
+	echo "$0: keeping temporary files due to use of -k"
+	echo
+	echo "$0: to remove the temporary files:"
+	echo
+	echo -n "rm -f"
+	if [[ -e $TMP_STDERR_FILE ]]; then
+	    echo -n " $TMP_STDERR_FILE"
+	fi
+	echo
     fi
-    echo
 fi
-
 
 # All Done!!! -- Jessica Noll, Age 2
 #

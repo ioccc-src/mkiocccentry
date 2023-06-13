@@ -499,6 +499,8 @@ echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
 echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+#make -C jparse/test_jparse test | tee -a -- "$LOGFILE"
+
 jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
