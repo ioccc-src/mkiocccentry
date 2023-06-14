@@ -463,7 +463,7 @@ run_test()
 	echo "$0: debug[9]: in run_test: fnamchk: $FNAMCHK" 1>&2
 	echo "$0: debug[9]: in run_test: txzchk_test_file: $txzchk_test_file" 1>&2
 	if [[ $pass_fail = fail ]]; then
-	    echo "$0: debug[9]: in run-test: txzchk_err_file: $txzchk_err_file" 1>&2
+	    echo "$0: debug[9]: in run_test: txzchk_err_file: $txzchk_err_file" 1>&2
 	fi
     fi
 
