@@ -1,5 +1,31 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.11 2023-06-14
+
+Minor fix in `jparse` error location reporting. When the erroneous token was at
+the very first column the column reported was column 0 which is incorrect by the
+standard (de facto or otherwise) and also editors like vim which could be
+confusing. New JSON parser version "1.0.5 2023-06-14". Since this also changes
+the `jparse` tool indirectly I also updated the `jparse` version to be "1.0.5
+2023-06-14" (skipping 1.0.4 in order to make it match as this seems like a good
+time to make them match version and date).
+
+Renamed `test_jparse/test_JSON/bad_loc/comma-eof.json` ->
+`test_jparse/test_JSON/bad_loc/braces-comma-eof.json` as it actually has an
+otherwise valid json file, `{}`. Added a `comma-eof.json` and respective error
+file which has the first character being a comma.
+
+Added several other test files (and their corresponding `.err` file) to have
+more tests in JSON error location reporting.
+
+Added another bad json file
+`test_ioccc/test_JSON/general.json/bad/third-line-backspace.json`.
+
+Added make rule in `jparse/test_jparse` to simplify adding the
+`jparse/test_jparse/test_JSON/bad_loc` error files. To use run from the
+`jparse/test_jparse` directory `make rebuild_jparse_err_files`. This rule
+deletes the error files prior to regenerating them.
+
 ## Release 1.0.10 2023-06-13
 
 New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_test.sh 8 "13 June 2023" "jparse_test.sh" "IOCCC tools"
+.TH jparse_test.sh 8 "14 June 2023" "jparse_test.sh" "IOCCC tools"
 .SH NAME
 .B jparse_test.sh
 \- test jparse on one or more files with one or more one\-line JSON blobs
@@ -52,9 +52,9 @@ However, if
 .B \-L
 is specified, then there is another kind of file that must fail, located in the subdirectory called
 .IR bad_loc .
-These files have errors in syntax and the purpose is to make sure that location error reporting is valid.
+These files have errors in syntax and the purpose is to make sure that error location reporting is valid.
 See the subsection
-.B Location errors
+.B Error locations
 under
 .B NOTES
 for details on this and what one
@@ -119,7 +119,7 @@ Keep temporary stderr files in the directory for investigation.
 This is only used for checking that location reporting in error messages is valid.
 .TP
 .BI \-L
-Run location reporting error tests.
+Run error location tests.
 .SH EXIT STATUS
 .TP
 0
@@ -172,13 +172,13 @@ The default JSON tree with
 .IR bad ,
 and
 .IR bad_loc
-subdirectories for files that must pass, fail and fail, respectively.
+subdirectories for files that must pass, fail and fail with the exact error (error location testing), respectively.
 .RE
 .SH NOTES
 The JSON parser
 .B jparse
 was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
-.SS Location errors
+.SS Error locations
 .PP
 The purpose of this is to verify that the error locations are correctly reported.
 The error files have the errors that
@@ -197,21 +197,18 @@ cd jparse/test_jparse
 .ft R
 .RE
 .PP
-Next you must delete all the error files in
+Then you
+.B MUST
+verify that the output of
+.B jparse
+on the files added is correct.
+If it is you must then regenerate all the error files in
 .I test_JSON/bad_loc
 like:
 .sp
 .RS
 .ft B
-rm -f test_JSON/bad_loc/*.err
-.ft R
-.RE
-.PP
-Then you must generate the error files again like:
-.sp
-.RS
-.ft B
-for i in test_JSON/./bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
+make rebuild_jparse_err_files
 .ft R
 .RE
 .PP
@@ -223,6 +220,17 @@ make test
 .ft R
 .RE
 .PP
+After that go back to the
+.I jparse/test_jparse
+subdirectory and run
+.sp
+.RS
+.ft B
+make test
+.ft
+.RE
+.sp
+and make sure that it also passes okay.
 Assuming everything is OK you can then add the JSON files and the error files like:
 .sp
 .RS

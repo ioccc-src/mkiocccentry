@@ -51,6 +51,23 @@ static YY_BUFFER_STATE bs;
 
 /*
  * locations in the file / json block
+ *
+ * Why is it that columns start out at 0 and the line starts out at 1? This is
+ * because of the way the scanning works. Whenever a token is matched this macro
+ * is run. Each time a token is matched if the column is 0 we have to make sure
+ * it is 1 and otherwise we have to increase it: unless it's a tab or a newline.
+ * If it's a newline we set the column back to 0 and increase the line. If
+ * however it's a tab we increase the column count by 8 as that is the default
+ * value for '\t'.
+ *
+ * Now as far as the final 'else' in the for loop it seems more complicated than
+ * it might need to be. This was done during the fixing of error location
+ * reporting, specifically with the first column being reported as column 0 and
+ * then column 2, but the extra defence in the way it is done does not hurt
+ * anything so we have left it as is. Thus if the token is not a newline and not
+ * a tab we check if first_column is 0 or if last_column is 0 and if either one
+ * is we explicitly set the respective variable to 1. Otherwise we increment the
+ * first_column and last_column.
  */
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
@@ -59,13 +76,23 @@ static YY_BUFFER_STATE bs;
 			for (char *p = yytext; *p; ++p) { \
 			    if (*p == '\n') { \
 				yylloc->last_line++; \
-				yylloc->last_column = 1; \
+				yylloc->last_column = 0; \
 			    } \
 			    else if (*p == '\t') { \
 				yylloc->last_column += 8; \
 			    } \
 			    else { \
-				yylloc->last_column++; \
+				if (yylloc->first_column == 0 || yylloc->last_column == 0) { \
+				    if (yylloc->first_column == 0) { \
+					yylloc->first_column = 1; \
+				    } \
+				    if (yylloc->last_column == 0) { \
+					yylloc->last_column = 1; \
+				    } \
+				} else { \
+				    yylloc->last_column++; \
+				    yylloc->first_column++; \
+				} \
 			    } \
 			}
 %}
@@ -545,9 +572,12 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * we cannot set the column and probably line number without first having a
      * buffer which is why the yy_scan_bytes() is called first.
+     *
+     * For why we set the column to 0 but the line to 1 see the comments with
+     * the YY_USER_ACTION macro.
      */
-    yyset_column(1, scanner);
-    yyset_lineno(1, scanner);
+    jparse_set_column(0, scanner);
+    jparse_set_lineno(1, scanner);
 
     /*
      * announce beginning to parse

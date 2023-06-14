@@ -808,6 +808,23 @@ static YY_BUFFER_STATE bs;
 
 /*
  * locations in the file / json block
+ *
+ * Why is it that columns start out at 0 and the line starts out at 1? This is
+ * because of the way the scanning works. Whenever a token is matched this macro
+ * is run. Each time a token is matched if the column is 0 we have to make sure
+ * it is 1 and otherwise we have to increase it: unless it's a tab or a newline.
+ * If it's a newline we set the column back to 0 and increase the line. If
+ * however it's a tab we increase the column count by 8 as that is the default
+ * value for '\t'.
+ *
+ * Now as far as the final 'else' in the for loop it seems more complicated than
+ * it might need to be. This was done during the fixing of error location
+ * reporting, specifically with the first column being reported as column 0 and
+ * then column 2, but the extra defence in the way it is done does not hurt
+ * anything so we have left it as is. Thus if the token is not a newline and not
+ * a tab we check if first_column is 0 or if last_column is 0 and if either one
+ * is we explicitly set the respective variable to 1. Otherwise we increment the
+ * first_column and last_column.
  */
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
@@ -816,16 +833,26 @@ static YY_BUFFER_STATE bs;
 			for (char *p = yytext; *p; ++p) { \
 			    if (*p == '\n') { \
 				yylloc->last_line++; \
-				yylloc->last_column = 1; \
+				yylloc->last_column = 0; \
 			    } \
 			    else if (*p == '\t') { \
 				yylloc->last_column += 8; \
 			    } \
 			    else { \
-				yylloc->last_column++; \
+				if (yylloc->first_column == 0 || yylloc->last_column == 0) { \
+				    if (yylloc->first_column == 0) { \
+					yylloc->first_column = 1; \
+				    } \
+				    if (yylloc->last_column == 0) { \
+					yylloc->last_column = 1; \
+				    } \
+				} else { \
+				    yylloc->last_column++; \
+				    yylloc->first_column++; \
+				} \
 			    } \
 			}
-#line 777 "jparse.c"
+#line 804 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -846,7 +873,7 @@ static YY_BUFFER_STATE bs;
  *	    \"([^\n"]|\\\")*\"
  */
 /* Actions. */
-#line 798 "jparse.c"
+#line 825 "jparse.c"
 
 #define INITIAL 0
 
@@ -1126,9 +1153,9 @@ YY_DECL
 		}
 
 	{
-#line 111 "./jparse.l"
+#line 138 "./jparse.l"
 
-#line 1080 "jparse.c"
+#line 1107 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1199,7 +1226,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 112 "./jparse.l"
+#line 139 "./jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -1219,14 +1246,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 128 "./jparse.l"
+#line 155 "./jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 132 "./jparse.l"
+#line 159 "./jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1234,7 +1261,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 137 "./jparse.l"
+#line 164 "./jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1242,7 +1269,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 142 "./jparse.l"
+#line 169 "./jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1250,7 +1277,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 147 "./jparse.l"
+#line 174 "./jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1258,7 +1285,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 151 "./jparse.l"
+#line 178 "./jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1266,7 +1293,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 156 "./jparse.l"
+#line 183 "./jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1274,7 +1301,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 160 "./jparse.l"
+#line 187 "./jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1282,7 +1309,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 165 "./jparse.l"
+#line 192 "./jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1290,7 +1317,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 169 "./jparse.l"
+#line 196 "./jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1298,7 +1325,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 174 "./jparse.l"
+#line 201 "./jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1306,7 +1333,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 179 "./jparse.l"
+#line 206 "./jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1314,7 +1341,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 184 "./jparse.l"
+#line 211 "./jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1350,10 +1377,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 217 "./jparse.l"
+#line 244 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1305 "jparse.c"
+#line 1332 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2515,7 +2542,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 217 "./jparse.l"
+#line 244 "./jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2847,9 +2874,12 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     /*
      * we cannot set the column and probably line number without first having a
      * buffer which is why the yy_scan_bytes() is called first.
+     *
+     * For why we set the column to 0 but the line to 1 see the comments with
+     * the YY_USER_ACTION macro.
      */
-    yyset_column(1, scanner);
-    yyset_lineno(1, scanner);
+    jparse_set_column(0, scanner);
+    jparse_set_lineno(1, scanner);
 
     /*
      * announce beginning to parse
