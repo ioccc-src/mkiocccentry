@@ -1,21 +1,36 @@
 # Preparing the bad location tests
 
 If ever a file is added to the `test_JSON/bad_loc` directory then one **MUST**
-run from `jparse/test_jparse/` the following commands exactly:
+take the following steps.
+
+First make a visual inspection to be sure that the output of `jparse` is correct
+on the files. If they are then run from `jparse/test_jparse/` the following
+commands exactly:
 
 ```sh
-rm test_JSON/bad_loc/*.err
-for i in test_JSON/./bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
+make rebuild_jparse_err_files
 ```
 
-Then run from the top level directory `make test`. If all is okay then you must
-do the following, also from the top level directory:
+You should see something like:
 
 ```sh
-git add ./jparse/test_jparse/test_JSON/bad_loc/*.json
-git add ./jparse/test_jparse/test_JSON/bad_loc/*.err
+$ rm -f test_JSON/bad_loc/*.err; make rebuild_jparse_err_files
+make: [rebuild_jparse_err_files] Error 1 (ignored)
+
+Make sure to run make test from the top level directory befor doing a
+git add on all the *.json and *.json.err files in test_json/bad_loc!
+```
+
+Assuming you see the above you **MUST** then run `make test` from the top level
+directory **AND** this directory and make sure that both do not fail.
+
+Assuming that these both pass you can then do from this directory:
+
+```sh
+git add test_JSON/bad_loc/*.json
+git add test_JSON/bad_loc/*.json.err
 ```
 
 Then commit and make a pull request to have it added to the repo.
 
-**WITHOUT THIS, `make test` WILL FAIL!**
+If the error files are not added, `make test` **WILL FAIL!**

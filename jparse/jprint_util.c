@@ -972,6 +972,8 @@ jprint_parse_value_type_option(char *optarg)
 	type = JPRINT_TYPE_STR;
     } else if (!strcmp(p, "null")) {
 	type = JPRINT_TYPE_NULL;
+    } else if (!strcmp(p, "simple")) {
+	type = JPRINT_TYPE_SIMPLE;
     } else {
 	/* unknown or unsupported type */
 	err(3, __func__, "unknown or unsupported type '%s'", p); /*ooo*/

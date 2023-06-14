@@ -65,7 +65,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.16 2023-06-13"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.17 2023-06-14"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_pattern - struct for a linked list of patterns requested, held in
@@ -103,18 +103,20 @@ struct jprint
     uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
     bool print_level_tab;			/* -L tab option */
     bool print_colons;				/* -T specified */
-    bool print_commas;				/* -C specified */
+    bool print_final_comma;			/* -C specified */
     bool print_braces;				/* -B specified */
     uintmax_t indent_level;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
     bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded;				/* -E used, match encoded name */
-    bool substrings_okay;			/* -S used, matching substrings okay */
+    bool substrings_okay;			/* -M used, matching substrings okay */
     bool use_regexps;				/* -g used, allow grep-like regexps */
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* search for value, not name (-Y) */
+    char *tool_path;				/* -s path specified */
+    char *tool_args;				/* -S args for -s path specified */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
