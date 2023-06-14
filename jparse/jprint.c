@@ -454,6 +454,14 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
+    /* check that both -j and -M were not used */
+    if (jprint->print_syntax && jprint->substrings_okay) {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jprint", "cannot use both -j and -M"); /*ooo*/
+	not_reached();
+    }
+
     /* check that if -b [num]t is used then both -p both */
     if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
 	free_jprint(jprint);

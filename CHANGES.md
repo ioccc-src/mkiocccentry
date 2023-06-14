@@ -37,6 +37,7 @@ if the tool path exists, is a regular file and is executable and obviously it
 does not execute anything yet either as this tool is to be written later and the
 details are not specific yet either.
 
+Make it so that use of both `jprint -j` and `jprint -M` is an error.
 
 ## Release 1.0.10 2023-06-13
 
