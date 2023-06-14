@@ -472,8 +472,10 @@ else
 		write_echo "bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
-	write_echo ""
-	write_echo "See test_ioccc/test_ioccc.log for more details."
+	if [[ -e test_ioccc/test_ioccc.log ]]; then
+	    write_echo ""
+	    write_echo "See test_ioccc/test_ioccc.log for more details."
+	fi
     else
 	if [[ -n "$FAILURE_SUMMARY" ]]; then
 	    write_echo "One or more tests failed:"
@@ -489,8 +491,10 @@ else
 	else
 	    write_echo "One or more tests failed."
 	fi
-	write_echo ""
-	write_echo "See test_ioccc/test_ioccc.log for more details."
+	if [[ -e test_ioccc/test_ioccc.log ]]; then
+	    write_echo ""
+	    write_echo "See test_ioccc/test_ioccc.log for more details."
+	fi
     fi
 fi
 
