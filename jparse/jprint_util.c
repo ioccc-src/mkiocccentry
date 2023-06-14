@@ -17,6 +17,9 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
+/* special comments for the seqcexit tool */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 #include "jprint_util.h"
 
@@ -367,7 +370,7 @@ jprint_parse_types_option(char *optarg)
 	errno = 0;
 	dup = strdup(optarg);
 	if (dup == NULL) {
-	    err(7, __func__, "strdup(%s) failed", optarg); /*ooo*/
+	    errp(19, __func__, "strdup(%s) failed", optarg);
 	    not_reached();
 	}
     }
@@ -512,7 +515,7 @@ jprint_parse_print_option(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	err(7, __func__, "strdup(%s) failed", optarg); /*ooo*/
+	errp(20, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 

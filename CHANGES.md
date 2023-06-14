@@ -39,6 +39,14 @@ details are not specific yet either.
 
 Make it so that use of both `jprint -j` and `jprint -M` is an error.
 
+Change exit codes for `jprint`. Specifically 7 is no longer reserved for an
+allocation error as it's more of an internal error. 7 is now for the JSON check
+tool failure which is related to the options `-s` and `-S`. Sequenced exit
+codes.
+
+`jprint -Y` requires exactly two args to the command - the file and one
+`name_arg`. Anything else is an error.
+
 ## Release 1.0.10 2023-06-13
 
 New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4

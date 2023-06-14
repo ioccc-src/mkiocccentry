@@ -17,6 +17,9 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
+/* special comments for the seqcexit tool */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 #include "jprint.h"
 
@@ -133,7 +136,7 @@ static const char * const usage_msg2 =
 
 static const char * const usage_msg3 =
     "\t-Y type\t\tSearch for a JSON value as written in file.json (def: search for JSON names)\n"
-    "\t\t\tNOTE: Type is one or more, comma separated of:\n"
+    "\t\t\tNOTE: Type is one or more comma separated of:\n"
     "\n"
     "\t\t\t\tint\tinteger values\n"
     "\t\t\t\tfloat\tfloating point values\n"
@@ -143,6 +146,7 @@ static const char * const usage_msg3 =
     "\t\t\t\tstr\tstring values\n"
     "\t\t\t\tnull\tnull values\n"
     "\t\t\t\tsimple\talias for 'num,bool,str,null'\n\n"
+    "\t\t\tNOTE: -Y Requires one and only one name_arg.\n\n"
     "\t-s path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-S args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\t\t\tNOTE: use of -S requires use of -s\n";
@@ -164,7 +168,7 @@ static const char * const usage_msg4 =
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
-    "    7\tmemory allocation error\n"
+    "    7\tJSON check tool failed\n"
     " >=15\tinternal error\n\n"
     "JSON parser version: %s\n"
     "jprint version: %s";
@@ -191,7 +195,7 @@ int main(int argc, char **argv)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(7, "jprint", "failed to allocate jprint struct"); /*ooo*/
+	err(15, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
@@ -564,14 +568,19 @@ int main(int argc, char **argv)
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
-    if (argv[1] == NULL) {
+    if (jprint->search_value && argc != 2) {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jprint", "-Y requires exactly one name_arg");
+	not_reached();
+    } else if (argv[1] == NULL) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     } else {
 	for (i = 1; argv[i] != NULL; ++i) {
 	    jprint->pattern_specified = true;
 
 	    if (add_jprint_pattern(jprint, argv[i]) == NULL) {
-		err(15, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
+		err(16, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
 		not_reached();
 	    }
 	}
@@ -650,11 +659,11 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * firewall
      */
     if (jprint == NULL) {
-	err(16, __func__, "passed NULL jprint struct");
+	err(17, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(17, __func__, "passed NULL str");
+	err(18, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -677,14 +686,14 @@ add_jprint_pattern(struct jprint *jprint, char *str)
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(18, __func__, "unable to allocate struct jprint_pattern *");
+	errp(19, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(19, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(20, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -722,7 +731,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(20, __func__, "passed NULL jprint struct");
+	err(21, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
