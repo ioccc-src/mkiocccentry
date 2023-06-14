@@ -26,6 +26,9 @@ Added make rule in `jparse/test_jparse` to simplify adding the
 `jparse/test_jparse` directory `make rebuild_jparse_err_files`. This rule
 deletes the error files prior to regenerating them.
 
+`jprint` version updated to "0.0.17 2023-06-14". `jprint -h` modified for the
+`-m max_depth` option.  `jprint -Y` now accepts `simple` type as well.
+
 ## Release 1.0.10 2023-06-13
 
 New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4

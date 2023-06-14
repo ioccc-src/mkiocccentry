@@ -65,7 +65,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.16 2023-06-13"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.17 2023-06-14"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_pattern - struct for a linked list of patterns requested, held in

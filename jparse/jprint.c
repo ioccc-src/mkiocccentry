@@ -132,16 +132,17 @@ static const char * const usage_msg2 =
     "\t-K\t\tRun tests on jprint constraints\n";
 
 static const char * const usage_msg3 =
-    "\t-Y type\t\tSearch for a simple JSON value (def: search for JSON names)\n"
-    "\t\t\tRequires one name_arg, the JSON value in the file.json to search for.\n"
-    "\t\t\tThe type is one of:\n"
-    "\t\t\t\tint\t\tinteger value\n"
-    "\t\t\t\tfloat\t\tfloating point value\n"
-    "\t\t\t\texp\t\texponential notation values\n"
-    "\t\t\t\tnum\t\talias for int,float,exp\n"
-    "\t\t\t\tbool\t\tboolean value\n"
-    "\t\t\t\tstr\t\tstring value\n"
-    "\t\t\t\tnull\t\tnull value\n";
+    "\t-Y type\t\tSearch for a JSON value as written in file.json (def: search for JSON names)\n"
+    "\t\t\tNOTE: Type is one or more, comma separated of:\n"
+    "\n"
+    "\t\t\t\tint\tinteger values\n"
+    "\t\t\t\tfloat\tfloating point values\n"
+    "\t\t\t\texp\texponential notation values\n"
+    "\t\t\t\tnum\talias for int,float,exp\n"
+    "\t\t\t\tbool\tboolean values\n"
+    "\t\t\t\tstr\tstring values\n"
+    "\t\t\t\tnull\tnull values\n"
+    "\t\t\t\tsimple\talias for 'num,bool,str,null'\n";
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
  * have to be added the first additional one should be the number this is and this one
