@@ -167,7 +167,7 @@ static const char * const usage_msg4 =
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
-    "    7\tmemory allocation error\n"
+    "    7\tJSON check tool failed\n"
     " >=15\tinternal error\n\n"
     "JSON parser version: %s\n"
     "jprint version: %s";
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(7, "jprint", "failed to allocate jprint struct"); /*ooo*/
+	err(15, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
@@ -574,7 +574,7 @@ int main(int argc, char **argv)
 	    jprint->pattern_specified = true;
 
 	    if (add_jprint_pattern(jprint, argv[i]) == NULL) {
-		err(15, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
+		err(16, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
 		not_reached();
 	    }
 	}
@@ -653,11 +653,11 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * firewall
      */
     if (jprint == NULL) {
-	err(16, __func__, "passed NULL jprint struct");
+	err(17, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(17, __func__, "passed NULL str");
+	err(18, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -680,14 +680,14 @@ add_jprint_pattern(struct jprint *jprint, char *str)
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(18, __func__, "unable to allocate struct jprint_pattern *");
+	errp(19, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(19, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(20, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -725,7 +725,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(20, __func__, "passed NULL jprint struct");
+	err(21, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
