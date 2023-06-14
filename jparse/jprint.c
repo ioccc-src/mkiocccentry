@@ -117,18 +117,18 @@ static const char * const usage_msg2 =
     "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens.\n"
     "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented.\n"
     "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
-    "\t\t\tNOTE: it is an error to use both -p and -j\n"
+    "\t\t\tNOTE: it is an error to use both -p and -j\n\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
     "\t-i\t\tIgnore case of name (def: case matters).\n"
-    "\t-S\t\tSubstrings are used to match (def: the full name must match).\n"
+    "\t-S\t\tSubstrings are used to match (def: the full name must match).\n\n"
     "\t-g\t\tgrep-like extended regular expressions are used to match (def: name args are not regexps).\n"
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tNOTE: Use of -g and -S is an error.\n"
-    "\t-c\t\tOnly show count of matches found\n"
+    "\t\t\tNOTE: Use of -g and -S is an error.\n\n"
+    "\t-c\t\tOnly show count of matches found\n\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
-    "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
+    "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-).\n\n"
     "\t-K\t\tRun tests on jprint constraints\n";
 
 static const char * const usage_msg3 =
