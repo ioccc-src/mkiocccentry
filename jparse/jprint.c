@@ -567,7 +567,12 @@ int main(int argc, char **argv)
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
-    if (argv[1] == NULL) {
+    if (jprint->search_value && argc != 2) {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jprint", "-Y requires exactly one name_arg");
+	not_reached();
+    } else if (argv[1] == NULL) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     } else {
 	for (i = 1; argv[i] != NULL; ++i) {
