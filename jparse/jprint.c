@@ -136,7 +136,7 @@ static const char * const usage_msg2 =
 
 static const char * const usage_msg3 =
     "\t-Y type\t\tSearch for a JSON value as written in file.json (def: search for JSON names)\n"
-    "\t\t\tNOTE: Type is one or more, comma separated of:\n"
+    "\t\t\tNOTE: Type is one or more comma separated of:\n"
     "\n"
     "\t\t\t\tint\tinteger values\n"
     "\t\t\t\tfloat\tfloating point values\n"
@@ -146,6 +146,7 @@ static const char * const usage_msg3 =
     "\t\t\t\tstr\tstring values\n"
     "\t\t\t\tnull\tnull values\n"
     "\t\t\t\tsimple\talias for 'num,bool,str,null'\n\n"
+    "\t\t\tNOTE: -Y Requires one and only one name_arg.\n\n"
     "\t-s path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-S args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\t\t\tNOTE: use of -S requires use of -s\n";
