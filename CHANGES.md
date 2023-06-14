@@ -29,6 +29,15 @@ deletes the error files prior to regenerating them.
 `jprint` version updated to "0.0.17 2023-06-14". `jprint -h` modified for the
 `-m max_depth` option.  `jprint -Y` now accepts `simple` type as well.
 
+Rename `jprint -S` to `jprint -M`, add new options `-s` and `-S` for a tool path
+and tool args to be run on file.json. Right now all that is done is the old
+processing of `-S` is now done for `-M` and `-s` sets a path and `-S` sets args.
+It makes sure that if `-S` is specified then so is `-s`. It does not check yet
+if the tool path exists, is a regular file and is executable and obviously it
+does not execute anything yet either as this tool is to be written later and the
+details are not specific yet either.
+
+
 ## Release 1.0.10 2023-06-13
 
 New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4
