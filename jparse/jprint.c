@@ -39,7 +39,8 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
-    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-S] [-g] [-c] [-m depth] [-K] file.json [name_arg ...]\n\n"
+    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-S] [-g] [-c] [-m depth] [-K] [-Y type:value]\n"
+    "\t\tfile.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -130,6 +131,17 @@ static const char * const usage_msg2 =
     "\t\t\tNOTE: max_depth of 0 implies use of JSON_INFINITE_DEPTH: use this with extreme caution.\n"
     "\t-K\t\tRun tests on jprint constraints\n";
 
+static const char * const usage_msg3 =
+    "\t-Y type\t\tSearch for a simple JSON value (def: search for JSON names)\n"
+    "\t\t\tRequires one name_arg, the JSON value in the file.json to search for.\n"
+    "\t\t\tThe type is one of:\n"
+    "\t\t\t\tint\t\tinteger value\n"
+    "\t\t\t\tfloat\t\tfloating point value\n"
+    "\t\t\t\texp\t\texponential notation values\n"
+    "\t\t\t\tnum\t\talias for int,float,exp\n"
+    "\t\t\t\tbool\t\tboolean value\n"
+    "\t\t\t\tstr\t\tstring value\n"
+    "\t\t\t\tnull\t\tnull value\n";
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
  * have to be added the first additional one should be the number this is and this one
@@ -137,7 +149,7 @@ static const char * const usage_msg2 =
  * string can be removed this one should have its number changed to be + 1 from
  * the last one before it.
  */
-static const char * const usage_msg3 =
+static const char * const usage_msg4 =
     "\tfile.json\tJSON file to parse (- indicates stdin)\n"
     "\tname_arg\tJSON element to print\n\n"
     "Exit codes:\n"
@@ -237,6 +249,8 @@ int main(int argc, char **argv)
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+
+    jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
     /* finally the linked list of patterns */
     jprint->patterns = NULL;
 
@@ -246,7 +260,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiSgcm:K")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiSgcm:KY:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(jprint);
@@ -364,6 +378,18 @@ int main(int argc, char **argv)
 		jprint = NULL;
 		exit(0); /*ooo*/
 	    }
+	    break;
+	case 'Y':
+	    /*
+	     * Why is this option -Y? Why not Y? Because Y, that's why! Why
+	     * besides, all the other good options were already taken. :-)
+	     * Specifically the letter Y has a V in it and V would have been the
+	     * obvious choice but both v and V are taken. This is why you'll
+	     * have to believe us when we tell you that this is a good enough
+	     * reason why! :-)
+	     */
+	    jprint->search_value = true;
+	    jprint->type = jprint_parse_value_type_option(optarg);
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -503,7 +529,8 @@ int main(int argc, char **argv)
 	     */
 	    jprint->match_found = true;
 
-	    dbg(DBG_NONE, "searching for %s '%s'", jprint->use_regexps?"regexp":"pattern", pattern->pattern);
+	    dbg(DBG_NONE, "searching for %s %s '%s'", jprint->search_value?"value":"name",
+		    jprint->use_regexps?"regexp":"pattern", pattern->pattern);
 	}
     }
     /*
@@ -583,9 +610,9 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * processing is complete
      */
     if (jprint->use_regexps) {
-	dbg(DBG_NONE,"regex requested: %s", str);
+	dbg(DBG_NONE,"%s regex requested: %s", jprint->search_value?"value":"name", str);
     } else {
-	dbg(DBG_NONE,"pattern requested: %s", str);
+	dbg(DBG_NONE,"%s pattern requested: %s", jprint->search_value?"value":"name", str);
     }
 
     errno = 0; /* pre-clear errno for errp() */
@@ -603,8 +630,9 @@ add_jprint_pattern(struct jprint *jprint, char *str)
     }
 
     pattern->regexp = jprint->use_regexps;
+    pattern->value = jprint->search_value;
 
-    dbg(DBG_NONE, "adding pattern '%s' to patterns list", pattern->pattern);
+    dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->value?"value":"name", pattern->pattern);
 
     for (tmp = jprint->patterns; tmp && tmp->next; tmp = tmp->next)
 	; /* on its own line to silence useless and bogus warning -Wempty-body */
@@ -717,7 +745,8 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2);
-    fprintf_usage(exitcode, stderr, usage_msg3, json_parser_version, JPRINT_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3);
+    fprintf_usage(exitcode, stderr, usage_msg4, json_parser_version, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -12,16 +12,38 @@ perfect as there might be other cases where a `\t` is some other count. This has
 to be tested further.
 
 Update `jprint_test.sh` and add new files under
-`jparse/test_jparse/test_JSON/bad_loc`. The new functionality tests for the
-exact match of errors (in the `*.err` files) of the `*.json` files in this
-subdirectory. These JSON files have syntax errors where the purpose is to test
-location reporting. If there is not an exact match `make test` will fail. For
-now there is only one file but more will be added in time. The purpose of this
-new feature is to test the location reporting but we can add more files in time.
-An important thing to note is the new README.md file in `jparse/test_jparse`
-which explains what one **MUST** do after adding a new invalid JSON file under
+`jparse/test_jparse/test_JSON/bad_loc`. The new functionality, which is only run
+if the option `-L` is passed to the script, tests for the exact match of errors
+(in the `*.err` files) of the `*.json` files in this subdirectory. These JSON
+files have syntax errors where the purpose is to test location reporting. If
+there is not an exact match `make test` will fail. For now there is only one
+file but more will be added in time. The purpose of this new feature is to test
+the location reporting but we can add more files in time.  An important thing to
+note is the new README.md file in `jparse/test_jparse` which explains what one
+**MUST** do after adding a new invalid JSON file under
 `jparse/test_jparse/test_JSON/bad_loc`. This information is also in the man page
 `jparse(8)`.
+
+New `jprint` version "0.0.16 2023-06-13" with new option. Using `-Y type` one
+will be able to search by value instead of name. Currently it does not check for
+only one value but this will likely change in a future update. Code does not yet
+check that the type matches either. In other words if one specifies `-Y int` it
+does not verify that the `name_arg` is actually an int. It might not be
+necessary either since the JSON parser has the values and names as original
+strings. This is TBD later. But an important question has to be answered right
+now.
+
+```
+/*
+ * Why is this option -Y? Why not Y? Because Y, that's why! Why
+ * besides, all the other good options were already taken. :-)
+ * Specifically the letter Y has a V in it and V would have been the
+ * obvious choice but both v and V are taken. This is why you'll
+ * have to believe us when we tell you that this is a good enough
+ * reason why! :-)
+ */
+```	
+
 
 ## Release 1.0.9 2023-06-12
 

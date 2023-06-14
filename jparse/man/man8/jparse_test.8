@@ -30,8 +30,9 @@
 .IR json_tree \|]
 .RB [\| \-s
 .IR subdir \|]
-.RI [\| file
 .RB [\| \-k \|]
+.RB [\| \-L \|]
+.RI [\| file
 .IR ... \|]
 .SH DESCRIPTION
 .B jparse_test.sh
@@ -47,7 +48,9 @@ The normal files that must pass are in the subdirectory called
 .I good
 and the normal files that must fail are in the subdirectory called
 .IR bad .
-However there is another kind of file that must fail, located in the subdirectory called
+However, if
+.B \-L
+is specified, then there is another kind of file that must fail, located in the subdirectory called
 .IR bad_loc .
 These files have errors in syntax and the purpose is to make sure that location error reporting is valid.
 See the subsection
@@ -114,6 +117,9 @@ To not specify a subdirectory specify
 .BI \-k
 Keep temporary stderr files in the directory for investigation.
 This is only used for checking that location reporting in error messages is valid.
+.TP
+.BI \-L
+Run location reporting error tests.
 .SH EXIT STATUS
 .TP
 0
@@ -161,10 +167,10 @@ It will be removed prior to each time the script is run to keep the state of the
 .RE
 .I test_JSON
 .RS
-The default JSON tree with 
+The default JSON tree with
 .IR good ,
 .IR bad ,
-and 
+and
 .IR bad_loc
 subdirectories for files that must pass, fail and fail, respectively.
 .RE
@@ -205,7 +211,7 @@ Then you must generate the error files again like:
 .sp
 .RS
 .ft B
-for i in ./test_JSON/bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
+for i in test_JSON/./bad_loc/*.json; do ../jparse -- "$i" 2>"$i.err" ; done
 .ft R
 .RE
 .PP

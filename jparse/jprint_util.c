@@ -932,3 +932,53 @@ jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *pr
 	dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
     }
 }
+
+/*
+ * jprint_parse_value_option	- parse -t types list
+ *
+ * given:
+ *
+ *	optarg	    - option argument to -t option
+ *
+ * Returns: bitvector of types requested.
+ *
+ * NOTE: if optarg is NULL (which should never happen) or empty it returns the
+ * default, JPRINT_TYPE_SIMPLE (as if '-t simple').
+ */
+uintmax_t
+jprint_parse_value_type_option(char *optarg)
+{
+    uintmax_t type = JPRINT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
+    char *p = NULL;
+
+    if (optarg == NULL || !*optarg) {
+	/* NULL or empty optarg, assume simple */
+	return type;
+    }
+    p = optarg;
+
+    /* Determine if the arg is a valid type.  */
+    if (!strcmp(p, "int")) {
+	type = JPRINT_TYPE_INT;
+    } else if (!strcmp(p, "float")) {
+	type = JPRINT_TYPE_FLOAT;
+    } else if (!strcmp(p, "exp")) {
+	type = JPRINT_TYPE_EXP;
+    } else if (!strcmp(p, "num")) {
+	type = JPRINT_TYPE_NUM;
+    } else if (!strcmp(p, "bool")) {
+	type = JPRINT_TYPE_BOOL;
+    } else if (!strcmp(p, "str")) {
+	type = JPRINT_TYPE_STR;
+    } else if (!strcmp(p, "null")) {
+	type = JPRINT_TYPE_NULL;
+    } else {
+	/* unknown or unsupported type */
+	err(3, __func__, "unknown or unsupported type '%s'", p); /*ooo*/
+	not_reached();
+    }
+
+    return type;
+}
+
+

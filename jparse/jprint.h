@@ -65,7 +65,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.15 2023-06-12"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.16 2023-06-13"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_pattern - struct for a linked list of patterns requested, held in
@@ -75,6 +75,7 @@ struct jprint_pattern
 {
     char *pattern;		    /* the actual pattern or regexp string */
     bool regexp;		    /* whether -g was used */
+    bool value;			    /* whether -Y was used, implying to search values */
 
     struct jprint_pattern *next;    /* the next in the list */
 };
@@ -113,6 +114,7 @@ struct jprint
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
+    bool search_value;				/* search for value, not name (-Y) */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
