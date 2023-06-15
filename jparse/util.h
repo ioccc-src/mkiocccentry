@@ -199,7 +199,6 @@ extern void pr(char const *name, char const *fmt, ...)
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
-extern off_t round_to_multiple(off_t num, off_t multiple);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);
 extern bool is_string(char const * const ptr, size_t len);

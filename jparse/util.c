@@ -1753,49 +1753,6 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     return ret;
 }
 
-
-/*
- * round_to_multiple - round up to a multiple
- *
- * given:
- *	num		- the number to round up
- *	multiple	- the multiple to round up to
- *
- *  Returns num rounded up to the nearest multiple.
- *
- *  Slightly modified code from https://stackoverflow.com/a/3407254/9205647
- *  because sometimes we all get to be lazy. :-)
- *
- *  Returns num rounded up to the next multiple of 1024.
- *
- *  Examples:
- *
- *	0 rounds to 0
- *	1 rounds to 1024
- *	1023 rounds to 1024
- *	1024 rounds to 1024
- *	1025 rounds to 2048
- *	2047 rounds to 2048
- *	2048 rounds to 2048
- *	etc.
- */
-off_t
-round_to_multiple(off_t num, off_t multiple)
-{
-    off_t mod;
-
-    if (!multiple || num <= 0) {
-	return num;
-    }
-
-    mod = num % multiple;
-    if (!mod)
-        return num;
-
-    return num + multiple - mod;
-}
-
-
 /*
  * read_all - read all data from an open file
  *
