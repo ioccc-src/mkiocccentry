@@ -1,5 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.12 2023-06-15
+
+Change option letters of `jprint` a bit as described next.
+
+`-s` now means search substrings. Conflicts with `-g`. `-s` was `-M`.
+
+`-S` sets the path to the tool to run, which although in concept should be a
+semantics tool checker, it can actually be something else like `grep`. This option
+was `-s`.
+
+`-A` sets the args to the `-S path`. This option was `-S`. Empty args are not
+allowed and use of `-A` requires use of `-S`. The difference besides letters is
+that args now must not be empty though this might not be strictly necessary.
+
+Updated `jprint` version to "0.0.18 2023-06-15".
+
 ## Release 1.0.11 2023-06-14
 
 Minor fix in `jparse` error location reporting. When the erroneous token was at
