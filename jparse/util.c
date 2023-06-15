@@ -1243,7 +1243,7 @@ para(char const *line, ...)
 		err(126, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(128, __func__, "unexpected fputs error writing paragraph to a stdout");
+		errp(128, __func__, "unexpected fputs error writing paragraph to stdout");
 		not_reached();
 	    }
 	}
@@ -1664,7 +1664,7 @@ readline(char **linep, FILE * stream)
 
 
 /*
- * readline_dup - read a line from a stream and duplicate to a allocated buffer.
+ * readline_dup - read a line from a stream and duplicate to an allocated buffer.
  *
  * given:
  *      linep   - allocated line buffer (may be realloced) or ptr to NULL
