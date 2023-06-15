@@ -14,6 +14,15 @@ was `-s`.
 allowed and use of `-A` requires use of `-S`. The difference besides letters is
 that args now must not be empty though this might not be strictly necessary.
 
+Allow for both regular expressions and normal patterns via the `-G regexp`
+option. Does not conflict with `-s` because the regexp is added as a regexp but
+the `name_arg`s will allow substrings if `-s` specified - but not for the `-G`
+regexp. `-G` does not conflict with `-Y` as long as only `-G` is used only once
+and no additional `name_arg` is specified at the command line after `file.json`.
+
+Fix bug where the command line could be messed up and the file.json is thought
+to be a different arg specified.
+
 Updated `jprint` version to "0.0.18 2023-06-15".
 
 ## Release 1.0.11 2023-06-14
