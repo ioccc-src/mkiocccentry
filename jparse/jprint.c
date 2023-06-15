@@ -41,16 +41,16 @@ static bool quiet = false;				/* true ==> quiet mode */
  */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
-    "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-T] [-C] [-B]\n"
-    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-M] [-g] [-c] [-m depth] [-K] [-Y type:value]\n"
-    "\t\t[-s path] [-S args] file.json [name_arg ...]\n\n"
+    "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
+    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type:value]\n"
+    "\t\t[-S path] [-A args] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
     "\t-J level\tJSON verbosity level (def: %d)\n"
     "\t-e\t\tPrint JSON strings as encoded strings (def: decode JSON strings)\n"
     "\t-Q\t\tPrint JSON strings surrounded by double quotes (def: do not)\n"
-    "\t-t type\t\tPrint only if JSON value matches one of the comma-separated\n"
+    "\t-t type\t\tPrint only if JSON value matches one of the comma-Separated\n"
     "\t\t\ttypes (def: simple):\n\n"
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
@@ -102,7 +102,7 @@ static const char * const usage_msg1 =
     "\t-L tab\t\tAlias for '-L 1t'.\n";
 
 static const char * const usage_msg2 =
-    "\t-T\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
+    "\t-P\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
     "\t\t\tand separate : (colon) from the value by the same.\n\n"
@@ -123,12 +123,12 @@ static const char * const usage_msg2 =
     "\t\t\tNOTE: it is an error to use both -p and -j\n\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
     "\t-i\t\tIgnore case of name (def: case matters).\n"
-    "\t-M\t\tSubstrings are used to match (def: the full name must match).\n\n"
+    "\t-s\t\tSubstrings are used to match (def: the full name must match).\n\n"
     "\t-g\t\tgrep-like extended regular expressions are used to match (def: name args are not regexps).\n"
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tNOTE: Use of -g and -M is an error.\n\n"
+    "\t\t\tNOTE: Use of -g and -s is an error.\n\n"
     "\t-c\t\tOnly show count of matches found\n\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-).\n\n"
@@ -147,9 +147,9 @@ static const char * const usage_msg3 =
     "\t\t\t\tnull\tnull values\n"
     "\t\t\t\tsimple\talias for 'num,bool,str,null'\n\n"
     "\t\t\tNOTE: -Y Requires one and only one name_arg.\n\n"
-    "\t-s path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
-    "\t-S args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
-    "\t\t\tNOTE: use of -S requires use of -s\n";
+    "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
+    "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
+    "\t\t\tNOTE: use of -A requires use of -S\n";
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
  * have to be added the first additional one should be the number this is and this one
@@ -245,14 +245,14 @@ int main(int argc, char **argv)
     jprint->print_json_levels = false;			/* -L specified */
     jprint->num_level_spaces = 0;			/* number of spaces or tab for -L */
     jprint->print_level_tab = false;			/* -L tab option */
-    jprint->print_colons = false;			/* -T specified */
+    jprint->print_colons = false;			/* -P specified */
     jprint->print_final_comma = false;			/* -C specified */
     jprint->print_braces = false;			/* -B specified */
     jprint->indent_level = 0;				/* -I specified */
     jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
     jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     jprint->match_encoded = false;			/* -E used, match encoded name */
-    jprint->substrings_okay = false;			/* -M used, matching substrings okay */
+    jprint->substrings_okay = false;			/* -s used, matching substrings okay */
     jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
@@ -260,8 +260,8 @@ int main(int argc, char **argv)
 
     jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
 
-    jprint->tool_path = NULL;				/* -s path for check tool */
-    jprint->tool_args = NULL;				/* -S args for check tool */
+    jprint->tool_path = NULL;				/* -S path for check tool */
+    jprint->tool_args = NULL;				/* -A args for check tool */
     /* finally the linked list of patterns */
     jprint->patterns = NULL;
 
@@ -271,7 +271,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:TCBI:jEiMgcm:KY:s:S:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(jprint);
@@ -329,9 +329,9 @@ int main(int argc, char **argv)
 	    jprint->print_json_levels = true; /* print JSON levels */
 	    jprint_parse_st_level_option(optarg, &jprint->num_level_spaces, &jprint->print_level_tab);
 	    break;
-	case 'T':
+	case 'P':
 	    jprint->print_colons = true;
-	    dbg(DBG_NONE, "-T specified, will print colons");
+	    dbg(DBG_NONE, "-P specified, will print colons");
 	    break;
 	case 'C':
 	    jprint->print_final_comma = true;
@@ -364,9 +364,9 @@ int main(int argc, char **argv)
 	    jprint->match_encoded = true;
 	    dbg(DBG_NONE, "-E specified, will match encoded strings, not decoded strings");
 	    break;
-	case 'M':
+	case 's':
 	    jprint->substrings_okay = true;
-	    dbg(DBG_NONE, "-M specified, will match substrings");
+	    dbg(DBG_NONE, "-s specified, will match substrings");
 	    break;
 	case 'g':   /* allow grep-like ERE */
 	    jprint->use_regexps = true;
@@ -412,26 +412,28 @@ int main(int argc, char **argv)
 	    jprint->search_value = true;
 	    jprint->type = jprint_parse_value_type_option(optarg);
 	    break;
-	case 's':
+	case 'S':
 	    /*
-	     * -s path to tool
+	     * -S path to tool
 	     *
 	     * XXX it is currently unclear how this will be used as such so this
 	     * might need to be strdup()d but for now it's not.
 	     *
 	     */
 	    jprint->tool_path = optarg;
+	    dbg(DBG_NONE, "set tool path to %s", jprint->tool_path);
 	    break;
-	case 'S':
+	case 'A':
 	    /*
-	     * -S args to tool
+	     * -A args to tool
 	     *
-	     * Requires use of -s.
+	     * Requires use of -S.
 	     *
 	     * XXX it is currently unclear how this will be used as such so this
 	     * might need to be strdup()d but for now it's not.
 	     */
 	    jprint->tool_args = optarg;
+	    dbg(DBG_NONE, "set tool args to %s", jprint->tool_args);
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -450,19 +452,19 @@ int main(int argc, char **argv)
      * the wrong number of arguments (if they do).
      */
 
-    /* use of -g conflicts with -M is an error */
+    /* use of -g conflicts with -s is an error */
     if (jprint->use_regexps && jprint->substrings_okay) {
 	free_jprint(jprint);
 	jprint = NULL;
-	err(3, "jprint", "cannot use both -g and -M"); /*ooo*/
+	err(3, "jprint", "cannot use both -g and -s"); /*ooo*/
 	not_reached();
     }
 
-    /* check that both -j and -M were not used */
+    /* check that both -j and -s were not used */
     if (jprint->print_syntax && jprint->substrings_okay) {
 	free_jprint(jprint);
 	jprint = NULL;
-	err(3, "jprint", "cannot use both -j and -M"); /*ooo*/
+	err(3, "jprint", "cannot use both -j and -s"); /*ooo*/
 	not_reached();
     }
 
@@ -488,16 +490,21 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
-    /* if -S is specified, -s must also be specified */
+    /* if -A is specified, -S must also be specified */
     if (jprint->tool_args != NULL && jprint->tool_path == NULL) {
 	free_jprint(jprint);
 	jprint = NULL;
-	err(3, "jparse", "use of -S args requires use of -s path"); /*ooo*/
+	err(3, "jparse", "use of -A args requires use of -S path"); /*ooo*/
+	not_reached();
+    } else if (jprint->tool_args != NULL && *jprint->tool_args == '\0') {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jparse", "-A requires non empty args list"); /*ooo*/
 	not_reached();
     }
 
     /*
-     * TODO if -s path is specified, verify that it exists, is a regular file
+     * TODO if -S path is specified, verify that it exists, is a regular file
      * and is executable.
      */
 
