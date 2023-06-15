@@ -42,15 +42,15 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
-    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type:value]\n"
-    "\t\t[-S path] [-A args] file.json [name_arg ...]\n\n"
+    "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-s] [-g] [-G regexp] [-c] [-m depth] [-K]\n"
+    "\t\t[-Y type:value] [-S path] [-A args] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
     "\t-J level\tJSON verbosity level (def: %d)\n"
     "\t-e\t\tPrint JSON strings as encoded strings (def: decode JSON strings)\n"
     "\t-Q\t\tPrint JSON strings surrounded by double quotes (def: do not)\n"
-    "\t-t type\t\tPrint only if JSON value matches one of the comma-Separated\n"
+    "\t-t type\t\tPrint only if JSON value matches one of the comma-separated\n"
     "\t\t\ttypes (def: simple):\n\n"
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
@@ -128,7 +128,9 @@ static const char * const usage_msg2 =
     "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the name end, end name_arg with '$'.\n"
     "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tNOTE: Use of -g and -s is an error.\n\n"
+    "\t\t\tNOTE: use of -g and -s is an error.\n"
+    "\t-G regex\t\tSpecify a pattern that is a regex irrespective of the name_args.\n"
+    "\t\t\tNOTE: use of -G does not conflict with G or -s\n\n"
     "\t-c\t\tOnly show count of matches found\n\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-).\n\n"
@@ -254,6 +256,7 @@ int main(int argc, char **argv)
     jprint->match_encoded = false;			/* -E used, match encoded name */
     jprint->substrings_okay = false;			/* -s used, matching substrings okay */
     jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
+    jprint->explicit_regexp = false;			/* -G used, will not allow -Y */
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
@@ -264,6 +267,7 @@ int main(int argc, char **argv)
     jprint->tool_args = NULL;				/* -A args for check tool */
     /* finally the linked list of patterns */
     jprint->patterns = NULL;
+    jprint->number_of_patterns = 0;
 
     int i;
 
@@ -271,7 +275,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(jprint);
@@ -370,7 +374,16 @@ int main(int argc, char **argv)
 	    break;
 	case 'g':   /* allow grep-like ERE */
 	    jprint->use_regexps = true;
-	    dbg(DBG_NONE, "-g specified, patterns will be regexps");
+	    dbg(DBG_NONE, "-g specified, name_args will be regexps");
+	    break;
+	case 'G': /* this pattern is a regexp but the name_args will be a normal pattern unless -g specified */
+	    jprint->explicit_regexp = true;
+	    if (add_jprint_pattern(jprint, true, false, optarg) == NULL) {
+		free_jprint(jprint);
+		jprint = NULL;
+		err(16, __func__, "failed to add regexp '%s' to patterns list", optarg);
+		not_reached();
+	    }
 	    break;
 	case 'c':
 	    jprint->count_only = true;
@@ -452,7 +465,10 @@ int main(int argc, char **argv)
      * the wrong number of arguments (if they do).
      */
 
-    /* use of -g conflicts with -s is an error */
+    /*
+     * use of -g conflicts with -s and is an error.
+     * -G and -s do not conflict.
+     */
     if (jprint->use_regexps && jprint->substrings_okay) {
 	free_jprint(jprint);
 	jprint = NULL;
@@ -511,12 +527,11 @@ int main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    /* must have at least REQUIRED_ARGS args */
-    if (argc < REQUIRED_ARGS) {
+    /* must have at least one arg */
+    if (argv[0] == NULL) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
-
 
     /* if argv[0] != "-" we will attempt to read from a regular file */
     if (strcmp(argv[0], "-") != 0) {
@@ -575,21 +590,33 @@ int main(int argc, char **argv)
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
-    if (jprint->search_value && argc != 2) {
+    if (jprint->search_value && argc != 2 && jprint->number_of_patterns != 1) {
 	free_jprint(jprint);
 	jprint = NULL;
-	err(3, "jprint", "-Y requires exactly one name_arg");
+	err(17, "jprint", "-Y requires exactly one name_arg");
 	not_reached();
-    } else if (argv[1] == NULL) {
+    } else if (!jprint->search_value && argv[1] == NULL) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
-    } else {
-	for (i = 1; argv[i] != NULL; ++i) {
-	    jprint->pattern_specified = true;
+    }
 
-	    if (add_jprint_pattern(jprint, argv[i]) == NULL) {
-		err(16, __func__, "failed to add pattern '%s' to patterns list", argv[i]);
-		not_reached();
-	    }
+    if (jprint->search_value && argv[1] != NULL) {
+	/*
+	 * special handling to make sure that if -Y is specified then only -G
+	 * foo or one arg is specified after the file
+	 */
+	free_jprint(jprint);
+	jprint = NULL;
+	err(17, "jprint", "-Y requires exactly one name_arg");
+	not_reached();
+    }
+
+    for (i = 1; argv[i] != NULL; ++i) {
+	jprint->pattern_specified = true;
+
+	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
+	    err(18, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
+		    jprint->substrings_okay?"OK":"ignored", argv[i]);
+	    not_reached();
 	}
     }
 
@@ -604,8 +631,9 @@ int main(int argc, char **argv)
 	     */
 	    jprint->match_found = true;
 
-	    dbg(DBG_NONE, "searching for %s %s '%s'", jprint->search_value?"value":"name",
-		    jprint->use_regexps?"regexp":"pattern", pattern->pattern);
+	    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
+		    pattern->use_regexp?"regexp":"pattern", pattern->pattern,
+		    pattern->use_substrings?"OK":"ignored");
 	}
     }
     /*
@@ -643,8 +671,10 @@ int main(int argc, char **argv)
  *
  * given:
  *
- *	jprint	    - pointer to the jprint struct
- *	str	    - the pattern to be added to the list
+ *	jprint		- pointer to the jprint struct
+ *	use_regexp	- whether to use regexp or not
+ *	use_substrings	- if -s was specified, make this a substring match
+ *	str		- the pattern to be added to the list
  *
  * NOTE: this function will not return if jprint is NULL. If str is NULL
  * this function will not return but if str is empty it will add an empty
@@ -657,7 +687,7 @@ int main(int argc, char **argv)
  * Duplicate patterns will not be added (case sensitive).
  */
 struct jprint_pattern *
-add_jprint_pattern(struct jprint *jprint, char *str)
+add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str)
 {
     struct jprint_pattern *pattern = NULL;
     struct jprint_pattern *tmp = NULL;
@@ -666,17 +696,20 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * firewall
      */
     if (jprint == NULL) {
-	err(17, __func__, "passed NULL jprint struct");
+	err(19, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(18, __func__, "passed NULL str");
+	err(20, __func__, "passed NULL str");
 	not_reached();
     }
 
-    /* first make sure the pattern is not already added to the list */
+    /*
+     * first make sure the pattern is not already added to the list as the same
+     * type
+     */
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern && !strcmp(pattern->pattern, str)) {
+	if (pattern->pattern && !strcmp(pattern->pattern, str) && pattern->use_regexp == use_regexp) {
 	    return pattern;
 	}
     }
@@ -684,7 +717,7 @@ add_jprint_pattern(struct jprint *jprint, char *str)
      * XXX either change the debug level or remove this message once
      * processing is complete
      */
-    if (jprint->use_regexps) {
+    if (use_regexp) {
 	dbg(DBG_NONE,"%s regex requested: %s", jprint->search_value?"value":"name", str);
     } else {
 	dbg(DBG_NONE,"%s pattern requested: %s", jprint->search_value?"value":"name", str);
@@ -693,21 +726,26 @@ add_jprint_pattern(struct jprint *jprint, char *str)
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(19, __func__, "unable to allocate struct jprint_pattern *");
+	errp(21, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(20, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(22, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
-    pattern->regexp = jprint->use_regexps;
-    pattern->value = jprint->search_value;
+    pattern->use_regexp = use_regexp;
+    pattern->use_value = jprint->search_value;
+    pattern->use_substrings = use_substrings;
+    /* increment how many patterns have been specified */
+    ++jprint->number_of_patterns;
+    /* let jprint know that a pattern was indeed specified */
+    jprint->pattern_specified = true;
 
-    dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->value?"value":"name", pattern->pattern);
+    dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
 
     for (tmp = jprint->patterns; tmp && tmp->next; tmp = tmp->next)
 	; /* on its own line to silence useless and bogus warning -Wempty-body */
@@ -738,7 +776,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(21, __func__, "passed NULL jprint struct");
+	err(23, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 

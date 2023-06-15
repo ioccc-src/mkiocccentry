@@ -74,8 +74,9 @@
 struct jprint_pattern
 {
     char *pattern;		    /* the actual pattern or regexp string */
-    bool regexp;		    /* whether -g was used */
-    bool value;			    /* whether -Y was used, implying to search values */
+    bool use_regexp;		    /* whether -g was used */
+    bool use_value;		    /* whether -Y was used, implying to search values */
+    bool use_substrings;	    /* if -s was used */
 
     struct jprint_pattern *next;    /* the next in the list */
 };
@@ -111,20 +112,22 @@ struct jprint
     bool match_encoded;				/* -E used, match encoded name */
     bool substrings_okay;			/* -s used, matching substrings okay */
     bool use_regexps;				/* -g used, allow grep-like regexps */
+    bool explicit_regexp;			/* -G used, will not allow -Y */
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-    bool search_value;				/* search for value, not name (-Y) */
+    bool search_value;				/* -Y used, search for value, not name */
     char *tool_path;				/* -S path specified */
     char *tool_args;				/* -A args for -S path specified */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
+    uintmax_t number_of_patterns;		/* patterns specified */
 };
 
 /* functions */
 void free_jprint(struct jprint *jprint);
-struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, char *str);
+struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */
