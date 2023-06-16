@@ -1047,7 +1047,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (format == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(120, name, "called with NULL format");
+	    err(118, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning NULL");
@@ -1068,7 +1068,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    errp(121, name, "calloc failed in vcmdprintf()");
+	    errp(119, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
@@ -1092,7 +1092,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(122, name, "fflush(stdout): error code: %d", ret);
+	    errp(120, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
@@ -1115,7 +1115,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(123, name, "fflush(stdin): error code: %d", ret);
+	    errp(121, name, "fflush(stdin): error code: %d", ret);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stdin) failed: %s", name, strerror(errno));
@@ -1138,7 +1138,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	}
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(124, name, "fflush(stderr): error code: %d", ret);
+	    errp(122, name, "fflush(stderr): error code: %d", ret);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stderr) failed: %s", name, strerror(errno));
@@ -1156,7 +1156,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (stream == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(125, name, "error calling popen(%s, \"%s\")", cmd, write_mode?"w":"r");
+	    errp(123, name, "error calling popen(%s, \"%s\")", cmd, write_mode?"w":"r");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"%s\"): %s", name, cmd, write_mode?"w":"r", strerror(errno));
@@ -1232,7 +1232,7 @@ para(char const *line, ...)
      * firewall
      */
     if (stdout == NULL) {
-	err(126, __func__, "stdout is NULL");
+	err(124, __func__, "stdout is NULL");
 	not_reached();
     }
     clearerr(stdout);		/* pre-clear ferror() status */
@@ -1242,7 +1242,7 @@ para(char const *line, ...)
      */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(128, __func__, "fileno on stdout returned: %d < 0", fd);
+	errp(125, __func__, "fileno on stdout returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stdout);		/* paranoia */
@@ -1261,13 +1261,13 @@ para(char const *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(129, __func__, "error writing paragraph to a stdout");
+		errp(126, __func__, "error writing paragraph to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(130, __func__, "EOF while writing paragraph to a stdout");
+		err(128, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(131, __func__, "unexpected fputs error writing paragraph to stdout");
+		errp(129, __func__, "unexpected fputs error writing paragraph to stdout");
 		not_reached();
 	    }
 	}
@@ -1280,13 +1280,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(132, __func__, "error writing newline to stdout");
+		errp(130, __func__, "error writing newline to stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(133, __func__, "EOF while writing newline to stdout");
+		err(131, __func__, "EOF while writing newline to stdout");
 		not_reached();
 	    } else {
-		errp(134, __func__, "unexpected fputc error writing newline to stdout");
+		errp(132, __func__, "unexpected fputc error writing newline to stdout");
 		not_reached();
 	    }
 	}
@@ -1311,13 +1311,13 @@ para(char const *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(135, __func__, "error flushing stdout");
+	    errp(133, __func__, "error flushing stdout");
 	    not_reached();
 	} else if (feof(stdout)) {
-	    err(136, __func__, "EOF while flushing stdout");
+	    err(134, __func__, "EOF while flushing stdout");
 	    not_reached();
 	} else {
-	    errp(137, __func__, "unexpected fflush error while flushing stdout");
+	    errp(135, __func__, "unexpected fflush error while flushing stdout");
 	    not_reached();
 	}
     }
@@ -1360,7 +1360,7 @@ fpara(FILE * stream, char const *line, ...)
      * firewall
      */
     if (stream == NULL) {
-	err(138, __func__, "stream is NULL");
+	err(136, __func__, "stream is NULL");
 	not_reached();
     }
 
@@ -1371,7 +1371,7 @@ fpara(FILE * stream, char const *line, ...)
     errno = 0;			/* pre-clear errno for errp() */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(139, __func__, "fileno on stream returned: %d < 0", fd);
+	errp(137, __func__, "fileno on stream returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stream);		/* paranoia */
@@ -1390,13 +1390,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(140, __func__, "error writing paragraph to stream");
+		errp(138, __func__, "error writing paragraph to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(141, __func__, "EOF while writing paragraph to stream");
+		err(139, __func__, "EOF while writing paragraph to stream");
 		not_reached();
 	    } else {
-		errp(142, __func__, "unexpected fputs error writing paragraph to stream");
+		errp(140, __func__, "unexpected fputs error writing paragraph to stream");
 		not_reached();
 	    }
 	}
@@ -1409,13 +1409,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(143, __func__, "error writing newline to stream");
+		errp(141, __func__, "error writing newline to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(144, __func__, "EOF while writing newline to stream");
+		err(142, __func__, "EOF while writing newline to stream");
 		not_reached();
 	    } else {
-		errp(145, __func__, "unexpected fputc error writing newline to stream");
+		errp(143, __func__, "unexpected fputc error writing newline to stream");
 		not_reached();
 	    }
 	}
@@ -1440,13 +1440,13 @@ fpara(FILE * stream, char const *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(146, __func__, "error flushing stream");
+	    errp(144, __func__, "error flushing stream");
 	    not_reached();
 	} else if (feof(stream)) {
-	    err(147, __func__, "EOF while flushing stream");
+	    err(145, __func__, "EOF while flushing stream");
 	    not_reached();
 	} else {
-	    errp(148, __func__, "unexpected fflush error while flushing stream");
+	    errp(146, __func__, "unexpected fflush error while flushing stream");
 	    not_reached();
 	}
     }
@@ -1639,7 +1639,7 @@ readline(char **linep, FILE * stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(149, __func__, "called with NULL arg(s)");
+	err(147, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1654,10 +1654,10 @@ readline(char **linep, FILE * stream)
 	    dbg(DBG_VVHIGH, "EOF detected in getline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
-	    errp(150, __func__, "getline() error");
+	    errp(148, __func__, "getline() error");
 	    not_reached();
 	} else {
-	    errp(151, __func__, "unexpected getline() error");
+	    errp(149, __func__, "unexpected getline() error");
 	    not_reached();
 	}
     }
@@ -1665,7 +1665,7 @@ readline(char **linep, FILE * stream)
      * paranoia
      */
     if (*linep == NULL) {
-	err(152, __func__, "*linep is NULL after getline()");
+	err(150, __func__, "*linep is NULL after getline()");
 	not_reached();
     }
 
@@ -1721,7 +1721,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(153, __func__, "called with NULL arg(s)");
+	err(151, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1743,7 +1743,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc((size_t)len+1+1, sizeof(char));
     if (ret == NULL) {
-	errp(154, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
+	errp(152, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
     memcpy(ret, *linep, (size_t)len);
@@ -1846,7 +1846,7 @@ read_all(FILE *stream, size_t *psize)
      * firewall
      */
     if (stream == NULL) {
-	err(155, __func__, "called with NULL stream");
+	err(153, __func__, "called with NULL stream");
 	not_reached();
     }
 
@@ -2547,7 +2547,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(156, __func__, "called with NULL arg(s)");
+	err(154, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3628,7 +3628,7 @@ calloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(157, __func__, "filename is NULL");
+	err(155, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3645,7 +3645,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(158, __func__, "strdup of filename failed: %s", filename);
+	    errp(156, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3663,7 +3663,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(159, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(157, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3673,7 +3673,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(160, __func__, "snprintf returned: %zu < 0", len);
+	    errp(158, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3682,7 +3682,7 @@ calloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(161, __func__, "function attempted to return NULL");
+	errp(159, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3709,7 +3709,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(162, __func__, "given NULL str");
+	err(160, __func__, "given NULL str");
 	not_reached();
     }
 
