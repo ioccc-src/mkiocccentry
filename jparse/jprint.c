@@ -651,6 +651,7 @@ int main(int argc, char **argv)
     /* free tree */
     json_tree_free(json_tree, jprint->max_depth);
 
+    /* All Done!!! -- Jessica Noll, Age 2 */
     if (jprint->match_found || !jprint->pattern_specified || jprint->print_entire_file) {
 	free_jprint(jprint);	/* free jprint struct */
 	jprint = NULL;	/* set jprint to NULL even though we're just about to exit */
