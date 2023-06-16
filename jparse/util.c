@@ -1007,7 +1007,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
  *
  * given:
  *	name		- name of the calling function
- *	mode		- string of the mode arg to popen()
+ *	write_mode	- true if we should open for writing
  *	abort_on_error	- false ==> return FILE * stream for open pipe to shell, or
  *			    return NULL on failure
  *			  true ==> return FILE * stream for open pipe to shell, or
@@ -1024,7 +1024,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
  *	FILE * stream for open pipe to shell, or NULL ==> error
  */
 FILE *
-pipe_open(char const *name, char const *mode, bool abort_on_error, char const *format, ...)
+pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
     char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
@@ -1041,25 +1041,6 @@ pipe_open(char const *name, char const *mode, bool abort_on_error, char const *f
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL name, returning NULL");
-	    return NULL;
-	}
-    }
-    if (mode == NULL) {
-	/* exit or error return depending on abort */
-	if (abort_on_error) {
-	    err(118, __func__, "function mode is NULL");
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called with NULL mode, returning NULL");
-	    return NULL;
-	}
-    } else if (strcmp(mode, "r") && strcmp(mode, "w")) {
-	/* exit or error return depending on abort */
-	if (abort_on_error) {
-	    err(119, __func__, "invalid mode, is neither: \"r\" nor \"w\": <%s>", mode);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "invalid mode, is neither: \"r\" nor \"w\": <%s>", mode);
 	    return NULL;
 	}
     }
@@ -1169,16 +1150,16 @@ pipe_open(char const *name, char const *mode, bool abort_on_error, char const *f
     /*
      * establish the open pipe to the shell command
      */
-    dbg(DBG_HIGH, "about to perform: popen(%s, \"%s\")", cmd, mode);
+    dbg(DBG_HIGH, "about to perform: popen(%s, \"%s\")", cmd, write_mode?"w":"r");
     errno = 0;			/* pre-clear errno for errp() */
-    stream = popen(cmd, mode);
+    stream = popen(cmd, write_mode?"w":"r");
     if (stream == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(125, name, "error calling popen(%s, \"%s\")", cmd, mode);
+	    errp(125, name, "error calling popen(%s, \"%s\")", cmd, write_mode?"w":"r");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"%s\"): %s", name, cmd, mode, strerror(errno));
+	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"%s\"): %s", name, cmd, write_mode?"w":"r", strerror(errno));
 	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    /* free allocated command storage */
 	    if (cmd != NULL) {

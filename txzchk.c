@@ -1484,7 +1484,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * form pipe to the fnamchk command
 	 */
-	fnamchk_stream = pipe_open(__func__, "r", true, "% -E % -- %", fnamchk, ext, tarball_path);
+	fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
 	if (fnamchk_stream == NULL) {
 	    err(36, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
 	    not_reached();
@@ -1571,7 +1571,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 
 	/* now open a pipe to tar command (tar -tJvf) to read from */
-	input_stream = pipe_open(__func__, "r", true, "% -tJvf %", tar, tarball_path);
+	input_stream = pipe_open(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (input_stream == NULL) {
 	    err(42, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, tarball_path);

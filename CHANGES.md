@@ -13,7 +13,8 @@ too as does the code to traverse the tree - or 'climb down the tree' :-) ). In
 other words one of the features of the program is complete! Note that use of
 `-o` when a pattern is specified is a command line error.
 
-
+Changed `pipe_open()` to allow for write mode. Takes a new boolean `write_mode`
+which says to open for write mode rather than read mode.
 
 ## Release 1.0.12 2023-06-15
 
