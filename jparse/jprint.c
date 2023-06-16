@@ -442,7 +442,7 @@ int main(int argc, char **argv)
 	     *
 	     */
 	    tool_path = optarg;
-	    dbg(DBG_NONE, "set tool path to: <%s>", tool_path);
+	    dbg(DBG_NONE, "set tool path to: '%s'", tool_path);
 	    break;
 	case 'A':
 	    /*
@@ -454,7 +454,7 @@ int main(int argc, char **argv)
 	     * might need to be strdup()d but for now it's not.
 	     */
 	    tool_args = optarg;
-	    dbg(DBG_NONE, "set tool args to: <%s>", tool_args);
+	    dbg(DBG_NONE, "set tool args to: '%s'", tool_args);
 	    break;
 	case 'o': /* -o, print entire file if valid JSON */
 	    jprint->print_entire_file = true;
@@ -600,7 +600,7 @@ int main(int argc, char **argv)
     if (tool_path != NULL) {
 	/* try running via shell_cmd() first */
 	if (tool_args != NULL) {
-	    dbg(DBG_MED, "about to execute: %s %s -- %s 2>/dev/null 2>&1", tool_path, tool_args, argv[0]);
+	    dbg(DBG_MED, "about to execute: %s %s -- %s >/dev/null 2>&1", tool_path, tool_args, argv[0]);
 	    exit_code = shell_cmd(__func__, true, "% % -- %", tool_path, tool_args, argv[0]);
 	} else {
 	    dbg(DBG_MED, "about to execute: %s -- %s >/dev/null 2>&1", tool_path, argv[0]);
@@ -644,7 +644,7 @@ int main(int argc, char **argv)
      */
     file_contents = read_all(json_file, &len);
     if (file_contents == NULL) {
-	err(4, "jprint", "could not read in file: <%s>", argv[0]); /*ooo*/
+	err(4, "jprint", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
     /* clear EOF status and rewind for parse_json_stream() */
@@ -782,9 +782,9 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * processing is complete
      */
     if (use_regexp) {
-	dbg(DBG_NONE,"%s regex requested: %s", jprint->search_value?"value":"name", str);
+	dbg(DBG_NONE,"%s regex requested: '%s'", jprint->search_value?"value":"name", str);
     } else {
-	dbg(DBG_NONE,"%s pattern requested: %s", jprint->search_value?"value":"name", str);
+	dbg(DBG_NONE,"%s pattern requested: '%s'", jprint->search_value?"value":"name", str);
     }
 
     errno = 0; /* pre-clear errno for errp() */
@@ -914,17 +914,17 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 	if (!exists(tool_path)) {
 	    free_jprint(jprint);
 	    jprint = NULL;
-	    err(3, __func__, "jprint tool path does not exist: <%s>", tool_path);/*ooo*/
+	    err(3, __func__, "jprint tool path does not exist: %s", tool_path);/*ooo*/
 	    not_reached();
 	} else if (!is_file(tool_path)) {
 	    free_jprint(jprint);
 	    jprint = NULL;
-	    err(3, __func__, "jprint tool not a regular file: <%s>", tool_path); /*ooo*/
+	    err(3, __func__, "jprint tool not a regular file: %s", tool_path); /*ooo*/
 	    not_reached();
 	} else if (!is_exec(tool_path)) {
 	    free_jprint(jprint);
 	    jprint = NULL;
-	    err(3, __func__, "jprint tool not an executable file: <%s>", tool_path); /*ooo*/
+	    err(3, __func__, "jprint tool not an executable file: %s", tool_path); /*ooo*/
 	    not_reached();
 	}
     }
