@@ -1097,52 +1097,49 @@ pipe_open(char const *name, char const *mode, bool abort_on_error, char const *f
 	}
     }
 
-    if (!strcmp(mode, "r")) {
-	/*
-	 * pre-flush stdout to avoid popen() buffered stdio issues
-	 */
-	clearerr(stdout);		/* pre-clear ferror() status */
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fflush(stdout);
-	if (ret < 0) {
-	    /* free allocated command storage */
-	    if (cmd != NULL) {
-		free(cmd);
-		cmd = NULL;
-	    }
-	    /* exit or error return depending on abort_on_error */
-	    if (abort_on_error) {
-		errp(122, name, "fflush(stdout): error code: %d", ret);
-		not_reached();
-	    } else {
-		dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
-		va_end(ap);		/* stdarg variable argument list cleanup */
-		return NULL;
-	    }
+    /*
+     * pre-flush stdout to avoid popen() buffered stdio issues
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	/* free allocated command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
+	    errp(122, name, "fflush(stdout): error code: %d", ret);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
+	    va_end(ap);		/* stdarg variable argument list cleanup */
+	    return NULL;
 	}
     }
-    if (!strcmp(mode, "w")) {
-	/*
-	 * pre-flush stdin to avoid popen() buffered stdio issues
-	 */
-	clearerr(stdin);		/* pre-clear ferror() status */
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fflush(stdin);
-	if (ret < 0) {
-	    /* free allocated command storage */
-	    if (cmd != NULL) {
-		free(cmd);
-		cmd = NULL;
-	    }
-	    /* exit or error return depending on abort_on_error */
-	    if (abort_on_error) {
-		errp(123, name, "fflush(stdin): error code: %d", ret);
-		not_reached();
-	    } else {
-		dbg(DBG_MED, "called from %s: fflush(stdin) failed: %s", name, strerror(errno));
-		va_end(ap);		/* stdarg variable argument list cleanup */
-		return NULL;
-	    }
+
+    /*
+     * pre-flush stdin to avoid popen() buffered stdio issues
+     */
+    clearerr(stdin);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdin);
+    if (ret < 0) {
+	/* free allocated command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
+	    errp(123, name, "fflush(stdin): error code: %d", ret);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: fflush(stdin) failed: %s", name, strerror(errno));
+	    va_end(ap);		/* stdarg variable argument list cleanup */
+	    return NULL;
 	}
     }
 
