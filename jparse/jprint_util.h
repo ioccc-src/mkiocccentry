@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <regex.h> /* for -g, regular expression matching */
+#include <regex.h> /* for -g and -G, regular expression matching */
 #include <string.h>
 
 /*

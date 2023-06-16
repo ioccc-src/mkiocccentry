@@ -124,7 +124,7 @@ struct jprint
 };
 
 /* functions */
-void free_jprint(struct jprint *jprint);
+void free_jprint(struct jprint **jprint);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
