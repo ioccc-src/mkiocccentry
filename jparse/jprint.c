@@ -690,14 +690,11 @@ int main(int argc, char **argv)
 			pattern->use_substrings?"OK":"ignored");
 	    }
 	}
+    } else {
 	/*
 	 * XXX remove this informative message or change debug level once processing
-	 * is implemented.
-	 *
-	 * NOTE: if pattern_specified is false then print_entire_file will be true
-	 * so this check is only here for documentation purposes.
+	 * above is implemented.
 	 */
-    } else {
 	dbg(DBG_NONE,"no pattern requested or -o, will print entire file");
 	if (file_contents != NULL) {
 	    fpr(stdout, "jprint", "%s", file_contents);
