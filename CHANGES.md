@@ -1,5 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.13 2023-06-16
+
+New `jprint` version "0.0.19 2023-06-16" - will print entire file if no pattern
+specified OR the new option `-o` is specified but only if valid JSON (for both).
+A note that if `read_all()` fails to read in the entire file then there could be
+a problem but we only print the file if the data read is not NULL. This change
+is important as it means now all that needs to be done is add the handling of
+the JSON checker/semantics tool and then the compiling of regexps (if requested)
+and then printing for any matches found (the search routines have to be written
+too as does the code to traverse the tree - or 'climb down the tree' :-) ). In
+other words one of the features of the program is complete!
+
+
+
 ## Release 1.0.12 2023-06-15
 
 Change option letters of `jprint` a bit as described next.

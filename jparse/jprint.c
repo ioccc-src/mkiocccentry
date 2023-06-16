@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-s] [-g] [-G regexp] [-c] [-m depth] [-K]\n"
-    "\t\t[-Y type:value] [-S path] [-A args] [-W] file.json [name_arg ...]\n\n"
+    "\t\t[-Y type:value] [-S path] [-A args] [-o] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -153,7 +153,7 @@ static const char * const usage_msg3 =
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\t\t\tNOTE: use of -A requires use of -S\n\n"
-    "\t-W\t\twrite entire file to stdout if valid JSON\n";
+    "\t-o\t\twrite entire file to stdout if valid JSON\n";
 
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
@@ -280,7 +280,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:W")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:o")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(jprint);
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 	    jprint->tool_args = optarg;
 	    dbg(DBG_NONE, "set tool args to %s", jprint->tool_args);
 	    break;
-	case 'W': /* -W, print entire file if valid JSON */
+	case 'o': /* -o, print entire file if valid JSON */
 	    jprint->print_entire_file = true;
 	    break;
 	case ':':   /* option requires an argument */
@@ -661,7 +661,7 @@ int main(int argc, char **argv)
 	 * so this check is only here for documentation purposes.
 	 */
     } else {
-	dbg(DBG_NONE,"no pattern requested or -W, will print entire file");
+	dbg(DBG_NONE,"no pattern requested or -o, will print entire file");
 	if (file_contents != NULL) {
 	    fpr(stdout, "jprint", "%s", file_contents);
 	}
