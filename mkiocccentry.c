@@ -4538,7 +4538,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
      * open pipe to the ls command
      */
     dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lak .", entry_dir, ls);
-    ls_stream = pipe_open(__func__, true, "cd -- % && % -lak .", entry_dir, ls);
+    ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lak .", entry_dir, ls);
     if (ls_stream == NULL) {
 	err(137, __func__, "popen filed for: cd -- %s && %s -lak .", entry_dir, ls);
 	not_reached();

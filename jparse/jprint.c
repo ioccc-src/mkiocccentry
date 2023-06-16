@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-Q] [-t type] [-q] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]} [-j] [-E] [-i] [-s] [-g] [-G regexp] [-c] [-m depth] [-K]\n"
-    "\t\t[-Y type:value] [-S path] [-A args] file.json [name_arg ...]\n\n"
+    "\t\t[-Y type:value] [-S path] [-A args] [-o] file.json [name_arg ...]\n\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
@@ -152,7 +152,10 @@ static const char * const usage_msg3 =
     "\t\t\tNOTE: -Y Requires one and only one name_arg\n\n"
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
-    "\t\t\tNOTE: use of -A requires use of -S\n";
+    "\t\t\tNOTE: use of -A requires use of -S\n\n"
+    "\t-o\t\twrite entire file to stdout if valid JSON\n"
+    "\t\t\tNOTE: use of -o with patterns specified is an error.\n";
+
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
  * have to be added the first additional one should be the number this is and this one
@@ -189,6 +192,8 @@ int main(int argc, char **argv)
     struct jprint *jprint = NULL;	/* struct of all our options and other things */
     struct jprint_pattern *pattern = NULL; /* iterate through patterns list to search for matches */
     FILE *json_file = NULL;		/* file pointer for json file */
+    char *file_contents = NULL;		/* file contents in full */
+    size_t len = 0;			/* length of file contents */
     struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
 
@@ -276,7 +281,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:o")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(jprint);
@@ -449,6 +454,9 @@ int main(int argc, char **argv)
 	    jprint->tool_args = optarg;
 	    dbg(DBG_NONE, "set tool args to %s", jprint->tool_args);
 	    break;
+	case 'o': /* -o, print entire file if valid JSON */
+	    jprint->print_entire_file = true;
+	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -567,26 +575,6 @@ int main(int argc, char **argv)
 	json_file = stdin;
     }
 
-    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
-    if (!is_valid) {
-	if (json_file != stdin) {
-	    fclose(json_file);  /* close file prior to exiting */
-	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
-	}
-
-	/* free our jprint struct */
-	free_jprint(jprint);
-	jprint = NULL;
-	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
-	not_reached();
-    } else if (json_file != stdin) {
-	/* close the JSON file if not stdin */
-	fclose(json_file);
-	json_file = NULL;
-    }
-
-    dbg(DBG_MED, "valid JSON");
-
     /* the debug level will be increased at a later time */
     dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
@@ -620,32 +608,76 @@ int main(int argc, char **argv)
 	    not_reached();
 	}
     }
+    /*
+     * read in entire file BEFORE trying to parse it as json as the parser
+     * function will close the file
+     */
+    file_contents = read_all(json_file, &len);
+    if (file_contents == NULL) {
+	err(4, "jprint", "could not read in file: <%s>", argv[0]); /*ooo*/
+	not_reached();
+    }
+    /* clear EOF status and rewind for parse_json_stream() */
+    clearerr(json_file);
+    rewind(json_file);
 
-    /* TODO process name_args */
-    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern != NULL && *pattern->pattern) {
-	    /*
-	     * XXX if matches found we set the boolean match_found to true to
-	     * indicate exit code of 0 but currently no matches are checked. In
-	     * other words in the future this setting of match_found will not always
-	     * happen.
-	     */
-	    jprint->match_found = true;
+    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
+    if (!is_valid) {
+	if (json_file != stdin) {
+	    fclose(json_file);  /* close file prior to exiting */
+	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+	}
 
-	    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
-		    pattern->use_regexp?"regexp":"pattern", pattern->pattern,
-		    pattern->use_substrings?"OK":"ignored");
+	/* free our jprint struct */
+	free_jprint(jprint);
+	jprint = NULL;
+	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
+	not_reached();
+    }
+
+    dbg(DBG_MED, "valid JSON");
+
+    if (jprint->patterns != NULL && jprint->print_entire_file) {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jprint", "printing the entire file is incompatible with any patterns specified"); /*ooo*/
+	not_reached();
+    }
+    if (jprint->patterns != NULL && !jprint->print_entire_file) {
+	/* TODO process name_args */
+	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	    if (pattern->pattern != NULL && *pattern->pattern) {
+		/*
+		 * XXX if matches found we set the boolean match_found to true to
+		 * indicate exit code of 0 but currently no matches are checked. In
+		 * other words in the future this setting of match_found will not always
+		 * happen.
+		 */
+		jprint->match_found = true;
+
+		dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
+			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
+			pattern->use_substrings?"OK":"ignored");
+	    }
+	}
+	/*
+	 * XXX remove this informative message or change debug level once processing
+	 * is implemented.
+	 *
+	 * NOTE: if pattern_specified is false then print_entire_file will be true
+	 * so this check is only here for documentation purposes.
+	 */
+    } else {
+	dbg(DBG_NONE,"no pattern requested or -o, will print entire file");
+	if (file_contents != NULL) {
+	    fpr(stdout, "jprint", "%s", file_contents);
 	}
     }
-    /*
-     * XXX remove this informative message or change debug level once processing
-     * is implemented.
-     *
-     * NOTE: if pattern_specified is false then print_entire_file will be true
-     * so this check is only here for documentation purposes.
-     */
-    if (!jprint->pattern_specified || jprint->print_entire_file) {
-	dbg(DBG_NONE,"no pattern requested, will print entire file");
+
+    /* close the JSON file if not stdin */
+    if (json_file != stdin) {
+	fclose(json_file);
+	json_file = NULL;
     }
 
     /* free tree */
