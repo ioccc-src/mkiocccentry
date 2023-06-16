@@ -1453,13 +1453,11 @@ check_tarball(char const *tar, char const *fnamchk)
      * fnamchk on it directly with the appropriate options (for example -E txt
      * would tell it to expect the extension txt instead of txz).
      */
-    if (dbg_allowed(DBG_HIGH)) {
+    if (dbg_allowed(DBG_MED)) {
 	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, tarball_path);
-	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -v 5 -E % -- %", fnamchk, ext, tarball_path);
     } else {
 	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, tarball_path);
-	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
     }
     if (exit_code != 0) {

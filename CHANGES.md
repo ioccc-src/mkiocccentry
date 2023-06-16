@@ -31,6 +31,8 @@ even matter. Currently it's used as options and the options list is terminated
 by `--`. It might be that it's supposed to be args to the program, not options.
 Or it might be that it doesn't matter. This is TBD later.
 
+Fix minor bug in `txzchk` that prevented a debug message from being shown even
+if the debug level requested was high enough.
 
 ## Release 1.0.12 2023-06-15
 
