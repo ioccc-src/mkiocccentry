@@ -48,6 +48,7 @@ static const char * const usage_msg0 =
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
     "\t-J level\tJSON verbosity level (def: %d)\n"
+    "\n"
     "\t-e\t\tPrint JSON strings as encoded strings (def: decode JSON strings)\n"
     "\t-Q\t\tPrint JSON strings surrounded by double quotes (def: do not)\n"
     "\t-t type\t\tPrint only if JSON value matches one of the comma-separated\n"
@@ -55,85 +56,85 @@ static const char * const usage_msg0 =
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
     "\t\t\t\texp\t\texponential notation values\n"
-    "\t\t\t\tnum\t\talias for int,float,exp\n"
+    "\t\t\t\tnum\t\tAlias for: int,float,exp\n"
     "\t\t\t\tbool\t\tboolean values\n"
     "\t\t\t\tstr\t\tstring values\n"
     "\t\t\t\tnull\t\tnull values\n"
-    "\t\t\t\tsimple\t\talias for 'num,bool,str,null' (the default)\n"
+    "\t\t\t\tsimple\t\tAlias for: num,bool,str,null (the default)\n"
     "\t\t\t\tobject\t\tJSON objects\n"
     "\t\t\t\tarray\t\tJSON array\n"
-    "\t\t\t\tcompound\talias for object,array\n"
+    "\t\t\t\tcompound\tAlias for: object,array\n"
     "\t\t\t\tany\t\tany type of value\n";
 
 static const char * const usage_msg1 =
     "\t-q\t\tQuiet mode (def: print stuff to stdout)\n\n"
-    "\t-l lvl\t\tPrint values at specific JSON levels (def: any level, '0:')\n"
-    "\t\t\tIf lvl is a number (e.g. '-l 3'), level must == number\n"
-    "\t\t\tIf lvl is a number followed by : (e.g. '-l 3:'), level must be >= number\n"
-    "\t\t\tIf lvl is a : followed by a number (e.g. '-l :3'), level must be <= number\n"
-    "\t\t\tIf lvl is num:num (e.g. '-l 3:5'), level must be inclusively in the range\n\n"
+    "\t-l lvl\t\tPrint values at specific JSON levels (def: any level: 0:)\n"
+    "\t\t\tIf lvl is a number (e.g.: -l 3), level must == number\n"
+    "\t\t\tIf lvl is a number followed by : (e.g.: -l 3:), level must be >= number\n"
+    "\t\t\tIf lvl is a : followed by a number (e.g.: -l :3), level must be <= number\n"
+    "\t\t\tIf lvl is num:num (e.g.: -l 3:5), level must be inclusively in the range\n\n"
     "\t-n count\tPrint up to count matches (def: print all matches)\n"
-    "\t\t\tIf count is a number (e.g. '-n 3'), the matches must == number\n"
-    "\t\t\tIf count is a number followed by : (e.g. '-n 3:'), matches must be >= number\n"
-    "\t\t\tIf count is a : followed by a number (e.g. '-n :3'), matches must be <= number\n"
-    "\t\t\tIf count is num:num (e.g. '-n 3:5'), matches must be inclusively in the range\n"
+    "\t\t\tIf count is a number (e.g.: -n 3), the matches must == number\n"
+    "\t\t\tIf count is a number followed by : (e.g.: -n 3:), matches must be >= number\n"
+    "\t\t\tIf count is a : followed by a number (e.g.: -n :3), matches must be <= number\n"
+    "\t\t\tIf count is num:num (e.g.: -n 3:5), matches must be inclusively in the range\n"
     "\t\t\tNOTE: when number < 0 it refers to up through matches - the positive max\n\n"
     "\t-N num\t\tPrint only if there are only a given number of matches (def: do not limit)\n"
-    "\t\t\tIf num is only a number (e.g. '-l 1'), there must be only that many matches\n"
-    "\t\t\tIf num is a number followed by : (e.g. '-l 3:'), there must >= num matches\n"
-    "\t\t\tIf num is a : followed by a number (e.g. '-n :3'), there must <= num matches\n"
-    "\t\t\tIf num is num:num (e.g. '-n 3:5'), the number of matches must be inclusively in the range\n\n"
+    "\t\t\tIf num is only a number (e.g.: -l 1), there must be only that many matches\n"
+    "\t\t\tIf num is a number followed by : (e.g.: -l 3:), there must >= num matches\n"
+    "\t\t\tIf num is a : followed by a number (e.g.: -n :3), there must <= num matches\n"
+    "\t\t\tIf num is num:num (e.g.: -n 3:5), the number of matches must be inclusively in the range\n\n"
     "\t-p {n,v,b}\tprint JSON key, value or both (def: print JSON values)\n"
     "\t\t\tIf the type of value does not match the -t type specification,\n"
-    "\t\t\tthen the key, value or both are not printed.\n"
+    "\t\t\tthen the key, value or both are not printed\n"
     "\t\t\tNOTE: it is an error to use both -p and -j\n"
-    "\t-p name\t\tAlias for '-p n'.\n"
-    "\t-p value\tAlias for '-p v'.\n"
-    "\t-p both\t\tAlias for '-p n,v'.\n\n"
+    "\t-p name\t\tAlias for: -p n\n"
+    "\t-p value\tAlias for: -p v\n"
+    "\t-p both\t\tAlias for: -p n,v\n\n"
     "\t-b <num>[{t|s}]\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
-    "\t\t\tNot specifying a character after the number implies spaces.\n"
-    "\t\t\tNOTE: -b without -j has no effect.\n"
+    "\t\t\tNot specifying a character after the number implies spaces\n"
+    "\t\t\tNOTE: -b without -j has no effect\n"
     "\t\t\tNOTE: it is an error to use -b [num]t without -p b\n"
-    "\t-b tab\t\tAlias for '-b 1t'.\n\n"
+    "\t-b tab\t\tAlias for: -b 1t\n\n"
     "\t-L <num>[{t|s}]\tPrint JSON level followed by specified number of tabs or spaces (def: don't print levels)\n"
-    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
-    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
-    "\t\t\tNOTE: the top JSON level is 0.\n"
-    "\t-L tab\t\tAlias for '-L 1t'.\n";
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces\n"
+    "\t\t\tNot specifying 's' or 't' implies spaces but any other character is an error\n"
+    "\t\t\tNOTE: the top JSON level is 0\n"
+    "\t-L tab\t\tAlias for: -L 1t\n";
 
 static const char * const usage_msg2 =
     "\t-P\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
     "\t\t\tNOTE: When -C is used with -b {t,number}, the same number of spaces or tabs\n"
     "\t\t\tseparate the name from the : (colon) AND a number of spaces or tabs\n"
-    "\t\t\tand separate : (colon) from the value by the same.\n\n"
-    "\t-C\t\tWhen printing JSON syntax, always print a comma after final line (def: do not).\n"
-    "\t\t\tUse of -C without -j has no effect.\n\n"
+    "\t\t\tand separate : (colon) from the value by the same\n\n"
+    "\t-C\t\tWhen printing JSON syntax, always print a comma after final line (def: do not)\n"
+    "\t\t\tUse of -C without -j has no effect\n\n"
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
-    "\t\t\tUse of -B without -j has no effect.\n\n"
-    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e. '-I 4') (def: don't indent i.e. '-I 0')\n"
-    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces. Not\n"
-    "\t\t\tspecifying 's' or 't' implies spaces but any other character is an error.\n"
-    "\t\t\tNOTE: the top JSON level is 0.\n"
-    "\t-I tab\t\tAlias for '-I 1t'.\n\n"
-    "\t-j\t\tPrint using JSON syntax (def: do not).\n"
-    "\t\t\tImplies '-p b -b 1 -e -Q -I 4 -t any'.\n"
-    "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens.\n"
-    "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented.\n"
-    "\t\t\tSubsequent use of -t type will change which JSON values are printed.\n"
+    "\t\t\tUse of -B without -j has no effect\n\n"
+    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e.: -I 4) (def: don't indent i.e.: -I 0)\n"
+    "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces\n"
+    "\t\t\tNot specifying 's' or 't' implies spaces but any other character is an error\n"
+    "\t\t\tNOTE: the top JSON level is 0\n"
+    "\t-I tab\t\tAlias for: -I 1t\n\n"
+    "\t-j\t\tPrint using JSON syntax (def: do not)\n"
+    "\t\t\tImplies: -p b -b 1 -e -Q -I 4 -t any\n"
+    "\t\t\tSubsequent use of -b <num>{[t|s]} changes the printing between JSON tokens\n"
+    "\t\t\tSubsequent use of -I <num>{[t|s]} changes how JSON is indented\n"
+    "\t\t\tSubsequent use of -t type will change which JSON values are printed\n"
     "\t\t\tNOTE: it is an error to use both -p and -j\n\n"
-    "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name).\n"
-    "\t-i\t\tIgnore case of name (def: case matters).\n"
-    "\t-s\t\tSubstrings are used to match (def: the full name must match).\n\n"
-    "\t-g\t\tgrep-like extended regular expressions are used to match (def: name args are not regexps).\n"
-    "\t\t\tTo match from the name beginning, start name_arg with '^'.\n"
-    "\t\t\tTo match to the name end, end name_arg with '$'.\n"
-    "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'.\n"
-    "\t\t\tNOTE: use of -g and -s is an error.\n"
-    "\t-G regex\t\tSpecify a pattern that is a regex irrespective of the name_args.\n"
+    "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name)\n"
+    "\t-i\t\tIgnore case of name (def: case matters)\n"
+    "\t-s\t\tSubstrings are used to match (def: the full name must match)\n\n"
+    "\t-g\t\tgrep-like extended regular expressions are used to match (def: name args are not regexps)\n"
+    "\t\t\tTo match from the name beginning, start name_arg with '^'\n"
+    "\t\t\tTo match to the name end, end name_arg with '$'\n"
+    "\t\t\tTo match the entire name, enclose name_arg between '^' and '$'\n"
+    "\t\t\tNOTE: use of -g and -s is an error\n"
+    "\t-G regex\t\tSpecify a pattern that is a regex irrespective of the name_args\n"
     "\t\t\tNOTE: use of -G does not conflict with G or -s\n\n"
     "\t-c\t\tOnly show count of matches found\n\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
-    "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-).\n\n"
+    "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n\n"
     "\t-K\t\tRun tests on jprint constraints\n";
 
 static const char * const usage_msg3 =
@@ -143,12 +144,12 @@ static const char * const usage_msg3 =
     "\t\t\t\tint\tinteger values\n"
     "\t\t\t\tfloat\tfloating point values\n"
     "\t\t\t\texp\texponential notation values\n"
-    "\t\t\t\tnum\talias for int,float,exp\n"
+    "\t\t\t\tnum\tAlias for: int,float,exp\n"
     "\t\t\t\tbool\tboolean values\n"
     "\t\t\t\tstr\tstring values\n"
     "\t\t\t\tnull\tnull values\n"
-    "\t\t\t\tsimple\talias for 'num,bool,str,null'\n\n"
-    "\t\t\tNOTE: -Y Requires one and only one name_arg.\n\n"
+    "\t\t\t\tsimple\tAlias for: num,bool,str,null\n\n"
+    "\t\t\tNOTE: -Y Requires one and only one name_arg\n\n"
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\t\t\tNOTE: use of -A requires use of -S\n";
@@ -160,8 +161,8 @@ static const char * const usage_msg3 =
  * the last one before it.
  */
 static const char * const usage_msg4 =
-    "\tfile.json\tJSON file to parse (- indicates stdin)\n"
-    "\tname_arg\tJSON element to print\n\n"
+    "\tfile.json\tJSON file to parse (- ==> read from stdin)\n"
+    "\tname_arg\tsearch file.json for JSON name(s) (or one value if -Y) (def: match all)\n\n"
     "Exit codes:\n"
     "    0\tall is OK: file is valid JSON, match(es) found or no name_arg given OR test mode OK\n"
     "    1\tfile is valid JSON, name_arg given but no matches found\n"
@@ -171,7 +172,7 @@ static const char * const usage_msg4 =
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
     "    7\tJSON check tool failed\n"
-    " >=15\tinternal error\n\n"
+    " >=10\tinternal error\n\n"
     "JSON parser version: %s\n"
     "jprint version: %s";
 
@@ -606,7 +607,7 @@ int main(int argc, char **argv)
 	 */
 	free_jprint(jprint);
 	jprint = NULL;
-	err(17, "jprint", "-Y requires exactly one name_arg");
+	err(18, "jprint", "-Y requires exactly one name_arg");
 	not_reached();
     }
 
@@ -614,7 +615,7 @@ int main(int argc, char **argv)
 	jprint->pattern_specified = true;
 
 	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
-	    err(18, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
+	    err(19, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
 		    jprint->substrings_okay?"OK":"ignored", argv[i]);
 	    not_reached();
 	}
@@ -696,11 +697,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(19, __func__, "passed NULL jprint struct");
+	err(20, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(20, __func__, "passed NULL str");
+	err(21, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -726,14 +727,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(21, __func__, "unable to allocate struct jprint_pattern *");
+	errp(22, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(22, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(23, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -776,7 +777,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(23, __func__, "passed NULL jprint struct");
+	err(24, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
