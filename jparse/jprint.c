@@ -153,7 +153,8 @@ static const char * const usage_msg3 =
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\t\t\tNOTE: use of -A requires use of -S\n\n"
-    "\t-o\t\twrite entire file to stdout if valid JSON\n";
+    "\t-o\t\twrite entire file to stdout if valid JSON\n"
+    "\t\t\tNOTE: use of -o with patterns specified is an error.\n";
 
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
@@ -636,6 +637,12 @@ int main(int argc, char **argv)
 
     dbg(DBG_MED, "valid JSON");
 
+    if (jprint->patterns != NULL && jprint->print_entire_file) {
+	free_jprint(jprint);
+	jprint = NULL;
+	err(3, "jprint", "printing the entire file is incompatible with any patterns specified"); /*ooo*/
+	not_reached();
+    }
     if (jprint->patterns != NULL && !jprint->print_entire_file) {
 	/* TODO process name_args */
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {

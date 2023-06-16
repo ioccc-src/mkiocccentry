@@ -10,7 +10,8 @@ is important as it means now all that needs to be done is add the handling of
 the JSON checker/semantics tool and then the compiling of regexps (if requested)
 and then printing for any matches found (the search routines have to be written
 too as does the code to traverse the tree - or 'climb down the tree' :-) ). In
-other words one of the features of the program is complete!
+other words one of the features of the program is complete! Note that use of
+`-o` when a pattern is specified is a command line error.
 
 
 
