@@ -16,6 +16,22 @@ other words one of the features of the program is complete! Note that use of
 Changed `pipe_open()` to allow for write mode. Takes a new boolean `write_mode`
 which says to open for write mode rather than read mode.
 
+Fix handling of `jprint -S` and `jprint -A` (specifically `-S`: a segfault in
+some conditions namely if the path did not exist which was not checked for and
+thus not triggered until this change). Verify path is a regular file and is
+executable. Check args and if specified make sure not empty and make sure that
+`-S` is specified as well. Checks `-S` path first.
+
+If `jprint -S path` is an executable file then attempt to run, first redirecting
+stdout and stderr to `/dev/null`, checking the exit code. If exit code is not 0
+exit as an error. If it is 0 open a write only pipe. The pipe is not used yet
+but will be once it is clear how it should be used. At this time the `-A args`
+might be a misnomer or it might be a misunderstanding on my part or it might not
+even matter. Currently it's used as options and the options list is terminated
+by `--`. It might be that it's supposed to be args to the program, not options.
+Or it might be that it doesn't matter. This is TBD later.
+
+
 ## Release 1.0.12 2023-06-15
 
 Change option letters of `jprint` a bit as described next.

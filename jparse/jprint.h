@@ -117,8 +117,6 @@ struct jprint
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* -Y used, search for value, not name */
-    char *tool_path;				/* -S path specified */
-    char *tool_args;				/* -A args for -S path specified */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
@@ -129,5 +127,6 @@ struct jprint
 void free_jprint(struct jprint *jprint);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
+void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
 
 #endif /* !defined INCLUDE_JPRINT_H */

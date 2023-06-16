@@ -192,10 +192,14 @@ int main(int argc, char **argv)
     struct jprint *jprint = NULL;	/* struct of all our options and other things */
     struct jprint_pattern *pattern = NULL; /* iterate through patterns list to search for matches */
     FILE *json_file = NULL;		/* file pointer for json file */
+    FILE *tool_stream = NULL;		/* for -S path */
     char *file_contents = NULL;		/* file contents in full */
     size_t len = 0;			/* length of file contents */
     struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
+    char *tool_path = NULL;		/* -S path specified */
+    char *tool_args = NULL;		/* -A args for -S path specified */
+    int exit_code = 0;			/* exit code for -S path execution */
 
 
     /* allocate our struct jprint */
@@ -269,8 +273,6 @@ int main(int argc, char **argv)
 
     jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
 
-    jprint->tool_path = NULL;				/* -S path for check tool */
-    jprint->tool_args = NULL;				/* -A args for check tool */
     /* finally the linked list of patterns */
     jprint->patterns = NULL;
     jprint->number_of_patterns = 0;
@@ -439,8 +441,8 @@ int main(int argc, char **argv)
 	     * might need to be strdup()d but for now it's not.
 	     *
 	     */
-	    jprint->tool_path = optarg;
-	    dbg(DBG_NONE, "set tool path to %s", jprint->tool_path);
+	    tool_path = optarg;
+	    dbg(DBG_NONE, "set tool path to: <%s>", tool_path);
 	    break;
 	case 'A':
 	    /*
@@ -451,8 +453,8 @@ int main(int argc, char **argv)
 	     * XXX it is currently unclear how this will be used as such so this
 	     * might need to be strdup()d but for now it's not.
 	     */
-	    jprint->tool_args = optarg;
-	    dbg(DBG_NONE, "set tool args to %s", jprint->tool_args);
+	    tool_args = optarg;
+	    dbg(DBG_NONE, "set tool args to: <%s>", tool_args);
 	    break;
 	case 'o': /* -o, print entire file if valid JSON */
 	    jprint->print_entire_file = true;
@@ -493,7 +495,7 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
-    /* check that if -b [num]t is used then both -p both */
+    /* check that if -b [num]t is used then -p both is true */
     if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
 	free_jprint(jprint);
 	jprint = NULL;
@@ -515,23 +517,8 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
-    /* if -A is specified, -S must also be specified */
-    if (jprint->tool_args != NULL && jprint->tool_path == NULL) {
-	free_jprint(jprint);
-	jprint = NULL;
-	err(3, "jparse", "use of -A args requires use of -S path"); /*ooo*/
-	not_reached();
-    } else if (jprint->tool_args != NULL && *jprint->tool_args == '\0') {
-	free_jprint(jprint);
-	jprint = NULL;
-	err(3, "jparse", "-A requires non empty args list"); /*ooo*/
-	not_reached();
-    }
-
-    /*
-     * TODO if -S path is specified, verify that it exists, is a regular file
-     * and is executable.
-     */
+    /* run specific sanity chks */
+    jprint_sanity_chks(jprint, tool_path, tool_args);
 
     argc -= optind;
     argv += optind;
@@ -608,6 +595,49 @@ int main(int argc, char **argv)
 	    not_reached();
 	}
     }
+
+    /* run tool if -S used */
+    if (tool_path != NULL) {
+	/* try running via shell_cmd() first */
+	if (tool_args != NULL) {
+	    dbg(DBG_MED, "about to execute: %s %s -- %s 2>/dev/null 2>&1", tool_path, tool_args, argv[0]);
+	    exit_code = shell_cmd(__func__, true, "% % -- %", tool_path, tool_args, argv[0]);
+	} else {
+	    dbg(DBG_MED, "about to execute: %s -- %s >/dev/null 2>&1", tool_path, argv[0]);
+	    exit_code = shell_cmd(__func__, true, "% % -- %", tool_path, argv[0]);
+	}
+	if(exit_code != 0) {
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    if (tool_args != NULL) {
+		err(7, "jprint", "JSON check tool '%s' with args '%s' failed with exit code: %d",/*ooo*/
+			tool_path, tool_args, exit_code);
+	    } else {
+		err(7, "jprint", "JSON check tool '%s' without args failed with exit code: %d",/*ooo*/
+			tool_path, exit_code);
+	    }
+	    not_reached();
+	}
+	/* now open a write-only pipe */
+	if (tool_args != NULL) {
+	    tool_stream = pipe_open(__func__, true, true, "% % -- %", tool_path, tool_args, argv[0]);
+	} else {
+	    tool_stream = pipe_open(__func__, true, true, "% -- %", tool_path, argv[0]);
+	}
+	if (tool_stream == NULL) {
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    if (tool_args != NULL) {
+		err(7, "jprint", "opening pipe to JSON check tool '%s' with args '%s' failed", tool_path, tool_args); /*ooo*/
+	    } else {
+		err(7, "jprint", "opening pipe to JSON check tool '%s' without args failed", tool_path); /*ooo*/
+	    }
+	    not_reached();
+	} else {
+	    /* XXX - process stream - XXX */
+	}
+    }
+
     /*
      * read in entire file BEFORE trying to parse it as json as the parser
      * function will close the file
@@ -850,6 +880,77 @@ free_jprint(struct jprint *jprint)
 
     free(jprint);
     jprint = NULL;
+}
+
+/* jprint_sanity_chks	- sanity checks on jprint
+ *
+ * given:
+ *
+ *	jprint	    - pointer to our jprint struct
+ *	tool_path   - path to tool if -S specified
+ *	tool_args   - args to tool_path
+ *
+ * This function runs any important checks on the jprint internal state.
+ * If passed a NULL pointer or anything is not sane this function will not
+ * return.
+ *
+ * This function will not always run tests: it depends on the options specified
+ * at the command line.
+ */
+void
+jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args)
+{
+    /* firewall */
+    if (jprint == NULL) {
+	err(25, __func__, "NULL jprint");
+	not_reached();
+    }
+
+    /*
+     * if -S specified then we need to verify that the tool is a regular
+     * executable file
+     */
+    if (tool_path != NULL) {
+	if (!exists(tool_path)) {
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    err(3, __func__, "jprint tool path does not exist: <%s>", tool_path);/*ooo*/
+	    not_reached();
+	} else if (!is_file(tool_path)) {
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    err(3, __func__, "jprint tool not a regular file: <%s>", tool_path); /*ooo*/
+	    not_reached();
+	} else if (!is_exec(tool_path)) {
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    err(3, __func__, "jprint tool not an executable file: <%s>", tool_path); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    if (tool_args != NULL) {
+	if (tool_path == NULL) {
+	    /* it is an error if -A args specified without -S path */
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    err(3, __func__, "-A used without -S"); /*ooo*/
+	    not_reached();
+	} else if (tool_args == NULL || *tool_args == '\0') {
+	    /*
+	     * tool args should never be NULL but might be empty. The question
+	     * is whether or not empty args should actually be an error. It
+	     * shouldn't hurt if they are but for now it's an error.
+	     */
+	    free_jprint(jprint);
+	    jprint = NULL;
+	    err(3, __func__, "-A args NULL or empty"); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    /* all good */
+    return;
 }
 
 /*
