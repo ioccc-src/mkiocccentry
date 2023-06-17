@@ -484,7 +484,7 @@ int main(int argc, char **argv)
 	jprint->pattern_specified = true;
 
 	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
-	    err(20, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
+	    err(19, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
 		    jprint->substrings_okay?"OK":"ignored", argv[i]);
 	    not_reached();
 	}
@@ -496,7 +496,7 @@ int main(int argc, char **argv)
 	 * foo or one arg is specified after the file
 	 */
 	free_jprint(&jprint);
-	err(19, "jprint", "-Y requires exactly one name_arg");
+	err(20, "jprint", "-Y requires exactly one name_arg");
 	not_reached();
     }
 
@@ -587,8 +587,7 @@ int main(int argc, char **argv)
 		jprint->match_found = true;
 
 		if (pattern->use_regexp) {
-		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name",
-			pattern->pattern);
+		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
 		} else {
 		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
@@ -637,7 +636,7 @@ alloc_jprint(void)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(15, "jprint", "failed to allocate jprint struct");
+	err(21, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
@@ -742,11 +741,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(21, __func__, "passed NULL jprint struct");
+	err(22, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(22, __func__, "passed NULL str");
+	err(23, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -772,14 +771,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(23, __func__, "unable to allocate struct jprint_pattern *");
+	errp(24, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(24, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(25, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -822,7 +821,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(25, __func__, "passed NULL jprint struct");
+	err(26, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
@@ -889,7 +888,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 {
     /* firewall */
     if (jprint == NULL) {
-	err(26, __func__, "NULL jprint");
+	err(27, __func__, "NULL jprint");
 	not_reached();
     }
 
