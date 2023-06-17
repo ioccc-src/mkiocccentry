@@ -1344,7 +1344,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     }
 
     /*
-     * print debug leader
+     * print debug header
      */
     if (json_dbg_lvl != JSON_DBG_FORCED) {
 	fprint(stream, "JSON tree[%d]:\t", json_dbg_lvl);
