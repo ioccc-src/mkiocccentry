@@ -480,16 +480,6 @@ int main(int argc, char **argv)
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     }
 
-    if (jprint->search_value && argv[1] != NULL && argv[2] != NULL) {
-	/*
-	 * special handling to make sure that if -Y is specified then only -G
-	 * foo or one arg is specified after the file
-	 */
-	free_jprint(&jprint);
-	err(19, "jprint", "-Y requires exactly one name_arg");
-	not_reached();
-    }
-
     for (i = 1; argv[i] != NULL; ++i) {
 	jprint->pattern_specified = true;
 
@@ -499,6 +489,17 @@ int main(int argc, char **argv)
 	    not_reached();
 	}
     }
+
+    if (jprint->search_value && jprint->number_of_patterns != 1) {
+	/*
+	 * special handling to make sure that if -Y is specified then only -G
+	 * foo or one arg is specified after the file
+	 */
+	free_jprint(&jprint);
+	err(19, "jprint", "-Y requires exactly one name_arg");
+	not_reached();
+    }
+
 
     /* run tool if -S used */
     if (tool_path != NULL) {
