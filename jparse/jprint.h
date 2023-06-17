@@ -65,7 +65,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.19 2023-06-16"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.20 2023-06-17"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_pattern - struct for a linked list of patterns requested, held in
@@ -77,6 +77,7 @@ struct jprint_pattern
     bool use_regexp;		    /* whether -g was used */
     bool use_value;		    /* whether -Y was used, implying to search values */
     bool use_substrings;	    /* if -s was used */
+    uintmax_t matches_found;	    /* number of matches found with this pattern */
 
     struct jprint_pattern *next;    /* the next in the list */
 };
@@ -94,8 +95,11 @@ struct jprint
     bool quote_strings;				/* -Q used */
     uintmax_t type;				/* -t type used */
     struct jprint_number jprint_max_matches;	/* -n count specified */
+    bool max_matches_requested;			/* -n used */
     struct jprint_number jprint_min_matches;	/* -N count specified */
+    bool min_matches_requested;			/* -N used */
     struct jprint_number jprint_levels;		/* -l level specified */
+    bool levels_constrained;			/* -l specified */
     uintmax_t print_type;			/* -p type specified */
     bool print_type_option;			/* -p explicitly used */
     uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
@@ -128,5 +132,10 @@ void free_jprint(struct jprint **jprint);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
+void jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...);
+void vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap);
+void jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
+void jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap);
 
 #endif /* !defined INCLUDE_JPRINT_H */

@@ -243,6 +243,7 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'l':
+	    jprint->levels_constrained = true;
 	    jprint_parse_number_range("-l", optarg, &jprint->jprint_levels);
 	    break;
 	case 'e':
@@ -258,9 +259,11 @@ int main(int argc, char **argv)
 	    break;
 	case 'n':
 	    jprint_parse_number_range("-n", optarg, &jprint->jprint_max_matches);
+	    jprint->max_matches_requested = true;
 	    break;
 	case 'N':
 	    jprint_parse_number_range("-N", optarg, &jprint->jprint_min_matches);
+	    jprint->min_matches_requested = true;
 	    break;
 	case 'p':
 	    jprint->print_type_option = true;
@@ -362,29 +365,17 @@ int main(int argc, char **argv)
 	    jprint->type = jprint_parse_value_type_option(optarg);
 	    break;
 	case 'S':
-	    /*
-	     * -S path to tool
-	     *
-	     * XXX it is currently unclear how this will be used as such so this
-	     * might need to be strdup()d but for now it's not.
-	     *
-	     */
+	    /* -S path to tool */
 	    tool_path = optarg;
 	    dbg(DBG_NONE, "set tool path to: '%s'", tool_path);
 	    break;
 	case 'A':
 	    /*
-	     * -A args to tool
-	     *
-	     * Requires use of -S.
-	     *
-	     * XXX it is currently unclear how this will be used as such so this
-	     * might need to be strdup()d but for now it's not.
-	     */
+	     * -A args to tool. Requires use of -S. */
 	    tool_args = optarg;
 	    dbg(DBG_NONE, "set tool args to: '%s'", tool_args);
 	    break;
-	case 'o': /* -o, print entire file if valid JSON */
+	case 'o': /* -o, print entire file if valid JSON. Incompatible with patterns to search for. */
 	    jprint->print_entire_file = true;
 	    break;
 	case ':':   /* option requires an argument */
@@ -404,10 +395,7 @@ int main(int argc, char **argv)
      * the wrong number of arguments (if they do).
      */
 
-    /*
-     * use of -g conflicts with -s and is an error.
-     * -G and -s do not conflict.
-     */
+    /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
     if (jprint->use_regexps && jprint->substrings_okay) {
 	free_jprint(&jprint);
 	err(3, "jprint", "cannot use both -g and -s"); /*ooo*/
@@ -441,9 +429,10 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
-    /* run specific sanity chks */
+    /* run specific sanity checks */
     jprint_sanity_chks(jprint, tool_path, tool_args);
 
+    /* shift argc and argv for further processing */
     argc -= optind;
     argv += optind;
 
@@ -455,7 +444,7 @@ int main(int argc, char **argv)
 
     /* if argv[0] != "-" we will attempt to read from a regular file */
     if (strcmp(argv[0], "-") != 0) {
-        /* check that first arg exists and is a regular file */
+        /* check that first arg exists and is a readable regular file */
 	if (!exists(argv[0])) {
 	    free_jprint(&jprint);
 	    err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
@@ -494,25 +483,26 @@ int main(int argc, char **argv)
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     }
 
-    if (jprint->search_value && argv[1] != NULL) {
+    for (i = 1; argv[i] != NULL; ++i) {
+	jprint->pattern_specified = true;
+
+	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
+	    err(19, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
+		    jprint->substrings_okay?"OK":"ignored", argv[i]);
+	    not_reached();
+	}
+    }
+
+    if (jprint->search_value && jprint->number_of_patterns != 1) {
 	/*
 	 * special handling to make sure that if -Y is specified then only -G
 	 * foo or one arg is specified after the file
 	 */
 	free_jprint(&jprint);
-	err(19, "jprint", "-Y requires exactly one name_arg");
+	err(20, "jprint", "-Y requires exactly one name_arg");
 	not_reached();
     }
 
-    for (i = 1; argv[i] != NULL; ++i) {
-	jprint->pattern_specified = true;
-
-	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
-	    err(20, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
-		    jprint->substrings_okay?"OK":"ignored", argv[i]);
-	    not_reached();
-	}
-    }
 
     /* run tool if -S used */
     if (tool_path != NULL) {
@@ -556,7 +546,7 @@ int main(int argc, char **argv)
 
     /*
      * read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file
+     * function will close the file if not stdin
      */
     file_contents = read_all(json_file, &len);
     if (file_contents == NULL) {
@@ -584,7 +574,7 @@ int main(int argc, char **argv)
 
     if (jprint->patterns != NULL && jprint->print_entire_file) {
 	free_jprint(&jprint);
-	err(3, "jprint", "printing the entire file is incompatible with any patterns specified"); /*ooo*/
+	err(3, "jprint", "printing the entire file not supported when searching for a pattern");/*ooo*/
 	not_reached();
     }
     if (jprint->patterns != NULL && !jprint->print_entire_file) {
@@ -599,9 +589,13 @@ int main(int argc, char **argv)
 		 */
 		jprint->match_found = true;
 
-		dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
+		if (pattern->use_regexp) {
+		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
+		} else {
+		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
 			pattern->use_substrings?"OK":"ignored");
+		}
 	    }
 	}
     } else {
@@ -614,6 +608,8 @@ int main(int argc, char **argv)
 	    fpr(stdout, "jprint", "%s", file_contents);
 	}
     }
+
+    jprint_json_tree_print(jprint, json_tree, jprint->max_depth);
 
     /* free tree */
     json_tree_free(json_tree, jprint->max_depth);
@@ -645,7 +641,7 @@ alloc_jprint(void)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(15, "jprint", "failed to allocate jprint struct");
+	err(21, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
@@ -668,6 +664,7 @@ alloc_jprint(void)
     jprint->jprint_max_matches.range.less_than_equal = false;
     jprint->jprint_max_matches.range.greater_than_equal = false;
     jprint->jprint_max_matches.range.inclusive = false;
+    jprint->max_matches_requested = false;
 
     /* min matches number range */
     jprint->jprint_min_matches.number = 0;
@@ -677,6 +674,7 @@ alloc_jprint(void)
     jprint->jprint_min_matches.range.less_than_equal = false;
     jprint->jprint_min_matches.range.greater_than_equal = false;
     jprint->jprint_min_matches.range.inclusive = false;
+    jprint->min_matches_requested = false;
 
     /* levels number range */
     jprint->jprint_levels.number = 0;
@@ -686,6 +684,7 @@ alloc_jprint(void)
     jprint->jprint_levels.range.less_than_equal = false;
     jprint->jprint_levels.range.greater_than_equal = false;
     jprint->jprint_levels.range.inclusive = false;
+    jprint->levels_constrained = false;
 
     jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
     jprint-> print_type_option = false;			/* -p explicitly used */
@@ -750,11 +749,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(21, __func__, "passed NULL jprint struct");
+	err(22, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(22, __func__, "passed NULL str");
+	err(23, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -780,14 +779,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(23, __func__, "unable to allocate struct jprint_pattern *");
+	errp(24, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(24, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(25, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -798,6 +797,7 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     ++jprint->number_of_patterns;
     /* let jprint know that a pattern was indeed specified */
     jprint->pattern_specified = true;
+    pattern->matches_found = 0; /* 0 matches found at first */
 
     dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
 
@@ -830,7 +830,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(25, __func__, "passed NULL jprint struct");
+	err(26, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
@@ -897,7 +897,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 {
     /* firewall */
     if (jprint == NULL) {
-	err(26, __func__, "NULL jprint");
+	err(27, __func__, "NULL jprint");
 	not_reached();
     }
 
@@ -940,6 +940,462 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
     }
 
     /* all good */
+    return;
+}
+
+/*
+ * jprint_json_print
+ *
+ * Print information about a JSON node, depending on the booleans in struct
+ * jprint if the tree node matches the name or value in any pattern in the
+ * struct json.
+ *
+ * given:
+ *	jprint	pointer to our struct jprint
+ *	node	pointer to a JSON parser tree node to try and match
+ *	depth	current tree depth (0 ==> top of tree)
+ *	...	extra args are ignored, required extra args if <=
+ *		json_verbosity_level:
+ *
+ *		    stream	   stream to print on
+ *		    json_dbg_lvl   print message if JSON_DBG_FORCED
+ *				   OR if <= json_verbosity_level
+ *
+ * Example use - print a JSON parse tree
+ *
+ *	jprint_json_print(node, depth, JSON_DBG_MED);
+ *	jprint_json_print(node, depth, JSON_DBG_FORCED;
+ *	jprint_json_print(node, depth, JSON_DBG_MED);
+ *
+ * While the ... variable arg are ignored, we need to declare
+ * then in order to be in vcallback form for use by json_tree_walk().
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if jprint == NULL or node == NULL.
+ */
+void
+jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /* firewall */
+    if (jprint == NULL || node == NULL) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, depth);
+
+    /*
+     * call va_list argument list function
+     */
+    vjprint_json_print(jprint, node, depth, ap);
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjprint_json_print
+ *
+ * Print information about a JSON node, depending on the booleans in struct
+ * jprint if the tree node matches the name or value in any pattern in the
+ * struct json.
+ *
+ * This is a variable argument list interface to jprint_json_print().
+ *
+ * See jprint_json_tree_print() to go through the entire tree.
+ *
+ * given:
+ *	jprint	pointer to our struct json
+ *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
+ *	ap	variable argument list, required ap args:
+ *
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
+ *
+ * NOTE: This function does nothing if jprint == NULL or jprint->patterns ==
+ * NULL or if none of the names/values match any of the patterns or node ==
+ * NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ *
+ * NOTE: this function is incomplete and does not do everything correctly. Any
+ * problems will be fixed in a future commit.
+ */
+void
+vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap)
+{
+    FILE *stream = NULL;	/* stream to print on */
+    int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
+    struct jprint_pattern *pattern = NULL; /* to iterate through patterns list */
+    va_list ap2;		/* copy of va_list ap */
+
+    /*
+     * firewall - nothing to do for NULL jprint or NULL patterns list or NULL node
+     */
+    if (jprint == NULL || jprint->patterns == NULL || node == NULL) {
+	return;
+    }
+
+    /*
+     * duplicate va_list ap
+     */
+    va_copy(ap2, ap);
+
+    /*
+     * obtain the stream, json_dbg_used, and json_dbg args
+     */
+    stream = stdout;
+    if (stream == NULL) {
+	va_end(ap2); /* stdarg variable argument list clean up */
+	return;
+    }
+    json_dbg_lvl = va_arg(ap2, int);
+
+    /* if level is okay go through each pattern and print any matches */
+    if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
+    {
+	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+
+	    /*
+	     * NOTE: there'll probably be a list of patterns found on top of
+	     * those to search for and that list will be iterated through
+	     * instead.
+	     */
+
+	    /*
+	     * XXX: for each pattern we have to print all matches within the
+	     * constraints of jprint->jprint_min_matches and
+	     * jprint->jprint_max_matches. In order to do this we'll need
+	     * another list of patterns and for each in the list it will have to
+	     * have another list of those found (or put another way: for each
+	     * pattern searched for there will have to be a list of matches
+	     * found whether or not in a second list or not). Perhaps when the
+	     * search code is added it will not add matches beyond the
+	     * constraints but this is TBD later.
+	     */
+	    /*
+	     * XXX - this does not check for matches nor any additional
+	     * constraints not noted above - XXX
+	     */
+
+		/*
+		 * print node details if type matches
+		 *
+		 * XXX - this matching is not done yet either
+		 */
+		switch (node->type) {
+
+		case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+		    break;
+
+		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+		    {
+			struct json_number *item = &(node->item.number);
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+		    {
+			struct json_string *item = &(node->item.string);
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+		    {
+			struct json_boolean *item = &(node->item.boolean);
+
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+		    {
+			struct json_null *item = &(node->item.null);
+
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
+		    {
+			struct json_member *item = &(node->item.member);
+
+			print("%s\n", item->name_str);
+		    }
+		    break;
+
+		case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
+		    {
+			struct json_object *item = &(node->item.object);
+
+			/* XXX - fix to print the object - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
+		    {
+			struct json_array *item = &(node->item.array);
+
+			/* XXX - fix to print the array - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
+		    {
+			struct json_elements *item = &(node->item.elements);
+
+			/* XXX - fix to print the elements - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		default:
+		    break;
+		}
+	    }
+    /*
+     * print final newline
+     */
+    fprstr(stream, "\n");
+
+    }
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap2);
+    return;
+}
+
+
+/*
+ * jprint_json_tree_print - print lines for an entire JSON parse tree.
+ *
+ * This function uses the jprint_json_tree_walk() interface to walk
+ * the JSON parse tree and print requested information about matching nodes.
+ *
+ * given:
+ *	jprint	    pointer to our struct jprint
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
+ *	...	extra args are ignored, required extra args:
+ *
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
+ *
+ * Example uses - print an entire JSON parse tree
+ *
+ *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if jprint == NULL, jprint->patterns == NULL
+ * or node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ *
+ * NOTE: this function is a wrapper to jprint_json_tree_walk() with the callback
+ * vjprint_json_print().
+ */
+void
+jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (jprint == NULL || jprint->patterns == NULL || node == NULL) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, max_depth);
+
+    /*
+     * free the JSON parse tree
+     */
+    jprint_json_tree_walk(jprint, node, max_depth, 0, vjprint_json_print, ap);
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+    return;
+}
+
+/*
+ * jprint_json_tree_walk - walk a JSON parse tree calling a function on each node in va_list form
+ *
+ * This is the va_list form of json_tree_walk().
+ *
+ * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ *
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
+ *
+ * Example use - walk an entire JSON parse tree, looking for matches and
+ * printing requested information on those matches.
+ *
+ *	jprint_json_tree_walk(jprint, tree, JSON_DEFAULT_MAX_DEPTH, 0, json_free);
+ *
+ * given:
+ *	node	    pointer to a JSON parse tree
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	vcallback   function to operate JSON parse tree node in va_list form
+ *	ap	    variable argument list
+ *
+ * The vcallback() function must NOT call va_arg() nor call va_end() on the
+ * va_list argument directly.  Instead they must call va_copy() and then use
+ * va_arg() and va_end() on the va_list copy.
+ *
+ * Although in C ALL functions are pointers which means one can call foo()
+ * as foo() or (*foo)() we use the latter format for the callback function
+ * to make it clearer that it is in fact a function that's passed in so
+ * that we can use this function to do more than one thing. This is also
+ * why we call it callback and not something else.
+ *
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
+ * In this case it will NOT operate on the node, or will be descend and further
+ * into the tree.
+ *
+ * NOTE: This function warns but does not do anything if an arg is NULL.
+ *
+ * NOTE: this function might be incomplete or does something that is incorrect.
+ * If this is the case it will be fixed in a future update.
+ */
+void
+jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return ;
+    }
+    if (vcallback == NULL) {
+	warn(__func__, "vcallback is NULL");
+	return ;
+    }
+
+    /*
+     * do nothing if we are too deep
+     */
+    if (max_depth != JSON_INFINITE_DEPTH && depth > max_depth) {
+	warn(__func__, "tree walk descent stopped, tree depth: %u > max_depth: %u", depth, max_depth);
+	return;
+    }
+
+    /*
+     * walk based on type of node
+     */
+    switch (node->type) {
+
+    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+
+	/* perform function operation on this terminal parse tree node */
+	(*vcallback)(jprint, node, depth, ap);
+	break;
+
+    case JTYPE_MEMBER:	/* JSON item is a member */
+	{
+	    struct json_member *item = &(node->item.member);
+
+	    /* perform function operation on JSON member name (left branch) node */
+	    jprint_json_tree_walk(jprint, item->name, max_depth, depth+1, vcallback, ap);
+
+	    /* perform function operation on JSON member value (right branch) node */
+	    jprint_json_tree_walk(jprint, item->value, max_depth, depth+1, vcallback, ap);
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(jprint, node, depth, ap);
+	break;
+
+    case JTYPE_OBJECT:	/* JSON item is a { members } */
+	{
+	    struct json_object *item = &(node->item.object);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(jprint, node, depth, ap);
+	break;
+
+    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
+	{
+	    struct json_array *item = &(node->item.array);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(jprint, node, depth, ap);
+	break;
+
+    case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
+	{
+	    struct json_elements *item = &(node->item.elements);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(jprint, node, depth, ap);
+	break;
+
+    default:
+	warn(__func__, "node type is unknown: %d", node->type);
+	/* nothing we can traverse */
+	break;
+    }
     return;
 }
 

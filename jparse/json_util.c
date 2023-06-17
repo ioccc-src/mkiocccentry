@@ -1220,7 +1220,7 @@ json_tree_free(struct json *node, unsigned int max_depth, ...)
  *	JSON tree node:
  *
  * given:
- *	node	pointer to a JSON parser tree node to free
+ *	node	pointer to a JSON parser tree node to print
  *	depth	current tree depth (0 ==> top of tree)
  *	...	extra args are ignored, required extra args:
  *				OR if <= json_verbosity_level
@@ -1344,7 +1344,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     }
 
     /*
-     * print debug leader
+     * print debug header
      */
     if (json_dbg_lvl != JSON_DBG_FORCED) {
 	fprint(stream, "JSON tree[%d]:\t", json_dbg_lvl);
@@ -1782,14 +1782,11 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
  *		json_dbg_lvl   print message if JSON_DBG_FORCED
  *			       OR if <= json_verbosity_level
  *
- * Example use - free an entire JSON parse tree
+ * Example uses - print an entire JSON parse tree
  *
- *	len = json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, NULL, JSON_DBG_FORCED);
+ *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, NULL, JSON_DBG_FORCED);
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stderr, JSON_DBG_FORCED);
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stdout, JSON_DBG_MED);
- *
- * NOTE: This function will free the internals of a JSON parser tree node.
- *	 It is up to the caller to free the top level struct json if needed.
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -1797,6 +1794,9 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
  * NOTE: This function does nothing if node == NULL.
  *
  * NOTE: This function does nothing if the node type is invalid.
+ *
+ * NOTE: this function is a wrapper to vjson_tree_walk() with the callback
+ * vjson_fprint().
  */
 void
 json_tree_print(struct json *node, unsigned int max_depth, ...)

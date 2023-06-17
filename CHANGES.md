@@ -1,5 +1,30 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.14 2023-06-17
+
+New `jprint` version at "0.0.20 2023-06-17".
+
+Fix special handling for -Y option wrt exactly one name arg. The idea behind the
+check is that if `-G` is specified then one cannot specify a `name_arg`. If it
+is not specified then you must specify one `name_arg`. If both `-G` and a
+`name_arg` are not specified it is also an error but there was a bug which
+required that `-G` was used.
+
+Don't show that substrings are ignored for patterns that are regexps (in
+`jprint`).
+
+Sequenced exit codes in `jprint`.
+
+Add callback function and calling code to `jprint`. Currently it does not check
+for any constraints and will print only json nodes which has a string as the
+name or value. The name is not ultimately desired without printing json as a
+whole but for now the name is printed. This means that both name and value might
+be printed. There are too many newlines printed as well. Much more needs to be
+done with these functions.
+
+`jprint` now checks level (depth) constraints before printing a json member.
+This needs to be tested more carefully with bigger documents.
+
 ## Release 1.0.13 2023-06-16
 
 New `jprint` version "0.0.19 2023-06-16" - will print entire file if no pattern
