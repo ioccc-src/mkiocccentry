@@ -243,6 +243,7 @@ int main(int argc, char **argv)
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'l':
+	    jprint->levels_constrained = true;
 	    jprint_parse_number_range("-l", optarg, &jprint->jprint_levels);
 	    break;
 	case 'e':
@@ -258,9 +259,11 @@ int main(int argc, char **argv)
 	    break;
 	case 'n':
 	    jprint_parse_number_range("-n", optarg, &jprint->jprint_max_matches);
+	    jprint->max_matches_requested = true;
 	    break;
 	case 'N':
 	    jprint_parse_number_range("-N", optarg, &jprint->jprint_min_matches);
+	    jprint->min_matches_requested = true;
 	    break;
 	case 'p':
 	    jprint->print_type_option = true;
@@ -661,6 +664,7 @@ alloc_jprint(void)
     jprint->jprint_max_matches.range.less_than_equal = false;
     jprint->jprint_max_matches.range.greater_than_equal = false;
     jprint->jprint_max_matches.range.inclusive = false;
+    jprint->max_matches_requested = false;
 
     /* min matches number range */
     jprint->jprint_min_matches.number = 0;
@@ -670,6 +674,7 @@ alloc_jprint(void)
     jprint->jprint_min_matches.range.less_than_equal = false;
     jprint->jprint_min_matches.range.greater_than_equal = false;
     jprint->jprint_min_matches.range.inclusive = false;
+    jprint->min_matches_requested = false;
 
     /* levels number range */
     jprint->jprint_levels.number = 0;
@@ -679,6 +684,7 @@ alloc_jprint(void)
     jprint->jprint_levels.range.less_than_equal = false;
     jprint->jprint_levels.range.greater_than_equal = false;
     jprint->jprint_levels.range.inclusive = false;
+    jprint->levels_constrained = false;
 
     jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
     jprint-> print_type_option = false;			/* -p explicitly used */
@@ -791,6 +797,7 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     ++jprint->number_of_patterns;
     /* let jprint know that a pattern was indeed specified */
     jprint->pattern_specified = true;
+    pattern->matches_found = 0; /* 0 matches found at first */
 
     dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
 
@@ -1033,7 +1040,6 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
     struct jprint_pattern *pattern = NULL; /* to iterate through patterns list */
     va_list ap2;		/* copy of va_list ap */
 
-    UNUSED_ARG(depth); /* XXX - fix this to be used - XXX */
     /*
      * firewall - nothing to do for NULL jprint or NULL patterns list or NULL node
      */
@@ -1056,93 +1062,118 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
     }
     json_dbg_lvl = va_arg(ap2, int);
 
-    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	/*
-	 * XXX - this does not check for matches nor any other constraints - XXX
-	 */
+    /* if level is okay go through each pattern and print any matches */
+    if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
+    {
+	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 
-	/*
-	 * print node details if type matches
-	 */
-	    switch (node->type) {
+	    /*
+	     * NOTE: there'll probably be a list of patterns found on top of
+	     * those to search for and that list will be iterated through
+	     * instead.
+	     */
 
-	    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-		break;
+	    /*
+	     * XXX: for each pattern we have to print all matches within the
+	     * constraints of jprint->jprint_min_matches and
+	     * jprint->jprint_max_matches. In order to do this we'll need
+	     * another list of patterns and for each in the list it will have to
+	     * have another list of those found (or put another way: for each
+	     * pattern searched for there will have to be a list of matches
+	     * found whether or not in a second list or not). Perhaps when the
+	     * search code is added it will not add matches beyond the
+	     * constraints but this is TBD later.
+	     */
+	    /*
+	     * XXX - this does not check for matches nor any additional
+	     * constraints not noted above - XXX
+	     */
 
-	    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-		{
-		    struct json_number *item = &(node->item.number);
-		    print("%s\n", item->as_str);
+		/*
+		 * print node details if type matches
+		 *
+		 * XXX - this matching is not done yet either
+		 */
+		switch (node->type) {
+
+		case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+		    break;
+
+		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+		    {
+			struct json_number *item = &(node->item.number);
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+		    {
+			struct json_string *item = &(node->item.string);
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+		    {
+			struct json_boolean *item = &(node->item.boolean);
+
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+		    {
+			struct json_null *item = &(node->item.null);
+
+			print("%s\n", item->as_str);
+		    }
+		    break;
+
+		case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
+		    {
+			struct json_member *item = &(node->item.member);
+
+			print("%s\n", item->name_str);
+		    }
+		    break;
+
+		case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
+		    {
+			struct json_object *item = &(node->item.object);
+
+			/* XXX - fix to print the object - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
+		    {
+			struct json_array *item = &(node->item.array);
+
+			/* XXX - fix to print the array - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
+		    {
+			struct json_elements *item = &(node->item.elements);
+
+			/* XXX - fix to print the elements - XXX */
+			UNUSED_ARG(item);
+		    }
+		    break;
+
+		default:
+		    break;
 		}
-		break;
-
-	    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-		{
-		    struct json_string *item = &(node->item.string);
-		    print("%s\n", item->as_str);
-		}
-		break;
-
-	    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-		{
-		    struct json_boolean *item = &(node->item.boolean);
-
-		    print("%s\n", item->as_str);
-		}
-		break;
-
-	    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-		{
-		    struct json_null *item = &(node->item.null);
-
-		    print("%s\n", item->as_str);
-		}
-		break;
-
-	    case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
-		{
-		    struct json_member *item = &(node->item.member);
-
-		    print("%s\n", item->name_str);
-		}
-		break;
-
-	    case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
-		{
-		    struct json_object *item = &(node->item.object);
-
-		    /* XXX - fix to print the object - XXX */
-		    UNUSED_ARG(item);
-		}
-		break;
-
-	    case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
-		{
-		    struct json_array *item = &(node->item.array);
-
-		    /* XXX - fix to print the array - XXX */
-		    UNUSED_ARG(item);
-		}
-		break;
-
-	    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
-		{
-		    struct json_elements *item = &(node->item.elements);
-
-		    /* XXX - fix to print the elements - XXX */
-		    UNUSED_ARG(item);
-		}
-		break;
-
-	    default:
-		break;
 	    }
-	}
     /*
      * print final newline
      */
     fprstr(stream, "\n");
 
+    }
     /*
      * stdarg variable argument list clean up
      */
@@ -1223,7 +1254,8 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  *
  *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
  *
- * Example use - free an entire JSON parse tree
+ * Example use - walk an entire JSON parse tree, looking for matches and
+ * printing requested information on those matches.
  *
  *	jprint_json_tree_walk(jprint, tree, JSON_DEFAULT_MAX_DEPTH, 0, json_free);
  *

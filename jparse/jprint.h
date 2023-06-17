@@ -77,6 +77,7 @@ struct jprint_pattern
     bool use_regexp;		    /* whether -g was used */
     bool use_value;		    /* whether -Y was used, implying to search values */
     bool use_substrings;	    /* if -s was used */
+    uintmax_t matches_found;	    /* number of matches found with this pattern */
 
     struct jprint_pattern *next;    /* the next in the list */
 };
@@ -94,8 +95,11 @@ struct jprint
     bool quote_strings;				/* -Q used */
     uintmax_t type;				/* -t type used */
     struct jprint_number jprint_max_matches;	/* -n count specified */
+    bool max_matches_requested;			/* -n used */
     struct jprint_number jprint_min_matches;	/* -N count specified */
+    bool min_matches_requested;			/* -N used */
     struct jprint_number jprint_levels;		/* -l level specified */
+    bool levels_constrained;			/* -l specified */
     uintmax_t print_type;			/* -p type specified */
     bool print_type_option;			/* -p explicitly used */
     uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
