@@ -1220,7 +1220,7 @@ json_tree_free(struct json *node, unsigned int max_depth, ...)
  *	JSON tree node:
  *
  * given:
- *	node	pointer to a JSON parser tree node to free
+ *	node	pointer to a JSON parser tree node to print
  *	depth	current tree depth (0 ==> top of tree)
  *	...	extra args are ignored, required extra args:
  *				OR if <= json_verbosity_level
