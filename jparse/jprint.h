@@ -128,5 +128,10 @@ void free_jprint(struct jprint **jprint);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
+void jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...);
+void vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap);
+void jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
+void jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap);
 
 #endif /* !defined INCLUDE_JPRINT_H */

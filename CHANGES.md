@@ -15,6 +15,13 @@ Don't show that substrings are ignored for patterns that are regexps (in
 
 Sequenced exit codes in `jprint`.
 
+Add callback function and calling code to `jprint`. Currently it does not check
+for any constraints and will print only json nodes which has a string as the
+name or value. The name is not ultimately desired without printing json as a
+whole but for now the name is printed. This means that both name and value might
+be printed. There are too many newlines printed as well. Much more needs to be
+done with these functions.
+
 ## Release 1.0.13 2023-06-16
 
 New `jprint` version "0.0.19 2023-06-16" - will print entire file if no pattern
