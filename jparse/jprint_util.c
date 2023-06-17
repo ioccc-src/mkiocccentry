@@ -278,7 +278,7 @@ jprint_match_array(uintmax_t types)
  * specific types. For the specific types those bits have to be set instead. If
  * JPRINT_TYPE_ANY is set then any type can be set but if types is say
  * JPRINT_TYPE_INT then checking for JPRINT_TYPE_INT & JPRINT_TYPE_ANY would be
- * != 0 (as it's a bitwise OR Of all the types) which would suggest that any
+ * != 0 (as it's a bitwise OR of all the types) which would suggest that any
  * type is okay even if JPRINT_TYPE_INT was the only type.
  */
 bool
