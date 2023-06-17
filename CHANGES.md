@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.14 2023-06-17
+
+New `jprint` version at "0.0.20 2023-06-17".
+
+Fix special handling for -Y option wrt exactly one name arg. The idea behind the
+check is that if `-G` is specified then one cannot specify a `name_arg`. If it
+is not specified then you must specify one `name_arg`. If both `-G` and a
+`name_arg` are not specified it is also an error but there was a bug which
+required that `-G` was used.
+
+
 ## Release 1.0.13 2023-06-16
 
 New `jprint` version "0.0.19 2023-06-16" - will print entire file if no pattern

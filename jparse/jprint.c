@@ -362,29 +362,17 @@ int main(int argc, char **argv)
 	    jprint->type = jprint_parse_value_type_option(optarg);
 	    break;
 	case 'S':
-	    /*
-	     * -S path to tool
-	     *
-	     * XXX it is currently unclear how this will be used as such so this
-	     * might need to be strdup()d but for now it's not.
-	     *
-	     */
+	    /* -S path to tool */
 	    tool_path = optarg;
 	    dbg(DBG_NONE, "set tool path to: '%s'", tool_path);
 	    break;
 	case 'A':
 	    /*
-	     * -A args to tool
-	     *
-	     * Requires use of -S.
-	     *
-	     * XXX it is currently unclear how this will be used as such so this
-	     * might need to be strdup()d but for now it's not.
-	     */
+	     * -A args to tool. Requires use of -S. */
 	    tool_args = optarg;
 	    dbg(DBG_NONE, "set tool args to: '%s'", tool_args);
 	    break;
-	case 'o': /* -o, print entire file if valid JSON */
+	case 'o': /* -o, print entire file if valid JSON. Incompatible with patterns to search for. */
 	    jprint->print_entire_file = true;
 	    break;
 	case ':':   /* option requires an argument */
@@ -404,10 +392,7 @@ int main(int argc, char **argv)
      * the wrong number of arguments (if they do).
      */
 
-    /*
-     * use of -g conflicts with -s and is an error.
-     * -G and -s do not conflict.
-     */
+    /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
     if (jprint->use_regexps && jprint->substrings_okay) {
 	free_jprint(&jprint);
 	err(3, "jprint", "cannot use both -g and -s"); /*ooo*/
@@ -441,9 +426,10 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
-    /* run specific sanity chks */
+    /* run specific sanity checks */
     jprint_sanity_chks(jprint, tool_path, tool_args);
 
+    /* shift argc and argv for further processing */
     argc -= optind;
     argv += optind;
 
@@ -455,7 +441,7 @@ int main(int argc, char **argv)
 
     /* if argv[0] != "-" we will attempt to read from a regular file */
     if (strcmp(argv[0], "-") != 0) {
-        /* check that first arg exists and is a regular file */
+        /* check that first arg exists and is a readable regular file */
 	if (!exists(argv[0])) {
 	    free_jprint(&jprint);
 	    err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
@@ -494,7 +480,7 @@ int main(int argc, char **argv)
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     }
 
-    if (jprint->search_value && argv[1] != NULL) {
+    if (jprint->search_value && argv[1] != NULL && argv[2] != NULL) {
 	/*
 	 * special handling to make sure that if -Y is specified then only -G
 	 * foo or one arg is specified after the file
@@ -556,7 +542,7 @@ int main(int argc, char **argv)
 
     /*
      * read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file
+     * function will close the file if not stdin
      */
     file_contents = read_all(json_file, &len);
     if (file_contents == NULL) {
@@ -584,7 +570,7 @@ int main(int argc, char **argv)
 
     if (jprint->patterns != NULL && jprint->print_entire_file) {
 	free_jprint(&jprint);
-	err(3, "jprint", "printing the entire file is incompatible with any patterns specified"); /*ooo*/
+	err(3, "jprint", "printing the entire file not supported when searching for a pattern");/*ooo*/
 	not_reached();
     }
     if (jprint->patterns != NULL && !jprint->print_entire_file) {
