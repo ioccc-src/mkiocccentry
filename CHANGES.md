@@ -10,6 +10,7 @@ is not specified then you must specify one `name_arg`. If both `-G` and a
 `name_arg` are not specified it is also an error but there was a bug which
 required that `-G` was used.
 
+Don't show that substrings are ignored for patterns that are regexps.
 
 ## Release 1.0.13 2023-06-16
 

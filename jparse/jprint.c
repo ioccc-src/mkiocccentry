@@ -586,9 +586,14 @@ int main(int argc, char **argv)
 		 */
 		jprint->match_found = true;
 
-		dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
+		if (pattern->use_regexp) {
+		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name",
+			pattern->pattern);
+		} else {
+		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
 			pattern->use_substrings?"OK":"ignored");
+		}
 	    }
 	}
     } else {
