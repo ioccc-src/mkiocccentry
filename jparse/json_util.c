@@ -1782,9 +1782,9 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
  *		json_dbg_lvl   print message if JSON_DBG_FORCED
  *			       OR if <= json_verbosity_level
  *
- * Example use - print an entire JSON parse tree
+ * Example uses - print an entire JSON parse tree
  *
- *	len = json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, NULL, JSON_DBG_FORCED);
+ *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, NULL, JSON_DBG_FORCED);
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stderr, JSON_DBG_FORCED);
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stdout, JSON_DBG_MED);
  *
