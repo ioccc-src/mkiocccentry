@@ -590,7 +590,7 @@ int main(int argc, char **argv)
 		jprint->match_found = true;
 
 		if (pattern->use_regexp) {
-		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
+		    dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
 		} else {
 		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
@@ -609,7 +609,8 @@ int main(int argc, char **argv)
 	}
     }
 
-    jprint_json_tree_print(jprint, json_tree, jprint->max_depth);
+    jprint_json_tree_search(jprint, json_tree, jprint->max_depth);
+    jprint_print_matches(jprint);
 
     /* free tree */
     json_tree_free(json_tree, jprint->max_depth);
@@ -716,6 +717,138 @@ alloc_jprint(void)
     return jprint;
 }
 
+/*
+ * add_jprint_match
+ *
+ * Add jprint pattern match to the jprint struct pattern match list.
+ *
+ * given:
+ *
+ *	jprint		- pointer to the jprint struct
+ *	pattern		- the pattern that matched
+ *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
+ *
+ * NOTE: this function will not return if any of the pointers are NULL including
+ * the pointers in the pattern struct.
+ *
+ * Returns a pointer to the newly allocated struct jprint_match * that was
+ * added to the jprint matched patterns list.
+ */
+struct jprint_match *
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level)
+{
+    struct jprint_match *match = NULL;
+    struct jprint_match *tmp = NULL;
+
+    /*
+     * firewall
+     */
+    if (jprint == NULL) {
+	err(22, __func__, "passed NULL jprint struct");
+	not_reached();
+    }
+
+    if (pattern == NULL) {
+	err(23, __func__, "passed NULL pattern");
+	not_reached();
+    } else if (pattern->pattern == NULL) {
+	err(24, __func__, "pattern->pattern is NULL");
+	not_reached();
+    }
+
+    if (value == NULL) {
+	err(25, __func__, "value is NULL");
+	not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    match = calloc(1, sizeof *match);
+    if (match == NULL) {
+	errp(26, __func__, "unable to allocate struct jprint_match *");
+	not_reached();
+    }
+
+    /* duplicate the name (pattern->pattern) */
+    errno = 0; /* pre-clear errno for errp() */
+    match->name = strdup(pattern->pattern);
+    if (match->name == NULL) {
+	errp(27, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
+	not_reached();
+    }
+
+    /* duplicate the value */
+    errno = 0; /* pre-clear errno for errp() */
+    match->value = strdup(value);
+    if (match->value == NULL) {
+	errp(28, __func__, "unable to strdup value string '%s' for match list", value);
+	not_reached();
+    }
+    /* set level of the match for -l / -L options */
+    match->level = level;
+
+    /* record the pattern that was matched */
+    match->pattern = pattern; /* DO NOT FREE THIS */
+
+    /* set which match number this is, incrementing the pattern's total matches */
+    match->number = pattern->matches_found++;
+
+    dbg(DBG_NONE, "adding match '%s' to pattern '%s' to match list",
+	    jprint->search_value?match->value:match->name, pattern->pattern);
+
+    for (tmp = pattern->matches; tmp && tmp->next; tmp = tmp->next)
+	; /* on its own line to silence useless and bogus warning -Wempty-body */
+
+    if (!tmp) {
+	pattern->matches = match;
+    } else {
+	tmp->next = match;
+    }
+
+    return match;
+}
+
+/* free_jprint_matches_list   - free matches list in a struct jprint_pattern *
+ *
+ * given:
+ *
+ *	pattern	    - the jprint pattern
+ *
+ * If the jprint patterns match list is empty this function will do nothing.
+ *
+ * NOTE: this function does not return on a NULL pattern.
+ */
+void
+free_jprint_matches_list(struct jprint_pattern *pattern)
+{
+    struct jprint_match *match = NULL; /* to iterate through matches list */
+    struct jprint_match *next_match = NULL; /* next in list */
+
+    if (pattern == NULL) {
+	err(29, __func__, "passed NULL pattern struct");
+	not_reached();
+    }
+
+    for (match = pattern->matches; match != NULL; match = next_match) {
+	next_match = match->next;
+	if (match->name) {
+	    free(match->name);
+	    match->name = NULL;
+	}
+
+	if (match->value) {
+	    free(match->value);
+	    match->value = NULL;
+	}
+
+	/* DO NOT FREE match->pattern! */
+	free(match);
+	match = NULL;
+    }
+
+    pattern->matches = NULL;
+}
+
+
 
 /*
  * add_jprint_pattern
@@ -749,11 +882,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(22, __func__, "passed NULL jprint struct");
+	err(30, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(23, __func__, "passed NULL str");
+	err(31, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -779,14 +912,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(24, __func__, "unable to allocate struct jprint_pattern *");
+	errp(32, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(25, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(33, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -822,6 +955,9 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
  * If the jprint patterns list is empty this function will do nothing.
  *
  * NOTE: this function does not return on a NULL jprint.
+ *
+ * NOTE: this function calls free_jprint_matches_list() on all the patterns
+ * prior to freeing the pattern itself.
  */
 void
 free_jprint_patterns_list(struct jprint *jprint)
@@ -830,17 +966,23 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(26, __func__, "passed NULL jprint struct");
+	err(34, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
     for (pattern = jprint->patterns; pattern != NULL; pattern = next_pattern) {
 	next_pattern = pattern->next;
+
+	/* first free any matches */
+	free_jprint_matches_list(pattern);
+
+	/* now free the pattern string itself */
 	if (pattern->pattern) {
 	    free(pattern->pattern);
 	    pattern->pattern = NULL;
 	}
 
+	/* finally free the pattern and set to NULL for the next pass */
 	free(pattern);
 	pattern = NULL;
     }
@@ -897,7 +1039,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 {
     /* firewall */
     if (jprint == NULL) {
-	err(27, __func__, "NULL jprint");
+	err(35, __func__, "NULL jprint");
 	not_reached();
     }
 
@@ -944,28 +1086,29 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 }
 
 /*
- * jprint_json_print
+ * jprint_json_search
  *
  * Print information about a JSON node, depending on the booleans in struct
  * jprint if the tree node matches the name or value in any pattern in the
  * struct json.
  *
  * given:
- *	jprint	pointer to our struct jprint
- *	node	pointer to a JSON parser tree node to try and match
- *	depth	current tree depth (0 ==> top of tree)
- *	...	extra args are ignored, required extra args if <=
- *		json_verbosity_level:
+ *	jprint	    pointer to our struct jprint
+ *	node	    pointer to a JSON parser tree node to try and match
+ *	is_value    whether node is a value or name
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	...	    extra args are ignored, required extra args if <=
+ *		    json_verbosity_level:
  *
- *		    stream	   stream to print on
- *		    json_dbg_lvl   print message if JSON_DBG_FORCED
- *				   OR if <= json_verbosity_level
+ *			stream		stream to print on
+ *			json_dbg_lvl	print message if JSON_DBG_FORCED
+ *					OR if <= json_verbosity_level
  *
  * Example use - print a JSON parse tree
  *
- *	jprint_json_print(node, depth, JSON_DBG_MED);
- *	jprint_json_print(node, depth, JSON_DBG_FORCED;
- *	jprint_json_print(node, depth, JSON_DBG_MED);
+ *	jprint_json_search(node, true, depth, JSON_DBG_MED);
+ *	jprint_json_search(node, false, depth, JSON_DBG_FORCED;
+ *	jprint_json_search(node, false, depth, JSON_DBG_MED);
  *
  * While the ... variable arg are ignored, we need to declare
  * then in order to be in vcallback form for use by json_tree_walk().
@@ -976,7 +1119,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
  * NOTE: This function does nothing if jprint == NULL or node == NULL.
  */
 void
-jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...)
+jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -993,7 +1136,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
     /*
      * call va_list argument list function
      */
-    vjprint_json_print(jprint, node, depth, ap);
+    vjprint_json_search(jprint, node, is_value, depth, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1004,24 +1147,25 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
 
 
 /*
- * vjprint_json_print
+ * vjprint_json_search
  *
- * Print information about a JSON node, depending on the booleans in struct
+ * Search for matches in a JSON node, depending on the booleans in struct
  * jprint if the tree node matches the name or value in any pattern in the
  * struct json.
  *
- * This is a variable argument list interface to jprint_json_print().
+ * This is a variable argument list interface to jprint_json_search().
  *
- * See jprint_json_tree_print() to go through the entire tree.
+ * See jprint_json_tree_search() to go through the entire tree.
  *
  * given:
- *	jprint	pointer to our struct json
- *	node	pointer to a JSON parser tree node to free
- *	depth	current tree depth (0 ==> top of tree)
- *	ap	variable argument list, required ap args:
+ *	jprint	    pointer to our struct json
+ *	node	    pointer to a JSON parser tree node to free
+ *	is_value    boolean to indicate if this is a value or name
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	ap	    variable argument list, required ap args:
  *
- *		json_dbg_lvl   print message if JSON_DBG_FORCED
- *			       OR if <= json_verbosity_level
+ *			json_dbg_lvl	print message if JSON_DBG_FORCED
+ *					OR if <= json_verbosity_level
  *
  * NOTE: This function does nothing if jprint == NULL or jprint->patterns ==
  * NULL or if none of the names/values match any of the patterns or node ==
@@ -1033,7 +1177,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
  * problems will be fixed in a future commit.
  */
 void
-vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap)
+vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
     int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
@@ -1062,37 +1206,37 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
     }
     json_dbg_lvl = va_arg(ap2, int);
 
+    /*
+     * NOTE: why is it that we return if we're searching by value and it is a
+     * value or if it's not a value and we're searching by name? Because as I
+     * understand it at this time if we're searching for values we want to print
+     * the name and not the value. The '-p' option will change this behaviour
+     * anyway so this might have to change but at this time for simple JSON
+     * files using -Y will add only names and not using it will add only values.
+     * The pattern should itself have the pattern that matched (though currently
+     * only basic matching is in - regexp not implemented yet) which is set to
+     * the name in the match (it might be that it should be renamed as it isn't
+     * necessarily always a name but this will be decided later). Note that this
+     * only prints the match found regardless of the -p option. That will be
+     * fixed later.
+     */
+    if ((jprint->search_value && is_value) || (!is_value && !jprint->search_value)) {
+	va_end(ap2); /* stdarg variable argument list clean up */
+	return;
+    }
+
     /* if level is okay go through each pattern and print any matches */
     if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
     {
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-
-	    /*
-	     * NOTE: there'll probably be a list of patterns found on top of
-	     * those to search for and that list will be iterated through
-	     * instead.
-	     */
-
-	    /*
-	     * XXX: for each pattern we have to print all matches within the
-	     * constraints of jprint->jprint_min_matches and
-	     * jprint->jprint_max_matches. In order to do this we'll need
-	     * another list of patterns and for each in the list it will have to
-	     * have another list of those found (or put another way: for each
-	     * pattern searched for there will have to be a list of matches
-	     * found whether or not in a second list or not). Perhaps when the
-	     * search code is added it will not add matches beyond the
-	     * constraints but this is TBD later.
-	     */
-	    /*
-	     * XXX - this does not check for matches nor any additional
-	     * constraints not noted above - XXX
+	    /* XXX: for each pattern we have to find a match and then add it to
+	     * the matches list of that pattern. After that we can go through
+	     * the matches found and print out the matches as desired by the
+	     * user. We will not add matches if the constraints do not allow it.
 	     */
 
 		/*
-		 * print node details if type matches
-		 *
-		 * XXX - this matching is not done yet either
+		 * if there is a match found add it to the matches list
 		 */
 		switch (node->type) {
 
@@ -1102,14 +1246,26 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 		    {
 			struct json_number *item = &(node->item.number);
-			print("%s\n", item->as_str);
+
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
+			}
 		    }
 		    break;
 
 		case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 		    {
 			struct json_string *item = &(node->item.string);
-			print("%s\n", item->as_str);
+
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
+			}
 		    }
 		    break;
 
@@ -1117,7 +1273,12 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_boolean *item = &(node->item.boolean);
 
-			print("%s\n", item->as_str);
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
+			}
 		    }
 		    break;
 
@@ -1125,7 +1286,12 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_null *item = &(node->item.null);
 
-			print("%s\n", item->as_str);
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
+			}
 		    }
 		    break;
 
@@ -1133,7 +1299,9 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_member *item = &(node->item.member);
 
-			print("%s\n", item->name_str);
+			/* XXX - fix to check for match of the member and add to
+			 * the matches list if it fits within constraints - XXX */
+			UNUSED_ARG(item);
 		    }
 		    break;
 
@@ -1141,7 +1309,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_object *item = &(node->item.object);
 
-			/* XXX - fix to print the object - XXX */
+			/* XXX - fix to check for match of the object and add to
+			 * the matches list if it fits within constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1150,7 +1319,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_array *item = &(node->item.array);
 
-			/* XXX - fix to print the array - XXX */
+			/* XXX - fix to check for match of the array and add it
+			 * to the matches list if it fits within the constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1159,7 +1329,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_elements *item = &(node->item.elements);
 
-			/* XXX - fix to print the elements - XXX */
+			/* XXX - fix to check for match of the element and add it
+			 * to the matches list if it fits within the constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1168,11 +1339,6 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    break;
 		}
 	    }
-    /*
-     * print final newline
-     */
-    fprstr(stream, "\n");
-
     }
     /*
      * stdarg variable argument list clean up
@@ -1183,7 +1349,7 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 
 
 /*
- * jprint_json_tree_print - print lines for an entire JSON parse tree.
+ * jprint_json_tree_search - print lines for an entire JSON parse tree.
  *
  * This function uses the jprint_json_tree_walk() interface to walk
  * the JSON parse tree and print requested information about matching nodes.
@@ -1201,9 +1367,9 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
  *
  * Example uses - print an entire JSON parse tree
  *
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -1214,10 +1380,10 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
  * NOTE: This function does nothing if the node type is invalid.
  *
  * NOTE: this function is a wrapper to jprint_json_tree_walk() with the callback
- * vjprint_json_print().
+ * vjprint_json_search().
  */
 void
-jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...)
+jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1234,9 +1400,9 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
     va_start(ap, max_depth);
 
     /*
-     * free the JSON parse tree
+     * walk the JSON parse tree
      */
-    jprint_json_tree_walk(jprint, node, max_depth, 0, vjprint_json_print, ap);
+    jprint_json_tree_walk(jprint, node, max_depth, false, 0, vjprint_json_search, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1261,6 +1427,7 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  *
  * given:
  *	node	    pointer to a JSON parse tree
+ *	is_value    if it's a value or name
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
@@ -1276,7 +1443,7 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  * as foo() or (*foo)() we use the latter format for the callback function
  * to make it clearer that it is in fact a function that's passed in so
  * that we can use this function to do more than one thing. This is also
- * why we call it callback and not something else.
+ * why we call it vcallback and not something else.
  *
  * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
  * In this case it will NOT operate on the node, or will be descend and further
@@ -1288,8 +1455,8 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  * If this is the case it will be fixed in a future update.
  */
 void
-jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
-		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap)
+jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap)
 {
     int i;
 
@@ -1313,19 +1480,29 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	return;
     }
 
+    /* if depth is 0 it can't be a value */
+    if (depth == 0) {
+	is_value = false;
+    }
+
     /*
      * walk based on type of node
      */
     switch (node->type) {
 
     case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
     case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+	/* perform function operation on this terminal parse tree node, all of
+	 * which have to be a value */
+	(*vcallback)(jprint, node, true, depth, ap);
+	break;
+
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
@@ -1333,14 +1510,14 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    jprint_json_tree_walk(jprint, item->name, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth+1, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    jprint_json_tree_walk(jprint, item->value, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth+1, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON item is a { members } */
@@ -1350,13 +1527,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], is_value, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
@@ -1366,13 +1543,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
@@ -1382,13 +1559,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     default:
@@ -1397,6 +1574,82 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	break;
     }
     return;
+}
+
+/* jprint_print_matches	    - print all matches found
+ *
+ * given:
+ *
+ *	jprint	    - our struct jprint with patterns list
+ *
+ * NOTE: this function will not return if jprint is NULL.
+ *
+ * NOTE: this function will only warn on empty patterns list.
+ *
+ * NOTE: if any pointer in a match is NULL this function will not return as it
+ * indicates incorrect behaviour in the program as it should never have got this
+ * far in the first place.
+ */
+void
+jprint_print_matches(struct jprint *jprint)
+{
+    struct jprint_pattern *pattern = NULL;  /* to iterate through patterns list */
+    struct jprint_match *match = NULL;	    /* to iterate through matches of each pattern in the patterns list */
+
+    /* firewall */
+    if (jprint == NULL) {
+	err(40, __func__, "jprint is NULL");
+	not_reached();
+    } else if (jprint->patterns == NULL) {
+	warn(__func__, "empty patterns list");
+	return;
+    }
+
+    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	for (match = pattern->matches; match != NULL; match = match->next) {
+	    /* if the name of the match is NULL it is a fatal error */
+	    if (match->name == NULL) {
+		err(41, __func__, "match->name is NULL");
+		not_reached();
+	    } else if (*match->name == '\0') {
+		/* warn on empty name for now and then go to next match */
+		warn(__func__, "empty match name");
+		continue;
+	    }
+
+	    if (match->value == NULL) {
+		err(42, __func__, "match '%s' has NULL value", match->name);
+		not_reached();
+	    } else if (*match->value == '\0') {
+		/* for now we only warn on empty value */
+		warn(__func__, "empty value for match '%s'", match->name);
+		continue;
+	    }
+
+	    /* print the match if constraints allow it
+	     *
+	     * XXX - add final constraint checks
+	     *
+	     * XXX - This is buggy in some cases. This must be fixed.
+	     */
+	    if (jprint_print_name_value(jprint->print_type)) {
+		print("%s\n", match->name);
+		print("%s\n", match->value);
+	    } else if (jprint_print_name(jprint->print_type)) {
+		print("%s\n", match->name);
+	    } else if (jprint_print_value(jprint->print_type)) {
+		print("%s\n", match->value);
+	    }
+	    /*
+	     * XXX: more functions will have to be added to print the values
+	     * and currently the struct jprint_match struct is a work in
+	     * progress. More will have to be added like the JSON type that
+	     * matched (this includes not only the jprint type but the JSON
+	     * type).
+	     */
+
+	}
+    }
 }
 
 /*
