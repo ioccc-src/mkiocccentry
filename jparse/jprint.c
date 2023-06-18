@@ -1252,9 +1252,11 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 		    {
 			struct json_number *item = &(node->item.number);
 
-			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
-			    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
-			    not_reached();
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
 			}
 		    }
 		    break;
@@ -1263,9 +1265,11 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 		    {
 			struct json_string *item = &(node->item.string);
 
-			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
-			    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
-			    not_reached();
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
 			}
 		    }
 		    break;
@@ -1274,9 +1278,11 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 		    {
 			struct json_boolean *item = &(node->item.boolean);
 
-			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
-			    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
-			    not_reached();
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
 			}
 		    }
 		    break;
@@ -1285,9 +1291,11 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 		    {
 			struct json_null *item = &(node->item.null);
 
-			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
-			    err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
-			    not_reached();
+			if (!strcmp(pattern->pattern, item->as_str)) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+				err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
+				not_reached();
+			    }
 			}
 		    }
 		    break;

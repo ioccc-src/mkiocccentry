@@ -25,11 +25,10 @@ will only work for simple json files (or I have only tested simple json files at
 this time). If value is being searched we print the name. I'm not sure now if
 that's correct behaviour. If it is not then the check will have to be changed.
 
-Add checks of what to print - name, value or both. This is modified by the `-p`
-option. If `-Y` is specified it will print name but it can be changed by the
-`-p` option. Again this has only been tested for simple types and it is somewhat
-buggy depending on the options used. This has to do with the way the tree is
-traversed and what is added to the matches list.
+Checks for basic patterns are added! No regexp support yet. This does not mean
+that the printing of name and/or value is yet correct. This needs to be worked
+on. Right now a match can happen for either name or value even though it's
+supposed to be one or the other.
 
 ## Release 1.0.14 2023-06-17
 
