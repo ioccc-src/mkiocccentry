@@ -1237,8 +1237,6 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 
 		/*
 		 * if there is a match found add it to the matches list
-		 *
-		 * XXX - for now everything is added as no matching is done yet - XXX
 		 */
 		switch (node->type) {
 
