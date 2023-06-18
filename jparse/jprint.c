@@ -1214,9 +1214,11 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
      * anyway so this might have to change but at this time for simple JSON
      * files using -Y will add only names and not using it will add only values.
      * The pattern should itself have the pattern that matched (though currently
-     * matching is not yet done) which is set to the name in the match (it might
-     * be that it should be renamed as it isn't necessarily always a name but
-     * this will be decided later).
+     * only basic matching is in - regexp not implemented yet) which is set to
+     * the name in the match (it might be that it should be renamed as it isn't
+     * necessarily always a name but this will be decided later). Note that this
+     * only prints the match found regardless of the -p option. That will be
+     * fixed later.
      */
     if ((jprint->search_value && is_value) || (!is_value && !jprint->search_value)) {
 	va_end(ap2); /* stdarg variable argument list clean up */
