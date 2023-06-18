@@ -43,6 +43,6 @@
 	"trigraph_warning" : false,
 	"ungetc_warning" : false,
 	"fnamchk_version" : "1.0 2023-02-04",
-	"txzchk_version" : "1.0 2023-02-04",
+	"txzchk_version" : "1.0.1 2023-06-16",
 	"wordbuf_warning" : false
 }
