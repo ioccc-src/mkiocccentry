@@ -3003,7 +3003,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	node = json_alloc(JTYPE_UNSET);
 	return node;
     }
-    if (is_open_stream(stream) == false) {
+    if (fd_is_ready(__func__, false, fileno(stream)) == false) {
 
 	/* report closed stream */
 	werr(44, __func__, "stream is not open");

@@ -2356,7 +2356,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * copy prog.c under entry_dir
      */
     dbg(DBG_HIGH, "about to perform: %s -- %s %s/prog.c", cp, prog_c, entry_dir);
-    exit_code = shell_cmd(__func__, true, "% -- % %/prog.c", cp, prog_c, entry_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/prog.c", cp, prog_c, entry_dir);
     if (exit_code != 0) {
 	err(91, __func__, "%s -- %s %s/prog.c failed with exit code: %d",
 			  cp, prog_c, entry_dir, WEXITSTATUS(exit_code));
@@ -2771,7 +2771,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
      * copy Makefile under entry_dir
      */
     dbg(DBG_HIGH, "about to perform: %s --  %s %s/Makefile", cp, Makefile, entry_dir);
-    exit_code = shell_cmd(__func__, true, "% -- % %/Makefile", cp, Makefile, entry_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/Makefile", cp, Makefile, entry_dir);
     if (exit_code != 0) {
 	err(104, __func__, "%s --  %s %s/Makefile failed with exit code: %d",
 			   cp, Makefile, entry_dir, WEXITSTATUS(exit_code));
@@ -2861,7 +2861,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
      * copy remarks.md under entry_dir
      */
     dbg(DBG_HIGH, "about to perform: %s -- %s %s/remarks.md", cp, remarks_md, entry_dir);
-    exit_code = shell_cmd(__func__, true, "% -- % %/remarks.md", cp, remarks_md, entry_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/remarks.md", cp, remarks_md, entry_dir);
     if (exit_code != 0) {
 	err(112, __func__, "%s -- %s %s/remarks.md failed with exit code: %d",
 			   cp, remarks_md, entry_dir, WEXITSTATUS(exit_code));
@@ -3045,7 +3045,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	 * copy remarks_md under entry_dir
 	 */
 	dbg(DBG_HIGH, "about to perform: %s -- %s %s", cp, args[i], dest);
-	exit_code = shell_cmd(__func__, true, "% -- % %", cp, args[i], dest);
+	exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, args[i], dest);
 	if (exit_code != 0) {
 	    err(126, __func__, "%s -- %s %s failed with exit code: %d",
 			       cp, args[i], dest, WEXITSTATUS(exit_code));
@@ -4527,7 +4527,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	 "",
 	 NULL);
     dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lak .", entry_dir, ls);
-    exit_code = shell_cmd(__func__, true, "cd -- % && % -lak .", entry_dir, ls);
+    exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lak .", entry_dir, ls);
     if (exit_code != 0) {
 	err(136, __func__, "cd -- %s && %s -lak . failed with exit code: %d",
 			   entry_dir, ls, WEXITSTATUS(exit_code));
@@ -4826,7 +4826,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	    "Checking the format of .info.json ...", NULL);
     }
     dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -- % .", chkentry, info_path);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- % .", chkentry, info_path);
     if (exit_code != 0) {
 	err(155, __func__, "%s -q -- %s . failed with exit code: %d",
 			   chkentry, info_path, WEXITSTATUS(exit_code));
@@ -5082,7 +5082,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	    "Checking the format of .auth.json ...", NULL);
     }
     dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, auth_path);
-    exit_code = shell_cmd(__func__, true, "% -q -- . %", chkentry, auth_path);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- . %", chkentry, auth_path);
     if (exit_code != 0) {
 	err(173, __func__, "%s -q -- . %s failed with exit code: %d",
 			   chkentry, auth_path, WEXITSTATUS(exit_code));
@@ -5188,7 +5188,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     basename_tarball_path = base_name(tarball_path);
     dbg(DBG_HIGH, "about to perform: %s --format=v7 -cJf %s -- %s",
 		   tar, basename_tarball_path, basename_entry_dir);
-    exit_code = shell_cmd(__func__, true, "% --format=v7 -cJf % -- %",
+    exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_entry_dir);
     if (exit_code != 0) {
 	err(177, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
@@ -5237,7 +5237,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      */
     dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s/../%s",
 		  txzchk, fnamchk, entry_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, true, "% -q -F % -- %/../%",
+    exit_code = shell_cmd(__func__, false, true, "% -q -F % -- %/../%",
 					  txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (exit_code != 0) {
 	err(182, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",

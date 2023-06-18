@@ -2374,7 +2374,7 @@ fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *se
 	warn(__func__, "stream is NULL");
 	return;
     }
-    if (is_open_stream(stream) == false) {
+    if (fd_is_ready(__func__, true, fileno(stream)) == false) {
 	warn(__func__, "stream is is not an open FILE *stream");
 	return;
     }
@@ -2519,7 +2519,7 @@ fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_va
 	warn(__func__, "stream is NULL");
 	return;
     }
-    if (is_open_stream(stream) == false) {
+    if (fd_is_ready(__func__, true, fileno(stream)) == false) {
 	warn(__func__, "stream is is not an open FILE *stream");
 	return;
     }

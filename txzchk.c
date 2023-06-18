@@ -1455,10 +1455,10 @@ check_tarball(char const *tar, char const *fnamchk)
      */
     if (dbg_allowed(DBG_MED)) {
 	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, tarball_path);
-	exit_code = shell_cmd(__func__, true, "% -v 5 -E % -- %", fnamchk, ext, tarball_path);
+	exit_code = shell_cmd(__func__, false, true, "% -v 5 -E % -- %", fnamchk, ext, tarball_path);
     } else {
 	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, tarball_path);
-	exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+	exit_code = shell_cmd(__func__, false, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
     }
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", tarball_path, fnamchk, tarball_path, WEXITSTATUS(exit_code));
@@ -1561,7 +1561,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 * first execute the tar command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, tarball_path);
+	exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (exit_code != 0) {
 	    errp(41, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));

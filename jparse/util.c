@@ -43,6 +43,7 @@
 #include <limits.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <poll.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -475,17 +476,32 @@ is_write(char const *path)
 
 
 /*
- * is_open_stream - determine if a file stream is open
+ * is_open_file_stream - determine if a file stream is open
+ *
+ * Determine if a file stream that is NOT stdin, NOR associated
+ * with valid terminal type device (tty), is open.
+ *
+ * If you wish to determine of a stdio stream associated with stdin,
+ * or a stdio stream associated with tty (such as stdin, stdout or stderr),
+ * then perhaps you want to call is_open_stdio instead:
+ *
+ *	fd_is_ready(__func__, true, fileno(stream))
+ *
+ * (MIS)FEATURE: Calling is_open_file_stream(stdin) will always return true.
+ *	         Calling is_open_file_stream(tty_stream) on a tty based stream
+ *	         will always return true.
  *
  * given:
  *	stream	stream to read if open
  *
  * returns:
- *      true ==> stream is open
- *      false ==> stream is NULL or nor open
+ *      true ==> stream is open, or
+ *		 stream is stdin, or
+ *		 stream is associated with a valid terminal type device (tty)
+ *      false ==> stream is NULL or not open
  */
 bool
-is_open_stream(FILE *stream)
+is_open_file_stream(FILE *stream)
 {
     long pos = 0;	/* stream position */
 
@@ -519,6 +535,295 @@ is_open_stream(FILE *stream)
 
 
 /*
+ * fd_is_ready - test of a file descriptor is ready for I/O
+ *
+ * Perform a non-blocking test to determine of a given file descriptor is ready
+ * for I/O (reading or writing).  If the file descriptor is NOT open, return false.
+ *
+ * The open_test_only flag effects if the test includes a test of the we can read or write
+ * the file descriptor.  When open_test_only is true, we only return true if the file descriptor
+ * is valid and open and not in an error state.  When open_test_only is is false, we also test
+ * if the file descriptor has data ready to be read or can be written into.
+ *
+ * given:
+ *	name		name of the calling function
+ *	open_test_only	true ==>  do not test if we can read or write, only test if open & valid
+ *			false ==> unless descriptor is ready to read or write. return false
+ *	fd		file descriptor on which to perform an I/O test
+ *
+ * returns:
+ *	true	if open_test_only == true:  file descriptor is open and not in an error state
+ *		if open_test_only == false: file descriptor is open, not in an error state, and
+ *					    has data ready to be read or can be written into
+ *	false	if open_test_only == true:  file descriptor is closed or in an error state, or
+ *					    file descriptor < 0
+ *		if open_test_only == false: file descriptor is closed or in an error state, or
+ *					    file descriptor is open but lacks data to read, or
+ *					    file descriptor is open cannot be written info, or
+ *					    file descriptor < 0
+ */
+bool
+fd_is_ready(char const *name, bool open_test_only, int fd)
+{
+    struct pollfd fds;		/* poll selector */
+    int ret;			/* return code holder */
+
+    /*
+     * firewall - fd < 0 returns false
+     */
+    if (fd < 0) {
+	dbg(DBG_VVHIGH, "%s: called via %s: fd: %d < 0, returning false", __func__, name, fd);
+	return false;
+    }
+
+    /*
+     * setup the poll selector for the file descriptor
+     *
+     * We look for all known poll events we are allowed to mark.  Some events are output only,
+     * such as POLLERR, POLLHUP and POLLNVAL (are ignored in events) so we do not set them.
+     */
+    fds.fd = fd;
+    fds.events = 0;
+    if (open_test_only == false){
+	fds.events |= POLLIN | POLLOUT | POLLPRI;
+    }
+#if defined(_GNU_SOURCE)
+    fds.events |= POLLRDHUP;
+#endif /* _GNU_SOURCE */
+#if defined(_XOPEN_SOURCE)
+    if (open_test_only == false) {
+	fds.events |= POLLRDNORM | POLLRDBAND | POLLWRNORM | POLLWRBAND;
+    }
+#endif /* _XOPEN_SOURCE */
+    dbg(DBG_VVHIGH, "%s: called via %s: poll for %d: events set to: %d", __func__, name, fd, fds.events);
+    fds.revents = 0;
+
+    /*
+     * poll the file descriptor without blocking
+     */
+    errno = 0;			/* pre-clear errno for dbg() */
+    ret = poll(&fds, 1, 0);
+    if (ret < 0) {
+	warn(__func__, "called via %s: poll on %d failed: %s, returning false", name, fd, strerror(errno));
+	return false;
+
+    /*
+     * case: file descriptor has an event to check
+     */
+    } else if (ret == 1) {
+
+	/*
+	 * case: POLLNVAL
+	 *
+	 * The fd is not open.
+	 */
+	if (fds.revents & POLLNVAL) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLNVAL revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+	/*
+	 * case: POLLHUP
+	 *
+	 * Note that when reading from a channel such as a pipe or a
+         * stream socket, this event merely indicates that the peer
+         * closed its end of the channel.  Subsequent reads from the
+         * channel will return 0 (end of file) only after all
+         * outstanding data in the channel has been consumed.
+	 */
+	} else if (fds.revents & POLLHUP) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLHUP revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+	/*
+	 * case: POLLERR
+	 *
+	 * This bit is also set for a file descriptor referring to the write end of a pipe
+	 * when the read end has been closed.
+	 */
+	} else if (fds.revents & POLLERR) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLERR revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+#if defined(_GNU_SOURCE)
+	/*
+	 * case: POLLRDHUP
+	 *
+	 * Stream socket peer closed connection, or shut down writing half of connection.
+	 */
+	} else if (fds.revents & POLLRDHUP) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLRDHUP revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+#endif /* _GNU_SOURCE */
+	}
+
+	/*
+	 * cases: all other cases the file descriptor is considered ready
+	 *
+	 * These cases include:
+	 *
+	 * POLLIN - There is data to read.
+	 * POLLPRI - some exceptional condition on the file descriptor such as:
+	 *		out-of-band data on a TCP socket
+	 *		pseudoterminal master in packet mode has seen a state change on the slave
+	 *		cgroup.events file has been modified
+	 * POLLOUT - Writing is now possible.
+	 *
+	 * And if defined(_XOPEN_SOURCE):
+	 *
+	 * POLLRDNORM - Equivalent to POLLIN.
+	 * POLLRDBAND - Priority band data can be read.
+	 * POLLWRNORM - Equivalent to POLLOUT.
+	 * POLLWRBAND - Priority data may be written.
+	 */
+	dbg(DBG_VVHIGH, "%s: called via %s: poll on %d revents: %x such that we return true",
+			__func__, name, fd, fds.revents);
+	return true;
+
+    /*
+     * case: file descriptor has no events, return false
+     *
+     * When descriptors are have events, we assume that the file descriptor is valid (open non-error).
+     *
+     * If open_test_only is true: because we ignore events related to being able to read or write,
+     *				  we can safely assume file descriptor is not suitable for I/O actions.
+     * If open_test_only is false: we assume file descriptor cannot also be read from or written into.
+     *
+     * In either case we declare the file descriptors not ready.
+     */
+    } else if (ret == 0) {
+	dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found no events, returning false",
+			__func__, name, fd);
+	return false;
+    }
+
+    /*
+     * unexpected poll return, return false
+     */
+    warn(__func__, "called via %s: poll on %d returned %d: expected 0 or 1, returning false", name, fd, ret);
+    return false;
+}
+
+
+/*
+ * flush_tty - flush stdin, stdout and stderr
+ *
+ * We flush all pending stdio data if they are open.
+ * We ignore the flush of they are not open.
+ *
+ * given:
+ *	name		- name of the calling function
+ *	flush_stdin	- true ==> stdin should be flushed as well as stdout and stderr,
+ *			  false ==> only flush stdout and stderr
+ *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
+ *			            return EXIT_CALLOC_FAILED malloc() failure,
+ *			            return EXIT_FFLUSH_FAILED on fflush failure,
+ *			            return EXIT_SYSTEM_FAILED if system() failed,
+ *			            return EXIT_NULL_ARGS if NULL pointers were passed
+ *			  true ==> return exit code if able to successfully call system(), or
+ *			           call errp() (and thus exit) if unsuccessful
+ *
+ * IMPORTANT: If write_mode == true, then pending stdin will be flushed.
+ *	      If this process has not read all pending data on stdin, then
+ *	      such pending data will be lost by the internal call to fflush(stdin).
+ *	      It is the responsibility of the calling function to have read all stdin
+ *	      OR accept that such pending stdin data will be lost.
+ *
+ * NOTE: This function does not return on error (such as a stdio related error).
+ */
+void
+flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
+{
+    int ret;			/* return code holder */
+
+    /*
+     * case: flush_stdin is true
+     */
+    if (flush_stdin == true) {
+
+	/*
+	 * pre-flush stdin, if open, to avoid buffered stdio issues with the child process
+	 *
+	 * We do not want the child process to "inherit" buffered stdio stdin data
+	 * waiting to be read as this could result in data being read twice or worse.
+	 *
+	 * NOTE: If this process has not read all pending data on stdin, this
+	 *	     next fflush() will cause that data to be lost.
+	 */
+	if (fd_is_ready(name, true, fileno(stdin))) {
+	    clearerr(stdin);		/* pre-clear ferror() status */
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fflush(stdin);
+	    if (ret < 0) {
+		/* exit or error return depending on abort_on_error */
+		if (abort_on_error) {
+		    errp(109, name, "fflush(stdin): error code: %d", ret);
+		    not_reached();
+		} else {
+		    dbg(DBG_MED, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
+		    return;
+		}
+	    }
+	} else {
+	    dbg(DBG_VHIGH, "%s: called via %s: stdin is NOT open, flush request ignored", __func__, name);
+	}
+    }
+
+    /*
+     * pre-flush stdout, if open, to avoid buffered stdio issues with the child process
+     *
+     * We do not want the child process to "inherit" buffered stdio stdout data
+     * waiting to be written as this could result in data being written twice or worse.
+     */
+    if (fd_is_ready(name, true, fileno(stdout))) {
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    /* exit or error return depending on abort_on_error */
+	    if (abort_on_error) {
+		errp(110, name, "fflush(stdout): error code: %d", ret);
+		not_reached();
+	    } else {
+		dbg(DBG_MED, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
+		return;
+	    }
+	}
+    } else {
+	dbg(DBG_VHIGH, "%s: called via %s: stdout is NOT open, flush request ignored", __func__, name);
+    }
+
+    /*
+     * pre-flush stderr, if open, to avoid buffered stdio issues with the child process
+     *
+     * We do not want the child process to "inherit" buffered stdio stderr data
+     * waiting to be written as this could result in data being written twice or worse.
+     */
+    if (fd_is_ready(name, true, fileno(stderr))) {
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    /* exit or error return depending on abort_on_error */
+	    if (abort_on_error) {
+		errp(111, name, "fflush(stderr): error code: %d", ret);
+		not_reached();
+	    } else {
+		dbg(DBG_MED, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));
+		return;
+	    }
+	}
+    } else {
+	dbg(DBG_VHIGH, "%s: called via %s: stderr is NOT open, flush request ignored", __func__, name);
+    }
+    return;
+}
+
+
+/*
  * file_size - determine the file size
  *
  * Return the file size, or -1 if the file does not exist.
@@ -540,7 +845,7 @@ file_size(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(109, __func__, "called with NULL path");
+	err(112, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -815,19 +1120,20 @@ vcmdprintf(char const *fmt, va_list ap)
  *
  * given:
  *	name		- name of the calling function
+ *	flush_stdin	- true ==> stdin should be flushed as well as stdout and stderr,
+ *			  false ==> only flush stdout and stderr
  *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
- *			    return EXIT_CALLOC_FAILED malloc() failure,
- *			    return EXIT_FFLUSH_FAILED on fflush failure,
- *			    return EXIT_SYSTEM_FAILED if system() failed,
- *			    return EXIT_NULL_ARGS if NULL pointers were passed
+ *			            return EXIT_CALLOC_FAILED malloc() failure,
+ *			            return EXIT_FFLUSH_FAILED on fflush failure,
+ *			            return EXIT_SYSTEM_FAILED if system() failed,
+ *			            return EXIT_NULL_ARGS if NULL pointers were passed
  *			  true ==> return exit code if able to successfully call system(), or
- *			   call errp() (and thus exit) if unsuccessful
+ *			           call errp() (and thus exit) if unsuccessful
  *      format		- The format string, any % on this string inserts the
  *			  next string from the list, escaping special characters
  *			  that the shell might threaten as command characters.
  *			  In the worst case, the algorithm will make twice as
- *			  many characters.  Will not use escaping if it isn't
- *			  needed.
+ *			  many characters.  Will not use escaping if it isn't needed.
  *      ...		- args to give after the format
  *
  * returns:
@@ -836,14 +1142,19 @@ vcmdprintf(char const *fmt, va_list ap)
  * NOTE: The values *_EXIT are < 0, and therefore do not match a valid exit code.
  *	 Moreover if abort_on_error == false, a simple check if the return was <
  *	 0 will allow the calling function to determine if this function failed.
+ *
+ * IMPORTANT: If flush_stdin == true, then pending stdin will be flushed.
+ *	      If this process has not read all pending data on stdin, then
+ *	      such pending data will be lost by the internal call to fflush(stdin).
+ *	      It is the responsibility of the calling function to have read all stdin
+ *	      OR accept that such pending stdin data will be lost.
  */
 int
-shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
+shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
     char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
-    int ret;			/* libc function return */
 
     /*
      * firewall
@@ -851,7 +1162,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (name == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    err(110, __func__, "function name is not caller name because we were called with NULL name");
+	    err(113, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL name, returning: %d < 0", EXIT_NULL_ARGS);
@@ -861,7 +1172,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (format == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    err(111, name, "called with NULL format");
+	    err(114, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
@@ -882,7 +1193,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (cmd == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(112, name, "calloc failed in vcmdprintf()");
+	    errp(115, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
@@ -893,50 +1204,9 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * pre-flush stdout to avoid system() buffered stdio issues
+     * flush stdio as needed
      */
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
-	/* exit or error return depending on abort_on_error */
-	if (abort_on_error) {
-	    errp(113, name, "fflush(stdout): error code: %d", ret);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
-	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return EXIT_FFLUSH_FAILED;
-	}
-    }
-
-    /*
-     * pre-flush stderr to avoid system() buffered stdio issues
-     */
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
-	/* exit or error return depending on abort_on_error */
-	if (abort_on_error) {
-	    errp(114, name, "fflush(stderr): error code: %d", ret);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stderr) failed", name);
-	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return EXIT_FFLUSH_FAILED;
-	}
-    }
+    flush_tty(name, flush_stdin, abort_on_error);
 
     /*
      * execute the command
@@ -947,7 +1217,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (exit_code < 0) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(115, __func__, "error calling system(%s)", cmd);
+	    errp(116, __func__, "error calling system(%s)", cmd);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling system(%s)", name, cmd);
@@ -966,7 +1236,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     } else if (exit_code == 127) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(116, __func__, "execution of the shell failed for system(%s)", cmd);
+	    errp(117, __func__, "execution of the shell failed for system(%s)", cmd);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(%s)", name, cmd);
@@ -1007,27 +1277,33 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
  *
  * given:
  *	name		- name of the calling function
- *	write_mode	- true if we should open for writing
+ *	write_mode	- true ==> open a pipe for writing and flush stdin
+ *			  false ==> open a pipe for reading
  *	abort_on_error	- false ==> return FILE * stream for open pipe to shell, or
- *			    return NULL on failure
+ *			            return NULL on failure
  *			  true ==> return FILE * stream for open pipe to shell, or
- *			   call errp() (and thus exit) if unsuccessful
+ *			           call errp() (and thus exit) if unsuccessful
  *      format		- The format string, any % on this string inserts the
  *			  next string from the list, escaping special characters
  *			  that the shell might threaten as command characters.
  *			  In the worst case, the algorithm will make twice as
- *			  many characters.  Will not use escaping if it isn't
- *			  needed.
+ *			  many characters.  Will not use escaping if it isn't needed.
  *      ...     - args to give after the format
  *
  * returns:
  *	FILE * stream for open pipe to shell, or NULL ==> error
+ *
+ * IMPORTANT: If write_mode == true, then pending stdin will be flushed.
+ *	      If this process has not read all pending data on stdin, then
+ *	      such pending data will be lost by the internal call to fflush(stdin).
+ *	      It is the responsibility of the calling function to have read all stdin
+ *	      OR accept that such pending stdin data will be lost.
  */
 FILE *
 pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
-    char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
+    char *cmd = NULL;		/* e.g., cp prog.c entry_dir/prog.c */
     FILE *stream = NULL;	/* open pipe to shell command or NULL */
     int ret;			/* libc function return */
 
@@ -1037,7 +1313,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (name == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(117, __func__, "function name is not caller name because we were called with NULL name");
+	    err(118, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL name, returning NULL");
@@ -1047,7 +1323,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (format == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(118, name, "called with NULL format");
+	    err(119, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning NULL");
@@ -1068,7 +1344,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    errp(119, name, "calloc failed in vcmdprintf()");
+	    errp(120, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
@@ -1079,73 +1355,12 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     }
 
     /*
-     * pre-flush stdout to avoid popen() buffered stdio issues
+     * flush stdio as needed
+     *
+     * If we are in write_mode to a pipe, we also flush stdin in order to
+     * avoid duplicate reads (or worse) of buffered stdin data.
      */
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
-	/* exit or error return depending on abort_on_error */
-	if (abort_on_error) {
-	    errp(120, name, "fflush(stdout): error code: %d", ret);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
-	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return NULL;
-	}
-    }
-
-    /*
-     * pre-flush stdin to avoid popen() buffered stdio issues
-     */
-    clearerr(stdin);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdin);
-    if (ret < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
-	/* exit or error return depending on abort_on_error */
-	if (abort_on_error) {
-	    errp(121, name, "fflush(stdin): error code: %d", ret);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stdin) failed: %s", name, strerror(errno));
-	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return NULL;
-	}
-    }
-
-    /*
-     * pre-flush stderr to avoid popen() buffered stdio issues
-     */
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	/* free allocated command storage */
-	if (cmd != NULL) {
-	    free(cmd);
-	    cmd = NULL;
-	}
-	/* exit or error return depending on abort_on_error */
-	if (abort_on_error) {
-	    errp(122, name, "fflush(stderr): error code: %d", ret);
-	    not_reached();
-	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stderr) failed: %s", name, strerror(errno));
-	    va_end(ap);		/* stdarg variable argument list cleanup */
-	    return NULL;
-	}
-    }
+    flush_tty(name, write_mode, abort_on_error);
 
     /*
      * establish the open pipe to the shell command
@@ -1156,7 +1371,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (stream == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(123, name, "error calling popen(%s, \"%s\")", cmd, write_mode?"w":"r");
+	    errp(121, name, "error calling popen(%s, \"%s\")", cmd, write_mode?"w":"r");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"%s\"): %s", name, cmd, write_mode?"w":"r", strerror(errno));
@@ -1232,7 +1447,7 @@ para(char const *line, ...)
      * firewall
      */
     if (stdout == NULL) {
-	err(124, __func__, "stdout is NULL");
+	err(122, __func__, "stdout is NULL");
 	not_reached();
     }
     clearerr(stdout);		/* pre-clear ferror() status */
@@ -1242,7 +1457,7 @@ para(char const *line, ...)
      */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(125, __func__, "fileno on stdout returned: %d < 0", fd);
+	errp(123, __func__, "fileno on stdout returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stdout);		/* paranoia */
@@ -1261,13 +1476,13 @@ para(char const *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(126, __func__, "error writing paragraph to a stdout");
+		errp(124, __func__, "error writing paragraph to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(128, __func__, "EOF while writing paragraph to a stdout");
+		err(125, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(129, __func__, "unexpected fputs error writing paragraph to stdout");
+		errp(126, __func__, "unexpected fputs error writing paragraph to stdout");
 		not_reached();
 	    }
 	}
@@ -1280,13 +1495,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(130, __func__, "error writing newline to stdout");
+		errp(128, __func__, "error writing newline to stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(131, __func__, "EOF while writing newline to stdout");
+		err(129, __func__, "EOF while writing newline to stdout");
 		not_reached();
 	    } else {
-		errp(132, __func__, "unexpected fputc error writing newline to stdout");
+		errp(130, __func__, "unexpected fputc error writing newline to stdout");
 		not_reached();
 	    }
 	}
@@ -1311,13 +1526,13 @@ para(char const *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(133, __func__, "error flushing stdout");
+	    errp(131, __func__, "error flushing stdout");
 	    not_reached();
 	} else if (feof(stdout)) {
-	    err(134, __func__, "EOF while flushing stdout");
+	    err(132, __func__, "EOF while flushing stdout");
 	    not_reached();
 	} else {
-	    errp(135, __func__, "unexpected fflush error while flushing stdout");
+	    errp(133, __func__, "unexpected fflush error while flushing stdout");
 	    not_reached();
 	}
     }
@@ -1360,7 +1575,7 @@ fpara(FILE * stream, char const *line, ...)
      * firewall
      */
     if (stream == NULL) {
-	err(136, __func__, "stream is NULL");
+	err(134, __func__, "stream is NULL");
 	not_reached();
     }
 
@@ -1371,7 +1586,7 @@ fpara(FILE * stream, char const *line, ...)
     errno = 0;			/* pre-clear errno for errp() */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(137, __func__, "fileno on stream returned: %d < 0", fd);
+	errp(135, __func__, "fileno on stream returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stream);		/* paranoia */
@@ -1390,13 +1605,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(138, __func__, "error writing paragraph to stream");
+		errp(136, __func__, "error writing paragraph to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(139, __func__, "EOF while writing paragraph to stream");
+		err(137, __func__, "EOF while writing paragraph to stream");
 		not_reached();
 	    } else {
-		errp(140, __func__, "unexpected fputs error writing paragraph to stream");
+		errp(138, __func__, "unexpected fputs error writing paragraph to stream");
 		not_reached();
 	    }
 	}
@@ -1409,13 +1624,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(141, __func__, "error writing newline to stream");
+		errp(139, __func__, "error writing newline to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(142, __func__, "EOF while writing newline to stream");
+		err(140, __func__, "EOF while writing newline to stream");
 		not_reached();
 	    } else {
-		errp(143, __func__, "unexpected fputc error writing newline to stream");
+		errp(141, __func__, "unexpected fputc error writing newline to stream");
 		not_reached();
 	    }
 	}
@@ -1440,13 +1655,13 @@ fpara(FILE * stream, char const *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(144, __func__, "error flushing stream");
+	    errp(142, __func__, "error flushing stream");
 	    not_reached();
 	} else if (feof(stream)) {
-	    err(145, __func__, "EOF while flushing stream");
+	    err(143, __func__, "EOF while flushing stream");
 	    not_reached();
 	} else {
-	    errp(146, __func__, "unexpected fflush error while flushing stream");
+	    errp(144, __func__, "unexpected fflush error while flushing stream");
 	    not_reached();
 	}
     }
@@ -1639,7 +1854,7 @@ readline(char **linep, FILE * stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(147, __func__, "called with NULL arg(s)");
+	err(145, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1654,10 +1869,10 @@ readline(char **linep, FILE * stream)
 	    dbg(DBG_VVHIGH, "EOF detected in getline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
-	    errp(148, __func__, "getline() error");
+	    errp(146, __func__, "getline() error");
 	    not_reached();
 	} else {
-	    errp(149, __func__, "unexpected getline() error");
+	    errp(147, __func__, "unexpected getline() error");
 	    not_reached();
 	}
     }
@@ -1665,7 +1880,7 @@ readline(char **linep, FILE * stream)
      * paranoia
      */
     if (*linep == NULL) {
-	err(150, __func__, "*linep is NULL after getline()");
+	err(148, __func__, "*linep is NULL after getline()");
 	not_reached();
     }
 
@@ -1721,7 +1936,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(151, __func__, "called with NULL arg(s)");
+	err(149, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1743,7 +1958,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc((size_t)len+1+1, sizeof(char));
     if (ret == NULL) {
-	errp(152, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
+	errp(150, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
     memcpy(ret, *linep, (size_t)len);
@@ -1818,7 +2033,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	    .. data has no internal NUL byte ..
  *	} else {
  *	    .. data has at least one internal NUL byte ..
- }	}
+ *	}
  *
  * Because files can contain NUL bytes, the strlen() function on
  * the allocated buffer may return a different length than the
@@ -1846,7 +2061,7 @@ read_all(FILE *stream, size_t *psize)
      * firewall
      */
     if (stream == NULL) {
-	err(153, __func__, "called with NULL stream");
+	err(151, __func__, "called with NULL stream");
 	not_reached();
     }
 
@@ -2547,7 +2762,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(154, __func__, "called with NULL arg(s)");
+	err(152, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3628,7 +3843,7 @@ calloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(155, __func__, "filename is NULL");
+	err(153, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -3645,7 +3860,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(156, __func__, "strdup of filename failed: %s", filename);
+	    errp(154, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -3663,7 +3878,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(157, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(155, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -3673,7 +3888,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(158, __func__, "snprintf returned: %zu < 0", len);
+	    errp(156, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -3682,7 +3897,7 @@ calloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(159, __func__, "function attempted to return NULL");
+	errp(157, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -3709,7 +3924,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(160, __func__, "given NULL str");
+	err(158, __func__, "given NULL str");
 	not_reached();
     }
 

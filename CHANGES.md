@@ -33,6 +33,18 @@ supposed to be one or the other.
 Rename some functions to match what they do better (they do not print but search
 for matches).
 
+Added double blank lines before _Release_ markdown headers in this file.
+
+Rename `is_open_stream()` to `is_open_file_stream()` in `jparse/util.c`.
+Added `fd_is_ready()` and `flush_tty()` to `jparse/util.c`.
+Added `flush_stdin` as new 2nd arg to `shell_cmd()` in `jparse/util.c`.
+Changed `pipe_open()` in `jparse/util.c` to only flush stdin if `write_mode`.
+Changed JSON parser to use new `fd_is_ready()` function.
+Changed `jprint` and `jparse/json_sem` to use new `fd_is_ready()` function.
+Updated `mkiocccentry` to not flush stdin when calling shell functions.
+Updated `txzchk` to not flush stdin when calling shell functions.
+
+
 ## Release 1.0.14 2023-06-17
 
 New `jprint` version at "0.0.20 2023-06-17".
@@ -57,6 +69,7 @@ done with these functions.
 
 `jprint` now checks level (depth) constraints before printing a json member.
 This needs to be tested more carefully with bigger documents.
+
 
 ## Release 1.0.13 2023-06-16
 
@@ -118,6 +131,7 @@ to be a different arg specified.
 
 Updated `jprint` version to "0.0.18 2023-06-15".
 
+
 ## Release 1.0.11 2023-06-14
 
 Minor fix in `jparse` error location reporting. When the erroneous token was at
@@ -165,6 +179,7 @@ codes.
 `jprint -Y` requires exactly two args to the command - the file and one
 `name_arg`. Anything else is an error.
 
+
 ## Release 1.0.10 2023-06-13
 
 New `jparse` version at "1.0.3 2023-06-12" and json parser version at "1.0.4
@@ -207,7 +222,7 @@ now.
  * have to believe us when we tell you that this is a good enough
  * reason why! :-)
  */
-```	
+```
 
 
 ## Release 1.0.9 2023-06-12
@@ -241,6 +256,7 @@ the list so that the first pattern/regexp specified will be looked for first.
 Change exit codes in `jprint` a bit, making 7 exclusive for memory allocation
 errors and >= 15 for other internal errors.
 
+
 ## Release 1.0.8 2023-06-11
 
 Fix `jparse` column location calculations where error messages just showed the
@@ -257,6 +273,7 @@ It is an error to use `jprint -p {n,v,b}` and `jprint -j` together.
 
 Move the many options in `jprint`'s `main()` to `struct jprint_options` to
 organise them and to help with passing to necessary callbacks later on.
+
 
 ## Release 1.0.7 2023-06-10
 
@@ -280,6 +297,7 @@ Clarify use of `jprint` `-I` and `-L` options in help string.
 Add more test cases of bits.
 
 Fix potential NULL pointer dereference in parsing of number ranges.
+
 
 ## Release 1.0.6 2023-06-09
 
@@ -305,6 +323,7 @@ test functions. See `jprint_test.c` for details.
 
 Release `jprint` version "0.0.12 2023-06-09": change semantics of `-I` option to
 match that of `-b` and `-L`. Finished -t type test code.
+
 
 ## Release 1.0.5 2023-06-08
 
@@ -337,6 +356,7 @@ verify that `jprint` works as expected. Then any issues can be fixed and the
 tests can be run again. This might take more than a few days but hopefully
 things will move along nicely.
 
+
 ## Release 1.0.5 2023-06-05
 
 `jprint` now accepts a `-m max_depth` option to allow for one to specify maximum
@@ -352,6 +372,7 @@ first thought).
 New `jprint` version "0.0.6 2023-06-07". It now parses all options and most test
 functions for options being set are added as well. This version is backdated to
 7 June because this was done on the 7th of June but the version was not updated.
+
 
 ## Release 1.0.4 2023-06-04
 

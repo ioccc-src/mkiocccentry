@@ -509,10 +509,10 @@ int main(int argc, char **argv)
 	/* try running via shell_cmd() first */
 	if (tool_args != NULL) {
 	    dbg(DBG_MED, "about to execute: %s %s %s >/dev/null 2>&1", tool_path, tool_args, argv[0]);
-	    exit_code = shell_cmd(__func__, true, "% % -- %", tool_path, tool_args, argv[0]);
+	    exit_code = shell_cmd(__func__, true, true, "% % -- %", tool_path, tool_args, argv[0]);
 	} else {
 	    dbg(DBG_MED, "about to execute: %s %s >/dev/null 2>&1", tool_path, argv[0]);
-	    exit_code = shell_cmd(__func__, true, "% %", tool_path, argv[0]);
+	    exit_code = shell_cmd(__func__, true, true, "% %", tool_path, argv[0]);
 	}
 	if(exit_code != 0) {
 	    free_jprint(&jprint);
