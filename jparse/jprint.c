@@ -1443,7 +1443,7 @@ jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int m
  * as foo() or (*foo)() we use the latter format for the callback function
  * to make it clearer that it is in fact a function that's passed in so
  * that we can use this function to do more than one thing. This is also
- * why we call it callback and not something else.
+ * why we call it vcallback and not something else.
  *
  * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
  * In this case it will NOT operate on the node, or will be descend and further
