@@ -20,6 +20,15 @@ just like the others this will be changed.
 
 Stop extraneous newlines from being printed.
 
+Add initial support for searching by value or name (value via `-Y` option). This
+will only work for simple json files (or I have only tested simple json files at
+this time). If value is being searched we print the name. I'm not sure now if
+that's correct behaviour. If it is not then the check will have to be changed.
+
+Add checks of what to print - name, value or both. This is modified by the `-p`
+option. If `-Y` is specified it will print name but it can be changed by the
+`-p` option. Again this has only been tested for simple types.
+
 ## Release 1.0.14 2023-06-17
 
 New `jprint` version at "0.0.20 2023-06-17".

@@ -1206,16 +1206,22 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
     }
     json_dbg_lvl = va_arg(ap2, int);
 
-    /* is_value is currently unused as it's not clear yet how it might need to
-     * be dealt with. As this function is called for both name and value
-     * separately but we need the name with the value this function will
-     * possibly have to change a lot so this boolean might not even be needed.
-     * Possibly both nodes will have to be passed to the function and then
-     * depending on this boolean we will know which to search for. But since
-     * many things are currently unclear we simply have the boolean even though
-     * it's unused and might not be necessary at all.
+    /*
+     * NOTE: why is it that we return if we're searching by value and it is a
+     * value or if it's not a value and we're searching by name? Because as I
+     * understand it at this time if we're searching for values we want to print
+     * the name and not the value. The '-p' option will change this behaviour
+     * anyway so this might have to change but at this time for simple JSON
+     * files using -Y will add only names and not using it will add only values.
+     * The pattern should itself have the pattern that matched (though currently
+     * matching is not yet done) which is set to the name in the match (it might
+     * be that it should be renamed as it isn't necessarily always a name but
+     * this will be decided later).
      */
-    UNUSED_ARG(is_value);
+    if ((jprint->search_value && is_value) || (!is_value && !jprint->search_value)) {
+	va_end(ap2); /* stdarg variable argument list clean up */
+	return;
+    }
 
     /* if level is okay go through each pattern and print any matches */
     if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
@@ -1621,7 +1627,14 @@ jprint_print_matches(struct jprint *jprint)
 	     *
 	     * XXX - add final constraint checks
 	     */
-
+	    if (jprint_print_name_value(jprint->print_type)) {
+		print("%s\n", match->name);
+		print("%s\n", match->value);
+	    } else if (jprint_print_name(jprint->print_type)) {
+		print("%s\n", match->name);
+	    } else if (jprint_print_value(jprint->print_type)) {
+		print("%s\n", match->value);
+	    }
 	    /*
 	     * XXX: more functions will have to be added to print the values
 	     * and currently the struct jprint_match struct is a work in
@@ -1630,7 +1643,6 @@ jprint_print_matches(struct jprint *jprint)
 	     * type).
 	     */
 
-	    print("%s\n", match->value);
 	}
     }
 }
