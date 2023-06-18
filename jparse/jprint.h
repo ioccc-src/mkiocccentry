@@ -161,11 +161,11 @@ void jprint_print_matches(struct jprint *jprint);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* for finding matches and printing them */
-void jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...);
-void vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap);
+void jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
+void vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
 void jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
-void jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
-		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap);
+void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
 
 
 /* sanity checks on environment for specific options */

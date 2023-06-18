@@ -792,7 +792,8 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     /* set which match number this is, incrementing the pattern's total matches */
     match->number = pattern->matches_found++;
 
-    dbg(DBG_NONE, "adding match #%ju to pattern '%s' to match list", match->number, pattern->pattern);
+    dbg(DBG_NONE, "adding match '%s' to pattern '%s' to match list",
+	    jprint->search_value?match->value:match->name, pattern->pattern);
 
     for (tmp = pattern->matches; tmp && tmp->next; tmp = tmp->next)
 	; /* on its own line to silence useless and bogus warning -Wempty-body */
@@ -1092,21 +1093,22 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
  * struct json.
  *
  * given:
- *	jprint	pointer to our struct jprint
- *	node	pointer to a JSON parser tree node to try and match
- *	depth	current tree depth (0 ==> top of tree)
- *	...	extra args are ignored, required extra args if <=
- *		json_verbosity_level:
+ *	jprint	    pointer to our struct jprint
+ *	node	    pointer to a JSON parser tree node to try and match
+ *	is_value    whether node is a value or name
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	...	    extra args are ignored, required extra args if <=
+ *		    json_verbosity_level:
  *
- *		    stream	   stream to print on
- *		    json_dbg_lvl   print message if JSON_DBG_FORCED
- *				   OR if <= json_verbosity_level
+ *			stream		stream to print on
+ *			json_dbg_lvl	print message if JSON_DBG_FORCED
+ *					OR if <= json_verbosity_level
  *
  * Example use - print a JSON parse tree
  *
- *	jprint_json_print(node, depth, JSON_DBG_MED);
- *	jprint_json_print(node, depth, JSON_DBG_FORCED;
- *	jprint_json_print(node, depth, JSON_DBG_MED);
+ *	jprint_json_print(node, true, depth, JSON_DBG_MED);
+ *	jprint_json_print(node, false, depth, JSON_DBG_FORCED;
+ *	jprint_json_print(node, false, depth, JSON_DBG_MED);
  *
  * While the ... variable arg are ignored, we need to declare
  * then in order to be in vcallback form for use by json_tree_walk().
@@ -1117,7 +1119,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
  * NOTE: This function does nothing if jprint == NULL or node == NULL.
  */
 void
-jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...)
+jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1134,7 +1136,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
     /*
      * call va_list argument list function
      */
-    vjprint_json_print(jprint, node, depth, ap);
+    vjprint_json_print(jprint, node, is_value, depth, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1156,13 +1158,14 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
  * See jprint_json_tree_print() to go through the entire tree.
  *
  * given:
- *	jprint	pointer to our struct json
- *	node	pointer to a JSON parser tree node to free
- *	depth	current tree depth (0 ==> top of tree)
- *	ap	variable argument list, required ap args:
+ *	jprint	    pointer to our struct json
+ *	node	    pointer to a JSON parser tree node to free
+ *	is_value    boolean to indicate if this is a value or name
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	ap	    variable argument list, required ap args:
  *
- *		json_dbg_lvl   print message if JSON_DBG_FORCED
- *			       OR if <= json_verbosity_level
+ *			json_dbg_lvl	print message if JSON_DBG_FORCED
+ *					OR if <= json_verbosity_level
  *
  * NOTE: This function does nothing if jprint == NULL or jprint->patterns ==
  * NULL or if none of the names/values match any of the patterns or node ==
@@ -1174,7 +1177,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, 
  * problems will be fixed in a future commit.
  */
 void
-vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap)
+vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
     int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
@@ -1203,11 +1206,21 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
     }
     json_dbg_lvl = va_arg(ap2, int);
 
+    /* is_value is currently unused as it's not clear yet how it might need to
+     * be dealt with. As this function is called for both name and value
+     * separately but we need the name with the value this function will
+     * possibly have to change a lot so this boolean might not even be needed.
+     * Possibly both nodes will have to be passed to the function and then
+     * depending on this boolean we will know which to search for. But since
+     * many things are currently unclear we simply have the boolean even though
+     * it's unused and might not be necessary at all.
+     */
+    UNUSED_ARG(is_value);
+
     /* if level is okay go through each pattern and print any matches */
     if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
     {
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-
 	    /* XXX: for each pattern we have to find a match and then add it to
 	     * the matches list of that pattern. After that we can go through
 	     * the matches found and print out the matches as desired by the
@@ -1378,9 +1391,9 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
     va_start(ap, max_depth);
 
     /*
-     * free the JSON parse tree
+     * walk the JSON parse tree
      */
-    jprint_json_tree_walk(jprint, node, max_depth, 0, vjprint_json_print, ap);
+    jprint_json_tree_walk(jprint, node, max_depth, false, 0, vjprint_json_print, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1405,6 +1418,7 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  *
  * given:
  *	node	    pointer to a JSON parse tree
+ *	is_value    if it's a value or name
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
@@ -1432,8 +1446,8 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
  * If this is the case it will be fixed in a future update.
  */
 void
-jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
-		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap)
+jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap)
 {
     int i;
 
@@ -1457,19 +1471,29 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	return;
     }
 
+    /* if depth is 0 it can't be a value */
+    if (depth == 0) {
+	is_value = false;
+    }
+
     /*
      * walk based on type of node
      */
     switch (node->type) {
 
     case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
     case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+	/* perform function operation on this terminal parse tree node, all of
+	 * which have to be a value */
+	(*vcallback)(jprint, node, true, depth, ap);
+	break;
+
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
@@ -1477,14 +1501,14 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    jprint_json_tree_walk(jprint, item->name, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth+1, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    jprint_json_tree_walk(jprint, item->value, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth+1, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON item is a { members } */
@@ -1494,13 +1518,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], is_value, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
@@ -1510,13 +1534,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
@@ -1526,13 +1550,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     default:

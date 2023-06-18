@@ -7,7 +7,7 @@ pattern. The tree traversal functions will search for matches and after that
 function finally returns the printing of matches will be found. This will
 require additional functions that figure out how to print based on the json type
 and jprint options along with the jprint type but for now it prints just the
-name and value. Currently everything is added to the list.
+name and value.
 
 Note that by 'everything is added to the list' mentioned above this means that
 name and value will be added as a value. This is something that will be fixed
