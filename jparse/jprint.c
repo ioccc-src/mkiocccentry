@@ -609,7 +609,7 @@ int main(int argc, char **argv)
 	}
     }
 
-    jprint_json_tree_print(jprint, json_tree, jprint->max_depth);
+    jprint_json_tree_search(jprint, json_tree, jprint->max_depth);
     jprint_print_matches(jprint);
 
     /* free tree */
@@ -1086,7 +1086,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 }
 
 /*
- * jprint_json_print
+ * jprint_json_search
  *
  * Print information about a JSON node, depending on the booleans in struct
  * jprint if the tree node matches the name or value in any pattern in the
@@ -1106,9 +1106,9 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
  *
  * Example use - print a JSON parse tree
  *
- *	jprint_json_print(node, true, depth, JSON_DBG_MED);
- *	jprint_json_print(node, false, depth, JSON_DBG_FORCED;
- *	jprint_json_print(node, false, depth, JSON_DBG_MED);
+ *	jprint_json_search(node, true, depth, JSON_DBG_MED);
+ *	jprint_json_search(node, false, depth, JSON_DBG_FORCED;
+ *	jprint_json_search(node, false, depth, JSON_DBG_MED);
  *
  * While the ... variable arg are ignored, we need to declare
  * then in order to be in vcallback form for use by json_tree_walk().
@@ -1119,7 +1119,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
  * NOTE: This function does nothing if jprint == NULL or node == NULL.
  */
 void
-jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...)
+jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1136,7 +1136,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsig
     /*
      * call va_list argument list function
      */
-    vjprint_json_print(jprint, node, is_value, depth, ap);
+    vjprint_json_search(jprint, node, is_value, depth, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1147,15 +1147,15 @@ jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsig
 
 
 /*
- * vjprint_json_print
+ * vjprint_json_search
  *
- * Print information about a JSON node, depending on the booleans in struct
+ * Search for matches in a JSON node, depending on the booleans in struct
  * jprint if the tree node matches the name or value in any pattern in the
  * struct json.
  *
- * This is a variable argument list interface to jprint_json_print().
+ * This is a variable argument list interface to jprint_json_search().
  *
- * See jprint_json_tree_print() to go through the entire tree.
+ * See jprint_json_tree_search() to go through the entire tree.
  *
  * given:
  *	jprint	    pointer to our struct json
@@ -1177,7 +1177,7 @@ jprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsig
  * problems will be fixed in a future commit.
  */
 void
-vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap)
+vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
     int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
@@ -1233,11 +1233,6 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 	     * the matches list of that pattern. After that we can go through
 	     * the matches found and print out the matches as desired by the
 	     * user. We will not add matches if the constraints do not allow it.
-	     */
-
-	    /*
-	     * XXX - this does not check for matches nor any additional
-	     * constraints not noted above, just yet - XXX
 	     */
 
 		/*
@@ -1356,7 +1351,7 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
 
 
 /*
- * jprint_json_tree_print - print lines for an entire JSON parse tree.
+ * jprint_json_tree_search - print lines for an entire JSON parse tree.
  *
  * This function uses the jprint_json_tree_walk() interface to walk
  * the JSON parse tree and print requested information about matching nodes.
@@ -1374,9 +1369,9 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
  *
  * Example uses - print an entire JSON parse tree
  *
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jprint_json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
+ *	jprint_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -1387,10 +1382,10 @@ vjprint_json_print(struct jprint *jprint, struct json *node, bool is_value, unsi
  * NOTE: This function does nothing if the node type is invalid.
  *
  * NOTE: this function is a wrapper to jprint_json_tree_walk() with the callback
- * vjprint_json_print().
+ * vjprint_json_search().
  */
 void
-jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...)
+jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1409,7 +1404,7 @@ jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int ma
     /*
      * walk the JSON parse tree
      */
-    jprint_json_tree_walk(jprint, node, max_depth, false, 0, vjprint_json_print, ap);
+    jprint_json_tree_walk(jprint, node, max_depth, false, 0, vjprint_json_search, ap);
 
     /*
      * stdarg variable argument list clean up

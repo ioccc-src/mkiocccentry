@@ -30,6 +30,9 @@ that the printing of name and/or value is yet correct. This needs to be worked
 on. Right now a match can happen for either name or value even though it's
 supposed to be one or the other.
 
+Rename some functions to match what they do better (they do not print but search
+for matches).
+
 ## Release 1.0.14 2023-06-17
 
 New `jprint` version at "0.0.20 2023-06-17".
