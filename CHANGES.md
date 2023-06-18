@@ -27,7 +27,9 @@ that's correct behaviour. If it is not then the check will have to be changed.
 
 Add checks of what to print - name, value or both. This is modified by the `-p`
 option. If `-Y` is specified it will print name but it can be changed by the
-`-p` option. Again this has only been tested for simple types.
+`-p` option. Again this has only been tested for simple types and it is somewhat
+buggy depending on the options used. This has to do with the way the tree is
+traversed and what is added to the matches list.
 
 ## Release 1.0.14 2023-06-17
 

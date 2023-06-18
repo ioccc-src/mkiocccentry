@@ -1626,6 +1626,8 @@ jprint_print_matches(struct jprint *jprint)
 	    /* print the match if constraints allow it
 	     *
 	     * XXX - add final constraint checks
+	     *
+	     * XXX - This is buggy in some cases. This must be fixed.
 	     */
 	    if (jprint_print_name_value(jprint->print_type)) {
 		print("%s\n", match->name);
