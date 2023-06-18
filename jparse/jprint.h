@@ -65,7 +65,25 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.20 2023-06-17"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.21 2023-06-18"		/* format: major.minor YYYY-MM-DD */
+
+/*
+ * jprint_match - a struct for a linked list of patterns matched in each pattern
+ * requested.
+ *
+ * XXX - this struct is a work in progress - XXX
+ */
+struct jprint_match
+{
+    char *name;			    /* name of member */
+    char *value;		    /* value of member */
+
+    uintmax_t level;		    /* the level of the json member for -l */
+    uintmax_t number;		    /* which match this is */
+
+    struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
+    struct jprint_match *next; /* next match found */
+};
 
 /*
  * jprint_pattern - struct for a linked list of patterns requested, held in
@@ -77,9 +95,11 @@ struct jprint_pattern
     bool use_regexp;		    /* whether -g was used */
     bool use_value;		    /* whether -Y was used, implying to search values */
     bool use_substrings;	    /* if -s was used */
-    uintmax_t matches_found;	    /* number of matches found with this pattern */
+    uintmax_t matches_found;	    /* number of matches found so far with this pattern */
 
     struct jprint_pattern *next;    /* the next in the list */
+
+    struct jprint_match *matches;   /* matches found */
 };
 
 /*
@@ -128,14 +148,27 @@ struct jprint
 };
 
 /* functions */
+/* to free the entire struct jprint */
 void free_jprint(struct jprint **jprint);
+
+/* patterns list in struct jprint */
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
-void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
+
+/* matches found of each pattern */
+struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level);
+void jprint_print_matches(struct jprint *jprint);
+void free_jprint_matches_list(struct jprint_pattern *pattern);
+
+/* for finding matches and printing them */
 void jprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, ...);
 void vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth, va_list ap);
 void jprint_json_tree_print(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, unsigned int, va_list), va_list ap);
+
+
+/* sanity checks on environment for specific options */
+void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
 
 #endif /* !defined INCLUDE_JPRINT_H */

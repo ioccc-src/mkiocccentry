@@ -590,7 +590,7 @@ int main(int argc, char **argv)
 		jprint->match_found = true;
 
 		if (pattern->use_regexp) {
-		dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
+		    dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
 		} else {
 		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
@@ -610,6 +610,7 @@ int main(int argc, char **argv)
     }
 
     jprint_json_tree_print(jprint, json_tree, jprint->max_depth);
+    jprint_print_matches(jprint);
 
     /* free tree */
     json_tree_free(json_tree, jprint->max_depth);
@@ -716,6 +717,137 @@ alloc_jprint(void)
     return jprint;
 }
 
+/*
+ * add_jprint_match
+ *
+ * Add jprint pattern match to the jprint struct pattern match list.
+ *
+ * given:
+ *
+ *	jprint		- pointer to the jprint struct
+ *	pattern		- the pattern that matched
+ *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
+ *
+ * NOTE: this function will not return if any of the pointers are NULL including
+ * the pointers in the pattern struct.
+ *
+ * Returns a pointer to the newly allocated struct jprint_match * that was
+ * added to the jprint matched patterns list.
+ */
+struct jprint_match *
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level)
+{
+    struct jprint_match *match = NULL;
+    struct jprint_match *tmp = NULL;
+
+    /*
+     * firewall
+     */
+    if (jprint == NULL) {
+	err(22, __func__, "passed NULL jprint struct");
+	not_reached();
+    }
+
+    if (pattern == NULL) {
+	err(23, __func__, "passed NULL pattern");
+	not_reached();
+    } else if (pattern->pattern == NULL) {
+	err(24, __func__, "pattern->pattern is NULL");
+	not_reached();
+    }
+
+    if (value == NULL) {
+	err(25, __func__, "value is NULL");
+	not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    match = calloc(1, sizeof *match);
+    if (match == NULL) {
+	errp(26, __func__, "unable to allocate struct jprint_match *");
+	not_reached();
+    }
+
+    /* duplicate the name (pattern->pattern) */
+    errno = 0; /* pre-clear errno for errp() */
+    match->name = strdup(pattern->pattern);
+    if (match->name == NULL) {
+	errp(27, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
+	not_reached();
+    }
+
+    /* duplicate the value */
+    errno = 0; /* pre-clear errno for errp() */
+    match->value = strdup(value);
+    if (match->value == NULL) {
+	errp(28, __func__, "unable to strdup value string '%s' for match list", value);
+	not_reached();
+    }
+    /* set level of the match for -l / -L options */
+    match->level = level;
+
+    /* record the pattern that was matched */
+    match->pattern = pattern; /* DO NOT FREE THIS */
+
+    /* set which match number this is, incrementing the pattern's total matches */
+    match->number = pattern->matches_found++;
+
+    dbg(DBG_NONE, "adding match #%ju to pattern '%s' to match list", match->number, pattern->pattern);
+
+    for (tmp = pattern->matches; tmp && tmp->next; tmp = tmp->next)
+	; /* on its own line to silence useless and bogus warning -Wempty-body */
+
+    if (!tmp) {
+	pattern->matches = match;
+    } else {
+	tmp->next = match;
+    }
+
+    return match;
+}
+
+/* free_jprint_matches_list   - free matches list in a struct jprint_pattern *
+ *
+ * given:
+ *
+ *	pattern	    - the jprint pattern
+ *
+ * If the jprint patterns match list is empty this function will do nothing.
+ *
+ * NOTE: this function does not return on a NULL pattern.
+ */
+void
+free_jprint_matches_list(struct jprint_pattern *pattern)
+{
+    struct jprint_match *match = NULL; /* to iterate through matches list */
+    struct jprint_match *next_match = NULL; /* next in list */
+
+    if (pattern == NULL) {
+	err(29, __func__, "passed NULL pattern struct");
+	not_reached();
+    }
+
+    for (match = pattern->matches; match != NULL; match = next_match) {
+	next_match = match->next;
+	if (match->name) {
+	    free(match->name);
+	    match->name = NULL;
+	}
+
+	if (match->value) {
+	    free(match->value);
+	    match->value = NULL;
+	}
+
+	/* DO NOT FREE match->pattern! */
+	free(match);
+	match = NULL;
+    }
+
+    pattern->matches = NULL;
+}
+
+
 
 /*
  * add_jprint_pattern
@@ -749,11 +881,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(22, __func__, "passed NULL jprint struct");
+	err(30, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(23, __func__, "passed NULL str");
+	err(31, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -779,14 +911,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(24, __func__, "unable to allocate struct jprint_pattern *");
+	errp(32, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(25, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(33, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -822,6 +954,9 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
  * If the jprint patterns list is empty this function will do nothing.
  *
  * NOTE: this function does not return on a NULL jprint.
+ *
+ * NOTE: this function calls free_jprint_matches_list() on all the patterns
+ * prior to freeing the pattern itself.
  */
 void
 free_jprint_patterns_list(struct jprint *jprint)
@@ -830,17 +965,23 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(26, __func__, "passed NULL jprint struct");
+	err(34, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
     for (pattern = jprint->patterns; pattern != NULL; pattern = next_pattern) {
 	next_pattern = pattern->next;
+
+	/* first free any matches */
+	free_jprint_matches_list(pattern);
+
+	/* now free the pattern string itself */
 	if (pattern->pattern) {
 	    free(pattern->pattern);
 	    pattern->pattern = NULL;
 	}
 
+	/* finally free the pattern and set to NULL for the next pass */
 	free(pattern);
 	pattern = NULL;
     }
@@ -897,7 +1038,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 {
     /* firewall */
     if (jprint == NULL) {
-	err(27, __func__, "NULL jprint");
+	err(35, __func__, "NULL jprint");
 	not_reached();
     }
 
@@ -1067,32 +1208,21 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
     {
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 
-	    /*
-	     * NOTE: there'll probably be a list of patterns found on top of
-	     * those to search for and that list will be iterated through
-	     * instead.
+	    /* XXX: for each pattern we have to find a match and then add it to
+	     * the matches list of that pattern. After that we can go through
+	     * the matches found and print out the matches as desired by the
+	     * user. We will not add matches if the constraints do not allow it.
 	     */
 
 	    /*
-	     * XXX: for each pattern we have to print all matches within the
-	     * constraints of jprint->jprint_min_matches and
-	     * jprint->jprint_max_matches. In order to do this we'll need
-	     * another list of patterns and for each in the list it will have to
-	     * have another list of those found (or put another way: for each
-	     * pattern searched for there will have to be a list of matches
-	     * found whether or not in a second list or not). Perhaps when the
-	     * search code is added it will not add matches beyond the
-	     * constraints but this is TBD later.
-	     */
-	    /*
 	     * XXX - this does not check for matches nor any additional
-	     * constraints not noted above - XXX
+	     * constraints not noted above, just yet - XXX
 	     */
 
 		/*
-		 * print node details if type matches
+		 * if there is a match found add it to the matches list
 		 *
-		 * XXX - this matching is not done yet either
+		 * XXX - for now everything is added as no matching is done yet - XXX
 		 */
 		switch (node->type) {
 
@@ -1102,14 +1232,22 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 		    {
 			struct json_number *item = &(node->item.number);
-			print("%s\n", item->as_str);
+
+			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+			    not_reached();
+			}
 		    }
 		    break;
 
 		case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 		    {
 			struct json_string *item = &(node->item.string);
-			print("%s\n", item->as_str);
+
+			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+			    not_reached();
+			}
 		    }
 		    break;
 
@@ -1117,7 +1255,10 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_boolean *item = &(node->item.boolean);
 
-			print("%s\n", item->as_str);
+			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+			    not_reached();
+			}
 		    }
 		    break;
 
@@ -1125,7 +1266,10 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_null *item = &(node->item.null);
 
-			print("%s\n", item->as_str);
+			if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
+			    not_reached();
+			}
 		    }
 		    break;
 
@@ -1133,7 +1277,9 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_member *item = &(node->item.member);
 
-			print("%s\n", item->name_str);
+			/* XXX - fix to check for match of the member and add to
+			 * the matches list if it fits within constraints - XXX */
+			UNUSED_ARG(item);
 		    }
 		    break;
 
@@ -1141,7 +1287,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_object *item = &(node->item.object);
 
-			/* XXX - fix to print the object - XXX */
+			/* XXX - fix to check for match of the object and add to
+			 * the matches list if it fits within constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1150,7 +1297,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_array *item = &(node->item.array);
 
-			/* XXX - fix to print the array - XXX */
+			/* XXX - fix to check for match of the array and add it
+			 * to the matches list if it fits within the constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1159,7 +1307,8 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    {
 			struct json_elements *item = &(node->item.elements);
 
-			/* XXX - fix to print the elements - XXX */
+			/* XXX - fix to check for match of the element and add it
+			 * to the matches list if it fits within the constraints - XXX */
 			UNUSED_ARG(item);
 		    }
 		    break;
@@ -1168,11 +1317,6 @@ vjprint_json_print(struct jprint *jprint, struct json *node, unsigned int depth,
 		    break;
 		}
 	    }
-    /*
-     * print final newline
-     */
-    fprstr(stream, "\n");
-
     }
     /*
      * stdarg variable argument list clean up
@@ -1397,6 +1541,74 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, unsigned int max
 	break;
     }
     return;
+}
+
+/* jprint_print_matches	    - print all matches found
+ *
+ * given:
+ *
+ *	jprint	    - our struct jprint with patterns list
+ *
+ * NOTE: this function will not return if jprint is NULL.
+ *
+ * NOTE: this function will only warn on empty patterns list.
+ *
+ * NOTE: if any pointer in a match is NULL this function will not return as it
+ * indicates incorrect behaviour in the program as it should never have got this
+ * far in the first place.
+ */
+void
+jprint_print_matches(struct jprint *jprint)
+{
+    struct jprint_pattern *pattern = NULL;  /* to iterate through patterns list */
+    struct jprint_match *match = NULL;	    /* to iterate through matches of each pattern in the patterns list */
+
+    /* firewall */
+    if (jprint == NULL) {
+	err(40, __func__, "jprint is NULL");
+	not_reached();
+    } else if (jprint->patterns == NULL) {
+	warn(__func__, "empty patterns list");
+	return;
+    }
+
+    for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
+	for (match = pattern->matches; match != NULL; match = match->next) {
+	    /* if the name of the match is NULL it is a fatal error */
+	    if (match->name == NULL) {
+		err(41, __func__, "match->name is NULL");
+		not_reached();
+	    } else if (*match->name == '\0') {
+		/* warn on empty name for now and then go to next match */
+		warn(__func__, "empty match name");
+		continue;
+	    }
+
+	    if (match->value == NULL) {
+		err(42, __func__, "match '%s' has NULL value", match->name);
+		not_reached();
+	    } else if (*match->value == '\0') {
+		/* for now we only warn on empty value */
+		warn(__func__, "empty value for match '%s'", match->name);
+		continue;
+	    }
+
+	    /* print the match if constraints allow it
+	     *
+	     * XXX - add final constraint checks
+	     */
+
+	    /*
+	     * XXX: more functions will have to be added to print the values
+	     * and currently the struct jprint_match struct is a work in
+	     * progress. More will have to be added like the JSON type that
+	     * matched (this includes not only the jprint type but the JSON
+	     * type).
+	     */
+
+	    print("%s\n", match->value);
+	}
+    }
 }
 
 /*

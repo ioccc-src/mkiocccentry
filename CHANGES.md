@@ -1,5 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.15 2023-06-18
+
+New `jprint` version at "0.0.21 2023-06-18". `jprint` now has a matches list per
+pattern. The tree traversal functions will search for matches and after that
+function finally returns the printing of matches will be found. This will
+require additional functions that figure out how to print based on the json type
+and jprint options along with the jprint type but for now it prints just the
+name and value. Currently everything is added to the list.
+
+Note that by 'everything is added to the list' mentioned above this means that
+name and value will be added as a value. This is something that will be fixed
+later but it's the way the tree is traversed that causes this. Be aware also
+that for _each_ pattern requested every member of currently supported types will
+be added so you can see duplicates. This is because no matching is done yet.
+
+New debug message added. The level is currently 0 so will always be printed but
+just like the others this will be changed.
+
+Stop extraneous newlines from being printed.
+
 ## Release 1.0.14 2023-06-17
 
 New `jprint` version at "0.0.20 2023-06-17".
