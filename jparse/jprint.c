@@ -430,6 +430,16 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
+    /* without -j, -B has no effect */
+    if (jprint->print_braces && !jprint->print_syntax) {
+	jprint->print_braces = false;
+    }
+
+    /* without -j, -C has no effect */
+    if (jprint->print_final_comma && !jprint->print_syntax) {
+	jprint->print_final_comma = false;
+    }
+
     /* run specific sanity checks */
     jprint_sanity_chks(jprint, tool_path, tool_args);
 
@@ -728,6 +738,7 @@ alloc_jprint(void)
  *	jprint		- pointer to the jprint struct
  *	pattern		- the pattern that matched
  *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
+ *	string		- boolean to indicate if the match is a string
  *
  * NOTE: this function will not return if any of the pointers are NULL including
  * the pointers in the pattern struct.
@@ -736,7 +747,7 @@ alloc_jprint(void)
  * added to the jprint matched patterns list.
  */
 struct jprint_match *
-add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level)
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string)
 {
     struct jprint_match *match = NULL;
     struct jprint_match *tmp = NULL;
@@ -792,6 +803,9 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
 
     /* set which match number this is, incrementing the pattern's total matches */
     match->number = pattern->matches_found++;
+
+    /* set if a string for -j */
+    match->string = string;
 
     dbg(DBG_NONE, "adding match '%s' to pattern '%s' to match list",
 	    jprint->search_value?match->value:match->name, pattern->pattern);
@@ -1235,7 +1249,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_number *item = &(node->item.number);
 
 			if (!strcmp(pattern->pattern, item->as_str)) {
-			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
 				err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
 				not_reached();
 			    }
@@ -1248,7 +1262,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_string *item = &(node->item.string);
 
 			if (!strcmp(pattern->pattern, item->as_str)) {
-			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth, true) == NULL) {
 				err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
 				not_reached();
 			    }
@@ -1261,7 +1275,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_boolean *item = &(node->item.boolean);
 
 			if (!strcmp(pattern->pattern, item->as_str)) {
-			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
 				err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
 				not_reached();
 			    }
@@ -1274,7 +1288,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_null *item = &(node->item.null);
 
 			if (!strcmp(pattern->pattern, item->as_str)) {
-			    if (add_jprint_match(jprint, pattern, item->as_str, depth) == NULL) {
+			    if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
 				err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
 				not_reached();
 			    }
@@ -1592,6 +1606,14 @@ jprint_print_matches(struct jprint *jprint)
 	return;
     }
 
+    /*
+     * although printing syntax is not yet fully implemented, we will check for
+     * -B and print the braces so that after the syntax printing is implemented
+     * nothing has to be done with -B.
+     */
+    if (jprint->print_braces) {
+	print("%c\n", '{');
+    }
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	for (match = pattern->matches; match != NULL; match = match->next) {
 	    /* if the name of the match is NULL it is a fatal error */
@@ -1619,8 +1641,12 @@ jprint_print_matches(struct jprint *jprint)
 	     *
 	     * XXX - This is buggy in some cases. This must be fixed.
 	     */
-	    if (jprint_print_name_value(jprint->print_type)) {
-		if (jprint->print_json_levels) {
+	    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+		if (jprint->print_syntax) {
+		    print("\"%s\" : %s%s%s%s\n", match->name,
+			    match->string?"\"":"", match->value, match->string?"\"":"",
+			    match->next?",":"");
+		} else if (jprint->print_json_levels) {
 		    uintmax_t i;
 		    print("%ju", match->level);
 		    for (i = 0; i < jprint->num_level_spaces; ++i) {
@@ -1666,9 +1692,27 @@ jprint_print_matches(struct jprint *jprint)
 	     * matched (this includes not only the jprint type but the JSON
 	     * type).
 	     */
-
 	}
     }
+
+    /*
+     * although printing syntax is not yet fully implemented, we will check for
+     * -B and print the braces so that after the syntax printing is implemented
+     * nothing has to be done with -B.
+     */
+    if (jprint->print_braces) {
+	print("%c", '}');
+    }
+    /*
+     * as well, even though -j is not yet fully implemented, we will check for
+     * -C and print the final comma if requested so that once -j fully
+     * implemented we shouldn't have to do anything else with this option.
+     */
+    if (jprint->print_final_comma) {
+	print("%c", ',');
+    }
+    /* print final newline */
+    puts("");
 }
 
 /*

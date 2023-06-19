@@ -80,6 +80,7 @@ struct jprint_match
 
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
+    bool string;		    /* match is a string */
 
     struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
     struct jprint_match *next; /* next match found */
@@ -156,7 +157,8 @@ struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp
 void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
-struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level);
+struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level,
+	bool string);
 void jprint_print_matches(struct jprint *jprint);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 

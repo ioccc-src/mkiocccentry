@@ -11,6 +11,11 @@ without quotes, `"0.0.22 2023-06-19"`).
 
 Implement `-L` option.
 
+Implement `-C` and `-B` options if `-j` specified (`-j` is required) and partly
+implement `-j` (for simple files). It is not an error if `-j` is not specified:
+it simply has no effect. The `struct jprint_match` now has a boolean `string`:
+if true it means the match is a string.
+
 ## Release 1.0.15 2023-06-18
 
 New `jprint` version at "0.0.21 2023-06-18". `jprint` now has a matches list per
