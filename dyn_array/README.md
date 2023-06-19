@@ -4,7 +4,7 @@ When linked into your program, the `dyn_array` facility will give you a way to h
 general purpose dynamic array in your program.
 
 
-# Set up
+## Set up
 
 1. Compile `dyn_array.c` to produce `dyn_array.o`.
 2. Add `#include "dyn_array.h"` to the C source files that you wish to use the
@@ -15,7 +15,7 @@ general purpose dynamic array in your program.
 For more information including an example see the next section.
 
 
-# The `dyn_array` API
+## The `dyn_array` API
 
 For an overview of all the functions and macros, please see the man page
 `dyn_array.3`. You can render it by:
@@ -27,3 +27,66 @@ man ./dyn_array/dyn_array.3
 An example program making use of some of the functions is `dyn_test.c`. How to
 use this example will be added once the facility does not depend on the `dbg`
 facility.
+
+
+## Source Code History
+
+This [dynamic array facility repo](https://github.com/dyn_alloc)
+was created from a file copy of the _dynamic array facility_ code
+found in the `dyn_alloc` subdirectory of the [mkiocccentry GitHub
+repo](https://github.com/ioccc-src/mkiocccentry) on 2023 June 18.
+At the file copy, `DYN_ARRAY_VERSION` was "2.3 2023-02-04", and
+`DYN_TEST_VERSION` was "1.9 2023-02-04".
+
+The last commit into the `dyn_alloc` subdirectory of the [mkiocccentry
+GitHub repo](https://github.com/ioccc-src/mkiocccentry) was [commit
+187a6ac4ac081fa915799fa9f8e3dbcbd950833c](https://github.com/ioccc-src/mkiocccentry/commit/187a6ac4ac081fa915799fa9f8e3dbcbd950833c)
+on 2023 Feb 19.
+
+The  `dyn_alloc` subdirectory of the [mkiocccentry GitHub
+repo](https://github.com/ioccc-src/mkiocccentry) was formed via
+[commit
+daaa9fb68240ca85cbb4bea24a3e36be7713d676](https://github.com/ioccc-src/mkiocccentry/commit/daaa9fb68240ca85cbb4bea24a3e36be7713d676)
+when the _dynamic array facility_ code was moved to the `dyn_array`
+subdirectory on 2022 Nov 20.  Prior to the creation of the `dyn_alloc`
+subdirectory, the dynamic array facility was found in the top
+directory of the [mkiocccentry GitHub repo as late as commit
+fb8203ac5de4c5e19a44a785f436236fae89bac3](https://github.com/ioccc-src/mkiocccentry/commit/fb8203ac5de4c5e19a44a785f436236fae89bac3)
+also on 2022 Nov 20.
+
+The dynamic array facility code first appeared [mkiocccentry GitHub
+repo](https://github.com/ioccc-src/mkiocccentry) via [commit
+16ae660339cd3729652ce3221785042c2e2d07aa](https://github.com/ioccc-src/mkiocccentry/commit/16ae660339cd3729652ce3221785042c2e2d07aa)
+on 2022 Apr 17.
+
+According to [commit
+16ae660339cd3729652ce3221785042c2e2d07aa](https://github.com/ioccc-src/mkiocccentry/commit/16ae660339cd3729652ce3221785042c2e2d07aa),
+it was a checkpoint of the _dynamic array facility_ of "_v1.4
+2022-04-17_".
+
+The  _dynamic array facility_ of "_v1.4 2022-04-17_" `dyn_alloc.c`
+and `dyn_alloc.h` files came from the [arcetri sts
+repo](https://github.com/arcetri/sts) on 2022 Apr 17.  In particular,
+`dyn_alloc.c` file was copied from [commit
+2d63fe8438857badc9dbc20a48bde4689ca1af9e](https://github.com/arcetri/sts/commit/2d63fe8438857badc9dbc20a48bde4689ca1af9e)
+of 2017 Apr 17.  The `dyn_alloc.h` file was was copied from [commit
+2b8cefa1e4556caa6e0b17f9c1017534fc9ffd6b](https://github.com/arcetri/sts/commit/2b8cefa1e4556caa6e0b17f9c1017534fc9ffd6b)
+of 2016 Dec 20.  The other files that were copied into the [dynamic
+array facility repo](https://github.com/dyn_alloc) were created as
+part of the [mkiocccentry GitHub
+repo](https://github.com/ioccc-src/mkiocccentry).
+
+The `dyn_alloc.c` file of the [arcetri sts
+repo](https://github.com/arcetri/sts) were added as part of sts
+version 2.1.2.1 on 2016 Dec 20 as part of [commit
+a29afbbf3d852cbf97908e05a0755b3bfaa1fbc9](https://github.com/arcetri/sts/commit/a29afbbf3d852cbf97908e05a0755b3bfaa1fbc9).
+This file was created by [Landon Curt
+Noll](http://www.isthe.com/chongo/index.html) back in 2014.
+
+The `dyn_alloc.h` file of the [arcetri sts
+repo](https://github.com/arcetri/sts) were added as part of sts
+version 2.1.2.2 on 2016 Dec 20 as part of [commit
+f124cb6e2b4ce7b07edf6fa3b4c444e32746ec88](https://github.com/arcetri/sts/commit/f124cb6e2b4ce7b07edf6fa3b4c444e32746ec88).
+That file was created from the above mentioned `dyn_alloc.c` file
+that was in turn created by [Landon Curt
+Noll](http://www.isthe.com/chongo/index.html) back in 2014.

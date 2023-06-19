@@ -1001,33 +1001,31 @@ dbg.status: dbg.clone/
 
 # dyn_array external repo
 #
-dyn_array/dyn_array.clone:
-	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${E} ${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
+dyn_array.clone:
+	${E} ${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array.clone
 
-dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/ .exclude
-	@#${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array/dyn_array.clone dyn_array
+dyn_array.diff: dyn_array.clone/ dyn_array/ .exclude
+	${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array.clone dyn_array
 
-dyn_array.fetch: dyn_array/dyn_array.clone/
-	@#${E} cd dyn_array/dyn_array.clone && ${GIT} fetch
-	@#${E} cd dyn_array/dyn_array.clone && ${GIT} fetch --prune --tags
-	@#${E} cd dyn_array/dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	@#${E} ${GIT} status dyn_array/dyn_array.clone
+dyn_array.fetch: dyn_array.clone/
+	${E} cd dyn_array.clone && ${GIT} fetch
+	${E} cd dyn_array.clone && ${GIT} fetch --prune --tags
+	${E} cd dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	${E} ${GIT} status dyn_array.clone
 
 dyn_array.reclone:
-	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${E} ${RM} -rf dyn_array/dyn_array.clone
-	@#${E} ${MAKE} dyn_array/dyn_array.clone
+	${E} ${RM} -rf dyn_array.clone
+	${E} ${MAKE} dyn_array.clone
 
-dyn_array.reload: dyn_array/dyn_array.clone/
-	@#${E} ${RM} -rf dyn_array
-	@#${E} ${MAKE} dyn_array.rsync
+dyn_array.reload: dyn_array.clone/
+	${E} ${RM} -rf dyn_array
+	${E} ${MAKE} dyn_array.rsync
 
-dyn_array.rsync: dyn_array/dyn_array.clone/
-	@#${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dyn_array/dyn_array.clone/ dyn_array
+dyn_array.rsync: dyn_array.clone/
+	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dyn_array.clone/ dyn_array
 
-dyn_array.status: dyn_array/dyn_array.clone/
-	@#${E} ${GIT} status dyn_array/dyn_array.clone
+dyn_array.status: dyn_array.clone/
+	${E} ${GIT} status dyn_array.clone
 
 # jparse external repo
 #
