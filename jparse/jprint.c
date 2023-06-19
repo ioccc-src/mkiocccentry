@@ -1645,7 +1645,7 @@ jprint_print_matches(struct jprint *jprint)
 		if (jprint->print_syntax) {
 		    print("\"%s\" : %s%s%s%s\n", match->name,
 			    match->string?"\"":"", match->value, match->string?"\"":"",
-			    match->next?",":"");
+			    match->next||(pattern->next&&pattern->next->matches)?",":"");
 		} else if (jprint->print_json_levels) {
 		    uintmax_t i;
 		    print("%ju", match->level);
