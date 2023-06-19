@@ -1207,26 +1207,12 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
     }
     json_dbg_lvl = va_arg(ap2, int);
 
-    /*
-     * NOTE: why is it that we return if we're searching by value and it is a
-     * value or if it's not a value and we're searching by name? Because as I
-     * understand it at this time if we're searching for values we want to print
-     * the name and not the value. The '-p' option will change this behaviour
-     * anyway so this might have to change but at this time for simple JSON
-     * files using -Y will add only names and not using it will add only values.
-     * The pattern should itself have the pattern that matched (though currently
-     * only basic matching is in - regexp not implemented yet) which is set to
-     * the name in the match (it might be that it should be renamed as it isn't
-     * necessarily always a name but this will be decided later). Note that this
-     * only prints the match found regardless of the -p option. That will be
-     * fixed later.
-     */
-    if ((jprint->search_value && is_value) || (!is_value && !jprint->search_value)) {
+    if ((!jprint->search_value && is_value) || (!is_value && jprint->search_value)) {
 	va_end(ap2); /* stdarg variable argument list clean up */
 	return;
     }
 
-    /* if level is okay go through each pattern and print any matches */
+    /* only search for matches if level constraints allow it */
     if (!jprint->levels_constrained || jprint_number_in_range(depth, jprint->number_of_patterns, &jprint->jprint_levels))
     {
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
@@ -1497,13 +1483,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 	/* perform function operation on this terminal parse tree node, all of
 	 * which have to be a value */
-	(*vcallback)(jprint, node, true, depth, ap);
+	(*vcallback)(jprint, node, true, depth+1, ap);
 	break;
 
     case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth+1, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
@@ -1511,14 +1497,14 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
 	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth+1, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON item is a { members } */
@@ -1528,13 +1514,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], is_value, max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], is_value, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth+1, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
@@ -1544,13 +1530,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth+1, ap);
 	break;
 
     case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
@@ -1560,13 +1546,13 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth+1, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, node, is_value, depth+1, ap);
 	break;
 
     default:

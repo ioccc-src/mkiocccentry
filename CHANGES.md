@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.16 2023-06-19
+
+New `jprint` version "0.0.22 2023-06-19".
+
+Fix level constraints and matching of value versus name constraints. These have
+only been tested in very basic JSON files but both now work in principle. There
+were a couple problems. See the commit log for details (search for the string,
+without quotes, `"0.0.22 2023-06-19"`).
+
+
 ## Release 1.0.15 2023-06-18
 
 New `jprint` version at "0.0.21 2023-06-18". `jprint` now has a matches list per
