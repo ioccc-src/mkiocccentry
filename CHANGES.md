@@ -1,5 +1,28 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.16 2023-06-19
+
+New `jprint` version "0.0.22 2023-06-19".
+
+Fix level constraints and matching of value versus name constraints. These have
+only been tested in very basic JSON files but both now work in principle. There
+were a couple problems. See the commit log for details (search for the string,
+without quotes, `"0.0.22 2023-06-19"`).
+
+Implement `-L` option.
+
+Implement `-C` and `-B` options if `-j` specified (`-j` is required) and partly
+implement `-j` (for simple files). It is not an error if `-j` is not specified:
+it simply has no effect. The `struct jprint_match` now has a boolean `string`:
+if true it means the match is a string.
+
+Partly process `-Y` option. It is buggy for strings due to the way the function
+is called. There is a workaround to let values be found but it also ends up
+letting names be found. This has to be fixed at a later time. The number check
+for `-Y` is incomplete as well and the simple and compound types are also not
+checked yet.
+
+
 ## Release 1.0.15 2023-06-18
 
 New `jprint` version at "0.0.21 2023-06-18". `jprint` now has a matches list per
