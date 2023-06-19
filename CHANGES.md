@@ -9,6 +9,7 @@ only been tested in very basic JSON files but both now work in principle. There
 were a couple problems. See the commit log for details (search for the string,
 without quotes, `"0.0.22 2023-06-19"`).
 
+Implement `-L` option.
 
 ## Release 1.0.15 2023-06-18
 

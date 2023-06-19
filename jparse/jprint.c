@@ -1620,12 +1620,44 @@ jprint_print_matches(struct jprint *jprint)
 	     * XXX - This is buggy in some cases. This must be fixed.
 	     */
 	    if (jprint_print_name_value(jprint->print_type)) {
-		print("%s\n", match->name);
-		print("%s\n", match->value);
+		if (jprint->print_json_levels) {
+		    uintmax_t i;
+		    print("%ju", match->level);
+		    for (i = 0; i < jprint->num_level_spaces; ++i) {
+			printf("%s", jprint->print_level_tab?"\t":" ");
+		    }
+		    print("%s\n", match->name);
+		    print("%ju", match->level);
+		    for (i = 0; i < jprint->num_level_spaces; ++i) {
+			printf("%s", jprint->print_level_tab?"\t":" ");
+		    }
+		    print("%s\n", match->value);
+		} else {
+		    print("%s\n", match->name);
+		    print("%s\n", match->value);
+		}
 	    } else if (jprint_print_name(jprint->print_type)) {
-		print("%s\n", match->name);
+		if (jprint->print_json_levels) {
+		    uintmax_t i;
+		    print("%ju", match->level);
+		    for (i = 0; i < jprint->num_level_spaces; ++i) {
+			printf("%s", jprint->print_level_tab?"\t":" ");
+		    }
+		    print("%s\n", match->name);
+		} else {
+		    print("%s\n", match->name);
+		}
 	    } else if (jprint_print_value(jprint->print_type)) {
-		print("%s\n", match->value);
+		if (jprint->print_json_levels) {
+		    uintmax_t i;
+		    print("%ju", match->level);
+		    for (i = 0; i < jprint->num_level_spaces; ++i) {
+			printf("%s", jprint->print_level_tab?"\t":" ");
+		    }
+		    print("%s\n", match->value);
+		} else {
+		    print("%s\n", match->value);
+		}
 	    }
 	    /*
 	     * XXX: more functions will have to be added to print the values
