@@ -974,7 +974,11 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # dbg external repo
 #
 dbg.clone:
-	${E} ${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
+	@echo If this git clone fails because you do not have the ssh key, try:
+	@echo
+	@echo '	' ${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
+	@echo
+	${E} ${GIT} clone git@github.com:lcn2/dbg.git dbg.clone
 
 dbg.diff: dbg.clone/ dbg/ .exclude
 	${E} ${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
@@ -1002,7 +1006,11 @@ dbg.status: dbg.clone/
 # dyn_array external repo
 #
 dyn_array.clone:
-	${E} ${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array.clone
+	@echo If this git clone fails because you do not have the ssh key, try:
+	@echo
+	@echo '	' ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone
+	@echo
+	${E} ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone
 
 dyn_array.diff: dyn_array.clone/ dyn_array/ .exclude
 	${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array.clone dyn_array
