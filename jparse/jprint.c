@@ -1742,6 +1742,7 @@ jprint_print_matches(struct jprint *jprint)
 			    print("\"%s\" : %s%s%s%s", match->name,
 				    match->string?"\"":"", match->value, match->string?"\"":"",
 				    match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    puts("");
 			} else if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
@@ -1757,6 +1758,7 @@ jprint_print_matches(struct jprint *jprint)
 			    print("%s\n", match->name);
 			    print("%s", match->value);
 			}
+			puts("");
 		    } else if (jprint_print_name(jprint->print_type)) {
 			if (jprint->print_json_levels) {
 			    print("%ju", match->level);
