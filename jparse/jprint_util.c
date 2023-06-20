@@ -540,13 +540,13 @@ jprint_parse_print_option(char *optarg)
     }
 
     if (jprint_print_name_value(print_types)) {
-	dbg(DBG_NONE, "will print both name and value");
+	dbg(DBG_LOW, "will print both name and value");
     }
     else if (jprint_print_name(print_types)) {
-	dbg(DBG_NONE, "will only print name");
+	dbg(DBG_LOW, "will only print name");
     }
     else if (jprint_print_value(print_types)) {
-	dbg(DBG_NONE, "will only print value");
+	dbg(DBG_LOW, "will only print value");
     }
 
     if (dup != NULL) {
@@ -621,7 +621,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	    number->range.inclusive = false;
 	    number->range.less_than_equal = false;
 	    number->range.greater_than_equal = false;
-	    dbg(DBG_NONE, "exact number required for option %s: %jd", option, number->number);
+	    dbg(DBG_LOW, "exact number required for option %s: %jd", option, number->number);
 	} else {
 	    err(3, __func__, "invalid number for option %s: <%s>", option, optarg); /*ooo*/
 	    not_reached();
@@ -639,7 +639,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	/* XXX - this debug message is problematic wrt the negative number
 	 * option
 	 */
-	dbg(DBG_NONE, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
+	dbg(DBG_LOW, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
 		number->range.max);
     } else if (sscanf(optarg, "%jd:", &min) == 1) {
 	number->number = 0;
@@ -649,7 +649,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	number->range.greater_than_equal = true;
 	number->range.less_than_equal = false;
 	number->range.inclusive = false;
-	dbg(DBG_NONE, "minimum number required for option %s: must be >= %jd", option, number->range.min);
+	dbg(DBG_LOW, "minimum number required for option %s: must be >= %jd", option, number->range.min);
     } else if (sscanf(optarg, ":%jd", &max) == 1) {
 	number->range.max = max;
 	number->range.min = number->range.max;
@@ -658,7 +658,7 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	number->range.less_than_equal = true;
 	number->range.greater_than_equal = false;
 	number->range.inclusive = false;
-	dbg(DBG_NONE, "maximum number required for option %s: must be <= %jd", option, number->range.max);
+	dbg(DBG_LOW, "maximum number required for option %s: must be <= %jd", option, number->range.max);
     } else {
 	err(3, __func__, "number range syntax error for option %s: <%s>", option, optarg);/*ooo*/
 	not_reached();
@@ -778,11 +778,11 @@ jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *p
     if (sscanf(optarg, "%ju%c", num_token_spaces, &ch) == 2) {
 	if (ch == 't') {
 	    *print_token_tab = true;
-	    dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+	    dbg(DBG_LOW, "will print %ju tab%s between name and value", *num_token_spaces,
 		*num_token_spaces==1?"":"s");
 	} else if (ch == 's') {
 	    *print_token_tab = false;
-	    dbg(DBG_NONE, "will print %ju space%s between name and value", *num_token_spaces,
+	    dbg(DBG_LOW, "will print %ju space%s between name and value", *num_token_spaces,
 		*num_token_spaces==1?"":"s");
 	} else {
 	    err(3, __func__, "syntax error for -b <num>[ts]"); /*ooo*/
@@ -791,14 +791,14 @@ jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *p
     } else if (!strcmp(optarg, "tab")) {
 	*print_token_tab = true;
 	*num_token_spaces = 1;
-	dbg(DBG_NONE, "will print %ju tab%s between name and value", *num_token_spaces,
+	dbg(DBG_LOW, "will print %ju tab%s between name and value", *num_token_spaces,
 	    *num_token_spaces==1?"":"s");
     } else if (!string_to_uintmax(optarg, num_token_spaces)) {
 	err(3, "jprint", "couldn't parse -b <num>[ts]"); /*ooo*/
 	not_reached();
     } else {
 	*print_token_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_NONE, "will print %jd space%s between name and value", *num_token_spaces,
+	dbg(DBG_LOW, "will print %jd space%s between name and value", *num_token_spaces,
 		*num_token_spaces==1?"":"s");
     }
 }
@@ -849,10 +849,10 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
     if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
 	if (ch == 't') {
 	    *indent_tab = true;
-	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
 	} else if (ch == 's') {
 	    *indent_tab = false; /* ensure it's false in case specified previously */
-	    dbg(DBG_NONE, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_LOW, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
 	} else {
 	    err(3, __func__, "syntax error for -I"); /*ooo*/
 	    not_reached();
@@ -860,13 +860,13 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
     } else if (!strcmp(optarg, "tab")) {
 	    *indent_tab = true;
 	    *indent_level = 1;
-	    dbg(DBG_NONE, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
+	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
     } else if (!string_to_uintmax(optarg, indent_level)) {
 	err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
 	not_reached();
     } else {
 	*indent_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_NONE, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
+	dbg(DBG_LOW, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
     }
 }
 
@@ -915,10 +915,10 @@ jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *pr
     if (sscanf(optarg, "%ju%c", num_level_spaces, &ch) == 2) {
 	if (ch == 't') {
 	    *print_level_tab = true;
-	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	    dbg(DBG_LOW, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
 	} else if (ch == 's') {
 	    *print_level_tab = false; /* ensure it's false in case specified previously */
-	    dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	    dbg(DBG_LOW, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
 	} else {
 	    err(3, __func__, "syntax error for -L"); /*ooo*/
 	    not_reached();
@@ -926,13 +926,13 @@ jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *pr
     } else if (!strcmp(optarg, "tab")) {
 	    *print_level_tab = true;
 	    *num_level_spaces = 1;
-	    dbg(DBG_NONE, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	    dbg(DBG_LOW, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
     } else if (!string_to_uintmax(optarg, num_level_spaces)) {
 	err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
 	not_reached();
     } else {
 	*print_level_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_NONE, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
+	dbg(DBG_LOW, "will print %jd space%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
     }
 }
 

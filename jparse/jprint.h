@@ -78,6 +78,7 @@ struct jprint_match
     char *name;			    /* name of member */
     char *value;		    /* value of member */
 
+    uintmax_t count;		    /* how many of this match are found */
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
     bool string;		    /* match is a string */

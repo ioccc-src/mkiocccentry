@@ -7,6 +7,14 @@ New `jprint` version "0.0.23 2023-06-20".
 Process write only pipe if -S tool specified. To see details check git log and
 search for 'Process write only pipe if -S tool specified'.
 
+Implement `-c` option to show only count of matches. Use of `-o` (print entire
+file) and `-c` (show only count) cannot be used together. If empty patterns list
+then nothing will be done as there can't be any matches. It might be desirable
+to print the count of all json members but this is not currently supported.
+
+Change debug level 0 messages to debug level 1.
+
+
 ## Release 1.0.16 2023-06-19
 
 New `jprint` version "0.0.22 2023-06-19".
