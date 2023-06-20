@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <regex.h> /* for -g, regular expression matching */
+#include <strings.h> /* for -i, strcasecmp */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -111,7 +112,7 @@ struct jprint
 {
     bool is_stdin;				/* reading from stdin */
     bool match_found;				/* true if a pattern is specified and there is a match */
-    bool case_insensitive;			/* true if -i, case-insensitive */
+    bool ignore_case;				/* true if -i, case-insensitive */
     bool pattern_specified;			/* true if a pattern was specified */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */

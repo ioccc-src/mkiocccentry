@@ -14,6 +14,7 @@ matches.
 
 Change debug level 0 messages to debug level 1.
 
+Implement case-insensitive option `-i`.
 
 ## Release 1.0.16 2023-06-19
 
