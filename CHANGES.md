@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.17 2023-06-20
+
+New `jprint` version "0.0.23 2023-06-20".
+
+Process write only pipe if -S tool specified. To see details check git log and
+search for 'Process write only pipe if -S tool specified'.
+
 ## Release 1.0.16 2023-06-19
 
 New `jprint` version "0.0.22 2023-06-19".

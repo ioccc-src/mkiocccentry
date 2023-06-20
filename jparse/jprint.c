@@ -514,6 +514,37 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
+    /* Before we can process the -S option, if it specified, we have to read in
+     * the JSON file (either stdin or otherwise) and then verify that the JSON
+     * is valid.
+     *
+     * Read in entire file BEFORE trying to parse it as json as the parser
+     * function will close the file if not stdin.
+     */
+    file_contents = read_all(json_file, &len);
+    if (file_contents == NULL) {
+	err(4, "jprint", "could not read in file: %s", argv[0]); /*ooo*/
+	not_reached();
+    }
+    /* clear EOF status and rewind for parse_json_stream() */
+    clearerr(json_file);
+    rewind(json_file);
+
+    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
+    if (!is_valid) {
+	if (json_file != stdin) {
+	    fclose(json_file);  /* close file prior to exiting */
+	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+	}
+
+	/* free our jprint struct */
+	free_jprint(&jprint);
+	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
+	not_reached();
+    }
+
+    dbg(DBG_MED, "valid JSON");
+
 
     /* run tool if -S used */
     if (tool_path != NULL) {
@@ -551,37 +582,33 @@ int main(int argc, char **argv)
 	    }
 	    not_reached();
 	} else {
-	    /* XXX - process stream - XXX */
+	    /* process the pipe */
+	    int exit_status = 0;
+
+	    /*
+	     * write the file contents, which we know to be a valid JSON
+	     * document that is NUL terminated, to the pipe.
+	     */
+	    fpr(tool_stream, __func__, "%s", file_contents);
+
+	    /*
+	     * close down the pipe to the child process and obtain the status of the pipe child process
+	     */
+	    exit_status = pclose(tool_stream);
+
+	    /*
+	     * examine the exit status of the child process and error if the child had a non-zero exit
+	     */
+	    if (WEXITSTATUS(exit_status) != 0) {
+		free_jprint(&jprint);
+		err(7, "jprint", "pipe child process exited non-zero"); /*ooo*/
+		not_reached();
+	    } else {
+		dbg(DBG_MED, "pipe child process exited OK");
+	    }
 	}
+	tool_stream = NULL;
     }
-
-    /*
-     * read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file if not stdin
-     */
-    file_contents = read_all(json_file, &len);
-    if (file_contents == NULL) {
-	err(4, "jprint", "could not read in file: %s", argv[0]); /*ooo*/
-	not_reached();
-    }
-    /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(json_file);
-    rewind(json_file);
-
-    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
-    if (!is_valid) {
-	if (json_file != stdin) {
-	    fclose(json_file);  /* close file prior to exiting */
-	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
-	}
-
-	/* free our jprint struct */
-	free_jprint(&jprint);
-	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
-	not_reached();
-    }
-
-    dbg(DBG_MED, "valid JSON");
 
     if (jprint->patterns != NULL && jprint->print_entire_file) {
 	free_jprint(&jprint);
