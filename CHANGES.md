@@ -1,5 +1,39 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.17 2023-06-20
+
+New `jprint` version "0.0.23 2023-06-20".
+
+Process write only pipe if -S tool specified. To see details check git log and
+search for 'Process write only pipe if -S tool specified'.
+
+Implement `-c` option to show only count of matches. Use of `-o` (print entire
+file) and `-c` (show only count) cannot be used together. Use of `-c` without
+specifying any patterns is also a command line error as there cannot be any
+matches.
+
+Change debug level 0 messages to debug level 1.
+
+Implement case-insensitive option `-i`.
+
+New `jparse` and JSON parser version both at "1.0.6 2023-06-20". Added boolean
+to `struct json_number` a boolean `is_integer` for integers to simplify checks
+in `jprint`. If integer the booleans for floating points are set to false but if
+number string is parsed as floating point only the integer boolean is set to
+false. This is because the function to parse floating points should take care of
+it (there are a lot of paths in the integer conversions) and that function only
+returns true or false without giving an indication if it's an exponent or not.
+
+Don't increment the count of matches if the type is not the same. By type this
+refers to the `JTYPE_*` enum found in `json_parse.h`.
+
+Add more strict checks for number types based on options.
+
+Disable explicit check for strings in match function as the check there is
+problematic anyway and this helps in another way until the function itself can
+be fixed. It's very much a work in progress.
+
+
 ## Release 1.0.16 2023-06-19
 
 New `jprint` version "0.0.22 2023-06-19".

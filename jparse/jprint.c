@@ -110,7 +110,8 @@ static const char * const usage_msg2 =
     "\t-C\t\tWhen printing JSON syntax, always print a comma after final line (def: do not)\n"
     "\t\t\tUse of -C without -j has no effect\n\n"
     "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line\n"
-    "\t\t\tUse of -B without -j has no effect\n\n"
+    "\t\t\tUse of -B without -j has no effect\n"
+    "\t\t\tUse of -B with -c is an error\n\n"
     "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (i.e.: -I 4) (def: don't indent i.e.: -I 0)\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces\n"
     "\t\t\tNot specifying 's' or 't' implies spaces but any other character is an error\n"
@@ -132,7 +133,8 @@ static const char * const usage_msg2 =
     "\t\t\tNOTE: use of -g and -s is an error\n"
     "\t-G regex\tSpecify a pattern that is a regex irrespective of the name_args\n"
     "\t\t\tNOTE: use of -G does not conflict with -g or -s\n\n"
-    "\t-c\t\tOnly show count of matches found\n\n"
+    "\t-c\t\tOnly show count of matches found\n"
+    "\t\t\tNOTE: use of -c with any of -B, -L, -j and -I is an error\n\n"
     "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
     "\t\t\tNOTE: 0 implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n\n"
     "\t-K\t\tRun tests on jprint constraints\n";
@@ -249,11 +251,11 @@ int main(int argc, char **argv)
 	    break;
 	case 'e':
 	    jprint->encode_strings = true;
-	    dbg(DBG_NONE, "-e specified, will encode strings");
+	    dbg(DBG_LOW, "-e specified, will encode strings");
 	    break;
 	case 'Q':
 	    jprint->quote_strings = true;
-	    dbg(DBG_NONE, "-Q specified, will quote strings");
+	    dbg(DBG_LOW, "-Q specified, will quote strings");
 	    break;
 	case 't':
 	    jprint->type = jprint_parse_types_option(optarg);
@@ -279,46 +281,46 @@ int main(int argc, char **argv)
 	    break;
 	case 'P':
 	    jprint->print_colons = true;
-	    dbg(DBG_NONE, "-P specified, will print colons");
+	    dbg(DBG_LOW, "-P specified, will print colons");
 	    break;
 	case 'C':
 	    jprint->print_final_comma = true;
-	    dbg(DBG_NONE, "-C specified, will print final comma");
+	    dbg(DBG_LOW, "-C specified, will print final comma");
 	    break;
 	case 'B':
 	    jprint->print_braces = true;
-	    dbg(DBG_NONE, "-B specified, will print braces");
+	    dbg(DBG_LOW, "-B specified, will print braces");
 	    break;
 	case 'I':
 	    jprint_parse_st_indent_option(optarg, &jprint->indent_level, &jprint->indent_tab);
 	    break;
 	case 'i':
-	    jprint->case_insensitive = true; /* make case cruel :-) */
-	    dbg(DBG_NONE, "-i specified, making matches case-insensitive");
+	    jprint->ignore_case = true; /* make case cruel :-) */
+	    dbg(DBG_LOW, "-i specified, making matches case-insensitive");
 	    break;
 	case 'j':
 	    jprint->print_syntax = true;
-	    dbg(DBG_NONE, "-j, implying -p both");
+	    dbg(DBG_LOW, "-j, implying -p both");
 	    jprint->print_type = jprint_parse_print_option("both");
-	    dbg(DBG_NONE, "-j, implying -b 1");
+	    dbg(DBG_LOW, "-j, implying -b 1");
 	    jprint_parse_st_tokens_option("1", &jprint->num_token_spaces, &jprint->print_token_tab);
-	    dbg(DBG_NONE, "-j, implying -e -Q");
+	    dbg(DBG_LOW, "-j, implying -e -Q");
 	    jprint->encode_strings = true;
 	    jprint->quote_strings = true;
-	    dbg(DBG_NONE, "-j, implying -t any");
+	    dbg(DBG_LOW, "-j, implying -t any");
 	    jprint->type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
 	    jprint->match_encoded = true;
-	    dbg(DBG_NONE, "-E specified, will match encoded strings, not decoded strings");
+	    dbg(DBG_LOW, "-E specified, will match encoded strings, not decoded strings");
 	    break;
 	case 's':
 	    jprint->substrings_okay = true;
-	    dbg(DBG_NONE, "-s specified, will match substrings");
+	    dbg(DBG_LOW, "-s specified, will match substrings");
 	    break;
 	case 'g':   /* allow grep-like ERE */
 	    jprint->use_regexps = true;
-	    dbg(DBG_NONE, "-g specified, name_args will be regexps");
+	    dbg(DBG_LOW, "-g specified, name_args will be regexps");
 	    break;
 	case 'G': /* this pattern is a regexp but the name_args will be a normal pattern unless -g specified */
 	    jprint->explicit_regexp = true;
@@ -330,7 +332,7 @@ int main(int argc, char **argv)
 	    break;
 	case 'c':
 	    jprint->count_only = true;
-	    dbg(DBG_NONE, "-c specified, will only show count of matches");
+	    dbg(DBG_LOW, "-c specified, will only show count of matches");
 	    break;
 	case 'q':
 	    quiet = true;
@@ -368,13 +370,13 @@ int main(int argc, char **argv)
 	case 'S':
 	    /* -S path to tool */
 	    tool_path = optarg;
-	    dbg(DBG_NONE, "set tool path to: '%s'", tool_path);
+	    dbg(DBG_LOW, "set tool path to: '%s'", tool_path);
 	    break;
 	case 'A':
 	    /*
 	     * -A args to tool. Requires use of -S. */
 	    tool_args = optarg;
-	    dbg(DBG_NONE, "set tool args to: '%s'", tool_args);
+	    dbg(DBG_LOW, "set tool args to: '%s'", tool_args);
 	    break;
 	case 'o': /* -o, print entire file if valid JSON. Incompatible with patterns to search for. */
 	    jprint->print_entire_file = true;
@@ -434,6 +436,25 @@ int main(int argc, char **argv)
     if (jprint->print_braces && !jprint->print_syntax) {
 	jprint->print_braces = false;
     }
+    /* use of -c with any of any of -B, -L, -j and -I is an error */
+    if (jprint->count_only) {
+	if (jprint->print_braces) {
+	    err(3, "jprint", "cannot use -B and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->print_json_levels) {
+	    err(3, "jprint", "cannot use -L and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->print_syntax) {
+	    err(3, "jprint", "cannot use -j and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->indent_level) {
+	    err(3, "jprint", "cannot use -I and -c together"); /*ooo*/
+	    not_reached();
+	}
+    }
 
     /* without -j, -C has no effect */
     if (jprint->print_final_comma && !jprint->print_syntax) {
@@ -483,14 +504,14 @@ int main(int argc, char **argv)
     }
 
     /* the debug level will be increased at a later time */
-    dbg(DBG_NONE, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
+    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
 		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     if (jprint->search_value && argc != 2 && jprint->number_of_patterns != 1) {
 	free_jprint(&jprint);
 	err(18, "jprint", "-Y requires exactly one name_arg");
 	not_reached();
-    } else if (!jprint->search_value && argv[1] == NULL) {
+    } else if (!jprint->search_value && argv[1] == NULL && !jprint->count_only) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     }
 
@@ -510,9 +531,45 @@ int main(int argc, char **argv)
 	 * foo or one arg is specified after the file
 	 */
 	free_jprint(&jprint);
-	err(20, "jprint", "-Y requires exactly one name_arg");
+	err(3, "jprint", "-Y requires exactly one name_arg"); /*ooo*/
 	not_reached();
     }
+
+    if (jprint->count_only && jprint->patterns == NULL) {
+	err(3, "jprint", "use of -c without any patterns is an error"); /*ooo*/
+	not_reached();
+    }
+
+    /* Before we can process the -S option, if it specified, we have to read in
+     * the JSON file (either stdin or otherwise) and then verify that the JSON
+     * is valid.
+     *
+     * Read in entire file BEFORE trying to parse it as json as the parser
+     * function will close the file if not stdin.
+     */
+    file_contents = read_all(json_file, &len);
+    if (file_contents == NULL) {
+	err(4, "jprint", "could not read in file: %s", argv[0]); /*ooo*/
+	not_reached();
+    }
+    /* clear EOF status and rewind for parse_json_stream() */
+    clearerr(json_file);
+    rewind(json_file);
+
+    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
+    if (!is_valid) {
+	if (json_file != stdin) {
+	    fclose(json_file);  /* close file prior to exiting */
+	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+	}
+
+	/* free our jprint struct */
+	free_jprint(&jprint);
+	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
+	not_reached();
+    }
+
+    dbg(DBG_MED, "valid JSON");
 
 
     /* run tool if -S used */
@@ -551,77 +608,64 @@ int main(int argc, char **argv)
 	    }
 	    not_reached();
 	} else {
-	    /* XXX - process stream - XXX */
+	    /* process the pipe */
+	    int exit_status = 0;
+
+	    /*
+	     * write the file contents, which we know to be a valid JSON
+	     * document that is NUL terminated, to the pipe.
+	     */
+	    fpr(tool_stream, __func__, "%s", file_contents);
+
+	    /*
+	     * close down the pipe to the child process and obtain the status of the pipe child process
+	     */
+	    exit_status = pclose(tool_stream);
+
+	    /*
+	     * examine the exit status of the child process and error if the child had a non-zero exit
+	     */
+	    if (WEXITSTATUS(exit_status) != 0) {
+		free_jprint(&jprint);
+		err(7, "jprint", "pipe child process exited non-zero"); /*ooo*/
+		not_reached();
+	    } else {
+		dbg(DBG_MED, "pipe child process exited OK");
+	    }
 	}
+	tool_stream = NULL;
     }
-
-    /*
-     * read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file if not stdin
-     */
-    file_contents = read_all(json_file, &len);
-    if (file_contents == NULL) {
-	err(4, "jprint", "could not read in file: %s", argv[0]); /*ooo*/
-	not_reached();
-    }
-    /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(json_file);
-    rewind(json_file);
-
-    json_tree = parse_json_stream(json_file, argv[0], &is_valid);
-    if (!is_valid) {
-	if (json_file != stdin) {
-	    fclose(json_file);  /* close file prior to exiting */
-	    json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
-	}
-
-	/* free our jprint struct */
-	free_jprint(&jprint);
-	err(5, "jprint", "%s invalid JSON", argv[0]); /*ooo*/
-	not_reached();
-    }
-
-    dbg(DBG_MED, "valid JSON");
 
     if (jprint->patterns != NULL && jprint->print_entire_file) {
 	free_jprint(&jprint);
 	err(3, "jprint", "printing the entire file not supported when searching for a pattern");/*ooo*/
 	not_reached();
     }
+
     if (jprint->patterns != NULL && !jprint->print_entire_file) {
-	/* TODO process name_args */
 	for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	    if (pattern->pattern != NULL && *pattern->pattern) {
-		/*
-		 * XXX if matches found we set the boolean match_found to true to
-		 * indicate exit code of 0 but currently no matches are checked. In
-		 * other words in the future this setting of match_found will not always
-		 * happen.
-		 */
-		jprint->match_found = true;
 
 		if (pattern->use_regexp) {
-		    dbg(DBG_NONE, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
+		    dbg(DBG_LOW, "searching for %s regexp '%s'", pattern->use_value?"value":"name", pattern->pattern);
 		} else {
-		    dbg(DBG_NONE, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
+		    dbg(DBG_LOW, "searching for %s %s '%s' (substrings %s)", pattern->use_value?"value":"name",
 			pattern->use_regexp?"regexp":"pattern", pattern->pattern,
 			pattern->use_substrings?"OK":"ignored");
 		}
 	    }
 	}
-    } else {
-	/*
-	 * XXX remove this informative message or change debug level once processing
-	 * above is implemented.
-	 */
-	dbg(DBG_NONE,"no pattern requested or -o, will print entire file");
-	if (file_contents != NULL) {
-	    fpr(stdout, "jprint", "%s", file_contents);
-	}
-    }
 
+    }
+    /* search for any patterns */
     jprint_json_tree_search(jprint, json_tree, jprint->max_depth);
-    jprint_print_matches(jprint);
+
+    if (!jprint->print_entire_file || jprint->count_only) {
+	jprint_print_matches(jprint);
+    } else if (file_contents != NULL) {
+	dbg(DBG_MED, "no pattern requested or -o and no -c, will print entire file");
+	fpr(stdout, "jprint", "%s", file_contents);
+    }
 
     /* free tree */
     json_tree_free(json_tree, jprint->max_depth);
@@ -653,14 +697,14 @@ alloc_jprint(void)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(21, "jprint", "failed to allocate jprint struct");
+	err(20, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
     /* clear everything out explicitly even after calloc() */
     jprint->is_stdin = false;			/* if it's stdin */
     jprint->match_found = false;		/* true if a pattern is specified and there is a match */
-    jprint->case_insensitive = false;		/* true if -i, case-insensitive */
+    jprint->ignore_case = false;		/* true if -i, case-insensitive */
     jprint->pattern_specified = false;		/* true if a pattern was specified */
     jprint->encode_strings = false;		/* -e used */
     jprint->quote_strings = false;		/* -Q used */
@@ -739,6 +783,7 @@ alloc_jprint(void)
  *	pattern		- the pattern that matched
  *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
  *	string		- boolean to indicate if the match is a string
+ *	type		- enum item_type indicating the type of node (JTYPE_* in json_parse.h)
  *
  * NOTE: this function will not return if any of the pointers are NULL including
  * the pointers in the pattern struct.
@@ -747,7 +792,7 @@ alloc_jprint(void)
  * added to the jprint matched patterns list.
  */
 struct jprint_match *
-add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string)
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string, enum item_type type)
 {
     struct jprint_match *match = NULL;
     struct jprint_match *tmp = NULL;
@@ -756,27 +801,44 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
      * firewall
      */
     if (jprint == NULL) {
-	err(22, __func__, "passed NULL jprint struct");
+	err(21, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
     if (pattern == NULL) {
-	err(23, __func__, "passed NULL pattern");
+	err(22, __func__, "passed NULL pattern");
 	not_reached();
     } else if (pattern->pattern == NULL) {
-	err(24, __func__, "pattern->pattern is NULL");
+	err(23, __func__, "pattern->pattern is NULL");
 	not_reached();
     }
 
     if (value == NULL) {
-	err(25, __func__, "value is NULL");
+	err(24, __func__, "value is NULL");
 	not_reached();
     }
 
+    /*
+     * search for an exact match and only increment the count if found.
+     *
+     * NOTE: this means that when printing the output we have to go potentially
+     * print the match more than once; if -c is specified we print only the
+     * count.
+     */
+    for (tmp = pattern->matches; tmp; tmp = tmp->next) {
+	if (type == tmp->type && (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
+	    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value)))) {
+	    dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
+	    tmp->count++;
+	    return tmp;
+	}
+    }
+
+    /* if we get here we have to add the match to the matches list */
     errno = 0; /* pre-clear errno for errp() */
     match = calloc(1, sizeof *match);
     if (match == NULL) {
-	errp(26, __func__, "unable to allocate struct jprint_match *");
+	errp(25, __func__, "unable to allocate struct jprint_match *");
 	not_reached();
     }
 
@@ -784,7 +846,7 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     errno = 0; /* pre-clear errno for errp() */
     match->name = strdup(pattern->pattern);
     if (match->name == NULL) {
-	errp(27, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
+	errp(26, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
 	not_reached();
     }
 
@@ -792,14 +854,17 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     errno = 0; /* pre-clear errno for errp() */
     match->value = strdup(value);
     if (match->value == NULL) {
-	errp(28, __func__, "unable to strdup value string '%s' for match list", value);
+	errp(27, __func__, "unable to strdup value string '%s' for match list", value);
 	not_reached();
     }
     /* set level of the match for -l / -L options */
     match->level = level;
 
+    /* set count to 1 */
+    match->count = 1;
+
     /* record the pattern that was matched */
-    match->pattern = pattern; /* DO NOT FREE THIS */
+    match->pattern = pattern; /* DO NOT FREE THIS! */
 
     /* set which match number this is, incrementing the pattern's total matches */
     match->number = pattern->matches_found++;
@@ -807,7 +872,10 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     /* set if a string for -j */
     match->string = string;
 
-    dbg(DBG_NONE, "adding match '%s' to pattern '%s' to match list",
+    /* record type */
+    match->type = type;
+
+    dbg(DBG_LOW, "adding match '%s' to pattern '%s' to match list",
 	    jprint->search_value?match->value:match->name, pattern->pattern);
 
     for (tmp = pattern->matches; tmp && tmp->next; tmp = tmp->next)
@@ -818,6 +886,9 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     } else {
 	tmp->next = match;
     }
+
+    /* a match is found, set jprint->match_found to true */
+    jprint->match_found = true;
 
     return match;
 }
@@ -839,7 +910,7 @@ free_jprint_matches_list(struct jprint_pattern *pattern)
     struct jprint_match *next_match = NULL; /* next in list */
 
     if (pattern == NULL) {
-	err(29, __func__, "passed NULL pattern struct");
+	err(28, __func__, "passed NULL pattern struct");
 	not_reached();
     }
 
@@ -897,11 +968,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(30, __func__, "passed NULL jprint struct");
+	err(29, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(31, __func__, "passed NULL str");
+	err(30, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -910,7 +981,8 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * type
      */
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern && !strcmp(pattern->pattern, str) && pattern->use_regexp == use_regexp) {
+	if (pattern->pattern && pattern->use_regexp == use_regexp && ((!jprint->ignore_case && !strcmp(pattern->pattern, str))||
+	    (jprint->ignore_case && strcasecmp(pattern->pattern, str)))) {
 	    return pattern;
 	}
     }
@@ -919,22 +991,22 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * processing is complete
      */
     if (use_regexp) {
-	dbg(DBG_NONE,"%s regex requested: '%s'", jprint->search_value?"value":"name", str);
+	dbg(DBG_LOW,"%s regex requested: '%s'", jprint->search_value?"value":"name", str);
     } else {
-	dbg(DBG_NONE,"%s pattern requested: '%s'", jprint->search_value?"value":"name", str);
+	dbg(DBG_LOW,"%s pattern requested: '%s'", jprint->search_value?"value":"name", str);
     }
 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(32, __func__, "unable to allocate struct jprint_pattern *");
+	errp(31, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(33, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(32, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -947,7 +1019,7 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     jprint->pattern_specified = true;
     pattern->matches_found = 0; /* 0 matches found at first */
 
-    dbg(DBG_NONE, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
+    dbg(DBG_LOW, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
 
     for (tmp = jprint->patterns; tmp && tmp->next; tmp = tmp->next)
 	; /* on its own line to silence useless and bogus warning -Wempty-body */
@@ -981,7 +1053,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(34, __func__, "passed NULL jprint struct");
+	err(33, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
@@ -1054,7 +1126,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 {
     /* firewall */
     if (jprint == NULL) {
-	err(35, __func__, "NULL jprint");
+	err(34, __func__, "NULL jprint");
 	not_reached();
     }
 
@@ -1222,12 +1294,15 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
     json_dbg_lvl = va_arg(ap2, int);
 
     /*
-     * XXX: -Y is buggy for strings without the explicit check for string type
-     * due to what is passed to this function and how. The below explicit check
-     * for the string type lets it process values but it can end up adding names
-     * as well. This must be fixed later.
+     * XXX: This is buggy in a number of ways and the is_value will possibly
+     * have to change. Strings in particular are problematic here and it does
+     * not work right. Also -t can end up searching by value without -Y even
+     * though it's not supposed to. What does work is that specifying a type in
+     * general can prevent one or the other from showing up. Nevertheless to
+     * develop the type checks this has to be done until it can be fixed. This
+     * is very much a work in progress.
      */
-    if (((!jprint->search_value && is_value) || (!is_value && jprint->search_value)) && node->type != JTYPE_STRING) {
+    if (((!jprint->search_value && is_value) || (!is_value && jprint->search_value))) {
 	va_end(ap2); /* stdarg variable argument list clean up */
 	return;
     }
@@ -1240,6 +1315,10 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 	     * the matches list of that pattern. After that we can go through
 	     * the matches found and print out the matches as desired by the
 	     * user. We will not add matches if the constraints do not allow it.
+	     *
+	     * However note that we currently do not have a working way to check
+	     * if the node is a value or name so what ends up happening is that
+	     * a value can match as a name and vice versa. See above comment.
 	     */
 
 		/*
@@ -1253,12 +1332,16 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 		    {
 			struct json_number *item = &(node->item.number);
-			if (!jprint->search_value || jprint_match_num(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str)) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
-				    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
-				    not_reached();
-				}
+			if (!jprint->search_value || jprint_match_num(jprint->type) ||
+			    (item->is_integer&&jprint_match_int(jprint->type))||
+			    (item->is_floating && jprint_match_float(jprint->type)) ||
+			    (item->is_e_notation && jprint_match_exp(jprint->type))) {
+				if (!strcmp(pattern->pattern, item->as_str) ||
+				    (jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
+					    err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
 			    }
 			}
 		    }
@@ -1270,11 +1353,12 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 
 			/* XXX - as noted above, the -Y for strings is buggy - XXX */
 			if (!jprint->search_value || jprint_match_string(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str)) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, true) == NULL) {
-				    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
-				    not_reached();
-				}
+			    if (!strcmp(pattern->pattern, item->as_str) ||
+				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
+					err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+					not_reached();
+				    }
 			    }
 			}
 		    }
@@ -1285,11 +1369,12 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_boolean *item = &(node->item.boolean);
 
 			if (!jprint->search_value || jprint_match_bool(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str)) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
-				    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
-				    not_reached();
-				}
+			    if (!strcmp(pattern->pattern, item->as_str) ||
+				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
+					err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+					not_reached();
+				    }
 			    }
 			}
 		    }
@@ -1300,9 +1385,10 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_null *item = &(node->item.null);
 
 			if (!jprint->search_value || jprint_match_null(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str)) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
-				    err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
+			    if (!strcmp(pattern->pattern, item->as_str) ||
+				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+				if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
+				    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
 				    not_reached();
 				}
 			    }
@@ -1610,10 +1696,12 @@ jprint_print_matches(struct jprint *jprint)
 {
     struct jprint_pattern *pattern = NULL;  /* to iterate through patterns list */
     struct jprint_match *match = NULL;	    /* to iterate through matches of each pattern in the patterns list */
+    uintmax_t i = 0;			    /* to iterate through count of each match */
+    uintmax_t j = 0;			    /* temporary iterator */
 
     /* firewall */
     if (jprint == NULL) {
-	err(40, __func__, "jprint is NULL");
+	err(39, __func__, "jprint is NULL");
 	not_reached();
     } else if (jprint->patterns == NULL) {
 	warn(__func__, "empty patterns list");
@@ -1623,110 +1711,117 @@ jprint_print_matches(struct jprint *jprint)
     /*
      * although printing syntax is not yet fully implemented, we will check for
      * -B and print the braces so that after the syntax printing is implemented
-     * nothing has to be done with -B.
+     * nothing has to be done with -B. Don't do this if -c used.
      */
-    if (jprint->print_braces) {
+    if (jprint->print_braces && !jprint->count_only) {
 	print("%c\n", '{');
     }
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	for (match = pattern->matches; match != NULL; match = match->next) {
 	    /* if the name of the match is NULL it is a fatal error */
-	    if (match->name == NULL) {
-		err(41, __func__, "match->name is NULL");
-		not_reached();
-	    } else if (*match->name == '\0') {
-		/* warn on empty name for now and then go to next match */
-		warn(__func__, "empty match name");
-		continue;
-	    }
+		if (match->name == NULL) {
+		    err(40, __func__, "match->name is NULL");
+		    not_reached();
+		} else if (*match->name == '\0') {
+		    /* warn on empty name for now and then go to next match */
+		    warn(__func__, "empty match name");
+		    continue;
+		}
 
-	    if (match->value == NULL) {
-		err(42, __func__, "match '%s' has NULL value", match->name);
-		not_reached();
-	    } else if (*match->value == '\0') {
-		/* for now we only warn on empty value */
-		warn(__func__, "empty value for match '%s'", match->name);
-		continue;
-	    }
+		if (match->value == NULL) {
+		    err(41, __func__, "match '%s' has NULL value", match->name);
+		    not_reached();
+		} else if (*match->value == '\0') {
+		    /* for now we only warn on empty value */
+		    warn(__func__, "empty value for match '%s'", match->name);
+		    continue;
+		}
 
-	    /* print the match if constraints allow it
-	     *
-	     * XXX - add final constraint checks
-	     *
-	     * XXX - This is buggy in some cases. This must be fixed.
-	     */
-	    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
-		if (jprint->print_syntax) {
-		    print("\"%s\" : %s%s%s%s\n", match->name,
-			    match->string?"\"":"", match->value, match->string?"\"":"",
-			    match->next||(pattern->next&&pattern->next->matches)?",":"");
-		} else if (jprint->print_json_levels) {
-		    uintmax_t i;
-		    print("%ju", match->level);
-		    for (i = 0; i < jprint->num_level_spaces; ++i) {
-			printf("%s", jprint->print_level_tab?"\t":" ");
-		    }
-		    print("%s\n", match->name);
-		    print("%ju", match->level);
-		    for (i = 0; i < jprint->num_level_spaces; ++i) {
-			printf("%s", jprint->print_level_tab?"\t":" ");
-		    }
-		    print("%s\n", match->value);
-		} else {
-		    print("%s\n", match->name);
-		    print("%s\n", match->value);
-		}
-	    } else if (jprint_print_name(jprint->print_type)) {
-		if (jprint->print_json_levels) {
-		    uintmax_t i;
-		    print("%ju", match->level);
-		    for (i = 0; i < jprint->num_level_spaces; ++i) {
-			printf("%s", jprint->print_level_tab?"\t":" ");
-		    }
-		    print("%s\n", match->name);
-		} else {
-		    print("%s\n", match->name);
-		}
-	    } else if (jprint_print_value(jprint->print_type)) {
-		if (jprint->print_json_levels) {
-		    uintmax_t i;
-		    print("%ju", match->level);
-		    for (i = 0; i < jprint->num_level_spaces; ++i) {
-			printf("%s", jprint->print_level_tab?"\t":" ");
-		    }
-		    print("%s\n", match->value);
-		} else {
-		    print("%s\n", match->value);
-		}
-	    }
 	    /*
-	     * XXX: more functions will have to be added to print the values
-	     * and currently the struct jprint_match struct is a work in
-	     * progress. More will have to be added like the JSON type that
-	     * matched (this includes not only the jprint type but the JSON
-	     * type).
+	     * if we get here we have to either print the count or we have to
+	     * print the name and/or value
 	     */
+	    if (jprint->count_only) {
+		/* -c used, print count only */
+		print("%s:%ju\n", jprint->search_value?match->name:match->value, match->count);
+	    } else {
+		for (i = 0; i < match->count; ++i) {
+				    /* print the match if constraints allow it
+		     *
+		     * XXX - add final constraint checks
+		     *
+		     * XXX - This is buggy in some cases. This must be fixed.
+		     */
+		    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+			if (jprint->print_syntax) {
+			    print("\"%s\" : %s%s%s%s\n", match->name,
+				    match->string?"\"":"", match->value, match->string?"\"":"",
+				    match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			} else if (jprint->print_json_levels) {
+			    print("%ju", match->level);
+			    for (j = 0; j < jprint->num_level_spaces; ++j) {
+				printf("%s", jprint->print_level_tab?"\t":" ");
+			    }
+			    print("%s\n", match->name);
+			    print("%ju", match->level);
+			    for (j = 0; j < jprint->num_level_spaces; ++j) {
+				print("%s", jprint->print_level_tab?"\t":" ");
+			    }
+			    print("%s\n", match->value);
+			} else {
+			    print("%s\n", match->name);
+			    print("%s\n", match->value);
+			}
+		    } else if (jprint_print_name(jprint->print_type)) {
+			if (jprint->print_json_levels) {
+			    print("%ju", match->level);
+			    for (j = 0; j < jprint->num_level_spaces; ++j) {
+				print("%s", jprint->print_level_tab?"\t":" ");
+			    }
+			    print("%s\n", match->name);
+			} else {
+			    print("%s\n", match->name);
+			}
+		    } else if (jprint_print_value(jprint->print_type)) {
+			if (jprint->print_json_levels) {
+			    print("%ju", match->level);
+			    for (j = 0; j < jprint->num_level_spaces; ++j) {
+				printf("%s", jprint->print_level_tab?"\t":" ");
+			    }
+			    print("%s\n", match->value);
+			} else {
+			    print("%s\n", match->value);
+			}
+		    }
+		    /*
+		     * XXX: more functions will have to be added to print the values
+		     * and currently the struct jprint_match struct is a work in
+		     * progress. More will have to be added like the JSON type that
+		     * matched (this includes not only the jprint type but the JSON
+		     * type).
+		     */
+		}
+	    }
 	}
     }
 
     /*
      * although printing syntax is not yet fully implemented, we will check for
      * -B and print the braces so that after the syntax printing is implemented
-     * nothing has to be done with -B.
+     * nothing has to be done with -B. Don't print braces if -c used.
      */
-    if (jprint->print_braces) {
+    if (jprint->print_braces && !jprint->count_only) {
 	print("%c", '}');
     }
     /*
      * as well, even though -j is not yet fully implemented, we will check for
      * -C and print the final comma if requested so that once -j fully
-     * implemented we shouldn't have to do anything else with this option.
+     * implemented we shouldn't have to do anything else with this option. Don't
+     * print final comma if -c used.
      */
-    if (jprint->print_final_comma) {
+    if (jprint->print_final_comma && !jprint->count_only) {
 	print("%c", ',');
     }
-    /* print final newline */
-    puts("");
 }
 
 /*
