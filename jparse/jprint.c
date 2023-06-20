@@ -535,6 +535,11 @@ int main(int argc, char **argv)
 	not_reached();
     }
 
+    if (jprint->count_only && jprint->patterns == NULL) {
+	err(3, "jprint", "use of -c without any patterns is an error"); /*ooo*/
+	not_reached();
+    }
+
     /* Before we can process the -S option, if it specified, we have to read in
      * the JSON file (either stdin or otherwise) and then verify that the JSON
      * is valid.
