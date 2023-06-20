@@ -2434,6 +2434,7 @@ json_conv_number(char const *ptr, size_t len)
     item->is_floating = false;
     item->is_e_notation = false;
     /* integer values */
+    item->is_integer = false;
     item->int8_sized = false;
     item->uint8_sized = false;
     item->int16_sized = false;
@@ -2525,6 +2526,10 @@ json_conv_number(char const *ptr, size_t len)
 	if (success == false) {
 	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed: <%*.*s>",
 			   (int)item->number_len, (int)item->number_len, item->first);
+	} else {
+	    item->is_integer = true;
+	    item->is_floating = false;
+	    item->is_e_notation = false;
 	}
 
     /*
@@ -2539,6 +2544,8 @@ json_conv_number(char const *ptr, size_t len)
 	if (success == false) {
 	    warn(__func__, "JSON number as floating point or e-notation number failed: <%*.*s>",
 			   (int)item->number_len, (int)item->number_len, item->first);
+	} else {
+	    item->is_integer = false;
 	}
     }
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));

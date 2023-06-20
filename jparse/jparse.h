@@ -52,7 +52,7 @@
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "1.0.5 2023-06-14"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "1.0.6 2023-06-20"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -77,7 +77,7 @@
 /*
  * official JSON parser version
  */
-#define JSON_PARSER_VERSION "1.0.5 2023-06-14"		/* library version format: major.minor YYYY-MM-DD */
+#define JSON_PARSER_VERSION "1.0.6 2023-06-20"		/* library version format: major.minor YYYY-MM-DD */
 
 
 /*

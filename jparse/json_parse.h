@@ -113,6 +113,7 @@ struct json_number
 
     /* integer values */
 
+    bool is_integer;		/* true ==> converted to some integer type below */
     bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
     int8_t as_int8;		/* JSON integer value in int8_t form, if int8_sized == true */
 
