@@ -1739,10 +1739,9 @@ jprint_print_matches(struct jprint *jprint)
 		     */
 		    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
 			if (jprint->print_syntax) {
-			    print("\"%s\" : %s%s%s%s", match->name,
+			    print("\"%s\" : %s%s%s%s\n", match->name,
 				    match->string?"\"":"", match->value, match->string?"\"":"",
 				    match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-			    puts("");
 			} else if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
@@ -1751,36 +1750,33 @@ jprint_print_matches(struct jprint *jprint)
 			    print("%s\n", match->name);
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
-				printf("%s", jprint->print_level_tab?"\t":" ");
+				print("%s", jprint->print_level_tab?"\t":" ");
 			    }
-			    print("%s", match->value);
+			    print("%s\n", match->value);
 			} else {
 			    print("%s\n", match->name);
-			    print("%s", match->value);
+			    print("%s\n", match->value);
 			}
-			puts("");
 		    } else if (jprint_print_name(jprint->print_type)) {
 			if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
-				printf("%s", jprint->print_level_tab?"\t":" ");
+				print("%s", jprint->print_level_tab?"\t":" ");
 			    }
-			    print("%s", match->name);
+			    print("%s\n", match->name);
 			} else {
-			    print("%s", match->name);
+			    print("%s\n", match->name);
 			}
-			puts("");
 		    } else if (jprint_print_value(jprint->print_type)) {
 			if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
 				printf("%s", jprint->print_level_tab?"\t":" ");
 			    }
-			    print("%s", match->value);
+			    print("%s\n", match->value);
 			} else {
-			    print("%s", match->value);
+			    print("%s\n", match->value);
 			}
-			puts("");
 		    }
 		    /*
 		     * XXX: more functions will have to be added to print the values
