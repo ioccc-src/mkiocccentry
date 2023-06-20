@@ -783,6 +783,7 @@ alloc_jprint(void)
  *	pattern		- the pattern that matched
  *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
  *	string		- boolean to indicate if the match is a string
+ *	type		- enum item_type indicating the type of node (JTYPE_* in json_parse.h)
  *
  * NOTE: this function will not return if any of the pointers are NULL including
  * the pointers in the pattern struct.
@@ -791,7 +792,7 @@ alloc_jprint(void)
  * added to the jprint matched patterns list.
  */
 struct jprint_match *
-add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string)
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string, enum item_type type)
 {
     struct jprint_match *match = NULL;
     struct jprint_match *tmp = NULL;
@@ -825,8 +826,9 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
      * count.
      */
     for (tmp = pattern->matches; tmp; tmp = tmp->next) {
-	if (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
-	    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value))) {
+	if (type == tmp->type && (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
+	    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value)))) {
+	    dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
 	    tmp->count++;
 	    return tmp;
 	}
@@ -869,6 +871,9 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
 
     /* set if a string for -j */
     match->string = string;
+
+    /* record type */
+    match->type = type;
 
     dbg(DBG_LOW, "adding match '%s' to pattern '%s' to match list",
 	    jprint->search_value?match->value:match->name, pattern->pattern);
@@ -1289,12 +1294,15 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
     json_dbg_lvl = va_arg(ap2, int);
 
     /*
-     * XXX: -Y is buggy for strings without the explicit check for string type
-     * due to what is passed to this function and how. The below explicit check
-     * for the string type lets it process values but it can end up adding names
-     * as well. This must be fixed later.
+     * XXX: This is buggy in a number of ways and the is_value will possibly
+     * have to change. Strings in particular are problematic here and it does
+     * not work right. Also -t can end up searching by value without -Y even
+     * though it's not supposed to. What does work is that specifying a type in
+     * general can prevent one or the other from showing up. Nevertheless to
+     * develop the type checks this has to be done until it can be fixed. This
+     * is very much a work in progress.
      */
-    if (((!jprint->search_value && is_value) || (!is_value && jprint->search_value)) && node->type != JTYPE_STRING) {
+    if (((!jprint->search_value && is_value) || (!is_value && jprint->search_value))) {
 	va_end(ap2); /* stdarg variable argument list clean up */
 	return;
     }
@@ -1307,6 +1315,10 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 	     * the matches list of that pattern. After that we can go through
 	     * the matches found and print out the matches as desired by the
 	     * user. We will not add matches if the constraints do not allow it.
+	     *
+	     * However note that we currently do not have a working way to check
+	     * if the node is a value or name so what ends up happening is that
+	     * a value can match as a name and vice versa. See above comment.
 	     */
 
 		/*
@@ -1320,13 +1332,16 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 		    {
 			struct json_number *item = &(node->item.number);
-			if (!jprint->search_value || jprint_match_num(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str) ||
-				(jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
-				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
-					err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
-					not_reached();
-				    }
+			if (!jprint->search_value || jprint_match_num(jprint->type) ||
+			    (item->is_integer&&jprint_match_int(jprint->type))||
+			    (item->is_floating && jprint_match_float(jprint->type)) ||
+			    (item->is_e_notation && jprint_match_exp(jprint->type))) {
+				if (!strcmp(pattern->pattern, item->as_str) ||
+				    (jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
+					    err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
 			    }
 			}
 		    }
@@ -1340,7 +1355,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			if (!jprint->search_value || jprint_match_string(jprint->type)) {
 			    if (!strcmp(pattern->pattern, item->as_str) ||
 				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				    if (add_jprint_match(jprint, pattern, item->as_str, depth, true) == NULL) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
 					err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
 					not_reached();
 				    }
@@ -1356,7 +1371,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			if (!jprint->search_value || jprint_match_bool(jprint->type)) {
 			    if (!strcmp(pattern->pattern, item->as_str) ||
 				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
 					err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
 					not_reached();
 				    }
@@ -1372,7 +1387,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			if (!jprint->search_value || jprint_match_null(jprint->type)) {
 			    if (!strcmp(pattern->pattern, item->as_str) ||
 				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, false) == NULL) {
+				if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
 				    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
 				    not_reached();
 				}

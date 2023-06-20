@@ -24,6 +24,16 @@ false. This is because the function to parse floating points should take care of
 it (there are a lot of paths in the integer conversions) and that function only
 returns true or false without giving an indication if it's an exponent or not.
 
+Don't increment the count of matches if the type is not the same. By type this
+refers to the `JTYPE_*` enum found in `json_parse.h`.
+
+Add more strict checks for number types based on options.
+
+Disable explicit check for strings in match function as the check there is
+problematic anyway and this helps in another way until the function itself can
+be fixed. It's very much a work in progress.
+
+
 ## Release 1.0.16 2023-06-19
 
 New `jprint` version "0.0.22 2023-06-19".
