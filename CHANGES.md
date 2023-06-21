@@ -13,6 +13,12 @@ negative max is now `-n`. A test case for parsing this error in command line
 cannot be done because that's a fatal error which would make the program exit.
 It might be possible to do this in the test script at a later time.
 
+Implement `-L` option for indenting after levels with `-j` option. The text said
+that `-L` has no effect without `-j` but I felt like it might be useful to have
+it even without `-j` and the code is already there so for now I have kept it and
+removed the text that stated it has no effect without `-j`. This can be undone
+if necessary.
+
 ## Release 1.0.17 2023-06-20
 
 New `jprint` version "0.0.23 2023-06-20".

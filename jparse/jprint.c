@@ -112,8 +112,7 @@ static const char * const usage_msg1 =
     "\t-L tab\t\tAlias for: -L 1t\n"
     "\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.\n"
-    "\t\t\tNot specifying 's' nor 't' implies spaces.\n"
-    "\t\t\tUse of -L without -j has no effect.\n";
+    "\t\t\tNot specifying 's' nor 't' implies spaces.\n";
 
 static const char * const usage_msg2 =
     "\t-P\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
@@ -1786,9 +1785,19 @@ jprint_print_matches(struct jprint *jprint)
 		     */
 		    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
 			if (jprint->print_syntax) {
-			    print("\"%s\" : %s%s%s%s\n", match->name,
-				    match->string?"\"":"", match->value, match->string?"\"":"",
-				    match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    print("%ju", match->level);
+			    if (jprint->print_json_levels) {
+				for (j = 0; j < jprint->num_level_spaces; ++j) {
+				    printf("%s", jprint->print_level_tab?"\t":" ");
+				}
+				print("\"%s\" : %s%s%s%s\n", match->name,
+					match->string?"\"":"", match->value, match->string?"\"":"",
+					match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    } else {
+				print("\"%s\" : %s%s%s%s\n", match->name,
+					match->string?"\"":"", match->value, match->string?"\"":"",
+					match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    }
 			} else if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
@@ -1853,6 +1862,9 @@ jprint_print_matches(struct jprint *jprint)
      */
     if (jprint->print_final_comma && !jprint->count_only) {
 	print("%c", ',');
+    }
+    if ((jprint->print_braces || jprint->print_final_comma) && !jprint->count_only) {
+	puts("");
     }
 }
 
