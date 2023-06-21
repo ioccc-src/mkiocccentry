@@ -166,7 +166,7 @@ For instance:
 
 ```shell
 ./mkiocccentry -h
-./iocccsze -h
+./iocccsize -h
 ./chkentry -h
 ./txzchk -h
 ```
