@@ -517,9 +517,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -606,9 +608,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -695,9 +699,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -784,9 +790,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -873,9 +881,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -962,9 +972,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1051,9 +1063,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1140,9 +1154,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1229,9 +1245,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1318,9 +1336,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1407,9 +1427,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1496,9 +1518,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1585,9 +1609,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1674,9 +1700,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1763,9 +1791,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1852,9 +1882,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -1941,9 +1973,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2030,9 +2064,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2119,9 +2155,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2208,9 +2246,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2297,9 +2337,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2386,9 +2428,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2475,9 +2519,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2564,9 +2610,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2653,9 +2701,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2742,9 +2792,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2831,9 +2883,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -2920,9 +2974,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3009,9 +3065,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3098,9 +3156,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3187,9 +3247,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3276,9 +3338,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3365,9 +3429,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3454,9 +3520,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3543,9 +3611,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3632,9 +3702,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3721,9 +3793,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3810,9 +3884,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3899,9 +3975,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -3988,9 +4066,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4077,9 +4157,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4166,9 +4248,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4255,9 +4339,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4344,9 +4430,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4433,9 +4521,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4522,9 +4612,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4611,9 +4703,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4700,9 +4794,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4789,9 +4885,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4878,9 +4976,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -4967,9 +5067,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5056,9 +5158,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5145,9 +5249,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5234,9 +5340,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5323,9 +5431,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5412,9 +5522,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5501,9 +5613,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5590,9 +5704,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5679,9 +5795,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5768,9 +5886,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5857,9 +5977,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -5946,9 +6068,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6035,9 +6159,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6124,9 +6250,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6213,9 +6341,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6302,9 +6432,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6391,9 +6523,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6480,9 +6614,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6569,9 +6705,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6658,9 +6796,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6747,9 +6887,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6836,9 +6978,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -6925,9 +7069,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7014,9 +7160,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7103,9 +7251,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7192,9 +7342,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7281,9 +7433,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7370,9 +7524,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7459,9 +7615,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7548,9 +7706,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7637,9 +7797,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7726,9 +7888,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7815,9 +7979,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7904,9 +8070,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -7993,9 +8161,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8082,9 +8252,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8171,9 +8343,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8260,9 +8434,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8349,9 +8525,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8438,9 +8616,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8527,9 +8707,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8616,9 +8798,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8705,9 +8889,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8794,9 +8980,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8883,9 +9071,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -8972,9 +9162,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9061,9 +9253,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9150,9 +9344,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9239,9 +9435,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9328,9 +9526,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9417,9 +9617,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9506,9 +9708,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9595,9 +9799,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9684,9 +9890,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9773,9 +9981,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9862,9 +10072,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -9951,9 +10163,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10040,9 +10254,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10129,9 +10345,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10218,9 +10436,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10307,9 +10527,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10396,9 +10618,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10485,9 +10709,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10574,9 +10800,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10663,9 +10891,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10752,9 +10982,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10841,9 +11073,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -10930,9 +11164,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11019,9 +11255,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11108,9 +11346,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11197,9 +11437,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11286,9 +11528,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11375,9 +11619,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11464,9 +11710,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11553,9 +11801,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11642,9 +11892,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11731,9 +11983,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11820,9 +12074,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11909,9 +12165,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -11998,9 +12256,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12087,9 +12347,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12176,9 +12438,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12265,9 +12529,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12354,9 +12620,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12443,9 +12711,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12532,9 +12802,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12621,9 +12893,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12710,9 +12984,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12799,9 +13075,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12888,9 +13166,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -12977,9 +13257,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13066,9 +13348,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13155,9 +13439,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13244,9 +13530,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13333,9 +13621,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13422,9 +13712,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13511,9 +13803,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13600,9 +13894,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13689,9 +13985,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13778,9 +14076,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13867,9 +14167,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -13956,9 +14258,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14045,9 +14349,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14134,9 +14440,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14223,9 +14531,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14312,9 +14622,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14401,9 +14713,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14490,9 +14804,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14579,9 +14895,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14668,9 +14986,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14757,9 +15077,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14846,9 +15168,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -14935,9 +15259,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15024,9 +15350,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15113,9 +15441,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15202,9 +15532,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15291,9 +15623,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15380,9 +15714,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15469,9 +15805,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15558,9 +15896,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15647,9 +15987,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15736,9 +16078,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15825,9 +16169,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -15914,9 +16260,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16003,9 +16351,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16092,9 +16442,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16181,9 +16533,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16270,9 +16624,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16359,9 +16715,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16448,9 +16806,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16537,9 +16897,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16626,9 +16988,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16715,9 +17079,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16804,9 +17170,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16893,9 +17261,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -16982,9 +17352,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17071,9 +17443,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17160,9 +17534,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17249,9 +17625,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17338,9 +17716,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17427,9 +17807,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17516,9 +17898,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17605,9 +17989,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17694,9 +18080,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17783,9 +18171,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17872,9 +18262,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -17961,9 +18353,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	-128,		/* JSON integer value in int8_t form */
@@ -18050,9 +18444,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18139,9 +18535,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18228,9 +18626,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18317,9 +18717,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18406,9 +18808,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	-127,		/* JSON integer value in int8_t form */
@@ -18495,9 +18899,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18584,9 +18990,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18673,9 +19081,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18762,9 +19172,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -18851,9 +19263,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	-126,		/* JSON integer value in int8_t form */
@@ -18940,9 +19354,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19029,9 +19445,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19118,9 +19536,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19207,9 +19627,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19296,9 +19718,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	-2,		/* JSON integer value in int8_t form */
@@ -19385,9 +19809,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19474,9 +19900,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19563,9 +19991,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19652,9 +20082,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19741,9 +20173,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	-1,		/* JSON integer value in int8_t form */
@@ -19830,9 +20264,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -19919,9 +20355,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20008,9 +20446,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	true,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20097,9 +20537,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20186,9 +20628,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* JSON integer value in int8_t form */
@@ -20275,9 +20719,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20364,9 +20810,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20453,9 +20901,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20542,9 +20992,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20631,9 +21083,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	1,		/* JSON integer value in int8_t form */
@@ -20720,9 +21174,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20809,9 +21265,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20898,9 +21356,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -20987,9 +21447,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21076,9 +21538,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	2,		/* JSON integer value in int8_t form */
@@ -21165,9 +21629,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21254,9 +21720,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21343,9 +21811,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21432,9 +21902,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21521,9 +21993,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	126,		/* JSON integer value in int8_t form */
@@ -21610,9 +22084,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21699,9 +22175,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21788,9 +22266,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21877,9 +22357,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -21966,9 +22448,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	true,		/* true ==> converted JSON integer to C int8_t */
 	127,		/* JSON integer value in int8_t form */
@@ -22055,9 +22539,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22144,9 +22630,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22233,9 +22721,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22322,9 +22812,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22411,9 +22903,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22500,9 +22994,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22589,9 +23085,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22678,9 +23176,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22767,9 +23267,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22856,9 +23358,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -22945,9 +23449,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23034,9 +23540,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23123,9 +23631,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23212,9 +23722,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23301,9 +23813,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23390,9 +23904,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23479,9 +23995,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23568,9 +24086,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23657,9 +24177,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23746,9 +24268,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23835,9 +24359,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -23924,9 +24450,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24013,9 +24541,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24102,9 +24632,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24191,9 +24723,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24280,9 +24814,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24369,9 +24905,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24458,9 +24996,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24547,9 +25087,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24636,9 +25178,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24725,9 +25269,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24814,9 +25360,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24903,9 +25451,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -24992,9 +25542,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25081,9 +25633,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25170,9 +25724,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25259,9 +25815,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25348,9 +25906,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25437,9 +25997,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25526,9 +26088,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25615,9 +26179,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25704,9 +26270,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25793,9 +26361,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25882,9 +26452,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -25971,9 +26543,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26060,9 +26634,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26149,9 +26725,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26238,9 +26816,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26327,9 +26907,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26416,9 +26998,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26505,9 +27089,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26594,9 +27180,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26683,9 +27271,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26772,9 +27362,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26861,9 +27453,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -26950,9 +27544,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27039,9 +27635,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27128,9 +27726,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27217,9 +27817,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27306,9 +27908,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27395,9 +27999,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27484,9 +28090,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27573,9 +28181,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27662,9 +28272,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27751,9 +28363,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27840,9 +28454,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -27929,9 +28545,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28018,9 +28636,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28107,9 +28727,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28196,9 +28818,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28285,9 +28909,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28374,9 +29000,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28463,9 +29091,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28552,9 +29182,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28641,9 +29273,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28730,9 +29364,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28819,9 +29455,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28908,9 +29546,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -28997,9 +29637,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29086,9 +29728,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29175,9 +29819,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29264,9 +29910,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29353,9 +30001,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29442,9 +30092,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29531,9 +30183,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29620,9 +30274,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29709,9 +30365,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29798,9 +30456,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29887,9 +30547,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -29976,9 +30638,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30065,9 +30729,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30154,9 +30820,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30243,9 +30911,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30332,9 +31002,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30421,9 +31093,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30510,9 +31184,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30599,9 +31275,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30688,9 +31366,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30777,9 +31457,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30866,9 +31548,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -30955,9 +31639,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31044,9 +31730,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31133,9 +31821,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31222,9 +31912,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31311,9 +32003,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31400,9 +32094,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31489,9 +32185,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31578,9 +32276,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31667,9 +32367,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31756,9 +32458,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31845,9 +32549,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -31934,9 +32640,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32023,9 +32731,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32112,9 +32822,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32201,9 +32913,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32290,9 +33004,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32379,9 +33095,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32468,9 +33186,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32557,9 +33277,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32646,9 +33368,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32735,9 +33459,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32824,9 +33550,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -32913,9 +33641,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33002,9 +33732,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33091,9 +33823,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33180,9 +33914,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33269,9 +34005,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33358,9 +34096,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33447,9 +34187,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33536,9 +34278,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33625,9 +34369,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33714,9 +34460,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33803,9 +34551,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33892,9 +34642,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -33981,9 +34733,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34070,9 +34824,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34159,9 +34915,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34248,9 +35006,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34337,9 +35097,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34426,9 +35188,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	true,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34515,9 +35279,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34604,9 +35370,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34693,9 +35461,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34782,9 +35552,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34871,9 +35643,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -34960,9 +35734,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35049,9 +35825,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35138,9 +35916,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35227,9 +36007,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35316,9 +36098,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35405,9 +36189,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35494,9 +36280,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35583,9 +36371,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35672,9 +36462,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35761,9 +36553,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35850,9 +36644,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -35939,9 +36735,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36028,9 +36826,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36117,9 +36917,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36206,9 +37008,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36295,9 +37099,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36384,9 +37190,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36473,9 +37281,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36562,9 +37372,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36651,9 +37463,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36740,9 +37554,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36829,9 +37645,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -36918,9 +37736,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37007,9 +37827,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37096,9 +37918,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37185,9 +38009,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37274,9 +38100,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37363,9 +38191,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37452,9 +38282,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37541,9 +38373,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37630,9 +38464,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37719,9 +38555,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37808,9 +38646,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37897,9 +38737,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -37986,9 +38828,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38075,9 +38919,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38164,9 +39010,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38253,9 +39101,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38342,9 +39192,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38431,9 +39283,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38520,9 +39374,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38609,9 +39465,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38698,9 +39556,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38787,9 +39647,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38876,9 +39738,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -38965,9 +39829,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39054,9 +39920,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39143,9 +40011,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39232,9 +40102,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39321,9 +40193,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39410,9 +40284,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39499,9 +40375,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39588,9 +40466,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39677,9 +40557,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39766,9 +40648,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39855,9 +40739,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	false,		/* true ==> e notation used such as 1e10, no e notation found */
+	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -39944,9 +40830,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
@@ -40033,9 +40921,11 @@ struct json_number test_result[TEST_COUNT+1] = {
 	false,		/* true ==> value < 0 */
 
 	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
-	true,		/* true ==> e notation used such as 1e10, no e notation found */
+	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
+	false,		/* true ==> integer conversion success, false ==> no integer conversion */
+
 
 	false,		/* true ==> converted JSON integer to C int8_t */
 	0,		/* no JSON integer value in int8_t form */
