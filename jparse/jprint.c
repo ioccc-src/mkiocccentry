@@ -823,7 +823,8 @@ alloc_jprint(void)
  * added to the jprint matched patterns list.
  */
 struct jprint_match *
-add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string, enum item_type type)
+add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level, bool string,
+	enum item_type type)
 {
     struct jprint_match *match = NULL;
     struct jprint_match *tmp = NULL;
