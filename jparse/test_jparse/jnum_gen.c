@@ -428,13 +428,21 @@ fpr_number(FILE *stream, struct json_number *item)
 		   "\t/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */\n",
 		   booltostr(item->is_floating));
     fprint(stream, "\t%s,\t"
-		   "\t/* true ==> e notation used such as 1e10, no e notation found */\n\n",
+		   "\t/* true ==> e notation used such as 1e10, false ==> no e notation found */\n\n",
 		   booltostr(item->is_e_notation));
 
     /*
      * print integer values
      */
     fprstr(stream, "\t/* integer values */\n");
+
+    /*
+     * print is_boolean
+     */
+    fprint(stream, "\t%s,\t"
+		   "\t/* true ==> integer conversion success, false ==> no integer conversion */\n\n",
+		   booltostr(item->is_integer));
+
 
     /*
      * print int8_t info
