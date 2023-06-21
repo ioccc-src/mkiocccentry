@@ -26,6 +26,8 @@ well. This holds for exact matches as well.
 
 Implement `jprint -I` (indent json syntax based on the depth).
 
+Implement `jprint -b`.
+
 ## Release 1.0.17 2023-06-20
 
 New `jprint` version "0.0.23 2023-06-20".

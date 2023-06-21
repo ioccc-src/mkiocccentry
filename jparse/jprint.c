@@ -1824,7 +1824,7 @@ jprint_print_matches(struct jprint *jprint)
 		print("%s:%ju\n", jprint->search_value?match->name:match->value, match->count);
 	    } else {
 		for (i = 0; i < match->count; ++i) {
-				    /* print the match if constraints allow it
+		    /* print the match if constraints allow it
 		     *
 		     * XXX - add final constraint checks
 		     *
@@ -1844,9 +1844,20 @@ jprint_print_matches(struct jprint *jprint)
 				    print("%s", jprint->indent_tab?"\t":" ");
 				}
 			    }
-			    print("\"%s\" : %s%s%s%s\n", match->name,
-				match->string?"\"":"", match->value, match->string?"\"":"",
-				match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    print("\"%s\"", match->name);
+			    for (j = 0; j < jprint->num_token_spaces; ++j) {
+				print("%s", jprint->print_token_tab?"\t":" ");
+			    }
+			    print("%s", ":");
+			    for (j = 0; j < jprint->num_token_spaces; ++j) {
+				print("%s", jprint->print_token_tab?"\t":" ");
+			    }
+
+			    print("%s%s%s%s\n",
+				    match->string?"\"":"",
+				    match->value,
+				    match->string?"\"":"",
+				    match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
 			} else if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {
