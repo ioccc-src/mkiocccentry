@@ -1848,19 +1848,21 @@ jprint_print_matches(struct jprint *jprint)
 		     */
 		    if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
 			if (jprint->print_syntax) {
-			    print("%ju", match->level);
-			    if (jprint->print_json_levels) {
-				for (j = 0; j < jprint->num_level_spaces; ++j) {
-				    printf("%s", jprint->print_level_tab?"\t":" ");
-				}
-				print("\"%s\" : %s%s%s%s\n", match->name,
-					match->string?"\"":"", match->value, match->string?"\"":"",
-					match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-			    } else {
-				print("\"%s\" : %s%s%s%s\n", match->name,
-					match->string?"\"":"", match->value, match->string?"\"":"",
-					match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+			    if (jprint->print_json_levels && jprint->indent_level) {
+				    print("%ju", match->level);
+
+				    for (j = 0; j < jprint->num_level_spaces; ++j) {
+					print("%s", jprint->print_level_tab?"\t":" ");
+				    }
 			    }
+			    if (jprint->indent_level) {
+				for (j = 0; j < match->level * jprint->indent_level; ++j) {
+				    print("%s", jprint->indent_tab?"\t":" ");
+				}
+			    }
+			    print("\"%s\" : %s%s%s%s\n", match->name,
+				match->string?"\"":"", match->value, match->string?"\"":"",
+				match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
 			} else if (jprint->print_json_levels) {
 			    print("%ju", match->level);
 			    for (j = 0; j < jprint->num_level_spaces; ++j) {

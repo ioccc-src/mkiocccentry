@@ -24,6 +24,7 @@ matching that has to be added is regexps. It should be noted, however, that
 the matching is not entirely complete and some of it will have to change as
 well. This holds for exact matches as well.
 
+Implement `jprint -I` (indent json syntax based on the depth).
 
 ## Release 1.0.17 2023-06-20
 
