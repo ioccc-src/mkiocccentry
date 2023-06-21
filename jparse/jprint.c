@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 	    break;
 	case 'l':
 	    jprint->levels_constrained = true;
-	    jprint_parse_number_range("-l", optarg, &jprint->jprint_levels);
+	    jprint_parse_number_range("-l", optarg, false, &jprint->jprint_levels);
 	    break;
 	case 'e':
 	    jprint->encode_strings = true;
@@ -292,11 +292,11 @@ int main(int argc, char **argv)
 	    jprint->type = jprint_parse_types_option(optarg);
 	    break;
 	case 'n':
-	    jprint_parse_number_range("-n", optarg, &jprint->jprint_max_matches);
+	    jprint_parse_number_range("-n", optarg, true, &jprint->jprint_max_matches);
 	    jprint->max_matches_requested = true;
 	    break;
 	case 'N':
-	    jprint_parse_number_range("-N", optarg, &jprint->jprint_min_matches);
+	    jprint_parse_number_range("-N", optarg, false, &jprint->jprint_min_matches);
 	    jprint->min_matches_requested = true;
 	    break;
 	case 'p':
