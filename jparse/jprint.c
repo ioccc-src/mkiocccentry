@@ -857,11 +857,23 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
      * count.
      */
     for (tmp = pattern->matches; tmp; tmp = tmp->next) {
-	if (type == tmp->type && (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
-	    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value)))) {
-	    dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
-	    tmp->count++;
-	    return tmp;
+	if (type == tmp->type) {
+	    /* XXX - add support for regexps - XXX */
+	    if (jprint->substrings_okay) {
+		if (((!jprint->ignore_case && strstr(pattern->pattern, tmp->name) && strstr(value, tmp->value)))||
+		    (jprint->ignore_case && strcasestr(pattern->pattern, tmp->name) && strcasestr(value, tmp->value))) {
+			dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
+			tmp->count++;
+			return tmp;
+		}
+	    } else {
+		if (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
+		    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value))) {
+			dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
+			tmp->count++;
+			return tmp;
+		}
+	    }
 	}
     }
 
@@ -1012,9 +1024,19 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * type
      */
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern && pattern->use_regexp == use_regexp && ((!jprint->ignore_case && !strcmp(pattern->pattern, str))||
-	    (jprint->ignore_case && strcasecmp(pattern->pattern, str)))) {
-	    return pattern;
+	if (pattern->pattern && pattern->use_regexp == use_regexp) {
+	    /* XXX - add support for regexps - XXX */
+	    if (jprint->substrings_okay) {
+		if ((!jprint->ignore_case && strstr(str, pattern->pattern))||
+		    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
+		    return pattern;
+		}
+	    } else {
+		if ((!jprint->ignore_case && !strcmp(pattern->pattern, str))||
+		    (jprint->ignore_case && strcasecmp(pattern->pattern, str))) {
+		    return pattern;
+		}
+	    }
 	}
     }
     /*
@@ -1367,13 +1389,23 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			    (item->is_integer&&jprint_match_int(jprint->type))||
 			    (item->is_floating && jprint_match_float(jprint->type)) ||
 			    (item->is_e_notation && jprint_match_exp(jprint->type))) {
-				if (!strcmp(pattern->pattern, item->as_str) ||
-				    (jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
-					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
-					    err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
-					    not_reached();
-					}
-			    }
+				if (jprint->substrings_okay) {
+				    if (strstr(item->as_str, pattern->pattern) ||
+					(jprint->ignore_case&&strcasestr(item->as_str, pattern->pattern))) {
+					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
+						err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
+						not_reached();
+					    }
+				    }
+				} else {
+				    if (!strcmp(pattern->pattern, item->as_str) ||
+					(jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
+					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
+						err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
+						not_reached();
+					    }
+				    }
+				}
 			}
 		    }
 		    break;
@@ -1384,12 +1416,22 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 
 			/* XXX - as noted above, the -Y for strings is buggy - XXX */
 			if (!jprint->search_value || jprint_match_string(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str) ||
-				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				    if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
-					err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
-					not_reached();
-				    }
+			    if (jprint->substrings_okay) {
+				if (strstr(item->as_str, pattern->pattern) ||
+				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
+					    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
+				}
+			    } else {
+				if (!strcmp(pattern->pattern, item->as_str) ||
+				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
+					    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
+				}
 			    }
 			}
 		    }
@@ -1400,12 +1442,23 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_boolean *item = &(node->item.boolean);
 
 			if (!jprint->search_value || jprint_match_bool(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str) ||
-				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
-					err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
-					not_reached();
-				    }
+			    if (jprint->substrings_okay) {
+				if (strstr(item->as_str, pattern->pattern) ||
+				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
+					    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
+				}
+
+			    } else {
+				if (!strcmp(pattern->pattern, item->as_str) ||
+				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
+					    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    not_reached();
+					}
+				}
 			    }
 			}
 		    }
@@ -1416,11 +1469,21 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			struct json_null *item = &(node->item.null);
 
 			if (!jprint->search_value || jprint_match_null(jprint->type)) {
-			    if (!strcmp(pattern->pattern, item->as_str) ||
-				(jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
-				if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
-				    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
-				    not_reached();
+			    if (jprint->substrings_okay) {
+				if (strstr(item->as_str, pattern->pattern) ||
+				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
+					err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+					not_reached();
+				    }
+				}
+			    } else {
+				if (!strcmp(pattern->pattern, item->as_str) ||
+				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
+				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
+					err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+					not_reached();
+				    }
 				}
 			    }
 			}

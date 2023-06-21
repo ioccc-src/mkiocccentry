@@ -19,6 +19,12 @@ it even without `-j` and the code is already there so for now I have kept it and
 removed the text that stated it has no effect without `-j`. This can be undone
 if necessary.
 
+Implement `jprint -s` (substring match). This means that the only other kind of
+matching that has to be added is regexps. It should be noted, however, that
+the matching is not entirely complete and some of it will have to change as
+well. This holds for exact matches as well.
+
+
 ## Release 1.0.17 2023-06-20
 
 New `jprint` version "0.0.23 2023-06-20".
