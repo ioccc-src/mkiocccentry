@@ -13,6 +13,21 @@ negative max is now `-n`. A test case for parsing this error in command line
 cannot be done because that's a fatal error which would make the program exit.
 It might be possible to do this in the test script at a later time.
 
+Implement `-L` option for indenting after levels with `-j` option. The text said
+that `-L` has no effect without `-j` but I felt like it might be useful to have
+it even without `-j` and the code is already there so for now I have kept it and
+removed the text that stated it has no effect without `-j`. This can be undone
+if necessary.
+
+Implement `jprint -s` (substring match). This means that the only other kind of
+matching that has to be added is regexps. It should be noted, however, that
+the matching is not entirely complete and some of it will have to change as
+well. This holds for exact matches as well.
+
+Implement `jprint -I` (indent json syntax based on the depth).
+
+Implement `jprint -b`.
+
 ## Release 1.0.17 2023-06-20
 
 New `jprint` version "0.0.23 2023-06-20".
