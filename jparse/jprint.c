@@ -859,20 +859,11 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *va
     for (tmp = pattern->matches; tmp; tmp = tmp->next) {
 	if (type == tmp->type) {
 	    /* XXX - add support for regexps - XXX */
-	    if (jprint->substrings_okay) {
-		if (((!jprint->ignore_case && strstr(pattern->pattern, tmp->name) && strstr(value, tmp->value)))||
-		    (jprint->ignore_case && strcasestr(pattern->pattern, tmp->name) && strcasestr(value, tmp->value))) {
-			dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
-			tmp->count++;
-			return tmp;
-		}
-	    } else {
-		if (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
-		    (jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value))) {
-			dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
-			tmp->count++;
-			return tmp;
-		}
+	    if (((!jprint->ignore_case && !strcmp(tmp->name, pattern->pattern) && !strcmp(tmp->value, value)))||
+		(jprint->ignore_case && !strcasecmp(tmp->name, pattern->pattern) && !strcasecmp(tmp->value, value))) {
+		    dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->name, tmp->count + 1);
+		    tmp->count++;
+		    return tmp;
 	    }
 	}
     }
@@ -1026,16 +1017,9 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	if (pattern->pattern && pattern->use_regexp == use_regexp) {
 	    /* XXX - add support for regexps - XXX */
-	    if (jprint->substrings_okay) {
-		if ((!jprint->ignore_case && strstr(str, pattern->pattern))||
-		    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
-		    return pattern;
-		}
-	    } else {
-		if ((!jprint->ignore_case && !strcmp(pattern->pattern, str))||
-		    (jprint->ignore_case && strcasecmp(pattern->pattern, str))) {
-		    return pattern;
-		}
+	    if ((!jprint->ignore_case && !strcmp(pattern->pattern, str))||
+		(jprint->ignore_case && strcasecmp(pattern->pattern, str))) {
+		return pattern;
 	    }
 	}
     }
