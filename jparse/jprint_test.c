@@ -37,7 +37,7 @@ jprint_run_tests(void)
     uintmax_t bits = 0;	    /* for bits tests */
 
     /* set up exact match of 5 */
-    jprint_parse_number_range("-l", "5", &number);
+    jprint_parse_number_range("-l", "5", false, &number);
 
     /* make sure number matches exactly */
     test = jprint_test_number_range_opts(true, 5, 10, __LINE__, &number);
@@ -52,7 +52,7 @@ jprint_run_tests(void)
     }
 
     /* set up inclusive range of >= 5 && <= 10 */
-    jprint_parse_number_range("-l", "5:10", &number);
+    jprint_parse_number_range("-l", "5:10", false, &number);
     /* make sure that number is in the range >= 5 && <= 10 */
     test = jprint_test_number_range_opts(true, 6, 10, __LINE__, &number);
     if (!test) {
@@ -73,12 +73,13 @@ jprint_run_tests(void)
      * set up inclusive range of >= 5 && <= max - 3 (i.e. up through the third to
      * last match)
      */
-    jprint_parse_number_range("-l", "5:-3", &number);
+    jprint_parse_number_range("-n", "5:-3", true, &number);
     /* make sure that number is in the range >= 5 && <= 10 - 3 */
     test = jprint_test_number_range_opts(true, 7, 10, __LINE__, &number);
     if (!test) {
 	okay = false;
     }
+
     /* make sure that number is NOT in the range >= 5 && <= 10 - 3 due to >=
      * total_matches
      */
@@ -102,7 +103,7 @@ jprint_run_tests(void)
 
 
     /* set up minimum number */
-    jprint_parse_number_range("-l", "10:", &number);
+    jprint_parse_number_range("-l", "10:", false, &number);
     /* make sure that number 10 is in the range >= 10 */
     test = jprint_test_number_range_opts(true, 10, 42, __LINE__, &number);
     if (!test) {
@@ -121,7 +122,7 @@ jprint_run_tests(void)
     }
 
     /* set up maximum number */
-    jprint_parse_number_range("-l", ":10", &number);
+    jprint_parse_number_range("-l", ":10", false, &number);
     /* make sure that number 10 is in the range <= 10 */
     test = jprint_test_number_range_opts(true, 10, 42, __LINE__, &number);
     if (!test) {

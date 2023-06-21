@@ -130,7 +130,7 @@ bool jprint_print_value(uintmax_t types);
 bool jprint_print_name_value(uintmax_t types);
 
 /* for number range options: -l, -n, -n */
-bool jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number);
+bool jprint_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jprint_number *number);
 bool jprint_number_in_range(intmax_t number, intmax_t total_matches, struct jprint_number *range);
 
 /* for -b option */

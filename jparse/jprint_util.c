@@ -561,9 +561,10 @@ jprint_parse_print_option(char *optarg)
  *
  * given:
  *
- *	option	    - option string (e.g. "-l"). Used for error and debug messages.
- *	optarg	    - the option argument
- *	number	    - pointer to struct number
+ *	option		- option string (e.g. "-l"). Used for error and debug messages.
+ *	optarg		- the option argument
+ *	allow_negative	- true if max can be < 0
+ *	number		- pointer to struct number
  *
  * Returns true if successfully parsed.
  *
@@ -575,7 +576,8 @@ jprint_parse_print_option(char *optarg)
  *	    count - max.
  * (2) a minimum number, that is num >= minimum, is <num>:
  * (3) a maximum number, that is num <= maximum, is :<num>
- * (4) anything else is an error
+ * (4) if allow_negative is true then max can be < 0 otherwise it's an error.
+ * (5) anything else is an error
  *
  * See also the structs jprint_number_range and jprint_number in jprint_util.h
  * for more details.
@@ -583,7 +585,7 @@ jprint_parse_print_option(char *optarg)
  * NOTE: this function does not return on syntax error or NULL number.
  */
 bool
-jprint_parse_number_range(const char *option, char *optarg, struct jprint_number *number)
+jprint_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jprint_number *number)
 {
     intmax_t max = 0;
     intmax_t min = 0;
@@ -627,20 +629,26 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	    not_reached();
 	}
     } else if (sscanf(optarg, "%jd:%jd", &min, &max) == 2) {
-	/*
-	 * NOTE: we can't check that min >= max because a negative number in the
-	 * maximum means that the range is up through the count - max matches
-	 */
-	number->range.min = min;
-	number->range.max = max;
-	number->range.inclusive = true;
-	number->range.less_than_equal = false;
-	number->range.greater_than_equal = false;
-	/* XXX - this debug message is problematic wrt the negative number
-	 * option
-	 */
-	dbg(DBG_LOW, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
-		number->range.max);
+	/* if allow_negative is false we won't allow negative max in range. */
+	if (!allow_negative && max < 0) {
+	    err(3, __func__, "invalid number for option %s: <%s>: max cannot be < 0", option, optarg); /*ooo*/
+	    not_reached();
+	} else {
+	    /*
+	     * NOTE: we can't check that min >= max because a negative number in the
+	     * maximum means that the range is up through the count - max matches
+	     */
+	    number->range.min = min;
+	    number->range.max = max;
+	    number->range.inclusive = true;
+	    number->range.less_than_equal = false;
+	    number->range.greater_than_equal = false;
+	    /* XXX - this debug message is problematic wrt the negative number
+	     * option
+	     */
+	    dbg(DBG_LOW, "number range inclusive required for option %s: >= %jd && <= %jd", option, number->range.min,
+		    number->range.max);
+	}
     } else if (sscanf(optarg, "%jd:", &min) == 1) {
 	number->number = 0;
 	number->exact = false;
@@ -651,14 +659,20 @@ jprint_parse_number_range(const char *option, char *optarg, struct jprint_number
 	number->range.inclusive = false;
 	dbg(DBG_LOW, "minimum number required for option %s: must be >= %jd", option, number->range.min);
     } else if (sscanf(optarg, ":%jd", &max) == 1) {
-	number->range.max = max;
-	number->range.min = number->range.max;
-	number->number = 0;
-	number->exact = false;
-	number->range.less_than_equal = true;
-	number->range.greater_than_equal = false;
-	number->range.inclusive = false;
-	dbg(DBG_LOW, "maximum number required for option %s: must be <= %jd", option, number->range.max);
+	/* if allow_negative is false we won't allow negative max in range. */
+	if (!allow_negative && max < 0) {
+	    err(3, __func__, "invalid number for option %s: <%s>: max cannot be < 0", option, optarg); /*ooo*/
+	    not_reached();
+	} else {
+	    number->range.max = max;
+	    number->range.min = number->range.max;
+	    number->number = 0;
+	    number->exact = false;
+	    number->range.less_than_equal = true;
+	    number->range.greater_than_equal = false;
+	    number->range.inclusive = false;
+	    dbg(DBG_LOW, "maximum number required for option %s: must be <= %jd", option, number->range.max);
+	}
     } else {
 	err(3, __func__, "number range syntax error for option %s: <%s>", option, optarg);/*ooo*/
 	not_reached();

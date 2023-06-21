@@ -1,5 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.18 2023-06-21
+
+New `jprint` version "0.0.24 2023-06-21".
+
+`jprint` no longer accepts negative max values for options `-l` and `-N`. Only
+`-n` allows a max < 0. For `-N` it makes no sense and for `-l` it's of
+questionable use. That can be decided later but let's just say that if it was a
+square root it would be too imaginary :-) One of the `jprint -K` tests tests
+negative max but no others do. In that code only `-l` was tested but the one for
+negative max is now `-n`. A test case for parsing this error in command line
+cannot be done because that's a fatal error which would make the program exit.
+It might be possible to do this in the test script at a later time.
+
 ## Release 1.0.17 2023-06-20
 
 New `jprint` version "0.0.23 2023-06-20".
