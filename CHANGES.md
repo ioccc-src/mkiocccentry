@@ -14,6 +14,21 @@ Minor improvements to `jprint` usage string including not hard coding in the
 string the default maximum depth to parse, instead using the macro
 `JSON_DEFAULT_MAX_DEPTH`.
 
+Implement `jprint -P`. When this option is disabled the spaces specified still
+separate the tokens if printing both name and value. Default is 1 space, changed
+from 0 (it was always supposed to be 1).
+
+When printing both (without json syntax) print on the same line the name and
+value.
+
+Added boolean to indicate that `-b` was used. Currently this is unused but it
+will allow not relying on the spaces being not 0 as the default is 1. This fact
+is not yet needed but it might be and it's a clear way to indicate if the option
+was used or not.
+
+Make matching printing function a bit more modular by introducing a new
+function, `jprint_print_match()`. Note that the concept of patterns is incorrect
+and has to be fixed. Discussion is pending.
 
 ## Release 1.0.18 2023-06-21
 
