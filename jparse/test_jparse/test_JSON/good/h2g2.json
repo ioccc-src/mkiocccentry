@@ -1,0 +1,38 @@
+{
+    "number":42,
+    "number_as_str":"42",
+    "answer to life, the universe and everything" : 42,
+    "panic":false,
+    "panic":true,
+    "false":true,
+    "true":false,
+    "killers":"Vogons",
+    "Killers":"Vogons",
+    "hitchhikers" : [
+	    {
+		"person" : [
+		    {
+			"name" : "Arthur Dent",
+			"race" : "human",
+			"status" : "dead"
+		    },
+		    {
+			"name": "Ford Prefect",
+			"race" : "Betelgeusian",
+			"status" : "dead"
+		    }
+		]
+	    }
+    ],
+    "Vogons" : [
+	    {
+		"alien" : [
+		    {
+			"name" : "Prostetnic Vogon Jeltz",
+			"job": "Destroy Earth"
+		    }
+		]
+	    }
+    ],
+    "hitch-hikers":"hitchhikers"
+}
