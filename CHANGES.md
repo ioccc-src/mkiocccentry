@@ -8,6 +8,8 @@ Modify behaviour of `jprint -c` to completely match `grep -c` (which was my
 original idea in the first place). If more than one pattern (as in `name_arg`)
 is specified and found it is a total of the matches found.
 
+Implement `jprint -E` to such a degree as is currently possible.
+
 
 ## Release 1.0.18 2023-06-21
 
