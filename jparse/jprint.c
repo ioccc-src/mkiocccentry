@@ -1376,7 +1376,8 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (jprint->substrings_okay) {
 				    if (strstr(item->as_str, pattern->pattern) ||
 					(jprint->ignore_case&&strcasestr(item->as_str, pattern->pattern))) {
-					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
+					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false,
+							JTYPE_NUMBER) == NULL) {
 						err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
 						not_reached();
 					    }
@@ -1384,8 +1385,9 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				} else {
 				    if (!strcmp(pattern->pattern, item->as_str) ||
 					(jprint->ignore_case&&!strcasecmp(pattern->pattern, item->as_str))) {
-					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NUMBER) == NULL) {
-						err(35, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    if (add_jprint_match(jprint, pattern, item->as_str, depth, false,
+							JTYPE_NUMBER) == NULL) {
+						err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
 						not_reached();
 					    }
 				    }
@@ -1404,7 +1406,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (strstr(item->as_str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
-					    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
 					    not_reached();
 					}
 				}
@@ -1412,7 +1414,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (!strcmp(pattern->pattern, item->as_str) ||
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
 					if (add_jprint_match(jprint, pattern, item->as_str, depth, true, JTYPE_STRING) == NULL) {
-					    err(36, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
 					    not_reached();
 					}
 				}
@@ -1430,7 +1432,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (strstr(item->as_str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
-					    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    err(39, __func__, "adding match '%s' to pattern failed", item->as_str);
 					    not_reached();
 					}
 				}
@@ -1439,7 +1441,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (!strcmp(pattern->pattern, item->as_str) ||
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
 					if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_BOOL) == NULL) {
-					    err(37, __func__, "adding match '%s' to pattern failed", item->as_str);
+					    err(40, __func__, "adding match '%s' to pattern failed", item->as_str);
 					    not_reached();
 					}
 				}
@@ -1457,7 +1459,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (strstr(item->as_str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(item->as_str, pattern->pattern))) {
 				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
-					err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+					err(41, __func__, "adding match '%s' to pattern failed", item->as_str);
 					not_reached();
 				    }
 				}
@@ -1465,7 +1467,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (!strcmp(pattern->pattern, item->as_str) ||
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, item->as_str))) {
 				    if (add_jprint_match(jprint, pattern, item->as_str, depth, false, JTYPE_NULL) == NULL) {
-					err(38, __func__, "adding match '%s' to pattern failed", item->as_str);
+					err(42, __func__, "adding match '%s' to pattern failed", item->as_str);
 					not_reached();
 				    }
 				}
@@ -1779,7 +1781,7 @@ jprint_print_matches(struct jprint *jprint)
 
     /* firewall */
     if (jprint == NULL) {
-	err(39, __func__, "jprint is NULL");
+	err(43, __func__, "jprint is NULL");
 	not_reached();
     } else if (jprint->patterns == NULL) {
 	warn(__func__, "empty patterns list");
@@ -1798,7 +1800,7 @@ jprint_print_matches(struct jprint *jprint)
 	for (match = pattern->matches; match != NULL; match = match->next) {
 	    /* if the name of the match is NULL it is a fatal error */
 		if (match->name == NULL) {
-		    err(40, __func__, "match->name is NULL");
+		    err(44, __func__, "match->name is NULL");
 		    not_reached();
 		} else if (*match->name == '\0') {
 		    /* warn on empty name for now and then go to next match */
@@ -1807,7 +1809,7 @@ jprint_print_matches(struct jprint *jprint)
 		}
 
 		if (match->value == NULL) {
-		    err(41, __func__, "match '%s' has NULL value", match->name);
+		    err(45, __func__, "match '%s' has NULL value", match->name);
 		    not_reached();
 		} else if (*match->value == '\0') {
 		    /* for now we only warn on empty value */
