@@ -10,6 +10,10 @@ is specified and found it is a total of the matches found.
 
 Implement `jprint -E` to such a degree as is currently possible.
 
+Minor improvements to `jprint` usage string including not hard coding in the
+string the default maximum depth to parse, instead using the macro
+`JSON_DEFAULT_MAX_DEPTH`.
+
 
 ## Release 1.0.18 2023-06-21
 
