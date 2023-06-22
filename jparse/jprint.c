@@ -69,32 +69,32 @@ static const char * const usage_msg0 =
     "\t\t\t\tcompound\tAlias for: object,array\n"
     "\t\t\t\tany\t\tany type of value\n"
     "\n"
-    "\t\t\tMatches are based on JSON names, unless -Y is used in which case JSON values are matched.\n";
+    "\t\t\tMatches are based on JSON names unless -Y is used in which case JSON values are matched.\n";
 
 static const char * const usage_msg1 =
     "\t-l lvl\t\tPrint values at specific JSON levels (def: print any level)\n"
     "\n"
     "\t\t\tIf lvl is a number (e.g.: -l 3), level must == number.\n"
-    "\t\t\tIf lvl is a number followed by : (e.g.: -l 3:), level must be >= number.\n"
-    "\t\t\tIf lvl is a : followed by a number (e.g.: -l :3), level must be <= number.\n"
-    "\t\t\tIf lvl is num:num (e.g.: -l 3:5), level must be inclusively in the range.\n"
+    "\t\t\tIf lvl is a number followed by : (e.g. '-l 3:'), level must be >= number.\n"
+    "\t\t\tIf lvl is a : followed by a number (e.g. '-l :3'), level must be <= number.\n"
+    "\t\t\tIf lvl is num:num (e.g. '-l 3:5'), level must be inclusively in the range.\n"
     "\n"
     "\t-n count\tPrint up to count matches (def: print all matches)\n"
     "\n"
-    "\t\t\tIf count is a number (e.g.: -n 3), the matches must == number\n"
-    "\t\t\tIf count is a number followed by : (e.g.: -n 3:), matches must be >= number.\n"
-    "\t\t\tIf count is a : followed by a number (e.g.: -n :3), matches must be <= number.\n"
-    "\t\t\tIf count is num:num (e.g.: -n 3:5), matches must be inclusively in the range.\n"
-    "\t\t\tA number < 0 refers printing from last match  (e.g.: -n -1 will print last match).\n"
+    "\t\t\tIf count is a number (e.g. '-n 3'), the matches must == number\n"
+    "\t\t\tIf count is a number followed by : (e.g. '-n 3:'), matches must be >= number.\n"
+    "\t\t\tIf count is a : followed by a number (e.g. '-n :3'), matches must be <= number.\n"
+    "\t\t\tIf count is num:num (e.g. '-n 3:5'), matches must be inclusively in the range.\n"
+    "\t\t\tA number < 0 refers printing from last match (e.g. '-n -1' will print last match).\n"
     "\n"
     "\t-N num\t\tPrint only if there are only a given number of matches (def: do not limit)\n"
     "\n"
-    "\t\t\tIf num is only a number (e.g.: -l 1), there must be only that many matches.\n"
-    "\t\t\tIf num is a number followed by : (e.g.: -l 3:), there must >= num matches.\n"
-    "\t\t\tIf num is a : followed by a number (e.g.: -n :3), there must <= num matches.\n"
-    "\t\t\tIf num is num:num (e.g.: -n 3:5), the number of matches must be inclusively in the range.\n"
+    "\t\t\tIf num is only a number (e.g. '-l 1'), there must be only that many matches.\n"
+    "\t\t\tIf num is a number followed by : (e.g. '-l 3:'), there must >= num matches.\n"
+    "\t\t\tIf num is a : followed by a number (e.g. '-n :3'), there must <= num matches.\n"
+    "\t\t\tIf num is num:num (e.g. '-n 3:5'), the number of matches must be inclusively in the range.\n"
     "\n"
-    "\t-p {n,v,b}\tPrint JSON key, value or both (def: print JSON values, or JSON names if -Y is used)\n"
+    "\t-p {n,v,b}\tPrint JSON key, value or both (def: print JSON values or JSON names if -Y is used)\n"
     "\t-p name\t\tAlias for: -p n\n"
     "\t-p value\tAlias for: -p v\n"
     "\t-p both\t\tAlias for: -p n,v\n"
@@ -112,33 +112,33 @@ static const char * const usage_msg1 =
     "\t-L tab\t\tAlias for: -L 1t\n"
     "\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.\n"
-    "\t\t\tNot specifying 's' nor 't' implies spaces.\n";
+    "\t\t\tNot specifying 's' or 't' implies spaces.\n";
 
 static const char * const usage_msg2 =
-    "\t-P\t\tWhen printing '-p both', separate name/value by a : (colon) (def: do not)\n"
+    "\t-P\t\tWhen printing both i.e. '-p both', separate name/value by a : (colon) (def: do not)\n"
     "\n"
-    "\t\t\tWhen -P is used with -b, the same whitespace is used around the : (colon).\n"
+    "\t\t\tWhen -P is used with -b, the same whitespace is used round the : (colon).\n"
     "\n"
     "\t-C\t\tWhen printing JSON syntax, always print a comma after final line (def: do not)\n"
     "\n"
     "\t\t\tUse of -C without -j has no effect.\n"
     "\n"
-    "\t-B\t\tWhen printing JSON syntax, start with a { line and end with a } line.\n"
+    "\t-B\t\tWhen printing JSON syntax, start with a '{' line and end with a '}' line.\n"
     "\n"
     "\t\t\tUse of -B without -j has no effect.\n"
-    "\t\t\tUse of -B with -c is an error.\n"
+    "\t\t\tUse of both -B and -c is an error.\n"
     "\n"
     "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (def: do not indent)\n"
     "\t-I tab\t\tAlias for: -I 1t\n"
     "\n"
-    "\t\t\tTrailing 't' implies indent with number of tabs, whereas trailing 's' implies spaces.\n"
-    "\t\t\tNot specifying 's' nor 't' implies spaces.\n"
+    "\t\t\tTrailing 't' implies indent with number of tabs whereas trailing 's' implies spaces.\n"
+    "\t\t\tNot specifying 's' or 't' implies spaces.\n"
     "\n"
     "\t-j\t\tPrint using JSON syntax (def: do not)\n"
     "\n"
-    "\t\t\tUse of -j implies: -p both -b 1s -e -Q -I 4 -t any.\n"
+    "\t\t\tUse of -j implies '-p both -b 1s -e -Q -I 4 -t any'.\n"
     "\t\t\tSubsequent use of options after -j will change the effect of -j.\n"
-    "\t\t\tIt is an error to use both -p and -j.\n"
+    "\t\t\tUse of both -p and -j is an error.\n"
     "\n"
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name)\n"
     "\t-i\t\tIgnore case of name (def: case matters)\n"
@@ -146,7 +146,7 @@ static const char * const usage_msg2 =
     "\t-g\t\tMatch using grep-like extended regular expressions (def: match strings)\n"
     "\n"
     "\t\t\tTo match from the beginning, start name_arg with '^'.\n"
-    "\t\t\tTo match thru the end, end name_arg with '$'.\n"
+    "\t\t\tTo match to the end, end name_arg with '$'.\n"
     "\t\t\tUse of -g and -s is an error.\n"
     "\n"
     "\t-G regex\tSpecify a pattern that is a regex irrespective of the name_args\n"
@@ -157,7 +157,7 @@ static const char * const usage_msg2 =
     "\n"
     "\t\t\tUse of -c with -B, -L, -j, or -I is an error.\n"
     "\n"
-    "\t-m max_depth\tSet the maximum JSON level depth to max_depth, 0 ==> infinite depth (def: 256)\n"
+    "\t-m max_depth\tSet the maximum JSON level depth to max_depth (0 == infinite depth, def: %d)\n"
     "\n"
     "\t\t\tA 0 max_depth implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n"
     "\n"
@@ -181,11 +181,7 @@ static const char * const usage_msg3 =
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\n"
-    "\t\t\tUse of -A requires use of -S.\n"
-    "\n"
-    "\t-o\t\twrite entire file to stdout if valid JSON\n"
-    "\n"
-    "\t\t\tUse of -o with patterns specified is an error.\n";
+    "\t\t\tUse of -A requires use of -S.\n";
 
 /*
  * NOTE: this next one should be the last number; if any additional usage message strings
@@ -250,7 +246,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:o")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(&jprint);
@@ -407,9 +403,6 @@ int main(int argc, char **argv)
 	     * -A args to tool. Requires use of -S. */
 	    tool_args = optarg;
 	    dbg(DBG_LOW, "set tool args to: '%s'", tool_args);
-	    break;
-	case 'o': /* -o, print entire file if valid JSON. Incompatible with patterns to search for. */
-	    jprint->print_entire_file = true;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -1981,7 +1974,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JSON_DEFAULT_MAX_DEPTH);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3);
     fprintf_usage(exitcode, stderr, usage_msg4, json_parser_version, JPRINT_VERSION);
     exit(exitcode); /*ooo*/
