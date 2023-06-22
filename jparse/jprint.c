@@ -299,6 +299,7 @@ int main(int argc, char **argv)
 	    jprint->print_type = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
+	    jprint->print_token_spaces = true;
 	    jprint_parse_st_tokens_option(optarg, &jprint->num_token_spaces, &jprint->print_token_tab);
 	    break;
 	case 'L':
@@ -767,7 +768,8 @@ alloc_jprint(void)
 
     jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
     jprint-> print_type_option = false;			/* -p explicitly used */
-    jprint->num_token_spaces = 0;			/* -b specified number of spaces or tabs */
+    jprint->print_token_spaces = false;			/* -b specified */
+    jprint->num_token_spaces = 1;			/* -b specified number of spaces or tabs */
     jprint->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
     jprint->print_json_levels = false;			/* -L specified */
     jprint->num_level_spaces = 0;			/* number of spaces or tab for -L */
@@ -1759,6 +1761,154 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     return;
 }
 
+/* jprint_print_match	    - print a single match
+ *
+ * given:
+ *
+ *	jprint	    - our struct jprint with patterns list
+ *	pattern	    - the pattern with the match
+ *	match	    - the match to print
+ *
+ * NOTE: this function will not return if NULL pointers.
+ *
+ * NOTE: if any pointer in a match is NULL this function will not return as it
+ * indicates incorrect behaviour in the program as it should never have got this
+ * far in the first place.
+ *
+ * XXX: the concept of more than one pattern is not correct. This has to be
+ * fixed.
+ */
+void
+jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match)
+{
+    uintmax_t i = 0;			    /* to iterate through count of each match */
+    uintmax_t j = 0;			    /* temporary iterator */
+
+    /* firewall */
+    if (jprint == NULL) {
+	err(43, __func__, "jprint is NULL");
+	not_reached();
+    } else if (match == NULL) {
+	err(44, __func__, "match is NULL");
+	not_reached();
+    } else if (pattern == NULL) {
+	err(45, __func__, "pattern is NULL");
+	not_reached();
+    }
+
+    /* if the name of the match is NULL it is a fatal error */
+    if (match->name == NULL) {
+	err(46, __func__, "match->name is NULL");
+	not_reached();
+    } else if (*match->name == '\0') {
+	/* warn on empty name for now and then go to next match */
+	warn(__func__, "empty match name");
+	return;
+    }
+
+    if (match->value == NULL) {
+	err(47, __func__, "match '%s' has NULL value", match->name);
+	not_reached();
+    } else if (*match->value == '\0') {
+	/* for now we only warn on empty value */
+	warn(__func__, "empty value for match '%s'", match->name);
+	return;
+    }
+
+    /*
+     * if we get here we have to print the name and/or value
+     */
+    for (i = 0; i < match->count; ++i) {
+	/* print the match if constraints allow it
+	 *
+	 * XXX - add final constraint checks
+	 *
+	 * XXX - This is buggy in some cases. This must be fixed.
+	 */
+	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+	    if (jprint->print_syntax) {
+		if (jprint->print_json_levels && jprint->indent_level) {
+			print("%ju", match->level);
+
+			for (j = 0; j < jprint->num_level_spaces; ++j) {
+			    print("%s", jprint->print_level_tab?"\t":" ");
+			}
+		}
+		if (jprint->indent_level) {
+		    for (j = 0; j < match->level * jprint->indent_level; ++j) {
+			print("%s", jprint->indent_tab?"\t":" ");
+		    }
+		}
+		print("\"%s\"", match->name);
+		for (j = 0; j < jprint->num_token_spaces; ++j) {
+		    print("%s", jprint->print_token_tab?"\t":" ");
+		}
+		print("%s", ":");
+		for (j = 0; j < jprint->num_token_spaces; ++j) {
+		    print("%s", jprint->print_token_tab?"\t":" ");
+		}
+
+		print("%s%s%s%s\n",
+			match->string?"\"":"",
+			match->value,
+			match->string?"\"":"",
+			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
+	    } else if (jprint->print_json_levels) {
+		print("%ju", match->level);
+		for (j = 0; j < jprint->num_level_spaces; ++j) {
+		    printf("%s", jprint->print_level_tab?"\t":" ");
+		}
+		print("%s\n", match->name);
+		print("%ju", match->level);
+		for (j = 0; j < jprint->num_level_spaces; ++j) {
+		    print("%s", jprint->print_level_tab?"\t":" ");
+		}
+		print("%s\n", match->value);
+	    } else {
+		print("%s", match->name);
+		for (j = 0; j < jprint->num_token_spaces; ++j) {
+		    print("%s", jprint->print_token_tab?"\t":" ");
+		}
+		if (jprint->print_colons) {
+		    print("%s", ":");
+		}
+		for (j = 0; j < jprint->num_token_spaces; ++j) {
+		    print("%s", jprint->print_token_tab?"\t":" ");
+		}
+		print("%s\n", match->value);
+	    }
+	} else if (jprint_print_name(jprint->print_type)) {
+	    if (jprint->print_json_levels) {
+		print("%ju", match->level);
+		for (j = 0; j < jprint->num_level_spaces; ++j) {
+		    print("%s", jprint->print_level_tab?"\t":" ");
+		}
+		print("%s\n", match->name);
+	    } else {
+		print("%s\n", match->name);
+	    }
+	} else if (jprint_print_value(jprint->print_type)) {
+	    if (jprint->print_json_levels) {
+		print("%ju", match->level);
+		for (j = 0; j < jprint->num_level_spaces; ++j) {
+		    printf("%s", jprint->print_level_tab?"\t":" ");
+		}
+		print("%s\n", match->value);
+	    } else {
+		print("%s\n", match->value);
+	    }
+	}
+	/*
+	 * XXX: more functions will have to be added to print the values
+	 * and currently the struct jprint_match struct is a work in
+	 * progress. More will have to be added like the JSON type that
+	 * matched (this includes not only the jprint type but the JSON
+	 * type).
+	 */
+    }
+}
+
+
 /* jprint_print_matches	    - print all matches found
  *
  * given:
@@ -1772,18 +1922,21 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
  * NOTE: if any pointer in a match is NULL this function will not return as it
  * indicates incorrect behaviour in the program as it should never have got this
  * far in the first place.
+ *
+ * NOTE: this function uses jprint_print_match() to print each match.
+ *
+ * XXX: the concept of more than one pattern is not correct. This has to be
+ * fixed.
  */
 void
 jprint_print_matches(struct jprint *jprint)
 {
     struct jprint_pattern *pattern = NULL;  /* to iterate through patterns list */
     struct jprint_match *match = NULL;	    /* to iterate through matches of each pattern in the patterns list */
-    uintmax_t i = 0;			    /* to iterate through count of each match */
-    uintmax_t j = 0;			    /* temporary iterator */
 
     /* firewall */
     if (jprint == NULL) {
-	err(43, __func__, "jprint is NULL");
+	err(48, __func__, "jprint is NULL");
 	not_reached();
     } else if (jprint->patterns == NULL) {
 	warn(__func__, "empty patterns list");
@@ -1809,107 +1962,7 @@ jprint_print_matches(struct jprint *jprint)
     }
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	for (match = pattern->matches; match != NULL; match = match->next) {
-	    /* if the name of the match is NULL it is a fatal error */
-	    if (match->name == NULL) {
-		err(44, __func__, "match->name is NULL");
-		not_reached();
-	    } else if (*match->name == '\0') {
-		/* warn on empty name for now and then go to next match */
-		warn(__func__, "empty match name");
-		continue;
-	    }
-
-	    if (match->value == NULL) {
-		err(45, __func__, "match '%s' has NULL value", match->name);
-		not_reached();
-	    } else if (*match->value == '\0') {
-		/* for now we only warn on empty value */
-		warn(__func__, "empty value for match '%s'", match->name);
-		continue;
-	    }
-
-	    /*
-	     * if we get here we have to print the name and/or value
-	     */
-	    for (i = 0; i < match->count; ++i) {
-		/* print the match if constraints allow it
-		 *
-		 * XXX - add final constraint checks
-		 *
-		 * XXX - This is buggy in some cases. This must be fixed.
-		 */
-		if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
-		    if (jprint->print_syntax) {
-			if (jprint->print_json_levels && jprint->indent_level) {
-				print("%ju", match->level);
-
-				for (j = 0; j < jprint->num_level_spaces; ++j) {
-				    print("%s", jprint->print_level_tab?"\t":" ");
-				}
-			}
-			if (jprint->indent_level) {
-			    for (j = 0; j < match->level * jprint->indent_level; ++j) {
-				print("%s", jprint->indent_tab?"\t":" ");
-			    }
-			}
-			print("\"%s\"", match->name);
-			for (j = 0; j < jprint->num_token_spaces; ++j) {
-			    print("%s", jprint->print_token_tab?"\t":" ");
-			}
-			print("%s", ":");
-			for (j = 0; j < jprint->num_token_spaces; ++j) {
-			    print("%s", jprint->print_token_tab?"\t":" ");
-			}
-
-			print("%s%s%s%s\n",
-				match->string?"\"":"",
-				match->value,
-				match->string?"\"":"",
-				match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-		    } else if (jprint->print_json_levels) {
-			print("%ju", match->level);
-			for (j = 0; j < jprint->num_level_spaces; ++j) {
-			    printf("%s", jprint->print_level_tab?"\t":" ");
-			}
-			print("%s\n", match->name);
-			print("%ju", match->level);
-			for (j = 0; j < jprint->num_level_spaces; ++j) {
-			    print("%s", jprint->print_level_tab?"\t":" ");
-			}
-			print("%s\n", match->value);
-		    } else {
-			print("%s\n", match->name);
-			print("%s\n", match->value);
-		    }
-		} else if (jprint_print_name(jprint->print_type)) {
-		    if (jprint->print_json_levels) {
-			print("%ju", match->level);
-			for (j = 0; j < jprint->num_level_spaces; ++j) {
-			    print("%s", jprint->print_level_tab?"\t":" ");
-			}
-			print("%s\n", match->name);
-		    } else {
-			print("%s\n", match->name);
-		    }
-		} else if (jprint_print_value(jprint->print_type)) {
-		    if (jprint->print_json_levels) {
-			print("%ju", match->level);
-			for (j = 0; j < jprint->num_level_spaces; ++j) {
-			    printf("%s", jprint->print_level_tab?"\t":" ");
-			}
-			print("%s\n", match->value);
-		    } else {
-			print("%s\n", match->value);
-		    }
-		}
-		/*
-		 * XXX: more functions will have to be added to print the values
-		 * and currently the struct jprint_match struct is a work in
-		 * progress. More will have to be added like the JSON type that
-		 * matched (this includes not only the jprint type but the JSON
-		 * type).
-		 */
-	    }
+	    jprint_print_match(jprint, pattern, match);
 	}
     }
 

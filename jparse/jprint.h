@@ -126,6 +126,7 @@ struct jprint
     bool levels_constrained;			/* -l specified */
     uintmax_t print_type;			/* -p type specified */
     bool print_type_option;			/* -p explicitly used */
+    bool print_token_spaces;			/* -b specified */
     uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
     bool print_token_tab;			/* -b tab (or -b <num>[t]) specified */
     bool print_json_levels;			/* -L specified */
@@ -164,6 +165,7 @@ void free_jprint_patterns_list(struct jprint *jprint);
 struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level,
 	bool string, enum item_type type);
 void jprint_print_matches(struct jprint *jprint);
+void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* for finding matches and printing them */
