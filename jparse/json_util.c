@@ -1597,7 +1597,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (item->converted == true) {
 
-		fprstr(stream, "\tvalue: NULL");
+		fprstr(stream, "\tvalue: null");
 
 	    /*
 	     * case: not converted null

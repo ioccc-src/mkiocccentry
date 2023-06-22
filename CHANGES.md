@@ -30,6 +30,10 @@ Make matching printing function a bit more modular by introducing a new
 function, `jprint_print_match()`. Note that the concept of patterns is incorrect
 and has to be fixed. Discussion is pending.
 
+New jparse and json parser version "1.0.7 2023-06-22". Make print tree function
+a bit better in that for `null` type it prints not `NULL` but `null` to indicate
+it's a JSON `null` to remove any ambiguity from C's `NULL`.
+
 ## Release 1.0.18 2023-06-21
 
 New `jprint` version "0.0.24 2023-06-21".
