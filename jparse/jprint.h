@@ -66,7 +66,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.24 2023-06-21"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.25 2023-06-22"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
@@ -149,6 +149,7 @@ struct jprint
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
     uintmax_t number_of_patterns;		/* patterns specified */
+    uintmax_t total_matches;			/* total matches of all patterns (name_args) */
 };
 
 /* functions */
