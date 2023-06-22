@@ -34,6 +34,8 @@ New jparse and json parser version "1.0.7 2023-06-22". Make print tree function
 a bit better in that for `null` type it prints not `NULL` but `null` to indicate
 it's a JSON `null` to remove any ambiguity from C's `NULL`.
 
+Typo fixes in `jprint` usage string.
+
 ## Release 1.0.18 2023-06-21
 
 New `jprint` version "0.0.24 2023-06-21".
