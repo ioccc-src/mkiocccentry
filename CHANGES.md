@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.19 2023-06-22
+
+New `jprint` version at "0.0.25 2023-06-22".
+
+Modify behaviour of `jprint -c` to completely match `grep -c` (which was my
+original idea in the first place). If more than one pattern (as in `name_arg`)
+is specified and found it is a total of the matches found.
+
+
 ## Release 1.0.18 2023-06-21
 
 New `jprint` version "0.0.24 2023-06-21".
