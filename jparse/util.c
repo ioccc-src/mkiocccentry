@@ -1097,12 +1097,13 @@ vcmdprintf(char const *fmt, va_list ap)
      * verify amount of data written
      */
     if ((size_t)(d + 1 - cmd) != size) {
+	warn(__func__, "stored characters: %jd != size: %ju",
+	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
+
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
 	}
-	warn(__func__, "stored characters: %jd != size: %ju",
-	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
 	return NULL;
     }
 
@@ -2376,7 +2377,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 	errno = saved_errno;
 	warnp(__func__, "error converting string <%s> to uintmax_t", str);
 	return false;
-    } else if (num < 0 || num >= UINTMAX_MAX) {
+    } else if (num <= 0 || num >= UINTMAX_MAX) {
 	warn(__func__, "number %s out of range for uintmax_t (must be >= %jd && < %jd)", str, (uintmax_t)0, UINTMAX_MAX);
 	return false;
     }

@@ -1442,11 +1442,11 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			} else if (item->int16_sized == true) {
 			    fprint(stream, "\tval-16: %jd", (intmax_t)item->as_int16);
 			} else if (item->int32_sized == true) {
-			    fprint(stream, "\tval-32: %jd", (intmax_t)item->int32_sized);
+			    fprint(stream, "\tval-32: %jd", (intmax_t)item->as_int32);
 			} else if (item->int64_sized == true) {
-			    fprint(stream, "\tval-64: %jd", (intmax_t)item->int64_sized);
+			    fprint(stream, "\tval-64: %jd", (intmax_t)item->as_int64);
 			} else if (item->maxint_sized == true) {
-			    fprint(stream, "\tval-max: %jd", (intmax_t)item->maxint_sized);
+			    fprint(stream, "\tval-max: %jd", (intmax_t)item->as_maxint);
 			} else {
 			    fprstr(stream, "\tWarning: -integer: no common size:\t");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');

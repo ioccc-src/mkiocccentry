@@ -190,12 +190,12 @@ bug-report.YYYYMMDD.HHMMSS.txt
 
 This bug report file is intended to be uploaded to a [mkiocccentry repo related bug report](https://github.com/ioccc-src/mkiocccentry/issues).
 
-This tool was co-developed in 2022 by:
+This tool was written in 2022 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
 
-and:
+with minor improvements by:
 
 *chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 

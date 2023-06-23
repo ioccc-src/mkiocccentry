@@ -1,5 +1,47 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.20 2023-06-23
+
+New `jprint` version at "0.0.26 2023-06-23".
+
+Add booleans (including renaming one `uintmax_t` to be a boolean and adding a
+new `uintmax_t` in its place) in `struct jprint` to indicate that specific
+options were used rather than relying on the `uintmax_t`s being not 0.
+
+Add inclusion of `string.h` and feature test macro `_GNU_SOURCE` to `jprint.h`
+for `strcasestr()`.
+
+Fix sign comparison warning in `util.h`.
+
+Fix use after free error in `util.c` (function `vcmdprintf()`).
+
+Fix error in `jprint_run_tests()` causing invalid test result and warning about
+unused computed value.
+
+The `jprint_match` struct (which is still a work in progress) now has two
+`struct json *`s: the node name and node value. The name is what was matched,
+whether or not value was searched or not and the value is what will be printed,
+either value or name depending on the options. As both might need to be printed
+this can also be a misnomer but I believe having the nodes will be useful at
+some point.
+
+Improve (but not yet fixed) the value / name added to matches particularly with
+substring matching. The value is still the same as the name in the match struct
+but with substring matches the match is the pattern (`name_arg`) specified but
+the value (what to be printed) is the actual member found.
+
+Typo fix in debug message. The `jprint -o` option no longer exists but it was
+referenced.
+
+New `jparse` version "1.0.8 2023-06-23". Fixed display bug in `vjson_fprint()`
+for some of the int types. In particular it cast the booleans to an int rather
+than use the `as_type` members of the struct. This would mean that instead of
+printing the actual number it would print a boolean as an integer.
+
+More modularity in `jprint` printing matches. Several new functions have been
+added. These will be useful later for the printing of not just a JSON file if no
+pattern requested but also printing matches. More will be added.
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".

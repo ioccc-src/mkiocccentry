@@ -295,7 +295,7 @@ jprint_run_tests(void)
      * each match function
      */
     bits = JPRINT_TYPE_NONE;
-	   jprint_test_bits(false, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
+    test = jprint_test_bits(false, bits, __LINE__, jprint_match_int, "JPRINT_TYPE_INT") &&
 	   jprint_test_bits(false, bits, __LINE__, jprint_match_float, "JPRINT_TYPE_FLOAT") &&
 	   jprint_test_bits(false, bits, __LINE__, jprint_match_exp, "JPRINT_TYPE_EXP") &&
 	   jprint_test_bits(false, bits, __LINE__, jprint_match_num, "JPRINT_TYPE_NUM") &&

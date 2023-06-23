@@ -20,8 +20,10 @@
 #if !defined(INCLUDE_JPRINT_H)
 #    define  INCLUDE_JPRINT_H
 
+#define _GNU_SOURCE /* feature test macro for strcasestr() */
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <regex.h> /* for -g, regular expression matching */
 #include <strings.h> /* for -i, strcasecmp */
 
@@ -66,7 +68,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.25 2023-06-22"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.26 2023-06-23"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
@@ -76,14 +78,17 @@
  */
 struct jprint_match
 {
-    char *name;			    /* name of member */
-    char *value;		    /* value of member */
+    char *match;		    /* string that matched */
+    char *value;		    /* name or value string of that which matched */
 
     uintmax_t count;		    /* how many of this match are found */
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
     enum item_type type;	    /* match type */
     bool string;		    /* match is a string */
+
+    struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
+    struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
 
     struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
     struct jprint_match *next; /* next match found */
@@ -117,7 +122,8 @@ struct jprint
     bool pattern_specified;			/* true if a pattern was specified */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */
-    uintmax_t type;				/* -t type used */
+    bool type_specified;			/* -t used */
+    uintmax_t type;				/* -t type */
     struct jprint_number jprint_max_matches;	/* -n count specified */
     bool max_matches_requested;			/* -n used */
     struct jprint_number jprint_min_matches;	/* -N count specified */
@@ -135,7 +141,8 @@ struct jprint
     bool print_colons;				/* -P specified */
     bool print_final_comma;			/* -C specified */
     bool print_braces;				/* -B specified */
-    uintmax_t indent_level;			/* -I specified */
+    bool indent_levels;				/* -I specified */
+    uintmax_t indent_spaces;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
     bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded;				/* -E used, match encoded name */
@@ -154,6 +161,7 @@ struct jprint
 };
 
 /* functions */
+
 /* to free the entire struct jprint */
 void free_jprint(struct jprint **jprint);
 
@@ -162,10 +170,8 @@ struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp
 void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
-struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level,
-	bool string, enum item_type type);
-void jprint_print_matches(struct jprint *jprint);
-void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
+struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
+	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* for finding matches and printing them */
@@ -174,7 +180,11 @@ void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
-
+void jprint_print_matches(struct jprint *jprint);
+bool jprint_print_count(struct jprint *jprint);
+void jprint_print_final_comma(struct jprint *jprint);
+void jprint_print_brace(struct jprint *jprint, bool open);
+void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 
 /* sanity checks on environment for specific options */
 void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
