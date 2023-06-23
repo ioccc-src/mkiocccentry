@@ -1097,12 +1097,13 @@ vcmdprintf(char const *fmt, va_list ap)
      * verify amount of data written
      */
     if ((size_t)(d + 1 - cmd) != size) {
+	warn(__func__, "stored characters: %jd != size: %ju",
+	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
+
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
 	}
-	warn(__func__, "stored characters: %jd != size: %ju",
-	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
 	return NULL;
     }
 

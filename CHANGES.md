@@ -13,6 +13,7 @@ for `strcasestr()`.
 
 Fix sign comparison warning in `util.h`.
 
+Fix use after free error in `util.c` (function `vcmdprintf()`).
 
 ## Release 1.0.19 2023-06-22
 
