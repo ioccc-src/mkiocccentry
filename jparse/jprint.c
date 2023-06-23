@@ -690,7 +690,7 @@ int main(int argc, char **argv)
     if (!jprint->print_entire_file || jprint->count_only) {
 	jprint_print_matches(jprint);
     } else if (file_contents != NULL) {
-	dbg(DBG_MED, "no pattern requested or -o and no -c, will print entire file");
+	dbg(DBG_MED, "no pattern requested and no -c, will print entire file");
 	fpr(stdout, "jprint", "%s", file_contents);
     }
 

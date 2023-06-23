@@ -30,6 +30,9 @@ substring matching. The value is still the same as the name in the match struct
 but with substring matches the match is the pattern (`name_arg`) specified but
 the value (what to be printed) is the actual member found.
 
+Typo fix in debug message. The `jprint -o` option no longer exists but it was
+referenced.
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".
