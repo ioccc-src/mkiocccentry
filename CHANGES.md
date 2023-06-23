@@ -46,6 +46,7 @@ Fix typo in usage string with `-Y` based on the original concept. It takes just
 one `name_arg` but is not an option arg but rather an arg to the program itself.
 Only the type is an option arg to the option.
 
+Fix unmatched `.RE` in jsemtblgen.8 man page.
 
 ## Release 1.0.19 2023-06-22
 
