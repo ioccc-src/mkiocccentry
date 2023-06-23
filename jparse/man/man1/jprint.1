@@ -1,0 +1,283 @@
+.\" section 1 man page for jprint
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2023.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jprint 1 "23 June 2023" "jprint" "IOCCC tools"
+.SH NAME
+.B jprint
+\- IOCCC JSON printer
+.SH SYNOPSIS
+.B jprint
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-e \|]
+.RB [\| \-q \|]
+.RB [\| -Q \|]
+.RB [\| -t
+.IR type \|]
+.RB [\| \-n
+.IR count \|]
+.RB [\| \-N
+.IR num \|]
+.RB [\| \-p
+.IR {n,v,b} \|]
+.RB [\| \-b
+.IR <num>{[t|s]} \|]
+.RB [\| \-L
+.IR <num>{[t|s]} \|]
+.RB [\| \-P \|]
+.RB [\| \-C \|]
+.RB [\| \-B \|]
+.RB [\| \-I
+.IR <num>{[t|s]}\|]
+.RB [\| \-j \|]
+.RB [\| \-E \|]
+.RB [\| \-i \|]
+.RB [\| \-s \|]
+.RB [\| \-g \|]
+.RB [\| \-G
+.IR regexp \|]
+.RB [\| \-c \|]
+.RB [\| \-m
+.IR depth \|]
+.RB [\| \-K \|]
+.RB [\| \-Y
+.IR type \|]
+.RB [\| \-S
+.IR path \|]
+.RB [\| \-A
+.IR args \|]
+.IR file.json
+.IR name_arg ...
+.SH DESCRIPTION
+.B jprint
+parses a JSON file and if it is valid it either prints out the file in full or prints specific members depending on either the name or value.
+If the
+.B \-g
+option is used it will allow one to use grep\-like regular expressions.
+The
+.B \-s
+option makes the tool search by substring rather than whole words or regular expression.
+The option
+.B \-t
+controls what types to search for, excluding matches if they are not any of the types in the comma-separated list.
+The
+.B \-Y
+option lets one search by value, printing the name instead of the value.
+.PP
+The
+.B \-p
+option lets you control what is printed: name, value or both.
+The option
+.B \-j
+pretty\-prints the JSON (for certain definitions of pretty printing JSON :-) ).
+The option
+.B \-C
+makes the program print a final comma after the JSON is printed.
+Despite the JSON spec not allowing this, this can be useful in case you want to use it to create a JSON document through this tool.
+There are many other options that control the program as described in the
+.B OPTIONS
+section.
+.PP
+The point of multiple
+.I name_args
+is to find a JSON member that is in the previous
+.I name_arg
+or
+.IR name_args .
+Matches are based on JSON names, printing values, unless
+.B \-Y
+is used in which case JSON values are matched and names are then printed.
+To make the program read from stdin use
+.B \-
+as the
+.I file.json
+arg.
+.PP
+.SH OPTIONS
+.TP
+.B \-h
+Show help and exit.
+.TP
+.B \-V
+Show version and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-J\  level
+Set JSON verbosity level to
+.IR level
+(def: 0).
+.TP
+.B \-e
+Print JSON strings as encoded strings (default: decode JSON strings).
+.TP
+.B \-q
+Suppresses some of the output (def: not quiet).
+.TP
+.B \-Q
+Print JSON strings surrounded by double quotes (def: do not).
+.TP
+.BI \-t\  type
+Match only the comma separated types (def: simple).
+.RS
+.B int
+.RS
+integer values
+.RE
+.B float
+.RS
+floating point values
+.RE
+.B exp
+.RS
+exponential notation values
+.RE
+.B num
+.RS
+alias for int,float,exp
+.RE
+.B bool
+.RS
+boolean values
+.RE
+.B str
+.RS
+string values
+.RE
+.B null
+.RS
+null values
+.RE
+.B simple
+.RS
+alias for num,bool,str,null (the default)
+.RE
+.B member
+.RS
+JSON members
+.RE
+.B object
+.RS
+JSON objects
+.RE
+.B array
+.RS
+JSON arrays
+.RE
+.B compound
+.RS
+alias for object,null
+.RE
+.B any
+.RS
+any type of value
+.RE
+.RE
+.TP
+.BI \-l\  lvl
+
+.TP
+.B \-s
+Search by substring rather than a whole match.
+.TP
+.SH EXIT STATUS
+.TP
+0
+all is OK: file is valid JSON, match(es) found or no name_arg given OR test mode OK
+.TQ
+1
+file is valid JSON, name_arg given but no matches found
+.TQ
+2
+.B \-h
+or
+.B \-V
+used and help string or version string printed.
+.TQ
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+4
+file does not exist, not a file, or unable to read the file
+.TQ
+5
+file contents is not valid JSON
+.TQ
+6
+test mode failed
+.TQ
+7
+JSON check tool failed
+.TQ
+>=10
+internal error
+.SH NOTES
+.PP
+The JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
+IOCCCMOCK, IOCCC28 and beyond.
+.PP
+.BR jprint (1)
+is being developed by Cody Boone Ferguson.
+.PP
+For more detailed history that goes beyond this humble man page we recommend you check
+.BR jprint (1),
+.IR CHANGES.md ,
+.IR README.md ,
+the GitHub git log as well as reading the source code (or not :\-) ).
+.PP
+We don't recommend you check the GitHub issue page! :\-)
+This is because it's incredibly long with a lot of OT things and would take even the fastest readers a very long time to read. :\-(
+.PP
+.SH BUGS
+.PP
+It is currently incomplete and listing the missing features and things that are not correct is not worth the time or effort.
+.SH EXAMPLES
+.PP
+Print a JSON file
+.I h2g2.json
+if it is valid JSON:
+.sp
+.RS
+.ft B
+ ./jprint h2g2.json
+.ft R
+.RE
+.PP
+Print the name of JSON members with the value 42 in the file
+.IR h2g2.json :
+.sp
+.RS
+.ft B
+ ./jprint -Y int 42 h2g2.json
+.ft R
+.RE
+.PP
+Print the value of the JSON member
+.IR panic
+in the file
+.IR h2g2.json :
+.sp
+.RS
+.ft B
+ ./jprint h2g2.json panic
+.ft R
+.RE
+.SH SEE ALSO
+.PP
+.BR jprint (1),
+.BR jparse (1)
