@@ -195,6 +195,53 @@ any type of value
 .B \-s
 Search by substring rather than a whole match.
 .TP
+.BI \-Y\  type
+Search for a value of of a specific type or types instead of a name, printing names instead of values.
+Types are specified in a comma separated list.
+Valid types are:
+.RS
+.B int
+.RS
+integer values
+.RE
+.B float
+.RS
+floating point values
+.RE
+.B exp
+.RS
+exponential notation values
+.RE
+.B num
+.RS
+alias for int,float,exp
+.RE
+.B bool
+.RS
+boolean values
+.RE
+.B str
+.RS
+string values
+.RE
+.B null
+.RS
+null values
+.RE
+.B simple
+.RS
+alias for num,bool,str,null
+.RE
+.PP
+Why is this option
+.BR \-Y ?
+Why not Y?
+Because Y, that's why Y!
+Why besides, all the other good options were already taken. :\-)
+Specifically the letter Y has a V in it and V would have been the
+obvious choice but both v and V are taken.
+This is why you'll have to believe us when we tell you that this is a good enough reason why Y! :\-)
+.RE
 .SH EXIT STATUS
 .TP
 0
