@@ -66,7 +66,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.25 2023-06-22"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.26 2023-06-23"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
@@ -117,7 +117,8 @@ struct jprint
     bool pattern_specified;			/* true if a pattern was specified */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */
-    uintmax_t type;				/* -t type used */
+    bool type_specified;			/* -t used */
+    uintmax_t type;				/* -t type */
     struct jprint_number jprint_max_matches;	/* -n count specified */
     bool max_matches_requested;			/* -n used */
     struct jprint_number jprint_min_matches;	/* -N count specified */
@@ -135,7 +136,8 @@ struct jprint
     bool print_colons;				/* -P specified */
     bool print_final_comma;			/* -C specified */
     bool print_braces;				/* -B specified */
-    uintmax_t indent_level;			/* -I specified */
+    bool indent_levels;				/* -I specified */
+    uintmax_t indent_spaces;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
     bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded;				/* -E used, match encoded name */

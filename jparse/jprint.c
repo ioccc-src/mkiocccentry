@@ -284,6 +284,7 @@ int main(int argc, char **argv)
 	    dbg(DBG_LOW, "-Q specified, will quote strings");
 	    break;
 	case 't':
+	    jprint->type_specified = true;
 	    jprint->type = jprint_parse_types_option(optarg);
 	    break;
 	case 'n':
@@ -319,7 +320,8 @@ int main(int argc, char **argv)
 	    dbg(DBG_LOW, "-B specified, will print braces");
 	    break;
 	case 'I':
-	    jprint_parse_st_indent_option(optarg, &jprint->indent_level, &jprint->indent_tab);
+	    jprint->indent_levels = true;
+	    jprint_parse_st_indent_option(optarg, &jprint->indent_spaces, &jprint->indent_tab);
 	    break;
 	case 'i':
 	    jprint->ignore_case = true; /* make case cruel :-) */
@@ -335,6 +337,7 @@ int main(int argc, char **argv)
 	    jprint->encode_strings = true;
 	    jprint->quote_strings = true;
 	    dbg(DBG_LOW, "-j, implying -t any");
+	    /* don't set jprint->type_specified as that's for explicit use of -t */
 	    jprint->type = jprint_parse_types_option("any");
 	    break;
 	case 'E':
@@ -384,12 +387,12 @@ int main(int argc, char **argv)
 	    break;
 	case 'Y':
 	    /*
-	     * Why is this option -Y? Why not Y? Because Y, that's why! Why
+	     * Why is this option -Y? Why not Y? Because Y, that's why Y! Why
 	     * besides, all the other good options were already taken. :-)
 	     * Specifically the letter Y has a V in it and V would have been the
 	     * obvious choice but both v and V are taken. This is why you'll
 	     * have to believe us when we tell you that this is a good enough
-	     * reason why! :-)
+	     * reason why Y! :-)
 	     */
 	    jprint->search_value = true;
 	    jprint->type = jprint_parse_value_type_option(optarg);
@@ -474,7 +477,7 @@ int main(int argc, char **argv)
 	    err(3, "jprint", "cannot use -j and -c together"); /*ooo*/
 	    not_reached();
 	}
-	if (jprint->indent_level) {
+	if (jprint->indent_levels) {
 	    err(3, "jprint", "cannot use -I and -c together"); /*ooo*/
 	    not_reached();
 	}
@@ -726,15 +729,17 @@ alloc_jprint(void)
     }
 
     /* clear everything out explicitly even after calloc() */
+
     jprint->is_stdin = false;			/* if it's stdin */
     jprint->match_found = false;		/* true if a pattern is specified and there is a match */
     jprint->ignore_case = false;		/* true if -i, case-insensitive */
     jprint->pattern_specified = false;		/* true if a pattern was specified */
     jprint->encode_strings = false;		/* -e used */
     jprint->quote_strings = false;		/* -Q used */
-    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type used */
+    jprint->type_specified = false;		/* -t used */
+    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
 
-    /* number range options, see struct in jprint_util.h for details */
+    /* number range options, see struct jprint_number_range in jprint_util.h for details */
 
     /* max matches number range */
     jprint->jprint_max_matches.number = 0;
@@ -777,7 +782,8 @@ alloc_jprint(void)
     jprint->print_colons = false;			/* -P specified */
     jprint->print_final_comma = false;			/* -C specified */
     jprint->print_braces = false;			/* -B specified */
-    jprint->indent_level = 0;				/* -I specified */
+    jprint->indent_levels = false;			/* -I used */
+    jprint->indent_spaces = 0;				/* -I number of tabs or spaces */
     jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
     jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     jprint->match_encoded = false;			/* -E used, match encoded name */
@@ -1827,15 +1833,15 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	 */
 	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
 	    if (jprint->print_syntax) {
-		if (jprint->print_json_levels && jprint->indent_level) {
+		if (jprint->print_json_levels && jprint->indent_spaces) {
 			print("%ju", match->level);
 
 			for (j = 0; j < jprint->num_level_spaces; ++j) {
 			    print("%s", jprint->print_level_tab?"\t":" ");
 			}
 		}
-		if (jprint->indent_level) {
-		    for (j = 0; j < match->level * jprint->indent_level; ++j) {
+		if (jprint->indent_spaces) {
+		    for (j = 0; j < match->level * jprint->indent_spaces; ++j) {
 			print("%s", jprint->indent_tab?"\t":" ");
 		    }
 		}
