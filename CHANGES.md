@@ -42,6 +42,22 @@ More modularity in `jprint` printing matches. Several new functions have been
 added. These will be useful later for the printing of not just a JSON file if no
 pattern requested but also printing matches. More will be added.
 
+Fix typo in usage string with `-Y` based on the original concept. It takes just
+one `name_arg` but is not an option arg but rather an arg to the program itself.
+Only the type is an option arg to the option.
+
+Fix unmatched `.RE` in jsemtblgen.8 man page.
+
+Add initial man page for `jprint`. This is currently incomplete. The `BUGS`
+section just says that there are too many things to list at this time as the
+tool is in progress and there are a number of things that are incorrect even
+besides it. There are some examples but with the exception of one that prints
+out the file it is not correct output (and it's not correct for the file in full
+depending on options specified). The synopsis is complete and the description is
+a good start but the options list is incomplete. There are a lot more to be
+added but I want to have the file in and I'll continue working on it in the
+coming days.
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".

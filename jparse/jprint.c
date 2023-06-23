@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-q] [-Q] [-t type] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-G regexp] [-c] [-m depth] [-K]\n"
-    "\t\t[-Y type:value] [-S path] [-A args] file.json [name_arg ...]\n"
+    "\t\t[-Y type] [-S path] [-A args] file.json [name_arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
