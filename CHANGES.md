@@ -42,6 +42,11 @@ More modularity in `jprint` printing matches. Several new functions have been
 added. These will be useful later for the printing of not just a JSON file if no
 pattern requested but also printing matches. More will be added.
 
+Fix typo in usage string with `-Y` based on the original concept. It takes just
+one `name_arg` but is not an option arg but rather an arg to the program itself.
+Only the type is an option arg to the option.
+
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".
