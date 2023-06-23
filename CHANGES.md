@@ -11,6 +11,8 @@ options were used rather than relying on the `uintmax_t`s being not 0.
 Add inclusion of `string.h` and feature test macro `_GNU_SOURCE` to `jprint.h`
 for `strcasestr()`.
 
+Fix sign comparison warning in `util.h`.
+
 
 ## Release 1.0.19 2023-06-22
 
