@@ -161,6 +161,7 @@ struct jprint
 };
 
 /* functions */
+
 /* to free the entire struct jprint */
 void free_jprint(struct jprint **jprint);
 
@@ -171,8 +172,6 @@ void free_jprint_patterns_list(struct jprint *jprint);
 /* matches found of each pattern */
 struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
 	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
-void jprint_print_matches(struct jprint *jprint);
-void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* for finding matches and printing them */
@@ -181,7 +180,11 @@ void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
-
+void jprint_print_matches(struct jprint *jprint);
+bool jprint_print_count(struct jprint *jprint);
+void jprint_print_final_comma(struct jprint *jprint);
+void jprint_print_brace(struct jprint *jprint, bool open);
+void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 
 /* sanity checks on environment for specific options */
 void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);

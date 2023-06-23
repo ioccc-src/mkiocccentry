@@ -38,6 +38,9 @@ for some of the int types. In particular it cast the booleans to an int rather
 than use the `as_type` members of the struct. This would mean that instead of
 printing the actual number it would print a boolean as an integer.
 
+More modularity in `jprint` printing matches. Several new functions have been
+added. These will be useful later for the printing of not just a JSON file if no
+pattern requested but also printing matches. More will be added.
 
 ## Release 1.0.19 2023-06-22
 

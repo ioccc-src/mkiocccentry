@@ -1788,6 +1788,31 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     return;
 }
 
+/* jprint_print_brace - print a brace if -B used
+ *
+ * given:
+ *
+ *	jprint	    - pointer to our jprint struct
+ *	open	    - boolean indicating if we need an open or close brace
+ *
+ * This function returns void.
+ *
+ * This function will not return on NULL jprint.
+ */
+void
+jprint_print_brace(struct jprint *jprint, bool open)
+{
+    /* firewall */
+    if (jprint == NULL) {
+	err(43, __func__, "jprint is NULL");
+	not_reached();
+    }
+
+    if (jprint->print_braces && !jprint->count_only) {
+	print("%c\n", open?'{':'}');
+    }
+}
+
 /* jprint_print_match	    - print a single match
  *
  * given:
@@ -1813,19 +1838,19 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 
     /* firewall */
     if (jprint == NULL) {
-	err(43, __func__, "jprint is NULL");
+	err(44, __func__, "jprint is NULL");
 	not_reached();
     } else if (match == NULL) {
-	err(44, __func__, "match is NULL");
+	err(45, __func__, "match is NULL");
 	not_reached();
     } else if (pattern == NULL) {
-	err(45, __func__, "pattern is NULL");
+	err(46, __func__, "pattern is NULL");
 	not_reached();
     }
 
     /* if the name of the match is NULL it is a fatal error */
     if (match->match == NULL) {
-	err(46, __func__, "match->match is NULL");
+	err(47, __func__, "match->match is NULL");
 	not_reached();
     } else if (*match->match == '\0') {
 	/* warn on empty name for now and then go to next match */
@@ -1834,7 +1859,7 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
     }
 
     if (match->match == NULL) {
-	err(47, __func__, "match '%s' has NULL match", match->match);
+	err(48, __func__, "match '%s' has NULL match", match->match);
 	not_reached();
     } else if (*match->match == '\0') {
 	/* for now we only warn on empty match */
@@ -1935,6 +1960,57 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
     }
 }
 
+/* jprint_print_count	- print total matches if -c used
+ *
+ * given:
+ *
+ *	jprint	    - pointer to our struct jprint
+ *
+ * This function will not return on NULL jprint.
+ *
+ * This function returns false if -c was not used and true if it was.
+ */
+bool
+jprint_print_count(struct jprint *jprint)
+{
+    /* firewall */
+    if (jprint == NULL) {
+	err(49, __func__, "jprint is NULL");
+	not_reached();
+    }
+
+    if (jprint->count_only) {
+	print("%ju\n", jprint->total_matches);
+	return true;
+    }
+
+    return false;
+}
+
+/* jprint_print_final_comma	- print final comma if -C used
+ *
+ * given:
+ *
+ *	jprint	    - pointer to our struct jprint
+ *
+ * This function will not return on NULL jprint.
+ *
+ * This function does nothing if -C was not used or if -c was used.
+ */
+void
+jprint_print_final_comma(struct jprint *jprint)
+{
+    /* firewall */
+    if (jprint == NULL) {
+	err(50, __func__, "jprint is NULL");
+	not_reached();
+    }
+
+    if (jprint->print_final_comma && !jprint->count_only) {
+	print("%c", ',');
+    }
+}
+
 
 /* jprint_print_matches	    - print all matches found
  *
@@ -1963,7 +2039,7 @@ jprint_print_matches(struct jprint *jprint)
 
     /* firewall */
     if (jprint == NULL) {
-	err(48, __func__, "jprint is NULL");
+	err(51, __func__, "jprint is NULL");
 	not_reached();
     } else if (jprint->patterns == NULL) {
 	warn(__func__, "empty patterns list");
@@ -1971,8 +2047,7 @@ jprint_print_matches(struct jprint *jprint)
     }
 
     /* if -c used just print total number of matches */
-    if (jprint->count_only) {
-	print("%ju\n", jprint->total_matches);
+    if (jprint_print_count(jprint)) {
 	return;
     }
 
@@ -1982,11 +2057,11 @@ jprint_print_matches(struct jprint *jprint)
      * although printing syntax is not yet fully implemented (though a
      * reasonable amount of it is), we will check for -B and print the braces so
      * that after the syntax printing is implemented nothing has to be done with
-     * -B.
+     * -B. The function jprint_print_braces() will not do anything if -B was not
+     * used.
      */
-    if (jprint->print_braces) {
-	print("%c\n", '{');
-    }
+    jprint_print_brace(jprint, true);
+
     for (pattern = jprint->patterns; pattern != NULL; pattern = pattern->next) {
 	for (match = pattern->matches; match != NULL; match = match->next) {
 	    jprint_print_match(jprint, pattern, match);
@@ -1996,10 +2071,11 @@ jprint_print_matches(struct jprint *jprint)
     /*
      * although printing syntax is not yet fully implemented, we will check for
      * -B and print the braces so that after the syntax printing is implemented
-     * nothing has to be done with -B. Don't print braces if -c used.
+     * nothing has to be done with -B. The function jprint_print_braces() will
+     * not do anything if -B was not used.
      */
     if (jprint->print_braces && !jprint->count_only) {
-	print("%c", '}');
+	jprint_print_brace(jprint, false);
     }
     /*
      * as well, even though -j is not yet fully implemented, we will check for
@@ -2007,9 +2083,9 @@ jprint_print_matches(struct jprint *jprint)
      * implemented we shouldn't have to do anything else with this option. Don't
      * print final comma if -c used.
      */
-    if (jprint->print_final_comma && !jprint->count_only) {
-	print("%c", ',');
-    }
+    jprint_print_final_comma(jprint);
+
+    /* if we need a newline print it */
     if ((jprint->print_braces || jprint->print_final_comma) && !jprint->count_only) {
 	puts("");
     }
