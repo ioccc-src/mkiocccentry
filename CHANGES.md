@@ -15,6 +15,9 @@ Fix sign comparison warning in `util.h`.
 
 Fix use after free error in `util.c` (function `vcmdprintf()`).
 
+Fix error in `jprint_run_tests()` causing invalid test result and warning about
+unused computed value.
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".
