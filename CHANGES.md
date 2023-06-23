@@ -8,6 +8,9 @@ Add booleans (including renaming one `uintmax_t` to be a boolean and adding a
 new `uintmax_t` in its place) in `struct jprint` to indicate that specific
 options were used rather than relying on the `uintmax_t`s being not 0.
 
+Add inclusion of `string.h` and feature test macro `_GNU_SOURCE` to `jprint.h`
+for `strcasestr()`.
+
 
 ## Release 1.0.19 2023-06-22
 
