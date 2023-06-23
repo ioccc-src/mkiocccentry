@@ -33,6 +33,12 @@ the value (what to be printed) is the actual member found.
 Typo fix in debug message. The `jprint -o` option no longer exists but it was
 referenced.
 
+New `jparse` version "1.0.8 2023-06-23". Fixed display bug in `vjson_fprint()`
+for some of the int types. In particular it cast the booleans to an int rather
+than use the `as_type` members of the struct. This would mean that instead of
+printing the actual number it would print a boolean as an integer.
+
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".
