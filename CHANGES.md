@@ -18,6 +18,18 @@ Fix use after free error in `util.c` (function `vcmdprintf()`).
 Fix error in `jprint_run_tests()` causing invalid test result and warning about
 unused computed value.
 
+The `jprint_match` struct (which is still a work in progress) now has two
+`struct json *`s: the node name and node value. The name is what was matched,
+whether or not value was searched or not and the value is what will be printed,
+either value or name depending on the options. As both might need to be printed
+this can also be a misnomer but I believe having the nodes will be useful at
+some point.
+
+Improve (but not yet fixed) the value / name added to matches particularly with
+substring matching. The value is still the same as the name in the match struct
+but with substring matches the match is the pattern (`name_arg`) specified but
+the value (what to be printed) is the actual member found.
+
 ## Release 1.0.19 2023-06-22
 
 New `jprint` version at "0.0.25 2023-06-22".

@@ -78,14 +78,17 @@
  */
 struct jprint_match
 {
-    char *name;			    /* name of member */
-    char *value;		    /* value of member */
+    char *match;		    /* string that matched */
+    char *value;		    /* name or value string of that which matched */
 
     uintmax_t count;		    /* how many of this match are found */
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
     enum item_type type;	    /* match type */
     bool string;		    /* match is a string */
+
+    struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
+    struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
 
     struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
     struct jprint_match *next; /* next match found */
@@ -166,8 +169,8 @@ struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp
 void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
-struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *value, uintmax_t level,
-	bool string, enum item_type type);
+struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
+	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
 void jprint_print_matches(struct jprint *jprint);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
