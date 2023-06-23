@@ -1858,12 +1858,12 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	return;
     }
 
-    if (match->match == NULL) {
-	err(48, __func__, "match '%s' has NULL match", match->match);
+    if (match->value == NULL) {
+	err(48, __func__, "match '%s' has NULL value", match->match);
 	not_reached();
-    } else if (*match->match == '\0') {
-	/* for now we only warn on empty match */
-	warn(__func__, "empty match for match '%s'", match->match);
+    } else if (*match->value == '\0') {
+	/* for now we only warn on empty value */
+	warn(__func__, "empty value for match '%s'", match->match);
 	return;
     }
 
