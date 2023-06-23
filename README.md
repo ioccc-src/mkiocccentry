@@ -146,14 +146,15 @@ actually there and `mkiocccentry` will fail.
 
 As a stand-alone tool it will report whether the files are validly formed.
 
-This tool was co-developed in 2022 by:
+This tool was developed in 2022 by:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+with improvements made by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
 
-and:
-
-*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 
 For more information and examples, try:
@@ -267,8 +268,8 @@ remarks.md	Remarks about your entry in markdown format
 [file ...]	extra data files to include with your entry
 ```
 
-NOTE: It is *NOT* necessary to install to use these tools as you can run
-these tools from the top of the _mkiocccentry repo_ directory just fine.
+NOTE: It is *NOT* necessary to install the tools to use them as you can run
+the tools from the top of the _mkiocccentry repo_ directory just fine.
 
 5) upload your entry to the IOCCC submit server
 
