@@ -2089,15 +2089,12 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
      */
     if (jprint->check_tool_path != NULL) {
 	if (!exists(jprint->check_tool_path)) {
-	    free_jprint(&jprint);
 	    err(3, __func__, "jprint tool path does not exist: %s", jprint->check_tool_path);/*ooo*/
 	    not_reached();
 	} else if (!is_file(jprint->check_tool_path)) {
-	    free_jprint(&jprint);
 	    err(3, __func__, "jprint tool not a regular file: %s", jprint->check_tool_path); /*ooo*/
 	    not_reached();
 	} else if (!is_exec(jprint->check_tool_path)) {
-	    free_jprint(&jprint);
 	    err(3, __func__, "jprint tool not an executable file: %s", jprint->check_tool_path); /*ooo*/
 	    not_reached();
 	}
