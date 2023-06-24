@@ -26,6 +26,7 @@ more than once. The `struct jprint` has the `FILE *json_file`, `char
 *file_contents` as well as a `FILE *` for the json check tool stream and `char
 *`s for the check tool path and args.
 
+Make `jprint.c` functions in same order as in `jprint.h`.
 
 ## Release 1.0.20 2023-06-23
 

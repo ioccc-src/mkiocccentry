@@ -167,8 +167,6 @@ struct jprint
 
 /* functions */
 
-/* to free the entire struct jprint */
-void free_jprint(struct jprint **jprint);
 
 /* patterns list in struct jprint */
 void parse_jprint_name_args(struct jprint *jprint, char **argv);
@@ -186,11 +184,11 @@ void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
-void jprint_print_matches(struct jprint *jprint);
 bool jprint_print_count(struct jprint *jprint);
 void jprint_print_final_comma(struct jprint *jprint);
 void jprint_print_brace(struct jprint *jprint, bool open);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
+void jprint_print_matches(struct jprint *jprint);
 
 /* sanity checks on environment for specific options */
 FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv);
@@ -198,5 +196,7 @@ FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, 
 /* for the -S check tool and -A check tool args */
 void run_jprint_check_tool(struct jprint *jprint, char **argv);
 
+/* to free the entire struct jprint */
+void free_jprint(struct jprint **jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */
