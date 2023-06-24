@@ -30,7 +30,10 @@ Make `jprint.c` functions in same order as in `jprint.h`.
 
 Implement `jprint -Q`.
 
-Fix `jprint -L` (at least for those that can be tested for now).
+Fix `jprint -L` for some types. Not all types have been tested but numbers,
+strings and possibly members are correct. When more is done other types will be
+verified too.
+
 
 ## Release 1.0.20 2023-06-23
 

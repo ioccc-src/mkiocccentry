@@ -1515,7 +1515,7 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 	/* perform function operation on this terminal parse tree node, all of
 	 * which have to be a value */
-	(*vcallback)(jprint, node, true, depth+1, ap);
+	(*vcallback)(jprint, node, true, depth, ap);
 	break;
 
     case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
