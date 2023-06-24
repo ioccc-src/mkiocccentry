@@ -214,6 +214,156 @@ static const char * const usage_msg4 =
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 static struct jprint *alloc_jprint(void);
 
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(3, program, "wrong number of arguments");;
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	str		top level usage message
+ *	prog		our program name
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *prog, char const *str)
+{
+    /*
+     * firewall
+     */
+    if (prog == NULL) {
+	prog = "((NULL prog))";
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
+    }
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JSON_DEFAULT_MAX_DEPTH);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3);
+    fprintf_usage(exitcode, stderr, usage_msg4, json_parser_version, JPRINT_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
+}
+
+/* alloc_jprint	    - allocate and clear out a struct jprint *
+ *
+ * This function returns a newly allocated and cleared struct jprint *.
+ *
+ * This function will never return a NULL pointer.
+ */
+struct jprint *
+alloc_jprint(void)
+{
+    /* allocate our struct jprint */
+    struct jprint *jprint = calloc(1, sizeof *jprint);
+
+    /* verify jprint != NULL */
+    if (jprint == NULL) {
+	err(22, "jprint", "failed to allocate jprint struct");
+	not_reached();
+    }
+
+    /* clear everything out explicitly even after calloc() */
+
+    jprint->is_stdin = false;			/* if it's stdin */
+    jprint->match_found = false;		/* true if a pattern is specified and there is a match */
+    jprint->ignore_case = false;		/* true if -i, case-insensitive */
+    jprint->pattern_specified = false;		/* true if a pattern was specified */
+    jprint->encode_strings = false;		/* -e used */
+    jprint->quote_strings = false;		/* -Q used */
+    jprint->type_specified = false;		/* -t used */
+    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
+
+    /* number range options, see struct jprint_number_range in jprint_util.h for details */
+
+    /* max matches number range */
+    jprint->jprint_max_matches.number = 0;
+    jprint->jprint_max_matches.exact = false;
+    jprint->jprint_max_matches.range.min = 0;
+    jprint->jprint_max_matches.range.max = 0;
+    jprint->jprint_max_matches.range.less_than_equal = false;
+    jprint->jprint_max_matches.range.greater_than_equal = false;
+    jprint->jprint_max_matches.range.inclusive = false;
+    jprint->max_matches_requested = false;
+
+    /* min matches number range */
+    jprint->jprint_min_matches.number = 0;
+    jprint->jprint_min_matches.exact = false;
+    jprint->jprint_min_matches.range.min = 0;
+    jprint->jprint_min_matches.range.max = 0;
+    jprint->jprint_min_matches.range.less_than_equal = false;
+    jprint->jprint_min_matches.range.greater_than_equal = false;
+    jprint->jprint_min_matches.range.inclusive = false;
+    jprint->min_matches_requested = false;
+
+    /* levels number range */
+    jprint->jprint_levels.number = 0;
+    jprint->jprint_levels.exact = false;
+    jprint->jprint_levels.range.min = 0;
+    jprint->jprint_levels.range.max = 0;
+    jprint->jprint_levels.range.less_than_equal = false;
+    jprint->jprint_levels.range.greater_than_equal = false;
+    jprint->jprint_levels.range.inclusive = false;
+    jprint->levels_constrained = false;
+
+    /* file contents */
+    jprint->file_contents = NULL;			/* file.json contents */
+    /* JSON FILE * */
+    jprint->json_file = NULL;				/* JSON file */
+
+    jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
+    jprint-> print_type_option = false;			/* -p explicitly used */
+    jprint->print_token_spaces = false;			/* -b specified */
+    jprint->num_token_spaces = 1;			/* -b specified number of spaces or tabs */
+    jprint->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
+    jprint->print_json_levels = false;			/* -L specified */
+    jprint->num_level_spaces = 0;			/* number of spaces or tab for -L */
+    jprint->print_level_tab = false;			/* -L tab option */
+    jprint->print_colons = false;			/* -P specified */
+    jprint->print_final_comma = false;			/* -C specified */
+    jprint->print_braces = false;			/* -B specified */
+    jprint->indent_levels = false;			/* -I used */
+    jprint->indent_spaces = 0;				/* -I number of tabs or spaces */
+    jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
+    jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    jprint->match_encoded = false;			/* -E used, match encoded name */
+    jprint->substrings_okay = false;			/* -s used, matching substrings okay */
+    jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
+    jprint->explicit_regexp = false;			/* -G used, will not allow -Y */
+    jprint->count_only = false;				/* -c used, only show count */
+    jprint->print_entire_file = false;			/* no name_arg specified */
+    jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+
+    jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
+
+    jprint->check_tool_stream = NULL;			/* FILE * stream for -S path */
+    jprint->check_tool_path = NULL;			/* -S path */
+    jprint->check_tool_args = NULL;			/* -A args */
+
+    /* finally the linked list of patterns for matches */
+    jprint->patterns = NULL;
+    jprint->number_of_patterns = 0;
+    jprint->total_matches = 0;
+
+    return jprint;
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -517,109 +667,6 @@ main(int argc, char **argv)
 	 */
 	exit(1); /*ooo*/
     }
-}
-
-/* alloc_jprint	    - allocate and clear out a struct jprint *
- *
- * This function returns a newly allocated and cleared struct jprint *.
- *
- * This function will never return a NULL pointer.
- */
-struct jprint *
-alloc_jprint(void)
-{
-    /* allocate our struct jprint */
-    struct jprint *jprint = calloc(1, sizeof *jprint);
-
-    /* verify jprint != NULL */
-    if (jprint == NULL) {
-	err(22, "jprint", "failed to allocate jprint struct");
-	not_reached();
-    }
-
-    /* clear everything out explicitly even after calloc() */
-
-    jprint->is_stdin = false;			/* if it's stdin */
-    jprint->match_found = false;		/* true if a pattern is specified and there is a match */
-    jprint->ignore_case = false;		/* true if -i, case-insensitive */
-    jprint->pattern_specified = false;		/* true if a pattern was specified */
-    jprint->encode_strings = false;		/* -e used */
-    jprint->quote_strings = false;		/* -Q used */
-    jprint->type_specified = false;		/* -t used */
-    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
-
-    /* number range options, see struct jprint_number_range in jprint_util.h for details */
-
-    /* max matches number range */
-    jprint->jprint_max_matches.number = 0;
-    jprint->jprint_max_matches.exact = false;
-    jprint->jprint_max_matches.range.min = 0;
-    jprint->jprint_max_matches.range.max = 0;
-    jprint->jprint_max_matches.range.less_than_equal = false;
-    jprint->jprint_max_matches.range.greater_than_equal = false;
-    jprint->jprint_max_matches.range.inclusive = false;
-    jprint->max_matches_requested = false;
-
-    /* min matches number range */
-    jprint->jprint_min_matches.number = 0;
-    jprint->jprint_min_matches.exact = false;
-    jprint->jprint_min_matches.range.min = 0;
-    jprint->jprint_min_matches.range.max = 0;
-    jprint->jprint_min_matches.range.less_than_equal = false;
-    jprint->jprint_min_matches.range.greater_than_equal = false;
-    jprint->jprint_min_matches.range.inclusive = false;
-    jprint->min_matches_requested = false;
-
-    /* levels number range */
-    jprint->jprint_levels.number = 0;
-    jprint->jprint_levels.exact = false;
-    jprint->jprint_levels.range.min = 0;
-    jprint->jprint_levels.range.max = 0;
-    jprint->jprint_levels.range.less_than_equal = false;
-    jprint->jprint_levels.range.greater_than_equal = false;
-    jprint->jprint_levels.range.inclusive = false;
-    jprint->levels_constrained = false;
-
-    /* file contents */
-    jprint->file_contents = NULL;			/* file.json contents */
-    /* JSON FILE * */
-    jprint->json_file = NULL;				/* JSON file */
-
-    jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
-    jprint-> print_type_option = false;			/* -p explicitly used */
-    jprint->print_token_spaces = false;			/* -b specified */
-    jprint->num_token_spaces = 1;			/* -b specified number of spaces or tabs */
-    jprint->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
-    jprint->print_json_levels = false;			/* -L specified */
-    jprint->num_level_spaces = 0;			/* number of spaces or tab for -L */
-    jprint->print_level_tab = false;			/* -L tab option */
-    jprint->print_colons = false;			/* -P specified */
-    jprint->print_final_comma = false;			/* -C specified */
-    jprint->print_braces = false;			/* -B specified */
-    jprint->indent_levels = false;			/* -I used */
-    jprint->indent_spaces = 0;				/* -I number of tabs or spaces */
-    jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
-    jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
-    jprint->match_encoded = false;			/* -E used, match encoded name */
-    jprint->substrings_okay = false;			/* -s used, matching substrings okay */
-    jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
-    jprint->explicit_regexp = false;			/* -G used, will not allow -Y */
-    jprint->count_only = false;				/* -c used, only show count */
-    jprint->print_entire_file = false;			/* no name_arg specified */
-    jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
-
-    jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
-
-    jprint->check_tool_stream = NULL;			/* FILE * stream for -S path */
-    jprint->check_tool_path = NULL;			/* -S path */
-    jprint->check_tool_args = NULL;			/* -A args */
-
-    /* finally the linked list of patterns for matches */
-    jprint->patterns = NULL;
-    jprint->number_of_patterns = 0;
-    jprint->total_matches = 0;
-
-    return jprint;
 }
 
 /* parse_jprint_name_args - add name_args to patterns list
@@ -2230,48 +2277,4 @@ free_jprint(struct jprint **jprint)
 }
 
 
-/*
- * usage - print usage to stderr
- *
- * Example:
- *      usage(3, program, "wrong number of arguments");;
- *
- * given:
- *	exitcode        value to exit with
- *	str		top level usage message
- *	prog		our program name
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-usage(int exitcode, char const *prog, char const *str)
-{
-    /*
-     * firewall
-     */
-    if (prog == NULL) {
-	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
-    }
-    if (str == NULL) {
-	str = "((NULL str))";
-	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
-    }
 
-    /*
-     * print the formatted usage stream
-     */
-    if (*str != '\0') {
-	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    }
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JSON_DEFAULT_MAX_DEPTH);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3);
-    fprintf_usage(exitcode, stderr, usage_msg4, json_parser_version, JPRINT_VERSION);
-    exit(exitcode); /*ooo*/
-    not_reached();
-}
