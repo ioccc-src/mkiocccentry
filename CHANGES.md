@@ -21,6 +21,11 @@ Add function `parse_jprint_name_args()` to iterate through command line, looking
 for `name_arg`s. This function is called by the `jprint_sanity_chks()` as some
 options have to be checked after looking on the command line for `name_arg`s.
 
+Make running JSON check tool more modular which fixes bug of printing output
+more than once. The `struct jprint` has the `FILE *json_file`, `char
+*file_contents` as well as a `FILE *` for the json check tool stream and `char
+*`s for the check tool path and args.
+
 
 ## Release 1.0.20 2023-06-23
 

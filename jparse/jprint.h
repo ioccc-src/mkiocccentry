@@ -117,6 +117,8 @@ struct jprint_pattern
 struct jprint
 {
     bool is_stdin;				/* reading from stdin */
+    FILE *json_file;				/* FILE * to json file */
+    char *file_contents;			/* file contents */
     bool match_found;				/* true if a pattern is specified and there is a match */
     bool ignore_case;				/* true if -i, case-insensitive */
     bool pattern_specified;			/* true if a pattern was specified */
@@ -153,6 +155,9 @@ struct jprint
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* -Y used, search for value, not name */
+    FILE *check_tool_stream;			/* FILE * stream for -S path */
+    char *check_tool_path;			/* -S used */
+    char *check_tool_args;			/* -A used */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
@@ -188,7 +193,10 @@ void jprint_print_brace(struct jprint *jprint, bool open);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 
 /* sanity checks on environment for specific options */
-FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv,
-	char const *tool_path, char const *tool_args);
+FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv);
+
+/* for the -S check tool and -A check tool args */
+void run_jprint_check_tool(struct jprint *jprint, char **argv);
+
 
 #endif /* !defined INCLUDE_JPRINT_H */
