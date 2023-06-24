@@ -383,7 +383,7 @@ main(int argc, char **argv)
      * case
      */
     if (jprint == NULL) {
-	err(16, "jprint", "failed to allocate jprint struct");
+	err(23, "jprint", "failed to allocate jprint struct");
 	not_reached();
     }
 
@@ -501,7 +501,7 @@ main(int argc, char **argv)
 	    jprint->explicit_regexp = true;
 	    if (add_jprint_pattern(jprint, true, false, optarg) == NULL) {
 		free_jprint(&jprint);
-		err(17, __func__, "failed to add regexp '%s' to patterns list", optarg);
+		err(24, __func__, "failed to add regexp '%s' to patterns list", optarg);
 		not_reached();
 	    }
 	    break;
@@ -583,7 +583,7 @@ main(int argc, char **argv)
 	 * NOTE: don't make this exit code 3 as it's an internal error if the
 	 * jprint_sanity_chks() returns a NULL pointer.
 	 */
-	err(18, "jprint", "could not open regular readable file");
+	err(25, "jprint", "could not open regular readable file");
 	not_reached();
     }
 
@@ -697,7 +697,7 @@ parse_jprint_name_args(struct jprint *jprint, char **argv)
 	jprint->pattern_specified = true;
 
 	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
-	    err(19, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
+	    err(26, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
 		    jprint->substrings_okay?"OK":"ignored", argv[i]);
 	    not_reached();
 	}
@@ -737,11 +737,11 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
     if (jprint == NULL) {
-	err(31, __func__, "passed NULL jprint struct");
+	err(27, __func__, "passed NULL jprint struct");
 	not_reached();
     }
     if (str == NULL) {
-	err(32, __func__, "passed NULL str");
+	err(28, __func__, "passed NULL str");
 	not_reached();
     }
 
@@ -771,14 +771,14 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
     errno = 0; /* pre-clear errno for errp() */
     pattern = calloc(1, sizeof *pattern);
     if (pattern == NULL) {
-	errp(33, __func__, "unable to allocate struct jprint_pattern *");
+	errp(29, __func__, "unable to allocate struct jprint_pattern *");
 	not_reached();
     }
 
     errno = 0;
     pattern->pattern = strdup(str);
     if (pattern->pattern == NULL) {
-	errp(34, __func__, "unable to strdup string '%s' for patterns list", str);
+	errp(30, __func__, "unable to strdup string '%s' for patterns list", str);
 	not_reached();
     }
 
@@ -826,7 +826,7 @@ free_jprint_patterns_list(struct jprint *jprint)
     struct jprint_pattern *next_pattern = NULL; /* next in list */
 
     if (jprint == NULL) {
-	err(35, __func__, "passed NULL jprint struct");
+	err(31, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
@@ -890,20 +890,20 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct j
      * firewall
      */
     if (jprint == NULL) {
-	err(23, __func__, "passed NULL jprint struct");
+	err(32, __func__, "passed NULL jprint struct");
 	not_reached();
     }
 
     if (pattern == NULL) {
-	err(24, __func__, "passed NULL pattern");
+	err(33, __func__, "passed NULL pattern");
 	not_reached();
     } else if (pattern->pattern == NULL) {
-	err(25, __func__, "pattern->pattern is NULL");
+	err(34, __func__, "pattern->pattern is NULL");
 	not_reached();
     }
 
     if (str == NULL) {
-	err(26, __func__, "str is NULL");
+	err(35, __func__, "str is NULL");
 	not_reached();
     }
 
@@ -931,7 +931,7 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct j
     errno = 0; /* pre-clear errno for errp() */
     match = calloc(1, sizeof *match);
     if (match == NULL) {
-	errp(27, __func__, "unable to allocate struct jprint_match *");
+	errp(36, __func__, "unable to allocate struct jprint_match *");
 	not_reached();
     }
 
@@ -939,7 +939,7 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct j
     errno = 0; /* pre-clear errno for errp() */
     match->match = strdup(pattern->pattern);
     if (match->match == NULL) {
-	errp(28, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
+	errp(37, __func__, "unable to strdup string '%s' for match list", pattern->pattern);
 	not_reached();
     }
 
@@ -947,7 +947,7 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct j
     errno = 0; /* pre-clear errno for errp() */
     match->value = strdup(str);
     if (match->match == NULL) {
-	errp(29, __func__, "unable to strdup value string '%s' for match list", str);
+	errp(38, __func__, "unable to strdup value string '%s' for match list", str);
 	not_reached();
     }
     /* set level of the match for -l / -L options */
@@ -1009,7 +1009,7 @@ free_jprint_matches_list(struct jprint_pattern *pattern)
     struct jprint_match *next_match = NULL; /* next in list */
 
     if (pattern == NULL) {
-	err(30, __func__, "passed NULL pattern struct");
+	err(39, __func__, "passed NULL pattern struct");
 	not_reached();
     }
 
@@ -1206,7 +1206,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 					    if (add_jprint_match(jprint, pattern, jprint->search_value?
 						NULL:node, jprint->search_value?node:NULL, str, depth, false,
 						JTYPE_NUMBER) == NULL) {
-						    err(41, __func__, "adding match '%s' to pattern failed", str);
+						    err(40, __func__, "adding match '%s' to pattern failed", str);
 						    not_reached();
 					    }
 				    }
@@ -1216,7 +1216,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 					    if (add_jprint_match(jprint, pattern, jprint->search_value?
 						NULL:node, jprint->search_value?node:NULL, str, depth, false,
 						JTYPE_NUMBER) == NULL) {
-						    err(42, __func__, "adding match '%s' to pattern failed", str);
+						    err(41, __func__, "adding match '%s' to pattern failed", str);
 						    not_reached();
 					    }
 				    }
@@ -1237,7 +1237,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					    jprint->search_value?node:NULL, str, depth, true, JTYPE_STRING) == NULL) {
-						err(43, __func__, "adding match '%s' to pattern failed", str);
+						err(42, __func__, "adding match '%s' to pattern failed", str);
 						not_reached();
 					}
 				}
@@ -1246,7 +1246,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, str))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					    jprint->search_value?node:NULL, str, depth, true, JTYPE_STRING) == NULL) {
-						err(44, __func__, "adding match '%s' to pattern failed", str);
+						err(43, __func__, "adding match '%s' to pattern failed", str);
 						not_reached();
 					}
 				}
@@ -1266,7 +1266,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					    jprint->search_value?node:NULL, str, depth, false, JTYPE_BOOL) == NULL) {
-						err(45, __func__, "adding match '%s' to pattern failed", str);
+						err(44, __func__, "adding match '%s' to pattern failed", str);
 						not_reached();
 					}
 				}
@@ -1276,7 +1276,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, str))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					    jprint->search_value?node:NULL, str, depth, false, JTYPE_BOOL) == NULL) {
-						err(46, __func__, "adding match '%s' to pattern failed", str);
+						err(45, __func__, "adding match '%s' to pattern failed", str);
 						not_reached();
 					}
 				}
@@ -1296,7 +1296,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					jprint->search_value?node:NULL, str, depth, false, JTYPE_NULL) == NULL) {
-					    err(47, __func__, "adding match '%s' to pattern failed", str);
+					    err(46, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
 				    }
 				}
@@ -1305,7 +1305,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				    (jprint->ignore_case && !strcasecmp(pattern->pattern, str))) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					jprint->search_value?node:NULL, str, depth, false, JTYPE_NULL) == NULL) {
-					    err(48, __func__, "adding match '%s' to pattern failed", str);
+					    err(47, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
 				    }
 				}
@@ -1611,7 +1611,7 @@ jprint_print_count(struct jprint *jprint)
 {
     /* firewall */
     if (jprint == NULL) {
-	err(55, __func__, "jprint is NULL");
+	err(48, __func__, "jprint is NULL");
 	not_reached();
     }
 
@@ -1639,7 +1639,7 @@ jprint_print_final_comma(struct jprint *jprint)
 {
     /* firewall */
     if (jprint == NULL) {
-	err(56, __func__, "jprint is NULL");
+	err(49, __func__, "jprint is NULL");
 	not_reached();
     }
 
@@ -1665,7 +1665,7 @@ jprint_print_brace(struct jprint *jprint, bool open)
 {
     /* firewall */
     if (jprint == NULL) {
-	err(49, __func__, "jprint is NULL");
+	err(50, __func__, "jprint is NULL");
 	not_reached();
     }
 
@@ -1700,19 +1700,19 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 
     /* firewall */
     if (jprint == NULL) {
-	err(50, __func__, "jprint is NULL");
+	err(51, __func__, "jprint is NULL");
 	not_reached();
     } else if (match == NULL) {
-	err(51, __func__, "match is NULL");
+	err(52, __func__, "match is NULL");
 	not_reached();
     } else if (pattern == NULL) {
-	err(52, __func__, "pattern is NULL");
+	err(53, __func__, "pattern is NULL");
 	not_reached();
     }
 
     /* if the name of the match is NULL it is a fatal error */
     if (match->match == NULL) {
-	err(53, __func__, "match->match is NULL");
+	err(54, __func__, "match->match is NULL");
 	not_reached();
     } else if (*match->match == '\0') {
 	/* warn on empty name for now and then go to next match */
@@ -1721,7 +1721,7 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
     }
 
     if (match->value == NULL) {
-	err(54, __func__, "match '%s' has NULL value", match->match);
+	err(55, __func__, "match '%s' has NULL value", match->match);
 	not_reached();
     } else if (*match->value == '\0') {
 	/* for now we only warn on empty value */
@@ -1874,7 +1874,7 @@ jprint_print_matches(struct jprint *jprint)
 
     /* firewall */
     if (jprint == NULL) {
-	err(57, __func__, "jprint is NULL");
+	err(56, __func__, "jprint is NULL");
 	not_reached();
     } else if (jprint->patterns == NULL) {
 	warn(__func__, "empty patterns list");
@@ -1957,16 +1957,16 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
 {
     /* firewall */
     if (jprint == NULL) {
-	err(36, __func__, "NULL jprint");
+	err(57, __func__, "NULL jprint");
 	not_reached();
     } else if (argc == NULL) {
-	err(37, __func__, "NULL argc");
+	err(58, __func__, "NULL argc");
 	not_reached();
     } else if (argv == NULL || *argv == NULL || **argv == NULL) {
-	err(38, __func__, "NULL argv");
+	err(59, __func__, "NULL argv");
 	not_reached();
     } else if (program == NULL) {
-	err(39, __func__, "NULL program");
+	err(60, __func__, "NULL program");
 	not_reached();
     }
 
@@ -2076,7 +2076,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
 
     if (jprint->search_value && *argc != 2 && jprint->number_of_patterns != 1) {
 	free_jprint(&jprint);
-	err(40, __func__, "-Y requires exactly one name_arg");
+	err(61, __func__, "-Y requires exactly one name_arg");
 	not_reached();
     } else if (!jprint->search_value && (*argv)[1] == NULL && !jprint->count_only) {
 	jprint->print_entire_file = true;   /* technically this boolean is redundant */
@@ -2194,10 +2194,10 @@ run_jprint_check_tool(struct jprint *jprint, char **argv)
 
     /* firewall */
     if (jprint == NULL) {
-	err(20, __func__, "NULL jprint");
+	err(62, __func__, "NULL jprint");
 	not_reached();
     } else if (jprint->file_contents == NULL) {
-	err(21, __func__, "NULL jprint->file_contents");
+	err(63, __func__, "NULL jprint->file_contents");
 	not_reached();
     }
 
