@@ -426,119 +426,16 @@ int main(int argc, char **argv)
      * prior to doing this though.
      */
 
-    /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
-    if (jprint->use_regexps && jprint->substrings_okay) {
-	free_jprint(&jprint);
-	err(3, "jprint", "cannot use both -g and -s"); /*ooo*/
-	not_reached();
-    }
-
-    /* check that both -j and -s were not used */
-    if (jprint->print_syntax && jprint->substrings_okay) {
-	free_jprint(&jprint);
-	err(3, "jprint", "cannot use both -j and -s"); /*ooo*/
-	not_reached();
-    }
-
-    /* check that if -b [num]t is used then -p both is true */
-    if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
-	free_jprint(&jprint);
-	err(3, "jparse", "use of -b [num]t cannot be used without -p both"); /*ooo*/
-	not_reached();
-    }
+    /* run specific sanity checks on options etc. */
+    json_file = jprint_sanity_chks(jprint, program, &argc, &argv, tool_path, tool_args);
 
     /*
-     * check that if -j was used that printing both name and value is used. -j
-     * does this but it's possible the user explicitly used -p after -j but if
-     * they did not specify 'b' or 'both' it is an error.
+     * jprint_sanity_chks() should never return a NULL FILE * but we check
+     * anyway
      */
-    if (jprint->print_syntax && !jprint_print_name_value(jprint->print_type)) {
-	free_jprint(&jprint);
-	err(3, "jparse", "cannot use -j without printing both name and value"); /*ooo*/
+    if (json_file == NULL) {
+	err(3, "jprint", "could not open regular readable file"); /*ooo*/
 	not_reached();
-    }
-
-    /* without -j, -B has no effect */
-    if (jprint->print_braces && !jprint->print_syntax) {
-	jprint->print_braces = false;
-    }
-    /* use of -c with any of any of -B, -L, -j and -I is an error */
-    if (jprint->count_only) {
-	if (jprint->print_braces) {
-	    err(3, "jprint", "cannot use -B and -c together"); /*ooo*/
-	    not_reached();
-	}
-	if (jprint->print_json_levels) {
-	    err(3, "jprint", "cannot use -L and -c together"); /*ooo*/
-	    not_reached();
-	}
-	if (jprint->print_syntax) {
-	    err(3, "jprint", "cannot use -j and -c together"); /*ooo*/
-	    not_reached();
-	}
-	if (jprint->indent_levels) {
-	    err(3, "jprint", "cannot use -I and -c together"); /*ooo*/
-	    not_reached();
-	}
-    }
-
-    /* without -j, -C has no effect */
-    if (jprint->print_final_comma && !jprint->print_syntax) {
-	jprint->print_final_comma = false;
-    }
-
-    /* run specific sanity checks */
-    jprint_sanity_chks(jprint, tool_path, tool_args);
-
-    /* shift argc and argv for further processing */
-    argc -= optind;
-    argv += optind;
-
-    /* must have at least one arg */
-    if (argv[0] == NULL) {
-	usage(3, program, "wrong number of arguments"); /*ooo*/
-	not_reached();
-    }
-
-    /* if argv[0] != "-" we will attempt to read from a regular file */
-    if (strcmp(argv[0], "-") != 0) {
-        /* check that first arg exists and is a readable regular file */
-	if (!exists(argv[0])) {
-	    free_jprint(&jprint);
-	    err(4, "jprint", "%s: file does not exist", argv[0]); /*ooo*/
-	    not_reached();
-	} else if (!is_file(argv[0])) {
-	    free_jprint(&jprint);
-	    err(4, "jprint", "%s: not a regular file", argv[0]); /*ooo*/
-	    not_reached();
-	} else if (!is_read(argv[0])) {
-	    free_jprint(&jprint);
-	    err(4, "jprint", "%s: unreadable file", argv[0]); /*ooo*/
-	    not_reached();
-	}
-
-	errno = 0; /* pre-clear errno for errp() */
-	json_file = fopen(argv[0], "r");
-	if (json_file == NULL) {
-	    free_jprint(&jprint);
-	    errp(4, "jprint", "%s: could not open for reading", argv[0]); /*ooo*/
-	    not_reached();
-	}
-    } else { /* argv[0] is "-": will read from stdin */
-	jprint->is_stdin = true;
-	json_file = stdin;
-    }
-
-    /* the debug level will be increased at a later time */
-    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
-		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
-
-    if (jprint->search_value && argc != 2 && jprint->number_of_patterns != 1) {
-	free_jprint(&jprint);
-	err(18, "jprint", "-Y requires exactly one name_arg");
-	not_reached();
-    } else if (!jprint->search_value && argv[1] == NULL && !jprint->count_only) {
-	jprint->print_entire_file = true;   /* technically this boolean is redundant */
     }
 
     for (i = 1; argv[i] != NULL; ++i) {
@@ -1160,29 +1057,164 @@ free_jprint(struct jprint **jprint)
     *jprint = NULL;
 }
 
-/* jprint_sanity_chks	- sanity checks on jprint
+/* jprint_sanity_chks	- sanity checks on jprint tool options
  *
  * given:
  *
  *	jprint	    - pointer to our jprint struct
+ *	program	    - program name
+ *	argc	    - pointer to argc from main()
+ *	argv	    - pointer to argv from main()
  *	tool_path   - path to tool if -S specified
  *	tool_args   - args to tool_path
  *
- * This function runs any important checks on the jprint internal state.
+ * This function runs any important checks on the jprint internal state. It also
+ * runs checks that a file arg is specified and that the right number of options
+ * are specified done after options are parsed.
+ *
  * If passed a NULL pointer or anything is not sane this function will not
  * return.
  *
- * This function will not always run tests: it depends on the options specified
- * at the command line.
+ * This function returns a FILE *, the file to read the json from. It will not
+ * return if this cannot be done (i.e. it will never return a NULL pointer
+ * though main() still checks to be defensive).
+ *
+ * NOTE: this function does NOT check for valid json nor does it look for any
+ * name_arg!
  */
-void
-jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args)
+FILE *
+jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv,
+	char const *tool_path, char const *tool_args)
 {
+    FILE *json_file = NULL;	/* the returned file to read json from */
+
     /* firewall */
     if (jprint == NULL) {
 	err(34, __func__, "NULL jprint");
 	not_reached();
+    } else if (argc == NULL) {
+	err(35, __func__, "NULL argc");
+	not_reached();
+    } else if (argv == NULL || *argv == NULL || **argv == NULL) {
+	err(36, __func__, "NULL argv");
+	not_reached();
+    } else if (program == NULL) {
+	err(37, __func__, "NULL program");
+	not_reached();
     }
+
+    /*
+     * first check for invalid option combinations which if any found it is a
+     * command line error.
+     */
+
+    /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
+    if (jprint->use_regexps && jprint->substrings_okay) {
+	free_jprint(&jprint);
+	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
+	not_reached();
+    }
+
+    /* check that both -j and -s were not used together */
+    if (jprint->print_syntax && jprint->substrings_okay) {
+	free_jprint(&jprint);
+	err(3, __func__, "cannot use both -j and -s"); /*ooo*/
+	not_reached();
+    }
+
+    /* check that if -b [num]t is used then -p both is true */
+    if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
+	free_jprint(&jprint);
+	err(3, "jparse", "use of -b [num]t cannot be used without printing both name and value"); /*ooo*/
+	not_reached();
+    }
+
+    /*
+     * check that if -j was used that printing both name and value is used. -j
+     * does this but it's possible the user explicitly used -p after -j but if
+     * they did not specify 'b' or 'both' it is an error.
+     */
+    if (jprint->print_syntax && !jprint_print_name_value(jprint->print_type)) {
+	free_jprint(&jprint);
+	err(3, "jparse", "cannot use -j without printing both name and value"); /*ooo*/
+	not_reached();
+    }
+
+
+    /* use of -c with any of any of -B, -L, -j and -I is an error */
+    if (jprint->count_only) {
+	if (jprint->print_braces) {
+	    err(3, __func__, "cannot use -B and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->print_json_levels) {
+	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->print_syntax) {
+	    err(3, __func__, "cannot use -j and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jprint->indent_levels) {
+	    err(3, __func__, "cannot use -I and -c together"); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    /*
+     * shift argc and argv for further processing. They're a pointer to those in
+     * main() so we have to dereference them here because main() also requires
+     * that they are shifted.
+     */
+    (*argc) -= optind;
+    (*argv) += optind;
+
+    /* must have at least one arg */
+    if ((*argv)[0] == NULL) {
+	usage(3, program, "wrong number of arguments"); /*ooo*/
+	not_reached();
+    }
+
+    /* if argv[0] != "-" we will attempt to open a regular readable file */
+    if (strcmp((*argv)[0], "-") != 0) {
+        /* check that the path exists and is a regular readable file */
+	if (!exists((*argv)[0])) {
+	    free_jprint(&jprint);
+	    err(4, __func__, "%s: file does not exist", (*argv)[0]); /*ooo*/
+	    not_reached();
+	} else if (!is_file((*argv)[0])) {
+	    free_jprint(&jprint);
+	    err(4, __func__, "%s: not a regular file", (*argv)[0]); /*ooo*/
+	    not_reached();
+	} else if (!is_read((*argv)[0])) {
+	    free_jprint(&jprint);
+	    err(4, __func__, "%s: unreadable file", (*argv[0])); /*ooo*/
+	    not_reached();
+	}
+
+	errno = 0; /* pre-clear errno for errp() */
+	json_file = fopen((*argv)[0], "r");
+	if (json_file == NULL) {
+	    free_jprint(&jprint);
+	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
+	    not_reached();
+	}
+    } else { /* argv[0] is "-": will read from stdin */
+	jprint->is_stdin = true;
+	json_file = stdin;
+    }
+
+    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jprint->max_depth, (jprint->max_depth == 0?" (no limit)":
+		jprint->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+
+    if (jprint->search_value && *argc != 2 && jprint->number_of_patterns != 1) {
+	free_jprint(&jprint);
+	err(18, __func__, "-Y requires exactly one name_arg");
+	not_reached();
+    } else if (!jprint->search_value && (*argv)[1] == NULL && !jprint->count_only) {
+	jprint->print_entire_file = true;   /* technically this boolean is redundant */
+    }
+
 
     /*
      * if -S specified then we need to verify that the tool is a regular
@@ -1204,26 +1236,39 @@ jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *too
 	}
     }
 
+    /*
+     * if -A args is specified then we must have an -S tool as well */
     if (tool_args != NULL) {
 	if (tool_path == NULL) {
 	    /* it is an error if -A args specified without -S path */
 	    free_jprint(&jprint);
 	    err(3, __func__, "-A used without -S"); /*ooo*/
 	    not_reached();
-	} else if (tool_args == NULL || *tool_args == '\0') {
-	    /*
-	     * tool args should never be NULL but might be empty. The question
-	     * is whether or not empty args should actually be an error. It
-	     * shouldn't hurt if they are but for now it's an error.
-	     */
+	} else if (tool_args == NULL) {
 	    free_jprint(&jprint);
-	    err(3, __func__, "-A args NULL or empty"); /*ooo*/
+	    err(3, __func__, "-A args NULL"); /*ooo*/
 	    not_reached();
 	}
     }
 
-    /* all good */
-    return;
+    /*
+     * final processing: some options require the use of others but they are not
+     * an error if they not used together; the one simply has no effect.
+     */
+
+    /* without -j, -B has no effect */
+    if (jprint->print_braces && !jprint->print_syntax) {
+	jprint->print_braces = false;
+    }
+
+    /* without -j, -C has no effect */
+    if (jprint->print_final_comma && !jprint->print_syntax) {
+	jprint->print_final_comma = false;
+    }
+
+
+    /* all good: return the (presumably) json FILE * */
+    return json_file;
 }
 
 /*

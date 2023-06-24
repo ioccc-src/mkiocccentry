@@ -187,6 +187,7 @@ void jprint_print_brace(struct jprint *jprint, bool open);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 
 /* sanity checks on environment for specific options */
-void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
+FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv,
+	char const *tool_path, char const *tool_args);
 
 #endif /* !defined INCLUDE_JPRINT_H */

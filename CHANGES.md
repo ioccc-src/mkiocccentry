@@ -8,6 +8,15 @@ just value is specified (after the `-j` as `-j` will set both). Checking for
 this is just as simple as for `-p` being used at all and it seems slightly more
 user-friendly to do it this way.
 
+Modularise option checking of `jprint` by moving it to the
+`jprint_sanity_chks()` function which now returns a `FILE *`, the file to read
+the JSON from. The function will never return a NULL `FILE *`. It will not
+return with a command line error. It will check all options and verify that the
+right number of args have been specified. `main()` will add the `name_arg`s to
+the patterns list and go from there if `jprint_sanity_chks()` returns. As the
+`argc` and `argv` have to be shifted in main() they are a `int *` and `char ***`
+respectively rather than their usual `int` and `char **`.
+
 
 ## Release 1.0.20 2023-06-23
 
