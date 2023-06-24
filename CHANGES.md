@@ -17,6 +17,10 @@ the patterns list and go from there if `jprint_sanity_chks()` returns. As the
 `argc` and `argv` have to be shifted in main() they are a `int *` and `char ***`
 respectively rather than their usual `int` and `char **`.
 
+Add function `parse_jprint_name_args()` to iterate through command line, looking
+for `name_arg`s. This function is called by the `jprint_sanity_chks()` as some
+options have to be checked after looking on the command line for `name_arg`s.
+
 
 ## Release 1.0.20 2023-06-23
 

@@ -166,6 +166,7 @@ struct jprint
 void free_jprint(struct jprint **jprint);
 
 /* patterns list in struct jprint */
+void parse_jprint_name_args(struct jprint *jprint, char **argv);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 
