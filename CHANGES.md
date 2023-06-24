@@ -28,6 +28,10 @@ more than once. The `struct jprint` has the `FILE *json_file`, `char
 
 Make `jprint.c` functions in same order as in `jprint.h`.
 
+Implement `jprint -Q`.
+
+Fix `jprint -L` (at least for those that can be tested for now).
+
 ## Release 1.0.20 2023-06-23
 
 New `jprint` version at "0.0.26 2023-06-23".

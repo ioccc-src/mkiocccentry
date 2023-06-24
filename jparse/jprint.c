@@ -1521,7 +1521,7 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jprint, node, is_value, depth+1, ap);
+	(*vcallback)(jprint, node, is_value, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
@@ -1529,10 +1529,10 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
 	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth+1, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth+1, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
@@ -1763,23 +1763,33 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		}
 
 		print("%s%s%s%s\n",
-			match->string?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
 			match->value,
-			match->string?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
 			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
 	    } else if (jprint->print_json_levels) {
 		print("%ju", match->level);
 		for (j = 0; j < jprint->num_level_spaces; ++j) {
 		    printf("%s", jprint->print_level_tab?"\t":" ");
 		}
-		print("%s\n", match->match);
-		print("%ju", match->level);
+
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->match,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
+
 		for (j = 0; j < jprint->num_level_spaces; ++j) {
 		    print("%s", jprint->print_level_tab?"\t":" ");
 		}
-		print("%s\n", match->value);
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->value,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    } else {
-		print("%s", match->match);
+		print("%s%s%s",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->match,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
@@ -1789,7 +1799,10 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
-		print("%s\n", match->value);
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->value,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    }
 	} else if (jprint_print_name(jprint->print_type)) {
 	    if (jprint->print_json_levels) {
@@ -1797,9 +1810,15 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		for (j = 0; j < jprint->num_level_spaces; ++j) {
 		    print("%s", jprint->print_level_tab?"\t":" ");
 		}
-		print("%s\n", match->match);
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->match,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    } else {
-		print("%s\n", match->match);
+	    	print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->match,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    }
 	} else if (jprint_print_value(jprint->print_type)) {
 	    if (jprint->print_json_levels) {
@@ -1807,9 +1826,15 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		for (j = 0; j < jprint->num_level_spaces; ++j) {
 		    printf("%s", jprint->print_level_tab?"\t":" ");
 		}
-		print("%s\n", match->value);
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->value,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    } else {
-		print("%s\n", match->value);
+		print("%s%s%s\n",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->value,
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    }
 	}
 	/*
