@@ -422,7 +422,8 @@ int main(int argc, char **argv)
     /*
      * check for conflicting options prior to changing argc and argv so that the
      * user will know to correct the options before being told that they have
-     * the wrong number of arguments (if they do).
+     * the wrong number of arguments (if they do). Not everything can be checked
+     * prior to doing this though.
      */
 
     /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
@@ -447,15 +448,13 @@ int main(int argc, char **argv)
     }
 
     /*
-     * check that -j and -p are not used together.
-     *
-     * NOTE: this means check if -p was explicitly used: the default is -p v but
-     * -j conflicts with it and since -j enables a number of options it is
-     * easier to just make it an error.
+     * check that if -j was used that printing both name and value is used. -j
+     * does this but it's possible the user explicitly used -p after -j but if
+     * they did not specify 'b' or 'both' it is an error.
      */
-    if (jprint->print_type_option && jprint->print_syntax) {
+    if (jprint->print_syntax && !jprint_print_name_value(jprint->print_type)) {
 	free_jprint(&jprint);
-	err(3, "jparse", "cannot use -j and explicit -p together"); /*ooo*/
+	err(3, "jparse", "cannot use -j without printing both name and value"); /*ooo*/
 	not_reached();
     }
 

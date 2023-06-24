@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.21 2023-06-24
+
+New `jprint` version at "0.0.27 2023-06-24". If `-j` is used don't make use of
+`-p b` or `-p both` an error. It's only an error if printing of just name or
+just value is specified (after the `-j` as `-j` will set both). Checking for
+this is just as simple as for `-p` being used at all and it seems slightly more
+user-friendly to do it this way.
+
+
 ## Release 1.0.20 2023-06-23
 
 New `jprint` version at "0.0.26 2023-06-23".
