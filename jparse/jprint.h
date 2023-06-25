@@ -68,7 +68,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.27 2023-06-24"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.28 2023-06-25"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
@@ -150,7 +150,6 @@ struct jprint
     bool match_encoded;				/* -E used, match encoded name */
     bool substrings_okay;			/* -s used, matching substrings okay */
     bool use_regexps;				/* -g used, allow grep-like regexps */
-    bool explicit_regexp;			/* -G used, will not allow -Y */
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */

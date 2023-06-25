@@ -42,8 +42,8 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-q] [-Q] [-t type] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
-    "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-G regexp] [-c] [-m depth] [-K]\n"
-    "\t\t[-Y type] [-S path] [-A args] file.json [name_arg ...]\n"
+    "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type]\n"
+    "\t\t[-S path] [-A args] file.json [name_arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -148,10 +148,6 @@ static const char * const usage_msg2 =
     "\t\t\tTo match from the beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the end, end name_arg with '$'.\n"
     "\t\t\tUse of -g and -s is an error.\n"
-    "\n"
-    "\t-G regex\tSpecify a pattern that is a regex irrespective of the name_args\n"
-    "\n"
-    "\t\t\tUse of -G does not conflict with -g or -s.\n"
     "\n"
     "\t-c\t\tOnly show count of matches found\n"
     "\n"
@@ -344,7 +340,6 @@ alloc_jprint(void)
     jprint->match_encoded = false;			/* -E used, match encoded name */
     jprint->substrings_okay = false;			/* -s used, matching substrings okay */
     jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
-    jprint->explicit_regexp = false;			/* -G used, will not allow -Y */
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
@@ -391,7 +386,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:G:KY:sA:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(&jprint);
@@ -496,14 +491,6 @@ main(int argc, char **argv)
 	case 'g':   /* allow grep-like ERE */
 	    jprint->use_regexps = true;
 	    dbg(DBG_LOW, "-g specified, name_args will be regexps");
-	    break;
-	case 'G': /* this pattern is a regexp but the name_args will be a normal pattern unless -g specified */
-	    jprint->explicit_regexp = true;
-	    if (add_jprint_pattern(jprint, true, false, optarg) == NULL) {
-		free_jprint(&jprint);
-		err(24, __func__, "failed to add regexp '%s' to patterns list", optarg);
-		not_reached();
-	    }
 	    break;
 	case 'c':
 	    jprint->count_only = true;
@@ -1975,7 +1962,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
      * command line error.
      */
 
-    /* use of -g conflicts with -s and is an error. -G and -s do not conflict. */
+    /* use of -g conflicts with -s and is an error. */
     if (jprint->use_regexps && jprint->substrings_okay) {
 	free_jprint(&jprint);
 	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
@@ -2138,8 +2125,8 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
     /* now verify final options that require looking at name_args first */
     if (jprint->search_value && jprint->number_of_patterns != 1) {
 	/*
-	 * special handling to make sure that if -Y is specified then only -G
-	 * foo or one arg is specified after the file
+	 * special handling to make sure that if -Y is specified then only one
+	 * arg is specified after the file
 	 */
 	free_jprint(&jprint);
 	err(3, __func__, "-Y requires exactly one name_arg"); /*ooo*/
