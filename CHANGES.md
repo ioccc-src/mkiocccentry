@@ -22,6 +22,13 @@ v`/`-p value` with `-j`. This was changed yesterday as it's just as easy to
 check (and is slightly more user-friendly) that as it is for explicit use of
 `-p` full stop.
 
+Move most functions from `jprint.c` to `jprint_util.c` and move structs to
+`jprint_util.h`. This is because most functions are utility in nature. The
+`jprint_sanity_chks()` remains in `jprint.c` as `usage()` is the same name as
+other tools usage function so it's a static function in `jprint.c` but
+`jprint_sanity_chks()` uses that function. It could also be renamed to
+`jprint_usage()` of course.
+
 
 ## Release 1.0.21 2023-06-24
 
