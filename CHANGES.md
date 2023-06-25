@@ -1,5 +1,35 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.22 2023-06-25
+
+New `jprint` version "0.0.28 2023-06-25". Removed `-G regex` option.
+
+Slight formatting in `jprint` usage string (to do with aliases).
+
+Rename `struct jprint` boolean `substrings_okay` to `use_substrings` as it seems
+a better description and it matches the pattern struct as well.
+
+Modularise `vjprint_json_search()` by new function `is_jprint_match()` which
+takes the `struct jprint *`, the pattern, node and string and based on the type
+does the right checks. Will not return on NULL pointers. Returns true if it is a
+match and false otherwise.
+
+Add more safety when checking for matches by checking that `item != NULL` and
+that `item->converted` is true and that the string is not NULL.
+
+Clarify that one can use `-p both` or `-p b` but not `-p n`/`-p name` or `-p
+v`/`-p value` with `-j`. This was changed yesterday as it's just as easy to
+check (and is slightly more user-friendly) that as it is for explicit use of
+`-p` full stop.
+
+Move most functions from `jprint.c` to `jprint_util.c` and move structs to
+`jprint_util.h`. This is because most functions are utility in nature. The
+`jprint_sanity_chks()` remains in `jprint.c` as `usage()` is the same name as
+other tools usage function so it's a static function in `jprint.c` but
+`jprint_sanity_chks()` uses that function. It could also be renamed to
+`jprint_usage()` of course.
+
+
 ## Release 1.0.21 2023-06-24
 
 New `jprint` version at "0.0.27 2023-06-24". If `-j` is used don't make use of

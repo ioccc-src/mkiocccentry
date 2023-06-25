@@ -79,8 +79,10 @@
 #define JPRINT_PRINT_VALUE  (2)
 #define JPRINT_PRINT_BOTH   (JPRINT_PRINT_NAME | JPRINT_PRINT_VALUE)
 
-/* structs for various options */
 
+/* structs */
+
+/* structs for various options */
 /* number ranges for the options -l, -n and -n */
 struct jprint_number_range
 {
@@ -101,7 +103,105 @@ struct jprint_number
     struct jprint_number_range range;	/* for ranges */
 };
 
+/*
+ * jprint_match - a struct for a linked list of patterns matched in each pattern
+ * requested.
+ *
+ * XXX - this struct is a work in progress - XXX
+ */
+struct jprint_match
+{
+    char *match;		    /* string that matched */
+    char *value;		    /* name or value string of that which matched */
+
+    uintmax_t count;		    /* how many of this match are found */
+    uintmax_t level;		    /* the level of the json member for -l */
+    uintmax_t number;		    /* which match this is */
+    enum item_type type;	    /* match type */
+    bool string;		    /* match is a string */
+
+    struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
+    struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
+
+    struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
+    struct jprint_match *next; /* next match found */
+};
+
+/*
+ * jprint_pattern - struct for a linked list of patterns requested, held in
+ * struct jprint
+ *
+ * XXX - the pattern concept is incorrect due to a misunderstanding - XXX
+ */
+struct jprint_pattern
+{
+    char *pattern;		    /* the actual pattern or regexp string */
+    bool use_regexp;		    /* whether -g was used */
+    bool use_value;		    /* whether -Y was used, implying to search values */
+    bool use_substrings;	    /* if -s was used */
+    uintmax_t matches_found;	    /* number of matches found so far with this pattern */
+
+    struct jprint_pattern *next;    /* the next in the list */
+
+    struct jprint_match *matches;   /* matches found */
+};
+
+/*
+ * jprint - struct that holds most of the options, other settings and other data
+ */
+struct jprint
+{
+    bool is_stdin;				/* reading from stdin */
+    FILE *json_file;				/* FILE * to json file */
+    char *file_contents;			/* file contents */
+    bool match_found;				/* true if a pattern is specified and there is a match */
+    bool ignore_case;				/* true if -i, case-insensitive */
+    bool pattern_specified;			/* true if a pattern was specified */
+    bool encode_strings;			/* -e used */
+    bool quote_strings;				/* -Q used */
+    bool type_specified;			/* -t used */
+    uintmax_t type;				/* -t type */
+    struct jprint_number jprint_max_matches;	/* -n count specified */
+    bool max_matches_requested;			/* -n used */
+    struct jprint_number jprint_min_matches;	/* -N count specified */
+    bool min_matches_requested;			/* -N used */
+    struct jprint_number jprint_levels;		/* -l level specified */
+    bool levels_constrained;			/* -l specified */
+    uintmax_t print_type;			/* -p type specified */
+    bool print_type_option;			/* -p explicitly used */
+    bool print_token_spaces;			/* -b specified */
+    uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
+    bool print_token_tab;			/* -b tab (or -b <num>[t]) specified */
+    bool print_json_levels;			/* -L specified */
+    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
+    bool print_level_tab;			/* -L tab option */
+    bool print_colons;				/* -P specified */
+    bool print_final_comma;			/* -C specified */
+    bool print_braces;				/* -B specified */
+    bool indent_levels;				/* -I specified */
+    uintmax_t indent_spaces;			/* -I specified */
+    bool indent_tab;				/* -I <num>[{t|s}] specified */
+    bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+    bool match_encoded;				/* -E used, match encoded name */
+    bool use_substrings;			/* -s used, matching substrings okay */
+    bool use_regexps;				/* -g used, allow grep-like regexps */
+    bool count_only;				/* -c used, only show count */
+    bool print_entire_file;			/* no name_arg specified */
+    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
+    bool search_value;				/* -Y used, search for value, not name */
+    FILE *check_tool_stream;			/* FILE * stream for -S path */
+    char *check_tool_path;			/* -S used */
+    char *check_tool_args;			/* -A used */
+
+    /* any patterns specified */
+    struct jprint_pattern *patterns;		/* linked list of patterns specified */
+    uintmax_t number_of_patterns;		/* patterns specified */
+    uintmax_t total_matches;			/* total matches of all patterns (name_args) */
+};
+
+
 /* function prototypes */
+struct jprint *alloc_jprint(void);
 
 /* JSON types - -t option*/
 uintmax_t jprint_parse_types_option(char *optarg);
@@ -141,5 +241,44 @@ void jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *
 
 /* for -L option */
 void jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
+
+/*
+ * patterns (name_args) specified
+ *
+ * XXX - the concept of the patterns is incorrect in that it's not individual
+ * patterns but rather the second, third and Nth patterns are under the previous
+ * patterns in the file.
+ */
+void parse_jprint_name_args(struct jprint *jprint, char **argv);
+struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
+void free_jprint_patterns_list(struct jprint *jprint);
+
+/* matches found of each pattern */
+struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
+	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
+void free_jprint_matches_list(struct jprint_pattern *pattern);
+
+/* functions to find matches in the JSON tree */
+bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct json *node, char *str);
+void jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
+void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
+void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
+void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
+
+/* functions to print matches */
+bool jprint_print_count(struct jprint *jprint);
+void jprint_print_final_comma(struct jprint *jprint);
+void jprint_print_brace(struct jprint *jprint, bool open);
+void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
+void jprint_print_matches(struct jprint *jprint);
+
+
+/* for the -S check tool and -A check tool args */
+void run_jprint_check_tool(struct jprint *jprint, char **argv);
+
+/* to free the entire struct jprint */
+void free_jprint(struct jprint **jprint);
+
 
 #endif /* !defined INCLUDE_JPRINT_UTIL_H */
