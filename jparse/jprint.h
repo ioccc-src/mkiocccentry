@@ -148,7 +148,7 @@ struct jprint
     bool indent_tab;				/* -I <num>[{t|s}] specified */
     bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     bool match_encoded;				/* -E used, match encoded name */
-    bool substrings_okay;			/* -s used, matching substrings okay */
+    bool use_substrings;			/* -s used, matching substrings okay */
     bool use_regexps;				/* -g used, allow grep-like regexps */
     bool count_only;				/* -c used, only show count */
     bool print_entire_file;			/* no name_arg specified */
@@ -164,10 +164,15 @@ struct jprint
     uintmax_t total_matches;			/* total matches of all patterns (name_args) */
 };
 
-/* functions */
+/* jprint functions */
 
-
-/* patterns list in struct jprint */
+/*
+ * patterns (name_args) specified
+ *
+ * XXX - the concept of the patterns is incorrect in that it's not individual
+ * patterns but rather the second, third and Nth patterns are under the previous
+ * patterns in the file.
+ */
 void parse_jprint_name_args(struct jprint *jprint, char **argv);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
@@ -177,19 +182,21 @@ struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_patte
 	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
-/* for finding matches and printing them */
+/* functions to find matches in the JSON tree */
 void jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
 void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
+
+/* functions to print matches */
 bool jprint_print_count(struct jprint *jprint);
 void jprint_print_final_comma(struct jprint *jprint);
 void jprint_print_brace(struct jprint *jprint, bool open);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
 void jprint_print_matches(struct jprint *jprint);
 
-/* sanity checks on environment for specific options */
+/* sanity checks on environment for specific options and the tool arguments */
 FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv);
 
 /* for the -S check tool and -A check tool args */

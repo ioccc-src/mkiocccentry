@@ -338,7 +338,7 @@ alloc_jprint(void)
     jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
     jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
     jprint->match_encoded = false;			/* -E used, match encoded name */
-    jprint->substrings_okay = false;			/* -s used, matching substrings okay */
+    jprint->use_substrings = false;			/* -s used, matching substrings okay */
     jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
     jprint->count_only = false;				/* -c used, only show count */
     jprint->print_entire_file = false;			/* no name_arg specified */
@@ -485,7 +485,7 @@ main(int argc, char **argv)
 	    dbg(DBG_LOW, "-E specified, will match encoded strings, not decoded strings");
 	    break;
 	case 's':
-	    jprint->substrings_okay = true;
+	    jprint->use_substrings = true;
 	    dbg(DBG_LOW, "-s specified, will match substrings");
 	    break;
 	case 'g':   /* allow grep-like ERE */
@@ -683,9 +683,9 @@ parse_jprint_name_args(struct jprint *jprint, char **argv)
     for (i = 1; argv[i] != NULL; ++i) {
 	jprint->pattern_specified = true;
 
-	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->substrings_okay, argv[i]) == NULL) {
+	if (add_jprint_pattern(jprint, jprint->use_regexps, jprint->use_substrings, argv[i]) == NULL) {
 	    err(26, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
-		    jprint->substrings_okay?"OK":"ignored", argv[i]);
+		    jprint->use_substrings?"OK":"ignored", argv[i]);
 	    not_reached();
 	}
     }
@@ -1187,7 +1187,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			    (item->is_integer&&jprint_match_int(jprint->type))||
 			    (item->is_floating && jprint_match_float(jprint->type)) ||
 			    (item->is_e_notation && jprint_match_exp(jprint->type))) {
-				if (jprint->substrings_okay) {
+				if (jprint->use_substrings) {
 				    if (strstr(str, pattern->pattern) ||
 					(jprint->ignore_case&&strcasestr(str, pattern->pattern))) {
 					    if (add_jprint_match(jprint, pattern, jprint->search_value?
@@ -1219,7 +1219,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 
 			/* XXX - as noted above, the -Y for strings is buggy - XXX */
 			if (!jprint->search_value || jprint_match_string(jprint->type)) {
-			    if (jprint->substrings_okay) {
+			    if (jprint->use_substrings) {
 				if (strstr(str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
@@ -1248,7 +1248,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			char *str = item->as_str;
 
 			if (!jprint->search_value || jprint_match_bool(jprint->type)) {
-			    if (jprint->substrings_okay) {
+			    if (jprint->use_substrings) {
 				if (strstr(str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
@@ -1278,7 +1278,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			char *str = item->as_str;
 
 			if (!jprint->search_value || jprint_match_null(jprint->type)) {
-			    if (jprint->substrings_okay) {
+			    if (jprint->use_substrings) {
 				if (strstr(str, pattern->pattern) ||
 				    (jprint->ignore_case && strcasestr(str, pattern->pattern))) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
@@ -1963,14 +1963,14 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
      */
 
     /* use of -g conflicts with -s and is an error. */
-    if (jprint->use_regexps && jprint->substrings_okay) {
+    if (jprint->use_regexps && jprint->use_substrings) {
 	free_jprint(&jprint);
 	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
 	not_reached();
     }
 
     /* check that both -j and -s were not used together */
-    if (jprint->print_syntax && jprint->substrings_okay) {
+    if (jprint->print_syntax && jprint->use_substrings) {
 	free_jprint(&jprint);
 	err(3, __func__, "cannot use both -j and -s"); /*ooo*/
 	not_reached();

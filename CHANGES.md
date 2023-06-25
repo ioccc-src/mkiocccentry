@@ -6,6 +6,9 @@ New `jprint` version "0.0.28 2023-06-25". Removed `-G regex` option.
 
 Slight formatting in `jprint` usage string (to do with aliases).
 
+Rename `struct jprint` boolean `substrings_okay` to `use_substrings` as it seems
+a better description and it matches the pattern struct as well.
+
 
 ## Release 1.0.21 2023-06-24
 
