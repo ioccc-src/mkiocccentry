@@ -20,6 +20,7 @@
 #if !defined(INCLUDE_JPRINT_UTIL_H)
 #    define  INCLUDE_JPRINT_UTIL_H
 
+#define _GNU_SOURCE /* feature test macro for strcasestr() */
 #include <stdlib.h>
 #include <unistd.h>
 #include <regex.h> /* for -g and -G, regular expression matching */
