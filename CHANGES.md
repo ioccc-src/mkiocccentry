@@ -9,6 +9,14 @@ Slight formatting in `jprint` usage string (to do with aliases).
 Rename `struct jprint` boolean `substrings_okay` to `use_substrings` as it seems
 a better description and it matches the pattern struct as well.
 
+Modularise `vjprint_json_search()` by new function `is_jprint_match()` which
+takes the `struct jprint *`, the pattern, node and string and based on the type
+does the right checks. Will not return on NULL pointers. Returns true if it is a
+match and false otherwise.
+
+Add more safety when checking for matches by checking that `item != NULL` and
+that `item->converted` is true and that the string is not NULL.
+
 
 ## Release 1.0.21 2023-06-24
 
