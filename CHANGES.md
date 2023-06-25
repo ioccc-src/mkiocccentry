@@ -4,6 +4,8 @@
 
 New `jprint` version "0.0.28 2023-06-25". Removed `-G regex` option.
 
+Slight formatting in `jprint` usage string (to do with aliases).
+
 
 ## Release 1.0.21 2023-06-24
 
