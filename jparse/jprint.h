@@ -68,7 +68,7 @@
 #include "jparse.h"
 
 /* jprint version string */
-#define JPRINT_VERSION "0.0.26 2023-06-23"		/* format: major.minor YYYY-MM-DD */
+#define JPRINT_VERSION "0.0.27 2023-06-24"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
@@ -117,6 +117,8 @@ struct jprint_pattern
 struct jprint
 {
     bool is_stdin;				/* reading from stdin */
+    FILE *json_file;				/* FILE * to json file */
+    char *file_contents;			/* file contents */
     bool match_found;				/* true if a pattern is specified and there is a match */
     bool ignore_case;				/* true if -i, case-insensitive */
     bool pattern_specified;			/* true if a pattern was specified */
@@ -153,6 +155,9 @@ struct jprint
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* -Y used, search for value, not name */
+    FILE *check_tool_stream;			/* FILE * stream for -S path */
+    char *check_tool_path;			/* -S used */
+    char *check_tool_args;			/* -A used */
 
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
@@ -162,10 +167,9 @@ struct jprint
 
 /* functions */
 
-/* to free the entire struct jprint */
-void free_jprint(struct jprint **jprint);
 
 /* patterns list in struct jprint */
+void parse_jprint_name_args(struct jprint *jprint, char **argv);
 struct jprint_pattern *add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, char *str);
 void free_jprint_patterns_list(struct jprint *jprint);
 
@@ -180,13 +184,19 @@ void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
 void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
 		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
-void jprint_print_matches(struct jprint *jprint);
 bool jprint_print_count(struct jprint *jprint);
 void jprint_print_final_comma(struct jprint *jprint);
 void jprint_print_brace(struct jprint *jprint, bool open);
 void jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct jprint_match *match);
+void jprint_print_matches(struct jprint *jprint);
 
 /* sanity checks on environment for specific options */
-void jprint_sanity_chks(struct jprint *jprint, char const *tool_path, char const *tool_args);
+FILE *jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char ***argv);
+
+/* for the -S check tool and -A check tool args */
+void run_jprint_check_tool(struct jprint *jprint, char **argv);
+
+/* to free the entire struct jprint */
+void free_jprint(struct jprint **jprint);
 
 #endif /* !defined INCLUDE_JPRINT_H */

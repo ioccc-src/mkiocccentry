@@ -1,5 +1,40 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.21 2023-06-24
+
+New `jprint` version at "0.0.27 2023-06-24". If `-j` is used don't make use of
+`-p b` or `-p both` an error. It's only an error if printing of just name or
+just value is specified (after the `-j` as `-j` will set both). Checking for
+this is just as simple as for `-p` being used at all and it seems slightly more
+user-friendly to do it this way.
+
+Modularise option checking of `jprint` by moving it to the
+`jprint_sanity_chks()` function which now returns a `FILE *`, the file to read
+the JSON from. The function will never return a NULL `FILE *`. It will not
+return with a command line error. It will check all options and verify that the
+right number of args have been specified. `main()` will add the `name_arg`s to
+the patterns list and go from there if `jprint_sanity_chks()` returns. As the
+`argc` and `argv` have to be shifted in main() they are a `int *` and `char ***`
+respectively rather than their usual `int` and `char **`.
+
+Add function `parse_jprint_name_args()` to iterate through command line, looking
+for `name_arg`s. This function is called by the `jprint_sanity_chks()` as some
+options have to be checked after looking on the command line for `name_arg`s.
+
+Make running JSON check tool more modular which fixes bug of printing output
+more than once. The `struct jprint` has the `FILE *json_file`, `char
+*file_contents` as well as a `FILE *` for the json check tool stream and `char
+*`s for the check tool path and args.
+
+Make `jprint.c` functions in same order as in `jprint.h`.
+
+Implement `jprint -Q`.
+
+Fix `jprint -L` for some types. Not all types have been tested but numbers,
+strings and possibly members are correct. When more is done other types will be
+verified too.
+
+
 ## Release 1.0.20 2023-06-23
 
 New `jprint` version at "0.0.26 2023-06-23".
