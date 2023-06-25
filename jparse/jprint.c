@@ -99,7 +99,7 @@ static const char * const usage_msg1 =
     "\t-p value\tAlias for '-p v'\n"
     "\t-p both\t\tAlias for '-p n,v'\n"
     "\n"
-    "\t\t\tIt is an error to use both -p and -j.\n"
+    "\t\t\tIt is an error to use -p n or -p v with -j.\n"
     "\n"
     "\t-b <num>[{t|s}]\tPrint specified number of tabs or spaces between JSON tokens printed via -j (def: 1 space)\n"
     "\t-b tab\t\tAlias for '-b 1t'\n"

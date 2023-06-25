@@ -17,6 +17,11 @@ match and false otherwise.
 Add more safety when checking for matches by checking that `item != NULL` and
 that `item->converted` is true and that the string is not NULL.
 
+Clarify that one can use `-p both` or `-p b` but not `-p n`/`-p name` or `-p
+v`/`-p value` with `-j`. This was changed yesterday as it's just as easy to
+check (and is slightly more user-friendly) that as it is for explicit use of
+`-p` full stop.
+
 
 ## Release 1.0.21 2023-06-24
 
