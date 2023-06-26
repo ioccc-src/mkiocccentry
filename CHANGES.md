@@ -7,6 +7,9 @@ New `jprint` version "0.0.29 2023-06-26".
 Fix handling of `-L` and `-I`. Indenting and printing of levels was messed up.
 Doing this I was able to remove a lot of duplicate code too.
 
+Add file `test_jparse/test_JSON/good/JSON_misfeature_number_7.json` from a
+GitHub comment.
+
 
 ## Release 1.0.22 2023-06-25
 
