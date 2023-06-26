@@ -1,5 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.23 2023-06-26
+
+New `jprint` version "0.0.29 2023-06-26".
+
+Fix handling of `-L` and `-I`. Indenting and printing of levels was messed up.
+Doing this I was able to remove a lot of duplicate code too.
+
+
 ## Release 1.0.22 2023-06-25
 
 New `jprint` version "0.0.28 2023-06-25". Removed `-G regex` option.

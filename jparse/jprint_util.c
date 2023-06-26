@@ -2352,25 +2352,32 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	 *
 	 * XXX - This is buggy in some cases. This must be fixed.
 	 */
-	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
-	    if (jprint->print_syntax) {
-		if (jprint->print_json_levels && jprint->indent_spaces) {
-			print("%ju", match->level);
+	if (jprint->print_json_levels) {
+	    print("%ju", match->level);
 
-			for (j = 0; j < jprint->num_level_spaces; ++j) {
-			    print("%s", jprint->print_level_tab?"\t":" ");
-			}
-		}
+	    for (j = 0; j < jprint->num_level_spaces; ++j) {
+		printf("%s", jprint->print_level_tab?"\t":" ");
+	    }
+	    if (jprint->indent_levels) {
 		if (jprint->indent_spaces) {
 		    for (j = 0; j < match->level * jprint->indent_spaces; ++j) {
 			print("%s", jprint->indent_tab?"\t":" ");
 		    }
 		}
+	    }
+
+	}
+	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+	    if (jprint->print_syntax) {
+
 		print("\"%s\"", match->match);
+
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
+
 		print("%s", ":");
+
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
@@ -2380,24 +2387,6 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 			match->value,
 			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
 			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-	    } else if (jprint->print_json_levels) {
-		print("%ju", match->level);
-		for (j = 0; j < jprint->num_level_spaces; ++j) {
-		    printf("%s", jprint->print_level_tab?"\t":" ");
-		}
-
-		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->match,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-
-		for (j = 0; j < jprint->num_level_spaces; ++j) {
-		    print("%s", jprint->print_level_tab?"\t":" ");
-		}
-		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    } else {
 		print("%s%s%s",
 			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
@@ -2418,37 +2407,15 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	    }
 	} else if (jprint_print_name(jprint->print_type)) {
-	    if (jprint->print_json_levels) {
-		print("%ju", match->level);
-		for (j = 0; j < jprint->num_level_spaces; ++j) {
-		    print("%s", jprint->print_level_tab?"\t":" ");
-		}
-		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->match,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-	    } else {
-	    	print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->match,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-	    }
+	    print("%s%s%s\n",
+		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+		  match->match,
+		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	} else if (jprint_print_value(jprint->print_type)) {
-	    if (jprint->print_json_levels) {
-		print("%ju", match->level);
-		for (j = 0; j < jprint->num_level_spaces; ++j) {
-		    printf("%s", jprint->print_level_tab?"\t":" ");
-		}
-		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-	    } else {
-		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-	    }
+	    print("%s%s%s\n",
+		    match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+		    match->value,
+		    match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
 	}
 	/*
 	 * XXX: more functions will have to be added to print the matches
