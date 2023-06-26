@@ -10,6 +10,9 @@ Doing this I was able to remove a lot of duplicate code too.
 Add file `test_jparse/test_JSON/good/JSON_misfeature_number_7.json` from a
 GitHub comment.
 
+Minor update to `h2g2.json` file - add a boolean to elements of the person
+array.
+
 
 ## Release 1.0.22 2023-06-25
 
