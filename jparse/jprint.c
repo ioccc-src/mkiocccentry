@@ -792,10 +792,3 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
     /* all good: return the (presumably) json FILE * */
     return jprint->json_file;
 }
-
-
-
-
-
-
-

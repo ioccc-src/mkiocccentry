@@ -14,12 +14,14 @@
 		    {
 			"name" : "Arthur Dent",
 			"race" : "human",
-			"status" : "dead"
+			"status" : "dead",
+			"alive": false
 		    },
 		    {
 			"name": "Ford Prefect",
 			"race" : "Betelgeusian",
-			"status" : "dead"
+			"status" : "dead",
+			"alive": false
 		    }
 		]
 	    }
