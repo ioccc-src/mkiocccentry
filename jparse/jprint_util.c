@@ -1519,7 +1519,7 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *nam
     if (jprint == NULL) {
 	err(39, __func__, "jprint is NULL");
 	not_reached();
-    } else if (pattern == NULL && name == NULL) {
+    } else if ((pattern == NULL || pattern->pattern == NULL) && name == NULL) {
 	err(40, __func__, "pattern and name are both NULL");
 	not_reached();
     } else if (node == NULL) {
@@ -1558,145 +1558,141 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *nam
      */
     switch (node->type) {
 
-    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-	break;
+	case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+	    break;
 
-    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-	{
-	    struct json_number *item = &(node->item.number);
+	case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+	    {
+		struct json_number *item = &(node->item.number);
 
-	    if (item != NULL) {
-		if (!jprint->search_value || jprint_match_num(jprint->type) ||
-		    (item->is_integer&&jprint_match_int(jprint->type))||
-		    (item->is_floating && jprint_match_float(jprint->type)) ||
-		    (item->is_e_notation && jprint_match_exp(jprint->type))) {
+		if (item != NULL) {
+		    if (!jprint->search_value || jprint_match_num(jprint->type) ||
+			(item->is_integer&&jprint_match_int(jprint->type))||
+			(item->is_floating && jprint_match_float(jprint->type)) ||
+			(item->is_e_notation && jprint_match_exp(jprint->type))) {
+			    if (jprint->use_substrings) {
+				if (strstr(str, name) ||
+				    (jprint->ignore_case&&strcasestr(str, name))) {
+					return true;
+				}
+			    } else {
+				if (!strcmp(name, str) ||
+				    (jprint->ignore_case&&!strcasecmp(name, str))) {
+					return true;
+				}
+			    }
+			}
+		}
+	    }
+	    break;
+
+	case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+	    {
+		struct json_string *item = &(node->item.string);
+
+		if (item != NULL) {
+		    /* XXX - as noted elsewhere, the -Y for strings is buggy - XXX */
+		    if (!jprint->search_value || jprint_match_string(jprint->type)) {
 			if (jprint->use_substrings) {
 			    if (strstr(str, name) ||
-				(jprint->ignore_case&&strcasestr(str, name))) {
+				(jprint->ignore_case && strcasestr(str, name))) {
 				    return true;
 			    }
 			} else {
 			    if (!strcmp(name, str) ||
-				(jprint->ignore_case&&!strcasecmp(name, str))) {
+				(jprint->ignore_case && !strcasecmp(name, str))) {
+				    return true;
+			    }
+			}
+		    }
+		}
+	    }
+	    break;
+
+	case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+	    {
+		struct json_boolean *item = &(node->item.boolean);
+
+		if (item != NULL) {
+		    if (!jprint->search_value || jprint_match_bool(jprint->type)) {
+			if (jprint->use_substrings) {
+			    if (strstr(str, name) ||
+				(jprint->ignore_case && strcasestr(str, name))) {
+				    return true;
+			    }
+
+			} else {
+			    if (!strcmp(name, str) ||
+				(jprint->ignore_case && !strcasecmp(name, str))) {
+				    return true;
+			    }
+			}
+		    }
+		}
+	    }
+	    break;
+
+	case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+	    {
+		struct json_null *item = &(node->item.null);
+
+		if (item != NULL) {
+		    if (!jprint->search_value || jprint_match_null(jprint->type)) {
+			if (jprint->use_substrings) {
+			    if (strstr(str, name) ||
+				(jprint->ignore_case && strcasestr(str, name))) {
+				    return true;
+			    }
+			} else {
+			    if (!strcmp(name, str) ||
+				(jprint->ignore_case && !strcasecmp(name, str))) {
 				    return true;
 			    }
 			}
 		    }
 	    }
-	}
-	break;
+	    break;
 
-    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-	{
-	    struct json_string *item = &(node->item.string);
+	case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
+	    {
+		struct json_member *item = &(node->item.member);
 
-	    if (item != NULL) {
-		/* XXX - as noted elsewhere, the -Y for strings is buggy - XXX */
-		if (!jprint->search_value || jprint_match_string(jprint->type)) {
-		    if (jprint->use_substrings) {
-			if (strstr(str, name) ||
-			    (jprint->ignore_case && strcasestr(str, name))) {
-				return true;
-			}
-		    } else {
-			if (!strcmp(name, str) ||
-			    (jprint->ignore_case && !strcasecmp(name, str))) {
-				return true;
-			}
-		    }
-		}
+		/* XXX - check if anything has to be done here */
+		UNUSED_ARG(item);
 	    }
-	}
-	break;
+	    break;
 
-    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-	{
-	    struct json_boolean *item = &(node->item.boolean);
+	case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
+	    {
+		struct json_object *item = &(node->item.object);
 
-	    if (item != NULL) {
-		if (!jprint->search_value || jprint_match_bool(jprint->type)) {
-		    if (jprint->use_substrings) {
-			if (strstr(str, name) ||
-			    (jprint->ignore_case && strcasestr(str, name))) {
-				return true;
-			}
-
-		    } else {
-			if (!strcmp(name, str) ||
-			    (jprint->ignore_case && !strcasecmp(name, str))) {
-				return true;
-			}
-		    }
-		}
+		/* XXX - check if anything has to be done here */
+		UNUSED_ARG(item);
 	    }
+	    break;
+
+	case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
+	    {
+		struct json_array *item = &(node->item.array);
+
+		/* XXX - check if anything has to be done here as a quick test
+		 * suggests nothing has to be done - XXX */
+		UNUSED_ARG(item);
+	    }
+	    break;
+
+	case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
+	    {
+		struct json_elements *item = &(node->item.elements);
+
+		/* XXX - check if anything has to be done here - XXX */
+		UNUSED_ARG(item);
+	    }
+	    break;
+
+	default:
+	    break;
 	}
-	break;
-
-    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-	{
-	    struct json_null *item = &(node->item.null);
-
-	    if (item != NULL) {
-		if (!jprint->search_value || jprint_match_null(jprint->type)) {
-		    if (jprint->use_substrings) {
-			if (strstr(str, name) ||
-			    (jprint->ignore_case && strcasestr(str, name))) {
-				return true;
-			}
-		    } else {
-			if (!strcmp(name, str) ||
-			    (jprint->ignore_case && !strcasecmp(name, str))) {
-				return true;
-			}
-		    }
-		}
-	}
-	break;
-
-    case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
-	{
-	    struct json_member *item = &(node->item.member);
-
-	    /* XXX - fix to check for match of the member and add to
-	     * the matches list if it fits within constraints - XXX */
-	    UNUSED_ARG(item);
-	}
-	break;
-
-    case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
-	{
-	    struct json_object *item = &(node->item.object);
-
-	    /* XXX - fix to check for match of the object and add to
-	     * the matches list if it fits within constraints - XXX */
-	    UNUSED_ARG(item);
-	}
-	break;
-
-    case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
-	{
-	    struct json_array *item = &(node->item.array);
-
-	    /* XXX - fix to check for match of the array and add it
-	     * to the matches list if it fits within the constraints - XXX */
-	    UNUSED_ARG(item);
-	}
-	break;
-
-    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
-	{
-	    struct json_elements *item = &(node->item.elements);
-
-	    /* XXX - fix to check for match of the element and add it
-	     * to the matches list if it fits within the constraints - XXX */
-	    UNUSED_ARG(item);
-	}
-	break;
-
-    default:
-	break;
-    }
-
     }
     /* nothing found, return false */
     return false;
@@ -1852,10 +1848,10 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 	     * a value can match as a name and vice versa. See above comment.
 	     */
 
-		/*
-		 * if there is a match found add it to the matches list
-		 */
-		switch (node->type) {
+	    /*
+	     * if there is a match found add it to the matches list
+	     */
+	    switch (node->type) {
 
 		case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
 		    break;
@@ -1982,8 +1978,8 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 
 		default:
 		    break;
-		}
 	    }
+	}
     }
     /*
      * stdarg variable argument list clean up
