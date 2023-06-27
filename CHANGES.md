@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.24 2023-06-27
+
+New `jprint` version "0.0.30 2023-06-27".
+
+Fix possible NULL pointer dereference. It should never have happened but it was
+theoretically possible. This fix involves a slight change in the way
+`is_jprint_match()` works in that it takes an additional `char *`: a name that
+is the name to match if `pattern` or `pattern->pattern` is NULL. If both are
+name and either `pattern` or `pattern->pattern` are NULL it is an error. This
+simplifies checking a bit and there is another use in mind that will have to
+come with another commit (if it proves useful; as the concept of `name_arg`s is
+currently not correct it might be that this won't be useful at all and that the
+struct is even removed).
+
+
 ## Release 1.0.23 2023-06-26
 
 New `jprint` version "0.0.29 2023-06-26".

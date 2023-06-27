@@ -260,7 +260,7 @@ struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_patte
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* functions to find matches in the JSON tree */
-bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct json *node, char *str);
+bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *name, struct json *node, char *str);
 void jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
 void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
