@@ -40,6 +40,12 @@ and printing syntax or quotes are requested but that the type of the match is a
 string (`JTYPE_STRING`) as well. Get rid of string bool in `jprint_match`
 struct as it's not needed with the `type`.
 
+Improvements in printing some types wrt quotes. Now the function
+`add_jprint_match()` takes two types, a name and value type and the `struct
+jprint_match` has a `enum item_type name_type` and `enum item_type value_type`.
+The determination of which type to use still only has one node at a time so it's
+not perfect but it does help somewhat and will be of value later on.
+
 
 ## Release 1.0.23 2023-06-26
 
