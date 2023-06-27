@@ -26,6 +26,15 @@ things have to be done before that can be done and once again it might be that
 the pattern struct and patterns list is completely removed once certain pending
 functions are added to the jparse library.
 
+Add back call to run json check tool. Used after reading in the data block but
+prior to parsing json. Fix use after free in the function that does this. It
+dereferenced the jparse struct after calling `free_jparse()`. This was not
+detected because it happens only when the tool failed and the test case used was
+not invalid where I tested it but is in macOS.
+
+Add `struct json *json_tree` to `struct jprint` as a convenience. Some functions
+are directly passed this but this could be changed if desired.
+
 
 ## Release 1.0.23 2023-06-26
 

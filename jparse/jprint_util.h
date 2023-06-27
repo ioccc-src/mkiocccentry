@@ -199,6 +199,8 @@ struct jprint
     uintmax_t number_of_patterns;		/* patterns specified */
     struct jprint_match *matches;		/* for entire file i.e. no name_arg */
     uintmax_t total_matches;			/* total matches of all patterns (name_args) */
+
+    struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
 
 

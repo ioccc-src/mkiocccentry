@@ -2563,7 +2563,6 @@ run_jprint_check_tool(struct jprint *jprint, char **argv)
 	    exit_code = shell_cmd(__func__, true, true, "% %", jprint->check_tool_path, argv[0]);
 	}
 	if(exit_code != 0) {
-	    free_jprint(&jprint);
 	    if (jprint->check_tool_args != NULL) {
 		err(7, __func__, "JSON check tool '%s' with args '%s' failed with exit code: %d",/*ooo*/
 			jprint->check_tool_path, jprint->check_tool_args, exit_code);
@@ -2581,7 +2580,6 @@ run_jprint_check_tool(struct jprint *jprint, char **argv)
 	    jprint->check_tool_stream = pipe_open(__func__, true, true, "% %", jprint->check_tool_path, argv[0]);
 	}
 	if (jprint->check_tool_stream == NULL) {
-	    free_jprint(&jprint);
 	    if (jprint->check_tool_args != NULL) {
 		err(7, __func__, "opening pipe to JSON check tool '%s' with args '%s' failed", /*ooo*/
 			jprint->check_tool_path, jprint->check_tool_args);
