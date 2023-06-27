@@ -265,7 +265,6 @@ main(int argc, char **argv)
     struct jprint *jprint = NULL;	/* struct of all our options and other things */
     struct jprint_pattern *pattern = NULL; /* iterate through patterns list to search for matches */
     size_t len = 0;			/* length of file contents */
-    struct json *json_tree;		/* json tree */
     bool is_valid = false;		/* if file is valid json */
     int i;
 
@@ -458,6 +457,7 @@ main(int argc, char **argv)
     /* run specific sanity checks on options etc. */
     jprint->json_file = jprint_sanity_chks(jprint, program, &argc, &argv);
 
+
     /*
      * jprint_sanity_chks() should never return a NULL FILE * but we check
      * anyway
@@ -491,8 +491,11 @@ main(int argc, char **argv)
     clearerr(jprint->json_file);
     rewind(jprint->json_file);
 
-    json_tree = parse_json_stream(jprint->json_file, argv[0], &is_valid);
-    if (!is_valid) {
+    /* run -S tool */
+    run_jprint_check_tool(jprint, argv);
+
+    jprint->json_tree = parse_json_stream(jprint->json_file, argv[0], &is_valid);
+    if (!is_valid || jprint->json_tree == NULL) {
 	if (jprint->json_file != stdin) {
 	    fclose(jprint->json_file);  /* close file prior to exiting */
 	    jprint->json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
@@ -507,8 +510,8 @@ main(int argc, char **argv)
     dbg(DBG_MED, "valid JSON");
 
 
-   /* search for any patterns */
-    jprint_json_tree_search(jprint, json_tree, jprint->max_depth);
+    /* search for any patterns */
+    jprint_json_tree_search(jprint, jprint->json_tree, jprint->max_depth);
 
     /* report, if debug level high enough, what will be searched for. */
     if (jprint->patterns != NULL && !jprint->print_entire_file) {
@@ -538,7 +541,7 @@ main(int argc, char **argv)
     }
 
     /* free tree */
-    json_tree_free(json_tree, jprint->max_depth);
+    json_tree_free(jprint->json_tree, jprint->max_depth);
 
     /* All Done!!! -- Jessica Noll, Age 2 */
     if (jprint->match_found || !jprint->pattern_specified || jprint->print_entire_file) {

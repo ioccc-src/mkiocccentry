@@ -1,6 +1,46 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.24 2023-06-27
+
+New `jprint` version "0.0.30 2023-06-27".
+
+Fix possible NULL pointer dereference. It should never have happened but it was
+theoretically possible. This fix involves a slight change in the way
+`is_jprint_match()` works in that it takes an additional `char *`: a name that
+is the name to match if `pattern` or `pattern->pattern` is NULL. If both are
+name and either `pattern` or `pattern->pattern` are NULL it is an error. This
+simplifies checking a bit and there is another use in mind that will have to
+come with another commit (if it proves useful; as the concept of `name_arg`s is
+currently not correct it might be that this won't be useful at all and that the
+struct is even removed).
+
+`jprint -Y str` partially works now. It's not perfect in that in some cases it
+can end up matching other types but that depends on the JSON file and options.
+The function `add_jprint_match()` can now have a NULL pattern and also NULL
+`pattern->pattern`. If `pattern == NULL` then the new `jprint->matches` is
+iterated through and set up. This change is to facilitate adding matches without
+patterns for when printing the entire file but this part has not been
+implemented yet. More needs to be tested when calling this function but other
+things have to be done before that can be done and once again it might be that
+the pattern struct and patterns list is completely removed once certain pending
+functions are added to the jparse library.
+
+Add back call to run json check tool. Used after reading in the data block but
+prior to parsing json. Fix use after free in the function that does this. It
+dereferenced the jparse struct after calling `free_jparse()`. This was not
+detected because it happens only when the tool failed and the test case used was
+not invalid where I tested it but is in macOS.
+
+Add `struct json *json_tree` to `struct jprint` as a convenience. Some functions
+are directly passed this but this could be changed if desired.
+
+Fixes in handling of `jprint -Q`. We have to check not only that it's a string
+and printing syntax or quotes are requested but that the type of the match is a
+string (`JTYPE_STRING`) as well. Get rid of string bool in `jprint_match`
+struct as it's not needed with the `type`.
+
+
 ## Release 1.0.23 2023-06-26
 
 New `jprint` version "0.0.29 2023-06-26".

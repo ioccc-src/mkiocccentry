@@ -119,7 +119,6 @@ struct jprint_match
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
     enum item_type type;	    /* match type */
-    bool string;		    /* match is a string */
 
     struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
     struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
@@ -197,7 +196,10 @@ struct jprint
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
     uintmax_t number_of_patterns;		/* patterns specified */
+    struct jprint_match *matches;		/* for entire file i.e. no name_arg */
     uintmax_t total_matches;			/* total matches of all patterns (name_args) */
+
+    struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
 
 
@@ -256,11 +258,11 @@ void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
 struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
-	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
+	struct json *node_name, struct json *node_value, char *name_str, char *value_str, uintmax_t level, enum item_type type);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* functions to find matches in the JSON tree */
-bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct json *node, char *str);
+bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *name, struct json *node, char *str);
 void jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
 void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
