@@ -2360,12 +2360,22 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
      * if we get here we have to print the name and/or match
      */
     for (i = 0; i < match->count; ++i) {
-	/* print the match if constraints allow it
+	/* print the match in the way requested
+	 *
+	 * XXX - the count is probably incorrect as it means the printing could
+	 * be out of order
 	 *
 	 * XXX - add final constraint checks
 	 *
-	 * XXX - This is buggy in some cases. This must be fixed.
+	 * XXX - part of the below is buggy in some cases. This must be fixed.
+	 *
+	 * XXX - more functions will have to be added to print the matches.
+	 * Currently the jprint_match struct is a work in progress. More will
+	 * have to be done depending on the type that matched (this includes not
+	 * only the jprint type but the JSON type too).
 	 */
+
+	/* first print JSON levels if requested */
 	if (jprint->print_json_levels) {
 	    print("%ju", match->level);
 
@@ -2381,9 +2391,16 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	    }
 
 	}
+
+	/*
+	 * if we're printing name and value or the syntax we have extra things
+	 * to do
+	 */
 	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+	    /* if we print syntax there are some extra things we have to do */
 	    if (jprint->print_syntax) {
 
+		/* XXX - this doesn't print arrays and other more complicated types - XXX */
 		print("\"%s\"", match->match);
 
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
@@ -2397,47 +2414,66 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		}
 
 		print("%s%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"",
 			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"",
 			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-	    } else {
+	    } else { /* if we're not printing syntax */
+		/* print the name, quoting it if necessary */
 		print("%s%s%s",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"",
 			match->match,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"");
+
+		/* print spaces or tabs according to command line */
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
+
+		/*
+		 * we're not printing the syntax but if colons are requested we
+		 * have to print them
+		 */
 		if (jprint->print_colons) {
 		    print("%s", ":");
 		}
+
+		/* print spaces or tabs according to command line */
 		for (j = 0; j < jprint->num_token_spaces; ++j) {
 		    print("%s", jprint->print_token_tab?"\t":" ");
 		}
+
+		/* finally print the value.
+		 *
+		 * NOTE the check for printing syntax or entire file is not
+		 * necessary as such.
+		 */
 		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"",
 			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
+			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			match->type == JTYPE_STRING?"\"":"");
 	    }
-	} else if (jprint_print_name(jprint->print_type)) {
+	} else if (jprint_print_name(jprint->print_type) || jprint_print_value(jprint->print_type)) {
+	    /*
+	     * here we will print just the name or value, quoting and doing
+	     * other things as necessary.
+	     *
+	     * NOTE the check for printing syntax or entire file is not
+	     * necessary as such.
+	     */
 	    print("%s%s%s\n",
-		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-		  match->match,
-		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
-	} else if (jprint_print_value(jprint->print_type)) {
-	    print("%s%s%s\n",
-		    match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"",
-		    match->value,
-		    match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)?"\"":"");
+		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+		  match->type == JTYPE_STRING?"\"":"",
+		  jprint_print_name(jprint->print_type)?match->match:match->value,
+		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+		  match->type == JTYPE_STRING?"\"":"");
 	}
-	/*
-	 * XXX: more functions will have to be added to print the matches
-	 * and currently the struct jprint_match struct is a work in
-	 * progress. More will have to be added like the JSON type that
-	 * matched (this includes not only the jprint type but the JSON
-	 * type).
-	 */
     }
 }
 

@@ -510,7 +510,7 @@ main(int argc, char **argv)
     dbg(DBG_MED, "valid JSON");
 
 
-   /* search for any patterns */
+    /* search for any patterns */
     jprint_json_tree_search(jprint, jprint->json_tree, jprint->max_depth);
 
     /* report, if debug level high enough, what will be searched for. */

@@ -35,6 +35,10 @@ not invalid where I tested it but is in macOS.
 Add `struct json *json_tree` to `struct jprint` as a convenience. Some functions
 are directly passed this but this could be changed if desired.
 
+Fixes in handling of `jprint -Q`. We have to check not only that it's a string
+and printing syntax or quotes are requested but that the type of the match is a
+string (`JTYPE_STRING`) as well.
+
 
 ## Release 1.0.23 2023-06-26
 
