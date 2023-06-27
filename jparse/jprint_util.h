@@ -119,7 +119,6 @@ struct jprint_match
     uintmax_t level;		    /* the level of the json member for -l */
     uintmax_t number;		    /* which match this is */
     enum item_type type;	    /* match type */
-    bool string;		    /* match is a string */
 
     struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
     struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
@@ -259,8 +258,7 @@ void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
 struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
-	struct json *node_name, struct json *node_value, char *name_str, char *value_str, uintmax_t level,
-	bool string, enum item_type type);
+	struct json *node_name, struct json *node_value, char *name_str, char *value_str, uintmax_t level, enum item_type type);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* functions to find matches in the JSON tree */

@@ -1345,7 +1345,7 @@ free_jprint_patterns_list(struct jprint *jprint)
  */
 struct jprint_match *
 add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct json *name,
-	struct json *value, char *name_str, char *value_str, uintmax_t level, bool string,
+	struct json *value, char *name_str, char *value_str, uintmax_t level,
 	enum item_type type)
 {
     struct jprint_match *match = NULL;
@@ -1431,9 +1431,6 @@ add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, struct j
 
     /* increment total matches of ALL patterns (name_args) in jprint struct */
     jprint->total_matches++;
-
-    /* set if a string for -j */
-    match->string = string;
 
     /* record type */
     match->type = type;
@@ -1869,7 +1866,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			    if (str != NULL) {
 				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?
-					NULL:node, jprint->search_value?node:NULL, pattern->pattern, str, depth, false,
+					NULL:node, jprint->search_value?node:NULL, pattern->pattern, str, depth,
 					JTYPE_NUMBER) == NULL) {
 					    err(44, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
@@ -1891,7 +1888,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
 					jprint->search_value?node:NULL, jprint->search_value?pattern->pattern:str,
-					jprint->search_value?str:pattern->pattern, depth, true, JTYPE_STRING) == NULL) {
+					jprint->search_value?str:pattern->pattern, depth, JTYPE_STRING) == NULL) {
 					    err(45, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
 				    }
@@ -1911,7 +1908,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			    if (str != NULL) {
 				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
-					jprint->search_value?node:NULL, pattern->pattern, str, depth, false, JTYPE_BOOL) == NULL) {
+					jprint->search_value?node:NULL, pattern->pattern, str, depth, JTYPE_BOOL) == NULL) {
 					    err(46, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
 				    }
@@ -1931,7 +1928,7 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 			    if (str != NULL) {
 				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
 				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
-					jprint->search_value?node:NULL, pattern->pattern, str, depth, false, JTYPE_NULL) == NULL) {
+					jprint->search_value?node:NULL, pattern->pattern, str, depth, JTYPE_NULL) == NULL) {
 					    err(47, __func__, "adding match '%s' to pattern failed", str);
 					    not_reached();
 				    }
@@ -2414,19 +2411,19 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		}
 
 		print("%s%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"",
 			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"",
 			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
 	    } else { /* if we're not printing syntax */
 		/* print the name, quoting it if necessary */
 		print("%s%s%s",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"",
 			match->match,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"");
 
 		/* print spaces or tabs according to command line */
@@ -2453,10 +2450,10 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 		 * necessary as such.
 		 */
 		print("%s%s%s\n",
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"",
 			match->value,
-			match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->type == JTYPE_STRING?"\"":"");
 	    }
 	} else if (jprint_print_name(jprint->print_type) || jprint_print_value(jprint->print_type)) {
@@ -2468,10 +2465,10 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	     * necessary as such.
 	     */
 	    print("%s%s%s\n",
-		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+		  (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 		  match->type == JTYPE_STRING?"\"":"",
 		  jprint_print_name(jprint->print_type)?match->match:match->value,
-		  match->string && (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
+		  (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 		  match->type == JTYPE_STRING?"\"":"");
 	}
     }

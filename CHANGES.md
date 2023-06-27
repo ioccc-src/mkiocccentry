@@ -37,7 +37,8 @@ are directly passed this but this could be changed if desired.
 
 Fixes in handling of `jprint -Q`. We have to check not only that it's a string
 and printing syntax or quotes are requested but that the type of the match is a
-string (`JTYPE_STRING`) as well.
+string (`JTYPE_STRING`) as well. Get rid of string bool in `jprint_match`
+struct as it's not needed with the `type`.
 
 
 ## Release 1.0.23 2023-06-26
