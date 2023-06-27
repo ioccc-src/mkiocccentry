@@ -1,5 +1,6 @@
 # Major changes to the IOCCC entry toolkit
 
+
 ## Release 1.0.23 2023-06-26
 
 New `jprint` version "0.0.29 2023-06-26".
@@ -12,6 +13,14 @@ GitHub comment.
 
 Minor update to `h2g2.json` file - add a boolean to elements of the person
 array.
+
+Added stub code for JSON tree search functions.
+
+Added pre-order (NLR) and post-order (LRN) search option to JSON
+tree talking.  Added post_order arg to `json_tree_walk()` and
+`vjson_tree_walk()`.
+
+Added depth arg to `json_tree_walk()`.
 
 
 ## Release 1.0.22 2023-06-25

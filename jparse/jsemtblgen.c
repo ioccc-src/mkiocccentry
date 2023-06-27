@@ -475,7 +475,7 @@ main(int argc, char **argv)
  * gen_sem_tbl - update semantic table from the parsed JSON node tree
  *
  * given:
- *      tree        pointer to a JSON parse tree
+ *      tree        pointer to root of a JSON parse tree
  *      max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *                      NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *      ...         extra args for vcallback, required extra args:
@@ -504,7 +504,7 @@ gen_sem_tbl(struct json *tree, unsigned int max_depth, ...)
     /*
      * update semantic table from the parsed JSON node tree
      */
-    vjson_tree_walk(tree, max_depth, 0, vupdate_tbl, ap);
+    vjson_tree_walk(tree, max_depth, 0, true, vupdate_tbl, ap);
 
     /*
      * stdarg variable argument list cleanup

@@ -1193,7 +1193,7 @@ json_tree_free(struct json *node, unsigned int max_depth, ...)
     /*
      * free the JSON parse tree
      */
-    vjson_tree_walk(node, max_depth, 0, vjson_free, ap);
+    vjson_tree_walk(node, max_depth, 0, true, vjson_free, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -1782,7 +1782,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
  *		json_dbg_lvl   print message if JSON_DBG_FORCED
  *			       OR if <= json_verbosity_level
  *
- * Example uses - print an entire JSON parse tree
+ * Example uses - print an entire JSON parse tree:
  *
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, NULL, JSON_DBG_FORCED);
  *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stderr, JSON_DBG_FORCED);
@@ -1818,7 +1818,7 @@ json_tree_print(struct json *node, unsigned int max_depth, ...)
     /*
      * free the JSON parse tree
      */
-    vjson_tree_walk(node, max_depth, 0, vjson_fprint, ap);
+    vjson_tree_walk(node, max_depth, 0, true, vjson_fprint, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -1921,13 +1921,15 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsig
  *
  * Example use - free an entire JSON parse tree
  *
- *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, json_free);
+ *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, 0, true, json_free);
  *
  * given:
  *	node	    pointer to a JSON parse tree
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	post_order  true ==> walk tree in post-order (LRN), false ==> walk in pre-order (NLR)
  *	vcallback   function to operate JSON parse tree node in va_list form
  *	...	    extra args for vcallback
  *
@@ -1948,7 +1950,7 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsig
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-json_tree_walk(struct json *node, unsigned int max_depth,
+json_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 	       void (*vcallback)(struct json *, unsigned int, va_list), ...)
 {
     va_list ap;		/* variable argument list */
@@ -1973,7 +1975,7 @@ json_tree_walk(struct json *node, unsigned int max_depth,
     /*
      * walk the tree according to max_depth
      */
-    vjson_tree_walk(node, max_depth, 0, vcallback, ap);
+    vjson_tree_walk(node, max_depth, depth, post_order, vcallback, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -1994,7 +1996,7 @@ json_tree_walk(struct json *node, unsigned int max_depth,
  *
  * Example use - free an entire JSON parse tree
  *
- *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, 0, json_free);
+ *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, 0, true, json_free);
  *
  * given:
  *	node	    pointer to a JSON parse tree
@@ -2002,8 +2004,9 @@ json_tree_walk(struct json *node, unsigned int max_depth,
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	depth	    current tree depth (0 ==> top of tree)
+ *	post_order  true ==> walk tree in post-order (LRN), false ==> walk in pre-order (NLR)
  *	vcallback   function to operate JSON parse tree node in va_list form
- *	ap	    variable argument list
+ *	ap	    variable argument list for vcallback
  *
  * The vcallback() function must NOT call va_arg() nor call va_end() on the
  * va_list argument directly.  Instead they must call va_copy() and then use
@@ -2022,7 +2025,7 @@ json_tree_walk(struct json *node, unsigned int max_depth,
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,
+vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 		void (*vcallback)(struct json *, unsigned int, va_list), va_list ap)
 {
     int i;
@@ -2058,71 +2061,108 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,
     case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
     case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
 
+	/* case: terminal JSON tree leaf node */
 	/* perform function operation on this terminal parse tree node */
 	(*vcallback)(node, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
+	/* case: pre-order (NLR) */
+	if (post_order == false) {
+	    (*vcallback)(node, depth, ap);
+	}
+
+	/* descend the tree */
 	{
 	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    vjson_tree_walk(item->name, max_depth, depth+1, vcallback, ap);
+	    vjson_tree_walk(item->name, max_depth, depth+1, post_order, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    vjson_tree_walk(item->value, max_depth, depth+1, vcallback, ap);
+	    vjson_tree_walk(item->value, max_depth, depth+1, post_order, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, depth, ap);
+	/* case: post-order (LRN) */
+	if (post_order == true) {
+	    (*vcallback)(node, depth, ap);
+	}
 	break;
 
     case JTYPE_OBJECT:	/* JSON item is a { members } */
+	/* case: pre-order (NLR) */
+	if (post_order == false) {
+	    (*vcallback)(node, depth, ap);
+	}
+
+	/* descend the tree */
 	{
 	    struct json_object *item = &(node->item.object);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, post_order, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, depth, ap);
+	/* case: post-order (LRN) */
+	if (post_order == true) {
+	    (*vcallback)(node, depth, ap);
+	}
 	break;
 
     case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
+	/* case: pre-order (NLR) */
+	if (post_order == false) {
+	    (*vcallback)(node, depth, ap);
+	}
+
+	/* descend the tree */
 	{
 	    struct json_array *item = &(node->item.array);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, post_order, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, depth, ap);
+	/* case: post-order (LRN) */
+	if (post_order == true) {
+	    (*vcallback)(node, depth, ap);
+	}
 	break;
 
     case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
+	/* case: pre-order (NLR) */
+	if (post_order == false) {
+	    (*vcallback)(node, depth, ap);
+	}
+
+	/* descend the tree */
 	{
 	    struct json_elements *item = &(node->item.elements);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, post_order, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, depth, ap);
+	/* case: post-order (LRN) */
+	if (post_order == true) {
+	    (*vcallback)(node, depth, ap);
+	}
 	break;
 
     default:

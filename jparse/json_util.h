@@ -100,9 +100,9 @@ extern void vjson_fprint(struct json *node, unsigned int depth, va_list ap);
 extern void json_tree_print(struct json *node, unsigned int max_depth, ...);
 extern void json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsigned int max_depth);
 extern void json_tree_free(struct json *node, unsigned int max_depth, ...);
-extern void json_tree_walk(struct json *node, unsigned int max_depth,
+extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			   void (*vcallback)(struct json *, unsigned int, va_list), ...);
-extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,
+extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
 
 

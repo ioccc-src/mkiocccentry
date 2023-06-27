@@ -2240,7 +2240,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     /*
      * perform a semantic scan of the JSON parse tree
      */
-    json_tree_walk(node, max_depth, sem_walk, sem, count_err, val_err);
+    json_tree_walk(node, max_depth, 0, true, sem_walk, sem, count_err, val_err);
 
     /*
      * check semantic table counts
