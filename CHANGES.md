@@ -15,6 +15,17 @@ come with another commit (if it proves useful; as the concept of `name_arg`s is
 currently not correct it might be that this won't be useful at all and that the
 struct is even removed).
 
+`jprint -Y str` partially works now. It's not perfect in that in some cases it
+can end up matching other types but that depends on the JSON file and options.
+The function `add_jprint_match()` can now have a NULL pattern and also NULL
+`pattern->pattern`. If `pattern == NULL` then the new `jprint->matches` is
+iterated through and set up. This change is to facilitate adding matches without
+patterns for when printing the entire file but this part has not been
+implemented yet. More needs to be tested when calling this function but other
+things have to be done before that can be done and once again it might be that
+the pattern struct and patterns list is completely removed once certain pending
+functions are added to the jparse library.
+
 
 ## Release 1.0.23 2023-06-26
 

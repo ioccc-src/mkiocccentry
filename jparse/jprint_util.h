@@ -197,6 +197,7 @@ struct jprint
     /* any patterns specified */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
     uintmax_t number_of_patterns;		/* patterns specified */
+    struct jprint_match *matches;		/* for entire file i.e. no name_arg */
     uintmax_t total_matches;			/* total matches of all patterns (name_args) */
 };
 
@@ -256,7 +257,8 @@ void free_jprint_patterns_list(struct jprint *jprint);
 
 /* matches found of each pattern */
 struct jprint_match *add_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern,
-	struct json *node_name, struct json *node_value, char *value, uintmax_t level, bool string, enum item_type type);
+	struct json *node_name, struct json *node_value, char *name_str, char *value_str, uintmax_t level,
+	bool string, enum item_type type);
 void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* functions to find matches in the JSON tree */

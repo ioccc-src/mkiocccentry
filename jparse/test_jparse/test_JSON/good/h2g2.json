@@ -1,5 +1,6 @@
 {
     "number":42,
+    "value":"value",
     "number_as_str":"42",
     "answer to life, the universe and everything" : 42,
     "panic":false,
@@ -36,5 +37,6 @@
 		]
 	    }
     ],
+    "value" : [ "value", "value", "value" ],
     "hitch-hikers":"hitchhikers"
 }
