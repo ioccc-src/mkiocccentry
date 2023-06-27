@@ -265,11 +265,14 @@ void free_jprint_matches_list(struct jprint_pattern *pattern);
 
 /* functions to find matches in the JSON tree */
 bool is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *name, struct json *node, char *str);
-void jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...);
-void vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap);
+void jprint_json_search(struct jprint *jprint, struct json *name_node, struct json *value_node, bool is_value,
+	unsigned int depth, ...);
+void vjprint_json_search(struct jprint *jprint, struct json *name_node, struct json *value_node, bool is_value,
+	unsigned int depth, va_list ap);
 void jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int max_depth, ...);
-void jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
-		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap);
+void jprint_json_tree_walk(struct jprint *jprint, struct json *lnode, struct json *rnode, bool is_value,
+		unsigned int max_depth, unsigned int depth, void (*vcallback)(struct jprint *, struct json *, struct json *, bool,
+		unsigned int, va_list), va_list ap);
 
 /* functions to print matches */
 bool jprint_print_count(struct jprint *jprint);

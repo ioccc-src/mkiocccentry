@@ -46,6 +46,11 @@ jprint_match` has a `enum item_type name_type` and `enum item_type value_type`.
 The determination of which type to use still only has one node at a time so it's
 not perfect but it does help somewhat and will be of value later on.
 
+Further update version of `jprint` to "0.0.31 2023-06-27". The handling of
+adding matches of strings and numbers with values and names being different (if
+they are in the file) has been implemented. This required a lot of extra code
+and more modularity needs to be added but that can come later.
+
 
 ## Release 1.0.23 2023-06-26
 

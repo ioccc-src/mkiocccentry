@@ -1711,7 +1711,8 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *nam
  *
  * given:
  *	jprint	    pointer to our struct jprint
- *	node	    pointer to a JSON parser tree node to try and match
+ *	name_node   pointer to a JSON parser tree name node to try and match or add
+ *	value_node  pointer to a JSON parser tree value node to try and match or add
  *	is_value    whether node is a value or name
  *	depth	    current tree depth (0 ==> top of tree)
  *	...	    extra args are ignored, required extra args if <=
@@ -1736,12 +1737,12 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char *nam
  * NOTE: This function does nothing if jprint == NULL or node == NULL.
  */
 void
-jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, ...)
+jprint_json_search(struct jprint *jprint, struct json *name_node, struct json *value_node, bool is_value, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
     /* firewall */
-    if (jprint == NULL || node == NULL) {
+    if (jprint == NULL || (name_node == NULL&&value_node == NULL)) {
 	return;
     }
 
@@ -1753,7 +1754,7 @@ jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsi
     /*
      * call va_list argument list function
      */
-    vjprint_json_search(jprint, node, is_value, depth, ap);
+    vjprint_json_search(jprint, name_node, value_node, is_value, depth, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1776,7 +1777,8 @@ jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsi
  *
  * given:
  *	jprint	    pointer to our struct json
- *	node	    pointer to a JSON parser tree node to free
+ *	name_node   pointer to a JSON parser tree name node to search
+ *	value_node  pointer to a JSON parser tree value node to search
  *	is_value    boolean to indicate if this is a value or name
  *	depth	    current tree depth (0 ==> top of tree)
  *	ap	    variable argument list, required ap args:
@@ -1794,7 +1796,8 @@ jprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsi
  * problems will be fixed in a future commit.
  */
 void
-vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, unsigned int depth, va_list ap)
+vjprint_json_search(struct jprint *jprint, struct json *name_node, struct json *value_node, bool is_value,
+	unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
     int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
@@ -1802,9 +1805,10 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
     va_list ap2;		/* copy of va_list ap */
 
     /*
-     * firewall - nothing to do for NULL jprint or NULL patterns list or NULL node
+     * firewall - nothing to do for NULL jprint or NULL patterns list or NULL
+     * nodes
      */
-    if (jprint == NULL || jprint->patterns == NULL || node == NULL) {
+    if (jprint == NULL || jprint->patterns == NULL || name_node == NULL || value_node == NULL) {
 	return;
     }
 
@@ -1854,141 +1858,218 @@ vjprint_json_search(struct jprint *jprint, struct json *node, bool is_value, uns
 	    /*
 	     * if there is a match found add it to the matches list
 	     */
-	    switch (node->type) {
+	    struct json *name = jprint->search_value?value_node:name_node;
+	    struct json *value = jprint->search_value?name_node:value_node;
+	    if (name != NULL) {
+		switch (name->type) {
 
-		case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-		    break;
+		    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+			break;
 
-		case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-		    {
-			struct json_number *item = &(node->item.number);
-			if (item != NULL && item->converted) {
-			    char *str = item->as_str;
+		    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+			{
+			    struct json_number *item = &(name->item.number);
+			    if (item != NULL && item->converted) {
+				char *str = item->as_str;
 
-			    if (str != NULL) {
-				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
-				    if (add_jprint_match(jprint, pattern, jprint->search_value?
-					NULL:node, jprint->search_value?node:NULL, pattern->pattern, str, depth,
-					jprint->search_value?JTYPE_STRING:JTYPE_NUMBER,
-					jprint->search_value?JTYPE_NUMBER:JTYPE_STRING) == NULL) {
-					    err(43, __func__, "adding match '%s' to pattern failed", str);
-					    not_reached();
+				if (str != NULL) {
+				    switch (value->type) {
+					case JTYPE_STRING:
+					    {
+					    struct json_string *string = &(value->item.string);
+					    if (string != NULL && string->converted) {
+						char *val = string->as_str;
+						if (val != NULL) {
+						    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+							if (add_jprint_match(jprint, pattern, name, value,
+							    str, val, depth, jprint->search_value?JTYPE_STRING:JTYPE_NUMBER,
+							    jprint->search_value?JTYPE_NUMBER:JTYPE_STRING) == NULL) {
+								err(43, __func__, "adding match '%s' to pattern failed", str);
+								not_reached();
+							}
+						    }
+						}
+					    }
+					}
+					break;
+					default:
+					    /* XXX - determine if other types need to be handled */
+					break;
 				    }
 				}
 			    }
 			}
-		    }
-		    break;
+			break;
 
-		case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-		    {
-			struct json_string *item = &(node->item.string);
-			if (item != NULL && item->converted) {
-			    char *str = jprint->match_encoded ? item->as_str : item->str;
+		    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+			{
+			    struct json_string *item = &(name->item.string);
+			    if (item != NULL && item->converted) {
+				char *str = jprint->match_encoded ? item->as_str : item->str;
 
-			    if (str != NULL) {
-				/* XXX - as noted above, the -Y for strings is buggy - XXX */
-				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
-				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
-					jprint->search_value?node:NULL, jprint->search_value?pattern->pattern:str,
-					jprint->search_value?str:pattern->pattern, depth,
-					jprint->search_value?JTYPE_STRING:JTYPE_STRING,
-					jprint->search_value?JTYPE_STRING:JTYPE_STRING) == NULL) {
-					    err(44, __func__, "adding match '%s' to pattern failed", str);
-					    not_reached();
+				if (str != NULL) {
+				    switch (value->type) {
+					case JTYPE_NUMBER:
+					{
+					    struct json_number *json_num = &(value->item.number);
+					    if (json_num != NULL && json_num->converted) {
+						char *val = json_num->as_str;
+						if (is_jprint_match(jprint, pattern, pattern->pattern, name,
+						    jprint->search_value?val:str)) {
+							if (add_jprint_match(jprint, pattern, name, value,
+							    str, val, depth,
+							    name->type, value->type) == NULL) {
+								err(44, __func__, "adding match '%s' to pattern failed", str);
+								not_reached();
+							}
+						}
+					    }
+					}
+					break;
+					case JTYPE_STRING:
+					{
+					    struct json_string *string = &(value->item.string);
+					    if (string != NULL && string->converted) {
+						char *val = string->as_str;
+
+						if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+						    if (add_jprint_match(jprint, pattern, name, value, str, val,
+							depth, JTYPE_STRING, JTYPE_STRING) == NULL) {
+							    err(44, __func__, "adding match '%s' to pattern failed", str);
+							    not_reached();
+						    }
+						}
+					    }
+					}
+					break;
+					case JTYPE_BOOL:
+					{
+					    struct json_boolean *boolean = &(value->item.boolean);
+					    if (boolean != NULL && boolean->converted) {
+						char *val = boolean->as_str;
+						if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+						    if (add_jprint_match(jprint, pattern, name, value, str, val,
+							depth, jprint->search_value?JTYPE_BOOL:JTYPE_STRING,
+							jprint->search_value?JTYPE_STRING:JTYPE_BOOL) == NULL) {
+							    err(45, __func__, "adding match '%s' to pattern failed", str);
+							    not_reached();
+						    }
+						}
+					    }
+					}
+					break;
+					case JTYPE_NULL:
+					{
+					    struct json_null *null = &(value->item.null);
+					    if (null != NULL && null->converted) {
+						char *val = null->as_str;
+						if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+						    if (add_jprint_match(jprint, pattern, name, value, str, val,
+							depth, jprint->search_value?JTYPE_NULL:JTYPE_STRING,
+							jprint->search_value?JTYPE_STRING:JTYPE_NULL) == NULL) {
+							    err(45, __func__, "adding match '%s' to pattern failed", str);
+							    not_reached();
+						    }
+						}
+					    }
+
+					}
+					break;
+					default:
+					    break;
 				    }
 				}
 			    }
 			}
-		    }
-		    break;
+			break;
 
-		case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-		    {
-			struct json_boolean *item = &(node->item.boolean);
+		    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+			{
+			    struct json_boolean *item = &(name->item.boolean);
 
-			if (item != NULL && item->converted) {
-			    char *str = item->as_str;
+			    if (item != NULL && item->converted) {
+				char *str = item->as_str;
 
-			    if (str != NULL) {
-				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
-				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
-					jprint->search_value?node:NULL, pattern->pattern, str, depth,
-					jprint->search_value?JTYPE_STRING:JTYPE_BOOL,
-					jprint->search_value?JTYPE_BOOL:JTYPE_STRING) == NULL) {
-					    err(45, __func__, "adding match '%s' to pattern failed", str);
-					    not_reached();
+				if (str != NULL) {
+				    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:name,
+					    jprint->search_value?name:NULL, pattern->pattern, str, depth,
+					    jprint->search_value?JTYPE_STRING:JTYPE_BOOL,
+					    jprint->search_value?JTYPE_BOOL:JTYPE_STRING) == NULL) {
+						err(45, __func__, "adding match '%s' to pattern failed", str);
+						not_reached();
+					}
 				    }
 				}
 			    }
 			}
-		    }
-		    break;
+			break;
 
-		case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-		    {
-			struct json_null *item = &(node->item.null);
+		    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
+			{
+			    struct json_null *item = &(name->item.null);
 
-			if (item != NULL && item->converted) {
-			    char *str = item->as_str;
+			    if (item != NULL && item->converted) {
+				char *str = item->as_str;
 
-			    if (str != NULL) {
-				if (is_jprint_match(jprint, pattern, pattern->pattern, node, str)) {
-				    if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:node,
-					jprint->search_value?node:NULL, pattern->pattern, str, depth,
-					jprint->search_value?JTYPE_STRING:JTYPE_NULL,
-					jprint->search_value?JTYPE_NULL:JTYPE_STRING) == NULL) {
-					    err(46, __func__, "adding match '%s' to pattern failed", str);
-					    not_reached();
+				if (str != NULL) {
+				    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:name,
+					    jprint->search_value?name:NULL, pattern->pattern, str, depth,
+					    jprint->search_value?JTYPE_STRING:JTYPE_NULL,
+					    jprint->search_value?JTYPE_NULL:JTYPE_STRING) == NULL) {
+						err(46, __func__, "adding match '%s' to pattern failed", str);
+						not_reached();
+					}
 				    }
 				}
 			    }
 			}
-		    }
-		    break;
+			break;
 
-		case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
-		    {
-			struct json_member *item = &(node->item.member);
+		    case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
+			{
+			    struct json_member *item = &(name->item.member);
 
-			/* XXX - fix to check for match of the member and add to
-			 * the matches list if it fits within constraints - XXX */
-			UNUSED_ARG(item);
-		    }
-		    break;
+			    /* XXX - fix to check for match of the member and add to
+			     * the matches list if it fits within constraints - XXX */
+			    UNUSED_ARG(item);
+			}
+			break;
 
-		case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
-		    {
-			struct json_object *item = &(node->item.object);
+		    case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
+			{
+			    struct json_object *item = &(name->item.object);
 
-			/* XXX - fix to check for match of the object and add to
-			 * the matches list if it fits within constraints - XXX */
-			UNUSED_ARG(item);
-		    }
-		    break;
+			    /* XXX - fix to check for match of the object and add to
+			     * the matches list if it fits within constraints - XXX */
+			    UNUSED_ARG(item);
+			}
+			break;
 
-		case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
-		    {
-			struct json_array *item = &(node->item.array);
+		    case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
+			{
+			    struct json_array *item = &(name->item.array);
 
-			/* XXX - fix to check for match of the array and add it
-			 * to the matches list if it fits within the constraints - XXX */
-			UNUSED_ARG(item);
-		    }
-		    break;
+			    /* XXX - fix to check for match of the array and add it
+			     * to the matches list if it fits within the constraints - XXX */
+			    UNUSED_ARG(item);
+			}
+			break;
 
-		case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
-		    {
-			struct json_elements *item = &(node->item.elements);
+		    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
+			{
+			    struct json_elements *item = &(name->item.elements);
 
-			/* XXX - fix to check for match of the element and add it
-			 * to the matches list if it fits within the constraints - XXX */
-			UNUSED_ARG(item);
-		    }
-		    break;
+			    /* XXX - fix to check for match of the element and add it
+			     * to the matches list if it fits within the constraints - XXX */
+			    UNUSED_ARG(item);
+			}
+			break;
 
-		default:
-		    break;
+		    default:
+			break;
+		}
 	    }
 	}
     }
@@ -2054,7 +2135,7 @@ jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int m
     /*
      * walk the JSON parse tree
      */
-    jprint_json_tree_walk(jprint, node, max_depth, false, 0, vjprint_json_search, ap);
+    jprint_json_tree_walk(jprint, node, node, max_depth, false, 0, vjprint_json_search, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -2107,15 +2188,16 @@ jprint_json_tree_search(struct jprint *jprint, struct json *node, unsigned int m
  * If this is the case it will be fixed in a future update.
  */
 void
-jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, unsigned int max_depth, unsigned int depth,
-		void (*vcallback)(struct jprint *, struct json *, bool, unsigned int, va_list), va_list ap)
+jprint_json_tree_walk(struct jprint *jprint, struct json *lnode, struct json *rnode, bool is_value,
+	unsigned int max_depth, unsigned int depth, void (*vcallback)(struct jprint *, struct json *, struct json *, bool,
+	unsigned int, va_list), va_list ap)
 {
     int i;
 
     /*
      * firewall
      */
-    if (node == NULL) {
+    if (lnode == NULL || rnode == NULL) {
 	warn(__func__, "node is NULL");
 	return ;
     }
@@ -2140,7 +2222,7 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     /*
      * walk based on type of node
      */
-    switch (node->type) {
+    switch (lnode->type) {
 
     case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
     case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
@@ -2148,80 +2230,80 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *node, bool is_value, u
     case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 	/* perform function operation on this terminal parse tree node, all of
 	 * which have to be a value */
-	(*vcallback)(jprint, node, true, depth, ap);
+	(*vcallback)(jprint, lnode, rnode, true, depth, ap);
 	break;
 
     case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jprint, node, is_value, depth, ap);
+	(*vcallback)(jprint, lnode, rnode, is_value, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON item is a member */
 	{
-	    struct json_member *item = &(node->item.member);
+	    struct json_member *item = &(lnode->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    jprint_json_tree_walk(jprint, item->name, false, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, item->value, false, max_depth, depth+1, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    jprint_json_tree_walk(jprint, item->value, true, max_depth, depth+1, vcallback, ap);
+	    jprint_json_tree_walk(jprint, item->name, item->value, true, max_depth, depth+1, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth+1, ap);
+	(*vcallback)(jprint, lnode, rnode, is_value, depth+1, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON item is a { members } */
 	{
-	    struct json_object *item = &(node->item.object);
+	    struct json_object *item = &(lnode->item.object);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], is_value, max_depth, depth, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], item->set[i], is_value, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth+1, ap);
+	(*vcallback)(jprint, lnode, rnode, is_value, depth+1, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
 	{
-	    struct json_array *item = &(node->item.array);
+	    struct json_array *item = &(lnode->item.array);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], item->set[i], true, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth+1, ap);
+	(*vcallback)(jprint, lnode, rnode, is_value, depth+1, ap);
 	break;
 
     case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
 	{
-	    struct json_elements *item = &(node->item.elements);
+	    struct json_elements *item = &(lnode->item.elements);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    jprint_json_tree_walk(jprint, item->set[i], true, max_depth, depth, vcallback, ap);
+		    jprint_json_tree_walk(jprint, item->set[i], item->set[i], true, max_depth, depth, vcallback, ap);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(jprint, node, is_value, depth+1, ap);
+	(*vcallback)(jprint, lnode, rnode, is_value, depth+1, ap);
 	break;
 
     default:
-	warn(__func__, "node type is unknown: %d", node->type);
+	warn(__func__, "node type is unknown: %d", lnode->type);
 	/* nothing we can traverse */
 	break;
     }
