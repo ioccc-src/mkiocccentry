@@ -1,17 +1,29 @@
 /*
  * json_search - search JSON parse tree for matches
  *
- * Because sometimes is harder to see the JSON forest thru the JSON trees.
+ * Because sometimes is harder to see the JSON forest through the JSON trees.
  * By carefully searching the JSON parse tree, we avoid careless playing with matches.
  * Only you can prevent JSON tree fires! :-)
  *
- * This search function was implemented by:
+ * This JSON parser was co-developed in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * This JSON search functionality was designed and implemented in support of
+ * jprint by:
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
+
 
 
 #if !defined(INCLUDE_JSON_SEARCH_H)

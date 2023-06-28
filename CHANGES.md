@@ -1,6 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.25 2023-06-28
+
+Add new good JSON test file 42.json under
+`jparse/test_jparse/test_JSON/good/42.json`.
+
+
 ## Release 1.0.24 2023-06-27
 
 New `jprint` version "0.0.30 2023-06-27".
