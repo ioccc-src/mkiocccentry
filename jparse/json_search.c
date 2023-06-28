@@ -1,7 +1,7 @@
 /*
  * json_search - search JSON parse tree for matches
  *
- * Because sometimes is harder to see the JSON forest through the JSON trees.
+ * Because sometimes it is harder to see the JSON forest through the JSON trees.
  * By carefully searching the JSON parse tree, we avoid careless playing with matches.
  * Only you can prevent JSON tree fires! :-)
  *
