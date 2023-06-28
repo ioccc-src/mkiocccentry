@@ -6,12 +6,7 @@
 Add new good JSON test file 42.json under
 `jparse/test_jparse/test_JSON/good/42.json`.
 
-New `jprint` version "0.0.32 2023-06-28". Add option `-R` to disable recursive
-sub-tree searching. The temporary default is false which disables recursive
-searching but once recursive sub-tree searching is supported the default will be
-to search in a recursive sub-tree way. This means that the concept of patterns
-can work. It seems useful and it would be a shame to waste the code that was
-added due to a misunderstanding.
+New `jprint` version "0.0.32 2023-06-28".
 
 Fixed potential memory leak in `jprint`: although currently none exist the
 matches list in the struct jprint (instead of the matches list in each pattern)
@@ -19,10 +14,13 @@ was not freed.
 
 Use of `jprint -s` and `jprint -j` now possible.
 
-Add new function `extern char const *json_get_type_str(struct json *node, bool
-encoded);` to jparse library to get the matched (in the parser/lexer) name that
-triggered parsing. Updated man page.
+New jparse and json parser version "1.0.9 2023-06-28". Add new function `extern
+char const *json_get_type_str(struct json *node, bool encoded);` to jparse
+library to get the matched (in the parser/lexer) name that triggered parsing.
+Updated man page.
 
+Make use of `json_get_type_str()` in `jprint` for modularity. This only applies
+to strings and number types.
 
 ## Release 1.0.24 2023-06-27
 

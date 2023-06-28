@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-q] [-Q] [-t type] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type]\n"
-    "\t\t[-R] [-S path] [-A args] file.json [name_arg ...]\n"
+    "\t\t[-S path] [-A args] file.json [name_arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -174,7 +174,6 @@ static const char * const usage_msg3 =
     "\t\t\tUse of -Y requires one and only one name_arg.\n"
     "\t\t\tUse of -Y changes the default from -p value to -p name.\n"
     "\n"
-    "\t-R\t\t\tDon't search in a recursive sub-tree manner (def: do search recursively)\n"
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\n"
@@ -426,11 +425,6 @@ main(int argc, char **argv)
 	     */
 	    jprint->search_value = true;
 	    jprint->type = jprint_parse_value_type_option(optarg);
-	    break;
-	case 'R':
-	    /* XXX - currently the default is false as recursive searching is
-	     * not done but the default will later be true - XXX */
-	    jprint->recursive_search = false;
 	    break;
 	case 'S':
 	    /* -S path to tool */
