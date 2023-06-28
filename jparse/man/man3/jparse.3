@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "30 January 2023" "jparse"
+.TH jparse 3  "28 June 2023" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_stream() \|,
@@ -35,6 +35,8 @@
 .B "extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);"
 .br
 .B "extern struct json *parse_json_file(char const *name, bool *is_valid);"
+.sp
+.B "extern char const *json_get_type_str(struct json *node, bool encoded);"
 .sp
 .B "extern bool json_dbg_allowed(int json_dbg_lvl);"
 .br
@@ -107,6 +109,15 @@ and then call
 on the stream, returning a
 .B struct json *
 tree.
+.SS Matching functions
+The
+.B json_get_type_str
+returns a
+.B char const *
+with what was matched in the parser.
+Depending on if the
+.I encoded
+boolean is true or not, it returns the encoded or decoded string, assuming the JSON node type has a distinction.
 .SS Debug, warn and error functions
 .PP
 The function
