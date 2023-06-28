@@ -191,11 +191,11 @@ struct jprint
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* -Y used, search for value, not name */
     /*
-     * XXX - for recurse_search the default is supposed to be true but currently
+     * XXX - for recursive_search the default is supposed to be true but currently
      * it is false until the searching of json in a recursive sub-tree way is
      * implemented. -R will disable this for the old pattern concept.
      */
-    bool recurse_search;			/* default true ==> search in a recursive way. XXX - temporarily def false */
+    bool recursive_search;			/* default true ==> search in a recursive way. XXX - temporarily def false */
     FILE *check_tool_stream;			/* FILE * stream for -S path */
     char *check_tool_path;			/* -S used */
     char *check_tool_args;			/* -A used */

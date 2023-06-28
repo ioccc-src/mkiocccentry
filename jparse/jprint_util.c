@@ -112,7 +112,7 @@ alloc_jprint(void)
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
 
     jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
-    jprint->recurse_search = false;			/* XXX - change this to true when recursive searching is done - XXX */
+    jprint->recursive_search = false;			/* XXX - change this to true when recursive searching is done - XXX */
 
     jprint->check_tool_stream = NULL;			/* FILE * stream for -S path */
     jprint->check_tool_path = NULL;			/* -S path */
@@ -1180,7 +1180,7 @@ parse_jprint_name_args(struct jprint *jprint, char **argv)
     }
 
     /*
-     * XXX - fix to search name_args, not patterns, if jprint->recurse_search is
+     * XXX - fix to search name_args, not patterns, if jprint->recursive_search is
      * true (true will be the default but is currently false) - XXX
      */
     for (i = 1; argv[i] != NULL; ++i) {
@@ -1231,10 +1231,10 @@ add_jprint_pattern(struct jprint *jprint, bool use_regexp, bool use_substrings, 
      * firewall
      */
 
-    /* it is an error if calling this function if the jprint->recurse_search is true
+    /* it is an error if calling this function if the jprint->recursive_search is true
      * (will be the default)
      */
-    if (jprint->recurse_search) {
+    if (jprint->recursive_search) {
 	err(26, __func__, "called pattern adding code without -R");
 	not_reached();
     }

@@ -430,7 +430,7 @@ main(int argc, char **argv)
 	case 'R':
 	    /* XXX - currently the default is false as recursive searching is
 	     * not done but the default will later be true - XXX */
-	    jprint->recurse_search = false;
+	    jprint->recursive_search = false;
 	    break;
 	case 'S':
 	    /* -S path to tool */
