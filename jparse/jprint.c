@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-q] [-Q] [-t type] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type]\n"
-    "\t\t[-S path] [-A args] file.json [name_arg ...]\n"
+    "\t\t[-R] [-S path] [-A args] file.json [name_arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -143,7 +143,7 @@ static const char * const usage_msg2 =
     "\t-E\t\tMatch the JSON encoded name (def: match the JSON decoded name)\n"
     "\t-i\t\tIgnore case of name (def: case matters)\n"
     "\t-s\t\tSubstrings are used to match (def: the full name must match)\n"
-    "\t-g\t\tMatch using grep-like extended regular expressions (def: match strings)\n"
+    "\t-g\t\tMatch using grep-like extended regular expressions (def: match strings or substrings if -s)\n"
     "\n"
     "\t\t\tTo match from the beginning, start name_arg with '^'.\n"
     "\t\t\tTo match to the end, end name_arg with '$'.\n"
@@ -174,6 +174,7 @@ static const char * const usage_msg3 =
     "\t\t\tUse of -Y requires one and only one name_arg.\n"
     "\t\t\tUse of -Y changes the default from -p value to -p name.\n"
     "\n"
+    "\t-R\t\t\tDon't search in a recursive sub-tree manner (def: do search recursively)\n"
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\n"
@@ -266,6 +267,7 @@ main(int argc, char **argv)
     struct jprint_pattern *pattern = NULL; /* iterate through patterns list to search for matches */
     size_t len = 0;			/* length of file contents */
     bool is_valid = false;		/* if file is valid json */
+    int exit_code = 0;			/* for the end */
     int i;
 
     jprint = alloc_jprint();		/* allocate our struct jprint * */
@@ -282,7 +284,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:R")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(&jprint);
@@ -425,6 +427,11 @@ main(int argc, char **argv)
 	    jprint->search_value = true;
 	    jprint->type = jprint_parse_value_type_option(optarg);
 	    break;
+	case 'R':
+	    /* XXX - currently the default is false as recursive searching is
+	     * not done but the default will later be true - XXX */
+	    jprint->recursive_search = false;
+	    break;
 	case 'S':
 	    /* -S path to tool */
 	    jprint->check_tool_path = optarg;
@@ -532,6 +539,9 @@ main(int argc, char **argv)
     /*
      * we can't have this in the sanity checks function very easily as we don't
      * want to read in the entire contents from that function
+     *
+     * XXX - printing the entire file is incorrect here as it needs to print it
+     * according to the options - XXX
      */
     if (!jprint->print_entire_file || jprint->count_only) {
 	jprint_print_matches(jprint);
@@ -545,15 +555,15 @@ main(int argc, char **argv)
 
     /* All Done!!! -- Jessica Noll, Age 2 */
     if (jprint->match_found || !jprint->pattern_specified || jprint->print_entire_file) {
-	free_jprint(&jprint);	/* free jprint struct */
-	exit(0); /*ooo*/
+	exit_code = 0;
     } else {
-	free_jprint(&jprint);	/* free jprint struct */
-	/*
-	 * exit with 1 due to no pattern found
-	 */
-	exit(1); /*ooo*/
+	exit_code = 1;
     }
+    if (jprint != NULL) {
+	free_jprint(&jprint);	/* free jprint struct */
+    }
+
+    exit(exit_code); /*ooo*/
 }
 
 /* jprint_sanity_chks	- sanity checks on jprint tool options
@@ -610,13 +620,6 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
     if (jprint->use_regexps && jprint->use_substrings) {
 	free_jprint(&jprint);
 	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
-	not_reached();
-    }
-
-    /* check that both -j and -s were not used together */
-    if (jprint->print_syntax && jprint->use_substrings) {
-	free_jprint(&jprint);
-	err(3, __func__, "cannot use both -j and -s"); /*ooo*/
 	not_reached();
     }
 

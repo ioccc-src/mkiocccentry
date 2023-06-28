@@ -132,7 +132,7 @@ struct jprint_match
  * jprint_pattern - struct for a linked list of patterns requested, held in
  * struct jprint
  *
- * XXX - the pattern concept is incorrect due to a misunderstanding - XXX
+ * NOTE: the pattern concept is for the -R option
  */
 struct jprint_pattern
 {
@@ -190,6 +190,12 @@ struct jprint
     bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     bool search_value;				/* -Y used, search for value, not name */
+    /*
+     * XXX - for recursive_search the default is supposed to be true but currently
+     * it is false until the searching of json in a recursive sub-tree way is
+     * implemented. -R will disable this for the old pattern concept.
+     */
+    bool recursive_search;			/* default true ==> search in a recursive way. XXX - temporarily def false */
     FILE *check_tool_stream;			/* FILE * stream for -S path */
     char *check_tool_path;			/* -S used */
     char *check_tool_args;			/* -A used */

@@ -93,6 +93,7 @@ extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *
 				    char const *tail);
 extern char const *json_type_name(enum item_type type);
 extern char const *json_item_type_name(const struct json *node);
+extern char const *json_get_type_str(struct json *node, bool encoded);
 extern void json_free(struct json *node, unsigned int depth, ...);
 extern void vjson_free(struct json *node, unsigned int depth, va_list ap);
 extern void json_fprint(struct json *node, unsigned int depth, ...);

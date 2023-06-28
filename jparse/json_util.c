@@ -874,7 +874,7 @@ json_type_name(enum item_type type)
  * json_item_type_name - print a struct json item union type by name
  *
  * given:
- *	node	pointer to a JSON parser tree node to free
+ *	node	pointer to a JSON parser tree node to get the type name
  *
  * returns:
  *	A constant (read-only) string that names the JTYPE_ enum.
@@ -902,6 +902,94 @@ json_item_type_name(const struct json *node)
     /* return read-only name constant string */
     return name;
 }
+
+/*
+ * json_get_type_str - print a struct json string (original match in scanner/parser)
+ *
+ * given:
+ *	node	    pointer to a JSON parser tree node to get matching string from
+ *	encoded	    true if we should return the encoded string
+ *
+ * returns:
+ *	A constant (read-only) string that originally matched in the
+ *	lexer/parser
+ *
+ * NOTE: This string returned is read only: It's not allocated on the stack.
+ *
+ * NOTE: this function can return a NULL pointer. It is the responsibility of
+ * the caller to check for a NULL return value.
+ */
+char const *
+json_get_type_str(struct json *node, bool encoded)
+{
+    char const *str = NULL;
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	return NULL;
+    }
+
+    switch (node->type) {
+	case JTYPE_NUMBER:
+	    {
+		struct json_number *item = &(node->item.number);
+		if (item != NULL && item->converted) {
+		    str = item->as_str;
+		}
+	    }
+	    break;
+	case JTYPE_STRING:
+	    {
+		struct json_string *item = &(node->item.string);
+
+		if (item != NULL && item->converted) {
+		    str = encoded ? item->as_str : item->str;
+		}
+	    }
+	    break;
+	case JTYPE_BOOL:
+	    {
+		struct json_boolean *item = &(node->item.boolean);
+
+		if (item != NULL && item->converted) {
+		    str = item->as_str;
+		}
+	    }
+	    break;
+	case JTYPE_NULL:
+	    {
+		struct json_null *item = &(node->item.null);
+
+		if (item != NULL && item->converted) {
+		    str = item->as_str;
+		}
+	    }
+	    break;
+	case JTYPE_MEMBER:
+	    {
+		struct json_member *item = &(node->item.member);
+
+		if (item != NULL && item->converted) {
+		    str = encoded ? item->name_as_str : item->name_str;
+		}
+	    }
+	    break;
+	case JTYPE_OBJECT:
+	    break;
+	case JTYPE_ARRAY:
+	    break;
+	case JTYPE_ELEMENTS:
+	    break;
+	default:
+	    break;
+    }
+
+    /* return read-only name constant string */
+    return str;
+}
+
 
 
 /*
