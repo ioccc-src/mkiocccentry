@@ -19,6 +19,10 @@ was not freed.
 
 Use of `jprint -s` and `jprint -j` now possible.
 
+Add new function `extern char const *json_get_type_str(struct json *node, bool encoded);
+` to jparse library to get the matched (in the parser/lexer) name that triggered
+parsing. Updated man page.
+
 
 ## Release 1.0.24 2023-06-27
 
