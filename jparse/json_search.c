@@ -14,8 +14,9 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
-
- * This search function was implemented by:
+ *
+ * This JSON search functionality was designed and implemented in support of
+ * jprint by:
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
