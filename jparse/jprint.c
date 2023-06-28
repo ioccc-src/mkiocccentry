@@ -623,13 +623,6 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
 	not_reached();
     }
 
-    /* check that both -j and -s were not used together */
-    if (jprint->print_syntax && jprint->use_substrings) {
-	free_jprint(&jprint);
-	err(3, __func__, "cannot use both -j and -s"); /*ooo*/
-	not_reached();
-    }
-
     /* check that if -b [num]t is used then -p both is true */
     if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
 	free_jprint(&jprint);

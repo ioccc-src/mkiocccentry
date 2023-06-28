@@ -17,6 +17,8 @@ Fixed potential memory leak in `jprint`: although currently none exist the
 matches list in the struct jprint (instead of the matches list in each pattern)
 was not freed.
 
+Use of `jprint -s` and `jprint -j` now possible.
+
 
 ## Release 1.0.24 2023-06-27
 
