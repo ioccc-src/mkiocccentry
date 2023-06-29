@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jprint 1 "25 June 2023" "jprint" "IOCCC tools"
+.TH jprint 1 "29 June 2023" "jprint" "IOCCC tools"
 .SH NAME
 .B jprint
 \- IOCCC JSON printer
@@ -52,6 +52,8 @@
 .RB [\| \-K \|]
 .RB [\| \-Y
 .IR type \|]
+.RB [\| -o \|]
+.RB [\| -r \|]
 .RB [\| \-S
 .IR path \|]
 .RB [\| \-A
@@ -75,6 +77,13 @@ The
 option lets one search by value, printing the name instead of the value.
 .PP
 The
+.B \-o
+option lets search in an OR manner.
+The option
+.B \-r
+lets you search under anywhere.
+.PP
+The
 .B \-p
 option lets you control what is printed: name, value or both.
 The option
@@ -94,6 +103,9 @@ is to find a JSON member that is in the previous
 .I name_arg
 or
 .IR name_args .
+However the
+.B -r
+option changes this behaviour.
 Matches are based on JSON names, printing values, unless
 .B \-Y
 is used in which case JSON values are matched and names are then printed.
@@ -239,6 +251,21 @@ Why besides, all the other good options were already taken. :\-)
 Specifically the letter Y has a V in it and V would have been the
 obvious choice but both v and V are taken.
 This is why you'll have to believe us when we tell you that this is a good enough reason why Y! :\-)
+.TP
+.B \-o
+Search in an OR manner.
+.TP
+.B \-r
+Search under anywhere.
+.PP
+Why is
+.B \-o
+specified before
+.B \-r\c
+\&?
+Because this way it spells out OR which is what the
+.B \-o
+option means!
 .RE
 .SH EXIT STATUS
 .TP

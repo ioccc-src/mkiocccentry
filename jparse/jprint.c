@@ -43,7 +43,7 @@ static const char * const usage_msg0 =
     "usage: %s [-h] [-V] [-v level] [-J level] [-e] [-q] [-Q] [-t type] [-n count]\n"
     "\t\t[-N num] [-p {n,v,b}] [-b <num>{[t|s]}] [-L <num>{[t|s]}] [-P] [-C] [-B]\n"
     "\t\t[-I <num>{[t|s]}] [-j] [-E] [-i] [-s] [-g] [-c] [-m depth] [-K] [-Y type]\n"
-    "\t\t[-S path] [-A args] file.json [name_arg ...]\n"
+    "\t\t[-o] [-r] [-S path] [-A args] file.json [name_arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -174,6 +174,9 @@ static const char * const usage_msg3 =
     "\t\t\tUse of -Y requires one and only one name_arg.\n"
     "\t\t\tUse of -Y changes the default from -p value to -p name.\n"
     "\n"
+    "\t-o\t\tSearch by OR mode like grep -E 'foo|bar' (def: don't)\n"
+    "\t-r\t\tSearch under anywhere (def: don't)\n"
+    "\n"
     "\t-S path\t\tRun JSON check tool, path, with file.json arg, abort of non-zero exit (def: do not run)\n"
     "\t-A args\t\tRun JSON check tool with additional args passed to the tool after file.json (def: none)\n"
     "\n"
@@ -283,7 +286,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEiS:m:cg:KY:sA:R")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:l:eQt:qjn:N:p:b:L:PCBI:jEim:cg:KY:sorS:A:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jprint(&jprint);
@@ -321,8 +324,8 @@ main(int argc, char **argv)
 	    dbg(DBG_LOW, "-Q specified, will quote strings");
 	    break;
 	case 't':
-	    jprint->type_specified = true;
-	    jprint->type = jprint_parse_types_option(optarg);
+	    jprint->json_types_specified = true;
+	    jprint->json_types = jprint_parse_types_option(optarg);
 	    break;
 	case 'n':
 	    jprint_parse_number_range("-n", optarg, true, &jprint->jprint_max_matches);
@@ -333,8 +336,8 @@ main(int argc, char **argv)
 	    jprint->min_matches_requested = true;
 	    break;
 	case 'p':
-	    jprint->print_type_option = true;
-	    jprint->print_type = jprint_parse_print_option(optarg);
+	    jprint->print_json_types_option = true;
+	    jprint->print_json_types = jprint_parse_print_option(optarg);
 	    break;
 	case 'b':
 	    jprint->print_token_spaces = true;
@@ -367,15 +370,15 @@ main(int argc, char **argv)
 	case 'j':
 	    jprint->print_syntax = true;
 	    dbg(DBG_LOW, "-j, implying -p both");
-	    jprint->print_type = jprint_parse_print_option("both");
+	    jprint->print_json_types = jprint_parse_print_option("both");
 	    dbg(DBG_LOW, "-j, implying -b 1");
 	    jprint_parse_st_tokens_option("1", &jprint->num_token_spaces, &jprint->print_token_tab);
 	    dbg(DBG_LOW, "-j, implying -e -Q");
 	    jprint->encode_strings = true;
 	    jprint->quote_strings = true;
 	    dbg(DBG_LOW, "-j, implying -t any");
-	    /* don't set jprint->type_specified as that's for explicit use of -t */
-	    jprint->type = jprint_parse_types_option("any");
+	    /* don't set jprint->json_types_specified as that's for explicit use of -t */
+	    jprint->json_types = jprint_parse_types_option("any");
 	    break;
 	case 'E':
 	    jprint->match_encoded = true;
@@ -424,10 +427,17 @@ main(int argc, char **argv)
 	     * reason why Y! :-)
 	     */
 	    jprint->search_value = true;
-	    jprint->type = jprint_parse_value_type_option(optarg);
+	    jprint->json_types = jprint_parse_value_type_option(optarg);
+	    break;
+	case 'o': /* search with OR mode */
+	    jprint->search_or_mode = true;
+	    break;
+	case 'r': /* search under anywhere */
+	    jprint->search_anywhere = true;  /* Why is -o before -r? To spell out OR when -o itself is OR! :-) */
 	    break;
 	case 'S':
 	    /* -S path to tool */
+	    jprint->check_tool_specified = true;
 	    jprint->check_tool_path = optarg;
 	    dbg(DBG_LOW, "set tool path to: '%s'", jprint->check_tool_path);
 	    break;
@@ -618,7 +628,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
     }
 
     /* check that if -b [num]t is used then -p both is true */
-    if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_type)) {
+    if (jprint->print_token_tab && !jprint_print_name_value(jprint->print_json_types)) {
 	free_jprint(&jprint);
 	err(3, "jparse", "use of -b [num]t cannot be used without printing both name and value"); /*ooo*/
 	not_reached();
@@ -629,7 +639,7 @@ jprint_sanity_chks(struct jprint *jprint, char const *program, int *argc, char *
      * does this but it's possible the user explicitly used -p after -j but if
      * they did not specify 'b' or 'both' it is an error.
      */
-    if (jprint->print_syntax && !jprint_print_name_value(jprint->print_type)) {
+    if (jprint->print_syntax && !jprint_print_name_value(jprint->print_json_types)) {
 	free_jprint(&jprint);
 	err(3, "jparse", "cannot use -j without printing both name and value"); /*ooo*/
 	not_reached();

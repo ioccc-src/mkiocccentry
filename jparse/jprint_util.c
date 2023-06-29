@@ -23,7 +23,7 @@
 
 #include "jprint_util.h"
 
-/* alloc_jprint	    - allocate and clear out a struct jprint *
+/* alloc_jprint	    - allocate a struct jprint *, clear it out and set defaults
  *
  * This function returns a newly allocated and cleared struct jprint *.
  *
@@ -37,20 +37,21 @@ alloc_jprint(void)
 
     /* verify jprint != NULL */
     if (jprint == NULL) {
-	err(22, "jprint", "failed to allocate jprint struct");
+	err(22, __func__, "failed to allocate jprint struct");
 	not_reached();
     }
 
-    /* clear everything out explicitly even after calloc() */
+    /* explicitly clear everything out and set defaults */
 
-    jprint->is_stdin = false;			/* if it's stdin */
-    jprint->match_found = false;		/* true if a pattern is specified and there is a match */
-    jprint->ignore_case = false;		/* true if -i, case-insensitive */
-    jprint->pattern_specified = false;		/* true if a pattern was specified */
+    /* JSON file member variables */
+    jprint->is_stdin = false;			/* true if it's stdin */
+    jprint->file_contents = NULL;		/* file.json contents */
+    jprint->json_file = NULL;			/* JSON file * */
+
+    /* string related options */
     jprint->encode_strings = false;		/* -e used */
     jprint->quote_strings = false;		/* -Q used */
-    jprint->type_specified = false;		/* -t used */
-    jprint->type = JPRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
+
 
     /* number range options, see struct jprint_number_range in jprint_util.h for details */
 
@@ -84,13 +85,9 @@ alloc_jprint(void)
     jprint->jprint_levels.range.inclusive = false;
     jprint->levels_constrained = false;
 
-    /* file contents */
-    jprint->file_contents = NULL;			/* file.json contents */
-    /* JSON FILE * */
-    jprint->json_file = NULL;				/* JSON file */
-
-    jprint->print_type = JPRINT_PRINT_VALUE;		/* -p type specified */
-    jprint->print_type_option = false;			/* -p explicitly used */
+    /* print related options */
+    jprint->print_json_types_option = false;		/* -p explicitly used */
+    jprint->print_json_types = JPRINT_PRINT_VALUE;	/* -p type specified */
     jprint->print_token_spaces = false;			/* -b specified */
     jprint->num_token_spaces = 1;			/* -b specified number of spaces or tabs */
     jprint->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
@@ -104,22 +101,45 @@ alloc_jprint(void)
     jprint->indent_spaces = 0;				/* -I number of tabs or spaces */
     jprint->indent_tab = false;				/* -I <num>[{t|s}] specified */
     jprint->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+
+    /* misc options */
+    jprint->count_only = false;				/* -c used, only show count */
+
+
+    /* search related bools */
+    /* json types to look for */
+    jprint->json_types_specified = false;		/* -t used */
+    jprint->json_types = JPRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
+    jprint->print_entire_file = false;			/* no name_arg specified */
+    jprint->match_found = false;			/* true if a pattern is specified and there is a match */
+    jprint->ignore_case = false;			/* true if -i, case-insensitive */
+    jprint->pattern_specified = false;			/* true if a pattern was specified */
+    jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
+    /*
+     * Why is -o specified before -r? This is so that it spells out 'or' which
+     * is what -o means. Obviously! :-)
+     */
+    jprint->search_or_mode = false;			/* -o used: search with OR mode */
+    jprint->search_anywhere = false;			/* -r used: search under anywhere */
+
     jprint->match_encoded = false;			/* -E used, match encoded name */
     jprint->use_substrings = false;			/* -s used, matching substrings okay */
     jprint->use_regexps = false;			/* -g used, allow grep-like regexps */
-    jprint->count_only = false;				/* -c used, only show count */
-    jprint->print_entire_file = false;			/* no name_arg specified */
     jprint->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
 
-    jprint->search_value = false;			/* -Y search by value, not name. Uses print type */
 
-    jprint->check_tool_stream = NULL;			/* FILE * stream for -S path */
-    jprint->check_tool_path = NULL;			/* -S path */
-    jprint->check_tool_args = NULL;			/* -A args */
+    /* check tool related */
+    jprint->check_tool_specified = false;		/* bool indicating -S was used */
+    jprint->check_tool_stream = NULL;			/* FILE * stream for -S tool */
+    jprint->check_tool_path = NULL;			/* -S tool_path */
+    jprint->check_tool_args = NULL;			/* -A tool_args */
 
     /* finally the linked list of patterns for matches */
+    /* XXX - the pattern concept is incorrect */
     jprint->patterns = NULL;
     jprint->number_of_patterns = 0;
+    /* matches - subject to change */
+    jprint->matches = NULL;
     jprint->total_matches = 0;
 
     return jprint;
@@ -608,7 +628,7 @@ jprint_parse_print_option(char *optarg)
     char *saveptr = NULL;   /* for strtok_r() */
     char *dup = NULL;	    /* strdup()d copy of optarg */
 
-    uintmax_t print_types = 0; /* default is to print values */
+    uintmax_t print_json_types = 0; /* default is to print values */
 
     if (optarg == NULL || !*optarg) {
 	/* NULL or empty optarg, assume simple */
@@ -630,11 +650,11 @@ jprint_parse_print_option(char *optarg)
      */
     for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "v") || !strcmp(p, "value")) {
-	    print_types |= JPRINT_PRINT_VALUE;
+	    print_json_types |= JPRINT_PRINT_VALUE;
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
-	    print_types |= JPRINT_PRINT_NAME;
+	    print_json_types |= JPRINT_PRINT_NAME;
 	} else if (!strcmp(p, "b") || !strcmp(p, "both")) {
-	    print_types |= JPRINT_PRINT_BOTH;
+	    print_json_types |= JPRINT_PRINT_BOTH;
 	} else {
 	    /* unknown keyword */
 	    err(3, __func__, "unknown keyword '%s'", p); /*ooo*/
@@ -642,13 +662,13 @@ jprint_parse_print_option(char *optarg)
 	}
     }
 
-    if (jprint_print_name_value(print_types)) {
+    if (jprint_print_name_value(print_json_types)) {
 	dbg(DBG_LOW, "will print both name and value");
     }
-    else if (jprint_print_name(print_types)) {
+    else if (jprint_print_name(print_json_types)) {
 	dbg(DBG_LOW, "will only print name");
     }
-    else if (jprint_print_value(print_types)) {
+    else if (jprint_print_value(print_json_types)) {
 	dbg(DBG_LOW, "will only print value");
     }
 
@@ -657,7 +677,7 @@ jprint_parse_print_option(char *optarg)
 	dup = NULL;
     }
 
-    return print_types;
+    return print_json_types;
 }
 
 /* jprint_parse_number_range	- parse a number range for options -l, -N, -n
@@ -911,7 +931,7 @@ jprint_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *p
 	dbg(DBG_LOW, "will print %ju tab%s between name and value", *num_token_spaces,
 	    *num_token_spaces==1?"":"s");
     } else if (!string_to_uintmax(optarg, num_token_spaces)) {
-	err(3, "jprint", "couldn't parse -b <num>[ts]"); /*ooo*/
+	err(3, __func__, "couldn't parse -b <num>[ts]"); /*ooo*/
 	not_reached();
     } else {
 	*print_token_tab = false; /* ensure it's false in case specified previously */
@@ -979,7 +999,7 @@ jprint_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *inden
 	    *indent_level = 1;
 	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
     } else if (!string_to_uintmax(optarg, indent_level)) {
-	err(3, "jprint", "couldn't parse -I spaces"); /*ooo*/
+	err(3, __func__, "couldn't parse -I spaces"); /*ooo*/
 	not_reached();
     } else {
 	*indent_tab = false; /* ensure it's false in case specified previously */
@@ -1045,7 +1065,7 @@ jprint_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *pr
 	    *num_level_spaces = 1;
 	    dbg(DBG_LOW, "will print %ju tab%s after levels", *num_level_spaces, *num_level_spaces==1?"":"s");
     } else if (!string_to_uintmax(optarg, num_level_spaces)) {
-	err(3, "jprint", "couldn't parse -L spaces"); /*ooo*/
+	err(3, __func__, "couldn't parse -L spaces"); /*ooo*/
 	not_reached();
     } else {
 	*print_level_tab = false; /* ensure it's false in case specified previously */
@@ -1592,11 +1612,11 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char cons
 	    {
 		struct json_number *item = &(node->item.number);
 
-		if (item != NULL) {
-		    if (!jprint->search_value || jprint_match_num(jprint->type) ||
-			(item->is_integer&&jprint_match_int(jprint->type))||
-			(item->is_floating && jprint_match_float(jprint->type)) ||
-			(item->is_e_notation && jprint_match_exp(jprint->type))) {
+		if (item != NULL && item->converted) {
+		    if (!jprint->search_value || jprint_match_num(jprint->json_types) ||
+			(item->is_integer&&jprint_match_int(jprint->json_types))||
+			(item->is_floating && jprint_match_float(jprint->json_types)) ||
+			(item->is_e_notation && jprint_match_exp(jprint->json_types))) {
 			    if (jprint->use_substrings) {
 				if (strstr(str, name) ||
 				    (jprint->ignore_case&&strcasestr(str, name))) {
@@ -1617,8 +1637,8 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char cons
 	    {
 		struct json_string *item = &(node->item.string);
 
-		if (item != NULL) {
-		    if (!jprint->search_value || jprint_match_string(jprint->type)) {
+		if (item != NULL && item->converted) {
+		    if (!jprint->search_value || jprint_match_string(jprint->json_types)) {
 			if (jprint->use_substrings) {
 			    if (strstr(str, name) ||
 				(jprint->ignore_case && strcasestr(str, name))) {
@@ -1639,8 +1659,8 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char cons
 	    {
 		struct json_boolean *item = &(node->item.boolean);
 
-		if (item != NULL) {
-		    if (!jprint->search_value || jprint_match_bool(jprint->type)) {
+		if (item != NULL && item->converted) {
+		    if (!jprint->search_value || jprint_match_bool(jprint->json_types)) {
 			if (jprint->use_substrings) {
 			    if (strstr(str, name) ||
 				(jprint->ignore_case && strcasestr(str, name))) {
@@ -1662,8 +1682,8 @@ is_jprint_match(struct jprint *jprint, struct jprint_pattern *pattern, char cons
 	    {
 		struct json_null *item = &(node->item.null);
 
-		if (item != NULL) {
-		    if (!jprint->search_value || jprint_match_null(jprint->type)) {
+		if (item != NULL && item->converted) {
+		    if (!jprint->search_value || jprint_match_null(jprint->json_types)) {
 			if (jprint->use_substrings) {
 			    if (strstr(str, name) ||
 				(jprint->ignore_case && strcasestr(str, name))) {
@@ -2479,7 +2499,7 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	 * if we're printing name and value or the syntax we have extra things
 	 * to do
 	 */
-	if (jprint_print_name_value(jprint->print_type) || jprint->print_syntax) {
+	if (jprint_print_name_value(jprint->print_json_types) || jprint->print_syntax) {
 	    /* if we print syntax there are some extra things we have to do */
 	    if (jprint->print_syntax) {
 
@@ -2542,7 +2562,7 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 			(jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
 			match->value_type == JTYPE_STRING?"\"":"");
 	    }
-	} else if (jprint_print_name(jprint->print_type) || jprint_print_value(jprint->print_type)) {
+	} else if (jprint_print_name(jprint->print_json_types) || jprint_print_value(jprint->print_json_types)) {
 	    /*
 	     * here we will print just the name or value, quoting and doing
 	     * other things as necessary.
@@ -2552,12 +2572,12 @@ jprint_print_match(struct jprint *jprint, struct jprint_pattern *pattern, struct
 	     */
 	    print("%s%s%s\n",
 		  (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
-		  ((match->name_type == JTYPE_STRING&&jprint_print_name(jprint->print_type))||
-		   (match->value_type == JTYPE_STRING&&jprint_print_value(jprint->print_type)))?"\"":"",
-		  jprint_print_name(jprint->print_type)?match->match:match->value,
+		  ((match->name_type == JTYPE_STRING&&jprint_print_name(jprint->print_json_types))||
+		   (match->value_type == JTYPE_STRING&&jprint_print_value(jprint->print_json_types)))?"\"":"",
+		  jprint_print_name(jprint->print_json_types)?match->match:match->value,
 		  (jprint->quote_strings||jprint->print_syntax||jprint->print_entire_file)&&
-		  ((match->name_type == JTYPE_STRING&&jprint_print_name(jprint->print_type))||
-		   (match->value_type == JTYPE_STRING&&jprint_print_value(jprint->print_type)))?"\"":"");
+		  ((match->name_type == JTYPE_STRING&&jprint_print_name(jprint->print_json_types))||
+		   (match->value_type == JTYPE_STRING&&jprint_print_value(jprint->print_json_types)))?"\"":"");
 	}
     }
 }

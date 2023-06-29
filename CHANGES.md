@@ -11,6 +11,13 @@ say what it translates to (int,float,exp).
 Added four new good test json files under `test_jparse/test_JSON/good`:
 `42.json`, `foo.json`, `just_array.json` and `top_level_array.json`.
 
+Sorted (by category) the member variables in `struct jprint` as well as in the
+function `alloc_jprint()` (in `jprint_util.c`).
+
+Added options `-o` and `-r` but at this time nothing is done with them: booleans
+are set but nothing else. Why is `-o` before `-r`? To spell out 'or' which is
+what the `-o` option does! Obviously :-)
+
 
 ## Release 1.0.25 2023-06-28
 
