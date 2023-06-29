@@ -104,6 +104,16 @@ struct jprint_number
     struct jprint_number_range range;	/* for ranges */
 };
 
+/* jprint_array - a struct for when an array matches, used in jprint_match below
+ *
+ * XXX - this struct might or might not have to change - XXX
+ */
+struct jprint_array
+{
+    struct json_array *array;
+
+    struct jprint_match *match;	    /* what matched this array */
+};
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
  * requested.
@@ -123,6 +133,8 @@ struct jprint_match
 
     struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
     struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
+
+    struct jprint_array *array;	    /* will not be NULL if match is an array. */
 
     struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
     struct jprint_match *next; /* next match found */
@@ -152,24 +164,30 @@ struct jprint_pattern
  */
 struct jprint
 {
+    /* JSON file related */
     bool is_stdin;				/* reading from stdin */
     FILE *json_file;				/* FILE * to json file */
     char *file_contents;			/* file contents */
-    bool match_found;				/* true if a pattern is specified and there is a match */
-    bool ignore_case;				/* true if -i, case-insensitive */
-    bool pattern_specified;			/* true if a pattern was specified */
+
+    /* string related options */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */
-    bool type_specified;			/* -t used */
-    uintmax_t type;				/* -t type */
-    struct jprint_number jprint_max_matches;	/* -n count specified */
+
+
+    /* number ranges */
+    /* max number of matches */
     bool max_matches_requested;			/* -n used */
-    struct jprint_number jprint_min_matches;	/* -N count specified */
+    struct jprint_number jprint_max_matches;	/* -n count specified */
+    /* min number of matches */
     bool min_matches_requested;			/* -N used */
-    struct jprint_number jprint_levels;		/* -l level specified */
+    struct jprint_number jprint_min_matches;	/* -N count specified */
+    /* level constraints */
     bool levels_constrained;			/* -l specified */
-    uintmax_t print_type;			/* -p type specified */
-    bool print_type_option;			/* -p explicitly used */
+    struct jprint_number jprint_levels;		/* -l level specified */
+
+    /* printing related options */
+    bool print_json_types_option;		/* -p explicitly used */
+    uintmax_t print_json_types;			/* -p type specified */
     bool print_token_spaces;			/* -b specified */
     uintmax_t num_token_spaces;			/* -b specified number of spaces or tabs */
     bool print_token_tab;			/* -b tab (or -b <num>[t]) specified */
@@ -183,20 +201,34 @@ struct jprint
     uintmax_t indent_spaces;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
     bool print_syntax;				/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
+
+    /* search related bools */
+    bool json_types_specified;			/* -t used */
+    uintmax_t json_types;			/* -t type */
+    bool print_entire_file;			/* no name_arg specified */
+    bool match_found;				/* true if a pattern is specified and there is a match */
+    bool ignore_case;				/* true if -i, case-insensitive */
+    bool pattern_specified;			/* true if a pattern was specified */
+    bool search_value;				/* -Y used, search for value, not name */
+    bool search_or_mode;			/* -o used: search with OR mode */
+    bool search_anywhere;			/* -r used: search under anywhere */
     bool match_encoded;				/* -E used, match encoded name */
     bool use_substrings;			/* -s used, matching substrings okay */
     bool use_regexps;				/* -g used, allow grep-like regexps */
     bool count_only;				/* -c used, only show count */
-    bool print_entire_file;			/* no name_arg specified */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-    bool search_value;				/* -Y used, search for value, not name */
+
+    /* check tool related things */
+    bool check_tool_specified;			/* bool indicating -S was used */
     FILE *check_tool_stream;			/* FILE * stream for -S path */
-    char *check_tool_path;			/* -S used */
-    char *check_tool_args;			/* -A used */
+    char *check_tool_path;			/* -S tool path used */
+    char *check_tool_args;			/* -A tool args used */
 
     /* any patterns specified */
+    /* XXX - the pattern concept is incorrect - XXX */
     struct jprint_pattern *patterns;		/* linked list of patterns specified */
     uintmax_t number_of_patterns;		/* patterns specified */
+    /* matches found - subject to change */
     struct jprint_match *matches;		/* for entire file i.e. no name_arg */
     uintmax_t total_matches;			/* total matches of all patterns (name_args) */
 

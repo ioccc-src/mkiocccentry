@@ -1,6 +1,35 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.26 2023-06-29
+
+New version of `jprint` "0.0.33 2023-06-29".
+
+Removed 'num' from description of 'simple' for options `-t` and `-Y` and instead
+say what it translates to (int,float,exp).
+
+Added four new good test json files under `test_jparse/test_JSON/good`:
+`42.json`, `foo.json`, `just_array.json` and `top_level_array.json`.
+
+Sorted (by category) the member variables in `struct jprint` as well as in the
+function `alloc_jprint()` (in `jprint_util.c`).
+
+Added options `-o` and `-r` but at this time nothing is done with them: booleans
+are set but nothing else. Why is `-o` before `-r`? To spell out 'or' which is
+what the `-o` option does! Obviously :-)
+
+Make `bug_report.sh` check that both `jprint` and `jprint_test.sh` are
+executable.
+
+Add support of proper matching for JSON booleans and nulls. This does not apply
+(just like for the others that are in) for inside arrays - just those by
+themselves. Works for `-Y` to search by value and without `-Y` to search by
+name, showing the name or value respectively, depending on if a match is found.
+The `-p` or `-j` options can override this of course. It should be remembered
+though that nulls and booleans have a string name so only string is checked
+before adding a match.
+
+
 ## Release 1.0.25 2023-06-28
 
 Add new good JSON test file 42.json under
