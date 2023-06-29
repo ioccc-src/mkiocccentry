@@ -2697,7 +2697,8 @@ run_jprint_check_tool(struct jprint *jprint, char **argv)
     if (jprint->check_tool_path != NULL) {
 	/* try running via shell_cmd() first */
 	if (jprint->check_tool_args != NULL) {
-	    dbg(DBG_MED, "about to execute: %s %s %s >/dev/null 2>&1", jprint->check_tool_path, jprint->check_tool_args, argv[0]);
+	    dbg(DBG_MED, "about to execute: %s %s -- %s >/dev/null 2>&1",
+		    jprint->check_tool_path, jprint->check_tool_args, argv[0]);
 	    exit_code = shell_cmd(__func__, true, true, "% % -- %", jprint->check_tool_path, jprint->check_tool_args, argv[0]);
 	} else {
 	    dbg(DBG_MED, "about to execute: %s %s >/dev/null 2>&1", jprint->check_tool_path, argv[0]);

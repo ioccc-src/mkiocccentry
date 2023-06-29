@@ -18,6 +18,8 @@ Added options `-o` and `-r` but at this time nothing is done with them: booleans
 are set but nothing else. Why is `-o` before `-r`? To spell out 'or' which is
 what the `-o` option does! Obviously :-)
 
+Make `bug_report.sh` check that both `jprint` and `jprint_test.sh` are
+executable.
 
 ## Release 1.0.25 2023-06-28
 

@@ -60,6 +60,8 @@ export TOOLS="
     ./jparse/test_jparse/jnum_chk
     ./jparse/test_jparse/jparse_test.sh
     ./jparse/test_jparse/jstr_test.sh
+    ./jparse/jprint
+    ./jparse/test_jparse/jprint_test.sh
     ./jparse/verge
     ./mkiocccentry
     ./soup/all_sem_ref.sh
@@ -90,7 +92,7 @@ export SUBDIRS="
     ./test_ioccc
     "
 
-export BUG_REPORT_VERSION="1.0.1 2023-05-22"
+export BUG_REPORT_VERSION="1.0.2 2023-06-29"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

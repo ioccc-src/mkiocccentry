@@ -30,7 +30,7 @@
 # and:
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
-# The jprint tool is being developed by Cody Boone Ferguson.
+# The jprint tool and this test script is being developed by Cody Boone Ferguson.
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
