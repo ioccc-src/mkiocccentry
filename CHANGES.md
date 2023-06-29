@@ -8,8 +8,8 @@ New version of `jprint` "0.0.33 2023-06-29".
 Removed 'num' from description of 'simple' for options `-t` and `-Y` and instead
 say what it translates to (int,float,exp).
 
-Added three new good test json files under `test_jparse/test_JSON/good`:
-`42.json`, `foo.json` and `just_array.json`.
+Added four new good test json files under `test_jparse/test_JSON/good`:
+`42.json`, `foo.json`, `just_array.json` and `top_level_array.json`.
 
 
 ## Release 1.0.25 2023-06-28
