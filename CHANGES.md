@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.26 2023-06-29
+
+New version of `jprint` "0.0.33 2023-06-29".
+
+Removed 'num' from description of 'simple' for options `-t` and `-Y` and instead
+say what it translates to (int,float,exp).
+
+
 ## Release 1.0.25 2023-06-28
 
 Add new good JSON test file 42.json under
