@@ -21,6 +21,15 @@ what the `-o` option does! Obviously :-)
 Make `bug_report.sh` check that both `jprint` and `jprint_test.sh` are
 executable.
 
+Add support of proper matching for JSON booleans and nulls. This does not apply
+(just like for the others that are in) for inside arrays - just those by
+themselves. Works for `-Y` to search by value and without `-Y` to search by
+name, showing the name or value respectively, depending on if a match is found.
+The `-p` or `-j` options can override this of course. It should be remembered
+though that nulls and booleans have a string name so only string is checked
+before adding a match.
+
+
 ## Release 1.0.25 2023-06-28
 
 Add new good JSON test file 42.json under

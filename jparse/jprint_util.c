@@ -2011,34 +2011,51 @@ vjprint_json_search(struct jprint *jprint, struct json *name_node, struct json *
 
 		    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
 			{
-				if (str != NULL) {
-
-				    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
-					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:name,
-					    jprint->search_value?name:NULL, pattern->pattern, str, depth,
-					    jprint->search_value?JTYPE_STRING:JTYPE_BOOL,
-					    jprint->search_value?JTYPE_BOOL:JTYPE_STRING) == NULL) {
-						err(48, __func__, "adding match '%s' to pattern failed", str);
-						not_reached();
+			    if (str != NULL) {
+				switch (value->type) {
+				    case JTYPE_STRING:
+				    {
+					if (val != NULL) {
+					    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+						if (add_jprint_match(jprint, pattern, name, value, str, val,
+						    depth, jprint->search_value?JTYPE_STRING:JTYPE_BOOL,
+						    jprint->search_value?JTYPE_BOOL:JTYPE_STRING) == NULL) {
+							err(48, __func__, "adding match '%s' to pattern failed", str);
+							not_reached();
+						}
+					    }
 					}
 				    }
+				    break;
+				    default: /* only string is valid */
+					break;
+				}
 			    }
 			}
 			break;
 
 		    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
 			{
-				if (str != NULL) {
-				    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
-					if (add_jprint_match(jprint, pattern, jprint->search_value?NULL:name,
-					    jprint->search_value?name:NULL, pattern->pattern, str, depth,
-					    jprint->search_value?JTYPE_STRING:JTYPE_NULL,
-					    jprint->search_value?JTYPE_NULL:JTYPE_STRING) == NULL) {
-						err(49, __func__, "adding match '%s' to pattern failed", str);
-						not_reached();
+			    if (str != NULL) {
+				switch (value->type) {
+				    case JTYPE_STRING:
+				    {
+					if (val != NULL) {
+					    if (is_jprint_match(jprint, pattern, pattern->pattern, name, str)) {
+						if (add_jprint_match(jprint, pattern, name, value, str, val,
+						    depth, jprint->search_value?JTYPE_STRING:JTYPE_NULL,
+						    jprint->search_value?JTYPE_NULL:JTYPE_STRING) == NULL) {
+							err(49, __func__, "adding match '%s' to pattern failed", str);
+							not_reached();
+						}
+					    }
 					}
 				    }
+				    break;
+				    default: /* only string is valid */
+					break;
 				}
+			    }
 			}
 			break;
 
@@ -2290,6 +2307,7 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *lnode, struct json *rn
 	    struct json_array *item = &(lnode->item.array);
 
 	    /* perform function operation on each object member in order */
+
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
 		    jprint_json_tree_walk(jprint, item->set[i], item->set[i], true, max_depth, depth, vcallback, ap);
@@ -2297,7 +2315,7 @@ jprint_json_tree_walk(struct jprint *jprint, struct json *lnode, struct json *rn
 	    }
 	}
 
-	/* finally perform function operation on the parent node */
+	/* just call callback on the array node */
 	(*vcallback)(jprint, lnode, rnode, is_value, depth+1, ap);
 	break;
 

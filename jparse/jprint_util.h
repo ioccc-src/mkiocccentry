@@ -104,6 +104,16 @@ struct jprint_number
     struct jprint_number_range range;	/* for ranges */
 };
 
+/* jprint_array - a struct for when an array matches, used in jprint_match below
+ *
+ * XXX - this struct might or might not have to change - XXX
+ */
+struct jprint_array
+{
+    struct json_array *array;
+
+    struct jprint_match *match;	    /* what matched this array */
+};
 /*
  * jprint_match - a struct for a linked list of patterns matched in each pattern
  * requested.
@@ -123,6 +133,8 @@ struct jprint_match
 
     struct json *node_name;	    /* struct json * node name. DO NOT FREE! */
     struct json *node_value;	    /* struct json * node value. DO NOT FREE! */
+
+    struct jprint_array *array;	    /* will not be NULL if match is an array. */
 
     struct jprint_pattern *pattern; /* pointer to the pattern that matched. DO NOT FREE! */
     struct jprint_match *next; /* next match found */
