@@ -317,14 +317,10 @@ run_location_err_test()
 	echo "$0: debug[9]: in run_location_err_test: test must fail"
 	echo "$0: debug[9]: in run_location_err_test: jparse: $JPARSE" 1>&2
 	echo "$0: debug[9]: in run_location_err_test: jparse_test_file: $jparse_test_file" 1>&2
-	if [[ $pass_fail = fail ]]; then
-	    echo "$0: debug[9]: in run_location_err_test: jparse_err_file: $jparse_err_file" 1>&2
-	fi
     fi
 
-    echo "$0: debug[3]: about to run test that must fail: $JPARSE -- $jparse_test_file >> ${LOGFILE} 2>$TMP_STDERR_FILE" 1>&2
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: in run_test: about to run: $JPARSE -- $jparse_test_file -- $jparse_test_file 2>$TMP_STDERR_FILE | tee -a -- ${LOGFILE}"
+	echo "$0: debug[3]: about to run test that must fail: $JPARSE -- $jparse_test_file >> ${LOGFILE} 2>$TMP_STDERR_FILE" 1>&2
     fi
 
     "$JPARSE" -- "$jparse_test_file" 2>"$TMP_STDERR_FILE" | tee -a -- "${LOGFILE}"
