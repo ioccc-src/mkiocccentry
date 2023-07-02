@@ -1,0 +1,1 @@
+{"datasets":[{"data":[],"class":"histogram"}],"xlabel":"Time since earthquake (minutes)","preferred_unit":"minutes","ylabel":"Number of responses","title":"Responses vs. Time Plot","preferred_conversion":60}
