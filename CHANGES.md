@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.27 2023-07-02
+
+Bug fixes in `jparse_test.sh` (erroneously it referred to a variable that did
+not exist in the function in question - to do with error location tests - and
+also had a log message outside the check of the verbosity level).
+
+Add several new good test JSON files under `jparse/test_jparse/test_JSON/good/`.
+
+
 ## Release 1.0.26 2023-06-29
 
 New version of `jprint` "0.0.33 2023-06-29".
