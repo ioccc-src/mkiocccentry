@@ -8,6 +8,7 @@ not exist in the function in question - to do with error location tests - and
 also had a log message outside the check of the verbosity level).
 
 Add several new good test JSON files under `jparse/test_jparse/test_JSON/good/`.
+Add another bad JSON test file for both location reporting and otherwise.
 
 
 ## Release 1.0.26 2023-06-29
