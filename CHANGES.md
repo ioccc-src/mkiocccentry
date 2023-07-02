@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.27 2023-07-02
+
+In an effort to write the specifications for command line utilities
+that read JSON, and to assist others in understanding the JSON
+related code, code comments, data structures and documentation found
+in this GitHub repo, we add a first draft of `jparse/json-README.md`.
+
+
 ## Release 1.0.26 2023-06-29
 
 New version of `jprint` "0.0.33 2023-06-29".

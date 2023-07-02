@@ -26,6 +26,9 @@ bit of information below.
 We also have some additional tools, some of which will be documented later and
 some of which are documented below, namely `jstrencode` and `jstrdecode`.
 
+We recommend that you read the [json-README.md](json-README.md) document
+to better understand the JSON terms used in this repo.
+
 
 ## Compiling
 
@@ -232,4 +235,3 @@ man ./man/man1/jstrdecode.1
 ```
 
 NOTE: After doing a `make all`, this tool may be found as: `./jstrdecode`.
-
