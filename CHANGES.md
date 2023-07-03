@@ -15,6 +15,16 @@ that read JSON, and to assist others in understanding the JSON
 related code, code comments, data structures and documentation found
 in this GitHub repo, we add a first draft of `jparse/json-README.md`.
 
+The modified JSON string encoding rules as given in `jparse/json-README.md`
+have been implemented.  The following characters are no longer encoded
+and are represented as themselves:
+
+- & is no longer encoded
+- / is no longer encoded
+- < is no longer encoded
+- > is no longer encoded
+- [\x80-\xff] is no longer encoded
+
 
 ## Release 1.0.26 2023-06-29
 
