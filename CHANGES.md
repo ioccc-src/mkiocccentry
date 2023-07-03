@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.28 2023-07-03
+
+Fixes and improvements applied to the new
+[json-README.md](jparse/json-README.md) document (which was not documented here
+yesterday when it was added).
+
 
 ## Release 1.0.27 2023-07-02
 
