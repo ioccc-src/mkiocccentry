@@ -3,6 +3,12 @@
 
 ## Release 1.0.27 2023-07-02
 
+Bug fixes in `jparse_test.sh` (erroneously it referred to a variable that did
+not exist in the function in question - to do with error location tests - and
+also had a log message outside the check of the verbosity level).
+
+Add several new good test JSON files under `jparse/test_jparse/test_JSON/good/`.
+
 In an effort to write the specifications for command line utilities
 that read JSON, and to assist others in understanding the JSON
 related code, code comments, data structures and documentation found
