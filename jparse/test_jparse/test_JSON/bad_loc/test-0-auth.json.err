@@ -1,0 +1,3 @@
+syntax error in file test_JSON/./bad_loc/test-0-auth.json at line 30 column 17: <{>
+Warning: ../jparse: JSON parse tree is NULL
+ERROR[1]: ../jparse: invalid JSON
