@@ -14,7 +14,7 @@ We request that you start your bug report title with the text:
 bug report:
 ```
 
-
+^^^^^^^^^^^^^^^^^^^^^^^^^ --- please cut all of the lines, including this one, above here
 ## Describe the bug
 
 
@@ -81,6 +81,7 @@ vvvvvvvvvvvvvvvvvvvvvvvvv --- Drag the file into the area below, please!
 
 Please add any other context about the problem here.
 
+vvvvvvvvvvvvvvvvvvvvvvvvv --- please cut all of the lines, including this one, below here
 Feel free to use [markdown](https://www.markdownguide.org/getting-started/) in your issue report.
 
 
