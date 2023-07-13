@@ -164,11 +164,10 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c \
-       jprint.c jprint_util.c jprint_test.c json_search.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
-       jparse.tab.ref.h jprint.h jprint_util.h jprint_test.h json_search.h
+       jparse.tab.ref.h
 
 # source files that do not conform to strict picky standards
 #
@@ -186,7 +185,7 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/jprint.1
+MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
 MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
 	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
 	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
@@ -213,7 +212,7 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o json_search.o
+LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
@@ -352,7 +351,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jprint
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
@@ -445,21 +444,6 @@ jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
-
-jprint_util.o: jprint_util.c jprint_util.h jparse.h json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
-	${CC} ${CFLAGS} jprint_util.c -c
-
-jprint_test.o: jprint_test.c jprint_util.o jprint_util.h jparse.h json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
-	${CC} ${CFLAGS} jprint_test.c -c
-
-jprint.o: jprint.c jparse.h jprint_util.o jprint_test.o json_parse.h json_util.h util.h ../dyn_array/dyn_array.h ../dbg/dbg.h
-	${CC} ${CFLAGS} jprint.c -c
-
-jprint: jprint.o jparse.a jprint_util.o jprint_test.o ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
-
-json_search.o: json_search.c json_search.h ../dyn_array/dyn_array.h ../dbg/dbg.h
-	${CC} ${CFLAGS} json_search.c -c
 
 
 # How to create jparse.tab.c and jparse.tab.h
@@ -954,21 +938,11 @@ jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
     json_util.h util.h
 jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
     jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
-jprint.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jprint.c jprint.h jprint_test.h jprint_util.h json_parse.h json_sem.h \
-    json_util.h util.h
-jprint_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jprint_test.c jprint_test.h jprint_util.h json_parse.h json_sem.h \
-    json_util.h util.h
-jprint_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jprint_util.c jprint_util.h json_parse.h json_sem.h json_util.h util.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
     jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
     json_util.h util.h
 json_parse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.c \
     json_parse.h json_util.h util.h
-json_search.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
-    json_search.c json_search.h json_util.h util.h
 json_sem.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_sem.c \
     json_sem.h json_util.h util.h
 json_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_util.c \

@@ -400,22 +400,6 @@ test:
 	    fi; \
 	fi
 	${S} echo
-	${Q} if [[ ! -x ./jprint_test.sh ]]; then \
-	    echo "${OUR_NAME}: ERROR: executable not found: ./jprint_test.sh" 1>&2; \
-	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
-	    exit 1; \
-	else \
-	    echo "./jprint_test.sh -j ../jprint -d test_JSON -s . ./json_teststr.txt"; \
-	    ./jprint_test.sh -j ../jprint -d test_JSON -s . ./json_teststr.txt; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jprint_test.sh failed, error code: $$EXIT_CODE"; \
-		exit "$$EXIT_CODE"; \
-	    else \
-		echo ${OUR_NAME}: "PASSED: jprint_test.sh"; \
-	    fi; \
-	fi
-	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # sequence exit codes

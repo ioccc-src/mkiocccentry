@@ -60,8 +60,6 @@ export TOOLS="
     ./jparse/test_jparse/jnum_chk
     ./jparse/test_jparse/jparse_test.sh
     ./jparse/test_jparse/jstr_test.sh
-    ./jparse/jprint
-    ./jparse/test_jparse/jprint_test.sh
     ./jparse/verge
     ./mkiocccentry
     ./soup/all_sem_ref.sh
