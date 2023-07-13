@@ -665,6 +665,15 @@ all_sem_ref: soup/Makefile
 all_sem_ref_ptch: soup/Makefile
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 
+
+# rebuild jparse error files for testing
+#
+# IMPORTANT: DO NOT run this tool unless you KNOW that
+#	     the tables produced by jparse are CORRECT!
+#
+rebuild_jparse_err_files: jparse/test_jparse/Makefile
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
+
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \

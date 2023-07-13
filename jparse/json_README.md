@@ -92,12 +92,13 @@ values](#json-value).
 
 ## JSON member
 
-A **JSON member** consists of a [JSON name](#json-name) and a [JSON
-value](#json-value).  A **JSON member** is a "name-value" pair.
+A **JSON member** consists of a [JSON member name](#json-member-name) and a [JSON
+member value](#json-member-value).  A **JSON member** is a "name-value" pair.
 
-In JSON syntax, the [JSON name](#json-name) and [JSON value](#json-value)
-are separated by a `:` (colon), with [JSON whitespace](#json-whitespace)
-(which can be empty (zero bytes long)) in between:
+In JSON syntax, the [JSON member name](#json-member-name) and [JSON
+value](#json-value) are separated by a `:` (colon), with [JSON
+whitespace](#json-whitespace) (which can be empty (zero bytes long))
+in between:
 
 ```json
 "member_name" : "member_value"
@@ -138,10 +139,21 @@ while a [JSON object](#json-object) is zero or more unordered [JSON
 members](#json-member).
 
 
+## JSON member name
+
+A **JSON member name** is a [JSON string](#json-string) that is lead part
+of a [JSON member](#json-member)'s "name-value" pair.
+
+
 ## JSON name
 
-A **JSON name** is a [JSON string](#json-string) that is lead part
-of a [JSON member](#json-member)'s "name-value" pair.
+A **JSON name** is an alias for [JSON member name](#json-member-name).
+
+
+## JSON member value
+
+A **JSON member value** is a [JSON value](#json-value) associated
+with the [JSON member name](#json-member-name).
 
 
 ## JSON string
@@ -323,6 +335,62 @@ Hello, with \-escaped and ß-like chars, world!
 _NOTE_: A **JSON decoded string** is _not_ allowed in a [JSON
 document](#json-document).  To be [valid JSON](#valid-json), all [JSON
 strings](#json-string) _must_ be [JSON encoded strings](#json-encoded-string).
+
+
+## JSON number
+
+A **JSON number** is a [JSON values](#json-value) that is numeric.
+
+A **JSON number** is in one of three forms [JSON int](#json-int),
+[JSON float](#json-float), or [JSON exp](#json-exp).
+
+
+## JSON int
+
+A **JSON int** is a [JSON number](#json-number) that is an integer.
+A **JSON int** is a [JSON number](#json-number) that has no decimal
+point ("_._") nor an "_E_", nor "_e_".
+
+Unless the **JSON int** is _0_, according to the [so-called JSON
+spec](#so-called-json-spec), a **JSON int** must start with
+some digit _1_ thru _9_.
+
+While this term is not an official part of the [so-called JSON
+spec](#so-called-json-spec), we use it code such such as
+the `jparse/json_parse.h` file.
+
+
+## JSON float
+
+A **JSON float** is a [JSON number](#json-number) that is not an
+integer.  A **JSON float** is a [JSON number](#json-number) that
+contains a decimal point ("_._").
+
+According to the [so-called JSON spec](#so-called-json-spec), a
+[JSON number](#json-number) must have a digit after the decimal
+point ("_._").  For example, "_2._" is not a valid [JSON
+number](#json-number) and so it not a valid **JSON float**.
+
+While this term is not an official part of the [so-called JSON
+spec](#so-called-json-spec), we use it code such such as
+the `jparse/json_parse.h` file.
+
+
+## JSON exp
+
+A **JSON exp** is a [JSON number](#json-number) that contains
+an "_E_", or "_e_".
+
+According to the [so-called JSON spec](#so-called-json-spec), a
+[JSON number](#json-number) that contains an "_E_", or "_e_", the
+"_E_", or "_e_" may be followed by an optional "-" or "+", and then
+a digit.  So much for the claim of the [so-called JSON
+spec](#so-called-json-spec), a [JSON number](#json-number) being
+minimal!  :-)
+
+While this term is not an official part of the [so-called JSON
+spec](#so-called-json-spec), we use it code such such as
+the `jparse/json_parse.h` file
 
 
 ## So-called JSON spec

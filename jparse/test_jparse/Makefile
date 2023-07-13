@@ -360,12 +360,25 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
 	${CP} -f -v jnum_header.c jnum_test.c
 	./jnum_gen jnum.testset >> jnum_test.c
 
+# rebuild jparse error files for testing
+#
+# IMPORTANT: DO NOT run this tool unless you KNOW that
+#	     the tables produced by jparse are CORRECT!
+#
 rebuild_jparse_err_files: ../jparse
-	@rm test_JSON/bad_loc/*.err
-	-@for i in test_JSON/./bad_loc/*.json; do ../jparse -- "$$i" 2>"$$i.err" ; done
-	@echo "" 1>&2
-	@echo "Make sure to run make test from the top level directory befor doing a"
-	@echo "git add on all the *.json and *.json.err files in test_json/bad_loc!"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${RM} -f test_JSON/bad_loc/*.err
+	-@for i in test_JSON/./bad_loc/*.json; do \
+	    echo "../jparse -- $$i 2> $$i.err" ;  \
+	    ../jparse -- "$$i" 2> "$$i.err" ;  \
+	done
+	${S} echo
+	${S} echo "Make sure to run make test from the top level directory befor doing a"
+	${S} echo "git add on all the *.json and *.json.err files in test_json/bad_loc!"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 test:
 	${S} echo
