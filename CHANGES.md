@@ -1,5 +1,28 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.29 2023-07-13
+
+New JSON parser and jparse version "1.0.10 2023-06-29".
+
+Fix regexp for `JSON_NUMBER` in json parser. For exponents it only allowed a
+fraction followed by an exponent rather than an integer followed by an exponent.
+In other words `1.0e0` was valid but `1e0` was not.
+
+Note that a googolplex is too big for C so the file `good/googolplex.json` was
+removed. For reference a googolplex is
+`1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`.
+We don't have a directory for the jparse test suite that is although valid JSON
+is not possible to parse. We do incidentally have this functionality for
+info.json and auth.json files though.
+
+A googol (yes this is where the name 'Google' comes from :-) ) is `1e100` and is
+not too big for C.
+
+The file `test_ioccc/test_JSON/general.json/bad/info.timestamp-0.json` is
+actually valid JSON so it was moved to the good subdirectory. Now make test at
+the top level directory works fine.
+
+
 ## Release 1.0.28 2023-07-03
 
 Fixes and improvements applied to the new
