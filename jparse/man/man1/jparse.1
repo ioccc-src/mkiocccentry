@@ -104,9 +104,11 @@ See the apology at the top of the generated files or look directly at \fIsorry.t
 .PP
 We don't recommend you check the GitHub issue page! :\-)
 This is because it's incredibly long with a lot of OT things and would take even the fastest readers a very long time to read. :\-(
+.SS Valid JSON
 .PP
-If the value cannot be converted but is valid JSON the tool will report that it's valid JSON but warn that it could not be converted.
-This might happen, for example, if a number is too big for the C types.
+In the case that a value cannot be converted but it is valid JSON the tool will report that it's valid JSON but it will warn that it could not be converted.
+This could happen if, for example, a number is too big for the C types.
+As long as the JSON is entirely valid the tool will exit 0.
 .SH BUGS
 .PP
 Although error reporting does have locations it is only line numbers and columns.
