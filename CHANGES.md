@@ -1,8 +1,49 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.30 2023-07-14
+
+New JSON parser and jparse version "1.0.11 2023-07-14".
+
+> Note on version 1.0.10: yesterday, 13 July 2023, the versions of both the JSON
+parser and jparse were updated but the date was not updated. The version date in
+the changes for 13 July 2023 has been updated below to not cause confusion.
+
+Added placeholder functions `is_floating_notation()`,
+`is_floating_notation_str()`, `is_e_notation()` and `is_e_notation_str()` for
+issue #752. These functions are NOT called yet except that the `_str()` versions
+call the non-`_str()` versions. Both return true without any tests at this time
+which is why they cannot be called in the parse functions!
+
+Added to each `struct json_foo` a boolean `parsed` which means that the value
+can be parsed but if false it would indicate it cannot be converted. This is
+important because a really big number say a googolplex would fail to be
+converted in C but it doesn't mean it's not valid JSON. We don't want to tie the
+parser to a big number library so other things will have to be done but we
+cannot say that it's not valid JSON.
+
+Add back good json file `googolplex.json` as it now is considered valid json: if
+the error is a range error then we know it's valid JSON so we can set parsed to
+true. If it's something else we cannot. THIS IS TEMPORARY! It could be that
+there is both a range error and it's an invalid string. There are XXX comments
+about this as it needs to change!
+
+Fix detection of '.' with e notation if a '.' found and also whether 'e' was
+found in the jnum tests.
+
+Add code to `is_floating_notation()` and `is_e_notation()` functions. More needs
+to be checked and there are still some `XXX` comments to look at. Note that the
+code here does the same checks as `json_process_floating()` and this might not
+be strictly correct but that can determined later: as it's used only in JSON
+parsing it should be okay for the time being.
+
+Check for more than one dot in floating point number strings for JSON and
+otherwise. For JSON this is not strictly necessary as the scanner will report an
+invalid token but we do it for safety anyway.
+
+
 ## Release 1.0.29 2023-07-13
 
-New JSON parser and jparse version "1.0.10 2023-06-29".
+New JSON parser and jparse version "1.0.10 2023-07-13".
 
 Fix regexp for `JSON_NUMBER` in json parser. For exponents it only allowed a
 fraction followed by an exponent rather than an integer followed by an exponent.

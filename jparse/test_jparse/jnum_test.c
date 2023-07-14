@@ -508,6 +508,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.0",	/* first whitespace character */
 
@@ -516,7 +518,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -599,6 +601,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.1",	/* first whitespace character */
 
@@ -607,7 +611,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -690,6 +694,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.2e2",	/* first whitespace character */
 
@@ -698,7 +704,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -781,6 +787,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.2E-4",	/* first whitespace character */
 
@@ -789,7 +797,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -872,6 +880,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.0",	/* first whitespace character */
 
@@ -880,7 +890,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -963,6 +973,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.1",	/* first whitespace character */
 
@@ -971,7 +983,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1054,6 +1066,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.2e2",	/* first whitespace character */
 
@@ -1062,7 +1076,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1145,6 +1159,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.2E-4",	/* first whitespace character */
 
@@ -1153,7 +1169,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1236,6 +1252,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.0",	/* first whitespace character */
 
@@ -1244,7 +1262,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1327,6 +1345,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.1",	/* first whitespace character */
 
@@ -1335,7 +1355,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1418,6 +1438,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.2e2",	/* first whitespace character */
 
@@ -1426,7 +1448,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1509,6 +1531,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.2E-4",	/* first whitespace character */
 
@@ -1517,7 +1541,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1600,6 +1624,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.0",	/* first whitespace character */
 
@@ -1608,7 +1634,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1691,6 +1717,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.1",	/* first whitespace character */
 
@@ -1699,7 +1727,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1782,6 +1810,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.2e2",	/* first whitespace character */
 
@@ -1790,7 +1820,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1873,6 +1903,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.2E-4",	/* first whitespace character */
 
@@ -1881,7 +1913,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1964,6 +1996,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.0",	/* first whitespace character */
 
@@ -1972,7 +2006,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2055,6 +2089,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.1",	/* first whitespace character */
 
@@ -2063,7 +2099,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2146,6 +2182,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.2e2",	/* first whitespace character */
 
@@ -2154,7 +2192,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2237,6 +2275,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.2E-4",	/* first whitespace character */
 
@@ -2245,7 +2285,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2328,6 +2368,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.0",	/* first whitespace character */
 
@@ -2336,7 +2378,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2419,6 +2461,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.1",	/* first whitespace character */
 
@@ -2427,7 +2471,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2510,6 +2554,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.2e2",	/* first whitespace character */
 
@@ -2518,7 +2564,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2601,6 +2647,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.2E-4",	/* first whitespace character */
 
@@ -2609,7 +2657,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2692,6 +2740,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.0",	/* first whitespace character */
 
@@ -2700,7 +2750,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2783,6 +2833,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.1",	/* first whitespace character */
 
@@ -2791,7 +2843,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2874,6 +2926,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.2e2",	/* first whitespace character */
 
@@ -2882,7 +2936,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2965,6 +3019,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.2E-4",	/* first whitespace character */
 
@@ -2973,7 +3029,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3056,6 +3112,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.0",	/* first whitespace character */
 
@@ -3064,7 +3122,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3147,6 +3205,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.1",	/* first whitespace character */
 
@@ -3155,7 +3215,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3238,6 +3298,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.2e2",	/* first whitespace character */
 
@@ -3246,7 +3308,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3329,6 +3391,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.2E-4",	/* first whitespace character */
 
@@ -3337,7 +3401,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3420,6 +3484,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.0",	/* first whitespace character */
 
@@ -3428,7 +3494,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3511,6 +3577,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.1",	/* first whitespace character */
 
@@ -3519,7 +3587,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3602,6 +3670,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.2e2",	/* first whitespace character */
 
@@ -3610,7 +3680,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3693,6 +3763,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.2E-4",	/* first whitespace character */
 
@@ -3701,7 +3773,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3784,6 +3856,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.0",	/* first whitespace character */
 
@@ -3792,7 +3866,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3875,6 +3949,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.1",	/* first whitespace character */
 
@@ -3883,7 +3959,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3966,6 +4042,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.2e2",	/* first whitespace character */
 
@@ -3974,7 +4052,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4057,6 +4135,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.2E-4",	/* first whitespace character */
 
@@ -4065,7 +4145,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4148,6 +4228,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.0",	/* first whitespace character */
 
@@ -4156,7 +4238,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4239,6 +4321,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.1",	/* first whitespace character */
 
@@ -4247,7 +4331,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4330,6 +4414,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.2e2",	/* first whitespace character */
 
@@ -4338,7 +4424,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4421,6 +4507,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.2E-4",	/* first whitespace character */
 
@@ -4429,7 +4517,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4512,6 +4600,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.0",	/* first whitespace character */
 
@@ -4520,7 +4610,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4603,6 +4693,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.1",	/* first whitespace character */
 
@@ -4611,7 +4703,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4694,6 +4786,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.2e2",	/* first whitespace character */
 
@@ -4702,7 +4796,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4785,6 +4879,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.2E-4",	/* first whitespace character */
 
@@ -4793,7 +4889,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4876,6 +4972,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.0",	/* first whitespace character */
 
@@ -4884,7 +4982,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4967,6 +5065,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.1",	/* first whitespace character */
 
@@ -4975,7 +5075,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5058,6 +5158,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.2e2",	/* first whitespace character */
 
@@ -5066,7 +5168,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5149,6 +5251,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.2E-4",	/* first whitespace character */
 
@@ -5157,7 +5261,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5240,6 +5344,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.0",	/* first whitespace character */
 
@@ -5248,7 +5354,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5331,6 +5437,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.1",	/* first whitespace character */
 
@@ -5339,7 +5447,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5422,6 +5530,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.2e2",	/* first whitespace character */
 
@@ -5430,7 +5540,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5513,6 +5623,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.2E-4",	/* first whitespace character */
 
@@ -5521,7 +5633,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5604,6 +5716,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.0",	/* first whitespace character */
 
@@ -5612,7 +5726,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5695,6 +5809,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.1",	/* first whitespace character */
 
@@ -5703,7 +5819,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5786,6 +5902,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.2e2",	/* first whitespace character */
 
@@ -5794,7 +5912,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5877,6 +5995,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.2E-4",	/* first whitespace character */
 
@@ -5885,7 +6005,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5968,6 +6088,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.0",	/* first whitespace character */
 
@@ -5976,7 +6098,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6058,6 +6180,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[61]: -131074 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131074",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074",	/* first whitespace character */
@@ -6150,6 +6274,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.1",	/* first whitespace character */
 
@@ -6158,7 +6284,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6241,6 +6367,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.2e2",	/* first whitespace character */
 
@@ -6249,7 +6377,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6332,6 +6460,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.2E-4",	/* first whitespace character */
 
@@ -6340,7 +6470,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6423,6 +6553,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.0",	/* first whitespace character */
 
@@ -6431,7 +6563,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6513,6 +6645,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[66]: -131073 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131073",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073",	/* first whitespace character */
@@ -6605,6 +6739,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.1",	/* first whitespace character */
 
@@ -6613,7 +6749,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6696,6 +6832,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.2e2",	/* first whitespace character */
 
@@ -6704,7 +6842,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6787,6 +6925,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.2E-4",	/* first whitespace character */
 
@@ -6795,7 +6935,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6878,6 +7018,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.0",	/* first whitespace character */
 
@@ -6886,7 +7028,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6968,6 +7110,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[71]: -131072 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131072",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072",	/* first whitespace character */
@@ -7060,6 +7204,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.1",	/* first whitespace character */
 
@@ -7068,7 +7214,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7151,6 +7297,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.2e2",	/* first whitespace character */
 
@@ -7159,7 +7307,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7242,6 +7390,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.2E-4",	/* first whitespace character */
 
@@ -7250,7 +7400,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7333,6 +7483,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.0",	/* first whitespace character */
 
@@ -7341,7 +7493,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7423,6 +7575,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[76]: -131071 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131071",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071",	/* first whitespace character */
@@ -7515,6 +7669,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.1",	/* first whitespace character */
 
@@ -7523,7 +7679,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7606,6 +7762,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.2e2",	/* first whitespace character */
 
@@ -7614,7 +7772,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7697,6 +7855,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.2E-4",	/* first whitespace character */
 
@@ -7705,7 +7865,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7788,6 +7948,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.0",	/* first whitespace character */
 
@@ -7796,7 +7958,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7878,6 +8040,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[81]: -131070 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131070",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070",	/* first whitespace character */
@@ -7970,6 +8134,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.1",	/* first whitespace character */
 
@@ -7978,7 +8144,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8061,6 +8227,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.2e2",	/* first whitespace character */
 
@@ -8069,7 +8237,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8152,6 +8320,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.2E-4",	/* first whitespace character */
 
@@ -8160,7 +8330,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8243,6 +8413,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.0",	/* first whitespace character */
 
@@ -8251,7 +8423,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8333,6 +8505,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[86]: -65538 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65538",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538",	/* first whitespace character */
@@ -8425,6 +8599,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.1",	/* first whitespace character */
 
@@ -8433,7 +8609,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8516,6 +8692,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.2e2",	/* first whitespace character */
 
@@ -8524,7 +8702,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8607,6 +8785,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.2E-4",	/* first whitespace character */
 
@@ -8615,7 +8795,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8698,6 +8878,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.0",	/* first whitespace character */
 
@@ -8706,7 +8888,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8788,6 +8970,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[91]: -65537 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65537",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537",	/* first whitespace character */
@@ -8880,6 +9064,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.1",	/* first whitespace character */
 
@@ -8888,7 +9074,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8971,6 +9157,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.2e2",	/* first whitespace character */
 
@@ -8979,7 +9167,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9062,6 +9250,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.2E-4",	/* first whitespace character */
 
@@ -9070,7 +9260,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9153,6 +9343,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.0",	/* first whitespace character */
 
@@ -9161,7 +9353,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9243,6 +9435,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[96]: -65536 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65536",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536",	/* first whitespace character */
@@ -9335,6 +9529,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.1",	/* first whitespace character */
 
@@ -9343,7 +9539,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9426,6 +9622,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.2e2",	/* first whitespace character */
 
@@ -9434,7 +9632,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9517,6 +9715,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.2E-4",	/* first whitespace character */
 
@@ -9525,7 +9725,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9608,6 +9808,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.0",	/* first whitespace character */
 
@@ -9616,7 +9818,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9698,6 +9900,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[101]: -65535 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65535",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535",	/* first whitespace character */
@@ -9790,6 +9994,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.1",	/* first whitespace character */
 
@@ -9798,7 +10004,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9881,6 +10087,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.2e2",	/* first whitespace character */
 
@@ -9889,7 +10097,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9972,6 +10180,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.2E-4",	/* first whitespace character */
 
@@ -9980,7 +10190,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10063,6 +10273,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.0",	/* first whitespace character */
 
@@ -10071,7 +10283,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10153,6 +10365,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[106]: -65534 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65534",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534",	/* first whitespace character */
@@ -10245,6 +10459,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.1",	/* first whitespace character */
 
@@ -10253,7 +10469,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10336,6 +10552,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.2e2",	/* first whitespace character */
 
@@ -10344,7 +10562,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10427,6 +10645,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.2E-4",	/* first whitespace character */
 
@@ -10435,7 +10655,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10518,6 +10738,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.0",	/* first whitespace character */
 
@@ -10526,7 +10748,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10608,6 +10830,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[111]: -32770 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32770",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770",	/* first whitespace character */
@@ -10700,6 +10924,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.1",	/* first whitespace character */
 
@@ -10708,7 +10934,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10791,6 +11017,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.2e2",	/* first whitespace character */
 
@@ -10799,7 +11027,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10882,6 +11110,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.2E-4",	/* first whitespace character */
 
@@ -10890,7 +11120,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10973,6 +11203,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.0",	/* first whitespace character */
 
@@ -10981,7 +11213,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11063,6 +11295,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[116]: -32769 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32769",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769",	/* first whitespace character */
@@ -11155,6 +11389,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.1",	/* first whitespace character */
 
@@ -11163,7 +11399,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11246,6 +11482,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.2e2",	/* first whitespace character */
 
@@ -11254,7 +11492,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11337,6 +11575,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.2E-4",	/* first whitespace character */
 
@@ -11345,7 +11585,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11428,6 +11668,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.0",	/* first whitespace character */
 
@@ -11436,7 +11678,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11518,6 +11760,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[121]: -32768 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32768",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768",	/* first whitespace character */
@@ -11610,6 +11854,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.1",	/* first whitespace character */
 
@@ -11618,7 +11864,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11701,6 +11947,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.2e2",	/* first whitespace character */
 
@@ -11709,7 +11957,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11792,6 +12040,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.2E-4",	/* first whitespace character */
 
@@ -11800,7 +12050,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11883,6 +12133,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.0",	/* first whitespace character */
 
@@ -11891,7 +12143,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11973,6 +12225,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[126]: -32767 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32767",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767",	/* first whitespace character */
@@ -12065,6 +12319,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.1",	/* first whitespace character */
 
@@ -12073,7 +12329,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12156,6 +12412,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.2e2",	/* first whitespace character */
 
@@ -12164,7 +12422,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12247,6 +12505,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.2E-4",	/* first whitespace character */
 
@@ -12255,7 +12515,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12338,6 +12598,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.0",	/* first whitespace character */
 
@@ -12346,7 +12608,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12428,6 +12690,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[131]: -32766 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32766",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766",	/* first whitespace character */
@@ -12520,6 +12784,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.1",	/* first whitespace character */
 
@@ -12528,7 +12794,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12611,6 +12877,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.2e2",	/* first whitespace character */
 
@@ -12619,7 +12887,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12702,6 +12970,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.2E-4",	/* first whitespace character */
 
@@ -12710,7 +12980,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12793,6 +13063,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.0",	/* first whitespace character */
 
@@ -12801,7 +13073,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12883,6 +13155,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[136]: -514 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-514",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514",		/* first whitespace character */
@@ -12975,6 +13249,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.1",	/* first whitespace character */
 
@@ -12983,7 +13259,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13066,6 +13342,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.2e2",	/* first whitespace character */
 
@@ -13074,7 +13352,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13157,6 +13435,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.2E-4",	/* first whitespace character */
 
@@ -13165,7 +13445,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13248,6 +13528,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.0",	/* first whitespace character */
 
@@ -13256,7 +13538,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13338,6 +13620,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[141]: -513 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-513",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513",		/* first whitespace character */
@@ -13430,6 +13714,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.1",	/* first whitespace character */
 
@@ -13438,7 +13724,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13521,6 +13807,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.2e2",	/* first whitespace character */
 
@@ -13529,7 +13817,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13612,6 +13900,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.2E-4",	/* first whitespace character */
 
@@ -13620,7 +13910,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13703,6 +13993,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.0",	/* first whitespace character */
 
@@ -13711,7 +14003,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13793,6 +14085,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[146]: -512 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-512",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512",		/* first whitespace character */
@@ -13885,6 +14179,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.1",	/* first whitespace character */
 
@@ -13893,7 +14189,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13976,6 +14272,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.2e2",	/* first whitespace character */
 
@@ -13984,7 +14282,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14067,6 +14365,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.2E-4",	/* first whitespace character */
 
@@ -14075,7 +14375,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14158,6 +14458,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.0",	/* first whitespace character */
 
@@ -14166,7 +14468,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14248,6 +14550,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[151]: -511 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-511",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511",		/* first whitespace character */
@@ -14340,6 +14644,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.1",	/* first whitespace character */
 
@@ -14348,7 +14654,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14431,6 +14737,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.2e2",	/* first whitespace character */
 
@@ -14439,7 +14747,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14522,6 +14830,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.2E-4",	/* first whitespace character */
 
@@ -14530,7 +14840,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14613,6 +14923,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.0",	/* first whitespace character */
 
@@ -14621,7 +14933,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14703,6 +15015,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[156]: -510 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-510",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510",		/* first whitespace character */
@@ -14795,6 +15109,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.1",	/* first whitespace character */
 
@@ -14803,7 +15119,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14886,6 +15202,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.2e2",	/* first whitespace character */
 
@@ -14894,7 +15212,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14977,6 +15295,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.2E-4",	/* first whitespace character */
 
@@ -14985,7 +15305,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15068,6 +15388,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.0",	/* first whitespace character */
 
@@ -15076,7 +15398,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15158,6 +15480,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[161]: -258 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-258",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258",		/* first whitespace character */
@@ -15250,6 +15574,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.1",	/* first whitespace character */
 
@@ -15258,7 +15584,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15341,6 +15667,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.2e2",	/* first whitespace character */
 
@@ -15349,7 +15677,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15432,6 +15760,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.2E-4",	/* first whitespace character */
 
@@ -15440,7 +15770,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15523,6 +15853,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.0",	/* first whitespace character */
 
@@ -15531,7 +15863,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15613,6 +15945,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[166]: -257 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-257",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257",		/* first whitespace character */
@@ -15705,6 +16039,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.1",	/* first whitespace character */
 
@@ -15713,7 +16049,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15796,6 +16132,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.2e2",	/* first whitespace character */
 
@@ -15804,7 +16142,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15887,6 +16225,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.2E-4",	/* first whitespace character */
 
@@ -15895,7 +16235,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15978,6 +16318,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.0",	/* first whitespace character */
 
@@ -15986,7 +16328,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16068,6 +16410,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[171]: -256 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-256",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256",		/* first whitespace character */
@@ -16160,6 +16504,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.1",	/* first whitespace character */
 
@@ -16168,7 +16514,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16251,6 +16597,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.2e2",	/* first whitespace character */
 
@@ -16259,7 +16607,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16342,6 +16690,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.2E-4",	/* first whitespace character */
 
@@ -16350,7 +16700,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16433,6 +16783,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.0",	/* first whitespace character */
 
@@ -16441,7 +16793,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16523,6 +16875,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[176]: -255 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-255",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255",		/* first whitespace character */
@@ -16615,6 +16969,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.1",	/* first whitespace character */
 
@@ -16623,7 +16979,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16706,6 +17062,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.2e2",	/* first whitespace character */
 
@@ -16714,7 +17072,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16797,6 +17155,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.2E-4",	/* first whitespace character */
 
@@ -16805,7 +17165,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16888,6 +17248,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.0",	/* first whitespace character */
 
@@ -16896,7 +17258,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16978,6 +17340,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[181]: -254 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-254",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254",		/* first whitespace character */
@@ -17070,6 +17434,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.1",	/* first whitespace character */
 
@@ -17078,7 +17444,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17161,6 +17527,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.2e2",	/* first whitespace character */
 
@@ -17169,7 +17537,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17252,6 +17620,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.2E-4",	/* first whitespace character */
 
@@ -17260,7 +17630,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17343,6 +17713,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.0",	/* first whitespace character */
 
@@ -17351,7 +17723,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17433,6 +17805,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[186]: -130 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-130",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130",		/* first whitespace character */
@@ -17525,6 +17899,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.1",	/* first whitespace character */
 
@@ -17533,7 +17909,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17616,6 +17992,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.2e2",	/* first whitespace character */
 
@@ -17624,7 +18002,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17707,6 +18085,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.2E-4",	/* first whitespace character */
 
@@ -17715,7 +18095,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17798,6 +18178,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.0",	/* first whitespace character */
 
@@ -17806,7 +18188,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17888,6 +18270,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[191]: -129 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-129",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129",		/* first whitespace character */
@@ -17980,6 +18364,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.1",	/* first whitespace character */
 
@@ -17988,7 +18374,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18071,6 +18457,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.2e2",	/* first whitespace character */
 
@@ -18079,7 +18467,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18162,6 +18550,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.2E-4",	/* first whitespace character */
 
@@ -18170,7 +18560,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18253,6 +18643,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.0",	/* first whitespace character */
 
@@ -18261,7 +18653,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18343,6 +18735,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[196]: -128 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-128",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128",		/* first whitespace character */
@@ -18435,6 +18829,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.1",	/* first whitespace character */
 
@@ -18443,7 +18839,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18526,6 +18922,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.2e2",	/* first whitespace character */
 
@@ -18534,7 +18932,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18617,6 +19015,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.2E-4",	/* first whitespace character */
 
@@ -18625,7 +19025,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18708,6 +19108,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.0",	/* first whitespace character */
 
@@ -18716,7 +19118,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18798,6 +19200,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[201]: -127 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-127",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127",		/* first whitespace character */
@@ -18890,6 +19294,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.1",	/* first whitespace character */
 
@@ -18898,7 +19304,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18981,6 +19387,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.2e2",	/* first whitespace character */
 
@@ -18989,7 +19397,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19072,6 +19480,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.2E-4",	/* first whitespace character */
 
@@ -19080,7 +19490,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19163,6 +19573,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.0",	/* first whitespace character */
 
@@ -19171,7 +19583,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19253,6 +19665,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[206]: -126 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-126",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126",		/* first whitespace character */
@@ -19345,6 +19759,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.1",	/* first whitespace character */
 
@@ -19353,7 +19769,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19436,6 +19852,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.2e2",	/* first whitespace character */
 
@@ -19444,7 +19862,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19527,6 +19945,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.2E-4",	/* first whitespace character */
 
@@ -19535,7 +19955,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19618,6 +20038,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.0",		/* first whitespace character */
 
@@ -19626,7 +20048,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19708,6 +20130,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[211]: -2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2",		/* first whitespace character */
@@ -19800,6 +20224,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.1",		/* first whitespace character */
 
@@ -19808,7 +20234,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19891,6 +20317,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.2e2",	/* first whitespace character */
 
@@ -19899,7 +20327,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19982,6 +20410,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.2E-4",	/* first whitespace character */
 
@@ -19990,7 +20420,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20073,6 +20503,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.0",		/* first whitespace character */
 
@@ -20081,7 +20513,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20163,6 +20595,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[216]: -1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1",		/* first whitespace character */
@@ -20255,6 +20689,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.1",		/* first whitespace character */
 
@@ -20263,7 +20699,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20346,6 +20782,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.2e2",	/* first whitespace character */
 
@@ -20354,7 +20792,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20437,6 +20875,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.2E-4",	/* first whitespace character */
 
@@ -20445,7 +20885,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20528,6 +20968,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.0",		/* first whitespace character */
 
@@ -20536,7 +20978,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20618,6 +21060,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[221]: 0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0",		/* first whitespace character */
@@ -20710,6 +21154,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.1",		/* first whitespace character */
 
@@ -20718,7 +21164,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20801,6 +21247,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.2e2",	/* first whitespace character */
 
@@ -20809,7 +21257,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20892,6 +21340,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.2E-4",	/* first whitespace character */
 
@@ -20900,7 +21350,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20983,6 +21433,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.0",		/* first whitespace character */
 
@@ -20991,7 +21443,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21073,6 +21525,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[226]: 1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1",		/* first whitespace character */
@@ -21165,6 +21619,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.1",		/* first whitespace character */
 
@@ -21173,7 +21629,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21256,6 +21712,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.2e2",	/* first whitespace character */
 
@@ -21264,7 +21722,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21347,6 +21805,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.2E-4",	/* first whitespace character */
 
@@ -21355,7 +21815,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21438,6 +21898,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.0",		/* first whitespace character */
 
@@ -21446,7 +21908,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21528,6 +21990,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[231]: 2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2",		/* first whitespace character */
@@ -21620,6 +22084,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.1",		/* first whitespace character */
 
@@ -21628,7 +22094,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21711,6 +22177,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.2e2",	/* first whitespace character */
 
@@ -21719,7 +22187,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21802,6 +22270,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.2E-4",	/* first whitespace character */
 
@@ -21810,7 +22280,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21893,6 +22363,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.0",	/* first whitespace character */
 
@@ -21901,7 +22373,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21983,6 +22455,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[236]: 126 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"126",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126",		/* first whitespace character */
@@ -22075,6 +22549,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.1",	/* first whitespace character */
 
@@ -22083,7 +22559,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22166,6 +22642,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.2e2",	/* first whitespace character */
 
@@ -22174,7 +22652,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22257,6 +22735,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.2E-4",	/* first whitespace character */
 
@@ -22265,7 +22745,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22348,6 +22828,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.0",	/* first whitespace character */
 
@@ -22356,7 +22838,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22438,6 +22920,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[241]: 127 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"127",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127",		/* first whitespace character */
@@ -22530,6 +23014,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.1",	/* first whitespace character */
 
@@ -22538,7 +23024,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22621,6 +23107,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.2e2",	/* first whitespace character */
 
@@ -22629,7 +23117,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22712,6 +23200,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.2E-4",	/* first whitespace character */
 
@@ -22720,7 +23210,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22803,6 +23293,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.0",	/* first whitespace character */
 
@@ -22811,7 +23303,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22893,6 +23385,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[246]: 128 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"128",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128",		/* first whitespace character */
@@ -22985,6 +23479,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.1",	/* first whitespace character */
 
@@ -22993,7 +23489,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23076,6 +23572,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.2e2",	/* first whitespace character */
 
@@ -23084,7 +23582,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23167,6 +23665,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.2E-4",	/* first whitespace character */
 
@@ -23175,7 +23675,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23258,6 +23758,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.0",	/* first whitespace character */
 
@@ -23266,7 +23768,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23348,6 +23850,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[251]: 129 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"129",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129",		/* first whitespace character */
@@ -23440,6 +23944,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.1",	/* first whitespace character */
 
@@ -23448,7 +23954,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23531,6 +24037,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.2e2",	/* first whitespace character */
 
@@ -23539,7 +24047,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23622,6 +24130,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.2E-4",	/* first whitespace character */
 
@@ -23630,7 +24140,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23713,6 +24223,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.0",	/* first whitespace character */
 
@@ -23721,7 +24233,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23803,6 +24315,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[256]: 130 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"130",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130",		/* first whitespace character */
@@ -23895,6 +24409,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.1",	/* first whitespace character */
 
@@ -23903,7 +24419,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23986,6 +24502,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.2e2",	/* first whitespace character */
 
@@ -23994,7 +24512,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24077,6 +24595,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.2E-4",	/* first whitespace character */
 
@@ -24085,7 +24605,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24168,6 +24688,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.0",	/* first whitespace character */
 
@@ -24176,7 +24698,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24258,6 +24780,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[261]: 254 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"254",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254",		/* first whitespace character */
@@ -24350,6 +24874,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.1",	/* first whitespace character */
 
@@ -24358,7 +24884,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24441,6 +24967,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.2e2",	/* first whitespace character */
 
@@ -24449,7 +24977,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24532,6 +25060,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.2E-4",	/* first whitespace character */
 
@@ -24540,7 +25070,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24623,6 +25153,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.0",	/* first whitespace character */
 
@@ -24631,7 +25163,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24713,6 +25245,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[266]: 255 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"255",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255",		/* first whitespace character */
@@ -24805,6 +25339,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.1",	/* first whitespace character */
 
@@ -24813,7 +25349,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24896,6 +25432,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.2e2",	/* first whitespace character */
 
@@ -24904,7 +25442,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24987,6 +25525,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.2E-4",	/* first whitespace character */
 
@@ -24995,7 +25535,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25078,6 +25618,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.0",	/* first whitespace character */
 
@@ -25086,7 +25628,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25168,6 +25710,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[271]: 256 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"256",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256",		/* first whitespace character */
@@ -25260,6 +25804,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.1",	/* first whitespace character */
 
@@ -25268,7 +25814,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25351,6 +25897,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.2e2",	/* first whitespace character */
 
@@ -25359,7 +25907,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25442,6 +25990,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.2E-4",	/* first whitespace character */
 
@@ -25450,7 +26000,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25533,6 +26083,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.0",	/* first whitespace character */
 
@@ -25541,7 +26093,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25623,6 +26175,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[276]: 257 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"257",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257",		/* first whitespace character */
@@ -25715,6 +26269,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.1",	/* first whitespace character */
 
@@ -25723,7 +26279,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25806,6 +26362,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.2e2",	/* first whitespace character */
 
@@ -25814,7 +26372,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25897,6 +26455,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.2E-4",	/* first whitespace character */
 
@@ -25905,7 +26465,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25988,6 +26548,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.0",	/* first whitespace character */
 
@@ -25996,7 +26558,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26078,6 +26640,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[281]: 258 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"258",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258",		/* first whitespace character */
@@ -26170,6 +26734,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.1",	/* first whitespace character */
 
@@ -26178,7 +26744,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26261,6 +26827,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.2e2",	/* first whitespace character */
 
@@ -26269,7 +26837,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26352,6 +26920,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.2E-4",	/* first whitespace character */
 
@@ -26360,7 +26930,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26443,6 +27013,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.0",	/* first whitespace character */
 
@@ -26451,7 +27023,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26533,6 +27105,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[286]: 510 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"510",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510",		/* first whitespace character */
@@ -26625,6 +27199,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.1",	/* first whitespace character */
 
@@ -26633,7 +27209,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26716,6 +27292,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.2e2",	/* first whitespace character */
 
@@ -26724,7 +27302,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26807,6 +27385,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.2E-4",	/* first whitespace character */
 
@@ -26815,7 +27395,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26898,6 +27478,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.0",	/* first whitespace character */
 
@@ -26906,7 +27488,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26988,6 +27570,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[291]: 511 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"511",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511",		/* first whitespace character */
@@ -27080,6 +27664,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.1",	/* first whitespace character */
 
@@ -27088,7 +27674,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27171,6 +27757,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.2e2",	/* first whitespace character */
 
@@ -27179,7 +27767,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27262,6 +27850,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.2E-4",	/* first whitespace character */
 
@@ -27270,7 +27860,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27353,6 +27943,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.0",	/* first whitespace character */
 
@@ -27361,7 +27953,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27443,6 +28035,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[296]: 512 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"512",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512",		/* first whitespace character */
@@ -27535,6 +28129,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.1",	/* first whitespace character */
 
@@ -27543,7 +28139,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27626,6 +28222,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.2e2",	/* first whitespace character */
 
@@ -27634,7 +28232,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27717,6 +28315,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.2E-4",	/* first whitespace character */
 
@@ -27725,7 +28325,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27808,6 +28408,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.0",	/* first whitespace character */
 
@@ -27816,7 +28418,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27898,6 +28500,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[301]: 513 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"513",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513",		/* first whitespace character */
@@ -27990,6 +28594,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.1",	/* first whitespace character */
 
@@ -27998,7 +28604,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28081,6 +28687,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.2e2",	/* first whitespace character */
 
@@ -28089,7 +28697,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28172,6 +28780,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.2E-4",	/* first whitespace character */
 
@@ -28180,7 +28790,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28263,6 +28873,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.0",	/* first whitespace character */
 
@@ -28271,7 +28883,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28353,6 +28965,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[306]: 514 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"514",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514",		/* first whitespace character */
@@ -28445,6 +29059,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.1",	/* first whitespace character */
 
@@ -28453,7 +29069,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28536,6 +29152,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.2e2",	/* first whitespace character */
 
@@ -28544,7 +29162,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28627,6 +29245,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.2E-4",	/* first whitespace character */
 
@@ -28635,7 +29255,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28718,6 +29338,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.0",	/* first whitespace character */
 
@@ -28726,7 +29348,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28808,6 +29430,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[311]: 32766 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32766",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766",	/* first whitespace character */
@@ -28900,6 +29524,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.1",	/* first whitespace character */
 
@@ -28908,7 +29534,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28991,6 +29617,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.2e2",	/* first whitespace character */
 
@@ -28999,7 +29627,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29082,6 +29710,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.2E-4",	/* first whitespace character */
 
@@ -29090,7 +29720,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29173,6 +29803,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.0",	/* first whitespace character */
 
@@ -29181,7 +29813,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29263,6 +29895,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[316]: 32767 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32767",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767",	/* first whitespace character */
@@ -29355,6 +29989,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.1",	/* first whitespace character */
 
@@ -29363,7 +29999,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29446,6 +30082,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.2e2",	/* first whitespace character */
 
@@ -29454,7 +30092,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29537,6 +30175,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.2E-4",	/* first whitespace character */
 
@@ -29545,7 +30185,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29628,6 +30268,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.0",	/* first whitespace character */
 
@@ -29636,7 +30278,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29718,6 +30360,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[321]: 32768 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32768",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768",	/* first whitespace character */
@@ -29810,6 +30454,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.1",	/* first whitespace character */
 
@@ -29818,7 +30464,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29901,6 +30547,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.2e2",	/* first whitespace character */
 
@@ -29909,7 +30557,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29992,6 +30640,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.2E-4",	/* first whitespace character */
 
@@ -30000,7 +30650,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30083,6 +30733,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.0",	/* first whitespace character */
 
@@ -30091,7 +30743,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30173,6 +30825,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[326]: 32769 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32769",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769",	/* first whitespace character */
@@ -30265,6 +30919,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.1",	/* first whitespace character */
 
@@ -30273,7 +30929,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30356,6 +31012,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.2e2",	/* first whitespace character */
 
@@ -30364,7 +31022,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30447,6 +31105,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.2E-4",	/* first whitespace character */
 
@@ -30455,7 +31115,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30538,6 +31198,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.0",	/* first whitespace character */
 
@@ -30546,7 +31208,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30628,6 +31290,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[331]: 32770 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32770",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770",	/* first whitespace character */
@@ -30720,6 +31384,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.1",	/* first whitespace character */
 
@@ -30728,7 +31394,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30811,6 +31477,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.2e2",	/* first whitespace character */
 
@@ -30819,7 +31487,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30902,6 +31570,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.2E-4",	/* first whitespace character */
 
@@ -30910,7 +31580,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30993,6 +31663,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.0",	/* first whitespace character */
 
@@ -31001,7 +31673,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31083,6 +31755,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[336]: 65534 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65534",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534",	/* first whitespace character */
@@ -31175,6 +31849,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.1",	/* first whitespace character */
 
@@ -31183,7 +31859,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31266,6 +31942,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.2e2",	/* first whitespace character */
 
@@ -31274,7 +31952,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31357,6 +32035,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.2E-4",	/* first whitespace character */
 
@@ -31365,7 +32045,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31448,6 +32128,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.0",	/* first whitespace character */
 
@@ -31456,7 +32138,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31538,6 +32220,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[341]: 65535 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65535",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535",	/* first whitespace character */
@@ -31630,6 +32314,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.1",	/* first whitespace character */
 
@@ -31638,7 +32324,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31721,6 +32407,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.2e2",	/* first whitespace character */
 
@@ -31729,7 +32417,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31812,6 +32500,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.2E-4",	/* first whitespace character */
 
@@ -31820,7 +32510,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31903,6 +32593,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.0",	/* first whitespace character */
 
@@ -31911,7 +32603,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31993,6 +32685,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[346]: 65536 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65536",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536",	/* first whitespace character */
@@ -32085,6 +32779,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.1",	/* first whitespace character */
 
@@ -32093,7 +32789,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32176,6 +32872,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.2e2",	/* first whitespace character */
 
@@ -32184,7 +32882,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32267,6 +32965,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.2E-4",	/* first whitespace character */
 
@@ -32275,7 +32975,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32358,6 +33058,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.0",	/* first whitespace character */
 
@@ -32366,7 +33068,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32448,6 +33150,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[351]: 65537 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65537",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537",	/* first whitespace character */
@@ -32540,6 +33244,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.1",	/* first whitespace character */
 
@@ -32548,7 +33254,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32631,6 +33337,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.2e2",	/* first whitespace character */
 
@@ -32639,7 +33347,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32722,6 +33430,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.2E-4",	/* first whitespace character */
 
@@ -32730,7 +33440,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32813,6 +33523,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.0",	/* first whitespace character */
 
@@ -32821,7 +33533,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32903,6 +33615,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[356]: 65538 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65538",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538",	/* first whitespace character */
@@ -32995,6 +33709,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.1",	/* first whitespace character */
 
@@ -33003,7 +33719,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33086,6 +33802,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.2e2",	/* first whitespace character */
 
@@ -33094,7 +33812,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33177,6 +33895,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.2E-4",	/* first whitespace character */
 
@@ -33185,7 +33905,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33268,6 +33988,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.0",	/* first whitespace character */
 
@@ -33276,7 +33998,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33358,6 +34080,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[361]: 131070 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131070",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070",	/* first whitespace character */
@@ -33450,6 +34174,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.1",	/* first whitespace character */
 
@@ -33458,7 +34184,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33541,6 +34267,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.2e2",	/* first whitespace character */
 
@@ -33549,7 +34277,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33632,6 +34360,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.2E-4",	/* first whitespace character */
 
@@ -33640,7 +34370,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33723,6 +34453,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.0",	/* first whitespace character */
 
@@ -33731,7 +34463,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33813,6 +34545,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[366]: 131071 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131071",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071",	/* first whitespace character */
@@ -33905,6 +34639,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.1",	/* first whitespace character */
 
@@ -33913,7 +34649,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33996,6 +34732,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.2e2",	/* first whitespace character */
 
@@ -34004,7 +34742,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34087,6 +34825,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.2E-4",	/* first whitespace character */
 
@@ -34095,7 +34835,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34178,6 +34918,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.0",	/* first whitespace character */
 
@@ -34186,7 +34928,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34268,6 +35010,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[371]: 131072 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131072",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072",	/* first whitespace character */
@@ -34360,6 +35104,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.1",	/* first whitespace character */
 
@@ -34368,7 +35114,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34451,6 +35197,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.2e2",	/* first whitespace character */
 
@@ -34459,7 +35207,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34542,6 +35290,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.2E-4",	/* first whitespace character */
 
@@ -34550,7 +35300,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34633,6 +35383,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.0",	/* first whitespace character */
 
@@ -34641,7 +35393,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34723,6 +35475,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[376]: 131073 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131073",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073",	/* first whitespace character */
@@ -34815,6 +35569,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.1",	/* first whitespace character */
 
@@ -34823,7 +35579,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34906,6 +35662,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.2e2",	/* first whitespace character */
 
@@ -34914,7 +35672,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34997,6 +35755,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.2E-4",	/* first whitespace character */
 
@@ -35005,7 +35765,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35088,6 +35848,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.0",	/* first whitespace character */
 
@@ -35096,7 +35858,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35178,6 +35940,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[381]: 131074 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131074",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074",	/* first whitespace character */
@@ -35270,6 +36034,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.1",	/* first whitespace character */
 
@@ -35278,7 +36044,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35361,6 +36127,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.2e2",	/* first whitespace character */
 
@@ -35369,7 +36137,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35452,6 +36220,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.2E-4",	/* first whitespace character */
 
@@ -35460,7 +36230,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35543,6 +36313,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.0",	/* first whitespace character */
 
@@ -35551,7 +36323,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35634,6 +36406,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.1",	/* first whitespace character */
 
@@ -35642,7 +36416,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35725,6 +36499,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.2e2",	/* first whitespace character */
 
@@ -35733,7 +36509,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35816,6 +36592,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.2E-4",	/* first whitespace character */
 
@@ -35824,7 +36602,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35907,6 +36685,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.0",	/* first whitespace character */
 
@@ -35915,7 +36695,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35998,6 +36778,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.1",	/* first whitespace character */
 
@@ -36006,7 +36788,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36089,6 +36871,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.2e2",	/* first whitespace character */
 
@@ -36097,7 +36881,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36180,6 +36964,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.2E-4",	/* first whitespace character */
 
@@ -36188,7 +36974,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36271,6 +37057,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.0",	/* first whitespace character */
 
@@ -36279,7 +37067,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36362,6 +37150,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.1",	/* first whitespace character */
 
@@ -36370,7 +37160,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36453,6 +37243,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.2e2",	/* first whitespace character */
 
@@ -36461,7 +37253,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36544,6 +37336,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.2E-4",	/* first whitespace character */
 
@@ -36552,7 +37346,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36635,6 +37429,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.0",	/* first whitespace character */
 
@@ -36643,7 +37439,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36726,6 +37522,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.1",	/* first whitespace character */
 
@@ -36734,7 +37532,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36817,6 +37615,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.2e2",	/* first whitespace character */
 
@@ -36825,7 +37625,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36908,6 +37708,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.2E-4",	/* first whitespace character */
 
@@ -36916,7 +37718,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36999,6 +37801,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.0",	/* first whitespace character */
 
@@ -37007,7 +37811,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37090,6 +37894,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.1",	/* first whitespace character */
 
@@ -37098,7 +37904,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37181,6 +37987,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.2e2",	/* first whitespace character */
 
@@ -37189,7 +37997,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37272,6 +38080,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.2E-4",	/* first whitespace character */
 
@@ -37280,7 +38090,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37363,6 +38173,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.0",	/* first whitespace character */
 
@@ -37371,7 +38183,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37454,6 +38266,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.1",	/* first whitespace character */
 
@@ -37462,7 +38276,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37545,6 +38359,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.2e2",	/* first whitespace character */
 
@@ -37553,7 +38369,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37636,6 +38452,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.2E-4",	/* first whitespace character */
 
@@ -37644,7 +38462,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37727,6 +38545,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.0",	/* first whitespace character */
 
@@ -37735,7 +38555,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37818,6 +38638,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.1",	/* first whitespace character */
 
@@ -37826,7 +38648,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37909,6 +38731,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.2e2",	/* first whitespace character */
 
@@ -37917,7 +38741,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38000,6 +38824,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.2E-4",	/* first whitespace character */
 
@@ -38008,7 +38834,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38091,6 +38917,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.0",	/* first whitespace character */
 
@@ -38099,7 +38927,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38182,6 +39010,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.1",	/* first whitespace character */
 
@@ -38190,7 +39020,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38273,6 +39103,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.2e2",	/* first whitespace character */
 
@@ -38281,7 +39113,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38364,6 +39196,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.2E-4",	/* first whitespace character */
 
@@ -38372,7 +39206,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38455,6 +39289,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.0",	/* first whitespace character */
 
@@ -38463,7 +39299,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38546,6 +39382,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.1",	/* first whitespace character */
 
@@ -38554,7 +39392,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38637,6 +39475,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.2e2",	/* first whitespace character */
 
@@ -38645,7 +39485,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38728,6 +39568,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.2E-4",	/* first whitespace character */
 
@@ -38736,7 +39578,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38819,6 +39661,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.0",	/* first whitespace character */
 
@@ -38827,7 +39671,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38910,6 +39754,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.1",	/* first whitespace character */
 
@@ -38918,7 +39764,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39001,6 +39847,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.2e2",	/* first whitespace character */
 
@@ -39009,7 +39857,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39092,6 +39940,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.2E-4",	/* first whitespace character */
 
@@ -39100,7 +39950,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39183,6 +40033,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.0",	/* first whitespace character */
 
@@ -39191,7 +40043,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39274,6 +40126,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.1",	/* first whitespace character */
 
@@ -39282,7 +40136,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39365,6 +40219,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.2e2",	/* first whitespace character */
 
@@ -39373,7 +40229,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39456,6 +40312,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.2E-4",	/* first whitespace character */
 
@@ -39464,7 +40322,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39547,6 +40405,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.0",	/* first whitespace character */
 
@@ -39555,7 +40415,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39638,6 +40498,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.1",	/* first whitespace character */
 
@@ -39646,7 +40508,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39729,6 +40591,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.2e2",	/* first whitespace character */
 
@@ -39737,7 +40601,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39820,6 +40684,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.2E-4",	/* first whitespace character */
 
@@ -39828,7 +40694,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39911,6 +40777,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.0",	/* first whitespace character */
 
@@ -39919,7 +40787,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40002,6 +40870,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.1",	/* first whitespace character */
 
@@ -40010,7 +40880,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40093,6 +40963,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.2e2",	/* first whitespace character */
 
@@ -40101,7 +40973,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40184,6 +41056,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.2E-4",	/* first whitespace character */
 
@@ -40192,7 +41066,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40275,6 +41149,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.0",	/* first whitespace character */
 
@@ -40283,7 +41159,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40366,6 +41242,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.1",	/* first whitespace character */
 
@@ -40374,7 +41252,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40457,6 +41335,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.2e2",	/* first whitespace character */
 
@@ -40465,7 +41345,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40548,6 +41428,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.2E-4",	/* first whitespace character */
 
@@ -40556,7 +41438,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40639,6 +41521,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.0",	/* first whitespace character */
 
@@ -40647,7 +41531,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40730,6 +41614,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.1",	/* first whitespace character */
 
@@ -40738,7 +41624,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40821,6 +41707,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.2e2",	/* first whitespace character */
 
@@ -40829,7 +41717,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40912,6 +41800,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.2E-4",	/* first whitespace character */
 
@@ -40920,7 +41810,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */

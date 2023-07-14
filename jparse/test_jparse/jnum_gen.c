@@ -391,6 +391,13 @@ fpr_number(FILE *stream, struct json_number *item)
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> able to convert JSON number string to some form of C value */\n\n",
 		   booltostr(item->converted));
+    /*
+     * print bool parsed
+     */
+    fprint(stream, "\t%s,\t"
+		   "\t/* true ==> able to parse JSON number string */\n\n",
+		   booltostr(item->parsed));
+
 
     /*
      * print JSON string

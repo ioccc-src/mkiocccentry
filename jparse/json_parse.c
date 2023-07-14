@@ -1270,7 +1270,7 @@ parse_json_string(char const *string, size_t len)
         not_reached();
     }
     item = &(str->item.string);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	err(152, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     }
@@ -1314,7 +1314,7 @@ parse_json_bool(char const *string)
         not_reached();
     }
     item = &(boolean->item.boolean);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	/*
 	 * json_conv_bool_str() calls json_conv_bool() which will warn if the
 	 * boolean is neither true nor false. We know that this function should never
@@ -1333,7 +1333,7 @@ parse_json_bool(char const *string)
 	not_reached();
     } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
 	/*
-	 * extra sanity check - make sure the allocated string is either "true"
+	 * extra sanity check - make sure the allocated string is "true"
 	 * or "false"
 	 */
 	err(158, __func__, "boolean->as_str neither \"true\" nor \"false\"");
@@ -1402,7 +1402,7 @@ parse_json_null(char const *string)
         not_reached();
     }
     item = &(null->item.null);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	/* why is it an error if we can't convert nothing ? :-) */
 	err(166,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
@@ -1451,7 +1451,7 @@ parse_json_number(char const *string)
         not_reached();
     }
     item = &(number->item.number);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	err(170, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     }
@@ -1502,7 +1502,7 @@ parse_json_array(struct json *elements)
     elements->type = JTYPE_ARRAY;
     /* paranoia - these tests should never result in an error */
     item = &(elements->item.array);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	err(173, __func__, "couldn't convert array");
 	not_reached();
     }
@@ -1557,7 +1557,7 @@ parse_json_member(struct json *name, struct json *value)
         not_reached();
     }
     item = &(member->item.member);
-    if (!item->converted) {
+    if (!item->converted && !item->parsed) {
 	err(179, __func__, "couldn't convert member");
 	not_reached();
     }
@@ -1730,11 +1730,16 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_maxint = strtoimax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
+	    if (errno == ERANGE) {
+		/* if only a range problem then we can say it's parsable but not converted */
+		item->parsed = true;
+	    }
 	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
 	}
 	item->converted = true;
+	item->parsed = true;
 	item->maxint_sized = true;
 	dbg(DBG_VVVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
 
@@ -1827,6 +1832,11 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_umaxint = strtoumax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
+	    if (errno == ERANGE) {
+		/* if range issue we know it's parsable */
+		item->parsed = true;
+	    }
+
 	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
@@ -1982,6 +1992,8 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     char *e_found = NULL;		/* strchr() search for e */
     char *cap_e_found = NULL;		/* strchr() search for E */
     char *e = NULL;			/* strrchr() search for second e or E */
+    char *dot_found = NULL;		/* strchr() search for '.' */
+    char *dot = NULL;			/* strrchr() search for '.' */
     size_t str_len = 0;			/* length as a C string, of str */
 
     /*
@@ -2052,6 +2064,19 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
 		       __func__, str);
 	return false;	/* processing failed */
+    }
+
+    /* detect dot */
+    dot_found = strchr(str, '.');
+    /* if dot found see if there's another one */
+    if (dot_found != NULL) {
+	dot = strrchr(str, '.');
+	if (dot != NULL && dot != dot_found) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+		      __func__, str);
+	    return false;	/* processing failed */
+	}
+	item->is_floating = true;
     }
 
     /*
@@ -2186,6 +2211,10 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_longdouble = strtold(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
+	if (errno == ERANGE) {
+	    /* if range problem we know it's parsable */
+	    item->parsed = true;
+	}
 	dbg(DBG_VVVHIGH, "strtold failed to convert");
 	item->converted = false;
 	return false;	/* processing failed */
@@ -2211,10 +2240,17 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     errno = 0;			/* pre-clear conversion test */
     item->as_double = strtod(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
+	if (errno == ERANGE) {
+	    /* if range problem we know it's parsable */
+	    item->parsed = true;
+	}
 	item->double_sized = false;
+	item->converted = false;
 	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
+	item->converted = true;
+	item->parsed = true;
 	item->as_double_int = (item->as_double == floor(item->as_double));
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
@@ -2228,9 +2264,15 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     errno = 0;			/* pre-clear conversion test */
     item->as_float = strtof(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
+	if (errno == ERANGE) {
+	    /* if range issue we know it's parsable */
+	    item->parsed = true;
+	}
 	item->float_sized = false;
 	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
     } else {
+	item->converted = true;
+	item->parsed = true;
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
 	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, (double)item->as_float);
@@ -2251,7 +2293,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  *
  * A JSON number string is of the form:
  *
- *      ({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}_
+ * 	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}|{JSON_INTEGER}{JSON_EXPONENT})
  *
  * where {JSON_INTEGER} is of the form:
  *
@@ -2281,6 +2323,8 @@ json_conv_number(char const *ptr, size_t len)
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_number *item = NULL;	    /* JSON number item inside JSON parser tree node */
     bool decimal = false;		    /* true ==> ptr points to a base 10 integer in ASCII */
+    bool e_notation = false;		    /* true ==> ptr points to e notation in ASCII */
+    bool floating_notation = false;	    /* true ==> ptr points to floating point notation in ASCII */
     bool success = false;		    /* true ==> processing was successful */
 
     /*
@@ -2299,6 +2343,7 @@ json_conv_number(char const *ptr, size_t len)
     item->as_str = NULL;
     item->first = NULL;
     item->converted = false;
+    item->parsed = false;
     item->is_negative = false;
     item->is_floating = false;
     item->is_e_notation = false;
@@ -2384,11 +2429,16 @@ json_conv_number(char const *ptr, size_t len)
 	return ret;
     }
 
+
+    decimal = is_decimal(item->first, item->number_len);
+    e_notation = is_e_notation(item->first, item->number_len);
+    floating_notation = is_floating_notation(item->first, item->number_len);
     /*
      * case: JSON number is a base 10 integer in ASCII
      */
-    decimal = is_decimal(item->first, item->number_len);
-    if (decimal == true) {
+    if (decimal) {
+
+	item->parsed = true;	/* it's parsable but we now have to check if it can be converted */
 
 	/* process JSON number as a base 10 integer in ASCII */
 	success = json_process_decimal(item, item->first, item->number_len);
@@ -2405,17 +2455,38 @@ json_conv_number(char const *ptr, size_t len)
      * case: JSON number is not a base 10 integer in ASCII
      *
      * The JSON number might be a floating point or e-notation number.
+     *
+     * We have to check e notation first as e notation must follow the rules of
+     * floating point notation with the addition of the e notation rules.
      */
-    } else {
+    } else if (e_notation) {
+	item->parsed = true;
 
 	/* process JSON number as floating point or e-notation number */
 	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as floating point or e-notation number failed: <%*.*s>",
+	    warn(__func__, "JSON number as e-notation number failed: <%*.*s>",
 			   (int)item->number_len, (int)item->number_len, item->first);
 	} else {
 	    item->is_integer = false;
+	    item->is_e_notation = true;
 	}
+    } else if (floating_notation) {
+	item->parsed = true;
+
+	/* process JSON number as floating point number */
+	success = json_process_floating(item, item->first, item->number_len);
+	if (success == false) {
+	    warn(__func__, "JSON number as floating point number failed: <%*.*s>",
+			   (int)item->number_len, (int)item->number_len, item->first);
+	} else {
+	    item->is_integer = false;
+	    item->is_e_notation = false;
+	    item->is_floating = true;
+	}
+    } else {
+	item->converted = false;
+	item->parsed = false;
     }
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
@@ -2429,7 +2500,8 @@ json_conv_number(char const *ptr, size_t len)
 /*
  * json_conv_number_str - convert JSON number string to C numeric value
  *
- * This is a simplified interface for json_conv_int().  See that function for details.
+ * This is a simplified interface for json_conv_number().  See that function for
+ * details.
  *
  * given:
  *	str	JSON number in the from of a NUL terminated C-style string
@@ -2529,6 +2601,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     item->as_str = NULL;
     item->str = NULL;
     item->converted = false;
+    item->parsed = false;
     item->quote = false;
     item->same = false;
     item->has_nul = false;
@@ -2599,6 +2672,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 	return ret;
     }
     item->converted = true;	/* JSON decoding successful */
+    item->parsed = true;	/* JSON parsed successful */
 
     /*
      * determine if decoded string is identical to the original JSON encoded string
@@ -2722,6 +2796,7 @@ json_conv_bool(char const *ptr, size_t len)
     item = &(ret->item.boolean);
     item->as_str = NULL;
     item->converted = false;
+    item->parsed = false;
     item->value = false;
 
     /*
@@ -2759,12 +2834,16 @@ json_conv_bool(char const *ptr, size_t len)
      */
     if (strcmp(item->as_str, "true") == 0) {
 	item->converted = true;
+	item->parsed = true;
 	item->value = true;
     } else if (strcmp(item->as_str, "false") == 0) {
 	item->converted = true;
+	item->parsed = true;
 	item->value = false;
     } else {
 	warn(__func__, "JSON boolean string neither true nor false: <%s>", item->as_str);
+	item->converted = false; /* extra sanity - force converted to false */
+	item->parsed = false;	/* extra sanity - force parsed to false */
     }
 
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
@@ -2872,6 +2951,8 @@ json_conv_null(char const *ptr, size_t len)
     item = &(ret->item.null);
     item->as_str = NULL;
     item->value = NULL;
+    item->converted = false;
+    item->parsed = false;
 
     /*
      * firewall
@@ -2908,9 +2989,12 @@ json_conv_null(char const *ptr, size_t len)
      */
     if (strcmp(item->as_str, "null") == 0) {
 	item->converted = true;
+	item->parsed = true;
 	item->value = NULL;
     } else {
 	warn(__func__, "JSON null string is not null: <%s>", item->as_str);
+	item->converted = false;    /* extra sanity - force converted to false */
+	item->parsed = false;	    /* extra sanity - force parsed to false */
     }
 
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
@@ -3031,6 +3115,7 @@ json_conv_member(struct json *name, struct json *value)
      */
     item = &(ret->item.member);
     item->converted = false;
+    item->parsed = false;
     item->name_as_str = NULL;
     item->name_str = NULL;
     item->name = NULL;
@@ -3085,6 +3170,7 @@ json_conv_member(struct json *name, struct json *value)
     item->name = name;
     item->value = value;
     item->converted = true;
+    item->parsed = true;
 
     /*
      * copy convenience values related to name
@@ -3150,6 +3236,7 @@ json_create_object(void)
      */
     item = &(ret->item.object);
     item->converted = false;
+    item->parsed = false;
     item->len = 0;
     item->set = NULL;
     item->s = NULL;
@@ -3169,6 +3256,7 @@ json_create_object(void)
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
+    item->parsed = true;
 
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
@@ -3301,6 +3389,7 @@ json_create_elements(void)
      */
     item = &(ret->item.array);
     item->converted = false;
+    item->parsed = false;
     item->len = 0;
     item->set = NULL;
     item->s = NULL;
@@ -3320,6 +3409,7 @@ json_create_elements(void)
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
+    item->parsed = true;
 
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
@@ -3464,6 +3554,7 @@ json_create_array(void)
      */
     item = &(ret->item.array);
     item->converted = false;
+    item->parsed = false;
     item->len = 0;
     item->set = NULL;
     item->s = NULL;
@@ -3483,6 +3574,7 @@ json_create_array(void)
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
+    item->parsed = true;
 
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
