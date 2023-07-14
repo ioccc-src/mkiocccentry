@@ -2460,6 +2460,8 @@ json_conv_number(char const *ptr, size_t len)
      * floating point notation with the addition of the e notation rules.
      */
     } else if (e_notation) {
+	item->parsed = true;
+
 	/* process JSON number as floating point or e-notation number */
 	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
@@ -2468,9 +2470,10 @@ json_conv_number(char const *ptr, size_t len)
 	} else {
 	    item->is_integer = false;
 	    item->is_e_notation = true;
-	    item->parsed = true;
 	}
     } else if (floating_notation) {
+	item->parsed = true;
+
 	/* process JSON number as floating point number */
 	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
@@ -2480,7 +2483,6 @@ json_conv_number(char const *ptr, size_t len)
 	    item->is_integer = false;
 	    item->is_e_notation = false;
 	    item->is_floating = true;
-	    item->parsed = true;
 	}
     } else {
 	item->converted = false;
