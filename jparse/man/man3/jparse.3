@@ -26,6 +26,8 @@
 .br
 \fB#define JSON_PARSER_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
 .br
+\fB#define VALID_JSON_NODE(item) ((item)->converted || (item)->parsed)\fP
+.sp
 .B "extern const char *const json_parser_version;	/* library version format: major.minor YYYY-MM-DD */"
 .br
 .B "extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */"
@@ -188,6 +190,29 @@ struct json
 .fi
 .in
 };
+.SS Checking for a valid JSON node
+.PP
+To check if one of the JSON nodes is valid you can use the
+.B VALID_JSON_NODE
+macro, which checks that either the
+.B converted
+or the
+.B parsed
+boolean is true.
+This macro is used in the conversion routines and it is an error if both conversion and parsing fails.
+The boolean
+.B parsed
+means it could be parsed as valid JSON and the boolean 
+.B converted
+means that it could be converted.
+If
+.B converted
+is true then
+.B parsed
+should be true too.
+It might happen that only
+.B parsed
+is true if a number is too big for C types.
 .SS Version strings
 The string
 .BR jparse_version ,

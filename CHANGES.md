@@ -45,7 +45,9 @@ converted is false but parsed is true.
 
 Add macro `VALID_JSON_NODE` that determines if a `struct json_foo` is valid
 which means that either `item->converted` or `item->parsed` is true. This macro
-is currently used prior to reporting an error in the conversion functions.
+is currently used prior to reporting an error in the conversion functions. This
+macro is documented in both `jparse.1` and `jparse.3`.
+
 
 Add function `sem_node_valid_parsed()` which is like
 `sem_node_valid_converted()` but for the parsed boolean instead of the converted
