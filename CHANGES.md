@@ -40,6 +40,23 @@ Check for more than one dot in floating point number strings for JSON and
 otherwise. For JSON this is not strictly necessary as the scanner will report an
 invalid token but we do it for safety anyway.
 
+Add to function `vjson_fprint()` code that prints out the string of a number if
+converted is false but parsed is true.
+
+Add macro `VALID_JSON_NODE` that determines if a `struct json_foo` is valid
+which means that either `item->converted` or `item->parsed` is true. This macro
+is currently used prior to reporting an error in the conversion functions. This
+macro is documented in both `jparse.1` and `jparse.3`.
+
+
+Add function `sem_node_valid_parsed()` which is like
+`sem_node_valid_converted()` but for the parsed boolean instead of the converted
+boolean.
+
+Update `jparse.1` man page noting the condition where if a value cannot be
+converted but is valid JSON it will still report that it's valid JSON but will
+warn that conversion failed.
+
 
 ## Release 1.0.29 2023-07-13
 

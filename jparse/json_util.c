@@ -1466,7 +1466,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted number
 	     */
-	    if (item->converted == true) {
+	    if (item->converted) {
 
 		/*
 		 * case: converted negative number
@@ -1615,11 +1615,162 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		    }
 		}
 
+	    }
+	    /* case: not converted but parsed */
+	    else if (item->parsed) {
+
+		/*
+		 * case: parsed negative number
+		 */
+		if (item->is_negative == true) {
+
+		    /*
+		     * case: parsed e-notation negative number
+		     */
+		    if (item->is_e_notation == true) {
+
+			/*
+			 * try to print the smallest parsed floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: -e-notation: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: parsed floating negative number
+		     */
+		    } else if (item->is_floating == true) {
+
+			/*
+			 * try to print the smallest parsed floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL-val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: -floating: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: parsed integer negative number
+		     */
+		    } else {
+
+			/*
+			 * try to print the smallest parsed integer
+			 */
+			if (item->int8_sized == true) {
+			    fprint(stream, "\tval-8: %s", item->as_str);
+			} else if (item->int16_sized == true) {
+			    fprint(stream, "\tval-16: %s", item->as_str);
+			} else if (item->int32_sized == true) {
+			    fprint(stream, "\tval-32: %s", item->as_str);
+			} else if (item->int64_sized == true) {
+			    fprint(stream, "\tval-64: %s", item->as_str);
+			} else if (item->maxint_sized == true) {
+			    fprint(stream, "\tval-max: %s", item->as_str);
+			} else {
+			    fprstr(stream, "\tWarning: -integer: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+		    }
+
+		/*
+		 * case: parsed positive number
+		 */
+		} else {
+
+		    /*
+		     * case: parsed e-notation positive number
+		     */
+		    if (item->is_e_notation == true) {
+
+			/*
+			 * try to print the smallest parsed floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: +e-notation: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: parsed floating positive number
+		     */
+		    } else if (item->is_floating == true) {
+
+			/*
+			 * try to print the smallest parsed floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL+val: %s\tinteger: %s",
+					   item->as_str, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: +floating: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: parsed integer positive number
+		     */
+		    } else {
+
+			/*
+			 * try to print the smallest parsed integer
+			 */
+			if (item->int8_sized == true) {
+			    fprint(stream, "\tval+8: %s", item->as_str);
+			} else if (item->int16_sized == true) {
+			    fprint(stream, "\tval+16: %s", item->as_str);
+			} else if (item->int32_sized == true) {
+			    fprint(stream, "\tval+32: %s", item->as_str);
+			} else if (item->int64_sized == true) {
+			    fprint(stream, "\tval+64: %s", item->as_str);
+			} else if (item->maxint_sized == true) {
+			    fprint(stream, "\tval+max: %s", item->as_str);
+			} else {
+			    fprstr(stream, "\tWarning: +integer: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+		    }
+		}
+
 	    /*
 	     * case: not converted number
 	     */
 	    } else {
-		fprstr(stream, "\tconverted: false");
+		fprstr(stream, "\tconverted and parsed: false");
 	    }
 	}
 	break;
