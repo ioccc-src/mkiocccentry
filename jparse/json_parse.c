@@ -1731,10 +1731,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	item->as_maxint = strtoimax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    if (errno == ERANGE) {
-		/* XXX - if range error we set parsed to true but in the future we
-		 * must use the is_floating_notation() and is_e_notation() functions
-		 * as it could be that there is a range error and it's an invalid
-		 * format! - XXX */
+		/* if only a range problem then we can say it's parsable but not converted */
 		item->parsed = true;
 	    }
 	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
@@ -1836,10 +1833,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	item->as_umaxint = strtoumax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    if (errno == ERANGE) {
-		/* XXX - if range error we set parsed to true but in the future we
-		 * must use the is_floating_notation() and is_e_notation() functions
-		 * as it could be that there is a range error and it's an invalid
-		 * format! - XXX */
+		/* if range issue we know it's parsable */
 		item->parsed = true;
 	    }
 
@@ -1998,6 +1992,8 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     char *e_found = NULL;		/* strchr() search for e */
     char *cap_e_found = NULL;		/* strchr() search for E */
     char *e = NULL;			/* strrchr() search for second e or E */
+    char *dot_found = NULL;		/* strchr() search for '.' */
+    char *dot = NULL;			/* strrchr() search for '.' */
     size_t str_len = 0;			/* length as a C string, of str */
 
     /*
@@ -2068,6 +2064,19 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
 		       __func__, str);
 	return false;	/* processing failed */
+    }
+
+    /* detect dot */
+    dot_found = strchr(str, '.');
+    /* if dot found see if there's another one */
+    if (dot_found != NULL) {
+	dot = strrchr(str, '.');
+	if (dot != NULL && dot != dot_found) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+		      __func__, str);
+	    return false;	/* processing failed */
+	}
+	item->is_floating = true;
     }
 
     /*
@@ -2203,10 +2212,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->as_longdouble = strtold(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
 	if (errno == ERANGE) {
-	    /* XXX - if range error we set parsed to true but in the future we
-	     * must use the is_floating_notation() and is_e_notation() functions
-	     * as it could be that there is a range error and it's an invalid
-	     * format! - XXX */
+	    /* if range problem we know it's parsable */
 	    item->parsed = true;
 	}
 	dbg(DBG_VVVHIGH, "strtold failed to convert");
@@ -2235,10 +2241,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->as_double = strtod(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
 	if (errno == ERANGE) {
-	    /* XXX - if range error we set parsed to true but in the future we
-	     * must use the is_floating_notation() and is_e_notation() functions
-	     * as it could be that there is a range error and it's an invalid
-	     * format! - XXX */
+	    /* if range problem we know it's parsable */
 	    item->parsed = true;
 	}
 	item->double_sized = false;
@@ -2262,10 +2265,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->as_float = strtof(str, &endptr);
     if (errno == ERANGE || endptr == str || endptr == NULL) {
 	if (errno == ERANGE) {
-	    /* XXX - if range error we set parsed to true but in the future we
-	     * must use the is_floating_notation() and is_e_notation() functions
-	     * as it could be that there is a range error and it's an invalid
-	     * format! - XXX */
+	    /* if range issue we know it's parsable */
 	    item->parsed = true;
 	}
 	item->float_sized = false;
@@ -2323,6 +2323,8 @@ json_conv_number(char const *ptr, size_t len)
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_number *item = NULL;	    /* JSON number item inside JSON parser tree node */
     bool decimal = false;		    /* true ==> ptr points to a base 10 integer in ASCII */
+    bool e_notation = false;		    /* true ==> ptr points to e notation in ASCII */
+    bool floating_notation = false;	    /* true ==> ptr points to floating point notation in ASCII */
     bool success = false;		    /* true ==> processing was successful */
 
     /*
@@ -2427,11 +2429,14 @@ json_conv_number(char const *ptr, size_t len)
 	return ret;
     }
 
+
+    decimal = is_decimal(item->first, item->number_len);
+    e_notation = is_e_notation(item->first, item->number_len);
+    floating_notation = is_floating_notation(item->first, item->number_len);
     /*
      * case: JSON number is a base 10 integer in ASCII
      */
-    decimal = is_decimal(item->first, item->number_len);
-    if (decimal == true) {
+    if (decimal) {
 
 	item->parsed = true;	/* it's parsable but we now have to check if it can be converted */
 
@@ -2450,28 +2455,36 @@ json_conv_number(char const *ptr, size_t len)
      * case: JSON number is not a base 10 integer in ASCII
      *
      * The JSON number might be a floating point or e-notation number.
+     *
+     * We have to check e notation first as e notation must follow the rules of
+     * floating point notation with the addition of the e notation rules.
      */
-
-    /*
-     * XXX - add calls to is_floating_notation() and is_e_notation() after those
-     * functions are written. We cannot do that now as both return true for the
-     * time being until the functions can be implemented. - XXX
-     */
-    } else {
-
+    } else if (e_notation) {
 	/* process JSON number as floating point or e-notation number */
 	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as floating point or e-notation number failed: <%*.*s>",
+	    warn(__func__, "JSON number as e-notation number failed: <%*.*s>",
 			   (int)item->number_len, (int)item->number_len, item->first);
 	} else {
 	    item->is_integer = false;
-	    /* XXX - use to be written functions is_floating_notation() and
-	     * is_e_notation before setting item->parsed = true but for now we have
-	     * to set it to true if it is converted okay though the function
-	     * should also set it - XXX */
+	    item->is_e_notation = true;
 	    item->parsed = true;
 	}
+    } else if (floating_notation) {
+	/* process JSON number as floating point number */
+	success = json_process_floating(item, item->first, item->number_len);
+	if (success == false) {
+	    warn(__func__, "JSON number as floating point number failed: <%*.*s>",
+			   (int)item->number_len, (int)item->number_len, item->first);
+	} else {
+	    item->is_integer = false;
+	    item->is_e_notation = false;
+	    item->is_floating = true;
+	    item->parsed = true;
+	}
+    } else {
+	item->converted = false;
+	item->parsed = false;
     }
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 

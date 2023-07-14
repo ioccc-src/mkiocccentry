@@ -27,6 +27,20 @@ true. If it's something else we cannot. THIS IS TEMPORARY! It could be that
 there is both a range error and it's an invalid string. There are XXX comments
 about this as it needs to change!
 
+Fix detection of '.' with e notation if a '.' found and also whether 'e' was
+found in the jnum tests.
+
+Add code to `is_floating_notation()` and `is_e_notation()` functions. More needs
+to be checked and there are still some `XXX` comments to look at. Note that the
+code here does the same checks as `json_process_floating()` and this might not
+be strictly correct but that can determined later: as it's used only in JSON
+parsing it should be okay for the time being.
+
+Check for more than one dot in floating point number strings for JSON and
+otherwise. For JSON this is not strictly necessary as the scanner will report an
+invalid token but we do it for safety anyway.
+
+
 ## Release 1.0.29 2023-07-13
 
 New JSON parser and jparse version "1.0.10 2023-07-13".

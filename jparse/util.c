@@ -2584,26 +2584,77 @@ is_decimal_str(char const *str, size_t *retlen)
  *	false	==> ptr does NOT point to a base 10 floating point notation in ASCII, or if ptr is NULL, or len <= 0
  */
 bool
-is_floating_notation(char const *ptr, size_t len)
+is_floating_notation(char const *str, size_t len)
 {
-    size_t start = 0;	/* starting character number for ASCII number */
-    size_t i;
+    size_t str_len = 0;	/* length of string */
+    char *dot_found = NULL; /* if dot found we have to check if more than one is found */
+    char *dot = NULL;	    /* to check if second dot is the same as first */
 
-    UNUSED_ARG(start);	/* XXX - remove after writing this function - XXX */
-    UNUSED_ARG(i);	/* XXX - remove after writing this function - XXX */
+
     /*
      * firewall
      */
-    if (ptr == NULL) {
-	warn(__func__, "passed NULL ptr");
+    if (str == NULL) {
+	warn(__func__, "passed NULL str");
 	return false;
     }
     if (len <= 0) {
 	warn(__func__, "len <= 0: %ju", (intmax_t)len);
 	return false;
     }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return false;	/* processing failed */
+    }
 
-    /* XXX - fix to test string, return true for now - XXX */
+    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	return false;	/* processing failed */
+    }
+
+    str_len = strlen(str);
+    if (str_len < len) {
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	return false;	/* processing failed */
+    /*
+     * JSON spec detail: floating point numbers cannot end with .
+     */
+    } else if (str[len-1] == '.') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with -
+     */
+    } else if (str[len-1] == '-') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with +
+     */
+    } else if (str[len-1] == '+') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    }
+
+    /* detect dot */
+    dot_found = strchr(str, '.');
+    /* if dot found see if there's another one */
+    if (dot_found != NULL) {
+	dot = strrchr(str, '.');
+	if (dot != NULL && dot != dot_found) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+		      __func__, str);
+	    return false;	/* processing failed */
+	}
+    }
+
+
     return true;
 }
 
@@ -2643,7 +2694,7 @@ is_floating_notation_str(char const *str, size_t *retlen)
     }
 
     /*
-     * convert to is_e_notation() call
+     * convert to is_floating_notation() call
      */
     ret = is_floating_notation(str, len);
 
@@ -2676,26 +2727,226 @@ is_floating_notation_str(char const *str, size_t *retlen)
  *	false	==> ptr does NOT point to a base 10 exponent notation in ASCII, or if ptr is NULL, or len <= 0
  */
 bool
-is_e_notation(char const *ptr, size_t len)
+is_e_notation(char const *str, size_t len)
 {
-    size_t start = 0;	/* starting character number for ASCII number */
-    size_t i;
+    size_t str_len = 0;	/* length of string */
+    char *e_found = NULL;   /* for e notation: lower case e */
+    char *cap_e_found = NULL;	/* for e notation: upper case E */
+    char *e = NULL;	/* check if more than one e or E */
+    bool is_e_notation = false;	/* if e or E notation valid */
+    char *dot_found = NULL; /* if dot found we have to check if more than one is found */
+    char *dot = NULL;	    /* to check if second dot is the same as first */
 
-    UNUSED_ARG(start);	/* XXX - remove after writing this function - XXX */
-    UNUSED_ARG(i);	/* XXX - remove after writing this function - XXX */
     /*
      * firewall
      */
-    if (ptr == NULL) {
-	warn(__func__, "passed NULL ptr");
+    if (str == NULL) {
+	warn(__func__, "passed NULL str");
 	return false;
     }
     if (len <= 0) {
 	warn(__func__, "len <= 0: %ju", (intmax_t)len);
 	return false;
     }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return false;	/* processing failed */
+    }
 
-    /* XXX - fix to test string, return true for now - XXX */
+    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	return false;	/* processing failed */
+    }
+
+    str_len = strlen(str);
+    if (str_len < len) {
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	return false;	/* processing failed */
+    }
+
+    /*
+     * JSON spec detail: floating point numbers cannot start with .
+     */
+    if (str[0] == '.') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot start with .: <%s>",
+		       __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with .
+     */
+    } else if (str[len-1] == '.') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with -
+     */
+    } else if (str[len-1] == '-') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with +
+     */
+    } else if (str[len-1] == '+') {
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers must end in a digit
+     */
+    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
+		       __func__, str);
+	return false;	/* processing failed */
+    }
+
+    /* detect dot */
+    dot_found = strchr(str, '.');
+    /* if dot found see if there's another one */
+    if (dot_found != NULL) {
+	dot = strrchr(str, '.');
+	if (dot != NULL && dot != dot_found) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+		      __func__, str);
+	    return false;	/* processing failed */
+	}
+    }
+
+    /*
+     * detect use of e notation
+     */
+    e_found = strchr(str, 'e');
+    cap_e_found = strchr(str, 'E');
+    /* case: both e and E found */
+    if (e_found != NULL && cap_e_found != NULL) {
+
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot use both e and E: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /* case: neither 'e' nor 'E' found */
+    } else if (e_found == NULL && cap_e_found == NULL) {
+	/* NOTE: don't warn as it could be a floating point without e notation */
+	dbg(DBG_HIGH, "in %s(): not e notation: neither 'e' nor 'E' found: <%s>",
+		      __func__, str);
+	return false;
+    /* case: just e found, no E */
+    } else if (e_found != NULL) {
+
+	/* firewall - search for two 'e's */
+	e = strrchr(str, 'e');
+	if (e_found != e) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one e: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+
+	/* note e notation */
+	is_e_notation = true;
+
+    /* case: just E found, no e */
+    } else if (cap_e_found != NULL) {
+
+	/* firewall - search for two 'E's */
+	e = strrchr(str, 'E');
+	if (cap_e_found != e) {
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+
+	/* note e notation */
+	is_e_notation = true;
+    }
+
+
+    /*
+     * perform additional JSON number checks on e notation
+     *
+     * NOTE: If item->is_e_notation == true, then e points to the e or E
+     */
+    if (is_e_notation) {
+
+	/*
+	 * JSON spec detail: e notation number cannot start with e or E
+	 */
+	if (e == str) {
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot start with e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number cannot end with e or E
+	 */
+	} else if (e == &(str[len-1])) {
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot end with e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number cannot have e or E after .
+	 */
+	} else if (e > str && e[-1] == '.') {
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot have '.' before e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number must have digit before e or E
+	 */
+	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * case: e notation number with a leading + in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with +" we know + is not at the end.
+	 */
+	} else if (e[1] == '+') {
+
+	    /*
+	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
+	     */
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit <%s>",
+			      __func__, str);
+		return false;	/* processing failed */
+	    }
+
+	/*
+	 * case: e notation number with a leading - in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with -" we know - is not at the end.
+	 */
+	} else if (e[1] == '-') {
+
+	    /*
+	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
+	     */
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit <%s>",
+			      __func__, str);
+		return false;	/* processing failed */
+	    }
+
+	/*
+	 * JSON spec detail: e notation number must have + or - or digit after e or E
+	 */
+	} else if (!isascii(e[1]) || !isdigit(e[1])) {
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+    }
+
+
     return true;
 }
 

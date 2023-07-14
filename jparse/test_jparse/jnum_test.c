@@ -518,7 +518,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -611,7 +611,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -704,7 +704,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -797,7 +797,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -890,7 +890,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -983,7 +983,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1076,7 +1076,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1169,7 +1169,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1262,7 +1262,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1355,7 +1355,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1448,7 +1448,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1541,7 +1541,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1634,7 +1634,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1727,7 +1727,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1820,7 +1820,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -1913,7 +1913,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2006,7 +2006,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2099,7 +2099,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2192,7 +2192,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2285,7 +2285,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2378,7 +2378,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2471,7 +2471,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2564,7 +2564,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2657,7 +2657,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2750,7 +2750,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2843,7 +2843,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -2936,7 +2936,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3029,7 +3029,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3122,7 +3122,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3215,7 +3215,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3308,7 +3308,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3401,7 +3401,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3494,7 +3494,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3587,7 +3587,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3680,7 +3680,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3773,7 +3773,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3866,7 +3866,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -3959,7 +3959,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4052,7 +4052,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4145,7 +4145,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4238,7 +4238,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4331,7 +4331,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4424,7 +4424,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4517,7 +4517,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4610,7 +4610,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4703,7 +4703,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4796,7 +4796,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4889,7 +4889,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -4982,7 +4982,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5075,7 +5075,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5168,7 +5168,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5261,7 +5261,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5354,7 +5354,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5447,7 +5447,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5540,7 +5540,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5633,7 +5633,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5726,7 +5726,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5819,7 +5819,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -5912,7 +5912,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6005,7 +6005,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6098,7 +6098,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6284,7 +6284,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6377,7 +6377,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6470,7 +6470,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6563,7 +6563,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6749,7 +6749,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6842,7 +6842,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -6935,7 +6935,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7028,7 +7028,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7214,7 +7214,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7307,7 +7307,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7400,7 +7400,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7493,7 +7493,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7679,7 +7679,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7772,7 +7772,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7865,7 +7865,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -7958,7 +7958,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8144,7 +8144,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8237,7 +8237,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8330,7 +8330,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8423,7 +8423,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8609,7 +8609,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8702,7 +8702,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8795,7 +8795,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -8888,7 +8888,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9074,7 +9074,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9167,7 +9167,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9260,7 +9260,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9353,7 +9353,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9539,7 +9539,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9632,7 +9632,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9725,7 +9725,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -9818,7 +9818,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10004,7 +10004,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10097,7 +10097,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10190,7 +10190,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10283,7 +10283,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10469,7 +10469,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10562,7 +10562,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10655,7 +10655,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10748,7 +10748,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -10934,7 +10934,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11027,7 +11027,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11120,7 +11120,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11213,7 +11213,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11399,7 +11399,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11492,7 +11492,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11585,7 +11585,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11678,7 +11678,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11864,7 +11864,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -11957,7 +11957,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12050,7 +12050,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12143,7 +12143,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12329,7 +12329,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12422,7 +12422,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12515,7 +12515,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12608,7 +12608,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12794,7 +12794,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12887,7 +12887,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -12980,7 +12980,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13073,7 +13073,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13259,7 +13259,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13352,7 +13352,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13445,7 +13445,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13538,7 +13538,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13724,7 +13724,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13817,7 +13817,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -13910,7 +13910,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14003,7 +14003,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14189,7 +14189,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14282,7 +14282,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14375,7 +14375,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14468,7 +14468,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14654,7 +14654,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14747,7 +14747,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14840,7 +14840,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -14933,7 +14933,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15119,7 +15119,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15212,7 +15212,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15305,7 +15305,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15398,7 +15398,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15584,7 +15584,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15677,7 +15677,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15770,7 +15770,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -15863,7 +15863,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16049,7 +16049,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16142,7 +16142,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16235,7 +16235,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16328,7 +16328,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16514,7 +16514,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16607,7 +16607,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16700,7 +16700,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16793,7 +16793,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -16979,7 +16979,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17072,7 +17072,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17165,7 +17165,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17258,7 +17258,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17444,7 +17444,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17537,7 +17537,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17630,7 +17630,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17723,7 +17723,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -17909,7 +17909,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18002,7 +18002,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18095,7 +18095,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18188,7 +18188,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18374,7 +18374,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18467,7 +18467,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18560,7 +18560,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18653,7 +18653,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18839,7 +18839,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -18932,7 +18932,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19025,7 +19025,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19118,7 +19118,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19304,7 +19304,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19397,7 +19397,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19490,7 +19490,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19583,7 +19583,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19769,7 +19769,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19862,7 +19862,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -19955,7 +19955,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20048,7 +20048,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20234,7 +20234,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20327,7 +20327,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20420,7 +20420,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20513,7 +20513,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20699,7 +20699,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20792,7 +20792,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20885,7 +20885,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	true,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -20978,7 +20978,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21164,7 +21164,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21257,7 +21257,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21350,7 +21350,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21443,7 +21443,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21629,7 +21629,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21722,7 +21722,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21815,7 +21815,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -21908,7 +21908,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22094,7 +22094,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22187,7 +22187,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22280,7 +22280,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22373,7 +22373,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22559,7 +22559,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22652,7 +22652,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22745,7 +22745,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -22838,7 +22838,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23024,7 +23024,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23117,7 +23117,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23210,7 +23210,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23303,7 +23303,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23489,7 +23489,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23582,7 +23582,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23675,7 +23675,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23768,7 +23768,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -23954,7 +23954,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24047,7 +24047,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24140,7 +24140,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24233,7 +24233,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24419,7 +24419,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24512,7 +24512,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24605,7 +24605,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24698,7 +24698,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24884,7 +24884,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -24977,7 +24977,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25070,7 +25070,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25163,7 +25163,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25349,7 +25349,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25442,7 +25442,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25535,7 +25535,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25628,7 +25628,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25814,7 +25814,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -25907,7 +25907,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26000,7 +26000,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26093,7 +26093,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26279,7 +26279,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26372,7 +26372,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26465,7 +26465,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26558,7 +26558,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26744,7 +26744,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26837,7 +26837,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -26930,7 +26930,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27023,7 +27023,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27209,7 +27209,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27302,7 +27302,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27395,7 +27395,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27488,7 +27488,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27674,7 +27674,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27767,7 +27767,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27860,7 +27860,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -27953,7 +27953,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28139,7 +28139,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28232,7 +28232,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28325,7 +28325,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28418,7 +28418,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28604,7 +28604,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28697,7 +28697,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28790,7 +28790,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -28883,7 +28883,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29069,7 +29069,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29162,7 +29162,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29255,7 +29255,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29348,7 +29348,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29534,7 +29534,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29627,7 +29627,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29720,7 +29720,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29813,7 +29813,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -29999,7 +29999,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30092,7 +30092,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30185,7 +30185,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30278,7 +30278,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30464,7 +30464,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30557,7 +30557,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30650,7 +30650,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30743,7 +30743,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -30929,7 +30929,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31022,7 +31022,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31115,7 +31115,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31208,7 +31208,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31394,7 +31394,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31487,7 +31487,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31580,7 +31580,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31673,7 +31673,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31859,7 +31859,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -31952,7 +31952,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32045,7 +32045,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32138,7 +32138,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32324,7 +32324,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32417,7 +32417,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32510,7 +32510,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32603,7 +32603,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32789,7 +32789,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32882,7 +32882,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -32975,7 +32975,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33068,7 +33068,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33254,7 +33254,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33347,7 +33347,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33440,7 +33440,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33533,7 +33533,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33719,7 +33719,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33812,7 +33812,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33905,7 +33905,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -33998,7 +33998,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34184,7 +34184,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34277,7 +34277,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34370,7 +34370,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34463,7 +34463,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34649,7 +34649,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34742,7 +34742,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34835,7 +34835,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -34928,7 +34928,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35114,7 +35114,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35207,7 +35207,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35300,7 +35300,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35393,7 +35393,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35579,7 +35579,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35672,7 +35672,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35765,7 +35765,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -35858,7 +35858,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36044,7 +36044,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36137,7 +36137,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36230,7 +36230,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36323,7 +36323,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36416,7 +36416,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36509,7 +36509,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36602,7 +36602,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36695,7 +36695,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36788,7 +36788,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36881,7 +36881,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -36974,7 +36974,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37067,7 +37067,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37160,7 +37160,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37253,7 +37253,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37346,7 +37346,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37439,7 +37439,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37532,7 +37532,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37625,7 +37625,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37718,7 +37718,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37811,7 +37811,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37904,7 +37904,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -37997,7 +37997,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38090,7 +38090,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38183,7 +38183,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38276,7 +38276,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38369,7 +38369,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38462,7 +38462,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38555,7 +38555,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38648,7 +38648,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38741,7 +38741,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38834,7 +38834,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -38927,7 +38927,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39020,7 +39020,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39113,7 +39113,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39206,7 +39206,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39299,7 +39299,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39392,7 +39392,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39485,7 +39485,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39578,7 +39578,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39671,7 +39671,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39764,7 +39764,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39857,7 +39857,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -39950,7 +39950,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40043,7 +40043,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40136,7 +40136,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40229,7 +40229,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40322,7 +40322,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40415,7 +40415,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40508,7 +40508,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40601,7 +40601,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40694,7 +40694,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40787,7 +40787,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40880,7 +40880,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -40973,7 +40973,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41066,7 +41066,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41159,7 +41159,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41252,7 +41252,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41345,7 +41345,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41438,7 +41438,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41531,7 +41531,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41624,7 +41624,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	false,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41717,7 +41717,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
@@ -41810,7 +41810,7 @@ struct json_number test_result[TEST_COUNT+1] = {
 
 	false,		/* true ==> value < 0 */
 
-	false,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
+	true,		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
 	true,		/* true ==> e notation used such as 1e10, false ==> no e notation found */
 
 	/* integer values */
