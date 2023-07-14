@@ -1270,7 +1270,7 @@ parse_json_string(char const *string, size_t len)
         not_reached();
     }
     item = &(str->item.string);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	err(152, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     }
@@ -1314,7 +1314,7 @@ parse_json_bool(char const *string)
         not_reached();
     }
     item = &(boolean->item.boolean);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	/*
 	 * json_conv_bool_str() calls json_conv_bool() which will warn if the
 	 * boolean is neither true nor false. We know that this function should never
@@ -1402,7 +1402,7 @@ parse_json_null(char const *string)
         not_reached();
     }
     item = &(null->item.null);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	/* why is it an error if we can't convert nothing ? :-) */
 	err(166,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
@@ -1451,7 +1451,7 @@ parse_json_number(char const *string)
         not_reached();
     }
     item = &(number->item.number);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	err(170, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     }
@@ -1502,7 +1502,7 @@ parse_json_array(struct json *elements)
     elements->type = JTYPE_ARRAY;
     /* paranoia - these tests should never result in an error */
     item = &(elements->item.array);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	err(173, __func__, "couldn't convert array");
 	not_reached();
     }
@@ -1557,7 +1557,7 @@ parse_json_member(struct json *name, struct json *value)
         not_reached();
     }
     item = &(member->item.member);
-    if (!item->converted && !item->parsed) {
+    if (!VALID_JSON_NODE(item)) {
 	err(179, __func__, "couldn't convert member");
 	not_reached();
     }

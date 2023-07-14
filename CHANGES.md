@@ -43,6 +43,10 @@ invalid token but we do it for safety anyway.
 Add to function `vjson_fprint()` code that prints out the string of a number if
 converted is false but parsed is true.
 
+Add macro `VALID_JSON_NODE` that determines if a `struct json_foo` is valid
+which means that either `item->converted` or `item->parsed` is true. This macro
+is currently used prior to reporting an error in the conversion functions.
+
 
 ## Release 1.0.29 2023-07-13
 
