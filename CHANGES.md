@@ -40,6 +40,9 @@ Check for more than one dot in floating point number strings for JSON and
 otherwise. For JSON this is not strictly necessary as the scanner will report an
 invalid token but we do it for safety anyway.
 
+Add to function `vjson_fprint()` code that prints out the string of a number if
+converted is false but parsed is true.
+
 
 ## Release 1.0.29 2023-07-13
 
