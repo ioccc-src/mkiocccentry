@@ -133,6 +133,8 @@ extern bool sem_chk_null_args(struct json const *node, unsigned int depth, struc
 			      char const *name, struct json_sem_val_err **val_err);
 extern bool sem_node_valid_converted(struct json const *node, unsigned int depth, struct json_sem *sem,
 				     char const *name, struct json_sem_val_err **val_err);
+extern bool sem_node_valid_parsed(struct json const *node, unsigned int depth, struct json_sem *sem,
+				     char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 				    char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
