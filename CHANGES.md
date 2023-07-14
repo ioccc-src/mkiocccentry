@@ -51,6 +51,10 @@ Add function `sem_node_valid_parsed()` which is like
 `sem_node_valid_converted()` but for the parsed boolean instead of the converted
 boolean.
 
+Update `jparse.1` man page noting the condition where if a value cannot be
+converted but is valid JSON it will still report that it's valid JSON but will
+warn that conversion failed.
+
 
 ## Release 1.0.29 2023-07-13
 
