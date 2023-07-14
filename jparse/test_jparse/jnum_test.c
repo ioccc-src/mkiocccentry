@@ -508,6 +508,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.0",	/* first whitespace character */
 
@@ -598,6 +600,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[1]: -8589934594.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934594.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.1",	/* first whitespace character */
@@ -690,6 +694,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934594.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.2e2",	/* first whitespace character */
 
@@ -780,6 +786,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[3]: -8589934594.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934594.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934594.2E-4",	/* first whitespace character */
@@ -872,6 +880,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.0",	/* first whitespace character */
 
@@ -962,6 +972,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[5]: -8589934593.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934593.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.1",	/* first whitespace character */
@@ -1054,6 +1066,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934593.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.2e2",	/* first whitespace character */
 
@@ -1144,6 +1158,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[7]: -8589934593.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934593.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934593.2E-4",	/* first whitespace character */
@@ -1236,6 +1252,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.0",	/* first whitespace character */
 
@@ -1326,6 +1344,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[9]: -8589934592.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934592.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.1",	/* first whitespace character */
@@ -1418,6 +1438,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934592.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.2e2",	/* first whitespace character */
 
@@ -1508,6 +1530,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[11]: -8589934592.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934592.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934592.2E-4",	/* first whitespace character */
@@ -1600,6 +1624,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.0",	/* first whitespace character */
 
@@ -1690,6 +1716,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[13]: -8589934591.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934591.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.1",	/* first whitespace character */
@@ -1782,6 +1810,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934591.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.2e2",	/* first whitespace character */
 
@@ -1872,6 +1902,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[15]: -8589934591.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934591.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934591.2E-4",	/* first whitespace character */
@@ -1964,6 +1996,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.0",	/* first whitespace character */
 
@@ -2054,6 +2088,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[17]: -8589934590.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934590.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.1",	/* first whitespace character */
@@ -2146,6 +2182,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-8589934590.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.2e2",	/* first whitespace character */
 
@@ -2236,6 +2274,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[19]: -8589934590.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-8589934590.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-8589934590.2E-4",	/* first whitespace character */
@@ -2328,6 +2368,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.0",	/* first whitespace character */
 
@@ -2418,6 +2460,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[21]: -4294967298.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967298.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.1",	/* first whitespace character */
@@ -2510,6 +2554,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967298.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.2e2",	/* first whitespace character */
 
@@ -2600,6 +2646,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[23]: -4294967298.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967298.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967298.2E-4",	/* first whitespace character */
@@ -2692,6 +2740,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.0",	/* first whitespace character */
 
@@ -2782,6 +2832,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[25]: -4294967297.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967297.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.1",	/* first whitespace character */
@@ -2874,6 +2926,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967297.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.2e2",	/* first whitespace character */
 
@@ -2964,6 +3018,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[27]: -4294967297.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967297.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967297.2E-4",	/* first whitespace character */
@@ -3056,6 +3112,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.0",	/* first whitespace character */
 
@@ -3146,6 +3204,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[29]: -4294967296.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967296.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.1",	/* first whitespace character */
@@ -3238,6 +3298,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967296.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.2e2",	/* first whitespace character */
 
@@ -3328,6 +3390,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[31]: -4294967296.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967296.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967296.2E-4",	/* first whitespace character */
@@ -3420,6 +3484,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.0",	/* first whitespace character */
 
@@ -3510,6 +3576,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[33]: -4294967295.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967295.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.1",	/* first whitespace character */
@@ -3602,6 +3670,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967295.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.2e2",	/* first whitespace character */
 
@@ -3692,6 +3762,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[35]: -4294967295.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967295.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967295.2E-4",	/* first whitespace character */
@@ -3784,6 +3856,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.0",	/* first whitespace character */
 
@@ -3874,6 +3948,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[37]: -4294967294.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967294.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.1",	/* first whitespace character */
@@ -3966,6 +4042,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-4294967294.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.2e2",	/* first whitespace character */
 
@@ -4056,6 +4134,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[39]: -4294967294.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-4294967294.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-4294967294.2E-4",	/* first whitespace character */
@@ -4148,6 +4228,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.0",	/* first whitespace character */
 
@@ -4238,6 +4320,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[41]: -2147483650.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483650.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.1",	/* first whitespace character */
@@ -4330,6 +4414,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483650.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.2e2",	/* first whitespace character */
 
@@ -4420,6 +4506,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[43]: -2147483650.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483650.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483650.2E-4",	/* first whitespace character */
@@ -4512,6 +4600,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.0",	/* first whitespace character */
 
@@ -4602,6 +4692,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[45]: -2147483649.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483649.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.1",	/* first whitespace character */
@@ -4694,6 +4786,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483649.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.2e2",	/* first whitespace character */
 
@@ -4784,6 +4878,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[47]: -2147483649.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483649.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483649.2E-4",	/* first whitespace character */
@@ -4876,6 +4972,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.0",	/* first whitespace character */
 
@@ -4966,6 +5064,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[49]: -2147483648.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483648.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.1",	/* first whitespace character */
@@ -5058,6 +5158,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483648.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.2e2",	/* first whitespace character */
 
@@ -5148,6 +5250,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[51]: -2147483648.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483648.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483648.2E-4",	/* first whitespace character */
@@ -5240,6 +5344,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.0",	/* first whitespace character */
 
@@ -5330,6 +5436,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[53]: -2147483647.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483647.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.1",	/* first whitespace character */
@@ -5422,6 +5530,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483647.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.2e2",	/* first whitespace character */
 
@@ -5512,6 +5622,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[55]: -2147483647.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483647.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483647.2E-4",	/* first whitespace character */
@@ -5604,6 +5716,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.0",	/* first whitespace character */
 
@@ -5694,6 +5808,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[57]: -2147483646.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483646.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.1",	/* first whitespace character */
@@ -5786,6 +5902,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2147483646.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.2e2",	/* first whitespace character */
 
@@ -5876,6 +5994,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[59]: -2147483646.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2147483646.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2147483646.2E-4",	/* first whitespace character */
@@ -5968,6 +6088,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.0",	/* first whitespace character */
 
@@ -6058,6 +6180,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[61]: -131074 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131074",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074",	/* first whitespace character */
@@ -6150,6 +6274,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.1",	/* first whitespace character */
 
@@ -6240,6 +6366,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[63]: -131074.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131074.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.2e2",	/* first whitespace character */
@@ -6332,6 +6460,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131074.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131074.2E-4",	/* first whitespace character */
 
@@ -6422,6 +6552,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[65]: -131073.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131073.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.0",	/* first whitespace character */
@@ -6514,6 +6646,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073",	/* first whitespace character */
 
@@ -6604,6 +6738,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[67]: -131073.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131073.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.1",	/* first whitespace character */
@@ -6696,6 +6832,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131073.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.2e2",	/* first whitespace character */
 
@@ -6786,6 +6924,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[69]: -131073.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131073.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131073.2E-4",	/* first whitespace character */
@@ -6878,6 +7018,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.0",	/* first whitespace character */
 
@@ -6968,6 +7110,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[71]: -131072 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131072",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072",	/* first whitespace character */
@@ -7060,6 +7204,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.1",	/* first whitespace character */
 
@@ -7150,6 +7296,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[73]: -131072.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131072.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.2e2",	/* first whitespace character */
@@ -7242,6 +7390,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131072.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131072.2E-4",	/* first whitespace character */
 
@@ -7332,6 +7482,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[75]: -131071.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131071.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.0",	/* first whitespace character */
@@ -7424,6 +7576,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071",	/* first whitespace character */
 
@@ -7514,6 +7668,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[77]: -131071.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131071.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.1",	/* first whitespace character */
@@ -7606,6 +7762,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131071.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.2e2",	/* first whitespace character */
 
@@ -7696,6 +7854,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[79]: -131071.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131071.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131071.2E-4",	/* first whitespace character */
@@ -7788,6 +7948,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.0",	/* first whitespace character */
 
@@ -7878,6 +8040,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[81]: -131070 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131070",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070",	/* first whitespace character */
@@ -7970,6 +8134,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.1",	/* first whitespace character */
 
@@ -8060,6 +8226,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[83]: -131070.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-131070.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.2e2",	/* first whitespace character */
@@ -8152,6 +8320,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-131070.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-131070.2E-4",	/* first whitespace character */
 
@@ -8242,6 +8412,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[85]: -65538.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65538.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.0",	/* first whitespace character */
@@ -8334,6 +8506,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538",	/* first whitespace character */
 
@@ -8424,6 +8598,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[87]: -65538.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65538.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.1",	/* first whitespace character */
@@ -8516,6 +8692,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65538.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.2e2",	/* first whitespace character */
 
@@ -8606,6 +8784,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[89]: -65538.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65538.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65538.2E-4",	/* first whitespace character */
@@ -8698,6 +8878,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.0",	/* first whitespace character */
 
@@ -8788,6 +8970,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[91]: -65537 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65537",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537",	/* first whitespace character */
@@ -8880,6 +9064,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.1",	/* first whitespace character */
 
@@ -8970,6 +9156,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[93]: -65537.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65537.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.2e2",	/* first whitespace character */
@@ -9062,6 +9250,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65537.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65537.2E-4",	/* first whitespace character */
 
@@ -9152,6 +9342,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[95]: -65536.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65536.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.0",	/* first whitespace character */
@@ -9244,6 +9436,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536",	/* first whitespace character */
 
@@ -9334,6 +9528,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[97]: -65536.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65536.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.1",	/* first whitespace character */
@@ -9426,6 +9622,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65536.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.2e2",	/* first whitespace character */
 
@@ -9516,6 +9714,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[99]: -65536.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65536.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65536.2E-4",	/* first whitespace character */
@@ -9608,6 +9808,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.0",	/* first whitespace character */
 
@@ -9698,6 +9900,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[101]: -65535 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65535",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535",	/* first whitespace character */
@@ -9790,6 +9994,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.1",	/* first whitespace character */
 
@@ -9880,6 +10086,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[103]: -65535.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65535.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.2e2",	/* first whitespace character */
@@ -9972,6 +10180,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65535.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65535.2E-4",	/* first whitespace character */
 
@@ -10062,6 +10272,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[105]: -65534.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65534.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.0",	/* first whitespace character */
@@ -10154,6 +10366,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534",	/* first whitespace character */
 
@@ -10244,6 +10458,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[107]: -65534.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65534.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.1",	/* first whitespace character */
@@ -10336,6 +10552,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-65534.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.2e2",	/* first whitespace character */
 
@@ -10426,6 +10644,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[109]: -65534.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-65534.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-65534.2E-4",	/* first whitespace character */
@@ -10518,6 +10738,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.0",	/* first whitespace character */
 
@@ -10608,6 +10830,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[111]: -32770 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32770",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770",	/* first whitespace character */
@@ -10700,6 +10924,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.1",	/* first whitespace character */
 
@@ -10790,6 +11016,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[113]: -32770.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32770.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.2e2",	/* first whitespace character */
@@ -10882,6 +11110,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32770.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32770.2E-4",	/* first whitespace character */
 
@@ -10972,6 +11202,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[115]: -32769.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32769.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.0",	/* first whitespace character */
@@ -11064,6 +11296,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769",	/* first whitespace character */
 
@@ -11154,6 +11388,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[117]: -32769.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32769.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.1",	/* first whitespace character */
@@ -11246,6 +11482,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32769.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.2e2",	/* first whitespace character */
 
@@ -11336,6 +11574,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[119]: -32769.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32769.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32769.2E-4",	/* first whitespace character */
@@ -11428,6 +11668,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.0",	/* first whitespace character */
 
@@ -11518,6 +11760,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[121]: -32768 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32768",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768",	/* first whitespace character */
@@ -11610,6 +11854,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.1",	/* first whitespace character */
 
@@ -11700,6 +11946,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[123]: -32768.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32768.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.2e2",	/* first whitespace character */
@@ -11792,6 +12040,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32768.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32768.2E-4",	/* first whitespace character */
 
@@ -11882,6 +12132,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[125]: -32767.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32767.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.0",	/* first whitespace character */
@@ -11974,6 +12226,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767",	/* first whitespace character */
 
@@ -12064,6 +12318,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[127]: -32767.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32767.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.1",	/* first whitespace character */
@@ -12156,6 +12412,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32767.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.2e2",	/* first whitespace character */
 
@@ -12246,6 +12504,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[129]: -32767.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32767.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32767.2E-4",	/* first whitespace character */
@@ -12338,6 +12598,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.0",	/* first whitespace character */
 
@@ -12428,6 +12690,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[131]: -32766 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32766",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766",	/* first whitespace character */
@@ -12520,6 +12784,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.1",	/* first whitespace character */
 
@@ -12610,6 +12876,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[133]: -32766.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-32766.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.2e2",	/* first whitespace character */
@@ -12702,6 +12970,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-32766.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-32766.2E-4",	/* first whitespace character */
 
@@ -12792,6 +13062,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[135]: -514.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-514.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.0",	/* first whitespace character */
@@ -12884,6 +13156,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514",		/* first whitespace character */
 
@@ -12974,6 +13248,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[137]: -514.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-514.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.1",	/* first whitespace character */
@@ -13066,6 +13342,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-514.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.2e2",	/* first whitespace character */
 
@@ -13156,6 +13434,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[139]: -514.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-514.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-514.2E-4",	/* first whitespace character */
@@ -13248,6 +13528,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.0",	/* first whitespace character */
 
@@ -13338,6 +13620,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[141]: -513 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-513",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513",		/* first whitespace character */
@@ -13430,6 +13714,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.1",	/* first whitespace character */
 
@@ -13520,6 +13806,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[143]: -513.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-513.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.2e2",	/* first whitespace character */
@@ -13612,6 +13900,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-513.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-513.2E-4",	/* first whitespace character */
 
@@ -13702,6 +13992,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[145]: -512.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-512.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.0",	/* first whitespace character */
@@ -13794,6 +14086,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512",		/* first whitespace character */
 
@@ -13884,6 +14178,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[147]: -512.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-512.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.1",	/* first whitespace character */
@@ -13976,6 +14272,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-512.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.2e2",	/* first whitespace character */
 
@@ -14066,6 +14364,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[149]: -512.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-512.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-512.2E-4",	/* first whitespace character */
@@ -14158,6 +14458,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.0",	/* first whitespace character */
 
@@ -14248,6 +14550,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[151]: -511 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-511",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511",		/* first whitespace character */
@@ -14340,6 +14644,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.1",	/* first whitespace character */
 
@@ -14430,6 +14736,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[153]: -511.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-511.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.2e2",	/* first whitespace character */
@@ -14522,6 +14830,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-511.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-511.2E-4",	/* first whitespace character */
 
@@ -14612,6 +14922,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[155]: -510.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-510.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.0",	/* first whitespace character */
@@ -14704,6 +15016,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510",		/* first whitespace character */
 
@@ -14794,6 +15108,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[157]: -510.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-510.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.1",	/* first whitespace character */
@@ -14886,6 +15202,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-510.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.2e2",	/* first whitespace character */
 
@@ -14976,6 +15294,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[159]: -510.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-510.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-510.2E-4",	/* first whitespace character */
@@ -15068,6 +15388,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.0",	/* first whitespace character */
 
@@ -15158,6 +15480,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[161]: -258 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-258",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258",		/* first whitespace character */
@@ -15250,6 +15574,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.1",	/* first whitespace character */
 
@@ -15340,6 +15666,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[163]: -258.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-258.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.2e2",	/* first whitespace character */
@@ -15432,6 +15760,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-258.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-258.2E-4",	/* first whitespace character */
 
@@ -15522,6 +15852,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[165]: -257.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-257.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.0",	/* first whitespace character */
@@ -15614,6 +15946,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257",		/* first whitespace character */
 
@@ -15704,6 +16038,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[167]: -257.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-257.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.1",	/* first whitespace character */
@@ -15796,6 +16132,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-257.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.2e2",	/* first whitespace character */
 
@@ -15886,6 +16224,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[169]: -257.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-257.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-257.2E-4",	/* first whitespace character */
@@ -15978,6 +16318,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.0",	/* first whitespace character */
 
@@ -16068,6 +16410,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[171]: -256 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-256",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256",		/* first whitespace character */
@@ -16160,6 +16504,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.1",	/* first whitespace character */
 
@@ -16250,6 +16596,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[173]: -256.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-256.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.2e2",	/* first whitespace character */
@@ -16342,6 +16690,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-256.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-256.2E-4",	/* first whitespace character */
 
@@ -16432,6 +16782,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[175]: -255.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-255.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.0",	/* first whitespace character */
@@ -16524,6 +16876,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255",		/* first whitespace character */
 
@@ -16614,6 +16968,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[177]: -255.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-255.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.1",	/* first whitespace character */
@@ -16706,6 +17062,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-255.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.2e2",	/* first whitespace character */
 
@@ -16796,6 +17154,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[179]: -255.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-255.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-255.2E-4",	/* first whitespace character */
@@ -16888,6 +17248,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.0",	/* first whitespace character */
 
@@ -16978,6 +17340,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[181]: -254 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-254",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254",		/* first whitespace character */
@@ -17070,6 +17434,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.1",	/* first whitespace character */
 
@@ -17160,6 +17526,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[183]: -254.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-254.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.2e2",	/* first whitespace character */
@@ -17252,6 +17620,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-254.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-254.2E-4",	/* first whitespace character */
 
@@ -17342,6 +17712,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[185]: -130.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-130.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.0",	/* first whitespace character */
@@ -17434,6 +17806,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130",		/* first whitespace character */
 
@@ -17524,6 +17898,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[187]: -130.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-130.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.1",	/* first whitespace character */
@@ -17616,6 +17992,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-130.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.2e2",	/* first whitespace character */
 
@@ -17706,6 +18084,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[189]: -130.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-130.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-130.2E-4",	/* first whitespace character */
@@ -17798,6 +18178,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.0",	/* first whitespace character */
 
@@ -17888,6 +18270,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[191]: -129 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-129",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129",		/* first whitespace character */
@@ -17980,6 +18364,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.1",	/* first whitespace character */
 
@@ -18070,6 +18456,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[193]: -129.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-129.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.2e2",	/* first whitespace character */
@@ -18162,6 +18550,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-129.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-129.2E-4",	/* first whitespace character */
 
@@ -18252,6 +18642,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[195]: -128.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-128.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.0",	/* first whitespace character */
@@ -18344,6 +18736,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128",		/* first whitespace character */
 
@@ -18434,6 +18828,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[197]: -128.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-128.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.1",	/* first whitespace character */
@@ -18526,6 +18922,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-128.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.2e2",	/* first whitespace character */
 
@@ -18616,6 +19014,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[199]: -128.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-128.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-128.2E-4",	/* first whitespace character */
@@ -18708,6 +19108,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.0",	/* first whitespace character */
 
@@ -18798,6 +19200,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[201]: -127 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-127",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127",		/* first whitespace character */
@@ -18890,6 +19294,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.1",	/* first whitespace character */
 
@@ -18980,6 +19386,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[203]: -127.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-127.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.2e2",	/* first whitespace character */
@@ -19072,6 +19480,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-127.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-127.2E-4",	/* first whitespace character */
 
@@ -19162,6 +19572,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[205]: -126.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-126.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.0",	/* first whitespace character */
@@ -19254,6 +19666,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126",		/* first whitespace character */
 
@@ -19344,6 +19758,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[207]: -126.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-126.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.1",	/* first whitespace character */
@@ -19436,6 +19852,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-126.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.2e2",	/* first whitespace character */
 
@@ -19526,6 +19944,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[209]: -126.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-126.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-126.2E-4",	/* first whitespace character */
@@ -19618,6 +20038,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.0",		/* first whitespace character */
 
@@ -19708,6 +20130,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[211]: -2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2",		/* first whitespace character */
@@ -19800,6 +20224,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.1",		/* first whitespace character */
 
@@ -19890,6 +20316,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[213]: -2.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-2.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.2e2",	/* first whitespace character */
@@ -19982,6 +20410,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-2.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-2.2E-4",	/* first whitespace character */
 
@@ -20072,6 +20502,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[215]: -1.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-1.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.0",		/* first whitespace character */
@@ -20164,6 +20596,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1",		/* first whitespace character */
 
@@ -20254,6 +20688,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[217]: -1.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-1.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.1",		/* first whitespace character */
@@ -20346,6 +20782,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"-1.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.2e2",	/* first whitespace character */
 
@@ -20436,6 +20874,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[219]: -1.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"-1.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"-1.2E-4",	/* first whitespace character */
@@ -20528,6 +20968,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.0",		/* first whitespace character */
 
@@ -20618,6 +21060,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[221]: 0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0",		/* first whitespace character */
@@ -20710,6 +21154,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.1",		/* first whitespace character */
 
@@ -20800,6 +21246,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[223]: 0.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"0.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.2e2",	/* first whitespace character */
@@ -20892,6 +21340,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"0.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"0.2E-4",	/* first whitespace character */
 
@@ -20982,6 +21432,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[225]: 1.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"1.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.0",		/* first whitespace character */
@@ -21074,6 +21526,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1",		/* first whitespace character */
 
@@ -21164,6 +21618,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[227]: 1.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"1.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.1",		/* first whitespace character */
@@ -21256,6 +21712,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"1.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.2e2",	/* first whitespace character */
 
@@ -21346,6 +21804,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[229]: 1.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"1.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"1.2E-4",	/* first whitespace character */
@@ -21438,6 +21898,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.0",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.0",		/* first whitespace character */
 
@@ -21528,6 +21990,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[231]: 2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2",		/* first whitespace character */
@@ -21620,6 +22084,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.1",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.1",		/* first whitespace character */
 
@@ -21710,6 +22176,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[233]: 2.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.2e2",	/* first whitespace character */
@@ -21802,6 +22270,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2.2E-4",	/* first whitespace character */
 
@@ -21892,6 +22362,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[235]: 126.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"126.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.0",	/* first whitespace character */
@@ -21984,6 +22456,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126",		/* first whitespace character */
 
@@ -22074,6 +22548,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[237]: 126.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"126.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.1",	/* first whitespace character */
@@ -22166,6 +22642,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"126.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.2e2",	/* first whitespace character */
 
@@ -22256,6 +22734,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[239]: 126.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"126.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"126.2E-4",	/* first whitespace character */
@@ -22348,6 +22828,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.0",	/* first whitespace character */
 
@@ -22438,6 +22920,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[241]: 127 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"127",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127",		/* first whitespace character */
@@ -22530,6 +23014,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.1",	/* first whitespace character */
 
@@ -22620,6 +23106,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[243]: 127.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"127.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.2e2",	/* first whitespace character */
@@ -22712,6 +23200,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"127.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"127.2E-4",	/* first whitespace character */
 
@@ -22802,6 +23292,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[245]: 128.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"128.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.0",	/* first whitespace character */
@@ -22894,6 +23386,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128",		/* first whitespace character */
 
@@ -22984,6 +23478,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[247]: 128.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"128.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.1",	/* first whitespace character */
@@ -23076,6 +23572,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"128.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.2e2",	/* first whitespace character */
 
@@ -23166,6 +23664,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[249]: 128.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"128.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"128.2E-4",	/* first whitespace character */
@@ -23258,6 +23758,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.0",	/* first whitespace character */
 
@@ -23348,6 +23850,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[251]: 129 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"129",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129",		/* first whitespace character */
@@ -23440,6 +23944,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.1",	/* first whitespace character */
 
@@ -23530,6 +24036,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[253]: 129.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"129.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.2e2",	/* first whitespace character */
@@ -23622,6 +24130,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"129.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"129.2E-4",	/* first whitespace character */
 
@@ -23712,6 +24222,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[255]: 130.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"130.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.0",	/* first whitespace character */
@@ -23804,6 +24316,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130",		/* first whitespace character */
 
@@ -23894,6 +24408,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[257]: 130.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"130.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.1",	/* first whitespace character */
@@ -23986,6 +24502,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"130.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.2e2",	/* first whitespace character */
 
@@ -24076,6 +24594,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[259]: 130.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"130.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"130.2E-4",	/* first whitespace character */
@@ -24168,6 +24688,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.0",	/* first whitespace character */
 
@@ -24258,6 +24780,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[261]: 254 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"254",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254",		/* first whitespace character */
@@ -24350,6 +24874,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.1",	/* first whitespace character */
 
@@ -24440,6 +24966,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[263]: 254.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"254.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.2e2",	/* first whitespace character */
@@ -24532,6 +25060,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"254.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"254.2E-4",	/* first whitespace character */
 
@@ -24622,6 +25152,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[265]: 255.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"255.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.0",	/* first whitespace character */
@@ -24714,6 +25246,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255",		/* first whitespace character */
 
@@ -24804,6 +25338,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[267]: 255.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"255.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.1",	/* first whitespace character */
@@ -24896,6 +25432,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"255.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.2e2",	/* first whitespace character */
 
@@ -24986,6 +25524,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[269]: 255.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"255.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"255.2E-4",	/* first whitespace character */
@@ -25078,6 +25618,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.0",	/* first whitespace character */
 
@@ -25168,6 +25710,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[271]: 256 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"256",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256",		/* first whitespace character */
@@ -25260,6 +25804,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.1",	/* first whitespace character */
 
@@ -25350,6 +25896,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[273]: 256.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"256.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.2e2",	/* first whitespace character */
@@ -25442,6 +25990,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"256.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"256.2E-4",	/* first whitespace character */
 
@@ -25532,6 +26082,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[275]: 257.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"257.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.0",	/* first whitespace character */
@@ -25624,6 +26176,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257",		/* first whitespace character */
 
@@ -25714,6 +26268,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[277]: 257.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"257.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.1",	/* first whitespace character */
@@ -25806,6 +26362,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"257.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.2e2",	/* first whitespace character */
 
@@ -25896,6 +26454,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[279]: 257.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"257.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"257.2E-4",	/* first whitespace character */
@@ -25988,6 +26548,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.0",	/* first whitespace character */
 
@@ -26078,6 +26640,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[281]: 258 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"258",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258",		/* first whitespace character */
@@ -26170,6 +26734,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.1",	/* first whitespace character */
 
@@ -26260,6 +26826,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[283]: 258.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"258.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.2e2",	/* first whitespace character */
@@ -26352,6 +26920,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"258.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"258.2E-4",	/* first whitespace character */
 
@@ -26442,6 +27012,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[285]: 510.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"510.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.0",	/* first whitespace character */
@@ -26534,6 +27106,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510",		/* first whitespace character */
 
@@ -26624,6 +27198,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[287]: 510.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"510.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.1",	/* first whitespace character */
@@ -26716,6 +27292,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"510.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.2e2",	/* first whitespace character */
 
@@ -26806,6 +27384,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[289]: 510.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"510.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"510.2E-4",	/* first whitespace character */
@@ -26898,6 +27478,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.0",	/* first whitespace character */
 
@@ -26988,6 +27570,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[291]: 511 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"511",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511",		/* first whitespace character */
@@ -27080,6 +27664,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.1",	/* first whitespace character */
 
@@ -27170,6 +27756,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[293]: 511.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"511.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.2e2",	/* first whitespace character */
@@ -27262,6 +27850,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"511.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"511.2E-4",	/* first whitespace character */
 
@@ -27352,6 +27942,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[295]: 512.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"512.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.0",	/* first whitespace character */
@@ -27444,6 +28036,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512",		/* first whitespace character */
 
@@ -27534,6 +28128,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[297]: 512.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"512.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.1",	/* first whitespace character */
@@ -27626,6 +28222,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"512.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.2e2",	/* first whitespace character */
 
@@ -27716,6 +28314,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[299]: 512.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"512.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"512.2E-4",	/* first whitespace character */
@@ -27808,6 +28408,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.0",	/* first whitespace character */
 
@@ -27898,6 +28500,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[301]: 513 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"513",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513",		/* first whitespace character */
@@ -27990,6 +28594,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.1",	/* first whitespace character */
 
@@ -28080,6 +28686,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[303]: 513.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"513.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.2e2",	/* first whitespace character */
@@ -28172,6 +28780,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"513.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"513.2E-4",	/* first whitespace character */
 
@@ -28262,6 +28872,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[305]: 514.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"514.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.0",	/* first whitespace character */
@@ -28354,6 +28966,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514",		/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514",		/* first whitespace character */
 
@@ -28444,6 +29058,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[307]: 514.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"514.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.1",	/* first whitespace character */
@@ -28536,6 +29152,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"514.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.2e2",	/* first whitespace character */
 
@@ -28626,6 +29244,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[309]: 514.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"514.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"514.2E-4",	/* first whitespace character */
@@ -28718,6 +29338,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.0",	/* first whitespace character */
 
@@ -28808,6 +29430,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[311]: 32766 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32766",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766",	/* first whitespace character */
@@ -28900,6 +29524,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.1",	/* first whitespace character */
 
@@ -28990,6 +29616,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[313]: 32766.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32766.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.2e2",	/* first whitespace character */
@@ -29082,6 +29710,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32766.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32766.2E-4",	/* first whitespace character */
 
@@ -29172,6 +29802,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[315]: 32767.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32767.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.0",	/* first whitespace character */
@@ -29264,6 +29896,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767",	/* first whitespace character */
 
@@ -29354,6 +29988,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[317]: 32767.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32767.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.1",	/* first whitespace character */
@@ -29446,6 +30082,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32767.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.2e2",	/* first whitespace character */
 
@@ -29536,6 +30174,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[319]: 32767.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32767.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32767.2E-4",	/* first whitespace character */
@@ -29628,6 +30268,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.0",	/* first whitespace character */
 
@@ -29718,6 +30360,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[321]: 32768 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32768",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768",	/* first whitespace character */
@@ -29810,6 +30454,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.1",	/* first whitespace character */
 
@@ -29900,6 +30546,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[323]: 32768.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32768.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.2e2",	/* first whitespace character */
@@ -29992,6 +30640,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32768.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32768.2E-4",	/* first whitespace character */
 
@@ -30082,6 +30732,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[325]: 32769.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32769.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.0",	/* first whitespace character */
@@ -30174,6 +30826,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769",	/* first whitespace character */
 
@@ -30264,6 +30918,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[327]: 32769.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32769.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.1",	/* first whitespace character */
@@ -30356,6 +31012,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32769.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.2e2",	/* first whitespace character */
 
@@ -30446,6 +31104,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[329]: 32769.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32769.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32769.2E-4",	/* first whitespace character */
@@ -30538,6 +31198,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.0",	/* first whitespace character */
 
@@ -30628,6 +31290,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[331]: 32770 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32770",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770",	/* first whitespace character */
@@ -30720,6 +31384,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.1",	/* first whitespace character */
 
@@ -30810,6 +31476,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[333]: 32770.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"32770.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.2e2",	/* first whitespace character */
@@ -30902,6 +31570,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"32770.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"32770.2E-4",	/* first whitespace character */
 
@@ -30992,6 +31662,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[335]: 65534.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65534.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.0",	/* first whitespace character */
@@ -31084,6 +31756,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534",	/* first whitespace character */
 
@@ -31174,6 +31848,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[337]: 65534.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65534.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.1",	/* first whitespace character */
@@ -31266,6 +31942,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65534.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.2e2",	/* first whitespace character */
 
@@ -31356,6 +32034,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[339]: 65534.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65534.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65534.2E-4",	/* first whitespace character */
@@ -31448,6 +32128,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.0",	/* first whitespace character */
 
@@ -31538,6 +32220,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[341]: 65535 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65535",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535",	/* first whitespace character */
@@ -31630,6 +32314,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.1",	/* first whitespace character */
 
@@ -31720,6 +32406,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[343]: 65535.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65535.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.2e2",	/* first whitespace character */
@@ -31812,6 +32500,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65535.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65535.2E-4",	/* first whitespace character */
 
@@ -31902,6 +32592,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[345]: 65536.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65536.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.0",	/* first whitespace character */
@@ -31994,6 +32686,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536",	/* first whitespace character */
 
@@ -32084,6 +32778,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[347]: 65536.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65536.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.1",	/* first whitespace character */
@@ -32176,6 +32872,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65536.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.2e2",	/* first whitespace character */
 
@@ -32266,6 +32964,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[349]: 65536.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65536.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65536.2E-4",	/* first whitespace character */
@@ -32358,6 +33058,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.0",	/* first whitespace character */
 
@@ -32448,6 +33150,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[351]: 65537 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65537",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537",	/* first whitespace character */
@@ -32540,6 +33244,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.1",	/* first whitespace character */
 
@@ -32630,6 +33336,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[353]: 65537.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65537.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.2e2",	/* first whitespace character */
@@ -32722,6 +33430,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65537.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65537.2E-4",	/* first whitespace character */
 
@@ -32812,6 +33522,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[355]: 65538.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65538.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.0",	/* first whitespace character */
@@ -32904,6 +33616,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538",	/* first whitespace character */
 
@@ -32994,6 +33708,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[357]: 65538.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65538.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.1",	/* first whitespace character */
@@ -33086,6 +33802,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"65538.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.2e2",	/* first whitespace character */
 
@@ -33176,6 +33894,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[359]: 65538.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"65538.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"65538.2E-4",	/* first whitespace character */
@@ -33268,6 +33988,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.0",	/* first whitespace character */
 
@@ -33358,6 +34080,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[361]: 131070 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131070",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070",	/* first whitespace character */
@@ -33450,6 +34174,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.1",	/* first whitespace character */
 
@@ -33540,6 +34266,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[363]: 131070.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131070.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.2e2",	/* first whitespace character */
@@ -33632,6 +34360,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131070.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131070.2E-4",	/* first whitespace character */
 
@@ -33722,6 +34452,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[365]: 131071.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131071.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.0",	/* first whitespace character */
@@ -33814,6 +34546,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071",	/* first whitespace character */
 
@@ -33904,6 +34638,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[367]: 131071.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131071.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.1",	/* first whitespace character */
@@ -33996,6 +34732,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131071.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.2e2",	/* first whitespace character */
 
@@ -34086,6 +34824,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[369]: 131071.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131071.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131071.2E-4",	/* first whitespace character */
@@ -34178,6 +34918,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.0",	/* first whitespace character */
 
@@ -34268,6 +35010,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[371]: 131072 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131072",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072",	/* first whitespace character */
@@ -34360,6 +35104,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.1",	/* first whitespace character */
 
@@ -34450,6 +35196,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[373]: 131072.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131072.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.2e2",	/* first whitespace character */
@@ -34542,6 +35290,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131072.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131072.2E-4",	/* first whitespace character */
 
@@ -34632,6 +35382,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[375]: 131073.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131073.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.0",	/* first whitespace character */
@@ -34724,6 +35476,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073",	/* first whitespace character */
 
@@ -34814,6 +35568,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[377]: 131073.1 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131073.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.1",	/* first whitespace character */
@@ -34906,6 +35662,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131073.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.2e2",	/* first whitespace character */
 
@@ -34996,6 +35754,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[379]: 131073.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131073.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131073.2E-4",	/* first whitespace character */
@@ -35088,6 +35848,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.0",	/* first whitespace character */
 
@@ -35178,6 +35940,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[381]: 131074 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131074",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074",	/* first whitespace character */
@@ -35270,6 +36034,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.1",	/* first whitespace character */
 
@@ -35360,6 +36126,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[383]: 131074.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"131074.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.2e2",	/* first whitespace character */
@@ -35452,6 +36220,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"131074.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"131074.2E-4",	/* first whitespace character */
 
@@ -35542,6 +36312,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[385]: 2147483646.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483646.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.0",	/* first whitespace character */
@@ -35634,6 +36406,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.1",	/* first whitespace character */
 
@@ -35724,6 +36498,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[387]: 2147483646.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483646.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.2e2",	/* first whitespace character */
@@ -35816,6 +36592,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483646.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483646.2E-4",	/* first whitespace character */
 
@@ -35906,6 +36684,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[389]: 2147483647.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483647.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.0",	/* first whitespace character */
@@ -35998,6 +36778,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.1",	/* first whitespace character */
 
@@ -36088,6 +36870,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[391]: 2147483647.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483647.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.2e2",	/* first whitespace character */
@@ -36180,6 +36964,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483647.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483647.2E-4",	/* first whitespace character */
 
@@ -36270,6 +37056,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[393]: 2147483648.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483648.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.0",	/* first whitespace character */
@@ -36362,6 +37150,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.1",	/* first whitespace character */
 
@@ -36452,6 +37242,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[395]: 2147483648.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483648.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.2e2",	/* first whitespace character */
@@ -36544,6 +37336,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483648.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483648.2E-4",	/* first whitespace character */
 
@@ -36634,6 +37428,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[397]: 2147483649.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483649.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.0",	/* first whitespace character */
@@ -36726,6 +37522,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.1",	/* first whitespace character */
 
@@ -36816,6 +37614,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[399]: 2147483649.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483649.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.2e2",	/* first whitespace character */
@@ -36908,6 +37708,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483649.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483649.2E-4",	/* first whitespace character */
 
@@ -36998,6 +37800,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[401]: 2147483650.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483650.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.0",	/* first whitespace character */
@@ -37090,6 +37894,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.1",	/* first whitespace character */
 
@@ -37180,6 +37986,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[403]: 2147483650.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"2147483650.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.2e2",	/* first whitespace character */
@@ -37272,6 +38080,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"2147483650.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"2147483650.2E-4",	/* first whitespace character */
 
@@ -37362,6 +38172,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[405]: 4294967294.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967294.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.0",	/* first whitespace character */
@@ -37454,6 +38266,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.1",	/* first whitespace character */
 
@@ -37544,6 +38358,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[407]: 4294967294.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967294.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.2e2",	/* first whitespace character */
@@ -37636,6 +38452,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967294.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967294.2E-4",	/* first whitespace character */
 
@@ -37726,6 +38544,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[409]: 4294967295.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967295.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.0",	/* first whitespace character */
@@ -37818,6 +38638,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.1",	/* first whitespace character */
 
@@ -37908,6 +38730,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[411]: 4294967295.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967295.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.2e2",	/* first whitespace character */
@@ -38000,6 +38824,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967295.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967295.2E-4",	/* first whitespace character */
 
@@ -38090,6 +38916,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[413]: 4294967296.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967296.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.0",	/* first whitespace character */
@@ -38182,6 +39010,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.1",	/* first whitespace character */
 
@@ -38272,6 +39102,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[415]: 4294967296.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967296.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.2e2",	/* first whitespace character */
@@ -38364,6 +39196,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967296.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967296.2E-4",	/* first whitespace character */
 
@@ -38454,6 +39288,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[417]: 4294967297.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967297.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.0",	/* first whitespace character */
@@ -38546,6 +39382,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.1",	/* first whitespace character */
 
@@ -38636,6 +39474,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[419]: 4294967297.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967297.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.2e2",	/* first whitespace character */
@@ -38728,6 +39568,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967297.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967297.2E-4",	/* first whitespace character */
 
@@ -38818,6 +39660,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[421]: 4294967298.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967298.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.0",	/* first whitespace character */
@@ -38910,6 +39754,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.1",	/* first whitespace character */
 
@@ -39000,6 +39846,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[423]: 4294967298.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"4294967298.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.2e2",	/* first whitespace character */
@@ -39092,6 +39940,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"4294967298.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"4294967298.2E-4",	/* first whitespace character */
 
@@ -39182,6 +40032,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[425]: 8589934590.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934590.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.0",	/* first whitespace character */
@@ -39274,6 +40126,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.1",	/* first whitespace character */
 
@@ -39364,6 +40218,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[427]: 8589934590.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934590.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.2e2",	/* first whitespace character */
@@ -39456,6 +40312,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934590.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934590.2E-4",	/* first whitespace character */
 
@@ -39546,6 +40404,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[429]: 8589934591.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934591.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.0",	/* first whitespace character */
@@ -39638,6 +40498,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.1",	/* first whitespace character */
 
@@ -39728,6 +40590,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[431]: 8589934591.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934591.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.2e2",	/* first whitespace character */
@@ -39820,6 +40684,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934591.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934591.2E-4",	/* first whitespace character */
 
@@ -39910,6 +40776,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[433]: 8589934592.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934592.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.0",	/* first whitespace character */
@@ -40002,6 +40870,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.1",	/* first whitespace character */
 
@@ -40092,6 +40962,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[435]: 8589934592.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934592.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.2e2",	/* first whitespace character */
@@ -40184,6 +41056,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934592.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934592.2E-4",	/* first whitespace character */
 
@@ -40274,6 +41148,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[437]: 8589934593.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934593.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.0",	/* first whitespace character */
@@ -40366,6 +41242,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.1",	/* first whitespace character */
 
@@ -40456,6 +41334,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[439]: 8589934593.2e2 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934593.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.2e2",	/* first whitespace character */
@@ -40548,6 +41428,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934593.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934593.2E-4",	/* first whitespace character */
 
@@ -40638,6 +41520,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[441]: 8589934594.0 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934594.0",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.0",	/* first whitespace character */
@@ -40730,6 +41614,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.1",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.1",	/* first whitespace character */
 
@@ -40821,6 +41707,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
 
+	true,		/* true ==> able to parse JSON number string */
+
 	"8589934594.2e2",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.2e2",	/* first whitespace character */
 
@@ -40911,6 +41799,8 @@ struct json_number test_result[TEST_COUNT+1] = {
     /* test_result[444]: 8589934594.2E-4 */
     {
 	true,		/* true ==> able to convert JSON number string to some form of C value */
+
+	true,		/* true ==> able to parse JSON number string */
 
 	"8589934594.2E-4",	/* allocated copy of the original allocated JSON number, NUL terminated */
 	"8589934594.2E-4",	/* first whitespace character */

@@ -2570,6 +2570,190 @@ is_decimal_str(char const *str, size_t *retlen)
 }
 
 /*
+ * is_floating_notation - if the buffer is a base 10 floating point notation in ASCII
+ *
+ * given:
+ *	ptr	    - pointer to buffer containing an integer in ASCII
+ *	len	    - length, starting at ptr
+ *
+ * XXX - update this comment explaining what we consider a floating point notation - XXX
+ *
+ * returns:
+ *
+ *	true	==> ptr points to a base 10 floating point notation in ASCII
+ *	false	==> ptr does NOT point to a base 10 floating point notation in ASCII, or if ptr is NULL, or len <= 0
+ */
+bool
+is_floating_notation(char const *ptr, size_t len)
+{
+    size_t start = 0;	/* starting character number for ASCII number */
+    size_t i;
+
+    UNUSED_ARG(start);	/* XXX - remove after writing this function - XXX */
+    UNUSED_ARG(i);	/* XXX - remove after writing this function - XXX */
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	warn(__func__, "passed NULL ptr");
+	return false;
+    }
+    if (len <= 0) {
+	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	return false;
+    }
+
+    /* XXX - fix to test string, return true for now - XXX */
+    return true;
+}
+
+
+/*
+ * is_floating_notation_str - if the string buffer str is a base 10 floating point notation in ASCII
+ *
+ * This is a simplified interface for is_floating_notation().
+ *
+ * given:
+ *	str	    - pointer to buffer containing an integer in ASCII
+ *	retlen	    - address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *
+ *	true	==> str points to a base 10 floating point notation in ASCII
+ *	false	==> str does NOT point to a base 10 floating point notation in
+ *		    ASCII, str is NULL or str is empty
+ *
+ * NOTE: This function calls is_floating_notation().  See that function for
+ * details on what is and is not considered floating point notation.
+ */
+bool
+is_floating_notation_str(char const *str, size_t *retlen)
+{
+    size_t len = 0;		/* length of string to test */
+    bool ret = false;		/* if str points to a base 10 floating point notation in ASCII */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "passed NULL str");
+	return false;
+    } else {
+	len = strlen(str);
+    }
+
+    /*
+     * convert to is_e_notation() call
+     */
+    ret = is_floating_notation(str, len);
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return test of ASCII base floating point notation digits
+     */
+    return ret;
+}
+
+
+/*
+ * is_e_notation - if the buffer is a base 10 exponent floating point notation in ASCII
+ *
+ * given:
+ *	ptr	    - pointer to buffer containing an integer in ASCII
+ *	len	    - length, starting at ptr
+ *
+ * XXX - update this comment explaining what we consider an exponent notation - XXX
+ *
+ * returns:
+ *
+ *	true	==> ptr points to a base 10 exponent notation in ASCII
+ *	false	==> ptr does NOT point to a base 10 exponent notation in ASCII, or if ptr is NULL, or len <= 0
+ */
+bool
+is_e_notation(char const *ptr, size_t len)
+{
+    size_t start = 0;	/* starting character number for ASCII number */
+    size_t i;
+
+    UNUSED_ARG(start);	/* XXX - remove after writing this function - XXX */
+    UNUSED_ARG(i);	/* XXX - remove after writing this function - XXX */
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	warn(__func__, "passed NULL ptr");
+	return false;
+    }
+    if (len <= 0) {
+	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	return false;
+    }
+
+    /* XXX - fix to test string, return true for now - XXX */
+    return true;
+}
+
+
+/*
+ * is_e_notation_str - if the string buffer str is a base 10 exponent floating point notation in ASCII
+ *
+ * This is a simplified interface for is_e_notation().
+ *
+ * given:
+ *	str	    - pointer to buffer containing an integer in ASCII
+ *	retlen	    - address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *
+ *	true	==> str points to a base 10 exponent floating point notation in ASCII
+ *	false	==> str does NOT point to a base 10 exponent floating point
+ *		    notation in ASCII, str is NULL or str is empty
+ *
+ * NOTE: This function calls is_e_notation().  See that function for details on
+ *	 what is and is not considered exponent notation.
+ */
+bool
+is_e_notation_str(char const *str, size_t *retlen)
+{
+    size_t len = 0;		/* length of string to test */
+    bool ret = false;		/* if str points to a base 10 exponent notation in ASCII */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "passed NULL str");
+	return false;
+    } else {
+	len = strlen(str);
+    }
+
+    /*
+     * convert to is_e_notation() call
+     */
+    ret = is_e_notation(str, len);
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return test of ASCII base exponent notation digits
+     */
+    return ret;
+}
+
+
+/*
  * posix_plus_safe - if string is a valid POSIX portable safe plus + chars
  *
  * If slash_ok is true:

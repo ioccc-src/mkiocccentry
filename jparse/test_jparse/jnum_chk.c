@@ -206,7 +206,7 @@ main(int argc, char *argv[])
 
 
 /*
- * chk_test = check a given test
+ * chk_test - check a given test
  *
  * When strict == true, we will compare every node->item.number element
  * with every *test element.  When strict == false, we will only compare
