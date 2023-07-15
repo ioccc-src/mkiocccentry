@@ -17,8 +17,13 @@ Add helper macros `CONVERTED_PARSED_JSON_NODE`, ` CONVERTED_JSON_NODE` and
 booleans are true. The `CONVERTED_JSON_NODE` checks that the boolean `converted`
 is true and that the `parsed` boolean is false and the `PARSED_JSON_NODE` checks
 that the `parsed` boolean is true and that the `converted` boolean is false.
-These macros have been used in `jparse/json_util.c` but other files need to be
-checked still.
+These macros have been used in in place of checks of `foo->converted` and
+`foo->parsed`.
+
+Rename function `sem_node_valid_converted()` to be just `sem_node_valid()` and
+make use of appropriate macro: for numbers it uses the `VALID_JSON_NODE` and or
+others it uses `CONVERTED_PARSED_JSON_NODE` as both `converted` and `parsed`
+must be true for non-number nodes.
 
 
 ## Release 1.0.30 2023-07-14
