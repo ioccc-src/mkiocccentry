@@ -714,9 +714,9 @@ sem_node_valid_converted(struct json const *node, unsigned int depth, struct jso
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	true ==> JSON node is converted and a valid JTYPE
+ *	true ==> JSON node is parsed and a valid JTYPE
  *	    The val_err arg is ignored
- *	NULL ==> JSON node is not converted, invalid node type, or internal error
+ *	NULL ==> JSON node is not parsed, invalid node type, or internal error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_count_err)
  */
 bool
@@ -732,7 +732,7 @@ sem_node_valid_parsed(struct json const *node, unsigned int depth, struct json_s
     }
 
     /*
-     * validate JSON parse node type and check for not converted
+     * validate JSON parse node type and check for not parsed
      */
     switch (node->type) {
     case JTYPE_UNSET:   /* JSON item has not been set - must be the value 0 */
@@ -827,7 +827,7 @@ sem_node_valid_parsed(struct json const *node, unsigned int depth, struct json_s
 	    /* parsed check */
 	    if (!item->parsed) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(56, node, depth, sem, name, "JTYPE_NULL node: converted is false");
+		    *val_err = werr_sem_val(56, node, depth, sem, name, "JTYPE_NULL node: parsed is false");
 		}
 		return false;
 	    }

@@ -259,6 +259,19 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
     }
 
     /*
+     * test parsed boolean
+     */
+    if (test_result[testnum].parsed != item->parsed) {
+	dbg(DBG_VHIGH, "ERROR: test_result[%d].parsed: %d != item.parsed: %d",
+		       testnum, test_result[testnum].parsed, item->parsed);
+	test_error = true;
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].parsed: %d == item.parsed: %d",
+			testnum, test_result[testnum].parsed, item->parsed);
+    }
+
+
+    /*
      * test NULL strings
      */
     if (test_result[testnum].as_str == NULL) {
