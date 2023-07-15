@@ -28,6 +28,9 @@ make use of appropriate macro: for numbers it uses the `VALID_JSON_NODE` and or
 others it uses `CONVERTED_PARSED_JSON_NODE` as both `converted` and `parsed`
 must be true for non-number nodes.
 
+Fixes in `json_util_README.md` up through the beginning of `jnamval`. The rest
+of the document and a more thorough check of that which has been checked will
+come later.
 
 ## Release 1.0.30 2023-07-14
 
