@@ -2,7 +2,10 @@
 
 ## Release 1.0.31 2023-07-15
 
-New JSON parser and jparse version "1.0.12 2023-07-15".
+New JSON parser and jparse version "1.1.0 2023-07-15".
+
+Completely resolve issue #752: 'Enhancement: add parsed boolean to the JSON
+parser'. This involved the below changes.
 
 Add more checks to JSON node `parsed` member so that if converted is false but
 parsed is true it's not an error (in the cases where parsed is allowed to be
