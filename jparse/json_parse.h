@@ -32,6 +32,10 @@
 #define JSON_BYTE_VALUES (BYTE_VALUES) /* to make the purpose clearer we have the JSON_ prefix */
 
 #define VALID_JSON_NODE(item) ((item)->converted || (item)->parsed)
+#define CONVERTED_PARSED_JSON_NODE(item) ((item)->converted && (item)->parsed)
+#define CONVERTED_JSON_NODE(item) ((item)->converted && !(item)->parsed)
+#define PARSED_JSON_NODE(item) ((item)->parsed && !(item)->converted)
+
 
 /*
  * JSON encoding of an octet in a JSON string

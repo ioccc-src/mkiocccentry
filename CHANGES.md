@@ -11,6 +11,15 @@ about it if they are different).
 
 Improve printing of string variables and numbers in `vjson_fprint()`.
 
+Add helper macros `CONVERTED_PARSED_JSON_NODE`, ` CONVERTED_JSON_NODE` and
+`PARSED_JSON_NODE` and updated jparse.3 man page. The
+`CONVERTED_PARSED_JSON_NODE` checks that both the `converted` and `parsed`
+booleans are true. The `CONVERTED_JSON_NODE` checks that the boolean `converted`
+is true and that the `parsed` boolean is false and the `PARSED_JSON_NODE` checks
+that the `parsed` boolean is true and that the `converted` boolean is false.
+These macros have been used in `jparse/json_util.c` but other files need to be
+checked still.
+
 
 ## Release 1.0.30 2023-07-14
 

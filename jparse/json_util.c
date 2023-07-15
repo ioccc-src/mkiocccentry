@@ -944,7 +944,7 @@ json_get_type_str(struct json *node, bool encoded)
 	    {
 		struct json_string *item = &(node->item.string);
 
-		if (item != NULL && (item->converted && item->parsed)) {
+		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
 		    str = encoded ? item->as_str : item->str;
 		}
 	    }
@@ -953,7 +953,7 @@ json_get_type_str(struct json *node, bool encoded)
 	    {
 		struct json_boolean *item = &(node->item.boolean);
 
-		if (item != NULL && (item->converted && item->parsed)) {
+		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
 		    str = item->as_str;
 		}
 	    }
@@ -962,7 +962,7 @@ json_get_type_str(struct json *node, bool encoded)
 	    {
 		struct json_null *item = &(node->item.null);
 
-		if (item != NULL && (item->converted && item->parsed)) {
+		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
 		    str = item->as_str;
 		}
 	    }
@@ -971,7 +971,7 @@ json_get_type_str(struct json *node, bool encoded)
 	    {
 		struct json_member *item = &(node->item.member);
 
-		if (item != NULL && (item->converted && item->parsed)) {
+		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
 		    str = encoded ? item->name_as_str : item->name_str;
 		}
 	    }
@@ -1474,7 +1474,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted number
 	     */
-	    if (item->converted) {
+	    if (CONVERTED_JSON_NODE(item)) {
 
 		/*
 		 * case: converted negative number
@@ -1625,7 +1625,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 
 	    }
 	    /* case: not converted but parsed */
-	    else if (item->parsed) {
+	    else if (PARSED_JSON_NODE(item)) {
 
 		/*
 		 * case: parsed negative number
@@ -1792,14 +1792,14 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     *
 	     * NOTE: converted should always be equal to parsed
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		/*
 		 * print string preamble
 		 */
 		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
-				item->converted?"c":"",
-				item->parsed?"p":"",
+				CONVERTED_JSON_NODE(item)?"c":"",
+				PARSED_JSON_NODE(item)?"p":"",
 				item->quote ? "q" : "",
 				item->same ? "=" : "",
 				item->has_nul ? "0" : "",
@@ -1815,7 +1815,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     *
 	     * NOTE: this should never happen
 	     */
-	    } else if (!item->converted && item->parsed) {
+	    } else if (PARSED_JSON_NODE(item)) {
 		warn(__func__, "string item->converted == false but item->parsed == true");
 		fprstr(stream, "\tparsed true, converted false: will not print data");
 	    /*
@@ -1823,7 +1823,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     *
 	     * NOTE: this should never happen
 	     */
-	    } else if (item->converted && !item->parsed) {
+	    } else if (CONVERTED_JSON_NODE(item)) {
 		warn(__func__, "string item->converted == true but item->parsed == false");
 		fprstr(stream, "\tconverted true, parsed false: will not print data");
 	    /*
@@ -1842,7 +1842,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed boolean
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		fprint(stream, "\tvalue: %s", booltostr(item->value));
 
@@ -1852,7 +1852,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     * NOTE: this should never happen as if converted == false then
 	     * parsed should also == false. We check explicitly so we can warn.
 	     */
-	    } else if (item->parsed && !item->converted) {
+	    } else if (PARSED_JSON_NODE(item)) {
 		warn(__func__, "boolean item->converted == false but item->parsed == true");
 		fprint(stream, "\tvalue: %s", booltostr(item->value));
 	    /*
@@ -1861,7 +1861,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     * NOTE: this should never happen as if converted == false then
 	     * parsed should also == false. We check explicitly so we can warn.
 	     */
-	    } else if (!item->parsed && item->converted) {
+	    } else if (CONVERTED_JSON_NODE(item)) {
 		warn(__func__, "boolean item->converted == true but item->parsed == false");
 		fprint(stream, "\tvalue: %s", booltostr(item->value));
 
@@ -1880,20 +1880,20 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed null
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		fprstr(stream, "\tvalue: null");
 
 	    /*
 	     * case: not converted but parsed null
 	     */
-	    } else if (!item->converted && item->parsed) {
+	    } else if (PARSED_JSON_NODE(item)) {
 		warn(__func__, "null item->converted == false but item->parsed == false");
 
 	    /*
 	     * case: converted but not parsed null
 	     */
-	    } else if (item->converted && !item->parsed) {
+	    } else if (CONVERTED_JSON_NODE(item)) {
 		warn(__func__, "null item->converted == false but item->parsed == false");
 	    /*
 	     * case: not converted not parsed null
@@ -1911,7 +1911,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed member
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		/*
 		 * print member name
@@ -1925,12 +1925,12 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		    if (type == JTYPE_STRING) {
 			struct json_string *item2 = &(item->name->item.string);
 
-			if (item2->converted && item2->parsed) {
+			if (CONVERTED_PARSED_JSON_NODE(item2)) {
 			    fprstr(stream, "\tname: ");
 			    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
-			} else if (item2->converted && !item2->parsed) {
+			} else if (CONVERTED_JSON_NODE(item2)) {
 			    warn(__func__, "\tname: converted true but parsed false:");
-			} else if (!item2->converted && item2->parsed) {
+			} else if (PARSED_JSON_NODE(item2)) {
 			    warn(__func__, "\tname: converted false but parsed true:");
 			} else {
 			    fprstr(stream, "\tname {converted,parsed}: false");
@@ -1966,7 +1966,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed object
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
@@ -1991,7 +1991,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed object
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
@@ -2017,7 +2017,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted and parsed object
 	     */
-	    if (item->converted && item->parsed) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		fprint(stream, "\tlen: %ju", item->len);
 		if (item->set == NULL) {
