@@ -935,7 +935,7 @@ json_get_type_str(struct json *node, bool encoded)
 	case JTYPE_NUMBER:
 	    {
 		struct json_number *item = &(node->item.number);
-		if (item != NULL && (item->converted || item->parsed)) {
+		if (item != NULL && VALID_JSON_NODE(item)) {
 		    str = item->as_str;
 		}
 	    }
