@@ -343,7 +343,7 @@ we recommend the following command line options for **jval**:
 			Trailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.
 			Not specifying 's' or 't' implies spaces.
 
-	-t type		Match only JSON values of a given comma-separated type (def: simple, or if -n, num)
+	-t type		Match only JSON values of a given comma-separated type (def: simple)
 
 				int	integer values
 				float	floating point values
@@ -379,31 +379,15 @@ we recommend the following command line options for **jval**:
 
 			To match from the beginning, start name_arg with '^'.
 			To match to the end, end name_arg with '$'.
-			Using -g with any of: -s, -n or -R is an error.
+			Using -g with -s is an error.
 
-	-n		match numerical values (def: match strings in file.json)
+	-n op=num	Match if numeric op with num is true (def: do not)
 
-			The _arg_ command line arguments must be numerical and match the -t type in effect.
-			When used with -i, only numerical values that do not match are printed.
-			Using -n with any of: -s, -f or -g is an error.
+			    op may be one of: eq, lt, le, gt, ge
 
-	-R interval	Match a range using a range type (def: gele)
+	-S op=str	Match if string op with str is true (def: do not)
 
-			    gtlt	range match >  1st value <  2nd value
-			    gelt	range match >= 1st value <  2nd value
-			    gtle	range match >  1st value <= 2nd value
-			    gele	range match >= 1st value <= 2nd value
-
-			    lt		range match <  1st value    2nd value must be .
-			    le		range match <= 1st value    2nd value must be .
-			    gt		range match >  1st value    2nd value must be .
-			    ge		range match >= 1st value    2nd value must be .
-
-			    open	alias for gtlt
-			    closed	alias for gele
-
-			The number of _arg_s must be an even number >= 2.
-			Using -R with either -s or -g is an error.
+			    op may be one of: eq, lt, le, gt, ge
 
 	file.json	JSON file to parse (- ==> read from stdin)
 	[arg]		match argument(s)
@@ -415,40 +399,17 @@ Because of the complexity of trying to describe a complex JSON value on
 the command line, let alone the problem of describing complex value ranges,
 the `-t type` does **NOT** include complex JSON types.
 
-Using `-R` __WITHOUT__ `-n` implies that string value ranges are
-compared.  Use string comparison functions such as `strcmp(3)`, and
-`strcasecmp(3)` to example string value ranges.
-
 If no "_arg_" is given on the command line then any value may be
 considered, unless `-i` inverts the match in which case no value
 is to be considered.
 
-Without `-n`, matching is string based.  Such strings matches are
-as given in the JSON document, unless `-d` is also given in which
-case the JSON decoded string is matched.
+When **jval** looks for a match, it is done in the following general order:
 
-Numerical matching (use of `-n`) solves the problem of trying to
-match various ways to encode a JSON number.  Thus, matching with the
-numerical value of _200_ would match JSON numbers such as:
-
-```
-200
-200.0
-2e2
-200.000
-2.0e2
-0.2e3
-```
-
-Numerical matching is limited to the ability of the hardware to
-encode a numerical value.  An attempt to try and match the numerical
-value of:
-
-```
-1e100000000000000000000000000000000
-```
-
-is likely to fail.
+0. Check JSON tree level (-l default matches any level)
+1. For all JSON nodes that previously matched, check node type (-t default matches simple types)
+2. For all JSON nodes that previously matched, check for "_arg_" value match (no args match all values)
+3. For all JSON nodes that previously matched, check for -n op=num and -S op=str matches (def: do not)
+4. If `-i` invert all matches (def: do not)
 
 
 ### jval exit codes
@@ -461,8 +422,7 @@ we recommend the following exit codes for **jval**:
 ...
     3	invalid command line, invalid option, option missing argument, invalid number of args
 ...
-    6	-n used and unable to convert arg into a numerical value
-    7	invalid range args
+    6	-n op=num however num cannot be represetned as a numerical value
 ```
 
 Other exit codes probably should fall under the "_internal error_" category
@@ -698,7 +658,7 @@ restrict which [JSON values](./json_README.md#json-value) are printed.
 The default match criteria is when the  "_arg_" is an exact match:
 
 ```sh
-jval parse/test_jparse/test_JSON/good/h2g2.json 42
+jval jparse/test_jparse/test_JSON/good/h2g2.json 42
 ```
 
 This should print 3 lines:
@@ -712,7 +672,7 @@ This should print 3 lines:
 When we add `-Q`:
 
 ```sh
-jval -Q parse/test_jparse/test_JSON/good/h2g2.json 42
+jval -Q jparse/test_jparse/test_JSON/good/h2g2.json 42
 ```
 
 
@@ -732,7 +692,7 @@ in the [JSON document](./json_README.md#json-document).
 Combined with `-t type`, allows for further restriction:
 
 ```sh
-jval -Q -t str parse/test_jparse/test_JSON/good/h2g2.json 42
+jval -Q -t str jparse/test_jparse/test_JSON/good/h2g2.json 42
 ```
 
 produces:
@@ -748,7 +708,7 @@ Multiple "_arg_", by default, setup multiple ways for a match.
 One may think of multiple "_args_" are matching in an "OR"-like way.
 
 ```sh
-jval -Q -t str parse/test_jparse/test_JSON/good/h2g2.json 42 number
+jval -Q -t str jparse/test_jparse/test_JSON/good/h2g2.json 42 number
 ```
 
 produces:
@@ -761,7 +721,7 @@ produces:
 Or for example:
 
 ```sh
-jval -Q -t str parse/test_jparse/test_JSON/good/h2g2.json 42 number name
+jval -Q -t str jparse/test_jparse/test_JSON/good/h2g2.json 42 number name
 ```
 
 produces:
@@ -781,7 +741,7 @@ The **jval** offers 2 ways to count mactches instead of simply printing
  [JSON values](./json_README.md#json-value) that match:
 
  ```sh
- jval -Q -t str -c parse/test_jparse/test_JSON/good/h2g2.json 42 number name
+ jval -Q -t str -c jparse/test_jparse/test_JSON/good/h2g2.json 42 number name
  ```
 
  produces:
@@ -795,7 +755,7 @@ because there are 5 total matches.
 With `-C`, the match count per "_arg_" may be printed:
 
  ```sh
- jval -Q -t str -C parse/test_jparse/test_JSON/good/h2g2.json 42 number name foo
+ jval -Q -t str -C jparse/test_jparse/test_JSON/good/h2g2.json 42 number name foo
  ```
 
 produces:
@@ -1044,92 +1004,51 @@ Proudfeet
 
 #### jval example 12
 
-By default, the matching of [JSON values](./json_README.md#json-value)
-by "_args_" is done on the actual text of the [JSON
-document](./json_README.md#json-document).  Or when `-d`, [JSON
-decoded strings](./json_README.md#json-decoded-string) are considered.
+Numerical matching (use of `-eq`, `-lt`, `-le`, `-gt`, `-ge`) solves
+the problem of trying to match various ways to encode a [JSON
+number](./json_README.md#json-number).  Thus with `-eq 200` matching
+with the numerical value of _200_ would match [JSON
+numbers](./json_README.md#json-number) such as in
+`jparse/test_jparse/test_JSON/good/200.json`:
 
-The `-n` option changes **jval** to consider the numerical value
-of the [JSON value](./json_README.md#json-value) instead.
+```
+[ 200, 200.0, 2e2, 200.000, 2.0e2, 0.2e3, 20.0e1 ]
+```
 
-Recall that:
+The command:
 
 ```sh
-jval -Q parse/test_jparse/test_JSON/good/h2g2.json 42
+jval -n eq=200 jparse/test_jparse/test_JSON/good/200.json
 ```
 
-produces:
+would produce:
 
 ```
-42
-"42"
-42
+200
+200.0
+2e2
+200.000
+2.0e2
+0.2e3
+    20.0e1
 ```
-
-With `-n` the numerical value is considered:
-
-```sh
-jval -n parse/test_jparse/test_JSON/good/h2g2.json 42
-```
-
-produces:
-
-```
-42
-42
-```
-
-Observe that the [JSON string](./json_README.md#json-string) containing
-42 is not a match because it does not have a numerical value.
-
-And for example:
-
-```sh
-jval -n top_level_array.json 2 3 5
-```
-
-produces:
-
-```
-2
-3
-5
-```
-
-because only those numerical [JSON values](./json_README.md#json-value) match.
-
-Only values that can be represented by a machine can be matched.
-
-The following command:
-
-```sh
-jval -n googolplex.json 1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-```
-
-will print an error message to standard error and exit with a value of 6.
-
-However when comparing strings (without `-n`):
-
-```sh
-jval googolplex.json 1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-```
-
-produces:
-
-```
-1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-```
-
-It is an error to give a non-numerical "_arg_" when using `-n`.
-
-Not giving any "_arg_" with `-n` is equivalent to using `-t num` and matching all numerical values.
-On the other hand, using `-n -t bool`, for example, will match nothing because only numerical values
-are matched with `-n`.
 
 The numerical value may be further restricted by using `-t type`.  Observe that:
 
 ```sh
-jval two-array.json 2
+jval -t int -n eq=200 jparse/test_jparse/test_JSON/good/200.json
+```
+
+would produce:
+
+```
+200
+```
+
+Also consider:
+
+```sh
+jval jparse/test_jparse/test_JSON/good/two-array.json 2
 ```
 
 produces:
@@ -1149,7 +1068,7 @@ produces:
 Whereas:
 
 ```sh
-jval -t int two-array.json 2
+jval -t int -n eq=2 jparse/test_jparse/test_JSON/good/two-array.json
 ```
 
 produces:
@@ -1161,7 +1080,7 @@ produces:
 And:
 
 ```sh
-jval -t float two-array.json 2
+jval -t float -n eq=2 jparse/test_jparse/test_JSON/good/two-array.json
 ```
 
 produces:
@@ -1174,9 +1093,8 @@ produces:
 And whereas:
 
 ```sh
-jval -t int,float two-array.json 2
+jval -t int,float -n eq=2 jparse/test_jparse/test_JSON/good/two-array.json
 ```
-
 
 produces:
 
@@ -1186,72 +1104,166 @@ produces:
 2.00
 ```
 
+Recall that:
+
+```sh
+jval -Q jparse/test_jparse/test_JSON/good/h2g2.json 42
+```
+
+produces:
+
+```
+42
+"42"
+42
+```
+
+With `-n eq=42` the numerical value is considered:
+
+```sh
+jval -n eq=42 4parse/test_jparse/test_JSON/good/h2g2.json
+```
+
+produces:
+
+```
+42
+42
+```
+
+And for example:
+
+```sh
+jval -n eq=2 -n eq=3 -n eq=5 jparse/test_jparse/test_JSON/good/top_level_array.json
+```
+
+produces:
+
+```
+2
+3
+5
+```
+
+The use of multiple `-n eq=val` tests multiple values.
+
+Only values that can be represented by a machine can be matched.
+The following command:
+
+```sh
+jval -n eq=1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 jparse/test_jparse/test_JSON/good/googolplex.json
+```
+
+will print an error message to standard error and exit with a value of 6.
+
 
 #### jval example 13
 
-The `-R interval` option causes **jval** to treat pairs of "_args_" as a range, matching only
-of the given [JSON value](./json_README.md#json-value) fall within a given range,
-With `-R` the number of  "_args_" on the command line must be an even number >= 2.
-
-There are 8 different types of range intervals supported.
-
-These 4 intervals support bounded ranges:
-
-```
-gtlt	range match >  1st value <  2nd value
-gelt	range match >= 1st value <  2nd value
-gtle	range match >  1st value <= 2nd value
-gele	range match >= 1st value <= 2nd value
-```
-
-These 4 intervals support half-open ranges:
-
-```
-lt		range match <  1st value    2nd value must be .
-le		range match <= 1st value    2nd value must be .
-gt		range match >  1st value    2nd value must be .
-ge		range match >= 1st value    2nd value must be .
-```
-
-The last 4: "lt", "le", "gt", and "ge" cause the 2nd pair to be ignored
-except that the corresponding "_arg"_ must be "_._" (dot).
-
-Without `-m`, the range comparison is string based according to `strcmp(3)` or
-`strcasecmp(3)` if `-f` is also used.  For example:
+When comparing as strings:
 
 ```sh
-jval -R gele JSON_misfeature_number_7.json a c
+jval -S eq=1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 jparse/test_jparse/test_JSON/good/googolplex.json
 ```
 
-The strings that are >= "a" and <= "c" are printed:
+produces:
+
+```
+1e10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+```
+
+This is because the `-S` is able to match more than [JSON
+strings](./json_README.md#json-string), it is able to match any
+simple [JSON value](./json_README.md#json-value) type (i.e., JSON
+int,float,exp,bool,str,null).  All such JSON nodes have a
+`as_str` element which is an allocated string of the JSON object
+in question.  The `-S` is able match, for example,
+
+Consider this command:
+
+```sh
+jval -S eq=200 jparse/test_jparse/test_JSON/good/200.json
+```
+
+Because `-S` can, for non-[JSON strings](./json_README.md#json-string),
+the `as_str` element, this command produces:
+
+```
+200
+```
+
+The above is not a numeric match, but rather a string match.
+For example:
+
+
+```sh
+jval -S eq=200.000 jparse/test_jparse/test_JSON/good/200.json
+```
+
+produces:
+
+```
+200.000
+```
+
+When multiple `-S op` where `op` is one of "lt", "le", "gt", or
+"ge", pairs of  `-S op` string matches are combined as an AND-ed
+pair of string matches.
+
+Consider the following command:
+
+```sh
+jval -R gele -S ge=c -S le=b jparse/test_jparse/test_JSON/good/JSON_misfeature_number_7.json
+```
+
+The strings that are >= "a" _AND_ <= "c" are printed:
 
 ```
 avalue
 bvalue
 ```
 
-Multiple ranges are allowed:
+With 4 such operations, two _AND_ed match pairs are formed:
 
 ```sh
-jval -R gtlt JSON_misfeature_number_7.json a c m o
+jval -S gt=a -S lt=c -S gt=m -S lt=o jparse/test_jparse/test_JSON/good/JSON_misfeature_number_7.json
 ```
 
-produces:
+The strings that are > "a" _AND_ < "c", _OR_
+strings that are > "m" _AND_ < "o" produces:
 
 ```
 avalue
-cvalue
+bvalue
 name1
 name2
 ```
 
-Half-open ranges are allowed:
+The presence of `-S eq` does not impact the formation of _AND_-ed pairs.
+For example:
 
 ```sh
-jval -R lt JSON_misfeature_number_7.json name2 .
+jval -S gt=a -S eq=zvalue -S lt=c -S gt=m -S lt=o jparse/test_jparse/test_JSON/good/JSON_misfeature_number_7.json
 ```
 
-Here the "_._" is required.  This produces:
+The strings that are > "a" _AND_ < "c", _OR_
+strings that are > "m" _AND_ < "o", _OR_
+strings that are == "zvalue" will produce:
+
+```
+avalue
+bvalue
+name1
+name2
+zvalue
+```
+
+Half-open ranges may be formed by using a odd number:
+
+```sh
+jval -S lt=name2 jparse/test_jparse/test_JSON/good/JSON_misfeature_number_7.json
+```
+
+This produces all strings that are < "name2":
 
 ```
 name1
@@ -1262,14 +1274,15 @@ bvalue
 
 #### jval example 14
 
-The `-R interval` with `-n` checks for numerical ranges of numeric
-[JSON values](./json_README.md#json-value):
+When multiple `-n op` where `op` is one of "lt", "le", "gt", or
+"ge", pairs of  `-n op` numeric matches are combined as an AND-ed
+pair of numeric matches.
 
 ```sh
-jval -R closed -m jparse/test_jparse/test_JSON/good/top_level_array.json 1 3
+jval -n ge=1 -n le=3 jparse/test_jparse/test_JSON/good/top_level_array.json
 ```
 
-produces:
+produces all numeric values >= 1 _AND_ values <= 3:
 
 ```
 1
@@ -1278,10 +1291,29 @@ produces:
 3
 ```
 
+The presence of `-n eq` does not impact the formation of _AND_-ed pairs.
+For example:
+
+```sh
+jval -n ge=1 -n eq=5 -n le=3 jparse/test_jparse/test_JSON/good/top_level_array.json
+```
+
+produces all numeric values >= 1 _AND_ values <= 3 as well as values == 5:
+
+```
+1
+2
+2.718
+3
+5
+```
+
+For a half open interval, use an odd number such as for all values < 1:
+
 And:
 
 ```sh
-jval -R lt jparse/test_jparse/test_JSON/good/top_level_array.json 1 .
+jval -n lt=1 jparse/test_jparse/test_JSON/good/top_level_array.json
 ```
 
 produces:
@@ -1309,7 +1341,7 @@ and the [jval command line options](#jval-command-line-options),
 we recommend the following command line options for **jnamval**:
 
 ```
-        -t type         Match only JSON values of a given comma-separated type (def: simple, or if -n, num)
+        -t type         Match only JSON values of a given comma-separated type (def: simple)
 	...
 
 			These types are only valid with -N, -M or if there are no args after file.json:
@@ -1324,7 +1356,6 @@ we recommend the following command line options for **jnamval**:
 	-H		March name heirarchies (def: with -H match any JSON member name, else JSON member value)
 
 			Use of -H implies -N.
-			Using -H with any of: -n or -R is an error.
 
 	-p parts	Parts of a JSON member to print (def: print JSON member values)
 
@@ -1361,6 +1392,14 @@ command line, by default, behave the same way as the [jval
 utility](#jval-utility).  With `-H`, the meaning of more than "_arg_"
 changes to searching for a given [JSON
 members](./json_README.md#json-member) hierarchy.
+
+When **jnamval** looks for a match, it is done in the following general order:
+
+0. Check JSON tree level (-l default matches any level)
+1. For all JSON nodes that previously matched, check JSON member nodes
+2. For all JSON nodes that previously matched, check for "_arg_" value match (no args match all values)
+3. For all JSON nodes that previously matched, check for -n op=num and -S op=str matches (def: do not)
+4. If `-i` invert all matches (def: do not)
 
 
 
@@ -1651,3 +1690,17 @@ This will only produce:
 ```
 
 This is because with `-H`, the "name" was restricted to those being under "guest_list".
+
+By using the `-n` or `-S`, one may further refine the search:
+
+```sh
+jnamval -H -n eq=2 -c jparse/test_jparse/test_JSON/good/party.json guest_list guest_number
+```
+
+produces:
+
+```
+1
+```
+
+because there is only one "guest_list guest_number" hierarchy with a numeric value of 2.
