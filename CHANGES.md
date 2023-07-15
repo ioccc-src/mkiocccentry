@@ -1,5 +1,31 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.31 2023-07-15
+
+New JSON parser and jparse version "1.0.12 2023-07-15".
+
+Add more checks to JSON node `parsed` member so that if converted is false but
+parsed is true it's not an error (in the cases where parsed is allowed to be
+different it is not an error: if they're not allowed to be different we warn
+about it if they are different).
+
+Improve printing of string variables and numbers in `vjson_fprint()`.
+
+Add helper macros `CONVERTED_PARSED_JSON_NODE`, ` CONVERTED_JSON_NODE` and
+`PARSED_JSON_NODE` and updated jparse.3 man page. The
+`CONVERTED_PARSED_JSON_NODE` checks that both the `converted` and `parsed`
+booleans are true. The `CONVERTED_JSON_NODE` checks that the boolean `converted`
+is true and that the `parsed` boolean is false and the `PARSED_JSON_NODE` checks
+that the `parsed` boolean is true and that the `converted` boolean is false.
+These macros have been used in in place of checks of `foo->converted` and
+`foo->parsed`.
+
+Rename function `sem_node_valid_converted()` to be just `sem_node_valid()` and
+make use of appropriate macro: for numbers it uses the `VALID_JSON_NODE` and or
+others it uses `CONVERTED_PARSED_JSON_NODE` as both `converted` and `parsed`
+must be true for non-number nodes.
+
+
 ## Release 1.0.30 2023-07-14
 
 New JSON parser and jparse version "1.0.11 2023-07-14".

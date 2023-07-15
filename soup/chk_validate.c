@@ -662,9 +662,9 @@ chk_authors(struct json const *node,
     /*
      * firewall - node type
      */
-    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
     if (test == false) {
-	/* sem_node_valid_converted() will have set *val_err */
+	/* sem_node_valid() will have set *val_err */
 	return false;
     }
     if (node->type != JTYPE_MEMBER) {
@@ -2183,9 +2183,9 @@ chk_manifest(struct json const *node,
     /*
      * firewall - node type
      */
-    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
     if (test == false) {
-	/* sem_node_valid_converted() will have set *val_err */
+	/* sem_node_valid() will have set *val_err */
 	return false;
     }
     if (node->type != JTYPE_MEMBER) {
@@ -2908,9 +2908,9 @@ chk_tarball(struct json const *node,
     /*
      * firewall - node type
      */
-    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
     if (test == false) {
-	/* sem_node_valid_converted() will have set *val_err */
+	/* sem_node_valid() will have set *val_err */
 	return false;
     }
     if (node->type != JTYPE_MEMBER) {

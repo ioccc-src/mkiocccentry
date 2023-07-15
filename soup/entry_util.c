@@ -518,9 +518,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     /*
      * firewall - validate JTYPE_MEMBER item in the JTYPE_ARRAY
      */
-    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
     if (test == false) {
-	/* sem_node_valid_converted() will have set *val_err */
+	/* sem_node_valid() will have set *val_err */
 	return false;
     }
     if (node->type != JTYPE_OBJECT) {
@@ -559,9 +559,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * firewall - validate JTYPE_MEMBER item in the JTYPE_OBJECT
 	 */
-	test = sem_node_valid_converted(e, depth+1, sem, __func__, val_err);
+	test = sem_node_valid(e, depth+1, sem, __func__, val_err);
 	if (test == false) {
-	    /* sem_node_valid_converted() will have set *val_err */
+	    /* sem_node_valid() will have set *val_err */
 	    return false;
 	}
 	if (e->type != JTYPE_MEMBER) {
@@ -1382,9 +1382,9 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     /*
      * firewall - validate JTYPE_MEMBER item in the JTYPE_ARRAY
      */
-    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
     if (test == false) {
-	/* sem_node_valid_converted() will have set *val_err */
+	/* sem_node_valid() will have set *val_err */
 	return false;
     }
     if (node->type != JTYPE_ARRAY) {
@@ -1438,9 +1438,9 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * firewall - validate JTYPE_OBJECT item in the JTYPE_ARRAY
 	 */
-	test = sem_node_valid_converted(e, depth+1, sem, __func__, val_err);
+	test = sem_node_valid(e, depth+1, sem, __func__, val_err);
 	if (test == false) {
-	    /* sem_node_valid_converted() will have set *val_err */
+	    /* sem_node_valid() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
 	}
@@ -1475,9 +1475,9 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 * firewall - validate JTYPE_MEMBER item in the JTYPE_OBJECT of the manifest JTYPE_ARRAY
 	 */
 	jo = o->set[0];
-	test = sem_node_valid_converted(jo, depth+2, sem, __func__, val_err);
+	test = sem_node_valid(jo, depth+2, sem, __func__, val_err);
 	if (test == false) {
-	    /* sem_node_valid_converted() will have set *val_err */
+	    /* sem_node_valid() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
 	}
