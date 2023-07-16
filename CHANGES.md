@@ -2,7 +2,11 @@
 
 ## Release 1.0.32 2023-07-16
 
-Add **TEMPORARY PLACEHOLDER** source and header files for `jfmt`, `jval` and
+Add initial code for `jfmt`: completely parses options and will dump JSON to
+output file if it is not the same as the input file and the file does not
+already exist. If not specified it will be stdout.
+
+Add **TEMPORARY PLACEHOLDER** source and header files for `jval` and
 `jnamval` tools. The key term that is important is _TEMPORARY PLACEHOLDER_. The
 files are actually copies of what were once jprint related but for each tool
 jprint / JPRINT were changed to their new tool counterparts. This is done this

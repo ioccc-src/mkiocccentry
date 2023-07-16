@@ -51,6 +51,8 @@ In this document, we assume that all utilities have the following options:
 	-v level	Verbosity level (def: 0)
 	-J level	JSON verbosity level (def: 0)
 	-q		Quiet mode, do not print to stdout (def: print stuff to stdout)
+	-m		Maximum depth to traverse in the JSON tree
+	-K		Run test mode and exit
 ```
 
 Additional command line options will be added on a utility by utility basis.
@@ -164,7 +166,7 @@ In addition to the [Common command line options](#common-command-line-options),
 we recommend the following command line options for `jfmt`:
 
 ```
-	-L <num>[{t|s}]	Print JSON level followed by whitespace (def: don't print whitespace)
+	-L <num>[{t|s}]	Print JSON level followed by a number of tabs or spaces (def: don't print levels)
 	-L tab		Alias for: '-L 1t'
 
 			Trailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.
