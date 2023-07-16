@@ -34,10 +34,14 @@ jparse.tab.c
 jparse.tab.h
 jparse.xml
 jparse/jparse
-jparse/jprint
+jparse/jfmt
+jparse/jnamval
+jparse/jval
 jparse/lex.yy.c
 jparse_test.log
-jprint_test.log
+jfmt_test.log
+jnamval.log
+jval.log
 jsemtblgen
 jstr_test.out
 jstr_test2.out

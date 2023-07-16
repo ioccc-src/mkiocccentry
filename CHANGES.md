@@ -1,5 +1,36 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.32 2023-07-16
+
+Add **TEMPORARY PLACEHOLDER** source and header files for `jfmt`, `jval` and
+`jnamval` tools. The key term that is important is _TEMPORARY PLACEHOLDER_. The
+files are actually copies of what were once jprint related but for each tool
+jprint / JPRINT were changed to their new tool counterparts. This is done this
+way because some of the code is common and this way they are in the repo. A lot
+of code will be removed but some will be kept. Much will also be changed. Option
+parsing in particular is useful but this will also have some changes. As it will
+take more work to get them in order I have kept the other things in too for now
+but this **GREATLY** simplifies starting the tools which seems like a worthy
+thing to do.  A very nice way that this simplifies starting the tools is that
+the parsing of the JSON file is already done. Along with this some of the
+options being the same and some of the structs being the same (though they will
+have to be modified and some will be removed) it will help get started.
+
+Respective test scripts for each tool have also been added which are also
+updated copies of the old script for jprint. These are not run yet because there
+is no point in running them yet and it would only slow down make test.
+
+With the exception of the scripts the required changes will be done soon -
+hopefully sometime in the coming week (real weeks start on Monday) - but what
+this means is that **TEMPORARILY** the tools function as the incomplete no
+longer useful jprint. By required changes I mean that the unnecessary code will
+be removed and option parsing / usage strings will be updated (whether the
+option parsing is completed in the next week is indeterminate).
+
+Updated `jparse/Makefile` and run make depend.
+
+Update .gitignore: fixed references of `jprint` and add the other tools.
+
 ## Release 1.0.31 2023-07-15
 
 New JSON parser and jparse version "1.1.0 2023-07-15".
