@@ -2576,7 +2576,10 @@ is_decimal_str(char const *str, size_t *retlen)
  *	ptr	    - pointer to buffer containing an integer in ASCII
  *	len	    - length, starting at ptr
  *
- * XXX - update this comment explaining what we consider a floating point notation - XXX
+ * A floating point notation is like that of C but as the only use of this
+ * function is the JSON parser it might be a bit different. The JSON parser
+ * conversion routine, which only will be called on floating point or
+ * e-notations, has more checks that are JSON specific.
  *
  * returns:
  *
@@ -2719,7 +2722,10 @@ is_floating_notation_str(char const *str, size_t *retlen)
  *	ptr	    - pointer to buffer containing an integer in ASCII
  *	len	    - length, starting at ptr
  *
- * XXX - update this comment explaining what we consider an exponent notation - XXX
+ * e-notation is like that of C but as the only use of this function is the JSON
+ * parser it might be a bit different. The JSON parser conversion routine, which
+ * only will be called on floating point or e-notations, has more checks that
+ * are JSON specific.
  *
  * returns:
  *
