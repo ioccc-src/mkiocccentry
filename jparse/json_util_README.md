@@ -1,6 +1,6 @@
 # Command line utilities that read JSON
 
-## Introduction
+## Introduction to this document
 
 NOTE: Please see [json_README.md](./json_README.md) for some important **JSON
 terms** used in this document!
@@ -21,7 +21,7 @@ document](./json_README.md#json-document).
 
 
 
-## Scope
+## Scope of this document
 
 In this document, we will concern ourselves with only [Valid
 JSON](./json_README.md#valid-json) in the form of a [JSON
@@ -93,9 +93,9 @@ formatting is to make is easier for a human to see the JSON structure. This
 might be likened to a beautifier (at least in so far as it is possible for JSON
 to be beautified :-) ).
 
-The **jfmt** utility will write the entire [JSON
+The `jfmt` utility will write the entire [JSON
 document](./json_README.md#json-document) to a file, (defaulting to standard
-output) in "canonical"-like well formatted JSON.  The output of the **jfmt**
+output) in "canonical"-like well formatted JSON.  The output of the `jfmt`
 utility **MUST** be [Valid JSON](./json_README.md#valid-json).
 
 Consider the following `top_level_array2.json` [JSON document](./json_README.md#json-document):
@@ -154,14 +154,14 @@ Should one wish to have more than one style of output, then:
 	-s style	use JSON output style (def: use common style)
 ```
 
-could be added as an option to the **jfmt** command line to change from the
+could be added as an option to the `jfmt` command line to change from the
 default JSON style.
 
 
 ### jfmt command line options
 
 In addition to the [Common command line options](#common-command-line-options),
-we recommend the following command line options for **jfmt**:
+we recommend the following command line options for `jfmt`:
 
 ```
 	-L <num>[{t|s}]	Print JSON level followed by whitespace (def: don't print whitespace)
@@ -199,10 +199,10 @@ For example, one might wish to add additional command line options to vary the
 style of JSON formatting.  This could be done, however, every one of those
 formatting style variations, increases the complexity of testing.
 
-We recommend command line simplicity be considered for the **jfmt** utility.
+We recommend command line simplicity be considered for the `jfmt` utility.
 
 We also recommend that the `jfmt(1)` man page contain a warning that users
-should not depend on the exact output of **jfmt** and that future versions of
+should not depend on the exact output of `jfmt` and that future versions of
 the utility might change the way [Valid JSON](./json_README.md#valid-json) is
 formatted.
 
@@ -210,7 +210,7 @@ formatted.
 ### jfmt exit codes
 
 In addition to the [Common exit codes](#common-exit-codes), we recommend the
-following exit code for **jfmt**:
+following exit code for `jfmt`:
 
 ```
     1	error in writing to ofile
@@ -285,7 +285,7 @@ Again, it is unclear how best to indent things such as "[{ .. }]" as these
 compound [JSON values](./json_README.md#json-value) are at different JSON tree
 levels.
 
-It would be better if the formatted lines of **jfmt** corresponded,
+It would be better if the formatted lines of `jfmt` corresponded,
 line by line with the use of `-L stuff` (printing JSON tree levels).
 
 
@@ -317,20 +317,20 @@ Given a [JSON document](./json_README.md#json-document), we need a utility that
 prints [JSON values](./json_README.md#json-value) that match or do not match
 certain values or value ranges.
 
-The **jval** command, without any "_args_" on the command line, will cause the
+The `jval` command, without any "_args_" on the command line, will cause the
 printing of any [JSON values](./json_README.md#json-value) that are not
 otherwise restricted by a `-t type` or `-l lvl` option.
 
 The presence of "_args_" creates match conditions that may further restrict
 which [JSON values](./json_README.md#json-value) are printed.  When using the
-**jval** command with "_args_", match criteria is setup to further select which
+`jval` command with "_args_", match criteria is setup to further select which
 [JSON values](./json_README.md#json-value) are printed.
 
 
 ### jval command line options
 
 In addition to the [Common command line options](#common-command-line-options),
-we recommend the following command line options for **jval**:
+we recommend the following command line options for `jval`:
 
 ```
 	-L <num>[{t|s}]	Print JSON level followed by whitespace (def: don't print whitespace)
@@ -399,7 +399,7 @@ the `-t type` does **NOT** include complex JSON types.
 If no "_arg_" is given on the command line then any value may be considered,
 unless `-i` inverts the match in which case no value is to be considered.
 
-When **jval** looks for a match, it is done in the following general order:
+When `jval` looks for a match, it is done in the following general order:
 
 0. Check JSON tree level (`-l` default matches any level).
 1. For all JSON nodes that previously matched, check node type (`-t` default
@@ -414,7 +414,7 @@ op=str` matches (def: do not).
 ### jval exit codes
 
 In addition to the [Common exit codes](#common-exit-codes), we recommend the
-following exit codes for **jval**:
+following exit codes for `jval`:
 
 ```
     1	no matchs found
@@ -542,10 +542,10 @@ null
 The use of double quotes helps distinguish, for example, a JSON `null` from a
 [JSON string](./json_README.md#json-string) of `"null"`.
 
-It is important to note that what **jval** prints is the actual characters from
+It is important to note that what `jval` prints is the actual characters from
 the [JSON document](./json_README.md#json-document), not some machine
 interpreted value.  For example, even though in JSON, `2.0` could be represented
-as in integer, what **jval** must print is the literal characters from the [JSON
+as in integer, what `jval` must print is the literal characters from the [JSON
 document](./json_README.md#json-document).  This can be done by printing from
 structure elements such as `as_str`, or if a decoded string is needed (`-D`),
 from the `str` element.
@@ -738,7 +738,7 @@ produces:
 
 #### jval example 6
 
-The **jval** offers two to count matches instead of simply printing [JSON
+The `jval` offers two to count matches instead of simply printing [JSON
 values](./json_README.md#json-value) that match:
 
  ```sh
@@ -817,7 +817,7 @@ Here the `-Q` is useful to distinguish between the integer and the
 
 #### jval example 7
 
-The `-i` option inverts matches, so **jval** would print [JSON
+The `-i` option inverts matches, so `jval` would print [JSON
 values](./json_README.md#json-value) that do **not match an "_arg_"**:
 
 
@@ -899,7 +899,7 @@ hello
 
 #### jval example 9
 
-By default, **jval** matches [JSON strings](./json_README.md#json-string)
+By default, `jval` matches [JSON strings](./json_README.md#json-string)
 based on their [JSON encoded string](./json_README.md#json-encoded-string)
 values.  With `-d`, such matching is on the [JSON decoded
 string](./json_README.md#json-decoded-string) value:
@@ -919,7 +919,7 @@ hello"
 
 #### jval example 10
 
-By default, **jval** matches [JSON strings](./json_README.md#json-string) where
+By default, `jval` matches [JSON strings](./json_README.md#json-string) where
 the case of the string matters:
 
 ```sh
@@ -963,7 +963,7 @@ produces:
 
 #### jval example 11
 
-The `-g` option causes **jval** to use regular expressions to match:
+The `-g` option causes `jval` to use regular expressions to match:
 
 ```sh
 jval -g party.json 'B.*Bag'
@@ -1327,20 +1327,20 @@ produces:
 
 ## jnamval
 
-The **jnamval** utility operates only on [JSON
-members](./json_README.md#json-member).  This utility is concerned only with
+The `jnamval` utility operates only on [JSON
+members](./json_README.md#json-member).  This utility is only concerned with
 [JSON member names](./json_README.md#json-member-name) and their associated
-[JSON member values](./json_README.md#json-member-value) only.
+[JSON member values](./json_README.md#json-member-value).
 
 
 ### jnamval command line options
 
-The options for the **jnamval** utility are very similar to the [jval
+The options for the `jnamval` utility are very similar to the [jval
 utility](#jval-utility).
 
 In addition to the [Common command line options](#common-command-line-options),
 and the [jval command line options](#jval-command-line-options),
-we recommend the following command line options for **jnamval**:
+we recommend the following additional command line options for `jnamval`:
 
 ```
         -t type         Match only JSON values of a given comma-separated type (def: simple)
@@ -1364,7 +1364,7 @@ we recommend the following command line options for **jnamval**:
 				n		print JSON member names
 				v		print JSON member values
 				b		print JSON member names and values
-				j		print JSON member om JSON syntax
+				j		print JSON member with JSON syntax
 
 				name		alias for n
 				value		alias for v
@@ -1373,42 +1373,58 @@ we recommend the following command line options for **jnamval**:
 ```
 
 The `-t type` applies to the type of the [JSON member
-value](./json_README.md#json-member-value) in a given [JSON
-members](./json_README.md#json-member).  Because of the difficulty
-in expressing [JSON member values](./json_README.md#json-member-value)
-for types member, object, array, compound, and any, those types
-can only be used if there are no "_args_" on the command line.
+values](./json_README.md#json-member-value) in given [JSON
+members](./json_README.md#json-member).  Because of the difficulty in expressing
+[JSON member values](./json_README.md#json-member-value) for types member,
+object, array, compound, and any, those types can only be used if there are no
+"_args_" on the command line.
 
-By default, **jnamval** prints [JSON member
+By default, `jnamval` prints [JSON member
 values](./json_README.md#json-member-value), just like the [jval
-utility](#jval-utility) only prints [JSON
-values](./json_README.md#json-value).  With the use of `-p parts`
-[JSON member names](./json_README.md#json-member-name) and/or [JSON
-member values](./json_README.md#json-member-value) may be printed.
-Furthermore, with `-p j` or `-p json`, the JSON syntax may be printed
-like the [jfmt utility](#jfmt-utility) does.
+utility](#jval-utility) only prints [JSON values](./json_README.md#json-value).
+With the use of `-p parts` [JSON member
+names](./json_README.md#json-member-name) and/or [JSON member
+values](./json_README.md#json-member-value) can be printed.  Furthermore, with
+`-p j` or `-p json`, the JSON syntax can be printed like the [jfmt
+utility](#jfmt-utility) does.
 
-By default, **jnamval** uses "_args_" to search the values, ranges,
-numerical values, and numerical ranges.  Multiple "_args_" on the
-command line, by default, behave the same way as the [jval
-utility](#jval-utility).  With `-H`, the meaning of more than "_arg_"
-changes to searching for a given [JSON
+By default, `jnamval` uses "_args_" to search the values, ranges, numerical
+values, and numerical ranges.  Multiple "_args_" on the command line, by
+default, behave the same way as the [jval utility](#jval-utility).  With `-H`,
+the meaning of more than one "_arg_" changes to searching for a given [JSON
 members](./json_README.md#json-member) hierarchy.
 
-When **jnamval** looks for a match, it is done in the following general order:
+When `jnamval` looks for a match, it is done in the following general order:
 
-0. Check JSON tree level (-l default matches any level)
-1. For all JSON nodes that previously matched, check JSON member nodes
-2. For all JSON nodes that previously matched, check for "_arg_" value match (no args match all values)
-3. For all JSON nodes that previously matched, check for -n op=num and -S op=str matches (def: do not)
-4. If `-i` invert all matches (def: do not)
+0. Check JSON tree level (`-l` default matches any level).
+1. For all JSON nodes that previously matched, check JSON member nodes.
+2. For all JSON nodes that previously matched, check for "_arg_" value match (no
+args indicates that all values should match).
+3. For all JSON nodes that previously matched, check for `-n op=num` and `-S
+op=str` matches (def: don't).
+4. If `-i` invert all matches (def: don't invert).
 
 
 
 ### jnamval exit codes
 
-The exit codes for **jnamval** (that are < 10) are identical to
-the [jval exit codes](#jval-exit-codes).
+The exit codes for `jnamval` (that are < 10) are identical to
+the [jval exit codes](#jval-exit-codes) which we include here again to help with
+development and documentation purposes.
+
+In addition to the [Common exit codes](#common-exit-codes), we recommend the
+following exit codes for `jnamval`:
+
+```
+    1	no matchs found
+...
+    3	invalid command line, invalid option, option missing argument, invalid number of args
+...
+    6	-n op=num: however num cannot be represetned as a numerical value
+```
+
+Other exit codes probably should fall under the "_internal error_" category
+and should fall into the "_>= 10_" range.
 
 
 ### jnamval examples
@@ -1417,42 +1433,44 @@ Level values are a guess made while looking at the output of `jparse -J 3`.
 The actual level values depend on the actual JSON parse tree.
 
 We presume that the same concepts described in [jval examples](#jval-examples)
-apply directly or indirectly to **jnamval**.  We will focus on command line
-options unique to **jnamval** as well as some variations from how
+apply directly or indirectly to `jnamval`.  We will focus on command line
+options unique to `jnamval` as well as some variations from how
 [jval](#jval) operates.
 
 
 #### jnamval example 0
 
-Unlike [jval](#jval), **jnamval** operates only on [JSON
+Unlike [jval](#jval), `jnamval` operates only on [JSON
 members](./json_README.md#json-member):
+
+Because `-t type` defaults to simple, and `-p parts` defaults
+to [JSON member values](./json_README.md#json-member-value),
+this command:
 
 ```sh
 jnamval jparse/test_jparse/test_JSON/good/42.json
 ```
 
-Because `-t type` defaults to simple, and `-p parts` defaults
-to [JSON member values](./json_README.md#json-member-value),
-this command produces:
+produces:
 
 ```
 42
 ```
 
-Only 1 of the 3 [JSON members](./json_README.md#json-member)
-had a [JSON member value](./json_README.md#json-member-value)
-that was of a simple type.
+This is because only 1 of the 3 [JSON members](./json_README.md#json-member) had
+a [JSON member value](./json_README.md#json-member-value) that was of a simple
+type.
 
 
 #### jnamval example 1
 
-The `-p type` option can change what **jnamval** prints from the
+The `-p type` option can change what `jnamval` prints from the
 default [JSON member value](./json_README.md#json-member-value).
 
 For example:
 
 ```sh
-jnamval -t json jparse/test_jparse/test_JSON/good/42.json
+jnamval -p json jparse/test_jparse/test_JSON/good/42.json
 ```
 
 produces:
@@ -1461,7 +1479,7 @@ produces:
 { "bar" : 42 }
 ```
 
-We recommend that when printing with `-t json`, the resulting JSON
+We recommend that when printing with `-p json`, the resulting JSON
 be formatted to fit in a single line with spaces between the JSON
 syntax tokens.
 
@@ -1480,7 +1498,7 @@ produces:
 And for example:
 
 ```sh
-jnamval -t both -Q jparse/test_jparse/test_JSON/good/42.json
+jnamval -p both -Q jparse/test_jparse/test_JSON/good/42.json
 ```
 
 produces:
@@ -1489,26 +1507,25 @@ produces:
 "bar" : 42
 ```
 
-Observe that the `-t both` prints the [JSON member
+Observe that the `-p both` prints the [JSON member
 name](./json_README.md#json-member-name) followed by a space,
-followed by a "_:_} (ASCII colon), followed by the [JSON member
+followed by a `:`(ASCII colon), followed by the [JSON member
 value](./json_README.md#json-member-value).
 
 
 #### jnamval example 2
 
-With **jnamval**, the `-t type` includes compound types such as:
+The `jnamval` `-t type` option includes compound types such as:
 
 - member for [JSON members](./json_README.md#json-member)
 - object for [JSON objects](.json_README.md#json-object)
-- array for [JSON array](.json_README.md#json-array)
-- any for any part of JSON
+- array for [JSON arrays](.json_README.md#json-array)
+- any for every part of JSON
 
-We recommend that when printing with compound types, the resulting
-JSON be formatted to fit in a single line with spaces between the
-JSON syntax tokens.
+We recommend that when printing with compound types, the resulting JSON be
+formatted to fit in a single line with spaces between the JSON syntax tokens.
 
-Consider this command:
+Consider this command for example:
 
 ```sh
 jnamval -t array jparse/test_jparse/test_JSON/good/42.json
@@ -1524,20 +1541,19 @@ This should produce:
 
 #### jnamval example 3
 
-While **jnamval** is able to search for [JSON member
-values](./json_README.md#json-member-value) in the same
-way as [jval](#jval), the use of "_args_" as match criteria
-is limited to only JSON simple types.
+While `jnamval` is able to search for [JSON member
+values](./json_README.md#json-member-value) in the same way as [jval](#jval),
+the use of "_args_" as match criteria is limited to only JSON simple types.
 
-The use of `-t type` where type is a compound type is allowed ONLY
-when there are no "_args_" after the "_file.json_" OR when `-N` is used.
+The use of `-t type` where type is a compound type is allowed ONLY when there
+are no "_args_" after the "_file.json_" OR if `-N` is used.
 
 When `-N` is used, we search for [JSON member
 names](./json_README.md#json-member-name), which are [JSON
-strings](./json_README.md#json-string), so any search "_args_" to
-the [JSON member names](./json_README.md#json-member-name).  This
-allows for a  `-t type` where type is a compound type with "_args_"
-after the "_file.json_".
+strings](./json_README.md#json-string), so any search "_args_" make `jnamval`
+search for the [JSON member names](./json_README.md#json-member-name).  This
+allows for a  `-t type` where the type is a compound type with "_args_" after
+the "_file.json_".
 
 For example:
 
@@ -1551,7 +1567,8 @@ produces:
 [ { "name" : "Bilbo Baggins", "age" : 111, "inheritance" : false }, { "name": "Frodo Baggins", "age": 33, "inheritance" : true } ]
 ```
 
-If one wanted to pretty print the results, pipe the output into [jfmt](#jfmt):
+If one wanted to pretty print the results, they should pipe the output into
+[jfmt](#jfmt):
 
 ```sh
 jnamval -N -t array jparse/test_jparse/test_JSON/good/party.json hobbit | jfmt -
@@ -1578,22 +1595,26 @@ produces:
 #### jnamval example 4
 
 With `-N` and "_args_" one may search for certain [JSON member
-values](./json_README.md#json-member-value) that match and print
-their corresponding [JSON member names](./json_README.md#json-member-name):
+names](./json_README.md#json-member-name) and print the matching corresponding
+[JSON member names](./json_README.md#json-member-value):
 
 ```sh
-jnamval -N -s -i -Q jparse/test_jparse/test_JSON/good/party.json gandalf
+jnamval -N -s -i -Q jparse/test_jparse/test_JSON/good/party.json name alias
 ```
 
 produces:
 
 ```
-"name"
-"alias"
+"Gandalf"
+"Gandalf the Grey"
+"Mithrandir"
+"Tharkûn"
+"Olórin"
+"Incánus"
 ```
 
 With `-N -t any` and no "_args_", one may simply print the list of [JSON member
-values](./json_README.md#json-member-value):
+names](./json_README.md#json-member-value):
 
 ```sh
 jnamval -N -t any -Q jparse/test_jparse/test_JSON/good/dyfi_geo_10km.geo.json
@@ -1616,10 +1637,9 @@ produces:
 "type"
 ```
 
-
 #### jnamval example 5
 
-The `-H` option (which implies `-N`) causes "_arg_" to only match a hierarchy
+The `-H` option (which implies `-N`) causes "_args_" to only match a hierarchy
 of [JSON members](./json_README.md#json-member).
 
 Consider this command:
@@ -1628,18 +1648,18 @@ Consider this command:
 jnamval -H jparse/test_jparse/test_JSON/good/dyfi_geo_10km.geo.json features properties stddev
 ```
 
-A search for a [JSON members](./json_README.md#json-member) with a
+A search for [JSON members](./json_README.md#json-member) with a
 [JSON member name](./json_README.md#json-member-name) of "_features_" is performed.
 
 For every [JSON member name](./json_README.md#json-member-name) of "_features_"
-that is found, a search under the given JSON node is then made for
-[JSON members](./json_README.md#json-member) with a
-[JSON member name](./json_README.md#json-member-name) "_properties_".
+that is found, a search under the respective JSON node is then made for [JSON
+members](./json_README.md#json-member) with a [JSON member
+name](./json_README.md#json-member-name) "_properties_".
 
-Then for every [JSON member name](./json_README.md#json-member-name) of "_properties_"
-that is found, a search under the given JSON node is then made for a
-[JSON members](./json_README.md#json-member) with a
-[JSON member name](./json_README.md#json-member-name) of "_stddev_" is name.
+Then for every [JSON member name](./json_README.md#json-member-name) of
+"_properties_" that is found, a search under the given JSON node is then made
+for a [JSON members](./json_README.md#json-member) with a [JSON member
+name](./json_README.md#json-member-name) of "_stddev_" is name.
 
 Since "_stddev_" is the last "_arg_", then the [JSON member
 value](./json_README.md#json-member-value) is examined to determine
@@ -1650,11 +1670,10 @@ the command produces:
 0.33
 ```
 
-The check of the [JSON member value](./json_README.md#json-member-value)
-is only performed on the last "_arg_".  All prior "_args_", to be
-in a hierarchy, had to be some form on compound type otherwise their
-value would not be able to contain lower level [JSON
-member](./json_README.md#json-member).
+The check of the [JSON member value](./json_README.md#json-member-value) is only
+performed on the last "_arg_".  All prior "_args_", to be in a hierarchy, had to
+be some form of compound type as otherwise their value would not be able to
+contain lower level [JSON member](./json_README.md#json-member).
 
 While this command:
 
@@ -1705,4 +1724,5 @@ produces:
 1
 ```
 
-because there is only one "guest_list guest_number" hierarchy with a numeric value of 2.
+because there is only one "guest_list guest_number" hierarchy with a numeric
+value of 2.
