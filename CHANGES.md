@@ -10,6 +10,8 @@ later is a placeholder - does nothing functionally.
 
 Removed unused `jval` structs.
 
+Add check that out file is not stdout before flushing/closing when freeing jfmt
+struct.
 
 ## Release 1.0.32 2023-07-16
 

@@ -429,7 +429,7 @@ free_jfmt(struct jfmt **jfmt)
     }
 
     /* flush output file if open and then close it */
-    if ((*jfmt)->outfile != NULL) {
+    if ((*jfmt)->outfile != NULL && (*jfmt)->outfile != stdout) {
 	fflush((*jfmt)->outfile);
 	fclose((*jfmt)->outfile);
 	(*jfmt)->outfile = NULL;
