@@ -413,14 +413,21 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
 	not_reached();
     }
 
-    /* use of -c with any of any of -C, -L, -j and -I is an error */
-    if (jval->count_only) {
-	if (jval->count_and_show_values) {
+    /*
+     * use of -c with -C or -L is an error and use of -C with -c or -L is an
+     * error
+     */
+    if (jval->count_only || jval->print_json_levels || jval->count_and_show_values) {
+	if (jval->count_and_show_values && jval->count_only) {
 	    err(3, __func__, "cannot use -c and -C together"); /*ooo*/
 	    not_reached();
 	}
-	if (jval->print_json_levels) {
+	if (jval->print_json_levels && jval->count_only) {
 	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
+	    not_reached();
+	}
+	if (jval->print_json_levels && jval->count_and_show_values) {
+	    err(3, __func__, "cannot use -L and -C together"); /*ooo*/
 	    not_reached();
 	}
     }
