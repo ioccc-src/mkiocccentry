@@ -71,10 +71,26 @@
 /* JVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
 #define JVAL_TYPE_SIMPLE  (JVAL_TYPE_NUM|JVAL_TYPE_BOOL|JVAL_TYPE_STR|JVAL_TYPE_NULL)
 
+#define JVAL_CMP_EQ	(1)
+#define JVAL_CMP_LT	(2)
+#define JVAL_CMP_LE	(3)
+#define JVAL_CMP_GT	(4)
+#define JVAL_CMP_GE	(5)
 
 /* structs */
 
 /* structs for various options */
+
+/* for comparison of numbers / strings - options -n and -S */
+struct jval_cmp_op
+{
+    char *str;		/* for -S str */
+
+    intmax_t num;	/* for -n as signed number */
+
+    uintmax_t op;	/* the operation - see JVAL_CMP macros above */
+};
+
 /* number ranges for the options -l, -n and -n */
 struct jval_number_range
 {
@@ -137,6 +153,10 @@ struct jval
     bool use_regexps;				/* -g used, allow grep-like regexps */
     uintmax_t total_matches;			/* for -c */
 
+    bool string_cmp_used;			/* for -S */
+    struct jval_cmp_op string_cmp;		/* for -S str */
+    bool num_cmp_used;				/* for -n */
+    struct jval_cmp_op num_cmp;			/* for -n num */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
@@ -162,6 +182,9 @@ bool jval_match_simple(uintmax_t types);
 /* for number range option -l */
 bool jval_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jval_number *number);
 bool jval_number_in_range(intmax_t number, intmax_t total_matches, struct jval_number *range);
+
+/* for -S and -n */
+void jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jval_cmp_op *cmp);
 
 /* for -L option */
 void jval_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);

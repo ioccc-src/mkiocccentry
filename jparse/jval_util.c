@@ -90,6 +90,18 @@ alloc_jval(void)
     jval->match_substrings = false;			/* -s used, matching substrings okay */
     jval->use_regexps = false;				/* -g used, allow grep-like regexps */
 
+    /* for -S */
+    jval->string_cmp_used = false;
+    jval->string_cmp.str = NULL;
+    jval->string_cmp.num = 0;
+    jval->string_cmp.op = 0;
+
+    /* for -n */
+    jval->num_cmp_used = false;
+    jval->num_cmp.str = NULL;
+    jval->num_cmp.num = 0;
+    jval->num_cmp.op = 0;
+
     /* parsing related */
     jval->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
     jval->json_tree = NULL;
@@ -814,4 +826,81 @@ parse_jval_args(struct jval *jval, char **argv)
     }
 }
 
+/*
+ * jval_parse_cmp_op	- parse -S / -n compare options
+ *
+ */
+void
+jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jval_cmp_op *cmp)
+{
+    char *p = NULL;		    /* to find the = separator */
+    char *mode = NULL;		    /* if -S then "str" else "num" */
 
+    /* firewall */
+    if (jval == NULL) {
+	err(55, __func__, "NULL jval");
+	not_reached();
+    }
+    if (option == NULL) {
+	err(56, __func__, "NULL option");
+	not_reached();
+    }
+    if (optarg == NULL) {
+	err(57, __func__, "NULL optarg");
+	not_reached();
+    }
+    if (cmp == NULL) {
+	err(58, __func__, "NULL cmp pointer");
+	not_reached();
+    }
+
+    if (!strcmp(option, "S")) {
+	mode = "str";
+    } else if (!strcmp(option, "n")) {
+	mode = "num";
+    } else {
+	err(59, __func__, "erroneous call to function");
+	not_reached();
+    }
+
+    p = strchr(optarg, '=');
+    if (p == NULL) {
+	err(3, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    } else if (p == optarg) {
+	err(3, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    } else if (p[1] == '\0') {
+	err(3, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	not_reached();
+    }
+
+    if (!strncmp(optarg, "eq=", 3)) {
+	cmp->op = JVAL_CMP_EQ;
+    } else if (!strncmp(optarg, "lt=", 3)) {
+	cmp->op = JVAL_CMP_LT;
+    } else if (!strncmp(optarg, "le=", 3)) {
+	cmp->op = JVAL_CMP_LE;
+    } else if (!strncmp(optarg, "gt=", 3)){
+	cmp->op = JVAL_CMP_GT;
+    } else if (!strncmp(optarg, "ge=", 3)) {
+	cmp->op = JVAL_CMP_GE;
+    } else {
+	err(3, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    }
+
+    if (!strcmp(option, "S")) { /* -S */
+	errno = 0;
+	cmp->str = strdup(optarg + 3);
+	if (cmp->str == NULL) {
+	    err(60, __func__, "failed to strdup() string for -%s", option);
+	    not_reached();
+	}
+    } else if (!strcmp(option, "n")) { /* -n */
+	if (!string_to_intmax(optarg + 3, &cmp->num)) {
+	    err(3, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
+	    not_reached();
+	}
+    }
+}

@@ -2,8 +2,10 @@
 
 ## Release 1.0.33 2023-07-17
 
-Add parsing of most options for `jval`. It is almost complete but two options
-remain yet: `-n` and `-S`. Updated version to "0.0.1 2023-07-17".
+Updated `jval` version to "0.0.1 2023-07-17".
+
+Add parsing for all options `jval`. Test code for `-n` and `-S` still needs to
+be written but everything should be fine.
 
 Removed unused `jval` code except that one function which _might_ be useful
 later is a placeholder - does nothing functionally.

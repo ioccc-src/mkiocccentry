@@ -237,8 +237,12 @@ main(int argc, char **argv)
 	    dbg(DBG_LOW, "-e specified, will encode strings");
 	    break;
 	case 'n': /* -n op=num */
+	    jval->num_cmp_used = true;
+	    jval_parse_cmp_op(jval, "n", optarg, &jval->num_cmp);
 	    break;
 	case 'S': /* -S op=str */
+	    jval->string_cmp_used = true;
+	    jval_parse_cmp_op(jval, "S", optarg, &jval->string_cmp);
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */
