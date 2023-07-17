@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.33 2023-07-17
+
+Add parsing of most options for `jval`. It is almost complete but two options
+remain yet: `-n` and `-S`. Updated version to "0.0.1 2023-07-17".
+
+Removed unused `jval` code except that one function which _might_ be useful
+later is a placeholder - does nothing functionally.
+
+Removed unused `jval` structs.
+
+
 ## Release 1.0.32 2023-07-16
 
 Add initial code for `jfmt`: completely parses options and will dump JSON to
