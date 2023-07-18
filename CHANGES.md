@@ -1,5 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.34 2023-07-18
+
+New jval version "0.0.2 2023-07-18". Option parsing is complete. All that is
+left for this is adding the test code for `-S` and `-n` (see below for why these
+options were not completely parsed).
+
+Fix `jval` parsing of `-S op=str` and `-n op=num` so that the json conversion
+routines are used in order to check that everything is okay according to the
+JSON spec. What is NOT implemented is the routines to run the comparisons: that
+will be a longer function and also has to happen after option parsing is done
+for all three tools and then the man pages are written and followed by that
+discussion.
+
+Note that if the string starts with a '"' we pass in true for the quote
+parameter to the conversion routine and otherwise we do not. It's the
+responsibility of the user to ensure that the string is properly formed
+otherwise. A possible problem, however, that might need to be addressed, is
+whether or not it can compare strings with quotes in it. This can be decided
+later.
+
+If `jval -c` or `jval -C` is used show a total count of matches. Currently will
+be 0 and for `-C` the output will be incorrect but that's okay as that's all we
+have available now and it lets us test the options.
+
+Sequenced exit codes.
+
+
 ## Release 1.0.33 2023-07-17
 
 Updated `jval` version to "0.0.1 2023-07-17".

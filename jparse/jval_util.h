@@ -84,11 +84,10 @@
 /* for comparison of numbers / strings - options -n and -S */
 struct jval_cmp_op
 {
-    char *str;		/* for -S str */
+    struct json_number *number;	    /* for -n as signed number */
+    struct json_string *string;	    /* for -S str */
 
-    intmax_t num;	/* for -n as signed number */
-
-    uintmax_t op;	/* the operation - see JVAL_CMP macros above */
+    uintmax_t op;	    /* the operation - see JVAL_CMP macros above */
 };
 
 /* number ranges for the options -l, -n and -n */

@@ -347,8 +347,21 @@ main(int argc, char **argv)
 	}
     }
 
-    /* XXX - implement core of the tool, for now just print file to out file - XXX */
-    fpr(jval->outfile?jval->outfile:stdout, "jval", "%s", jval->file_contents);
+    /* XXX - implement core of the tool, for now just print count (if requested)
+     * and file to out file or stdout - XXX */
+    if (jval->count_only) {
+	/* XXX - the count will currently be 0 but we can at least test this option */
+	jval_print_count(jval);
+    } else if (jval->count_and_show_values) {
+	/* XXX - the count will be wrong, the format will be wrong and it might
+	 * be that not the full document is requested but this is all we have at
+	 * this moment and at least we can test the option - XXX
+	 */
+	jval_print_count(jval);
+	fpr(jval->outfile?jval->outfile:stdout, "jval", "%s", jval->file_contents);
+    } else {
+	fpr(jval->outfile?jval->outfile:stdout, "jval", "%s", jval->file_contents);
+    }
 
     /* free tree */
     json_tree_free(jval->json_tree, jval->max_depth);
