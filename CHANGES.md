@@ -26,6 +26,8 @@ have available now and it lets us test the options.
 
 Sequenced exit codes.
 
+Remove `any` match type from `jval`. This was added by me as it seemed useful
+but since it's added to `jnamval` I presume that it should not be in `jval`.
 
 ## Release 1.0.33 2023-07-17
 

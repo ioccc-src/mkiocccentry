@@ -306,28 +306,6 @@ jval_match_null(uintmax_t types)
     return (types & JVAL_TYPE_NULL) != 0;
 }
 /*
- * jval_match_any	- if any type should match
- *
- * given:
- *
- *	types	- types set
- *
- * Returns true if types is equal to JVAL_TYPE_ANY.
- *
- * Why does it have to equal JVAL_TYPE_ANY if it checks for any type? Because
- * the point is that if JVAL_TYPE_ANY is set it can be any type but not
- * specific types. For the specific types those bits have to be set instead. If
- * JVAL_TYPE_ANY is set then any type can be set but if types is say
- * JVAL_TYPE_INT then checking for JVAL_TYPE_INT & JVAL_TYPE_ANY would be
- * != 0 (as it's a bitwise OR of all the types) which would suggest that any
- * type is okay even if JVAL_TYPE_INT was the only type.
- */
-bool
-jval_match_any(uintmax_t types)
-{
-    return types == JVAL_TYPE_ANY;
-}
-/*
  * jval_match_simple	- if simple types should match
  *
  * given:
@@ -412,8 +390,6 @@ jval_parse_types_option(char *optarg)
 	    type |= JVAL_TYPE_NULL;
 	} else if (!strcmp(p, "simple")) {
 	    type |= JVAL_TYPE_SIMPLE;
-	} else if (!strcmp(p, "any")) {
-	    type |= JVAL_TYPE_ANY;
 	} else {
 	    /* unknown type */
 	    err(3, __func__, "unknown type '%s'", p); /*ooo*/
@@ -928,12 +904,12 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jv
     } else if (!strcmp(option, "n")) { /* -n */
 	item = json_conv_number(optarg + 3, strlen(optarg + 3));
 	if (item == NULL) {
-	    err(37, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
+	    err(39, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
 	    not_reached();
 	} else {
 	    cmp->number = &(item->item.number);
 	    if (!cmp->number->converted && !cmp->number->parsed) {
-		err(38, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",
+		err(40, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",
 			optarg + 3, option);
 		not_reached();
 	    }

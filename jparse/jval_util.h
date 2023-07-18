@@ -67,7 +67,6 @@
 #define JVAL_TYPE_BOOL	    (16)
 #define JVAL_TYPE_STR	    (32)
 #define JVAL_TYPE_NULL	    (64)
-#define JVAL_TYPE_ANY	    (127) /* bitwise OR of the above values */
 /* JVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
 #define JVAL_TYPE_SIMPLE  (JVAL_TYPE_NUM|JVAL_TYPE_BOOL|JVAL_TYPE_STR|JVAL_TYPE_NULL)
 
@@ -175,7 +174,6 @@ bool jval_match_bool(uintmax_t types);
 bool jval_match_num(uintmax_t types);
 bool jval_match_string(uintmax_t types);
 bool jval_match_null(uintmax_t types);
-bool jval_match_any(uintmax_t types);
 bool jval_match_simple(uintmax_t types);
 
 /* for number range option -l */

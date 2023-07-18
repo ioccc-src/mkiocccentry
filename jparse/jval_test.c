@@ -164,14 +164,6 @@ jval_run_tests(void)
 	okay = false;
     }
 
-    /* test all types */
-    bits = jval_parse_types_option("any");
-    /* verify that it is the any bit */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY");
-    if (!test) {
-	okay = false;
-    }
-
     /* test simple */
     bits = jval_parse_types_option("simple");
     /* verify that the simple type is set by simple match function */
@@ -258,14 +250,13 @@ jval_run_tests(void)
 	   jval_test_bits(false, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
 
     /* check all types */
-    bits = jval_parse_types_option("int,float,exp,num,bool,str,null,any");
+    bits = jval_parse_types_option("int,float,exp,num,bool,str,null");
     test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP") &&
@@ -273,7 +264,6 @@ jval_run_tests(void)
 	   jval_test_bits(true, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
     if (!test) {
 	okay = false;

@@ -66,7 +66,6 @@ static const char * const usage_msg0 =
     "\t\t\t\tstr\t\tstring values\n"
     "\t\t\t\tnull\t\tnull values\n"
     "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null' (the default)\n"
-    "\t\t\t\tany\t\tany of the above types\n"
     "\n"
     "\t-l lvl\t\tPrint values at specific JSON levels (def: print any level)\n"
     "\n"
