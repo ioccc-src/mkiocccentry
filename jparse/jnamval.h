@@ -1,4 +1,4 @@
-/* jnamval - JSON member printer
+/* jnamval - JSON value printer
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -53,11 +53,6 @@
 #include "json_util.h"
 
 /*
- * jnamval_util - our utility functions, macros, jnamval structs and variables
- */
-#include "jnamval_util.h"
-
-/*
  * jnamval_test - test functions
  */
 #include "jnamval_test.h"
@@ -68,7 +63,7 @@
 #include "jparse.h"
 
 /* jnamval version string */
-#define JNAMVAL_VERSION "0.0.0 2023-07-16"		/* format: major.minor YYYY-MM-DD */
+#define JNAMVAL_VERSION "0.0.1 2023-07-18"		/* format: major.minor YYYY-MM-DD */
 
 /* jnamval functions - see jnamval_util.h for most */
 

@@ -29,6 +29,14 @@ Sequenced exit codes.
 Remove `any` match type from `jval`. This was added by me as it seemed useful
 but since it's added to `jnamval` I presume that it should not be in `jval`.
 
+New version of `jnamval` "0.0.1 2023-07-18". All options should now be parsed
+(unless some were missed by accident). Options test code was updated to test the
+new bits. Exit codes were changed from the original `json_util_README.md` (which
+has been updated) as 1 is already used for unable to write to output file which
+is in all tools now (and since 1 was used for jfmt in that way it seems better
+to keep them consistent).
+
+
 ## Release 1.0.33 2023-07-17
 
 Updated `jval` version to "0.0.1 2023-07-17".

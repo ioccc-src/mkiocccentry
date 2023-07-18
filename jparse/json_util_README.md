@@ -1357,9 +1357,7 @@ we recommend the following additional command line options for `jnamval`:
 				any		alias for 'simple,compound'
 
 	-N		Match based on JSON member names (def: match JSON member values)
-	-H		Match name heirarchies (def: with -H match any JSON member name, else JSON member value)
-
-			Use of -H implies -N.
+	-H		Match name hierarchies (def: with -N match any JSON member name, else JSON member value)
 
 	-p parts	Parts of a JSON member to print (def: print JSON member values)
 
@@ -1418,11 +1416,11 @@ In addition to the [Common exit codes](#common-exit-codes), we recommend the
 following exit codes for `jnamval`:
 
 ```
-    1	no matchs found
 ...
     3	invalid command line, invalid option, option missing argument, invalid number of args
 ...
     6	-n op=num: however num cannot be represetned as a numerical value
+    7	no matches found
 ```
 
 Other exit codes probably should fall under the "_internal error_" category

@@ -146,7 +146,7 @@ jnamval_run_tests(void)
     bits = jnamval_parse_print_option("both");
 
     /* check that JNAMVAL_PRINT_BOTH is equal to bits */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_name_value, "JNAMVAL_PRINT_BOTH");
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_both, "JNAMVAL_PRINT_BOTH");
     if (!test) {
 	okay = false;
     }
@@ -156,7 +156,7 @@ jnamval_run_tests(void)
     /* check that only JNAMVAL_PRINT_NAME is set: both and value are not set */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_name, "JNAMVAL_PRINT_NAME") &&
 	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_value, "JNAMVAL_PRINT_VALUE") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_name_value, "JNAMVAL_PRINT_BOTH");
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_both, "JNAMVAL_PRINT_BOTH");
 
     if (!test) {
 	okay = false;
@@ -166,11 +166,37 @@ jnamval_run_tests(void)
     /* check that only JNAMVAL_PRINT_VALUE is set: both and name are not set */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_value, "JNAMVAL_PRINT_VALUE") &&
 	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_name, "JNAMVAL_PRINT_NAME") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_name_value, "JNAMVAL_PRINT_BOTH");
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_both, "JNAMVAL_PRINT_BOTH");
 
     if (!test) {
 	okay = false;
     }
+
+    /* set bits to JNAMVAL_PRINT_JSON */
+    bits = jnamval_parse_print_option("j");
+    /* check that only JNAMVAL_PRINT_VALUE is set: both and name are not set */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_json, "JNAMVAL_PRINT_JSON") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_name, "JNAMVAL_PRINT_NAME") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_value, "JNAMVAL_PRINT_VALUE") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_both, "JNAMVAL_PRINT_BOTH");
+
+    if (!test) {
+	okay = false;
+    }
+
+    /* set bits to JNAMVAL_PRINT_JSON by full name */
+    bits = jnamval_parse_print_option("json");
+    /* check that only JNAMVAL_PRINT_VALUE is set: both and name are not set */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_json, "JNAMVAL_PRINT_JSON") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_name, "JNAMVAL_PRINT_NAME") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_value, "JNAMVAL_PRINT_VALUE") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_both, "JNAMVAL_PRINT_BOTH");
+
+    if (!test) {
+	okay = false;
+    }
+
+
 
     /* test -t option bits */
 
@@ -212,6 +238,14 @@ jnamval_run_tests(void)
     /* verify that the compound type is set by matching all types */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_object, "JNAMVAL_TYPE_OBJECT") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_array, "JNAMVAL_TYPE_ARRAY");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test member */
+    bits = jnamval_parse_types_option("member");
+    /* verify that the member type is set by member match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_member, "JNAMVAL_TYPE_MEMBER");
     if (!test) {
 	okay = false;
     }
