@@ -55,6 +55,9 @@ export TOOLS="
     ./jparse/jsemtblgen
     ./jparse/jstrdecode
     ./jparse/jstrencode
+    ./jparse/jfmt
+    ./jparse/jnamval
+    ./jparse/jval
     ./jparse/run_bison.sh
     ./jparse/run_flex.sh
     ./jparse/test_jparse/jnum_chk

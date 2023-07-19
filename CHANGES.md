@@ -9,6 +9,8 @@ Minor bug fixes in `jfmt`: set default spaces for `-L` and `-I`options to 4, not
 0, and add missing `-q` description to usage message. Updated version to "0.0.3
 2023-07-19".
 
+Add the three JSON tools `jfmt`, `jval` and `jnamval` to `bug_report.sh`.
+
 
 ## Release 1.0.34 2023-07-18
 
