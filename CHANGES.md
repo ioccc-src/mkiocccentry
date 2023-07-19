@@ -1,5 +1,10 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.35 2023-07-19
+
+Add initial version of man page of `jfmt(1)` to repo.
+
+
 ## Release 1.0.34 2023-07-18
 
 New jval version "0.0.2 2023-07-18". Option parsing is complete. All that is
