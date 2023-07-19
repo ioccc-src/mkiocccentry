@@ -2,7 +2,8 @@
 
 ## Release 1.0.35 2023-07-19
 
-Add initial version of man page of `jfmt(1)` to repo.
+Add initial version of man pages of `jfmt(1)`, `jval(1)` and `jnamval(1)` to
+repo.
 
 Minor bug fixes in `jfmt`: set default spaces for `-L` and `-I`options to 4, not
 0, and add missing `-q` description to usage message. Updated version to "0.0.3
