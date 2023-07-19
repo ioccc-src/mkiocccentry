@@ -66,10 +66,10 @@ alloc_jfmt(void)
 
     /* print related options */
     jfmt->print_json_levels = false;			/* -L specified */
-    jfmt->num_level_spaces = 0;			/* number of spaces or tab for -L */
+    jfmt->num_level_spaces = 4;			/* number of spaces or tab for -L */
     jfmt->print_level_tab = false;			/* -L tab option */
     jfmt->indent_levels = false;			/* -I used */
-    jfmt->indent_spaces = 0;				/* -I number of tabs or spaces */
+    jfmt->indent_spaces = 4;				/* -I number of tabs or spaces */
     jfmt->indent_tab = false;				/* -I <num>[{t|s}] specified */
 
     /* parsing related */

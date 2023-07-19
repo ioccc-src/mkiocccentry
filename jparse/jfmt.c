@@ -47,6 +47,7 @@ static const char * const usage_msg0 =
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
     "\t-J level\tJSON verbosity level (def: %d)\n"
+    "\t-q\t\tSuppress some of the output (def: show more info)\n"
     "\n"
     "\t-L <num>[{t|s}]\tPrint JSON level followed by a number of tabs or spaces (def: don't print levels)\n"
     "\t-L tab\t\tAlias for: '-L 1t'\n"
