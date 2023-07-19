@@ -56,7 +56,7 @@ static const char * const usage_msg0 =
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.\n"
     "\t\t\tNot specifying 's' or 't' implies spaces.\n"
     "\n"
-    "\t-t type\t\tMatch only one of the these comma-separated types (def: simple):\n"
+    "\t-t type\t\tMatch only the comma-separated types (def: simple):\n"
     "\n"
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
