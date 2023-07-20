@@ -364,8 +364,8 @@ that this might print:
 
 ```
 1    {
-2       "foo" : "bar",
-2	"foo" : [
+2        "foo" : "bar",
+2 	 "foo" : [
 3	    "bar",
 3	    "bar",
 3	    "bar"
@@ -375,6 +375,88 @@ that this might print:
 
 If `jval` uses the "1 level per line" model of printing JSON,
 then adding `-L` should simply add the level number for each line.
+
+To print JSON level numbers without intending JSON:
+
+```sh
+jfmt -L 4s -I 0 jparse/test_jparse/test_JSON/good/foo.json
+```
+
+produces:
+
+```
+1    {
+2    "foo" : "bar",
+2    "foo" : [
+3    "bar",
+3    "bar",
+3    "bar"
+2    ]
+1    }
+```
+
+
+#### jfmt example 3
+
+When restricting the levels of JSON that are printed via the `-l` option,
+and such a restriction starts at a deeper than level 0, one does **NOT**
+need to fully intent the top most level.
+
+Consider the initial output of:
+
+```sh
+jfmt -L 4s -I 2s jparse/test_jparse/test_JSON/good/party.json
+```
+
+Assume the above command prints (we are guessing at JSON levels):
+
+```
+0    {
+1      "event" : "A Long-expected Party",
+1      "location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
+1      "date" : "22 September T.A. 3001",
+1      "birthdays" : [
+2        {
+3          "hobbit" : [
+4             {
+5               "name" : "Bilbo Baggins",
+5               "age" : 111,
+5               "inheritance" : false
+4             },
+4             {
+5               "name": "Frodo Baggins",
+5               "age": 33,
+5               "inheritance" : true
+4             }
+3           ]
+2         }
+1      ],
+...
+```
+
+Assuming those JSON levels, if we restrict to printing at JSON level 4 and lower, then:
+
+
+```sh
+jfmt -L 4s -I 2s -l 4: jparse/test_jparse/test_JSON/good/party.json
+```
+
+need not intend level 4 as far as previous command did:
+
+```
+4    {
+5      "name" : "Bilbo Baggins",
+5      "age" : 111,
+5      "inheritance" : false
+4    },
+4    {
+5      "name": "Frodo Baggins",
+5      "age": 33,
+5      "inheritance" : true
+4    }
+```
+
+Since `-l 4:` is in effect, we can ignore the 4 levels of indentation when printing.
 
 
 ## jval utility
@@ -416,7 +498,7 @@ we recommend the following command line options for `jval`:
 				null	null values
 				simple	alias for 'int,float,exp,bool,str,null'
 
-	-l lvl		Print values at specific JSON levels (def: print at any level)
+	-l lvl		Print JSON only at specific JSON levels (def: print at any level)
 
 			If lvl is a number (e.g.: -l 3), level must == number.
 			If lvl is a number followed by : (e.g. '-l 3:'), level must be >= number.
