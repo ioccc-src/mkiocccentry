@@ -1357,7 +1357,7 @@ we recommend the following additional command line options for `jnamval`:
 				any		alias for 'simple,compound'
 
 	-N		Match based on JSON member names (def: match JSON member values)
-	-H		Match name heirarchies (def: do not match heirarchies)
+	-H		Match name hierarchies (def: do not match hierarchies)
 
 			Use of -H implies -N.
 
