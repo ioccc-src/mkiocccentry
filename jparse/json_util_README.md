@@ -365,7 +365,7 @@ that this might print:
 ```
 1    {
 2        "foo" : "bar",
-2 	 "foo" : [
+2        "foo" : [
 3	    "bar",
 3	    "bar",
 3	    "bar"
@@ -1421,6 +1421,62 @@ This produces all strings that are `< "name2"`:
 name1
 avalue
 bvalue
+```
+
+The `-S op=str` is intended to strictly be a string comparison.  While the use may be obvious for JSON stings, for JSON non-strings the same `as_str` comparison applies to other JSON simple types (i.e., numbers, booleans, nulls).
+
+Consider the case of `jparse/test_jparse/test_JSON/good/names.json`:
+
+```sh
+jval -S ge=n -S le=o jparse/test_jparse/test_JSON/good/names.json
+```
+
+Here we print over the range of strings in the [JSON
+document](./json_README.md#json-document) that are ">= n" and "<=
+o".  We perform string comparisons on the `as_str` structure element
+and produces:
+
+```
+name0
+name1
+name2
+null
+name3
+name4
+```
+
+Using `-S` with a half-open range:
+
+```sh
+jval -S ge=n jparse/test_jparse/test_JSON/good/names.json
+```
+
+produces:
+
+```
+name0
+name1
+name2
+null
+name3
+true
+name4
+```
+
+If we only wanted [JSON strings](./json_README.md#json-string) then we would need to use:
+
+```sh
+jval -S ge=n -S le=o -t str jparse/test_jparse/test_JSON/good/names.json
+```
+
+which would only produce:
+
+```
+name0
+name1
+name2
+name3
+name4
 ```
 
 
