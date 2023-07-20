@@ -191,10 +191,6 @@ we recommend the following command line options for `jfmt`:
 	file.json	JSON file to parse (- ==> read from stdin)
 ```
 
-It could be argued the default for `-I stuff` should be tab or 2 spaces or something else.
-We do not want to indent too far for reasonable levels of JSON.  2 spaces might be too little
-while tab and 8 spaces might be too much.
-
 Additional command line options may be added.
 
 For example, one might wish to add additional command line options to vary the
@@ -293,6 +289,71 @@ line by line with the use of `-L stuff` (printing JSON tree levels).
 
 #### jfmt example 2
 
+The use of `-I` controls how JSON is indented.  Consider this variant of [jfmt example 1](#jfmt-example-1):
+
+```sh
+jfmt -I 2s jparse/test_jparse/test_JSON/good/dyfi_zip.geo.json
+```
+
+produces:
+
+```json
+{
+  "features" : [
+    {
+      "geometry" : {
+        "coordinates" : [
+          -149.7791,
+          61.1512],
+        "type" : "Point"
+      },
+      "type" : "Feature",
+      "properties" : {
+        "population": 0,
+        "nresp": 1,
+        "name": "99507<br>0.330",
+        "cdi": 2,
+        "dist": 195
+      }
+    }
+  ],
+  "type" : "FeatureCollection"
+}
+```
+
+```sh
+jfmt -I 0 jparse/test_jparse/test_JSON/good/dyfi_zip.geo.json
+```
+
+produces:
+
+```json
+{
+"features" : [
+{
+"geometry" : {
+"coordinates" : [
+-149.7791,
+61.1512],
+"type" : "Point"
+},
+"type" : "Feature",
+"properties" : {
+"population": 0,
+"nresp": 1,
+"name": "99507<br>0.330",
+"cdi": 2,
+"dist": 195
+}
+}
+],
+"type" : "FeatureCollection"
+}
+```
+
+
+#### jfmt example 3
+
 ```sh
 jfmt -L 4s jparse/test_jparse/test_JSON/good/foo.json
 ```
@@ -311,6 +372,9 @@ that this might print:
 2        ]
 1    }
 ```
+
+If `jval` uses the "1 level per line" model of printing JSON,
+then adding `-L` should simply add the level number for each line.
 
 
 ## jval utility
