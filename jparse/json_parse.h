@@ -103,8 +103,8 @@ struct encode
  */
 struct json_number
 {
-    bool converted;		/* true ==> able to convert JSON number string to some form of C value */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to convert JSON number string to some form of C value */
 
     char *as_str;		/* allocated copy of the original allocated JSON number, NUL terminated */
     char *first;		/* first whitespace character */
@@ -212,8 +212,8 @@ struct json_number
  */
 struct json_string
 {
-    bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
 
     char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
     char *str;			/* allocated decoded JSON string, NUL terminated */
@@ -246,8 +246,8 @@ struct json_string
  */
 struct json_boolean
 {
-    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
 
     char *as_str;		/* allocated JSON boolean string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
@@ -268,8 +268,8 @@ struct json_boolean
  */
 struct json_null
 {
-    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
 
     char *as_str;		/* allocated JSON null string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
@@ -311,8 +311,8 @@ struct json_null
  */
 struct json_member
 {
-    bool converted;		/* true ==> able to decode JSON member */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON member */
 
     char *name_as_str;		/* name string as non-decoded JSON string - will not be NULL */
     char *name_str;		/* name string as decoded JSON string - will not be NULL */
@@ -342,8 +342,8 @@ struct json_member
  */
 struct json_object
 {
-    bool converted;		/* true ==> able to decode JSON object */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON object */
 
     intmax_t len;		/* number of JSON members in the object, 0 ==> empty object */
     struct json **set;		/* set of JSON members belonging to the object */
@@ -372,8 +372,8 @@ struct json_object
  */
 struct json_array
 {
-    bool converted;		/* true ==> able to decode JSON array */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON array */
 
     intmax_t len;		/* number of JSON values in the JSON array, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON array */
@@ -399,8 +399,8 @@ struct json_array
  */
 struct json_elements
 {
-    bool converted;		/* true ==> able to decode JSON array */
     bool parsed;		/* true ==> able to parse correctly */
+    bool converted;		/* true ==> able to decode JSON array */
 
     intmax_t len;		/* number of JSON values in the JSON elements, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON elements */

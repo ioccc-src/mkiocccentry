@@ -8,6 +8,8 @@ converted is true and parsed is false. It should be it checks for both are true
 and then the next check in the else if checks if parsed is true and converted is
 false.
 
+Move `converted` bool in `struct json_` structs below the `parsed` bool.
+
 
 ## Release 1.0.35 2023-07-19
 
