@@ -142,36 +142,6 @@ jval_run_tests(void)
 
     /* now check bits */
 
-    /* set bits to JVAL_PRINT_BOTH */
-    bits = jval_parse_print_option("both");
-
-    /* check that JVAL_PRINT_BOTH is equal to bits */
-    test = jval_test_bits(true, bits, __LINE__, jval_print_name_value, "JVAL_PRINT_BOTH");
-    if (!test) {
-	okay = false;
-    }
-
-    /* set bits to JVAL_PRINT_NAME */
-    bits = jval_parse_print_option("name");
-    /* check that only JVAL_PRINT_NAME is set: both and value are not set */
-    test = jval_test_bits(true, bits, __LINE__, jval_print_name, "JVAL_PRINT_NAME") &&
-	   jval_test_bits(false, bits, __LINE__, jval_print_value, "JVAL_PRINT_VALUE") &&
-	   jval_test_bits(false, bits, __LINE__, jval_print_name_value, "JVAL_PRINT_BOTH");
-
-    if (!test) {
-	okay = false;
-    }
-    /* set bits to JVAL_PRINT_VALUE */
-    bits = jval_parse_print_option("v");
-    /* check that only JVAL_PRINT_VALUE is set: both and name are not set */
-    test = jval_test_bits(true, bits, __LINE__, jval_print_value, "JVAL_PRINT_VALUE") &&
-	   jval_test_bits(false, bits, __LINE__, jval_print_name, "JVAL_PRINT_NAME") &&
-	   jval_test_bits(false, bits, __LINE__, jval_print_name_value, "JVAL_PRINT_BOTH");
-
-    if (!test) {
-	okay = false;
-    }
-
     /* test -t option bits */
 
     /* first int,float,exp */
@@ -190,28 +160,6 @@ jval_run_tests(void)
     test = jval_test_bits(false, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP");
-    if (!test) {
-	okay = false;
-    }
-
-    /* test all types */
-    bits = jval_parse_types_option("any");
-    /* verify that it is the any bit */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY");
-    if (!test) {
-	okay = false;
-    }
-
-    /* test compound */
-    bits = jval_parse_types_option("compound");
-    /* verify that the compound type is set by compound match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_compound, "JVAL_TYPE_COMPOUND");
-    if (!test) {
-	okay = false;
-    }
-    /* verify that the compound type is set by matching all types */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_object, "JVAL_TYPE_OBJECT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_array, "JVAL_TYPE_ARRAY");
     if (!test) {
 	okay = false;
     }
@@ -302,17 +250,13 @@ jval_run_tests(void)
 	   jval_test_bits(false, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
 	   jval_test_bits(false, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_object, "JVAL_TYPE_OBJECT") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_array, "JVAL_TYPE_ARRAY") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_compound, "JVAL_TYPE_COMPOUND");
+	   jval_test_bits(false, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
 
     /* check all types */
-    bits = jval_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound");
+    bits = jval_parse_types_option("int,float,exp,num,bool,str,null");
     test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP") &&
@@ -320,11 +264,7 @@ jval_run_tests(void)
 	   jval_test_bits(true, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
 	   jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_object, "JVAL_TYPE_OBJECT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_array, "JVAL_TYPE_ARRAY") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_any, "JVAL_TYPE_ANY") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_compound, "JVAL_TYPE_COMPOUND");
+	   jval_test_bits(true, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }

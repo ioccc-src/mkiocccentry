@@ -1,5 +1,69 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.35 2023-07-19
+
+Add initial version of man pages of `jfmt(1)`, `jval(1)` and `jnamval(1)` to
+repo.
+
+Minor bug fixes in `jfmt`: set default spaces for `-L` and `-I`options to 4, not
+0, and add missing `-q` description to usage message. Updated version to "0.0.3
+2023-07-19".
+
+Add the three JSON tools `jfmt`, `jval` and `jnamval` to `bug_report.sh`.
+
+
+## Release 1.0.34 2023-07-18
+
+New jval version "0.0.2 2023-07-18". Option parsing is complete. All that is
+left for this is adding the test code for `-S` and `-n` (see below for why these
+options were not completely parsed).
+
+Fix `jval` parsing of `-S op=str` and `-n op=num` so that the json conversion
+routines are used in order to check that everything is okay according to the
+JSON spec. What is NOT implemented is the routines to run the comparisons: that
+will be a longer function and also has to happen after option parsing is done
+for all three tools and then the man pages are written and followed by that
+discussion.
+
+Note that if the string starts with a '"' we pass in true for the quote
+parameter to the conversion routine and otherwise we do not. It's the
+responsibility of the user to ensure that the string is properly formed
+otherwise. A possible problem, however, that might need to be addressed, is
+whether or not it can compare strings with quotes in it. This can be decided
+later.
+
+If `jval -c` or `jval -C` is used show a total count of matches. Currently will
+be 0 and for `-C` the output will be incorrect but that's okay as that's all we
+have available now and it lets us test the options.
+
+Sequenced exit codes.
+
+Remove `any` match type from `jval`. This was added by me as it seemed useful
+but since it's added to `jnamval` I presume that it should not be in `jval`.
+
+New version of `jnamval` "0.0.1 2023-07-18". All options should now be parsed
+(unless some were missed by accident). Options test code was updated to test the
+new bits. Exit codes were changed from the original `json_util_README.md` (which
+has been updated) as 1 is already used for unable to write to output file which
+is in all tools now (and since 1 was used for jfmt in that way it seems better
+to keep them consistent).
+
+
+## Release 1.0.33 2023-07-17
+
+Updated `jval` version to "0.0.1 2023-07-17".
+
+Add parsing for all options `jval`. Test code for `-n` and `-S` still needs to
+be written but everything should be fine.
+
+Removed unused `jval` code except that one function which _might_ be useful
+later is a placeholder - does nothing functionally.
+
+Removed unused `jval` structs.
+
+Add check that out file is not stdout before flushing/closing when freeing jfmt
+struct.
+
 ## Release 1.0.32 2023-07-16
 
 Add initial code for `jfmt`: completely parses options and will dump JSON to

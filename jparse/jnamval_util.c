@@ -23,7 +23,8 @@
 
 #include "jnamval_util.h"
 
-/* alloc_jnamval	    - allocate a struct jnamval *, clear it out and set defaults
+/*
+ * alloc_jnamval	    - allocate a struct jnamval *, clear it out and set defaults
  *
  * This function returns a newly allocated and cleared struct jnamval *.
  *
@@ -45,8 +46,12 @@ alloc_jnamval(void)
 
     /* JSON file member variables */
     jnamval->is_stdin = false;			/* true if it's stdin */
-    jnamval->file_contents = NULL;		/* file.json contents */
+    jnamval->file_contents = NULL;			/* file.json contents */
     jnamval->json_file = NULL;			/* JSON file * */
+
+    jnamval->outfile_path = NULL;			/* assume no -o used */
+    jnamval->outfile = stdout;			/* default stdout */
+    jnamval->outfile_not_stdout = false;		/* by default we write to stdout */
 
     /* string related options */
     jnamval->encode_strings = false;		/* -e used */
@@ -55,27 +60,7 @@ alloc_jnamval(void)
 
     /* number range options, see struct jnamval_number_range in jnamval_util.h for details */
 
-    /* max matches number range */
-    jnamval->jnamval_max_matches.number = 0;
-    jnamval->jnamval_max_matches.exact = false;
-    jnamval->jnamval_max_matches.range.min = 0;
-    jnamval->jnamval_max_matches.range.max = 0;
-    jnamval->jnamval_max_matches.range.less_than_equal = false;
-    jnamval->jnamval_max_matches.range.greater_than_equal = false;
-    jnamval->jnamval_max_matches.range.inclusive = false;
-    jnamval->max_matches_requested = false;
-
-    /* min matches number range */
-    jnamval->jnamval_min_matches.number = 0;
-    jnamval->jnamval_min_matches.exact = false;
-    jnamval->jnamval_min_matches.range.min = 0;
-    jnamval->jnamval_min_matches.range.max = 0;
-    jnamval->jnamval_min_matches.range.less_than_equal = false;
-    jnamval->jnamval_min_matches.range.greater_than_equal = false;
-    jnamval->jnamval_min_matches.range.inclusive = false;
-    jnamval->min_matches_requested = false;
-
-    /* levels number range */
+    /* -l - levels number range */
     jnamval->jnamval_levels.number = 0;
     jnamval->jnamval_levels.exact = false;
     jnamval->jnamval_levels.range.min = 0;
@@ -88,58 +73,44 @@ alloc_jnamval(void)
     /* print related options */
     jnamval->print_json_types_option = false;		/* -p explicitly used */
     jnamval->print_json_types = JNAMVAL_PRINT_VALUE;	/* -p type specified */
-    jnamval->print_token_spaces = false;			/* -b specified */
-    jnamval->num_token_spaces = 1;			/* -b specified number of spaces or tabs */
-    jnamval->print_token_tab = false;			/* -b tab (or -b <num>[t]) specified */
+    jnamval->print_decoded = false;			/* -D not used if false */
     jnamval->print_json_levels = false;			/* -L specified */
-    jnamval->num_level_spaces = 0;			/* number of spaces or tab for -L */
+    jnamval->num_level_spaces = 0;				/* number of spaces or tab for -L */
     jnamval->print_level_tab = false;			/* -L tab option */
-    jnamval->print_colons = false;			/* -P specified */
-    jnamval->print_final_comma = false;			/* -C specified */
-    jnamval->print_braces = false;			/* -B specified */
-    jnamval->indent_levels = false;			/* -I used */
-    jnamval->indent_spaces = 0;				/* -I number of tabs or spaces */
-    jnamval->indent_tab = false;				/* -I <num>[{t|s}] specified */
-    jnamval->print_syntax = false;			/* -j used, will imply -p b -b 1 -c -e -Q -I 4 -t any */
-
-    /* misc options */
+    jnamval->invert_matches = false;			/* -i used */
     jnamval->count_only = false;				/* -c used, only show count */
+    jnamval->count_and_show_values = false;		/* -C used, count and show values */
 
-
-    /* search related bools */
+    /* search / matching related */
     /* json types to look for */
-    jnamval->json_types_specified = false;		/* -t used */
+    jnamval->json_types_specified = false;			/* -t used */
     jnamval->json_types = JNAMVAL_TYPE_SIMPLE;		/* -t type specified, default simple */
-    jnamval->print_entire_file = false;			/* no name_arg specified */
-    jnamval->match_found = false;			/* true if a pattern is specified and there is a match */
-    jnamval->ignore_case = false;			/* true if -i, case-insensitive */
-    jnamval->pattern_specified = false;			/* true if a pattern was specified */
-    jnamval->search_value = false;			/* -Y search by value, not name. Uses print type */
-    /*
-     * Why is -o specified before -r? This is so that it spells out 'or' which
-     * is what -o means. Obviously! :-)
-     */
-    jnamval->search_or_mode = false;			/* -o used: search with OR mode */
-    jnamval->search_anywhere = false;			/* -r used: search under anywhere */
+    jnamval->ignore_case = false;				/* true if -f, case-insensitive */
+    jnamval->match_decoded = false;			/* if -d used match decoded */
+    jnamval->arg_specified = false;			/* true if an arg was specified */
+    jnamval->match_substrings = false;			/* -s used, matching substrings okay */
+    jnamval->use_regexps = false;				/* -g used, allow grep-like regexps */
+    jnamval->match_json_member_names = false;		/* -N used, match based on member names */
+    jnamval->match_hierarchies = false;			/* -H used, match any JSON member name */
 
-    jnamval->match_encoded = false;			/* -E used, match encoded name */
-    jnamval->use_substrings = false;			/* -s used, matching substrings okay */
-    jnamval->use_regexps = false;			/* -g used, allow grep-like regexps */
+    /* for -S */
+    jnamval->string_cmp_used = false;
+    jnamval->string_cmp.string = NULL;
+    jnamval->string_cmp.number = NULL;
+    jnamval->string_cmp.op = 0;
+
+    /* for -n */
+    jnamval->num_cmp_used = false;
+    jnamval->num_cmp.string = NULL;
+    jnamval->num_cmp.number = 0;
+    jnamval->num_cmp.op = 0;
+
+    /* parsing related */
     jnamval->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
+    jnamval->json_tree = NULL;
 
 
-    /* check tool related */
-    jnamval->check_tool_specified = false;		/* bool indicating -S was used */
-    jnamval->check_tool_stream = NULL;			/* FILE * stream for -S tool */
-    jnamval->check_tool_path = NULL;			/* -S tool_path */
-    jnamval->check_tool_args = NULL;			/* -A tool_args */
-
-    /* finally the linked list of patterns for matches */
-    /* XXX - the pattern concept is incorrect */
-    jnamval->patterns = NULL;
-    jnamval->number_of_patterns = 0;
-    /* matches - subject to change */
-    jnamval->matches = NULL;
+    /* matches for -c / -C - subject to change */
     jnamval->total_matches = 0;
 
     return jnamval;
@@ -337,6 +308,7 @@ jnamval_match_null(uintmax_t types)
 {
     return (types & JNAMVAL_TYPE_NULL) != 0;
 }
+
 /*
  * jnamval_match_object	    - if objects should match
  *
@@ -362,6 +334,7 @@ jnamval_match_object(uintmax_t types)
 {
     return (types & JNAMVAL_TYPE_OBJECT) != 0;
 }
+
 /*
  * jnamval_match_array	    - if arrays should match
  *
@@ -387,28 +360,8 @@ jnamval_match_array(uintmax_t types)
 {
     return (types & JNAMVAL_TYPE_ARRAY) != 0;
 }
-/*
- * jnamval_match_any	- if any type should match
- *
- * given:
- *
- *	types	- types set
- *
- * Returns true if types is equal to JNAMVAL_TYPE_ANY.
- *
- * Why does it have to equal JNAMVAL_TYPE_ANY if it checks for any type? Because
- * the point is that if JNAMVAL_TYPE_ANY is set it can be any type but not
- * specific types. For the specific types those bits have to be set instead. If
- * JNAMVAL_TYPE_ANY is set then any type can be set but if types is say
- * JNAMVAL_TYPE_INT then checking for JNAMVAL_TYPE_INT & JNAMVAL_TYPE_ANY would be
- * != 0 (as it's a bitwise OR of all the types) which would suggest that any
- * type is okay even if JNAMVAL_TYPE_INT was the only type.
- */
-bool
-jnamval_match_any(uintmax_t types)
-{
-    return types == JNAMVAL_TYPE_ANY;
-}
+
+
 /*
  * jnamval_match_simple	- if simple types should match
  *
@@ -437,6 +390,35 @@ jnamval_match_simple(uintmax_t types)
     return (types & JNAMVAL_TYPE_SIMPLE) != 0;
 }
 /*
+ * jnamval_match_member   - if members should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * A member is defined as an object or array.
+ *
+ * Returns true if types has JNAMVAL_TYPE_MEMBER set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+jnamval_match_member(uintmax_t types)
+{
+    return (types & JNAMVAL_TYPE_MEMBER) != 0;
+}
+
+
+/*
  * jnamval_match_compound   - if compounds should match
  *
  * given:
@@ -462,6 +444,30 @@ bool
 jnamval_match_compound(uintmax_t types)
 {
     return (types & JNAMVAL_TYPE_COMPOUND) != 0;
+}
+
+
+/*
+ * jnamval_match_any	- if any type should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types is equal to JNAMVAL_TYPE_ANY.
+ *
+ * Why does it have to equal JNAMVAL_TYPE_ANY if it checks for any type? Because
+ * the point is that if JNAMVAL_TYPE_ANY is set it can be any type but not
+ * specific types. For the specific types those bits have to be set instead. If
+ * JNAMVAL_TYPE_ANY is set then any type can be set but if types is say
+ * JNAMVAL_TYPE_INT then checking for JNAMVAL_TYPE_INT & JNAMVAL_TYPE_ANY would be
+ * != 0 (as it's a bitwise OR of all the types) which would suggest that any
+ * type is okay even if JNAMVAL_TYPE_INT was the only type.
+ */
+bool
+jnamval_match_any(uintmax_t types)
+{
+    return types == JNAMVAL_TYPE_ANY;
 }
 
 /*
@@ -527,6 +533,8 @@ jnamval_parse_types_option(char *optarg)
 	    type |= JNAMVAL_TYPE_SIMPLE;
 	} else if (!strcmp(p, "compound")) {
 	    type |= JNAMVAL_TYPE_COMPOUND;
+	} else if (!strcmp(p, "member")) {
+	    type |= JNAMVAL_TYPE_MEMBER;
 	} else if (!strcmp(p, "any")) {
 	    type |= JNAMVAL_TYPE_ANY;
 	} else {
@@ -603,10 +611,37 @@ jnamval_print_value(uintmax_t types)
  * Returns true if types has JNAMVAL_PRINT_BOTH set.
  */
 bool
-jnamval_print_name_value(uintmax_t types)
+jnamval_print_both(uintmax_t types)
 {
     return types == JNAMVAL_PRINT_BOTH;
 }
+
+/*
+ * jnamval_print_json	- if only member with json syntax should be printed
+ *
+ * given:
+ *
+ *	types	- print types set
+ *
+ * Returns true if types only has JNAMVAL_PRINT_JSON set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true json to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another json to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+jnamval_print_json(uintmax_t types)
+{
+    return ((types & JNAMVAL_PRINT_JSON) && !(types & JNAMVAL_PRINT_NAME)) != 0;
+}
+
 
 
 /*
@@ -654,7 +689,10 @@ jnamval_parse_print_option(char *optarg)
 	} else if (!strcmp(p, "n") || !strcmp(p, "name")) {
 	    print_json_types |= JNAMVAL_PRINT_NAME;
 	} else if (!strcmp(p, "b") || !strcmp(p, "both")) {
-	    print_json_types |= JNAMVAL_PRINT_BOTH;
+	    print_json_types = JNAMVAL_PRINT_BOTH;
+	    break;
+	} else if (!strcmp(p, "j") || !strcmp(p, "json")) {
+	    print_json_types |= JNAMVAL_PRINT_JSON;
 	} else {
 	    /* unknown keyword */
 	    err(3, __func__, "unknown keyword '%s'", p); /*ooo*/
@@ -662,14 +700,14 @@ jnamval_parse_print_option(char *optarg)
 	}
     }
 
-    if (jnamval_print_name_value(print_json_types)) {
+    if (jnamval_print_both(print_json_types)) {
 	dbg(DBG_LOW, "will print both name and value");
-    }
-    else if (jnamval_print_name(print_json_types)) {
+    } else if (jnamval_print_name(print_json_types)) {
 	dbg(DBG_LOW, "will only print name");
-    }
-    else if (jnamval_print_value(print_json_types)) {
+    } else if (jnamval_print_value(print_json_types)) {
 	dbg(DBG_LOW, "will only print value");
+    } else if (jnamval_print_json(print_json_types)) {
+	dbg(DBG_LOW, "will print JSON member with JSON syntax");
     }
 
     if (dup != NULL) {
@@ -679,6 +717,7 @@ jnamval_parse_print_option(char *optarg)
 
     return print_json_types;
 }
+
 
 /* jnamval_parse_number_range	- parse a number range for options -l, -N, -n
  *
@@ -870,152 +909,14 @@ jnamval_number_in_range(intmax_t number, intmax_t total_matches, struct jnamval_
     return false; /* no match */
 }
 
-/* jnamval_parse_st_tokens_option    - parse -b [num]{s,t}/-b tab option
- *
- * This function parses the -b option. It's necessary to have it this way
- * because some options like -j imply it and rather than duplicate code we just
- * have it here once.
- *
- * given:
- *
- *	optarg		    - option argument to -b option (can be faked)
- *	num_token_spaces    - pointer to number of token spaces or tabs
- *	print_token_tab	    - pointer to boolean indicating if tab or spaces are to be used
- *
- * Function returns void.
- *
- * NOTE: syntax errors are an error just like it was when it was in main().
- *
- * NOTE: this function does not return on NULL pointers.
- */
-void
-jnamval_parse_st_tokens_option(char *optarg, uintmax_t *num_token_spaces, bool *print_token_tab)
-{
-    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
-
-    /* firewall checks */
-    if (optarg == NULL || *optarg == '\0') {
-	err(3, __func__, "NULL or empty optarg"); /*ooo*/
-	not_reached();
-    } else if (num_token_spaces == NULL) {
-	err(3, __func__, "NULL num_token_spaces"); /*ooo*/
-	not_reached();
-    } else if (print_token_tab == NULL) {
-	err(3, __func__, "NULL print_token_tab"); /*ooo*/
-	not_reached();
-    } else {
-	/* ensure that the variables are empty */
-
-	/* make *num_token_spaces == 0 */
-	*num_token_spaces = 0;
-	/* make *print_token_tab == false */
-	*print_token_tab = false;
-    }
-
-    if (sscanf(optarg, "%ju%c", num_token_spaces, &ch) == 2) {
-	if (ch == 't') {
-	    *print_token_tab = true;
-	    dbg(DBG_LOW, "will print %ju tab%s between name and value", *num_token_spaces,
-		*num_token_spaces==1?"":"s");
-	} else if (ch == 's') {
-	    *print_token_tab = false;
-	    dbg(DBG_LOW, "will print %ju space%s between name and value", *num_token_spaces,
-		*num_token_spaces==1?"":"s");
-	} else {
-	    err(3, __func__, "syntax error for -b <num>[ts]"); /*ooo*/
-	    not_reached();
-	}
-    } else if (!strcmp(optarg, "tab")) {
-	*print_token_tab = true;
-	*num_token_spaces = 1;
-	dbg(DBG_LOW, "will print %ju tab%s between name and value", *num_token_spaces,
-	    *num_token_spaces==1?"":"s");
-    } else if (!string_to_uintmax(optarg, num_token_spaces)) {
-	err(3, __func__, "couldn't parse -b <num>[ts]"); /*ooo*/
-	not_reached();
-    } else {
-	*print_token_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_LOW, "will print %jd space%s between name and value", *num_token_spaces,
-		*num_token_spaces==1?"":"s");
-    }
-}
-
-/* jnamval_parse_st_indent_option    - parse -I [num]{s,t}/-b indent option
- *
- * This function parses the -I option. It's necessary to have it this way
- * because some options like -j imply it and rather than duplicate code we just
- * have it here once.
- *
- * given:
- *
- *	optarg		    - option argument to -b option (can be faked)
- *	indent_level	    - pointer to number of indent spaces or tabs
- *	indent_tab	    - pointer to boolean indicating if tab or spaces are to be used
- *
- * Function returns void.
- *
- * NOTE: syntax errors are an error just like it was when it was in main().
- *
- * NOTE: this function does not return on NULL pointers.
- */
-void
-jnamval_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab)
-{
-    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
-
-    /* firewall checks */
-    if (optarg == NULL || *optarg == '\0') {
-	err(3, __func__, "NULL or empty optarg"); /*ooo*/
-	not_reached();
-    } else if (indent_level == NULL) {
-	err(3, __func__, "NULL indent_level"); /*ooo*/
-	not_reached();
-    } else if (indent_tab == NULL) {
-	err(3, __func__, "NULL print_token_tab"); /*ooo*/
-	not_reached();
-    } else {
-	/* ensure that the variables are empty */
-
-	/* make *indent_level == 0 */
-	*indent_level = 0;
-	/* make *ident_tab == false */
-	*indent_tab = false;
-    }
-
-
-    if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
-	if (ch == 't') {
-	    *indent_tab = true;
-	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
-	} else if (ch == 's') {
-	    *indent_tab = false; /* ensure it's false in case specified previously */
-	    dbg(DBG_LOW, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
-	} else {
-	    err(3, __func__, "syntax error for -I"); /*ooo*/
-	    not_reached();
-	}
-    } else if (!strcmp(optarg, "tab")) {
-	    *indent_tab = true;
-	    *indent_level = 1;
-	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
-    } else if (!string_to_uintmax(optarg, indent_level)) {
-	err(3, __func__, "couldn't parse -I spaces"); /*ooo*/
-	not_reached();
-    } else {
-	*indent_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_LOW, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
-    }
-}
 
 /* jnamval_parse_st_level_option    - parse -L [num]{s,t}/-b level option
  *
- * This function parses the -L option. It's necessary to have it this way
- * because some options like -j imply it and rather than duplicate code we just
- * have it here once.
+ * This function parses the -L option.
  *
  * given:
  *
- *	optarg		    - option argument to -b option (can be faked)
+ *	optarg		    - option argument to -L option (can be faked)
  *	num_level_spaces    - pointer to number of spaces or tabs to print after levels
  *	print_level_tab	    - pointer to boolean indicating if tab or spaces are to be used
  *
@@ -1141,1208 +1042,23 @@ jnamval_parse_value_type_option(char *optarg)
 void
 free_jnamval(struct jnamval **jnamval)
 {
-    struct jnamval_match *match = NULL; /* to iterate through matches list */
-    struct jnamval_match *next_match = NULL; /* next in list */
-
     /* firewall */
     if (jnamval == NULL || *jnamval == NULL) {
 	warn(__func__, "passed NULL struct jnamval ** or *jnamval is NULL");
 	return;
     }
 
-    free_jnamval_patterns_list(*jnamval); /* free patterns list first */
-
-    /* we have to free matches attached to jnamval itself too */
-    for (match = (*jnamval)->matches; match != NULL; match = next_match) {
-	next_match = match->next;
-
-	if (match->match) {
-	    free(match->match);
-	    match->match = NULL;
-	}
-
-	if (match->value) {
-	    free(match->value);
-	    match->value = NULL;
-	}
-
-	/* DO NOT FREE match->pattern! */
-	free(match);
-	match = NULL;
+    /* flush output file if open and then close it */
+    if ((*jnamval)->outfile != NULL && (*jnamval)->outfile != stdout) {
+	fflush((*jnamval)->outfile);
+	fclose((*jnamval)->outfile);
+	(*jnamval)->outfile = NULL;
+	(*jnamval)->outfile_path = NULL;
     }
-
 
     free(*jnamval);
     *jnamval = NULL;
 }
-
-
-/* parse_jnamval_name_args - add name_args to patterns list
- *
- * given:
- *
- *	jnamval	    - pointer to our struct jnamval
- *	argv	    - argv from main()
- *
- * This function will not return on NULL pointers.
- *
- * NOTE: by patterns we refer to name_args.
- *
- * XXX - the pattern concept is currently incorrect and needs to be fixed - XXX
- */
-void
-parse_jnamval_name_args(struct jnamval *jnamval, char **argv)
-{
-    int i;  /* to iterate through argv */
-
-    /* firewall */
-    if (argv == NULL) {
-	err(15, __func__, "argv is NULL"); /*ooo*/
-	not_reached();
-    }
-
-    for (i = 1; argv[i] != NULL; ++i) {
-	jnamval->pattern_specified = true;
-
-	if (add_jnamval_pattern(jnamval, jnamval->use_regexps, jnamval->use_substrings, argv[i]) == NULL) {
-	    err(25, __func__, "failed to add pattern (substrings %s) '%s' to patterns list",
-		    jnamval->use_substrings?"OK":"ignored", argv[i]);
-	    not_reached();
-	}
-    }
-}
-
-
-/*
- * add_jnamval_pattern
- *
- * Add jnamval pattern to the jnamval struct pattern list.
- *
- * given:
- *
- *	jnamval		- pointer to the jnamval struct
- *	use_regexp	- whether to use regexp or not
- *	use_substrings	- if -s was specified, make this a substring match
- *	str		- the pattern to be added to the list
- *
- * NOTE: this function will not return if jnamval is NULL. If str is NULL
- * this function will not return but if str is empty it will add an empty
- * string to the list. However the caller will usually check that it's not empty
- * prior to calling this function.
- *
- * Returns a pointer to the newly allocated struct jnamval_pattern * that was
- * added to the jnamval patterns list.
- *
- * Duplicate patterns will not be added (case sensitive).
- */
-struct jnamval_pattern *
-add_jnamval_pattern(struct jnamval *jnamval, bool use_regexp, bool use_substrings, char *str)
-{
-    struct jnamval_pattern *pattern = NULL;
-    struct jnamval_pattern *tmp = NULL;
-
-    /*
-     * firewall
-     */
-    if (jnamval == NULL) {
-	err(26, __func__, "passed NULL jnamval struct");
-	not_reached();
-    }
-    if (str == NULL) {
-	err(27, __func__, "passed NULL str");
-	not_reached();
-    }
-
-    /*
-     * first make sure the pattern is not already added to the list as the same
-     * type
-     */
-    for (pattern = jnamval->patterns; pattern != NULL; pattern = pattern->next) {
-	if (pattern->pattern && pattern->use_regexp == use_regexp) {
-	    /* XXX - add support for regexps - XXX */
-	    if ((!jnamval->ignore_case && !strcmp(pattern->pattern, str))||
-		(jnamval->ignore_case && strcasecmp(pattern->pattern, str))) {
-		return pattern;
-	    }
-	}
-    }
-    /*
-     * XXX either change the debug level or remove this message once
-     * processing is complete
-     */
-    if (use_regexp) {
-	dbg(DBG_LOW,"%s regex requested: '%s'", jnamval->search_value?"value":"name", str);
-    } else {
-	dbg(DBG_LOW,"%s pattern requested: '%s'", jnamval->search_value?"value":"name", str);
-    }
-
-    errno = 0; /* pre-clear errno for errp() */
-    pattern = calloc(1, sizeof *pattern);
-    if (pattern == NULL) {
-	errp(28, __func__, "unable to allocate struct jnamval_pattern *");
-	not_reached();
-    }
-
-    errno = 0;
-    pattern->pattern = strdup(str);
-    if (pattern->pattern == NULL) {
-	errp(29, __func__, "unable to strdup string '%s' for patterns list", str);
-	not_reached();
-    }
-
-    pattern->use_regexp = use_regexp;
-    pattern->use_value = jnamval->search_value;
-    pattern->use_substrings = use_substrings;
-    /* increment how many patterns have been specified */
-    ++jnamval->number_of_patterns;
-    /* let jnamval know that a pattern was indeed specified */
-    jnamval->pattern_specified = true;
-    pattern->matches_found = 0; /* 0 matches found at first */
-
-    dbg(DBG_LOW, "adding %s pattern '%s' to patterns list", pattern->use_value?"value":"name", pattern->pattern);
-
-    for (tmp = jnamval->patterns; tmp && tmp->next; tmp = tmp->next)
-	; /* on its own line to silence useless and bogus warning -Wempty-body */
-
-    if (!tmp) {
-	jnamval->patterns = pattern;
-    } else {
-	tmp->next = pattern;
-    }
-
-    return pattern;
-}
-
-
-/* free_jnamval_patterns_list	- free patterns list in a struct jnamval *
- *
- * given:
- *
- *	jnamval	    - the jnamval struct
- *
- * If the jnamval patterns list is empty this function will do nothing.
- *
- * NOTE: this function does not return on a NULL jnamval.
- *
- * NOTE: this function calls free_jnamval_matches_list() on all the patterns
- * prior to freeing the pattern itself.
- */
-void
-free_jnamval_patterns_list(struct jnamval *jnamval)
-{
-    struct jnamval_pattern *pattern = NULL; /* to iterate through patterns list */
-    struct jnamval_pattern *next_pattern = NULL; /* next in list */
-
-    if (jnamval == NULL) {
-	err(30, __func__, "passed NULL jnamval struct");
-	not_reached();
-    }
-
-    for (pattern = jnamval->patterns; pattern != NULL; pattern = next_pattern) {
-	next_pattern = pattern->next;
-
-	/* first free any matches */
-	free_jnamval_matches_list(pattern);
-
-	/* now free the pattern string itself */
-	if (pattern->pattern) {
-	    free(pattern->pattern);
-	    pattern->pattern = NULL;
-	}
-
-	/* finally free the pattern and set to NULL for the next pass */
-	free(pattern);
-	pattern = NULL;
-    }
-
-    jnamval->patterns = NULL;
-}
-
-
-/*
- * add_jnamval_match
- *
- * Add jnamval pattern match to the jnamval struct pattern match list.
- *
- * given:
- *
- *	jnamval		- pointer to the jnamval struct
- *	pattern		- the pattern that matched
- *	name		- struct json * name that matched
- *	value		- struct json * value that matched
- *	name_str	- the matching value, either a value or name
- *	value_str	- the matching value, the opposite of name_str
- *	level		- the depth or level for the -l / -L options (level 0 is top of tree)
- *	string		- boolean to indicate if the match is a string
- *	name_type	- enum item_type indicating the type of name node (JTYPE_* in json_parse.h)
- *	value_type	- enum item_type indicating the type of value node (JTYPE_* in json_parse.h)
- *
- * NOTE: this function will not return if any of the pointers are NULL (except
- * the name and value - for now) including the pointers in the pattern struct.
- *
- * Returns a pointer to the newly allocated struct jnamval_match * that was
- * added to the jnamval matched patterns list.
- *
- * NOTE: depending on jnamval->search_value the name and value nodes will be in a
- * different order. Specifically the name is what matched, whether a value in
- * the json tree or name, and the value is what will be printed. At least once
- * this feature is done :-)
- */
-struct jnamval_match *
-add_jnamval_match(struct jnamval *jnamval, struct jnamval_pattern *pattern, struct json *name,
-	struct json *value, char const *name_str, char const *value_str, uintmax_t level,
-	enum item_type name_type, enum item_type value_type)
-{
-    struct jnamval_match *match = NULL;
-    struct jnamval_match *tmp = NULL;
-
-    /*
-     * firewall
-     */
-    if (jnamval == NULL) {
-	err(31, __func__, "passed NULL jnamval struct");
-	not_reached();
-    }
-
-    if (name_str == NULL) {
-	err(32, __func__, "passed NULL name_str");
-	not_reached();
-    }
-    if (value_str == NULL) {
-	err(33, __func__, "value_str is NULL");
-	not_reached();
-    }
-
-    /*
-     * search for an exact match and only increment the count if found.
-     *
-     * NOTE: this means that when printing the output we have to go potentially
-     * print the match more than once; if -c is specified we print only the
-     * count.
-     */
-    for (tmp = pattern?pattern->matches:jnamval->matches; tmp; tmp = tmp->next) {
-	if (name_type == tmp->name_type) {
-	    /* XXX - add support for regexps - XXX */
-	    if (((!jnamval->ignore_case && !strcmp(tmp->match, value_str) && !strcmp(tmp->match, value_str)))||
-		(jnamval->ignore_case && !strcasecmp(tmp->match, value_str) && !strcasecmp(tmp->match, value_str))) {
-		    dbg(DBG_LOW, "incrementing count of match '%s' to %ju", tmp->match, tmp->count + 1);
-		    jnamval->total_matches++;
-		    tmp->count++;
-		    return tmp;
-	    }
-	}
-    }
-
-    /* if we get here we have to add the match to the matches list */
-    errno = 0; /* pre-clear errno for errp() */
-    match = calloc(1, sizeof *match);
-    if (match == NULL) {
-	errp(34, __func__, "unable to allocate struct jnamval_match *");
-	not_reached();
-    }
-
-    /* duplicate the match (name_str) */
-    errno = 0; /* pre-clear errno for errp() */
-    match->match = strdup(name_str);
-    if (match->match == NULL) {
-	errp(35, __func__, "unable to strdup string '%s' for match list", name_str);
-	not_reached();
-    }
-
-    /* duplicate the value of the match, either name or value */
-    errno = 0; /* pre-clear errno for errp() */
-    match->value = strdup(value_str);
-    if (match->match == NULL) {
-	errp(36, __func__, "unable to strdup value string '%s' for match list", value_str);
-	not_reached();
-    }
-    /* set level of the match for -l / -L options */
-    match->level = level;
-
-    /* set count to 1 */
-    match->count = 1;
-
-    /* record the pattern that was matched. It's okay if it is NULL. */
-    match->pattern = pattern; /* DO NOT FREE THIS! */
-
-    /* set struct json * nodes */
-    match->node_name = name;
-    match->node_value = value;
-
-    /* set which match number this is, incrementing the pattern's total matches */
-    if (pattern) {
-	match->number = pattern->matches_found++;
-    }
-
-    /* increment total matches of ALL patterns (name_args) in jnamval struct */
-    jnamval->total_matches++;
-
-    /* record types */
-    match->name_type = name_type;
-    match->value_type = value_type;
-
-    dbg(DBG_LOW, "adding match '%s' to pattern '%s' to match list",
-	    jnamval->search_value?match->value:match->match, name_str);
-
-    for (tmp = pattern?pattern->matches:jnamval->matches; tmp && tmp->next; tmp = tmp->next)
-	; /* on its own line to silence useless and bogus warning -Wempty-body */
-
-    if (!tmp) {
-	if (pattern != NULL) {
-	    pattern->matches = match;
-	} else {
-	    jnamval->matches = match;
-	}
-    } else {
-	tmp->next = match;
-    }
-
-    /* a match is found, set jnamval->match_found to true */
-    jnamval->match_found = true;
-
-    return match;
-}
-
-/* free_jnamval_matches_list   - free matches list in a struct jnamval_pattern *
- *
- * given:
- *
- *	pattern	    - the jnamval pattern
- *
- * If the jnamval patterns match list is empty this function will do nothing.
- *
- * NOTE: this function does not return on a NULL pattern.
- */
-void
-free_jnamval_matches_list(struct jnamval_pattern *pattern)
-{
-    struct jnamval_match *match = NULL; /* to iterate through matches list */
-    struct jnamval_match *next_match = NULL; /* next in list */
-
-    if (pattern == NULL) {
-	err(37, __func__, "passed NULL pattern struct");
-	not_reached();
-    }
-
-    for (match = pattern->matches; match != NULL; match = next_match) {
-	next_match = match->next;
-	if (match->match) {
-	    free(match->match);
-	    match->match = NULL;
-	}
-
-	if (match->value) {
-	    free(match->value);
-	    match->value = NULL;
-	}
-
-	/* DO NOT FREE match->pattern! */
-	free(match);
-	match = NULL;
-    }
-
-    pattern->matches = NULL;
-}
-
-/* is_jnamval_match	- if the name or value is a match based on type
- *
- * given:
- *
- *	jnamval	    - pointer to our struct jnamval
- *	pattern	    - pointer to the pattern
- *	name	    - char const * that is the matching name (if pattern == NULL)
- *	node	    - struct json node
- *	str	    - the string to compare
- *
- * Returns true if a match; else false.
- *
- * This function will not return if jnamval or node or str is NULL. The pattern
- * and name pointers can be NULL unless both are NULL.
- */
-bool
-is_jnamval_match(struct jnamval *jnamval, struct jnamval_pattern *pattern, char const *name, struct json *node, char const *str)
-{
-    /* firewall */
-    if (jnamval == NULL) {
-	err(38, __func__, "jnamval is NULL");
-	not_reached();
-    } else if ((pattern == NULL || pattern->pattern == NULL) && name == NULL) {
-	err(39, __func__, "pattern and name are both NULL");
-	not_reached();
-    } else if (node == NULL) {
-	err(40, __func__, "node is NULL");
-	not_reached();
-    } else if (str == NULL) {
-	err(41, __func__, "str is NULL");
-	not_reached();
-    }
-
-    /* set up name if NULL to be pattern->pattern */
-    if (name == NULL) {
-	name = pattern->pattern;
-    }
-
-    /* check that name != NULL */
-    if (name == NULL) {
-	err(42, __func__, "name is NULL");
-	not_reached();
-    }
-
-    /*
-     * if there is a match found add it to the matches list
-     *
-     * XXX - an issue that must be worked out is that if one does something
-     * like:
-     *
-     *	    jnamval -Y int -j h2g2.json 42
-     *
-     * they will get not just the integer values but the string "42". The
-     * problem is that in that file there is a string "42" and due to the bug in
-     * string matching and possibly the traversing of the tree (how it's done)
-     * this matches as all this function does is check the type of node and
-     * compare that it's equal. The string node should not actually be examined
-     * if the type does not match but this has to be fixed at a later time.
-     */
-    switch (node->type) {
-
-	case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-	    break;
-
-	case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-	    {
-		struct json_number *item = &(node->item.number);
-
-		if (item != NULL && item->converted) {
-		    if (!jnamval->search_value || jnamval_match_num(jnamval->json_types) ||
-			(item->is_integer&&jnamval_match_int(jnamval->json_types))||
-			(item->is_floating && jnamval_match_float(jnamval->json_types)) ||
-			(item->is_e_notation && jnamval_match_exp(jnamval->json_types))) {
-			    if (jnamval->use_substrings) {
-				if (strstr(str, name) ||
-				    (jnamval->ignore_case&&strcasestr(str, name))) {
-					return true;
-				}
-			    } else {
-				if (!strcmp(name, str) ||
-				    (jnamval->ignore_case&&!strcasecmp(name, str))) {
-					return true;
-				}
-			    }
-			}
-		}
-	    }
-	    break;
-
-	case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-	    {
-		struct json_string *item = &(node->item.string);
-
-		if (item != NULL && item->converted) {
-		    if (!jnamval->search_value || jnamval_match_string(jnamval->json_types)) {
-			if (jnamval->use_substrings) {
-			    if (strstr(str, name) ||
-				(jnamval->ignore_case && strcasestr(str, name))) {
-				    return true;
-			    }
-			} else {
-			    if (!strcmp(name, str) ||
-				(jnamval->ignore_case && !strcasecmp(name, str))) {
-				    return true;
-			    }
-			}
-		    }
-		}
-	    }
-	    break;
-
-	case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-	    {
-		struct json_boolean *item = &(node->item.boolean);
-
-		if (item != NULL && item->converted) {
-		    if (!jnamval->search_value || jnamval_match_bool(jnamval->json_types)) {
-			if (jnamval->use_substrings) {
-			    if (strstr(str, name) ||
-				(jnamval->ignore_case && strcasestr(str, name))) {
-				    return true;
-			    }
-
-			} else {
-			    if (!strcmp(name, str) ||
-				(jnamval->ignore_case && !strcasecmp(name, str))) {
-				    return true;
-			    }
-			}
-		    }
-		}
-	    }
-	    break;
-
-	case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-	    {
-		struct json_null *item = &(node->item.null);
-
-		if (item != NULL && item->converted) {
-		    if (!jnamval->search_value || jnamval_match_null(jnamval->json_types)) {
-			if (jnamval->use_substrings) {
-			    if (strstr(str, name) ||
-				(jnamval->ignore_case && strcasestr(str, name))) {
-				    return true;
-			    }
-			} else {
-			    if (!strcmp(name, str) ||
-				(jnamval->ignore_case && !strcasecmp(name, str))) {
-				    return true;
-			    }
-			}
-		    }
-	    }
-	    break;
-
-	case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
-	    {
-		struct json_member *item = &(node->item.member);
-
-		/* XXX - check if anything has to be done here */
-		UNUSED_ARG(item);
-	    }
-	    break;
-
-	case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
-	    {
-		struct json_object *item = &(node->item.object);
-
-		/* XXX - check if anything has to be done here */
-		UNUSED_ARG(item);
-	    }
-	    break;
-
-	case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
-	    {
-		struct json_array *item = &(node->item.array);
-
-		/* XXX - check if anything has to be done here as a quick test
-		 * suggests nothing has to be done - XXX */
-		UNUSED_ARG(item);
-	    }
-	    break;
-
-	case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
-	    {
-		struct json_elements *item = &(node->item.elements);
-
-		/* XXX - check if anything has to be done here - XXX */
-		UNUSED_ARG(item);
-	    }
-	    break;
-
-	default:
-	    break;
-	}
-    }
-    /* nothing found, return false */
-    return false;
-}
-
-
-/*
- * jnamval_json_search
- *
- * Print information about a JSON node, depending on the booleans in struct
- * jnamval if the tree node matches the name or value in any pattern in the
- * struct json.
- *
- * given:
- *	jnamval	    pointer to our struct jnamval
- *	name_node   pointer to a JSON parser tree name node to try and match or add
- *	value_node  pointer to a JSON parser tree value node to try and match or add
- *	is_value    whether node is a value or name
- *	depth	    current tree depth (0 ==> top of tree)
- *	...	    extra args are ignored, required extra args if <=
- *		    json_verbosity_level:
- *
- *			stream		stream to print on
- *			json_dbg_lvl	print message if JSON_DBG_FORCED
- *					OR if <= json_verbosity_level
- *
- * Example use - print a JSON parse tree
- *
- *	jnamval_json_search(node, true, depth, JSON_DBG_MED);
- *	jnamval_json_search(node, false, depth, JSON_DBG_FORCED;
- *	jnamval_json_search(node, false, depth, JSON_DBG_MED);
- *
- * While the ... variable arg are ignored, we need to declare
- * then in order to be in vcallback form for use by json_tree_walk().
- *
- * NOTE: If the pointer to allocated storage == NULL,
- *	 this function does nothing.
- *
- * NOTE: This function does nothing if jnamval == NULL or node == NULL.
- */
-void
-jnamval_json_search(struct jnamval *jnamval, struct json *name_node, struct json *value_node, bool is_value, unsigned int depth, ...)
-{
-    va_list ap;		/* variable argument list */
-
-    /* firewall */
-    if (jnamval == NULL || (name_node == NULL&&value_node == NULL)) {
-	return;
-    }
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, depth);
-
-    /*
-     * call va_list argument list function
-     */
-    vjnamval_json_search(jnamval, name_node, value_node, is_value, depth, ap);
-
-    /*
-     * stdarg variable argument list clean up
-     */
-    va_end(ap);
-    return;
-}
-
-
-/*
- * vjnamval_json_search
- *
- * Search for matches in a JSON node, depending on the booleans in struct
- * jnamval if the tree node matches the name or value in any pattern in the
- * struct json.
- *
- * This is a variable argument list interface to jnamval_json_search().
- *
- * See jnamval_json_tree_search() to go through the entire tree.
- *
- * given:
- *	jnamval	    pointer to our struct json
- *	name_node   pointer to a JSON parser tree name node to search
- *	value_node  pointer to a JSON parser tree value node to search
- *	is_value    boolean to indicate if this is a value or name
- *	depth	    current tree depth (0 ==> top of tree)
- *	ap	    variable argument list, required ap args:
- *
- *			json_dbg_lvl	print message if JSON_DBG_FORCED
- *					OR if <= json_verbosity_level
- *
- * NOTE: This function does nothing if jnamval == NULL or jnamval->patterns ==
- * NULL or if none of the names/values match any of the patterns or node ==
- * NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- *
- * NOTE: this function is incomplete and does not do everything correctly. Any
- * problems will be fixed in a future commit.
- */
-void
-vjnamval_json_search(struct jnamval *jnamval, struct json *name_node, struct json *value_node, bool is_value,
-	unsigned int depth, va_list ap)
-{
-    FILE *stream = NULL;	/* stream to print on */
-    int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used */
-    struct jnamval_pattern *pattern = NULL; /* to iterate through patterns list */
-    va_list ap2;		/* copy of va_list ap */
-
-    /*
-     * firewall - nothing to do for NULL jnamval or NULL patterns list or NULL
-     * nodes
-     */
-    if (jnamval == NULL || jnamval->patterns == NULL || name_node == NULL || value_node == NULL) {
-	return;
-    }
-
-    /*
-     * duplicate va_list ap
-     */
-    va_copy(ap2, ap);
-
-    /*
-     * obtain the stream, json_dbg_used, and json_dbg args
-     */
-    stream = stdout;
-    if (stream == NULL) {
-	va_end(ap2); /* stdarg variable argument list clean up */
-	return;
-    }
-    json_dbg_lvl = va_arg(ap2, int);
-
-    /*
-     * XXX: This is buggy in a number of ways and the is_value will possibly
-     * have to change. Strings in particular are problematic here and it does
-     * not work right. Also -t can end up searching by value without -Y even
-     * though it's not supposed to. What does work is that specifying a type in
-     * general can prevent one or the other from showing up. Nevertheless to
-     * develop the type checks this has to be done until it can be fixed. This
-     * is very much a work in progress.
-     */
-    if (((!jnamval->search_value && is_value) || (!is_value && jnamval->search_value))) {
-	va_end(ap2); /* stdarg variable argument list clean up */
-	return;
-    }
-
-    /* only search for matches if level constraints allow it */
-    if (!jnamval->levels_constrained || jnamval_number_in_range(depth, jnamval->number_of_patterns, &jnamval->jnamval_levels))
-    {
-	for (pattern = jnamval->patterns; pattern != NULL; pattern = pattern->next) {
-	    /* XXX: for each pattern we have to find a match and then add it to
-	     * the matches list of that pattern. After that we can go through
-	     * the matches found and print out the matches as desired by the
-	     * user. We will not add matches if the constraints do not allow it.
-	     *
-	     * However note that we currently do not have a working way to check
-	     * if the node is a value or name so what ends up happening is that
-	     * a value can match as a name and vice versa. See above comment.
-	     */
-
-	    /* get the name and value */
-	    struct json *name = jnamval->search_value?value_node:name_node;
-	    struct json *value = jnamval->search_value?name_node:value_node;
-
-	    /*
-	     * Get strings of name and value. NULL is checked prior to use,
-	     * below
-	     */
-	    char const *str = name  != NULL ? json_get_type_str(name, jnamval->match_encoded) : NULL;
-	    char const *val = value != NULL ? json_get_type_str(value, jnamval->match_encoded) : NULL;
-
-	    if (name != NULL) {
-		switch (name->type) {
-
-		    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-			break;
-
-		    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-			{
-			    if (str != NULL) {
-				switch (value->type) {
-				    case JTYPE_STRING:
-					{
-					    if (val != NULL) {
-						if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						    if (add_jnamval_match(jnamval, pattern, name, value,
-							str, val, depth, jnamval->search_value?JTYPE_STRING:JTYPE_NUMBER,
-							jnamval->search_value?JTYPE_NUMBER:JTYPE_STRING) == NULL) {
-							    err(43, __func__, "adding match '%s' to pattern failed", str);
-							    not_reached();
-						    }
-						}
-					}
-				    }
-				    break;
-				    default:
-					/* XXX - determine if other types need to be handled */
-				    break;
-				    }
-			    }
-			}
-			break;
-
-		    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-			{
-			    if (str != NULL) {
-				switch (value->type) {
-				    case JTYPE_NUMBER:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name,
-						jnamval->search_value?val:str)) {
-						    if (add_jnamval_match(jnamval, pattern, name, value,
-							str, val, depth,
-							name->type, value->type) == NULL) {
-							    err(44, __func__, "adding match '%s' to pattern failed", str);
-							    not_reached();
-						    }
-					    }
-					}
-				    }
-				    break;
-				    case JTYPE_STRING:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						if (add_jnamval_match(jnamval, pattern, name, value, str, val,
-						    depth, JTYPE_STRING, JTYPE_STRING) == NULL) {
-							err(45, __func__, "adding match '%s' to pattern failed", str);
-							not_reached();
-						}
-					    }
-					}
-				    }
-				    break;
-				    case JTYPE_BOOL:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						if (add_jnamval_match(jnamval, pattern, name, value, str, val,
-						    depth, jnamval->search_value?JTYPE_BOOL:JTYPE_STRING,
-						    jnamval->search_value?JTYPE_STRING:JTYPE_BOOL) == NULL) {
-							err(46, __func__, "adding match '%s' to pattern failed", str);
-							not_reached();
-						}
-					    }
-					}
-				    }
-				    break;
-				    case JTYPE_NULL:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						if (add_jnamval_match(jnamval, pattern, name, value, str, val,
-						    depth, jnamval->search_value?JTYPE_NULL:JTYPE_STRING,
-						    jnamval->search_value?JTYPE_STRING:JTYPE_NULL) == NULL) {
-							err(47, __func__, "adding match '%s' to pattern failed", str);
-							not_reached();
-						}
-					    }
-					}
-
-				    }
-				    break;
-				    default:
-					break;
-				}
-			    }
-			}
-			break;
-
-		    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-			{
-			    if (str != NULL) {
-				switch (value->type) {
-				    case JTYPE_STRING:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						if (add_jnamval_match(jnamval, pattern, name, value, str, val,
-						    depth, jnamval->search_value?JTYPE_STRING:JTYPE_BOOL,
-						    jnamval->search_value?JTYPE_BOOL:JTYPE_STRING) == NULL) {
-							err(48, __func__, "adding match '%s' to pattern failed", str);
-							not_reached();
-						}
-					    }
-					}
-				    }
-				    break;
-				    default: /* only string is valid */
-					break;
-				}
-			    }
-			}
-			break;
-
-		    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-			{
-			    if (str != NULL) {
-				switch (value->type) {
-				    case JTYPE_STRING:
-				    {
-					if (val != NULL) {
-					    if (is_jnamval_match(jnamval, pattern, pattern->pattern, name, str)) {
-						if (add_jnamval_match(jnamval, pattern, name, value, str, val,
-						    depth, jnamval->search_value?JTYPE_STRING:JTYPE_NULL,
-						    jnamval->search_value?JTYPE_NULL:JTYPE_STRING) == NULL) {
-							err(49, __func__, "adding match '%s' to pattern failed", str);
-							not_reached();
-						}
-					    }
-					}
-				    }
-				    break;
-				    default: /* only string is valid */
-					break;
-				}
-			    }
-			}
-			break;
-
-		    case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
-			{
-			    struct json_member *item = &(name->item.member);
-
-			    /* XXX - fix to check for match of the member and add to
-			     * the matches list if it fits within constraints - XXX */
-			    UNUSED_ARG(item);
-			}
-			break;
-
-		    case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
-			{
-			    struct json_object *item = &(name->item.object);
-
-			    /* XXX - fix to check for match of the object and add to
-			     * the matches list if it fits within constraints - XXX */
-			    UNUSED_ARG(item);
-			}
-			break;
-
-		    case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
-			{
-			    struct json_array *item = &(name->item.array);
-
-			    /* XXX - fix to check for match of the array and add it
-			     * to the matches list if it fits within the constraints - XXX */
-			    UNUSED_ARG(item);
-			}
-			break;
-
-		    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
-			{
-			    struct json_elements *item = &(name->item.elements);
-
-			    /* XXX - fix to check for match of the element and add it
-			     * to the matches list if it fits within the constraints - XXX */
-			    UNUSED_ARG(item);
-			}
-			break;
-
-		    default:
-			break;
-		}
-	    }
-	}
-    }
-    /*
-     * stdarg variable argument list clean up
-     */
-    va_end(ap2);
-    return;
-}
-
-
-/*
- * jnamval_json_tree_search - search nodes of an entire JSON parse tree
- *
- * This function uses the jnamval_json_tree_walk() interface to walk
- * the JSON parse tree and print requested information about matching nodes.
- *
- * given:
- *	jnamval	    pointer to our struct jnamval
- *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
- *	...	extra args are ignored, required extra args:
- *
- *		json_dbg_lvl   print message if JSON_DBG_FORCED
- *			       OR if <= json_verbosity_level
- *
- * Example uses - print an entire JSON parse tree
- *
- *	jnamval_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jnamval_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_FORCED);
- *	jnamval_json_tree_search(tree, JSON_DEFAULT_MAX_DEPTH, JSON_DBG_MED);
- *
- * NOTE: If the pointer to allocated storage == NULL,
- *	 this function does nothing.
- *
- * NOTE: This function does nothing if jnamval == NULL, jnamval->patterns == NULL
- * or node == NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- *
- * NOTE: this function is a wrapper to jnamval_json_tree_walk() with the callback
- * vjnamval_json_search().
- */
-void
-jnamval_json_tree_search(struct jnamval *jnamval, struct json *node, unsigned int max_depth, ...)
-{
-    va_list ap;		/* variable argument list */
-
-    /*
-     * firewall - nothing to do for a NULL node
-     */
-    if (jnamval == NULL || jnamval->patterns == NULL || node == NULL) {
-	return;
-    }
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, max_depth);
-
-    /*
-     * walk the JSON parse tree
-     */
-    jnamval_json_tree_walk(jnamval, node, node, max_depth, false, 0, vjnamval_json_search, ap);
-
-    /*
-     * stdarg variable argument list clean up
-     */
-    va_end(ap);
-    return;
-}
-
-/*
- * jnamval_json_tree_walk - walk a JSON parse tree calling a function on each node in va_list form
- *
- * This is the va_list form of json_tree_walk().
- *
- * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
- *
- *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
- *
- * Example use - walk an entire JSON parse tree, looking for matches and
- * printing requested information on those matches.
- *
- *	jnamval_json_tree_walk(jnamval, tree, JSON_DEFAULT_MAX_DEPTH, 0, json_free);
- *
- * given:
- *	node	    pointer to a JSON parse tree
- *	is_value    if it's a value or name
- *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
- *	depth	    current tree depth (0 ==> top of tree)
- *	vcallback   function to operate JSON parse tree node in va_list form
- *	ap	    variable argument list
- *
- * The vcallback() function must NOT call va_arg() nor call va_end() on the
- * va_list argument directly.  Instead they must call va_copy() and then use
- * va_arg() and va_end() on the va_list copy.
- *
- * Although in C ALL functions are pointers which means one can call foo()
- * as foo() or (*foo)() we use the latter format for the callback function
- * to make it clearer that it is in fact a function that's passed in so
- * that we can use this function to do more than one thing. This is also
- * why we call it vcallback and not something else.
- *
- * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
- * In this case it will NOT operate on the node, or will be descend and further
- * into the tree.
- *
- * NOTE: This function warns but does not do anything if an arg is NULL.
- *
- * NOTE: this function might be incomplete or does something that is incorrect.
- * If this is the case it will be fixed in a future update.
- */
-void
-jnamval_json_tree_walk(struct jnamval *jnamval, struct json *lnode, struct json *rnode, bool is_value,
-	unsigned int max_depth, unsigned int depth, void (*vcallback)(struct jnamval *, struct json *, struct json *, bool,
-	unsigned int, va_list), va_list ap)
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (lnode == NULL || rnode == NULL) {
-	warn(__func__, "node is NULL");
-	return ;
-    }
-    if (vcallback == NULL) {
-	warn(__func__, "vcallback is NULL");
-	return ;
-    }
-
-    /*
-     * do nothing if we are too deep
-     */
-    if (max_depth != JSON_INFINITE_DEPTH && depth > max_depth) {
-	warn(__func__, "tree walk descent stopped, tree depth: %u > max_depth: %u", depth, max_depth);
-	return;
-    }
-
-    /* if depth is 0 it can't be a value */
-    if (depth == 0) {
-	is_value = false;
-    }
-
-    /*
-     * walk based on type of node
-     */
-    switch (lnode->type) {
-
-    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
-    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
-    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
-	/* perform function operation on this terminal parse tree node, all of
-	 * which have to be a value */
-	(*vcallback)(jnamval, lnode, rnode, true, depth, ap);
-	break;
-
-    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
-
-	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(jnamval, lnode, rnode, is_value, depth, ap);
-	break;
-
-    case JTYPE_MEMBER:	/* JSON item is a member */
-	{
-	    struct json_member *item = &(lnode->item.member);
-
-	    /* perform function operation on JSON member name (left branch) node */
-	    jnamval_json_tree_walk(jnamval, item->name, item->value, false, max_depth, depth+1, vcallback, ap);
-
-	    /* perform function operation on JSON member value (right branch) node */
-	    jnamval_json_tree_walk(jnamval, item->name, item->value, true, max_depth, depth+1, vcallback, ap);
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(jnamval, lnode, rnode, is_value, depth+1, ap);
-	break;
-
-    case JTYPE_OBJECT:	/* JSON item is a { members } */
-	{
-	    struct json_object *item = &(lnode->item.object);
-
-	    /* perform function operation on each object member in order */
-	    if (item->set != NULL) {
-		for (i=0; i < item->len; ++i) {
-		    jnamval_json_tree_walk(jnamval, item->set[i], item->set[i], is_value, max_depth, depth, vcallback, ap);
-		}
-	    }
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(jnamval, lnode, rnode, is_value, depth+1, ap);
-	break;
-
-    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
-	{
-	    struct json_array *item = &(lnode->item.array);
-
-	    /* perform function operation on each object member in order */
-
-	    if (item->set != NULL) {
-		for (i=0; i < item->len; ++i) {
-		    jnamval_json_tree_walk(jnamval, item->set[i], item->set[i], true, max_depth, depth, vcallback, ap);
-		}
-	    }
-	}
-
-	/* just call callback on the array node */
-	(*vcallback)(jnamval, lnode, rnode, is_value, depth+1, ap);
-	break;
-
-    case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
-	{
-	    struct json_elements *item = &(lnode->item.elements);
-
-	    /* perform function operation on each object member in order */
-	    if (item->set != NULL) {
-		for (i=0; i < item->len; ++i) {
-		    jnamval_json_tree_walk(jnamval, item->set[i], item->set[i], true, max_depth, depth, vcallback, ap);
-		}
-	    }
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(jnamval, lnode, rnode, is_value, depth+1, ap);
-	break;
-
-    default:
-	warn(__func__, "node type is unknown: %d", lnode->type);
-	/* nothing we can traverse */
-	break;
-    }
-    return;
-}
-
 
 /* jnamval_print_count	- print total matches if -c used
  *
@@ -2359,422 +1075,160 @@ jnamval_print_count(struct jnamval *jnamval)
 {
     /* firewall */
     if (jnamval == NULL) {
-	err(50, __func__, "jnamval is NULL");
+	err(25, __func__, "jnamval is NULL");
 	not_reached();
     }
 
-    if (jnamval->count_only) {
-	print("%ju\n", jnamval->total_matches);
+    if (jnamval->count_only || jnamval->count_and_show_values) {
+	fpr(jnamval->outfile?jnamval->outfile:stdout, "jnamval", "%ju\n", jnamval->total_matches);
 	return true;
     }
 
     return false;
 }
 
-
-/* jnamval_print_final_comma	- print final comma if -C used
+/* parse_jnamval_name_args - add name_args to patterns list
  *
  * given:
  *
  *	jnamval	    - pointer to our struct jnamval
+ *	argv	    - argv from main()
  *
- * This function will not return on NULL jnamval.
+ * This function will not return on NULL pointers.
  *
- * This function does nothing if -C was not used or if -c was used.
  */
 void
-jnamval_print_final_comma(struct jnamval *jnamval)
+parse_jnamval_args(struct jnamval *jnamval, char **argv)
 {
+    int i;  /* to iterate through argv */
+
     /* firewall */
     if (jnamval == NULL) {
-	err(51, __func__, "jnamval is NULL");
+	err(26, __func__, "jnamval is NULL");
+	not_reached();
+    }
+    if (argv == NULL) {
+	err(27, __func__, "argv is NULL");
 	not_reached();
     }
 
-    if (jnamval->print_final_comma && !jnamval->count_only) {
-	print("%c", ',');
+    for (i = 1; argv[i] != NULL; ++i) {
+	/* XXX - go through argv and add args to a list - XXX */
     }
 }
 
-
-/* jnamval_print_brace - print a brace if -B used
+/*
+ * jnamval_parse_cmp_op	- parse -S / -n compare options
  *
  * given:
  *
  *	jnamval	    - pointer to our jnamval struct
- *	open	    - boolean indicating if we need an open or close brace
+ *	option	    - the option letter (without the '-') that triggered this
+ *		      function
+ *	optarg	    - option arg to the option
+ *	cmp	    - pointer to our struct jnamval_cmp_op depending on the option used
  *
- * This function returns void.
  *
- * This function will not return on NULL jnamval.
+ *  This function fills out either the jnamval->string_cmp or jnamval->num_cmp if the
+ *  syntax is correct.
+ *
+ *  This function will not return on error in conversion or syntax error or NULL
+ *  pointers.
+ *
+ *  This function returns void.
  */
 void
-jnamval_print_brace(struct jnamval *jnamval, bool open)
+jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg, struct jnamval_cmp_op *cmp)
 {
-    /* firewall */
-    if (jnamval == NULL) {
-	err(52, __func__, "jnamval is NULL");
-	not_reached();
-    }
-
-    if (jnamval->print_braces && !jnamval->count_only) {
-	print("%c\n", open?'{':'}');
-    }
-}
-
-
-/* jnamval_print_match	    - print a single match
- *
- * given:
- *
- *	jnamval	    - our struct jnamval with patterns list
- *	pattern	    - the pattern with the match
- *	match	    - the match to print
- *
- * NOTE: this function will not return if NULL pointers.
- *
- * NOTE: if any pointer in a match is NULL this function will not return as it
- * indicates incorrect behaviour in the program as it should never have got this
- * far in the first place.
- *
- * XXX: the concept of more than one pattern is not correct. This has to be
- * fixed.
- */
-void
-jnamval_print_match(struct jnamval *jnamval, struct jnamval_pattern *pattern, struct jnamval_match *match)
-{
-    uintmax_t i = 0;			    /* to iterate through count of each match */
-    uintmax_t j = 0;			    /* temporary iterator */
+    char *p = NULL;		    /* to find the = separator */
+    char *mode = NULL;		    /* if -S then "str" else "num" */
+    struct json *item = NULL;	    /* to get the converted value */
 
     /* firewall */
     if (jnamval == NULL) {
-	err(53, __func__, "jnamval is NULL");
-	not_reached();
-    } else if (match == NULL) {
-	err(54, __func__, "match is NULL");
-	not_reached();
-    } else if (pattern == NULL) {
-	err(55, __func__, "pattern is NULL");
+	err(28, __func__, "NULL jnamval");
 	not_reached();
     }
-
-    /* if the name of the match is NULL it is a fatal error */
-    if (match->match == NULL) {
-	err(56, __func__, "match->match is NULL");
+    if (option == NULL) {
+	err(29, __func__, "NULL option");
 	not_reached();
-    } else if (*match->match == '\0') {
-	/* warn on empty name for now and then go to next match */
-	warn(__func__, "empty match name");
-	return;
     }
-
-    if (match->value == NULL) {
-	err(57, __func__, "match '%s' has NULL value", match->match);
+    if (optarg == NULL) {
+	err(30, __func__, "NULL optarg");
 	not_reached();
-    } else if (*match->value == '\0') {
-	/* for now we only warn on empty value */
-	warn(__func__, "empty value for match '%s'", match->match);
-	return;
     }
-
-    /*
-     * if we get here we have to print the name and/or match
-     */
-    for (i = 0; i < match->count; ++i) {
-	/* print the match in the way requested
-	 *
-	 * XXX - the count is probably incorrect as it means the printing could
-	 * be out of order
-	 *
-	 * XXX - add final constraint checks
-	 *
-	 * XXX - part of the below is buggy in some cases. This must be fixed.
-	 *
-	 * XXX - more functions will have to be added to print the matches.
-	 * Currently the jnamval_match struct is a work in progress. More will
-	 * have to be done depending on the type that matched (this includes not
-	 * only the jnamval type but the JSON type too).
-	 */
-
-	/* first print JSON levels if requested */
-	if (jnamval->print_json_levels) {
-	    print("%ju", match->level);
-
-	    for (j = 0; j < jnamval->num_level_spaces; ++j) {
-		printf("%s", jnamval->print_level_tab?"\t":" ");
-	    }
-	    if (jnamval->indent_levels) {
-		if (jnamval->indent_spaces) {
-		    for (j = 0; j < match->level * jnamval->indent_spaces; ++j) {
-			print("%s", jnamval->indent_tab?"\t":" ");
-		    }
-		}
-	    }
-
-	}
-
-	/*
-	 * if we're printing name and value or the syntax we have extra things
-	 * to do
-	 */
-	if (jnamval_print_name_value(jnamval->print_json_types) || jnamval->print_syntax) {
-	    /* if we print syntax there are some extra things we have to do */
-	    if (jnamval->print_syntax) {
-
-		/* XXX - this doesn't print arrays and other more complicated types - XXX */
-		print("\"%s\"", match->match);
-
-		for (j = 0; j < jnamval->num_token_spaces; ++j) {
-		    print("%s", jnamval->print_token_tab?"\t":" ");
-		}
-
-		print("%s", ":");
-
-		for (j = 0; j < jnamval->num_token_spaces; ++j) {
-		    print("%s", jnamval->print_token_tab?"\t":" ");
-		}
-
-		print("%s%s%s%s\n",
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->value_type == JTYPE_STRING?"\"":"",
-			match->value,
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->value_type == JTYPE_STRING?"\"":"",
-			match->next || (pattern->next&&pattern->next->matches) || i+1<match->count?",":"");
-	    } else { /* if we're not printing syntax */
-		/* print the name, quoting it if necessary */
-		print("%s%s%s",
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->name_type == JTYPE_STRING?"\"":"",
-			match->match,
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->name_type == JTYPE_STRING?"\"":"");
-
-		/* print spaces or tabs according to command line */
-		for (j = 0; j < jnamval->num_token_spaces; ++j) {
-		    print("%s", jnamval->print_token_tab?"\t":" ");
-		}
-
-		/*
-		 * we're not printing the syntax but if colons are requested we
-		 * have to print them
-		 */
-		if (jnamval->print_colons) {
-		    print("%s", ":");
-		}
-
-		/* print spaces or tabs according to command line */
-		for (j = 0; j < jnamval->num_token_spaces; ++j) {
-		    print("%s", jnamval->print_token_tab?"\t":" ");
-		}
-
-		/* finally print the value.
-		 *
-		 * NOTE the check for printing syntax or entire file is not
-		 * necessary as such.
-		 */
-		print("%s%s%s\n",
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->value_type == JTYPE_STRING?"\"":"",
-			match->value,
-			(jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-			match->value_type == JTYPE_STRING?"\"":"");
-	    }
-	} else if (jnamval_print_name(jnamval->print_json_types) || jnamval_print_value(jnamval->print_json_types)) {
-	    /*
-	     * here we will print just the name or value, quoting and doing
-	     * other things as necessary.
-	     *
-	     * NOTE the check for printing syntax or entire file is not
-	     * necessary as such.
-	     */
-	    print("%s%s%s\n",
-		  (jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-		  ((match->name_type == JTYPE_STRING&&jnamval_print_name(jnamval->print_json_types))||
-		   (match->value_type == JTYPE_STRING&&jnamval_print_value(jnamval->print_json_types)))?"\"":"",
-		  jnamval_print_name(jnamval->print_json_types)?match->match:match->value,
-		  (jnamval->quote_strings||jnamval->print_syntax||jnamval->print_entire_file)&&
-		  ((match->name_type == JTYPE_STRING&&jnamval_print_name(jnamval->print_json_types))||
-		   (match->value_type == JTYPE_STRING&&jnamval_print_value(jnamval->print_json_types)))?"\"":"");
-	}
-    }
-}
-
-/* jnamval_print_matches	    - print all matches found
- *
- * given:
- *
- *	jnamval	    - our struct jnamval with patterns list
- *
- * NOTE: this function will not return if jnamval is NULL.
- *
- * NOTE: this function will only warn if patterns and matches are both NULL.
- *
- * NOTE: if any pointer in a match is NULL this function will not return as it
- * indicates incorrect behaviour in the program as it should never have got this
- * far in the first place.
- *
- * NOTE: this function uses jnamval_print_match() to print each match.
- *
- * XXX: the concept of more than one pattern is not correct. This has to be
- * fixed.
- */
-void
-jnamval_print_matches(struct jnamval *jnamval)
-{
-    struct jnamval_pattern *pattern = NULL;  /* to iterate through patterns list */
-    struct jnamval_match *match = NULL;	    /* to iterate through matches of each pattern in the patterns list */
-
-    /* firewall */
-    if (jnamval == NULL) {
-	err(58, __func__, "jnamval is NULL");
-	not_reached();
-    } else if (jnamval->patterns == NULL && jnamval->matches == NULL) {
-	warn(__func__, "NULL patterns and matches list");
-	return;
-    }
-
-    /* if -c used just print total number of matches */
-    if (jnamval_print_count(jnamval)) {
-	return;
-    }
-
-    /* if -c was not used we have more to do */
-
-    /*
-     * although printing syntax is not yet fully implemented (though a
-     * reasonable amount of it is), we will check for -B and print the braces so
-     * that after the syntax printing is implemented nothing has to be done with
-     * -B. The function jnamval_print_braces() will not do anything if -B was not
-     * used.
-     */
-    jnamval_print_brace(jnamval, true);
-
-    for (pattern = jnamval->patterns; pattern != NULL; pattern = pattern->next) {
-	for (match = pattern->matches; match != NULL; match = match->next) {
-	    jnamval_print_match(jnamval, pattern, match);
-	}
-    }
-
-    /*
-     * although printing syntax is not yet fully implemented, we will check for
-     * -B and print the braces so that after the syntax printing is implemented
-     * nothing has to be done with -B. The function jnamval_print_braces() will
-     * not do anything if -B was not used.
-     */
-    if (jnamval->print_braces && !jnamval->count_only) {
-	jnamval_print_brace(jnamval, false);
-    }
-    /*
-     * as well, even though -j is not yet fully implemented, we will check for
-     * -C and print the final comma if requested so that once -j fully
-     * implemented we shouldn't have to do anything else with this option. Don't
-     * print final comma if -c used.
-     */
-    jnamval_print_final_comma(jnamval);
-
-    /* if we need a newline print it */
-    if ((jnamval->print_braces || jnamval->print_final_comma) && !jnamval->count_only) {
-	puts("");
-    }
-}
-
-/* run_jnamval_check_tool    - run the JSON check tool from -S path
- *
- * given:
- *
- *	jnamval	    - pointer to our struct jnamval (has everything needed)
- *	argv	    - main()'s argv
- *
- * This function does not return on NULL jnamval. It does check for NULL
- * jnamval->check_tool_path and jnamval->check_tool_args as it's not required to
- * be set: the jnamval_sanity_chks() function only verifies that IF it is set it
- * exists and is executable and if the args are specified that the -S is also
- * specified (and the path is an executable file).
- *
- * This function does not return on NULL jnamval->file_contents.
- *
- * It does NOT check for the path existing as an executable file as the
- * jnamval_sanity_chks() does that and if it somehow failed it's an error anyway.
- */
-void
-run_jnamval_check_tool(struct jnamval *jnamval, char **argv)
-{
-    int exit_code = 0;			/* exit code for -S path execution */
-
-    /* firewall */
-    if (jnamval == NULL) {
-	err(59, __func__, "NULL jnamval");
-	not_reached();
-    } else if (jnamval->file_contents == NULL) {
-	err(60, __func__, "NULL jnamval->file_contents");
+    if (cmp == NULL) {
+	err(31, __func__, "NULL cmp pointer");
 	not_reached();
     }
 
-    /* run tool if -S used */
-    if (jnamval->check_tool_path != NULL) {
-	/* try running via shell_cmd() first */
-	if (jnamval->check_tool_args != NULL) {
-	    dbg(DBG_MED, "about to execute: %s %s -- %s >/dev/null 2>&1",
-		    jnamval->check_tool_path, jnamval->check_tool_args, argv[0]);
-	    exit_code = shell_cmd(__func__, true, true, "% % -- %", jnamval->check_tool_path, jnamval->check_tool_args, argv[0]);
-	} else {
-	    dbg(DBG_MED, "about to execute: %s %s >/dev/null 2>&1", jnamval->check_tool_path, argv[0]);
-	    exit_code = shell_cmd(__func__, true, true, "% %", jnamval->check_tool_path, argv[0]);
-	}
-	if(exit_code != 0) {
-	    if (jnamval->check_tool_args != NULL) {
-		err(7, __func__, "JSON check tool '%s' with args '%s' failed with exit code: %d",/*ooo*/
-			jnamval->check_tool_path, jnamval->check_tool_args, exit_code);
-	    } else {
-		err(7, __func__, "JSON check tool '%s' without args failed with exit code: %d",/*ooo*/
-			jnamval->check_tool_path, exit_code);
-	    }
-	    not_reached();
-	}
-	/* now open a write-only pipe */
-	if (jnamval->check_tool_args != NULL) {
-	    jnamval->check_tool_stream = pipe_open(__func__, true, true, "% % %", jnamval->check_tool_path,
-		    jnamval->check_tool_args, argv[0]);
-	} else {
-	    jnamval->check_tool_stream = pipe_open(__func__, true, true, "% %", jnamval->check_tool_path, argv[0]);
-	}
-	if (jnamval->check_tool_stream == NULL) {
-	    if (jnamval->check_tool_args != NULL) {
-		err(7, __func__, "opening pipe to JSON check tool '%s' with args '%s' failed", /*ooo*/
-			jnamval->check_tool_path, jnamval->check_tool_args);
-	    } else {
-		err(7, __func__, "opening pipe to JSON check tool '%s' without args failed", jnamval->check_tool_path); /*ooo*/
-	    }
+    if (!strcmp(option, "S")) {
+	mode = "str";
+    } else if (!strcmp(option, "n")) {
+	mode = "num";
+    } else {
+	err(32, __func__, "invalid option used for function: -%s", option);
+	not_reached();
+    }
+
+    p = strchr(optarg, '=');
+    if (p == NULL) {
+	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    } else if (p == optarg) {
+	err(34, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    } else if (p[1] == '\0') {
+	err(35, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	not_reached();
+    }
+
+    if (!strncmp(optarg, "eq=", 3)) {
+	cmp->op = JNAMVAL_CMP_EQ;
+    } else if (!strncmp(optarg, "lt=", 3)) {
+	cmp->op = JNAMVAL_CMP_LT;
+    } else if (!strncmp(optarg, "le=", 3)) {
+	cmp->op = JNAMVAL_CMP_LE;
+    } else if (!strncmp(optarg, "gt=", 3)){
+	cmp->op = JNAMVAL_CMP_GT;
+    } else if (!strncmp(optarg, "ge=", 3)) {
+	cmp->op = JNAMVAL_CMP_GE;
+    } else {
+	err(36, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	not_reached();
+    }
+
+    if (!strcmp(option, "S")) { /* -S */
+	errno = 0;
+	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
+	if (item == NULL) {
+	    err(37, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
 	    not_reached();
 	} else {
-	    /* process the pipe */
-	    int exit_status = 0;
-
-	    /*
-	     * write the file contents, which we know to be a valid JSON
-	     * document that is NUL terminated, to the pipe.
-	     */
-	    fpr(jnamval->check_tool_stream, __func__, "%s", jnamval->file_contents);
-
-	    /*
-	     * close down the pipe to the child process and obtain the status of the pipe child process
-	     */
-	    exit_status = pclose(jnamval->check_tool_stream);
-
-	    /*
-	     * examine the exit status of the child process and error if the child had a non-zero exit
-	     */
-	    if (WEXITSTATUS(exit_status) != 0) {
-		free_jnamval(&jnamval);
-		err(7, __func__, "pipe child process exited non-zero"); /*ooo*/
+	    cmp->string = &(item->item.string);
+	    if (cmp->string == NULL) {
+		err(38, __func__, "failed to convert string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
 		not_reached();
-	    } else {
-		dbg(DBG_MED, "pipe child process exited OK");
+	    } else if (!cmp->string->converted && !cmp->string->parsed) {
+		err(39, __func__, "failed to convert or parse string: <%s> for option -%s but string pointer not NULL!",
+			optarg + 3, option);
+		not_reached();
 	    }
+	    json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string->str);
 	}
-	jnamval->check_tool_stream = NULL;
+    } else if (!strcmp(option, "n")) { /* -n */
+	item = json_conv_number(optarg + 3, strlen(optarg + 3));
+	if (item == NULL) {
+	    err(40, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
+	    not_reached();
+	} else {
+	    cmp->number = &(item->item.number);
+	    if (!cmp->number->converted && !cmp->number->parsed) {
+		err(41, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",
+			optarg + 3, option);
+		not_reached();
+	    }
+	    /* TODO - add debug call if converted / parsed ? - TODO */
+	}
     }
 }
-
-

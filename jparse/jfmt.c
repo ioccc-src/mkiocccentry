@@ -40,13 +40,14 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
+    "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
     "\t[-l lvl] [-m depth] [-K] [-o ofile] file.json\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
     "\t-v level\tVerbosity level (def: %d)\n"
     "\t-J level\tJSON verbosity level (def: %d)\n"
+    "\t-q\t\tSuppress some of the output (def: show more info)\n"
     "\n"
     "\t-L <num>[{t|s}]\tPrint JSON level followed by a number of tabs or spaces (def: don't print levels)\n"
     "\t-L tab\t\tAlias for: '-L 1t'\n"

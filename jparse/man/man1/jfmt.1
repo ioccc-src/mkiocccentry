@@ -1,0 +1,222 @@
+.\" section 1 man page for jfmt
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2023.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jfmt 1 "19 July 2023" "jfmt" "IOCCC tools"
+.SH NAME
+.B jfmt
+\- IOCCC JSON printer
+.SH SYNOPSIS
+.B jfmt
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-L
+.IR <num>{[t|s]} \|]
+.RB [\| \-I
+.IR <num>{[t|s]} \|]
+.RB [\| \-l
+.IR lvl \|]
+.RB [\| \-m
+.IR depth \|]
+.RB [\| \-K \|]
+.RB [\| \-o \|]
+.IR file.json
+.SH DESCRIPTION
+.B jfmt
+parses a JSON file,
+.IR file.json ,
+and if it is valid it will format the JSON file in a way that is easier to see the JSON structure.
+One might call this pretty-printing or beautifying the JSON file (for various definitions of beautifying JSON :-) ).
+By default the tool writes the output to stdout but if you use the
+.B \-o
+option you can change this behaviour (\- means stdout).
+The
+.B \-m
+option allows you to change the default depth to traverse when parsing the JSON where the default is set to a reasonable value for most cases (256 or the macro
+.BR JSON_DEFAULT_MAX_DEPTH ).
+.PP
+The option
+.B \-l
+allows you to restrict the output based on the JSON level.
+The option
+.B \-L
+tells the program to print the JSON level followed by a given number of spaces or tabs where the default is 4 spaces.
+.B \-I
+allow for indenting the levels with a default value of 4 spaces.
+As these options are more complicated in form we describe them more in the
+.B OPTIONS
+section below.
+.SH OPTIONS
+.TP
+.B \-h
+Show help and exit.
+.TP
+.B \-V
+Show version and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-J\  level
+Set JSON verbosity level to
+.IR level
+(def: 0).
+.TP
+.B \-q
+Suppress some of the output (def: show more information).
+.TP
+.BI \-L\   <num>[{t|s}
+Print the JSON levels followed by the number of spaces or tabs, depending on the letter specified,
+.BR T
+for tabs and
+.BR S 
+for spaces.
+Not specifying either defaults to spaces.
+As a convenience, specifying
+.BI \-L\  tab
+is an alias for
+.BI \-L\  1t\c
+\&.
+.TP
+.BI \-I\   <num>[{t|s}
+Indent the JSON levels by the number of spaces or tabs, depending on the letter specified,
+.BR T
+for tabs and
+.BR S 
+for spaces.
+Not specifying either defaults to spaces.
+As a convenience, specifying
+.B \-I\  tab
+is an alias for
+.BI \-I\  1t\c
+\&.
+.TP
+.BI \-l\  lvl
+Only show JSON members in the given level range (def: show all levels).
+.sp
+.RS
+If
+.I lvl
+is a number (e.g.: \-l 3), level must == number.
+.br
+If
+.I lvl
+is a number followed by : (e.g. '\-l 3:'), level must be >= number.
+.br
+If
+.I lvl
+is a : followed by a number (e.g. '\-l :3'), level must be <= number.
+.br
+If
+.I lvl
+is num:num (e.g. '\-l 3:5'), level must be inclusively in the range.
+.RE
+.TP
+.BI \-m\  max_depth
+Set maximum traversal depth when parsing the JSON document.
+The default is defined as the macro
+.BI JSON_DEFAULT_MAX_DEPTH ,
+256.
+Specifying 0 means infinite depth: only safe with infinite time, variable size and RAM! :-)
+.TP
+.B \-K
+Run built\-in test suite of some features.
+.TP
+.BI \-o\  ofile
+Write output to specified file.
+.RS
+If the file already exists (case-insensitive) it is an error.
+.br
+If the file cannot be opened for writing it is also an error.
+.br
+Default is stdout which is the same as if you specified
+.BR \- .
+.RE
+.SH EXIT STATUS
+.TP
+0
+all is OK and file is valid JSON
+.TQ
+1
+error writing to ofile
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+4
+file does not exist, not a file, or unable to read the file
+.TQ
+5
+file contents is not valid JSON
+.TQ
+6
+test mode failed
+.TQ
+>=10
+internal error
+.SH NOTES
+.PP
+The JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
+IOCCCMOCK, IOCCC28 and beyond.
+.PP
+.BR jfmt (1)
+is being developed by Cody Boone Ferguson.
+.PP
+For more detailed history that goes beyond this humble man page we recommend you check
+.BR jfmt (1),
+.IR CHANGES.md ,
+.IR README.md ,
+the GitHub git log as well as reading the source code (or not :\-) ).
+.PP
+We don't recommend you check the GitHub issue page! :\-)
+This is because it's incredibly long with a lot of OT things and would take even the fastest readers a very long time to read. :\-(
+.PP
+.SH BUGS
+.PP
+It is currently incomplete and listing the missing features and things that are not correct is not worth the time or effort.
+.SH EXAMPLES
+.PP
+Pretty print a JSON file
+.I h2g2.json
+if it is valid JSON:
+.sp
+.RS
+.ft B
+jfmt h2g2.json
+.ft R
+.RE
+.PP
+Print the levels of each part of the JSON document
+.BR jparse/test_jparse/test_JSON/good/foo.json
+followed by 4 spaces:
+.sp
+.RS
+.ft B
+jfmt -L 4s jparse/test_jparse/test_JSON/good/foo.json
+.ft R
+.RE
+.sp
+This is a useful way to better understand JSON levels.
+.SH SEE ALSO
+.PP
+.BR jfmt (1),
+.BR jparse (1),
+.BR jval (1),
+.BR jnamval (1)
