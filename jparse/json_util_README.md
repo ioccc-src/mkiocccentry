@@ -191,10 +191,6 @@ we recommend the following command line options for `jfmt`:
 	file.json	JSON file to parse (- ==> read from stdin)
 ```
 
-It could be argued the default for `-I stuff` should be tab or 2 spaces or something else.
-We do not want to indent too far for reasonable levels of JSON.  2 spaces might be too little
-while tab and 8 spaces might be too much.
-
 Additional command line options may be added.
 
 For example, one might wish to add additional command line options to vary the
@@ -293,6 +289,71 @@ line by line with the use of `-L stuff` (printing JSON tree levels).
 
 #### jfmt example 2
 
+The use of `-I` controls how JSON is indented.  Consider this variant of [jfmt example 1](#jfmt-example-1):
+
+```sh
+jfmt -I 2s jparse/test_jparse/test_JSON/good/dyfi_zip.geo.json
+```
+
+produces:
+
+```json
+{
+  "features" : [
+    {
+      "geometry" : {
+        "coordinates" : [
+          -149.7791,
+          61.1512],
+        "type" : "Point"
+      },
+      "type" : "Feature",
+      "properties" : {
+        "population": 0,
+        "nresp": 1,
+        "name": "99507<br>0.330",
+        "cdi": 2,
+        "dist": 195
+      }
+    }
+  ],
+  "type" : "FeatureCollection"
+}
+```
+
+```sh
+jfmt -I 0 jparse/test_jparse/test_JSON/good/dyfi_zip.geo.json
+```
+
+produces:
+
+```json
+{
+"features" : [
+{
+"geometry" : {
+"coordinates" : [
+-149.7791,
+61.1512],
+"type" : "Point"
+},
+"type" : "Feature",
+"properties" : {
+"population": 0,
+"nresp": 1,
+"name": "99507<br>0.330",
+"cdi": 2,
+"dist": 195
+}
+}
+],
+"type" : "FeatureCollection"
+}
+```
+
+
+#### jfmt example 3
+
 ```sh
 jfmt -L 4s jparse/test_jparse/test_JSON/good/foo.json
 ```
@@ -303,14 +364,99 @@ that this might print:
 
 ```
 1    {
-2       "foo" : "bar",
-2	"foo" : [
+2        "foo" : "bar",
+2        "foo" : [
 3	    "bar",
 3	    "bar",
 3	    "bar"
 2        ]
 1    }
 ```
+
+If `jval` uses the "1 level per line" model of printing JSON,
+then adding `-L` should simply add the level number for each line.
+
+To print JSON level numbers without intending JSON:
+
+```sh
+jfmt -L 4s -I 0 jparse/test_jparse/test_JSON/good/foo.json
+```
+
+produces:
+
+```
+1    {
+2    "foo" : "bar",
+2    "foo" : [
+3    "bar",
+3    "bar",
+3    "bar"
+2    ]
+1    }
+```
+
+
+#### jfmt example 3
+
+When restricting the levels of JSON that are printed via the `-l` option,
+and such a restriction starts at a deeper than level 0, one does **NOT**
+need to fully intent the top most level.
+
+Consider the initial output of:
+
+```sh
+jfmt -L 4s -I 2s jparse/test_jparse/test_JSON/good/party.json
+```
+
+Assume the above command prints (we are guessing at JSON levels):
+
+```
+0    {
+1      "event" : "A Long-expected Party",
+1      "location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
+1      "date" : "22 September T.A. 3001",
+1      "birthdays" : [
+2        {
+3          "hobbit" : [
+4             {
+5               "name" : "Bilbo Baggins",
+5               "age" : 111,
+5               "inheritance" : false
+4             },
+4             {
+5               "name": "Frodo Baggins",
+5               "age": 33,
+5               "inheritance" : true
+4             }
+3           ]
+2         }
+1      ],
+...
+```
+
+Assuming those JSON levels, if we restrict to printing at JSON level 4 and lower, then:
+
+
+```sh
+jfmt -L 4s -I 2s -l 4: jparse/test_jparse/test_JSON/good/party.json
+```
+
+need not intend level 4 as far as previous command did:
+
+```
+4    {
+5      "name" : "Bilbo Baggins",
+5      "age" : 111,
+5      "inheritance" : false
+4    },
+4    {
+5      "name": "Frodo Baggins",
+5      "age": 33,
+5      "inheritance" : true
+4    }
+```
+
+Since `-l 4:` is in effect, we can ignore the 4 levels of indentation when printing.
 
 
 ## jval utility
@@ -352,7 +498,7 @@ we recommend the following command line options for `jval`:
 				null	null values
 				simple	alias for 'int,float,exp,bool,str,null'
 
-	-l lvl		Print values at specific JSON levels (def: print at any level)
+	-l lvl		Print JSON only at specific JSON levels (def: print at any level)
 
 			If lvl is a number (e.g.: -l 3), level must == number.
 			If lvl is a number followed by : (e.g. '-l 3:'), level must be >= number.
@@ -1277,6 +1423,62 @@ avalue
 bvalue
 ```
 
+The `-S op=str` is intended to strictly be a string comparison.  While the use may be obvious for JSON stings, for JSON non-strings the same `as_str` comparison applies to other JSON simple types (i.e., numbers, booleans, nulls).
+
+Consider the case of `jparse/test_jparse/test_JSON/good/names.json`:
+
+```sh
+jval -S ge=n -S le=o jparse/test_jparse/test_JSON/good/names.json
+```
+
+Here we print over the range of strings in the [JSON
+document](./json_README.md#json-document) that are ">= n" and "<=
+o".  We perform string comparisons on the `as_str` structure element
+and produces:
+
+```
+name0
+name1
+name2
+null
+name3
+name4
+```
+
+Using `-S` with a half-open range:
+
+```sh
+jval -S ge=n jparse/test_jparse/test_JSON/good/names.json
+```
+
+produces:
+
+```
+name0
+name1
+name2
+null
+name3
+true
+name4
+```
+
+If we only wanted [JSON strings](./json_README.md#json-string) then we would need to use:
+
+```sh
+jval -S ge=n -S le=o -t str jparse/test_jparse/test_JSON/good/names.json
+```
+
+which would only produce:
+
+```
+name0
+name1
+name2
+name3
+name4
+```
+
 
 #### jval example 14
 
@@ -1357,7 +1559,9 @@ we recommend the following additional command line options for `jnamval`:
 				any		alias for 'simple,compound'
 
 	-N		Match based on JSON member names (def: match JSON member values)
-	-H		Match name hierarchies (def: with -N match any JSON member name, else JSON member value)
+	-H		Match name hierarchies (def: do not match hierarchies)
+
+			Use of -H implies -N.
 
 	-p parts	Parts of a JSON member to print (def: print JSON member values)
 
