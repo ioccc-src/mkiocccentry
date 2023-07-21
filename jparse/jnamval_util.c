@@ -1209,7 +1209,7 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg, 
 	    if (cmp->string == NULL) {
 		err(38, __func__, "failed to convert string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
 		not_reached();
-	    } else if (!cmp->string->converted && !cmp->string->parsed) {
+	    } else if (!CONVERTED_PARSED_JSON_NODE(cmp->string)) {
 		err(39, __func__, "failed to convert or parse string: <%s> for option -%s but string pointer not NULL!",
 			optarg + 3, option);
 		not_reached();
@@ -1223,11 +1223,15 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg, 
 	    not_reached();
 	} else {
 	    cmp->number = &(item->item.number);
-	    if (!cmp->number->converted && !cmp->number->parsed) {
-		err(41, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",
+	    if (!CONVERTED_PARSED_JSON_NODE(cmp->number)) {
+		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
 			optarg + 3, option);
 		not_reached();
+	    } else if (PARSED_JSON_NODE(cmp->number)) {
+		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
+		not_reached();
 	    }
+
 	    /* TODO - add debug call if converted / parsed ? - TODO */
 	}
     }
