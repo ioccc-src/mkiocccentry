@@ -376,7 +376,7 @@ that this might print:
 If `jval` uses the "1 level per line" model of printing JSON,
 then adding `-L` should simply add the level number for each line.
 
-To print JSON level numbers without intending JSON:
+To print JSON level numbers without indenting JSON:
 
 ```sh
 jfmt -L 4s -I 0 jparse/test_jparse/test_JSON/good/foo.json
@@ -400,7 +400,7 @@ produces:
 
 When restricting the levels of JSON that are printed via the `-l` option,
 and such a restriction starts at a deeper than level 0, one does **NOT**
-need to fully intent the top most level.
+need to fully indent the top most level.
 
 Consider the initial output of:
 
@@ -434,14 +434,15 @@ Assume the above command prints (we are guessing at JSON levels):
 ...
 ```
 
-Assuming those JSON levels, if we restrict to printing at JSON level 4 and lower, then:
+Assuming those JSON levels, if we restrict to printing at JSON level 4 and
+lower, then:
 
 
 ```sh
 jfmt -L 4s -I 2s -l 4: jparse/test_jparse/test_JSON/good/party.json
 ```
 
-need not intend level 4 as far as previous command did:
+need not indent level 4 as far as the previous command did:
 
 ```
 4    {
@@ -1423,7 +1424,9 @@ avalue
 bvalue
 ```
 
-The `-S op=str` is intended to strictly be a string comparison.  While the use may be obvious for JSON stings, for JSON non-strings the same `as_str` comparison applies to other JSON simple types (i.e., numbers, booleans, nulls).
+The `-S op=str` is intended to strictly be a string comparison.  While the use
+may be obvious for JSON stings, for JSON non-strings the same `as_str`
+comparison applies to other JSON simple types (i.e., numbers, booleans, nulls).
 
 Consider the case of `jparse/test_jparse/test_JSON/good/names.json`:
 
