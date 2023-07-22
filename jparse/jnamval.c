@@ -297,6 +297,7 @@ main(int argc, char **argv)
 	    break;
 	case 'H':
 	    jnamval->match_hierarchies = true;
+	    jnamval->match_json_member_names = true; /* -H implies -N */
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */

@@ -1,5 +1,10 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.37 2023-07-22
+
+Use of `-H` in `jnamval` implies `-N`.
+
+
 ## Release 1.0.36 2023-07-21
 
 Fix bug in `vjson_fprint()` where numbers that were converted and parsed were

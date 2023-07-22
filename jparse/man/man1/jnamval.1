@@ -72,6 +72,11 @@ By default the program looks for whole matches but with the
 option it can look for substrings and with the
 .B \-g
 option it can use grep\-like regular expressions.
+Use of the
+.B \-H
+option implies the
+.B \-N
+option.
 If no arg other than the file is specified then everything matches.
 By default the tool writes the output to stdout but if you use the
 .B \-o
@@ -269,6 +274,9 @@ Match based on JSON member names (def: match JSON member values).
 .TP
 .B \-H
 Match name hierarchies (def: with -N match any JSON member name, else JSON member value).
+Implies the
+.B \-N
+option.
 .TP
 .BI \-P\  parts
 Instead of printing matching member values, print the specified parts:
