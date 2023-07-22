@@ -1474,7 +1474,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted number
 	     */
-	    if (CONVERTED_JSON_NODE(item)) {
+	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
 		/*
 		 * case: converted negative number

@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.36 2023-07-21
+
+Fix bug in `vjson_fprint()` where numbers that were converted and parsed were
+not printed as the check accidentally was using the wrong macro that checks if
+converted is true and parsed is false. It should be it checks for both are true
+and then the next check in the else if checks if parsed is true and converted is
+false.
+
+Move `converted` bool in `struct json_` structs below the `parsed` bool.
+
+Make `jval` and `jnamval` exit with 7 if a number cannot be represented by a C
+type. Updated man pages and usage messages. For `jnamval` this means what used
+to be 7 is now 8: no matches found.
+
+For number conversions in `jval` and `jnamval` use the macros to check for
+converted/parsed booleans.
+
+
+
 ## Release 1.0.35 2023-07-19
 
 Add initial version of man pages of `jfmt(1)`, `jval(1)` and `jnamval(1)` to

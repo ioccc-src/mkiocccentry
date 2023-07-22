@@ -73,7 +73,6 @@ static const char * const usage_msg0 =
     "\t\t\tIf lvl is a number followed by : (e.g. '-l 3:'), level must be >= number.\n"
     "\t\t\tIf lvl is a : followed by a number (e.g. '-l :3'), level must be <= number.\n"
     "\t\t\tIf lvl is num:num (e.g. '-l 3:5'), level must be inclusively in the range.\n"
-
     "\t-Q\t\tPrint JSON strings surrounded by double quotes (def: do not)\n"
     "\t-D\t\tPrint JSON strings as decoded strings (def: print JSON strings as encoded strings)\n"
     "\t-d\t\tMatch the JSON decoded values (def: match as given in the JSON document)\n"
@@ -121,6 +120,7 @@ static const char * const usage_msg0 =
     "    4\tfile does not exist, not a file, or unable to read the file\n"
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
+    "    7\tunable to represent a number\n"
     " >=10\tinternal error\n"
     "\n"
     "JSON parser version: %s\n"
