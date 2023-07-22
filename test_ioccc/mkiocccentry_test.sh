@@ -360,7 +360,7 @@ find "${work_dir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/empty.c
 :> "${src_dir}"/empty.c
 # test empty prog.c, ignoring the warning about it
-yes | ./mkiocccentry -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -454,7 +454,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -538,7 +538,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2

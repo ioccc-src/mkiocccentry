@@ -127,7 +127,8 @@ static const char * const usage_msg0 =
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
+    "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n"
+    "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c cp\t\tpath to cp executable (def: %s)\n"
@@ -172,6 +173,7 @@ static bool need_hints = true;		/* true ==> show hints */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;	/* input file: stdin or answers file  */
 static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
+static bool answer_yes = false;		/* true ==> -y used: always answer yes (use with EXTREME caution!) */
 
 /*
  * forward declarations
@@ -225,7 +227,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:F:C:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:F:C:y")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -292,6 +294,11 @@ main(int argc, char *argv[])
 	case 'C':
 	    chkentry_flag_used = true;
 	    chkentry = optarg;
+	    break;
+	case 'y':
+	    answer_yes = true;
+	    need_confirm = false;
+	    ignore_warnings = true;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -389,8 +396,17 @@ main(int argc, char *argv[])
 	     "you any additional warnings, you should note that The Judges will NOT",
 	     "ignore warnings! If this was unintentional, run the program again",
 	     "without specifying -W. We cannot stress the importance of this enough!",
-	     "Well, OK we can over-stress most things, but you get the point.",
+	     "Well OK, we can over-stress most things, but you get the point.",
 	     "Do not use the -W option!",
+	     "",
+	     NULL);
+    }
+    if (answer_yes) {
+	para("",
+	     "WARNING: you've chosen to answer yes to almost all prompts. If this was",
+	     "unintentional, run the program again without specifying -y. We cannot"
+	     "stress the importance of this enough! Well OK, we can over-stress most things"
+	     "but you get the point. Do not use the -y option without EXTREME caution!",
 	     "",
 	     NULL);
     }
@@ -1781,7 +1797,7 @@ warn_empty_prog(char const *prog_c)
     }
 
     dbg(DBG_MED, "prog.c: %s is empty", prog_c);
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	fpara(stderr,
 	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	  "",
@@ -1845,7 +1861,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
 	}
-	if (need_confirm && !ignore_warnings) {
+	if (need_confirm && !ignore_warnings && !answer_yes) {
 	    fpara(stderr,
 	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
@@ -1865,7 +1881,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
      * File size and iocccsize file size differ warning
      */
     } else if (mode == RULE_2A_BIG_FILE_WARNING) {
-	if (need_confirm && !ignore_warnings) {
+	if (need_confirm && !ignore_warnings && !answer_yes) {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %jd != rule_count function size: %jd\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -1919,7 +1935,7 @@ warn_high_bit(char const *prog_c)
     /*
      * warn about high bit chars, if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog.c: %s has non-ASCII and/or character(s) with high bit set!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -1961,7 +1977,7 @@ warn_nul_chars(char const *prog_c)
     /*
      * warn about NUL chars(s) if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog.c: %s has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -2004,7 +2020,7 @@ warn_trigraph(char const *prog_c)
     /*
      * warn the user about unknown or invalid trigraph(s), if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c: %s has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
@@ -2046,7 +2062,7 @@ warn_wordbuf(char const *prog_c)
     /*
      * warn the user about triggered a word buffer overflow in iocccsize, if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog.c: %s triggered a word buffer overflow!\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -2090,7 +2106,7 @@ warn_ungetc(char const *prog_c)
     /*
      * warn the user abort iocccsize ungetc error, if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog.c: %s triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -2133,7 +2149,7 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
     /*
      * warn the user about a possible Rule 2b violation, if we are allowed
      */
-    if (need_confirm && !ignore_warnings) {
+    if (need_confirm && !ignore_warnings && !answer_yes) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %ju > Rule 2b maximum: %ju\n", prog_c,
 		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
@@ -2678,12 +2694,14 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	}
 
 	/*
-	 * Ask if they want to submit it anyway
+	 * Ask if they want to submit it anyway unless -y
 	 */
-	yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
-	if (!yorn) {
-	    err(97, __func__, "Use a different Makefile or modify this file: %s", Makefile);
-	    not_reached();
+	if (!answer_yes) {
+	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
+	    if (!yorn) {
+		err(97, __func__, "Use a different Makefile or modify this file: %s", Makefile);
+		not_reached();
+	    }
 	}
     }
 }
@@ -3106,8 +3124,10 @@ yes_or_no(char const *question)
 
 	/*
 	 * check for a valid reply
+	 *
+	 * If -y was used the answer is yes.
 	 */
-	if (strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
+	if (answer_yes || strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
 
 	    /*
 	     * free storage
@@ -3822,7 +3842,7 @@ get_author_info(struct author **author_set_p)
 	    /*
 	     * verify the known location/country code
 	     */
-	    if (need_confirm) {
+	    if (need_confirm && !answer_yes) {
 		errno = 0;		/* pre-clear errno for warnp() */
 		ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
 		if (ret <= 0) {
@@ -4581,19 +4601,20 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     ls_stream = NULL;
 
     /*
-     * ask the user to verify the list
+     * ask the user to verify the list if not -y
      */
-    yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
-    if (!yorn) {
-	fpara(stderr,
-	      "",
-	      "We suggest you remove the existing entry directory, and then",
-	      "rerun this tool with the correct set of file arguments.",
-	      NULL);
-	err(141, __func__, "user rejected listing of entry_dir: %s", entry_dir);
-	not_reached();
+    if (!answer_yes) {
+	yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
+	if (!yorn) {
+	    fpara(stderr,
+		  "",
+		  "We suggest you remove the existing entry directory, and then",
+		  "rerun this tool with the correct set of file arguments.",
+		  NULL);
+	    err(141, __func__, "user rejected listing of entry_dir: %s", entry_dir);
+	    not_reached();
+	}
     }
-
     /*
      * free storage
      */

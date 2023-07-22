@@ -2,7 +2,7 @@
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0 2023-02-04",
+	"mkiocccentry_version" : "1.0.1 2023-07-22",
 	"chkentry_version" : "1.0 2023-02-04",
 	"fnamchk_version" : "1.0 2023-02-04",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
