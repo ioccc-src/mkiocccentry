@@ -217,7 +217,7 @@ LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_time.o entry_util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= location_main.o
+OTHER_OBJS= location_main.o location.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
