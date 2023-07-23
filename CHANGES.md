@@ -1,5 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.0.38 2023-07-23
+
+Fixed `jnum_chk` by correcting the output of `jnum_gen`.
+Fixed an incorrect prior use of `make rebuild_jnum_test`
+and hand verified the generated `jnum_test.c` file.
+
+Added large e-notation values to the jnum.testset.
+
+Improved `json_alloc()` to explicitly initialize critical booleans
+and pointers when allocating a new JSON parse tree node.
+
+Both `json_process_decimal()` and `json_process_floating()` no
+longer set `parsed` and `converted` booleans.  That task
+if performed by the `json_conv_number()` function.
+
+The `json_conv_number()` now correctly attempts to convert
+a given JSON number in floating point, e-notation and
+integer depending on if the result of `is_floating_notation()`,
+or `is_e_notation()` or `is_decimal()`, respectively.
+Those tests are used to set the `is_floating`, `is_e_notatiion`,
+and `is_integer` booleans, also respectively.
+
+Improved JSON debug messages from `json_process_decimal()` and
+`json_process_floating()`.
+
+
 ## Release 1.0.37 2023-07-22
 
 Use of `-H` in `jnamval` implies `-N`.
@@ -21,7 +48,6 @@ to be 7 is now 8: no matches found.
 
 For number conversions in `jval` and `jnamval` use the macros to check for
 converted/parsed booleans.
-
 
 
 ## Release 1.0.35 2023-07-19

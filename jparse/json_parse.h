@@ -116,10 +116,10 @@ struct json_number
 
     bool is_floating;		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
     bool is_e_notation;		/* true ==> e notation used such as 1e10, false ==> no e notation found */
+    bool is_integer;		/* true ==> converted to some integer type below */
 
     /* integer values */
 
-    bool is_integer;		/* true ==> converted to some integer type below */
     bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
     int8_t as_int8;		/* JSON integer value in int8_t form, if int8_sized == true */
 

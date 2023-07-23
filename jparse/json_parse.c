@@ -1757,8 +1757,7 @@ json_alloc(enum item_type type)
  *	 even if the NUL is well beyond the end of the JSON number.
  *
  * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
- *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
- *	 character.
+ *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number character.
  */
 static bool
 json_process_decimal(struct json_number *item, char const *str, size_t len)
@@ -1846,15 +1845,12 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	item->as_maxint = strtoimax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    if (errno == ERANGE) {
-		/* if only a range problem then we can say it's parsable but not converted */
-		item->parsed = true;
+		dbg(DBG_VVVHIGH, "negative integer out of range, strtoimax failed to convert");
+	    } else {
+		dbg(DBG_VVVHIGH, "invalid negative integer, strtoimax failed to convert");
 	    }
-	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
-	    item->converted = false;
 	    return false;	/* processing failed */
 	}
-	item->converted = true;
-	item->parsed = true;
 	item->maxint_sized = true;
 	dbg(DBG_VVVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
 
@@ -1948,15 +1944,12 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	item->as_umaxint = strtoumax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    if (errno == ERANGE) {
-		/* if range issue we know it's parsable */
-		item->parsed = true;
+		dbg(DBG_VVVHIGH, "positive integer out of range, strtoumax failed to convert");
+	    } else {
+		dbg(DBG_VVVHIGH, "invalid positive integer, strtoumax failed to convert");
 	    }
-
-	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
-	    item->converted = false;
 	    return false;	/* processing failed */
 	}
-	item->converted = true;
 	item->umaxint_sized = true;
 	dbg(DBG_VVVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
 
@@ -2331,10 +2324,8 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    item->parsed = true;
 	}
 	dbg(DBG_VVVHIGH, "strtold failed to convert");
-	item->converted = false;
 	return false;	/* processing failed */
     }
-    item->converted = true;
     item->longdouble_sized = true;
     item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
     dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
@@ -2360,11 +2351,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    item->parsed = true;
 	}
 	item->double_sized = false;
-	item->converted = false;
 	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
-	item->converted = true;
 	item->parsed = true;
 	item->as_double_int = (item->as_double == floor(item->as_double));
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
@@ -2386,7 +2375,6 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	item->float_sized = false;
 	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
     } else {
-	item->converted = true;
 	item->parsed = true;
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
@@ -2408,7 +2396,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  *
  * A JSON number string is of the form:
  *
- * 	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}|{JSON_INTEGER}{JSON_EXPONENT})
+ *	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}|{JSON_INTEGER}{JSON_EXPONENT})
  *
  * where {JSON_INTEGER} is of the form:
  *
@@ -2427,7 +2415,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  *	len	length, starting at ptr, of the JSON number string
  *
  * returns:
- *	allocated JSON parser tree node of the converted JSON number
+ *	allocated JSON parser tree node of the parsed JSON number
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -2455,10 +2443,10 @@ json_conv_number(char const *ptr, size_t len)
      * initialize the JSON item
      */
     item = &(ret->item.number);
+    item->parsed = false;
+    item->converted = false;
     item->as_str = NULL;
     item->first = NULL;
-    item->converted = false;
-    item->parsed = false;
     item->is_negative = false;
     item->is_floating = false;
     item->is_e_notation = false;
@@ -2544,66 +2532,98 @@ json_conv_number(char const *ptr, size_t len)
 	return ret;
     }
 
-
-    decimal = is_decimal(item->first, item->number_len);
-    e_notation = is_e_notation(item->first, item->number_len);
+    /*
+     * attempt to determine the type of JSON number we have been given
+     */
     floating_notation = is_floating_notation(item->first, item->number_len);
+    item->is_floating = floating_notation;
+    /**/
+    e_notation = is_e_notation(item->first, item->number_len);
+    item->is_e_notation = e_notation;
+    /**/
+    decimal = is_decimal(item->first, item->number_len);
+    item->is_integer = decimal;
+
+    /*
+     * case: JSON number is a floating point number
+     */
+    if (floating_notation) {
+
+	/* process JSON number as floating point number */
+	success = json_process_floating(item, item->first, item->number_len);
+	if (success == false) {
+
+	    /*
+	     * this JSON number is not a true floating point value
+	     */
+	    json_dbg(JSON_DBG_HIGH, __func__, "JSON number as floating point number failed: <%s>",
+				   item->as_str);
+
+	} else {
+
+	    /*
+	     * this JSON number is a converted floating point value
+	     */
+	    item->converted = true;
+	    json_dbg(JSON_DBG_VHIGH, __func__, "converted JSON floating point number of type %s: <%s>",
+				     json_item_type_name(ret), item->as_str);
+	}
+	item->parsed = true;	/* floating point number has been parsed, regardless of conversion status */
+    }
+
+    /*
+     * case: JSON number is an e-notation number
+     */
+    if (e_notation) {
+
+	/* process JSON number as floating point or e-notation number */
+	success = json_process_floating(item, item->first, item->number_len);
+	if (success == false) {
+
+	    /*
+	     * this JSON number is not a true e_notation value
+	     */
+	    json_dbg(JSON_DBG_HIGH, __func__, "JSON number as e-notation number failed: <%s>", item->as_str);
+
+	} else {
+
+	    /*
+	     * this JSON number is a converted e_notation value
+	     */
+	    item->converted = true;
+	    json_dbg(JSON_DBG_VHIGH, __func__, "converted JSON e-notation number of type %s: <%s>",
+				     json_item_type_name(ret), item->as_str);
+	}
+	item->parsed = true;	/* e-notation number has been parsed, regardless of conversion status */
+    }
+
     /*
      * case: JSON number is a base 10 integer in ASCII
      */
     if (decimal) {
 
-	item->parsed = true;	/* it's parsable but we now have to check if it can be converted */
-
-	/* process JSON number as a base 10 integer in ASCII */
+	/*
+	 * process JSON number as a base 10 integer in ASCII
+	 */
 	success = json_process_decimal(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed: <%*.*s>",
-			   (int)item->number_len, (int)item->number_len, item->first);
-	} else {
-	    item->is_integer = true;
-	    item->is_floating = false;
-	    item->is_e_notation = false;
-	}
 
-    /*
-     * case: JSON number is not a base 10 integer in ASCII
-     *
-     * The JSON number might be a floating point or e-notation number.
-     *
-     * We have to check e notation first as e notation must follow the rules of
-     * floating point notation with the addition of the e notation rules.
-     */
-    } else if (e_notation) {
-	item->parsed = true;
+	    /*
+	     * this JSON number is not a true integer value
+	     */
+	    json_dbg(JSON_DBG_HIGH, __func__, "JSON number as base 10 integer in ASCII processing failed: <%s>", item->as_str);
 
-	/* process JSON number as floating point or e-notation number */
-	success = json_process_floating(item, item->first, item->number_len);
-	if (success == false) {
-	    warn(__func__, "JSON number as e-notation number failed: <%*.*s>",
-			   (int)item->number_len, (int)item->number_len, item->first);
 	} else {
-	    item->is_integer = false;
-	    item->is_e_notation = true;
-	}
-    } else if (floating_notation) {
-	item->parsed = true;
 
-	/* process JSON number as floating point number */
-	success = json_process_floating(item, item->first, item->number_len);
-	if (success == false) {
-	    warn(__func__, "JSON number as floating point number failed: <%*.*s>",
-			   (int)item->number_len, (int)item->number_len, item->first);
-	} else {
-	    item->is_integer = false;
-	    item->is_e_notation = false;
-	    item->is_floating = true;
+	    /*
+	     * this JSON number is a converted integer value
+	     */
+	    item->converted = true;
+	    json_dbg(JSON_DBG_VHIGH, __func__, "converted JSON integer of type %s: <%s>",
+				     json_item_type_name(ret), item->as_str);
 	}
-    } else {
-	item->converted = false;
-	item->parsed = false;
+	item->parsed = true;	/* 10 integer has been parsed, regardless of conversion status */
     }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
      * return the JSON parse tree item

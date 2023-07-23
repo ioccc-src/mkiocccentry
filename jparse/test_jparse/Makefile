@@ -167,12 +167,12 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jnum_chk.c jnum_test.c jnum_gen.c jnum_header.c
+C_SRC= jnum_chk.c jnum_gen.c jnum_header.c
 H_SRC= jnum_chk.h jnum_gen.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC=
+LESS_PICKY_CSRC= jnum_test.c
 LESS_PICKY_HSRC=
 
 # all shell scripts

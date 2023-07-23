@@ -386,18 +386,15 @@ fpr_number(FILE *stream, struct json_number *item)
     }
 
     /*
-     * print bool converted
+     * print bool parsed and converted
      */
     fprint(stream, "\t%s,\t"
-		   "\t/* true ==> able to convert JSON number string to some form of C value */\n\n",
-		   booltostr(item->converted));
-    /*
-     * print bool parsed
-     */
-    fprint(stream, "\t%s,\t"
-		   "\t/* true ==> able to parse JSON number string */\n\n",
+		   "\t/* true ==> able to parse JSON number string */\n",
 		   booltostr(item->parsed));
-
+    fprint(stream, "\t%s,\t"
+		   "\t/* true ==> able to convert JSON number string to some form of C value */\n",
+		   booltostr(item->converted));
+    fprstr(stream, "\n");
 
     /*
      * print JSON string
@@ -407,9 +404,10 @@ fpr_number(FILE *stream, struct json_number *item)
 		   item->as_str,
 		   (item->as_str_len <= 4 ? "\t\t" : "\t"));
     fprint(stream, "\t\"%s\",%s"
-		   "/* first whitespace character */\n\n",
+		   "/* first whitespace character */\n",
 		   item->first,
 		   (item->number_len <= 4 ? "\t\t" : "\t"));
+    fprstr(stream, "\n");
 
     /*
      * print JSON string lengths
@@ -418,38 +416,36 @@ fpr_number(FILE *stream, struct json_number *item)
 		   "\t/* length of as_str */\n",
 		   (uintmax_t)item->as_str_len);
     fprint(stream, "\t%ju,\t"
-		   "\t/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */\n\n",
+		   "\t/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */\n",
 		   (uintmax_t)item->number_len);
+    fprstr(stream, "\n");
 
     /*
      * print bool is_negative
      */
     fprint(stream, "\t%s,\t"
-		   "\t/* true ==> value < 0 */\n\n",
+		   "\t/* true ==> value < 0 */\n",
 		   booltostr(item->is_negative));
+    fprstr(stream, "\n");
 
     /*
-     * print bool is_floating and is_e_notation
+     * print bool is_floating and is_e_notation and is_integer
      */
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */\n",
 		   booltostr(item->is_floating));
     fprint(stream, "\t%s,\t"
-		   "\t/* true ==> e notation used such as 1e10, false ==> no e notation found */\n\n",
+		   "\t/* true ==> e notation used such as 1e10, false ==> no e notation found */\n",
 		   booltostr(item->is_e_notation));
+    fprint(stream, "\t%s,\t"
+		   "\t/* true ==> integer conversion success, false ==> no integer conversion */\n",
+		   booltostr(item->is_integer));
+    fprstr(stream, "\n");
 
     /*
      * print integer values
      */
     fprstr(stream, "\t/* integer values */\n");
-
-    /*
-     * print is_boolean
-     */
-    fprint(stream, "\t%s,\t"
-		   "\t/* true ==> integer conversion success, false ==> no integer conversion */\n\n",
-		   booltostr(item->is_integer));
-
 
     /*
      * print int8_t info
@@ -587,7 +583,8 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print floating point values
      */
-    fprstr(stream, "\n\t/* floating point values */\n");
+    fprstr(stream, "\n");
+    fprstr(stream, "\t/* floating point values */\n");
 
     /*
      * print float info
@@ -655,7 +652,6 @@ fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const
     } else {
 	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
 	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
-
     }
     return;
 }
@@ -701,7 +697,6 @@ fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char con
     } else {
 	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
 	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
-
     }
     return;
 }
@@ -753,7 +748,6 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
 	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
 	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
 	fprint(stream, "\tfalse,\t\t/* %s */\n", sintval);
-
     }
     return;
 }
