@@ -1242,7 +1242,6 @@ struct json *
 parse_json_string(char const *string, size_t len)
 {
     struct json *str = NULL;
-    struct json_string *item = NULL;
 
     /*
      * firewall
@@ -1269,11 +1268,7 @@ parse_json_string(char const *string, size_t len)
         err(151, __func__, "expected JTYPE_STRING, found type: %s", json_item_type_name(str));
         not_reached();
     }
-    item = &(str->item.string);
-    if (!VALID_JSON_NODE(item)) {
-	err(152, __func__, "couldn't decode string: <%s>", string);
-	not_reached();
-    }
+
     return str;
 }
 
@@ -1294,7 +1289,6 @@ struct json *
 parse_json_bool(char const *string)
 {
     struct json *boolean = NULL;
-    struct json_boolean *item = NULL;
 
     /*
      * firewall
@@ -1312,51 +1306,6 @@ parse_json_bool(char const *string)
     } else if (boolean->type != JTYPE_BOOL) {
         err(155, __func__, "expected JTYPE_BOOL, found type: %s", json_item_type_name(boolean));
         not_reached();
-    }
-    item = &(boolean->item.boolean);
-    if (!VALID_JSON_NODE(item)) {
-	/*
-	 * json_conv_bool_str() calls json_conv_bool() which will warn if the
-	 * boolean is neither true nor false. We know that this function should never
-	 * be called on anything but the strings "true" or "false" and since the
-	 * function will abort if NULL is returned we should check if
-	 * boolean->converted == true.
-	 *
-	 * If it's not we abort as there's a serious mismatch between the
-	 * scanner and the parser.
-	 */
-	err(156, __func__, "called on non-boolean string: <%s>", string);
-	not_reached();
-    } else if (item->as_str == NULL) {
-	/* extra sanity check - make sure the allocated string != NULL */
-	err(157, __func__, "boolean->as_str == NULL");
-	not_reached();
-    } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
-	/*
-	 * extra sanity check - make sure the allocated string is "true"
-	 * or "false"
-	 */
-	err(158, __func__, "boolean->as_str neither \"true\" nor \"false\"");
-	not_reached();
-    } else {
-	/*
-	 * extra sanity checks - convert back and forth as string to bool and
-	 * bool to string and make sure everything matches.
-	 */
-	char const *str = booltostr(item->value);
-	if (str == NULL) {
-	    err(159, __func__, "could not convert boolean->value back to a string");
-	    not_reached();
-	} else if (strcmp(str, item->as_str)) {
-	    err(160, __func__, "boolean->as_str != item->value as a string");
-	    not_reached();
-	} else if (strtobool(item->as_str) != item->value) {
-	    err(161, __func__, "mismatch between boolean string and converted value");
-	    not_reached();
-	} else if (strtobool(str) != item->value) {
-	    err(162, __func__, "mismatch between converted string value and converted value");
-	    not_reached();
-	}
     }
 
     return boolean;
@@ -1379,7 +1328,6 @@ struct json *
 parse_json_null(char const *string)
 {
     struct json *null = NULL;
-    struct json_null *item = NULL;
 
     /*
      * firewall
@@ -1400,12 +1348,6 @@ parse_json_null(char const *string)
     } else if (null->type != JTYPE_NULL) {
         err(165, __func__, "expected JTYPE_NULL, found type: %s", json_item_type_name(null));
         not_reached();
-    }
-    item = &(null->item.null);
-    if (!VALID_JSON_NODE(item)) {
-	/* why is it an error if we can't convert nothing ? :-) */
-	err(166,__func__, "couldn't convert null: <%s>", string);
-	not_reached();
     }
 
     return null;
@@ -1428,7 +1370,6 @@ struct json *
 parse_json_number(char const *string)
 {
     struct json *number = NULL;
-    struct json_number *item = NULL;
 
     /*
      * firewall
@@ -1449,11 +1390,6 @@ parse_json_number(char const *string)
     } else if (number->type != JTYPE_NUMBER) {
         err(169, __func__, "expected JTYPE_NUMBER, found type: %s", json_item_type_name(number));
         not_reached();
-    }
-    item = &(number->item.number);
-    if (!VALID_JSON_NODE(item)) {
-	err(170, __func__, "couldn't convert number string: <%s>", string);
-	not_reached();
     }
     return number;
 }
@@ -1479,8 +1415,6 @@ parse_json_number(char const *string)
 struct json *
 parse_json_array(struct json *elements)
 {
-    struct json_array *item = NULL;
-
     /*
      * firewall
      */
@@ -1500,12 +1434,7 @@ parse_json_array(struct json *elements)
      * This hack works because struct json_array is identical to struct json_elements.
      */
     elements->type = JTYPE_ARRAY;
-    /* paranoia - these tests should never result in an error */
-    item = &(elements->item.array);
-    if (!VALID_JSON_NODE(item)) {
-	err(173, __func__, "couldn't convert array");
-	not_reached();
-    }
+
     return elements;
 }
 
@@ -1527,7 +1456,6 @@ struct json *
 parse_json_member(struct json *name, struct json *value)
 {
     struct json *member = NULL;
-    struct json_member *item = NULL;
 
     /*
      * firewall
@@ -1556,11 +1484,7 @@ parse_json_member(struct json *name, struct json *value)
         err(178, __func__, "expected JTYPE_MEMBER, found type: %s", json_item_type_name(member));
         not_reached();
     }
-    item = &(member->item.member);
-    if (!VALID_JSON_NODE(item)) {
-	err(179, __func__, "couldn't convert member");
-	not_reached();
-    }
+
     return member;
 }
 

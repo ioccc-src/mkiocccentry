@@ -26,6 +26,12 @@ and `is_integer` booleans, also respectively.
 Improved JSON debug messages from `json_process_decimal()` and
 `json_process_floating()`.
 
+In the `parse_json_foo()` structs make it so that if `!converted && !parsed`
+it's not an error. These should I believe never actually happen anyway but on
+GitHub it was suggested this condition should not be considered an error.
+
+Updated json parser version and jparse version string to "1.1.2 2023-07-23".
+
 
 ## Release 1.0.37 2023-07-22
 
