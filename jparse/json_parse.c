@@ -1616,6 +1616,121 @@ json_alloc(enum item_type type)
      */
     ret->type = type;
     ret->parent = NULL;
+
+    /*
+     * paranoia - explicitly elements in the "struct json_foo" structure
+     *
+     * We will set the common elements in the "struct json_foo" as follows:
+     *
+     *		parsed = false;
+     *		converted = false;
+     *		as_str = NULL;
+     *
+     * We also set other pointers to NULL on a type by type basis.
+     *
+     * It could be argued that the above use of calloc(3) will zeroize the structure
+     * and so set pointers to NULL and booleans to false.  As one might read in this FAQ:
+     *
+     *		https://c-faq.com/null/nullor0.html
+     *		https://c-faq.com/null/runtime0.html
+     *
+     * The answer is not so simple: especially when you have to take into account
+     * the way a compiler writer (or compiler feature or compiler mis-feature)
+     * might interpret such FAQs.
+     *
+     * Instead of diving into a pedantic details for NULL vs. 0, we explicitly
+     * set NULL pointers.  And while 0 == false, we also explicitly set both
+     * parsed and converted to false as well.
+     *
+     * One advantage of such explicit setting is that certain code analyzers will
+     * understand the NULL or false intent of such structure elements.
+     */
+    switch (ret->type) {
+    case JTYPE_UNSET:
+	break;
+    case JTYPE_NUMBER:
+	{
+	    struct json_number *item = &(ret->item.number);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->as_str = NULL;
+	};
+	break;
+    case JTYPE_STRING:
+	{
+	    struct json_string *item = &(ret->item.string);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->as_str = NULL;
+	    item->str = NULL;
+	};
+	break;
+    case JTYPE_BOOL:
+	{
+	    struct json_boolean *item = &(ret->item.boolean);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->as_str = NULL;
+	};
+	break;
+    case JTYPE_NULL:
+	{
+	    struct json_null *item = &(ret->item.null);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->as_str = NULL;
+	};
+	break;
+    case JTYPE_MEMBER:
+	{
+	    struct json_member *item = &(ret->item.member);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->name_as_str = NULL;
+	    item->name_str = NULL;
+	    item->name = NULL;
+	    item->value = NULL;
+	};
+	break;
+    case JTYPE_OBJECT:
+	{
+	    struct json_object *item = &(ret->item.object);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->set = NULL;
+	    item->s = NULL;
+	};
+	break;
+    case JTYPE_ARRAY:
+	{
+	    struct json_array *item = &(ret->item.array);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->set = NULL;
+	    item->s = NULL;
+	};
+	break;
+    case JTYPE_ELEMENTS:
+	{
+	    struct json_elements *item = &(ret->item.elements);
+
+	    item->parsed = false;
+	    item->converted = false;
+	    item->set = NULL;
+	    item->s = NULL;
+	};
+	break;
+    default:
+	warn(__func__, "attempt to initialize an unknown JSON type: %d", ret->type);
+	break;
+    }
     json_dbg(JSON_DBG_VHIGH, __func__, "allocated json with type: %s", json_item_type_name(ret));
 
     /*
