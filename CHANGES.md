@@ -32,6 +32,13 @@ For strings it's likewise just the rest is string data, not number data:
 
 Updated json parser and jparse version strings to "1.1.2 2023-07-24".
 
+Updated `jval` and `jnamval` to parse the options `-n` and `-S` as a list as
+each option can be specified more than once. A list seems the most natural
+approach though a dynamic array might be considered later. The `-S` list is
+tested fully but the `-n` list is not as there seems to be an issue with the
+convenience macro changes. That will have to be fixed later. New versions for
+each tool: version string updated to "0.0.3 2023-07-24".
+
 
 ## Release 1.0.38 2023-07-23
 

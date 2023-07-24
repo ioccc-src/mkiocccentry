@@ -83,12 +83,12 @@
 #define JNAMVAL_PRINT_BOTH   (JNAMVAL_PRINT_NAME | JNAMVAL_PRINT_VALUE)
 
 
-
-#define JNAMVAL_CMP_EQ	(1)
-#define JNAMVAL_CMP_LT	(2)
-#define JNAMVAL_CMP_LE	(3)
-#define JNAMVAL_CMP_GT	(4)
-#define JNAMVAL_CMP_GE	(5)
+#define JNAMVAL_CMP_OP_NONE (0)
+#define JNAMVAL_CMP_EQ	    (1)
+#define JNAMVAL_CMP_LT	    (2)
+#define JNAMVAL_CMP_LE	    (3)
+#define JNAMVAL_CMP_GT	    (4)
+#define JNAMVAL_CMP_GE	    (5)
 
 /* structs */
 
@@ -100,7 +100,11 @@ struct jnamval_cmp_op
     struct json_number *number;	    /* for -n as signed number */
     struct json_string *string;	    /* for -S str */
 
+    bool is_string;	    /* true if -S */
+    bool is_number;	    /* true if -n */
     uintmax_t op;	    /* the operation - see JNAMVAL_CMP macros above */
+
+    struct jnamval_cmp_op *next;    /* next in the list */
 };
 
 /* number ranges for the options -l, -n and -n */
@@ -170,9 +174,9 @@ struct jnamval
     uintmax_t total_matches;			/* for -c */
 
     bool string_cmp_used;			/* for -S */
-    struct jnamval_cmp_op string_cmp;		/* for -S str */
+    struct jnamval_cmp_op *string_cmp;		/* for -S str */
     bool num_cmp_used;				/* for -n */
-    struct jnamval_cmp_op num_cmp;			/* for -n num */
+    struct jnamval_cmp_op *num_cmp;			/* for -n num */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
@@ -211,7 +215,7 @@ bool jnamval_parse_number_range(const char *option, char *optarg, bool allow_neg
 bool jnamval_number_in_range(intmax_t number, intmax_t total_matches, struct jnamval_number *range);
 
 /* for -S and -n */
-void jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg, struct jnamval_cmp_op *cmp);
+struct jnamval_cmp_op *jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg);
 
 /* for -L option */
 void jnamval_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
@@ -225,6 +229,8 @@ bool jnamval_print_count(struct jnamval *jnamval);
  */
 void parse_jnamval_args(struct jnamval *jnamval, char **argv);
 
+/* free compare lists */
+void free_jnamval_cmp_op_lists(struct jnamval *jnamval);
 /* to free the entire struct jnamval */
 void free_jnamval(struct jnamval **jnamval);
 

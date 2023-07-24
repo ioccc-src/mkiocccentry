@@ -237,11 +237,19 @@ main(int argc, char **argv)
 	    break;
 	case 'n': /* -n op=num */
 	    jval->num_cmp_used = true;
-	    jval_parse_cmp_op(jval, "n", optarg, &jval->num_cmp);
+	    if (jval_parse_cmp_op(jval, "n", optarg) == NULL) {
+		free_jval(&jval);
+		err(35, "jval", "failed to parse -n option");
+		not_reached();
+	    }
 	    break;
 	case 'S': /* -S op=str */
 	    jval->string_cmp_used = true;
-	    jval_parse_cmp_op(jval, "S", optarg, &jval->string_cmp);
+	    if (jval_parse_cmp_op(jval, "S", optarg) == NULL) {
+		free_jval(&jval);
+		err(36, "jval", "failed to parse -S option");
+		not_reached();
+	    }
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */

@@ -259,11 +259,19 @@ main(int argc, char **argv)
 	    break;
 	case 'n': /* -n op=num */
 	    jnamval->num_cmp_used = true;
-	    jnamval_parse_cmp_op(jnamval, "n", optarg, &jnamval->num_cmp);
+	    if (jnamval_parse_cmp_op(jnamval, "n", optarg) == NULL) {
+		free_jnamval(&jnamval);
+		err(35, "jnamval", "couldn't parse -n option");
+		not_reached();
+	    }
 	    break;
 	case 'S': /* -S op=str */
 	    jnamval->string_cmp_used = true;
-	    jnamval_parse_cmp_op(jnamval, "S", optarg, &jnamval->string_cmp);
+	    if (jnamval_parse_cmp_op(jnamval, "S", optarg) == NULL) {
+		free_jnamval(&jnamval);
+		err(35, "jnamval", "couldn't parse -S option");
+		not_reached();
+	    }
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */

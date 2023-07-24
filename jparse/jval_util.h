@@ -70,11 +70,12 @@
 /* JVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
 #define JVAL_TYPE_SIMPLE  (JVAL_TYPE_NUM|JVAL_TYPE_BOOL|JVAL_TYPE_STR|JVAL_TYPE_NULL)
 
-#define JVAL_CMP_EQ	(1)
-#define JVAL_CMP_LT	(2)
-#define JVAL_CMP_LE	(3)
-#define JVAL_CMP_GT	(4)
-#define JVAL_CMP_GE	(5)
+#define JVAL_CMP_OP_NONE    (0)
+#define JVAL_CMP_EQ	    (1)
+#define JVAL_CMP_LT	    (2)
+#define JVAL_CMP_LE	    (3)
+#define JVAL_CMP_GT	    (4)
+#define JVAL_CMP_GE	    (5)
 
 /* structs */
 
@@ -86,7 +87,11 @@ struct jval_cmp_op
     struct json_number *number;	    /* for -n as signed number */
     struct json_string *string;	    /* for -S str */
 
+    bool is_string;	    /* true if -S */
+    bool is_number;	    /* true if -n */
     uintmax_t op;	    /* the operation - see JVAL_CMP macros above */
+
+    struct jval_cmp_op *next;	/* next in the list */
 };
 
 /* number ranges for the options -l, -n and -n */
@@ -152,9 +157,9 @@ struct jval
     uintmax_t total_matches;			/* for -c */
 
     bool string_cmp_used;			/* for -S */
-    struct jval_cmp_op string_cmp;		/* for -S str */
+    struct jval_cmp_op *string_cmp;		/* for -S str */
     bool num_cmp_used;				/* for -n */
-    struct jval_cmp_op num_cmp;			/* for -n num */
+    struct jval_cmp_op *num_cmp;			/* for -n num */
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
@@ -181,7 +186,7 @@ bool jval_parse_number_range(const char *option, char *optarg, bool allow_negati
 bool jval_number_in_range(intmax_t number, intmax_t total_matches, struct jval_number *range);
 
 /* for -S and -n */
-void jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jval_cmp_op *cmp);
+struct jval_cmp_op *jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg);
 
 /* for -L option */
 void jval_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
@@ -195,6 +200,8 @@ bool jval_print_count(struct jval *jval);
  */
 void parse_jval_args(struct jval *jnamval, char **argv);
 
+/* free compare lists */
+void free_jval_cmp_op_lists(struct jval *jval);
 /* to free the entire struct jval */
 void free_jval(struct jval **jval);
 
