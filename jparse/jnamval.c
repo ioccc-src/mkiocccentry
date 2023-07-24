@@ -259,11 +259,19 @@ main(int argc, char **argv)
 	    break;
 	case 'n': /* -n op=num */
 	    jnamval->num_cmp_used = true;
-	    jnamval_parse_cmp_op(jnamval, "n", optarg, &jnamval->num_cmp);
+	    if (jnamval_parse_cmp_op(jnamval, "n", optarg) == NULL) {
+		free_jnamval(&jnamval);
+		err(24, "jnamval", "couldn't parse -n option");
+		not_reached();
+	    }
 	    break;
 	case 'S': /* -S op=str */
 	    jnamval->string_cmp_used = true;
-	    jnamval_parse_cmp_op(jnamval, "S", optarg, &jnamval->string_cmp);
+	    if (jnamval_parse_cmp_op(jnamval, "S", optarg) == NULL) {
+		free_jnamval(&jnamval);
+		err(25, "jnamval", "couldn't parse -S option");
+		not_reached();
+	    }
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */
@@ -330,7 +338,7 @@ main(int argc, char **argv)
 	 * NOTE: don't make this exit code 3 as it's an internal error if the
 	 * jnamval_sanity_chks() returns a NULL pointer.
 	 */
-	err(24, "jnamval", "could not open regular readable file");
+	err(26, "jnamval", "could not open regular readable file");
 	not_reached();
     }
 
@@ -437,16 +445,16 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 {
     /* firewall */
     if (jnamval == NULL) {
-	err(25, __func__, "NULL jnamval");
+	err(27, __func__, "NULL jnamval");
 	not_reached();
     } else if (argc == NULL) {
-	err(26, __func__, "NULL argc");
+	err(28, __func__, "NULL argc");
 	not_reached();
     } else if (argv == NULL || *argv == NULL || **argv == NULL) {
-	err(27, __func__, "NULL argv");
+	err(29, __func__, "NULL argv");
 	not_reached();
     } else if (program == NULL) {
-	err(28, __func__, "NULL program");
+	err(30, __func__, "NULL program");
 	not_reached();
     }
 

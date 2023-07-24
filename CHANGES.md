@@ -32,6 +32,16 @@ For strings it's likewise just the rest is string data, not number data:
 
 Updated json parser and jparse version strings to "1.1.2 2023-07-24".
 
+New definition of recently removed macro `CONVERTED_JSON_NODE`:
+
+```c
+#define CONVERTED_JSON_NODE(item) ((item) != NULL && (item)->converted == true)
+```
+
+Updated `jval` and `jnamval` to parse the options `-n` and `-S` as a list as
+each option can be specified more than once. A list seems the most natural
+approach though a dynamic array might be considered later.
+New version for both tools: "0.0.3 2023-07-24".
 
 ## Release 1.0.38 2023-07-23
 

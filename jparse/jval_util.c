@@ -92,15 +92,11 @@ alloc_jval(void)
 
     /* for -S */
     jval->string_cmp_used = false;
-    jval->string_cmp.string = NULL;
-    jval->string_cmp.number = NULL;
-    jval->string_cmp.op = 0;
+    jval->string_cmp = NULL;
 
     /* for -n */
     jval->num_cmp_used = false;
-    jval->num_cmp.string = NULL;
-    jval->num_cmp.number = 0;
-    jval->num_cmp.op = 0;
+    jval->num_cmp = NULL;
 
     /* parsing related */
     jval->max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
@@ -741,6 +737,9 @@ free_jval(struct jval **jval)
 	(*jval)->outfile_path = NULL;
     }
 
+    /* free the compare lists too */
+    free_jval_cmp_op_lists(*jval);
+
     free(*jval);
     *jval = NULL;
 }
@@ -811,23 +810,26 @@ parse_jval_args(struct jval *jval, char **argv)
  *	option	    - the option letter (without the '-') that triggered this
  *		      function
  *	optarg	    - option arg to the option
- *	cmp	    - pointer to our struct jval_cmp_op depending on the option used
  *
  *
  *  This function fills out either the jval->string_cmp or jval->num_cmp if the
- *  syntax is correct.
+ *  syntax is correct. Or more correctly it adds to the list as more than one
+ *  can be specified.
+
  *
  *  This function will not return on error in conversion or syntax error or NULL
  *  pointers.
  *
  *  This function returns void.
  */
-void
-jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jval_cmp_op *cmp)
+struct jval_cmp_op *
+jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
 {
     char *p = NULL;		    /* to find the = separator */
     char *mode = NULL;		    /* if -S then "str" else "num" */
     struct json *item = NULL;	    /* to get the converted value */
+    struct jval_cmp_op *cmp = NULL; /* to add to list */
+    int op = JVAL_CMP_OP_NONE;	    /* assume no op for syntax wrong */
 
     /* firewall */
     if (jval == NULL) {
@@ -842,44 +844,40 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jv
 	err(29, __func__, "NULL optarg");
 	not_reached();
     }
-    if (cmp == NULL) {
-	err(30, __func__, "NULL cmp pointer");
-	not_reached();
-    }
 
     if (!strcmp(option, "S")) {
 	mode = "str";
     } else if (!strcmp(option, "n")) {
 	mode = "num";
     } else {
-	err(31, __func__, "invalid option used for function: -%s", option);
+	err(30, __func__, "invalid option used for function: -%s", option);
 	not_reached();
     }
 
     p = strchr(optarg, '=');
     if (p == NULL) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(31, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p == optarg) {
-	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p[1] == '\0') {
-	err(34, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	err(33, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
 	not_reached();
     }
 
     if (!strncmp(optarg, "eq=", 3)) {
-	cmp->op = JVAL_CMP_EQ;
+	op = JVAL_CMP_EQ;
     } else if (!strncmp(optarg, "lt=", 3)) {
-	cmp->op = JVAL_CMP_LT;
+	op = JVAL_CMP_LT;
     } else if (!strncmp(optarg, "le=", 3)) {
-	cmp->op = JVAL_CMP_LE;
+	op = JVAL_CMP_LE;
     } else if (!strncmp(optarg, "gt=", 3)){
-	cmp->op = JVAL_CMP_GT;
+	op = JVAL_CMP_GT;
     } else if (!strncmp(optarg, "ge=", 3)) {
-	cmp->op = JVAL_CMP_GE;
+	op = JVAL_CMP_GE;
     } else {
-	err(35, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(34, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     }
 
@@ -887,9 +885,14 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jv
 	errno = 0;
 	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
 	if (item == NULL) {
-	    err(36, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
+	    err(35, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
 	    not_reached();
 	} else {
+	    cmp = calloc(1, sizeof *cmp);
+	    if (cmp == NULL) {
+		err(36, __func__, "failed to allocate struct jval_cmp_op *");
+		not_reached();
+	    }
 	    cmp->string = &(item->item.string);
 	    if (cmp->string == NULL) {
 		err(37, __func__, "failed to convert string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
@@ -899,6 +902,13 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jv
 			optarg + 3, option);
 		not_reached();
 	    }
+
+	    cmp->op = op;
+
+	    cmp->next = jval->string_cmp;
+	    jval->string_cmp = cmp;
+
+	    /* XXX - add function that prints out what compare operation - XXX */
 	    json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string->str);
 	}
     } else if (!strcmp(option, "n")) { /* -n */
@@ -907,16 +917,72 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg, struct jv
 	    err(39, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
 	    not_reached();
 	} else {
+	    cmp = calloc(1, sizeof *cmp);
+	    if (cmp == NULL) {
+		err(40, __func__, "failed to allocate struct jval_cmp_op *");
+		not_reached();
+	    }
 	    cmp->number = &(item->item.number);
 	    if (!CONVERTED_PARSED_JSON_NODE(cmp->number)) {
 		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
 			optarg + 3, option);
 		not_reached();
-	    } else if (PARSED_JSON_NODE(cmp->number)) {
+	    } else if (PARSED_JSON_NODE(cmp->number) && !CONVERTED_JSON_NODE(cmp->number)) {
 		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
 		not_reached();
 	    }
+
+	    cmp->op = op;
+
+	    cmp->next = jval->num_cmp;
+	    jval->num_cmp = cmp;
+
+	    /* XXX - add function that prints out what compare operation - XXX */
 	    json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->number->as_str);
 	}
+    }
+
+    return cmp;
+}
+
+/* free_jval_cmp_op_lists - free the compare lists
+ *
+ * given:
+ *
+ *  jval	- pointer to our struct jval
+ *
+ * This function frees out both the number and string compare lists.
+ *
+ * This function will not return on NULL jval.
+ */
+void
+free_jval_cmp_op_lists(struct jval *jval)
+{
+    struct jval_cmp_op *op, *next_op;
+
+    /* firewall */
+    if (jval == NULL) {
+	err(41, __func__, "jval is NULL");
+	not_reached();
+    }
+
+    /* first the string compare list */
+    for (op = jval->string_cmp; op != NULL; op = next_op) {
+	next_op = op->next;
+
+	/* XXX - free json node - XXX */
+
+	free(op);
+	op = NULL;
+    }
+
+    /* now the number compare list */
+    for (op = jval->num_cmp; op != NULL; op = next_op) {
+	next_op = op->next;
+
+	/* XXX - free json node - XXX */
+
+	free(op);
+	op = NULL;
     }
 }
