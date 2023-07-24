@@ -12,6 +12,26 @@ seems like it might be a good place to do that.
 Fixed `warning: incompatible pointer to integer conversion passing 'struct json
 *' to parameter of type 'enum item_type'` in `json_util.c`.
 
+Add `:` suffix to parsed/converted boolean in debug output of `JTYPE_STRING` and
+`JTYPE_NUMBER` (via `fprnumber()`) in `vjson_fprint()`. For `parsed` if
+converted is also false add a `:` else a `,`. Print a `:` after converted flag.
+This separates the parsed/converted status from the actual information of the
+type. Here's an example log output for numbers:
+
+```
+JSON tree[3]:	lvl: 1	type: JTYPE_NUMBER	{p,c:-Fddildldi}: value:	-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0
+JSON tree[3]:	lvl: 1	type: JTYPE_NUMBER	{p:FE}: value:	1e100000000
+```
+
+Note for the first line it has `p,c:` as the number was both parsed and
+converted but for the second line it has just `p:` as the number could not
+be converted. The flags follow the `:`. Now one might argue that the bools are
+part of the numbers but the other data is the number itself.
+
+For strings it's likewise just the rest is string data, not number data:
+
+Updated json parser and jparse version strings to "1.1.2 2023-07-24".
+
 
 ## Release 1.0.38 2023-07-23
 

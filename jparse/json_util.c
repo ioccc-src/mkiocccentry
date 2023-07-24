@@ -1375,16 +1375,16 @@ json_fprint(struct json *node, unsigned int depth, ...)
  *
  * given:
  *	stream	    open stream on which to print information about a json_number
- *	prestr	    string to print 1st
+ *	prestr	    first string to print
  *	info	    pointer to struct json_number for which to print in stream
- *	midstr	    string to print 3rd
- *	poststr	    if non-NULL, 4th string to print, NULL ==> print "((NULL))"
+ *	midstr	    third string to print
+ *	poststr	    if non-NULL, fourth string to print, NULL ==> print "((NULL))"
  */
 static void
 fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, char *poststr)
 {
     /*
-     * firewall - just be -J 3 or more
+     * firewall - must be -J 3 or more
      */
     if (json_verbosity_level < JSON_DBG_MED) {
 	return;
@@ -1410,7 +1410,7 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
     }
 
     /*
-     * print the 1st prestr
+     * print the first prestr
      */
     fprint(stream, "%s", prestr);
 
@@ -1421,10 +1421,11 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
      */
     if (json_verbosity_level > JSON_DBG_MED) {
 
-	/* -J 4 and more output */
-	fprint(stream, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+	/* -J 4 and higher output */
+	fprint(stream, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
 			PARSED_JSON_NODE(item)?"p":"",
-			CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			CONVERTED_PARSED_JSON_NODE(item)?",":":",
+			CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
 			item->is_negative?"-":"",
 			item->is_floating?"F":"",
 			item->is_e_notation?"E":"",
@@ -1456,9 +1457,10 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
 			item->as_longdouble_int?"ldi":"");
     } else {
 
-	/* -J 3 */ fprint(stream, "%s%s%s%s%s%s",
+	/* -J 3 */ fprint(stream, "%s%s%s%s%s%s%s",
 			PARSED_JSON_NODE(item)?"p":"",
-			CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			CONVERTED_PARSED_JSON_NODE(item)?",":":",
+			CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
 			item->is_negative?"-":"", item->is_floating?"F":"",
 			item->is_e_notation?"E":"",
 			item->is_integer?"I":"");
@@ -1504,12 +1506,12 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
     }
 
     /*
-     * print the 3rd midstr
+     * print the third string (midstr)
      */
     fprint(stream, "%s", midstr);
 
     /*
-     * print the 4th poststr
+     * print the fourth poststr
      */
     fprint(stream, "%s", poststr);
     return;
@@ -1652,9 +1654,10 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		/*
 		 * print string preamble
 		 */
-		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
+		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
 				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+				CONVERTED_PARSED_JSON_NODE(item)?",":":",
+				CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
 				item->quote ? "q" : "",
 				item->same ? "=" : "",
 				item->has_nul ? "0" : "",
