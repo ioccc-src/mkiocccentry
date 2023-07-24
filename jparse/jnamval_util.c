@@ -1164,19 +1164,19 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
     } else if (!strcmp(option, "n")) {
 	mode = "num";
     } else {
-	err(32, __func__, "invalid option used for function: -%s", option);
+	err(31, __func__, "invalid option used for function: -%s", option);
 	not_reached();
     }
 
     p = strchr(optarg, '=');
     if (p == NULL) {
-	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p == optarg) {
-	err(34, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p[1] == '\0') {
-	err(35, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	err(34, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
 	not_reached();
     }
 
@@ -1191,7 +1191,7 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
     } else if (!strncmp(optarg, "ge=", 3)) {
 	op = JNAMVAL_CMP_GE;
     } else {
-	err(36, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(35, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     }
 
@@ -1199,7 +1199,7 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
 	errno = 0;
 	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
 	if (item == NULL) {
-	    err(37, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
+	    err(36, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
 	    not_reached();
 	} else {
 	    cmp = calloc(1, sizeof *cmp);
@@ -1232,25 +1232,25 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
 	    err(40, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
 	    not_reached();
 	} else {
+	    cmp = calloc(1, sizeof *cmp);
+	    if (cmp == NULL) {
+		err(41, __func__, "failed to allocate struct jval_cmp_op *");
+		not_reached();
+	    }
 	    cmp->number = &(item->item.number);
 	    if (!CONVERTED_PARSED_JSON_NODE(cmp->number)) {
 		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
 			optarg + 3, option);
 		not_reached();
-	    } else if (PARSED_JSON_NODE(cmp->number)) {
+	    } else if (PARSED_JSON_NODE(cmp->number) && !CONVERTED_JSON_NODE(cmp->number)) {
 		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
-		not_reached();
-	    }
-	    cmp = calloc(1, sizeof *cmp);
-	    if (cmp == NULL) {
-		err(37, __func__, "failed to allocate struct jnamval_cmp_op *");
 		not_reached();
 	    }
 
 	    cmp->op = op;
 
-	    cmp->next = jnamval->string_cmp;
-	    jnamval->string_cmp = cmp;
+	    cmp->next = jnamval->num_cmp;
+	    jnamval->num_cmp = cmp;
 
 	    /* XXX - add function that prints out what compare operation - XXX */
 	    json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->number->as_str);
@@ -1277,7 +1277,7 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
 
     /* firewall */
     if (jnamval == NULL) {
-	err(35, __func__, "jnamval is NULL");
+	err(42, __func__, "jnamval is NULL");
 	not_reached();
     }
 

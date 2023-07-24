@@ -850,19 +850,19 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
     } else if (!strcmp(option, "n")) {
 	mode = "num";
     } else {
-	err(31, __func__, "invalid option used for function: -%s", option);
+	err(30, __func__, "invalid option used for function: -%s", option);
 	not_reached();
     }
 
     p = strchr(optarg, '=');
     if (p == NULL) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(31, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p == optarg) {
-	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     } else if (p[1] == '\0') {
-	err(34, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	err(33, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
 	not_reached();
     }
 
@@ -877,7 +877,7 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
     } else if (!strncmp(optarg, "ge=", 3)) {
 	op = JVAL_CMP_GE;
     } else {
-	err(35, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(34, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
 	not_reached();
     }
 
@@ -885,12 +885,12 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
 	errno = 0;
 	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
 	if (item == NULL) {
-	    err(36, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
+	    err(35, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
 	    not_reached();
 	} else {
 	    cmp = calloc(1, sizeof *cmp);
 	    if (cmp == NULL) {
-		err(37, __func__, "failed to allocate struct jval_cmp_op *");
+		err(36, __func__, "failed to allocate struct jval_cmp_op *");
 		not_reached();
 	    }
 	    cmp->string = &(item->item.string);
@@ -919,7 +919,7 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
 	} else {
 	    cmp = calloc(1, sizeof *cmp);
 	    if (cmp == NULL) {
-		err(37, __func__, "failed to allocate struct jval_cmp_op *");
+		err(40, __func__, "failed to allocate struct jval_cmp_op *");
 		not_reached();
 	    }
 	    cmp->number = &(item->item.number);
@@ -927,7 +927,7 @@ jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg)
 		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
 			optarg + 3, option);
 		not_reached();
-	    } else if (PARSED_JSON_NODE(cmp->number)) {
+	    } else if (PARSED_JSON_NODE(cmp->number) && !CONVERTED_JSON_NODE(cmp->number)) {
 		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
 		not_reached();
 	    }
@@ -962,7 +962,7 @@ free_jval_cmp_op_lists(struct jval *jval)
 
     /* firewall */
     if (jval == NULL) {
-	err(35, __func__, "jval is NULL");
+	err(41, __func__, "jval is NULL");
 	not_reached();
     }
 

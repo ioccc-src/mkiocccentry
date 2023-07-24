@@ -37,6 +37,7 @@
  */
 #define PARSED_JSON_NODE(item) ((item) != NULL && ((item)->parsed == true))
 #define CONVERTED_PARSED_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) && ((item)->converted == true)))
+#define CONVERTED_JSON_NODE(item) ((item) != NULL && (item)->converted == true)
 #define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))
 
 
