@@ -472,8 +472,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
  *	filename    - filename or NULL for stdin
- *	is_valid    - set to true or false depending on json validity (must NOT
- *		      be NULL)
+ *	is_valid    - non-NULL printer to boolean to set depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
@@ -494,22 +493,18 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     struct json_extra extra;
 
     /*
-     * We set *is_valid = true if is_valid != NULL so that the caller does not
-     * have to worry about this for each call. That way when the function
-     * returns they can check their bool and know whether it was valid or not
-     * (though we actually report invalid json too in case but the caller has
-     * information about the filename when passed a file and can now report if
-     * the json was valid).
-     *
-     * Either way this ensures that the caller has a valid value after this
-     * function returns (as long as is_valid != NULL).
+     * firewall
      */
-    if (is_valid != NULL) {
-	*is_valid = true;
-    } else {
-	/* even so it's an error if is_valid is NULL */
+    if (is_valid == NULL) {
 	err(38, __func__, "is_valid == NULL");
 	not_reached();
+    } else {
+	/*
+	 * set to true so that the caller does not need to worry about it (well
+	 * they should in case this is removed but we do it explicitly for them
+	 * anyway).
+	 */
+	*is_valid = true;
     }
 
     /*
@@ -520,10 +515,8 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 	/* this should never happen */
 	werr(39, __func__, "ptr is NULL");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
@@ -558,10 +551,8 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 	 */
 	werr(41, __func__, "unable to scan string");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
@@ -615,14 +606,10 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     }
     if (ret == 0) {
 	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
-	if (is_valid != NULL) {
-	    *is_valid = true;
-	}
+	*is_valid = true; /* flag that we have valid JSON */
     } else {
 	json_dbg(JSON_DBG_LOW, __func__, "invalid JSON");
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	*is_valid = false; /* flag that we have invalid JSON */
     }
 
     /* free scanner */
@@ -644,8 +631,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
  * given:
  *	stream      - open file stream containing JSON data
  *	filename    - name of file or NULL for stdin
- *	is_valid    - set to true or false depending on json validity (must NOT
- *		      be NULL)
+ *	is_valid    - non-NULL printer to boolean to set depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
@@ -665,7 +651,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 struct json *
 parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 {
-    struct json *node = NULL;		/* the JSON parse tree */
+    struct json *tree = NULL;		/* the JSON parse tree */
     char *data = NULL;			/* used to determine if there are NUL bytes in the file */
     size_t len = 0;			/* length of data read */
     bool low_byte_detected = false;	/* true ==> byte values [\x00-\x08\x0e-\x1f] detected in data */
@@ -692,28 +678,24 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	/* report NULL stream */
 	werr(43, __func__, "stream is NULL");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
     if (fd_is_ready(__func__, false, fileno(stream)) == false) {
 
 	/* report closed stream */
 	werr(44, __func__, "stream is not open");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     if (filename == NULL) {
@@ -731,14 +713,12 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	werr(45, __func__, "could not read read stream");
 	clearerr_or_fclose(stream);
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     /*
@@ -763,10 +743,8 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	/* clean up input stream */
 	clearerr_or_fclose(stream);
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* free data */
 	if (data != NULL) {
@@ -775,15 +753,15 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	}
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     /*
      * JSON parse the data from the file
      */
     json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, filename, is_valid);
+    tree = parse_json(data, len, filename, is_valid);
 
     /* free data */
     if (data != NULL) {
@@ -800,9 +778,9 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     stream = NULL;
 
     /*
-     * return the JSON parse tree node
+     * return the JSON parse tree tree
      */
-    return node;
+    return tree;
 }
 
 
@@ -811,8 +789,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
  *
  * given:
  *	name	    - filename of file to parse
- *	is_valid    - set to true or false depending on json validity (must NOT
- *		      be NULL)
+ *	is_valid    - non-NULL printer to boolean to set depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
@@ -833,7 +810,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 struct json *
 parse_json_file(char const *name, bool *is_valid)
 {
-    struct json *node = NULL;		/* the JSON parse tree */
+    struct json *tree = NULL;		/* the JSON parse tree */
     FILE *stream = NULL;		/* file stream to read from */
 
     /*
@@ -843,7 +820,11 @@ parse_json_file(char const *name, bool *is_valid)
 	err(49, __func__, "is_valid == NULL");
 	not_reached();
     } else {
-	/* assume valid JSON to start out */
+	/*
+	 * set to true so that the caller does not need to worry about it (well
+	 * they should in case this is removed but we do it explicitly for them
+	 * anyway).
+	 */
 	*is_valid = true;
     }
     if (name == NULL) {
@@ -851,28 +832,24 @@ parse_json_file(char const *name, bool *is_valid)
 	/* this should actually never happen if called from jparse */
 	werr(50, __func__, "passed NULL name");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
     if (*name == '\0') { /* strlen(name) == 0 */
 
 	/* warn about bogus name */
 	werr(51, __func__, "passed empty filename");
 
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
+	/* flag that we have invalid JSON */
+	*is_valid = false;
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     /*
@@ -893,42 +870,36 @@ parse_json_file(char const *name, bool *is_valid)
 	    /* report missing file */
 	    werr(52, __func__, "passed filename that's not actually a file: %s", name);
 
-	    /* if allowed, report invalid JSON */
-	    if (is_valid != NULL) {
-		*is_valid = false;
-	    }
+	    /* flag that we have invalid JSON */
+	    *is_valid = false;
 
 	    /* return a blank JSON tree */
-	    node = json_alloc(JTYPE_UNSET);
-	    return node;
+	    tree = json_alloc(JTYPE_UNSET);
+	    return tree;
 
 	}
 	if (!is_file(name)) {
 	    /* report that file is not a normal file */
 	    werr(53, __func__, "passed filename not a normal file: %s", name);
 
-	    /* if allowed, report invalid JSON */
-	    if (is_valid != NULL) {
-		*is_valid = false;
-	    }
+	    /* report invalid JSON */
+	    *is_valid = false;
 
 	    /* return a blank JSON tree */
-	    node = json_alloc(JTYPE_UNSET);
-	    return node;
+	    tree = json_alloc(JTYPE_UNSET);
+	    return tree;
 	}
 	if (!is_read(name)) {
 
 	    /* report unreadable file */
 	    werr(54, __func__, "passed filename not a readable file: %s", name);
 
-	    /* if allowed, report invalid JSON */
-	    if (is_valid != NULL) {
-		*is_valid = false;
-	    }
+	    /* flag that we have invalid JSON */
+	    *is_valid = false;
 
 	    /* return a blank JSON tree */
-	    node = json_alloc(JTYPE_UNSET);
-	    return node;
+	    tree = json_alloc(JTYPE_UNSET);
+	    return tree;
 	}
 
 	/*
@@ -941,24 +912,22 @@ parse_json_file(char const *name, bool *is_valid)
 	    /* warn about file open error */
 	    werrp(55, __func__, "couldn't open file %s, ignoring", name);
 
-	    /* if allowed, report invalid JSON */
-	    if (is_valid != NULL) {
-		*is_valid = false;
-	    }
+	    /* flag that we have invalid JSON */
+	    *is_valid = false;
 
 	    /* return a blank JSON tree */
-	    node = json_alloc(JTYPE_UNSET);
-	    return node;
+	    tree = json_alloc(JTYPE_UNSET);
+	    return tree;
 	}
     }
 
     /*
      * JSON parse the open stream
      */
-    node = parse_json_stream(stream, name, is_valid);
+    tree = parse_json_stream(stream, name, is_valid);
 
     /*
-     * return the JSON parse tree node
+     * return the JSON parse tree tree
      */
-    return node;
+    return tree;
 }

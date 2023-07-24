@@ -26,6 +26,22 @@ and `is_integer` booleans, also respectively.
 Improved JSON debug messages from `json_process_decimal()` and
 `json_process_floating()`.
 
+Simplified how the `is_valid` boolean arg is used in `jparse/jparse.l`.
+Refer to `tree` (instead of "node") when referring to the JSON
+tree in `jparse.l`.
+
+Updated convenience macros in `jparse/json_parse.h`.  Now using:
+
+```c
+#define PARSED_JSON_NODE(item) ((item)->parsed == true)
+#define CONVERTED_PARSED_JSON_NODE(item) (((item)->parsed == true) && ((item)->converted == true))
+#define VALID_JSON_NODE(item) (((item)->parsed == true) || ((item)->converted == true))
+```
+
+Use of `CONVERTED_JSON_NODE(item)` changed to `CONVERTED_PARSED_JSON_NODE(item)`.
+
+Fixed "copy and paste" typo in `json_tree_print()`.
+
 
 ## Release 1.0.37 2023-07-22
 

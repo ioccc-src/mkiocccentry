@@ -1798,7 +1798,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		 * print string preamble
 		 */
 		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
-				CONVERTED_JSON_NODE(item)?"c":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 				PARSED_JSON_NODE(item)?"p":"",
 				item->quote ? "q" : "",
 				item->same ? "=" : "",
@@ -1823,7 +1823,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     *
 	     * NOTE: this should never happen
 	     */
-	    } else if (CONVERTED_JSON_NODE(item)) {
+	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
 		warn(__func__, "string item->converted == true but item->parsed == false");
 		fprstr(stream, "\tconverted true, parsed false: will not print data");
 	    /*
@@ -1861,7 +1861,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     * NOTE: this should never happen as if converted == false then
 	     * parsed should also == false. We check explicitly so we can warn.
 	     */
-	    } else if (CONVERTED_JSON_NODE(item)) {
+	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
 		warn(__func__, "boolean item->converted == true but item->parsed == false");
 		fprint(stream, "\tvalue: %s", booltostr(item->value));
 
@@ -1893,7 +1893,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	    /*
 	     * case: converted but not parsed null
 	     */
-	    } else if (CONVERTED_JSON_NODE(item)) {
+	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
 		warn(__func__, "null item->converted == false but item->parsed == false");
 	    /*
 	     * case: not converted not parsed null
@@ -1928,7 +1928,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			if (CONVERTED_PARSED_JSON_NODE(item2)) {
 			    fprstr(stream, "\tname: ");
 			    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
-			} else if (CONVERTED_JSON_NODE(item2)) {
+			} else if (CONVERTED_PARSED_JSON_NODE(item2)) {
 			    warn(__func__, "\tname: converted true but parsed false:");
 			} else if (PARSED_JSON_NODE(item2)) {
 			    warn(__func__, "\tname: converted false but parsed true:");
@@ -2115,7 +2115,7 @@ json_tree_print(struct json *node, unsigned int max_depth, ...)
     va_start(ap, max_depth);
 
     /*
-     * free the JSON parse tree
+     * print the JSON parse tree
      */
     vjson_tree_walk(node, max_depth, 0, true, vjson_fprint, ap);
 
