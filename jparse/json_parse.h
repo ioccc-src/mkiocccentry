@@ -56,8 +56,8 @@ struct encode
 /*
  * parsed JSON number
  *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * If converted == false, then the JSON number string was not able to be
  * converted into a C numeric value (neither integer, nor floating point), OR
@@ -65,7 +65,8 @@ struct encode
  * was too large or otherwise could not be converted into a C numeric value
  * by the standard libc conversion functions.
  *
- * If the allocation of as_str failed, as_str == NULL and converted == false.
+ * If the allocation of as_str fails, then as_str == NULL and parsed == false.
+ *
  * The non-NULL as_str allocated will be NUL byte terminated.
  *
  * While the parser is not designed to do so, it is possible that as_str
@@ -77,18 +78,18 @@ struct encode
  * the number of bytes, starting with first, that contain the actual
  * JSON number string.
  *
- * If is_floating == false, then the JSON number was attempted to be parsed
+ * If is_floating == false, then the JSON number was attempted to be converted
  * as an integer.  In this case the "integer values" fields will be used and
  * the "floating point values" fields will be unused (set to false, or 0.0);
  *
- * If is_floating == true then, then the JSON number was attempted to be parsed
+ * If is_floating == true then, then the JSON number was attempted to be converted
  * as a floating point value. In this case the "floating point values" fields
  * will be used, and the "integer values" fields will be unused (set to false,
  * or 0).
  *
  * A JSON number string is of the form:
  *
- *	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}_
+ *	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT})
  *
  * where {JSON_INTEGER} is of the form:
  *
@@ -199,10 +200,11 @@ struct json_number
 /*
  * parsed JSON string
  *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
  *
- * If the allocation of as_str failed, as_str == NULL and converted == false.
+ * If the allocation of as_str fails, then as_str == NULL and parsed == false.
+ *
  * The non-NULL as_str allocated will be NUL byte terminated.
  *
  * A JSON string is of the form:
@@ -239,8 +241,8 @@ struct json_string
 /*
  * parsed JSON boolean
  *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON boolean is of the form:
  *
@@ -262,8 +264,8 @@ struct json_boolean
 /*
  * parsed JSON null
  *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON null is of the form:
  *
@@ -284,8 +286,8 @@ struct json_null
 /*
  * JSON member
  *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON member is of the form:
  *
@@ -331,6 +333,9 @@ struct json_member
 /*
  * JSON object
  *
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
+ *
  * JSON object is one of:
  *
  *	{ }
@@ -339,9 +344,6 @@ struct json_member
  * The pointer to the i-th JSON member in the JSON object, if i < len, is:
  *
  *	foo.set[i-1]
- *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
  */
 struct json_object
 {
@@ -358,6 +360,9 @@ struct json_object
 /*
  * JSON ordered array of values
  *
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
+ *
  * A JSON array is of the form:
  *
  *	[ ]
@@ -366,9 +371,6 @@ struct json_object
  * The pointer to the i-th JSON value in the JSON array, if i < len, is:
  *
  *	foo.set[i-1]
- *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
  *
  * IMPORTANT: The struct json_array must be identical to struct json_elements because
  *	      parse_json_array() converts by just changing the JSON item type.
@@ -388,14 +390,14 @@ struct json_array
 /*
  * JSON elements
  *
+ * When parsed == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of parsed and only use values if parsed == true.
+ *
  * A JSON elements is zero or more JSON values.
  *
  * The pointer to the i-th JSON value in the JSON array, if i < len, is:
  *
  *	foo.set[i-1]
- *
- * When converted == false, then all other fields in this structure may be invalid.
- * So you must check the boolean of converted and only use values if converted == true.
  *
  * IMPORTANT: The struct json_array must be identical to struct json_elements because
  *	      parse_json_array() converts by just changing the JSON item type.

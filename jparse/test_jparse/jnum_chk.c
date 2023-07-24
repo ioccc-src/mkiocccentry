@@ -247,18 +247,6 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
     }
 
     /*
-     * test converted boolean
-     */
-    if (test_result[testnum].converted != item->converted) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].converted: %d != item.converted: %d",
-		       testnum, test_result[testnum].converted, item->converted);
-	test_error = true;
-    } else {
-	dbg(DBG_VVHIGH, "test_result[%d].converted: %d == item.converted: %d",
-			testnum, test_result[testnum].converted, item->converted);
-    }
-
-    /*
      * test parsed boolean
      */
     if (test_result[testnum].parsed != item->parsed) {
@@ -270,6 +258,17 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 			testnum, test_result[testnum].parsed, item->parsed);
     }
 
+    /*
+     * test converted boolean
+     */
+    if (test_result[testnum].converted != item->converted) {
+	dbg(DBG_VHIGH, "ERROR: test_result[%d].converted: %d != item.converted: %d",
+		       testnum, test_result[testnum].converted, item->converted);
+	test_error = true;
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].converted: %d == item.converted: %d",
+			testnum, test_result[testnum].converted, item->converted);
+    }
 
     /*
      * test NULL strings

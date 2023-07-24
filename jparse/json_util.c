@@ -1465,6 +1465,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     switch (node->type) {
 
     case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+	fprint(stream, "\tWarning: JTYPE_UNSET: %d", node->type);
 	break;
 
     case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
@@ -1490,16 +1491,23 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest converted floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf-val: %e\tinteger: %s",
+			    fprint(stream, "\t{%s%s}f-val: %e\tinteger: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td-val: %le\tinteger: %s",
+			    fprint(stream, "\t{%s%s}d-val: %le\tinteger: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_double, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL-val: %Le\tinteger: %s",
+			    fprint(stream, "\t{%s%s}L-val: %Le\tinteger: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_longdouble, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: -e-notation: <= min int size:\t");
+			    fprint(stream, "\t{%s%s}Warning: -e-notation: <= min int size:\t",
+					   PARSED_JSON_NODE(item)?"p":"", CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1512,16 +1520,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest converted negative floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf-val: %f\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}f-val: %f\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td-val: %lf\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}d-val: %lf\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_double, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL-val: %Lf\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}L-val: %Lf\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_longdouble, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: -floating: <= min floating point size:\t");
+			    fprint(stream, "\t{%s%s}Warning: -floating: <= min floating point size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1534,17 +1550,34 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest converted integer
 			 */
 			if (item->int8_sized == true) {
-			    fprint(stream, "\tval-8: %jd", (intmax_t)item->as_int8);
+			    fprint(stream, "\t{%s%s}val-8: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int8);
 			} else if (item->int16_sized == true) {
-			    fprint(stream, "\tval-16: %jd", (intmax_t)item->as_int16);
+			    fprint(stream, "\t{%s%s}val-16: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int16);
 			} else if (item->int32_sized == true) {
-			    fprint(stream, "\tval-32: %jd", (intmax_t)item->as_int32);
+			    fprint(stream, "\t{%s%s}val-32: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int32);
 			} else if (item->int64_sized == true) {
-			    fprint(stream, "\tval-64: %jd", (intmax_t)item->as_int64);
+			    fprint(stream, "\t{%s%s}val-64: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int64);
 			} else if (item->maxint_sized == true) {
-			    fprint(stream, "\tval-max: %jd", (intmax_t)item->as_maxint);
+			    fprint(stream, "\t{%s%s}val-max: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_maxint);
 			} else {
-			    fprstr(stream, "\tWarning: -integer: <= min int size:\t");
+			    fprint(stream, "\t{%s%s}Warning: -integer: <= min int size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 		    }
@@ -1563,16 +1596,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try to print the smallest converted floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf+val: %e\te-notation floating point: %s",
+			    fprint(stream, "\t{%s%s}f+val: %e\te-notation floating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td+val: %le\te-notation floating point: %s",
+			    fprint(stream, "\t{%s%s}d+val: %le\te-notation floating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_double, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL+val: %Le\te-notation floating point: %s",
+			    fprint(stream, "\t{%s%s}L+val: %Le\te-notation floating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_longdouble, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: +e-notation: >= max floating point size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +e-notation: >= max floating point size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1585,16 +1626,23 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try to print the smallest converted floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf+val: %f\tfloating: %s",
+			    fprint(stream, "\t{%s%s}f+val: %f\tfloating: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   (double)item->as_float, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td+val: %lf\tfloating: %s",
+			    fprint(stream, "\t{%s%s}d+val: %lf\tfloating: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_double, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL+val: %Lf\tfloating: %s",
+			    fprint(stream, "\t{%s%s}L+val: %Lf\tfloating: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_longdouble, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: +floating: >= max floating point size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +floating: >= max floating point size:\t",
+					   PARSED_JSON_NODE(item)?"p":"", CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1607,25 +1655,43 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest converted integer
 			 */
 			if (item->int8_sized == true) {
-			    fprint(stream, "\tval+8: %jd", (intmax_t)item->as_int8);
+			    fprint(stream, "\t{%s%s}val+8: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int8);
 			} else if (item->int16_sized == true) {
-			    fprint(stream, "\tval+16: %jd", (intmax_t)item->as_int16);
+			    fprint(stream, "\t{%s%s}val+16: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->as_int16);
 			} else if (item->int32_sized == true) {
-			    fprint(stream, "\tval+32: %jd", (intmax_t)item->int32_sized);
+			    fprint(stream, "\t{%s%s}val+32: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->int32_sized);
 			} else if (item->int64_sized == true) {
-			    fprint(stream, "\tval+64: %jd", (intmax_t)item->int64_sized);
+			    fprint(stream, "\t{%s%s}val+64: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->int64_sized);
 			} else if (item->maxint_sized == true) {
-			    fprint(stream, "\tval+max: %jd", (intmax_t)item->maxint_sized);
+			    fprint(stream, "\t{%s%s}val+max: %jd",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   (intmax_t)item->maxint_sized);
 			} else {
-			    fprstr(stream, "\tWarning: +integer: >= max int size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +integer: >= max int size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 		    }
 		}
 
-	    }
-	    /* case: not converted but parsed */
-	    else if (PARSED_JSON_NODE(item)) {
+	    /*
+	     * case: not converted but parsed
+	     */
+	    } else if (PARSED_JSON_NODE(item)) {
 
 		/*
 		 * case: parsed negative number
@@ -1641,16 +1707,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try to print the smallest parsed floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf-val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}f-val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td-val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}d-val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL-val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}L-val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: -e-notation: <= min floating point:\t");
+			    fprint(stream, "\t{%s%s}Warning: -e-notation: <= min floating point:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1663,16 +1737,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try to print the smallest parsed floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf-val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}f-val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td-val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}d-val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL-val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}L-val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: -floating: <= min floating point:\t");
+			    fprint(stream, "\t{%s%s}Warning: -floating: <= min floating point:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1685,17 +1767,34 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest parsed integer
 			 */
 			if (item->int8_sized == true) {
-			    fprint(stream, "\tval-8: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val-8: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int16_sized == true) {
-			    fprint(stream, "\tval-16: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val-16: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int32_sized == true) {
-			    fprint(stream, "\tval-32: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val-32: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int64_sized == true) {
-			    fprint(stream, "\tval-64: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val-64: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->maxint_sized == true) {
-			    fprint(stream, "\tval-max: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val-max: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else {
-			    fprstr(stream, "\tWarning: -int: <= min int size:\t");
+			    fprint(stream, "\t{%s%s}Warning: -int: <= min int size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 		    }
@@ -1714,16 +1813,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest parsed floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf+val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}f+val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td+val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}d+val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL+val: %s\te-notation: %s",
+			    fprint(stream, "\t{%s%s}L+val: %s\te-notation: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: +e-notation >= max floating point size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +e-notation >= max floating point size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1736,16 +1843,24 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest parsed floating floating point
 			 */
 			if (item->float_sized == true) {
-			    fprint(stream, "\tf+val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}f+val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_float_int));
 			} else if (item->double_sized == true) {
-			    fprint(stream, "\td+val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}d+val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_double_int));
 			} else if (item->longdouble_sized == true) {
-			    fprint(stream, "\tL+val: %s\tfloating point: %s",
+			    fprint(stream, "\t{%s%s}L+val: %s\tfloating point: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 					   item->as_str, booltostr(item->as_longdouble_int));
 			} else {
-			    fprstr(stream, "\tWarning: +floating: >= max floating point size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +floating: >= max floating point size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 
@@ -1758,17 +1873,34 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			 * try and print the smallest parsed integer
 			 */
 			if (item->int8_sized == true) {
-			    fprint(stream, "\tval+8: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val+8: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int16_sized == true) {
-			    fprint(stream, "\tval+16: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val+16: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int32_sized == true) {
-			    fprint(stream, "\tval+32: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val+32: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->int64_sized == true) {
-			    fprint(stream, "\tval+64: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val+64: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else if (item->maxint_sized == true) {
-			    fprint(stream, "\tval+max: %s", item->as_str);
+			    fprint(stream, "\t{%s%s}val+max: %s",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+					   item->as_str);
 			} else {
-			    fprstr(stream, "\tWarning: +int: >= max int size:\t");
+			    fprint(stream, "\t{%s%s}Warning: +int: >= max int size:\t",
+					   PARSED_JSON_NODE(item)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
 			}
 		    }
@@ -1778,7 +1910,9 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     * case: not converted and not parsed number
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1798,8 +1932,8 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		 * print string preamble
 		 */
 		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"",
 				item->quote ? "q" : "",
 				item->same ? "=" : "",
 				item->has_nul ? "0" : "",
@@ -1812,25 +1946,19 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 
 	    /*
 	     * case: not converted but parsed string
-	     *
-	     * NOTE: this should never happen
 	     */
 	    } else if (PARSED_JSON_NODE(item)) {
-		warn(__func__, "string item->converted == false but item->parsed == true");
-		fprstr(stream, "\tparsed true, converted false: will not print data");
-	    /*
-	     * case: not parsed but converted string
-	     *
-	     * NOTE: this should never happen
-	     */
-	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
-		warn(__func__, "string item->converted == true but item->parsed == false");
-		fprstr(stream, "\tconverted true, parsed false: will not print data");
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
 	    /*
 	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1843,32 +1971,26 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     * case: converted and parsed boolean
 	     */
 	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		fprint(stream, "\tvalue: %s", booltostr(item->value));
+		fprint(stream, "\t{%s%s}value: %s",
+			       PARSED_JSON_NODE(item)?"p":"",
+			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			       booltostr(item->value));
 
 	    /*
-	     * case: not converted but parsed
-	     *
-	     * NOTE: this should never happen as if converted == false then
-	     * parsed should also == false. We check explicitly so we can warn.
+	     * case: not converted but parsed string
 	     */
 	    } else if (PARSED_JSON_NODE(item)) {
-		warn(__func__, "boolean item->converted == false but item->parsed == true");
-		fprint(stream, "\tvalue: %s", booltostr(item->value));
-	    /*
-	     * case: not parsed but converted
-	     *
-	     * NOTE: this should never happen as if converted == false then
-	     * parsed should also == false. We check explicitly so we can warn.
-	     */
-	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
-		warn(__func__, "boolean item->converted == true but item->parsed == false");
-		fprint(stream, "\tvalue: %s", booltostr(item->value));
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 
-	    }
-	    /* case: not converted and parsed */
-	    else {
-		fprstr(stream, "\t{converted,parsed}: false");
+	    /*
+	     * case: neither converted nor parsed
+	     */
+	    } else {
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1882,24 +2004,25 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-		fprstr(stream, "\tvalue: null");
+		fprint(stream, "\t{%s%s}: value: null",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 
 	    /*
-	     * case: not converted but parsed null
+	     * case: not converted but parsed string
 	     */
 	    } else if (PARSED_JSON_NODE(item)) {
-		warn(__func__, "null item->converted == false but item->parsed == false");
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 
 	    /*
-	     * case: converted but not parsed null
-	     */
-	    } else if (CONVERTED_PARSED_JSON_NODE(item)) {
-		warn(__func__, "null item->converted == false but item->parsed == false");
-	    /*
-	     * case: not converted not parsed null
+	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1926,35 +2049,56 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 			struct json_string *item2 = &(item->name->item.string);
 
 			if (CONVERTED_PARSED_JSON_NODE(item2)) {
-			    fprstr(stream, "\tname: ");
+			    fprint(stream, "\t{%s%s}name: ",
+					   PARSED_JSON_NODE(item2)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
 			    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
+
 			} else if (CONVERTED_PARSED_JSON_NODE(item2)) {
-			    warn(__func__, "\tname: converted true but parsed false:");
-			} else if (PARSED_JSON_NODE(item2)) {
-			    warn(__func__, "\tname: converted false but parsed true:");
+			    fprint(stream, "\t{%s%s}name: no converted name data to print",
+					   PARSED_JSON_NODE(item2)?"p":"",
+					   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
+
 			} else {
-			    fprstr(stream, "\tname {converted,parsed}: false");
+			    fprint(stream, "\t{%s%s}: name node not parsed",
+					    PARSED_JSON_NODE(item2)?"p":"",
+					    CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
 			}
 
 		    /*
 		     * case: name is NOT JTYPE_STRING
 		     */
 		    } else {
-			fprint(stream, "\tWarning: wrong name type: %s", json_item_type_name(item->name));
+			fprint(stream, "\t{%s%s}: Warning: wrong name type: %s",
+				       PARSED_JSON_NODE(item)?"p":"",
+				       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+				       json_item_type_name(item->name));
 		    }
 
 		/*
 		 * bogus name pointer
 		 */
 		} else {
-		    fprstr(stream, "\tWarning: name == NULL");
+		    fprint(stream, "\t{%s%s}: name == NULL",
+				    PARSED_JSON_NODE(item)?"p":"",
+				    CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 		}
 
 	    /*
-	     * case: not converted member
+	     * case: not converted but parsed string
+	     */
+	    } else if (PARSED_JSON_NODE(item)) {
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+	    /*
+	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\tconverted: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1968,18 +2112,32 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-		fprint(stream, "\tlen: %ju", item->len);
+		fprint(stream, "\t{%s%s}len: %ju",
+			       PARSED_JSON_NODE(item)?"p":"",
+			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			       item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}
 		if (item->s == NULL) {
 		    fprstr(stream, "\tWarning: s == NULL");
 		}
+
 	    /*
-	     * case: not converted and parsed object
+	     * case: not converted but parsed string
+	     */
+	    } else if (PARSED_JSON_NODE(item)) {
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+	    /*
+	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -1993,7 +2151,10 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-		fprint(stream, "\tlen: %ju", item->len);
+		fprint(stream, "\t{%s%s}len: %ju",
+			       PARSED_JSON_NODE(item)?"p":"",
+			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			       item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}
@@ -2002,10 +2163,20 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		}
 
 	    /*
-	     * case: not converted and parsed object
+	     * case: not converted but parsed string
+	     */
+	    } else if (PARSED_JSON_NODE(item)) {
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+	    /*
+	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
@@ -2019,7 +2190,10 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	     */
 	    if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-		fprint(stream, "\tlen: %ju", item->len);
+		fprint(stream, "\t{%s%s}len: %ju",
+			       PARSED_JSON_NODE(item)?"p":"",
+			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+			       item->len);
 		if (item->set == NULL) {
 		    fprstr(stream, "\tWarning: set == NULL");
 		}
@@ -2028,10 +2202,20 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		}
 
 	    /*
-	     * case: not converted and parsed object
+	     * case: not converted but parsed string
+	     */
+	    } else if (PARSED_JSON_NODE(item)) {
+		fprint(stream, "\t{%s%s}: no converted data to print",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+	    /*
+	     * case: neither converted nor parsed
 	     */
 	    } else {
-		fprstr(stream, "\t{converted,parsed}: false");
+		fprint(stream, "\t{%s%s}: node not parsed",
+				PARSED_JSON_NODE(item)?"p":"",
+				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
 	    }
 	}
 	break;
