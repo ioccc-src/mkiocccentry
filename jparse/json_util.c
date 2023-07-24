@@ -1612,7 +1612,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     switch (node->type) {
 
     case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
-	fprint(stream, "\tWarning: JTYPE_UNSET: %s", json_type_name(node));
+	fprint(stream, "\tWarning: JTYPE_UNSET: %s", json_type_name(node->type));
 	break;
 
     case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */

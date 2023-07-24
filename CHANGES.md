@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.39 2023-07-24
+
+Minor fixes to JSON convenience macros that check for a valid or parsed node.
+Now they check that `item` != NULL first. I kept the `== true` checks that were
+added to them for the booleans even though it doesn't match my style simply
+because as a macro it might not be clear immediately that it's a boolean so it
+seems like it might be a good place to do that.
+
+Fixed `warning: incompatible pointer to integer conversion passing 'struct json
+*' to parameter of type 'enum item_type'` in `json_util.c`.
+
+
 ## Release 1.0.38 2023-07-23
 
 Fixed `jnum_chk` by correcting the output of `jnum_gen`.
