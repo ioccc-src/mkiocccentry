@@ -35,9 +35,9 @@
 /*
  * convenience macros
  */
-#define PARSED_JSON_NODE(item) ((item)->parsed == true)
-#define CONVERTED_PARSED_JSON_NODE(item) (((item)->parsed == true) && ((item)->converted == true))
-#define VALID_JSON_NODE(item) (((item)->parsed == true) || ((item)->converted == true))
+#define PARSED_JSON_NODE(item) ((item) != NULL && ((item)->parsed == true))
+#define CONVERTED_PARSED_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) && ((item)->converted == true)))
+#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))
 
 
 /*
