@@ -62,7 +62,7 @@
 
 bool jnamval_run_tests(void);
 bool jnamval_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches,
-	intmax_t line, struct jnamval_number *range);
+	intmax_t line, struct json_util_number *range);
 bool jnamval_test_bits(bool expected, uintmax_t set_bits, intmax_t line, bool (*check_func)(uintmax_t), const char *name);
 
 #endif /* !defined INCLUDE_JNAMVAL_TEST_H */

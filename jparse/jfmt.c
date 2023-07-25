@@ -196,19 +196,19 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'L':
-	    jfmt->print_json_levels = true; /* print JSON levels */
-	    jfmt_parse_st_level_option(optarg, &jfmt->num_level_spaces, &jfmt->print_level_tab);
+	    jfmt->common.print_json_levels = true; /* print JSON levels */
+	    json_util_parse_st_level_option(optarg, &jfmt->common.num_level_spaces, &jfmt->common.print_level_tab);
 	    break;
 	case 'I':
-	    jfmt->indent_levels = true;
-	    jfmt_parse_st_indent_option(optarg, &jfmt->indent_spaces, &jfmt->indent_tab);
+	    jfmt->common.indent_levels = true;
+	    json_util_parse_st_indent_option(optarg, &jfmt->common.indent_spaces, &jfmt->common.indent_tab);
 	    break;
 	case 'l':
-	    jfmt->levels_constrained = true;
-	    jfmt_parse_number_range("-l", optarg, false, &jfmt->jfmt_levels);
+	    jfmt->common.levels_constrained = true;
+	    json_util_parse_number_range("-l", optarg, false, &jfmt->common.json_util_levels);
 	    break;
 	case 'm': /* set maximum depth to traverse json tree */
-	    if (!string_to_uintmax(optarg, &jfmt->max_depth)) {
+	    if (!string_to_uintmax(optarg, &jfmt->common.max_depth)) {
 		free_jfmt(&jfmt);
 		err(3, "jfmt", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
@@ -226,9 +226,9 @@ main(int argc, char **argv)
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */
-		jfmt->outfile_not_stdout = true;
+		jfmt->common.outfile_not_stdout = true;
 	    }
-	    jfmt->outfile_path = optarg;
+	    jfmt->common.outfile_path = optarg;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -249,14 +249,14 @@ main(int argc, char **argv)
      */
 
     /* run specific sanity checks on options etc. */
-    jfmt->json_file = jfmt_sanity_chks(jfmt, program, &argc, &argv);
+    jfmt->common.json_file = jfmt_sanity_chks(jfmt, program, &argc, &argv);
 
 
     /*
      * jfmt_sanity_chks() should never return a NULL FILE * but we check
      * anyway
      */
-    if (jfmt->json_file == NULL) {
+    if (jfmt->common.json_file == NULL) {
 	/*
 	 * NOTE: don't make this exit code 3 as it's an internal error if the
 	 * jfmt_sanity_chks() returns a NULL pointer.
@@ -273,20 +273,20 @@ main(int argc, char **argv)
      * is not so much about a sane environment as much as being unable to
      * continue after verify the command line is correct.
      */
-    jfmt->file_contents = read_all(jfmt->json_file, &len);
-    if (jfmt->file_contents == NULL) {
+    jfmt->common.file_contents = read_all(jfmt->common.json_file, &len);
+    if (jfmt->common.file_contents == NULL) {
 	err(4, "jfmt", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
     /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jfmt->json_file);
-    rewind(jfmt->json_file);
+    clearerr(jfmt->common.json_file);
+    rewind(jfmt->common.json_file);
 
-    jfmt->json_tree = parse_json_stream(jfmt->json_file, argv[0], &is_valid);
-    if (!is_valid || jfmt->json_tree == NULL) {
-	if (jfmt->json_file != stdin) {
-	    fclose(jfmt->json_file);  /* close file prior to exiting */
-	    jfmt->json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+    jfmt->common.json_tree = parse_json_stream(jfmt->common.json_file, argv[0], &is_valid);
+    if (!is_valid || jfmt->common.json_tree == NULL) {
+	if (jfmt->common.json_file != stdin) {
+	    fclose(jfmt->common.json_file);  /* close file prior to exiting */
+	    jfmt->common.json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 	}
 
 	/* free our jfmt struct */
@@ -298,23 +298,23 @@ main(int argc, char **argv)
     dbg(DBG_MED, "valid JSON");
 
     /* only if we get here can we try and open the output file */
-    if (jfmt->outfile_not_stdout && jfmt->outfile_path != NULL && *jfmt->outfile_path != '\0') {
+    if (jfmt->common.outfile_not_stdout && jfmt->common.outfile_path != NULL && *jfmt->common.outfile_path != '\0') {
 	/*
 	 * we know the output file doesn't exist but the real question is can we
 	 * open it for writing to make it JSON ?
 	 */
-	jfmt->outfile = fopen(jfmt->outfile_path, "w");
-	if (jfmt->outfile == NULL) {
-	    err(1, __func__, "couldn't open output file: %s", jfmt->outfile_path);/*ooo*/
+	jfmt->common.outfile = fopen(jfmt->common.outfile_path, "w");
+	if (jfmt->common.outfile == NULL) {
+	    err(1, __func__, "couldn't open output file: %s", jfmt->common.outfile_path);/*ooo*/
 	    not_reached();
 	}
     }
 
     /* XXX - change this to format the file - XXX */
-    fpr(jfmt->outfile?jfmt->outfile:stdout, "jfmt", "%s", jfmt->file_contents);
+    fpr(jfmt->common.outfile?jfmt->common.outfile:stdout, "jfmt", "%s", jfmt->common.file_contents);
 
     /* free tree */
-    json_tree_free(jfmt->json_tree, jfmt->max_depth);
+    json_tree_free(jfmt->common.json_tree, jfmt->common.max_depth);
 
     /* All Done!!! -- Jessica Noll, Age 2 */
     if (jfmt != NULL) {
@@ -393,8 +393,8 @@ jfmt_sanity_chks(struct jfmt *jfmt, char const *program, int *argc, char ***argv
 	 * NOTE: do NOT open this file: we won't do that until we know that the
 	 * input JSON is valid.
 	 */
-	if (jfmt->outfile_not_stdout && jfmt->outfile_path != NULL && *jfmt->outfile_path != '\0') {
-	    if (!strcasecmp((*argv)[0], jfmt->outfile_path)) {
+	if (jfmt->common.outfile_not_stdout && jfmt->common.outfile_path != NULL && *jfmt->common.outfile_path != '\0') {
+	    if (!strcasecmp((*argv)[0], jfmt->common.outfile_path)) {
 		free_jfmt(&jfmt);
 		err(3, __func__, "-o ofile is the same as JSON file"); /*ooo*/
 		not_reached();
@@ -416,15 +416,15 @@ jfmt_sanity_chks(struct jfmt *jfmt, char const *program, int *argc, char ***argv
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jfmt->json_file = fopen((*argv)[0], "r");
-	if (jfmt->json_file == NULL) {
+	jfmt->common.json_file = fopen((*argv)[0], "r");
+	if (jfmt->common.json_file == NULL) {
 	    free_jfmt(&jfmt);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
-	jfmt->is_stdin = true;
-	jfmt->json_file = stdin;
+	jfmt->common.is_stdin = true;
+	jfmt->common.json_file = stdin;
     }
 
     /*
@@ -434,17 +434,17 @@ jfmt_sanity_chks(struct jfmt *jfmt, char const *program, int *argc, char ***argv
      * NOTE: there is a slight risk that between the time we have checked if the
      * file exists and when we want to open it to write it later that it exists
      */
-    if (jfmt->outfile_not_stdout && jfmt->outfile_path != NULL && *jfmt->outfile_path != '\0') {
-	if (exists(jfmt->outfile_path)) {
+    if (jfmt->common.outfile_not_stdout && jfmt->common.outfile_path != NULL && *jfmt->common.outfile_path != '\0') {
+	if (exists(jfmt->common.outfile_path)) {
 	    err(3, __func__, "-o ofile already exists: will not overwrite"); /*ooo*/
 	    not_reached();
 	}
     }
 
-    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jfmt->max_depth, (jfmt->max_depth == 0?" (no limit)":
-		jfmt->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jfmt->common.max_depth, (jfmt->common.max_depth == 0?" (no limit)":
+		jfmt->common.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
 
     /* all good: return the (presumably) json FILE * */
-    return jfmt->json_file;
+    return jfmt->common.json_file;
 }

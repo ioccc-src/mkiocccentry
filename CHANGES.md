@@ -1,6 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.40 2023-07-25
+
+New version for `jfmt`, `jval` and `jnamval`:  "0.0.4 2023-07-25". Moved common
+variables from the structs for each tool (`struct jfmt`, `struct jval` and
+`struct jnamval`) to `json_util.h` and prefix with `json_util` rather than the
+`(jfmt|jval|jnamval)_`. More work needs to be done here as `jval` and `jnamval`
+share variables as well but this will be done in another commit.
+
+The structs `(jfmt|jval|jnamval)_number` are now `json_util_number` in
+`json_util.h` and the associated code has been moved to `json_util.c`.
+
+The code for the common `-L` option to the three tools has also been moved to
+the `json_util.c` file.
+
+Any other options common to the three tools that I have not mentioned here have
+also been moved or so it is believed (it is possible some was missed but these
+will be located in time if any are missing).
+
+
+
+
 ## Release 1.0.39 2023-07-24
 
 Minor fixes to JSON convenience macros that check for a valid or parsed node.

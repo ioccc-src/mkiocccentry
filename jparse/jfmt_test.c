@@ -31,12 +31,12 @@
 bool
 jfmt_run_tests(void)
 {
-    struct jfmt_number number;    /* number range */
+    struct json_util_number number;    /* number range */
     bool test = false;		    /* whether current test passes or fails */
     bool okay = true;	    /* if any test fails set to true, is return value */
 
     /* set up exact match of 5 */
-    jfmt_parse_number_range("-l", "5", false, &number);
+    json_util_parse_number_range("-l", "5", false, &number);
 
     /* make sure number matches exactly */
     test = jfmt_test_number_range_opts(true, 5, 10, __LINE__, &number);
@@ -51,7 +51,7 @@ jfmt_run_tests(void)
     }
 
     /* set up inclusive range of >= 5 && <= 10 */
-    jfmt_parse_number_range("-l", "5:10", false, &number);
+    json_util_parse_number_range("-l", "5:10", false, &number);
     /* make sure that number is in the range >= 5 && <= 10 */
     test = jfmt_test_number_range_opts(true, 6, 10, __LINE__, &number);
     if (!test) {
@@ -72,7 +72,7 @@ jfmt_run_tests(void)
      * set up inclusive range of >= 5 && <= max - 3 (i.e. up through the third to
      * last match)
      */
-    jfmt_parse_number_range("-n", "5:-3", true, &number);
+    json_util_parse_number_range("-n", "5:-3", true, &number);
     /* make sure that number is in the range >= 5 && <= 10 - 3 */
     test = jfmt_test_number_range_opts(true, 7, 10, __LINE__, &number);
     if (!test) {
@@ -102,7 +102,7 @@ jfmt_run_tests(void)
 
 
     /* set up minimum number */
-    jfmt_parse_number_range("-l", "10:", false, &number);
+    json_util_parse_number_range("-l", "10:", false, &number);
     /* make sure that number 10 is in the range >= 10 */
     test = jfmt_test_number_range_opts(true, 10, 42, __LINE__, &number);
     if (!test) {
@@ -121,7 +121,7 @@ jfmt_run_tests(void)
     }
 
     /* set up maximum number */
-    jfmt_parse_number_range("-l", ":10", false, &number);
+    json_util_parse_number_range("-l", ":10", false, &number);
     /* make sure that number 10 is in the range <= 10 */
     test = jfmt_test_number_range_opts(true, 10, 42, __LINE__, &number);
     if (!test) {
@@ -160,7 +160,7 @@ jfmt_run_tests(void)
  * NOTE: this will not return on NULL pointers.
  */
 bool
-jfmt_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, intmax_t line, struct jfmt_number *range)
+jfmt_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, intmax_t line, struct json_util_number *range)
 {
     bool test = false;	    /* result of test */
 
@@ -169,7 +169,7 @@ jfmt_test_number_range_opts(bool expected, intmax_t number, intmax_t total_match
 	not_reached();
     }
 
-    test = jfmt_number_in_range(number, total_matches, range);
+    test = json_util_number_in_range(number, total_matches, range);
     print("in function %s from line %jd: expects %s: ", __func__, line, expected?"success":"failure");
     if (range->exact) {
 	print("expect exact match for number %jd: ", number);
