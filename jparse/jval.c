@@ -192,60 +192,60 @@ main(int argc, char **argv)
 	    json_util_parse_st_level_option(optarg, &jval->common.num_level_spaces, &jval->common.print_level_tab);
 	    break;
 	case 't':
-	    jval->json_types_specified = true;
-	    jval->json_types = jval_parse_types_option(optarg);
+	    jval->json_name_val.json_types_specified = true;
+	    jval->json_name_val.json_types = jval_parse_types_option(optarg);
 	    break;
 	case 'l':
 	    jval->common.levels_constrained = true;
 	    json_util_parse_number_range("-l", optarg, false, &jval->common.json_util_levels);
 	    break;
 	case 'Q':
-	    jval->quote_strings = true;
+	    jval->json_name_val.quote_strings = true;
 	    dbg(DBG_LOW, "-Q specified, will quote strings");
 	    break;
 	case 'D': /* -D - print decoded strings */
-	    jval->print_decoded = true;
+	    jval->json_name_val.print_decoded = true;
 	    break;
 	case 'd': /* -d - match decoded */
-	    jval->match_decoded = true;
+	    jval->json_name_val.match_decoded = true;
 	    break;
 	case 'i':
-	    jval->invert_matches = true; /* show non-matches */
+	    jval->json_name_val.invert_matches = true; /* show non-matches */
 	    break;
 	case 's':
-	    jval->match_substrings = true;
+	    jval->json_name_val.match_substrings = true;
 	    dbg(DBG_LOW, "-s specified, will match substrings");
 	    break;
 	case 'f':
-	    jval->ignore_case = true; /* make case cruel :-) */
+	    jval->json_name_val.ignore_case = true; /* make case cruel :-) */
 	    dbg(DBG_LOW, "-i specified, making matches case-insensitive");
 	    break;
 	case 'c':
-	    jval->count_only = true;
+	    jval->json_name_val.count_only = true;
 	    dbg(DBG_LOW, "-c specified, will only show count of matches");
 	    break;
 	case 'C':
-	    jval->count_and_show_values = true;
+	    jval->json_name_val.count_and_show_values = true;
 	    break;
 	case 'g':   /* allow grep-like ERE */
-	    jval->use_regexps = true;
+	    jval->json_name_val.use_regexps = true;
 	    dbg(DBG_LOW, "-g specified, name_args will be regexps");
 	    break;
 	case 'e':
-	    jval->encode_strings = true;
+	    jval->json_name_val.encode_strings = true;
 	    dbg(DBG_LOW, "-e specified, will encode strings");
 	    break;
 	case 'n': /* -n op=num */
-	    jval->num_cmp_used = true;
-	    if (jval_parse_cmp_op(jval, "n", optarg) == NULL) {
+	    jval->json_name_val.num_cmp_used = true;
+	    if (json_util_parse_cmp_op(&jval->json_name_val, "n", optarg) == NULL) {
 		free_jval(&jval);
 		err(24, "jval", "failed to parse -n option");
 		not_reached();
 	    }
 	    break;
 	case 'S': /* -S op=str */
-	    jval->string_cmp_used = true;
-	    if (jval_parse_cmp_op(jval, "S", optarg) == NULL) {
+	    jval->json_name_val.string_cmp_used = true;
+	    if (json_util_parse_cmp_op(&jval->json_name_val, "S", optarg) == NULL) {
 		free_jval(&jval);
 		err(25, "jval", "failed to parse -S option");
 		not_reached();
@@ -356,10 +356,10 @@ main(int argc, char **argv)
 
     /* XXX - implement core of the tool, for now just print count (if requested)
      * and file to out file or stdout - XXX */
-    if (jval->count_only) {
+    if (jval->json_name_val.count_only) {
 	/* XXX - the count will currently be 0 but we can at least test this option */
 	jval_print_count(jval);
-    } else if (jval->count_and_show_values) {
+    } else if (jval->json_name_val.count_and_show_values) {
 	/* XXX - the count will be wrong, the format will be wrong and it might
 	 * be that not the full document is requested but this is all we have at
 	 * this moment and at least we can test the option - XXX
@@ -402,8 +402,6 @@ main(int argc, char **argv)
  *
  * NOTE: this function does NOT check for valid JSON.
  *
- * NOTE: jval->check_tool_path and jval->check_tool_args can be NULL.
- *
  * NOTE: this function must be in jval.c, not jval_util.h, because it uses
  * the usage() function which needs to be in this file.
  */
@@ -431,7 +429,7 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
      */
 
     /* use of -g conflicts with -s and is an error. */
-    if (jval->use_regexps && jval->match_substrings) {
+    if (jval->json_name_val.use_regexps && jval->json_name_val.match_substrings) {
 	free_jval(&jval);
 	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
 	not_reached();
@@ -441,16 +439,16 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
      * use of -c with -C or -L is an error and use of -C with -c or -L is an
      * error
      */
-    if (jval->count_only || jval->common.print_json_levels || jval->count_and_show_values) {
-	if (jval->count_and_show_values && jval->count_only) {
+    if (jval->json_name_val.count_only || jval->common.print_json_levels || jval->json_name_val.count_and_show_values) {
+	if (jval->json_name_val.count_and_show_values && jval->json_name_val.count_only) {
 	    err(3, __func__, "cannot use -c and -C together"); /*ooo*/
 	    not_reached();
 	}
-	if (jval->common.print_json_levels && jval->count_only) {
+	if (jval->common.print_json_levels && jval->json_name_val.count_only) {
 	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
 	    not_reached();
 	}
-	if (jval->common.print_json_levels && jval->count_and_show_values) {
+	if (jval->common.print_json_levels && jval->json_name_val.count_and_show_values) {
 	    err(3, __func__, "cannot use -L and -C together"); /*ooo*/
 	    not_reached();
 	}
