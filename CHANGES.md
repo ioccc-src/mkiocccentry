@@ -19,7 +19,13 @@ Any other options common to the three tools that I have not mentioned here have
 also been moved or so it is believed (it is possible some was missed but these
 will be located in time if any are missing).
 
-
+Move variables and functions common to `jval` and `jnamval` to `json_util`
+except that only `jval` currently uses them. `jnamval` has more options not used
+by `jval` and so it'll take a bit more work to get it done. Some of the code is
+slightly different functionally so that code was not moved over. In particular
+some options that are common to both tools have it where `jval` has fewer
+option args: `-t` for example. The macros that have been updated now are as the
+new ones in `json_util.h`.
 
 
 ## Release 1.0.39 2023-07-24

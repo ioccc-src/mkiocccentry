@@ -65,7 +65,65 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
+/* for json tools jval and jnamval */
+#define JSON_UTIL_CMP_OP_NONE	    (0)
+#define JSON_UTIL_CMP_EQ	    (1)
+#define JSON_UTIL_CMP_LT	    (2)
+#define JSON_UTIL_CMP_LE	    (3)
+#define JSON_UTIL_CMP_GT	    (4)
+#define JSON_UTIL_CMP_GE	    (5)
+
+
 /* structures */
+
+/* structures for jval and jnamval */
+
+/* for comparison of numbers / strings - options -n and -S */
+struct json_util_cmp_op
+{
+    struct json_number *number;	    /* for -n as signed number */
+    struct json_string *string;	    /* for -S str */
+
+    bool is_string;	    /* true if -S */
+    bool is_number;	    /* true if -n */
+    uintmax_t op;	    /* the operation - see JVAL_CMP macros above */
+
+    struct json_util_cmp_op *next;	/* next in the list */
+};
+
+
+/* structures common to jval and jnamval  */
+struct json_util_name_val
+{
+    /* string related options */
+    bool encode_strings;			/* -e used */
+    bool quote_strings;				/* -Q used */
+
+    /* printing related options */
+    bool print_decoded;				/* -D used */
+
+    bool count_only;				/* -c used, only show count */
+    bool count_and_show_values;			/* -C used, show count and values */
+
+    bool string_cmp_used;			/* for -S */
+    struct json_util_cmp_op *string_cmp;		/* for -S str */
+    bool num_cmp_used;				/* for -n */
+    struct json_util_cmp_op *num_cmp;		/* for -n num */
+
+    /* search / matching related */
+    bool invert_matches;			/* -i used */
+    bool json_types_specified;			/* -t used */
+    uintmax_t json_types;			/* -t type */
+    bool match_substrings;			/* -s used, match substrings */
+    bool use_regexps;				/* -g used, allow grep-like regexps */
+
+    bool ignore_case;				/* true if -f, case-insensitive */
+    bool match_decoded;				/* -d used - match decoded */
+    bool arg_specified;				/* true if an arg was specified */
+    uintmax_t total_matches;			/* for -c */
+};
+
+/* structures common to jfmt, jval and jnamval */
 
 /* number ranges for the options -l, -n and -n of jfmt, jval and jnamval */
 struct json_util_number_range
@@ -166,9 +224,7 @@ bool json_util_number_in_range(intmax_t number, intmax_t total_matches, struct j
 void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
 /* for -I option */
 void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
-
-
-
-
+/* for -S and -n */
+struct json_util_cmp_op *json_util_parse_cmp_op(struct json_util_name_val *json_util_name_val, const char *option, char *optarg);
 
 #endif /* INCLUDE_JSON_UTIL_H */

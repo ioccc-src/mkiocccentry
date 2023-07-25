@@ -70,29 +70,16 @@
 /* JVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
 #define JVAL_TYPE_SIMPLE  (JVAL_TYPE_NUM|JVAL_TYPE_BOOL|JVAL_TYPE_STR|JVAL_TYPE_NULL)
 
-#define JVAL_CMP_OP_NONE    (0)
-#define JVAL_CMP_EQ	    (1)
-#define JVAL_CMP_LT	    (2)
-#define JVAL_CMP_LE	    (3)
-#define JVAL_CMP_GT	    (4)
-#define JVAL_CMP_GE	    (5)
+#define JVAL_CMP_OP_NONE    JSON_UTIL_CMP_OP_NONE
+#define JVAL_CMP_EQ	    JSON_UTIL_CMP_OP_EQ
+#define JVAL_CMP_LT	    JSON_UTIL_CMP_OP_LT
+#define JVAL_CMP_LE	    JSON_UTIL_CMP_OP_LE
+#define JVAL_CMP_GT	    JSON_UTIL_CMP_OP_GT
+#define JVAL_CMP_GE	    JSON_UTIL_CMP_OP_GE
 
 /* structs */
 
 /* structs for various options */
-
-/* for comparison of numbers / strings - options -n and -S */
-struct jval_cmp_op
-{
-    struct json_number *number;	    /* for -n as signed number */
-    struct json_string *string;	    /* for -S str */
-
-    bool is_string;	    /* true if -S */
-    bool is_number;	    /* true if -n */
-    uintmax_t op;	    /* the operation - see JVAL_CMP macros above */
-
-    struct jval_cmp_op *next;	/* next in the list */
-};
 
 /*
  * jval - struct that holds most of the options, other settings and other data
@@ -101,31 +88,7 @@ struct jval
 {
     struct json_util common;			/* data common to all three tools: jfmt, jval and jnamval */
 
-    /* string related options */
-    bool encode_strings;			/* -e used */
-    bool quote_strings;				/* -Q used */
-
-    /* printing related options */
-    bool print_decoded;				/* -D used */
-
-    /* search / matching related */
-    bool invert_matches;			/* -i used */
-    bool json_types_specified;			/* -t used */
-    uintmax_t json_types;			/* -t type */
-    bool ignore_case;				/* true if -f, case-insensitive */
-    bool match_decoded;				/* -d used - match decoded */
-    bool arg_specified;				/* true if an arg was specified */
-    bool match_substrings;			/* -s used, match substrings */
-    bool use_regexps;				/* -g used, allow grep-like regexps */
-    uintmax_t total_matches;			/* for -c */
-
-    bool count_only;				/* -c used, only show count */
-    bool count_and_show_values;			/* -C used, show count and values */
-
-    bool string_cmp_used;			/* for -S */
-    struct jval_cmp_op *string_cmp;		/* for -S str */
-    bool num_cmp_used;				/* for -n */
-    struct jval_cmp_op *num_cmp;		/* for -n num */
+    struct json_util_name_val json_name_val; /* common to jval and jnamval */
 };
 
 
@@ -145,8 +108,6 @@ bool jval_match_string(uintmax_t types);
 bool jval_match_null(uintmax_t types);
 bool jval_match_simple(uintmax_t types);
 
-/* for -S and -n */
-struct jval_cmp_op *jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg);
 
 /* functions to print matches */
 bool jval_print_count(struct jval *jval);
@@ -157,7 +118,6 @@ bool jval_print_count(struct jval *jval);
  */
 void parse_jval_args(struct jval *jnamval, char **argv);
 
-/* free compare lists */
 void free_jval_cmp_op_lists(struct jval *jval);
 /* to free the entire struct jval */
 void free_jval(struct jval **jval);
