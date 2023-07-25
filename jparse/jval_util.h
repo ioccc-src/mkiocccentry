@@ -94,59 +94,22 @@ struct jval_cmp_op
     struct jval_cmp_op *next;	/* next in the list */
 };
 
-/* number ranges for the options -l, -n and -n */
-struct jval_number_range
-{
-    intmax_t min;   /* min in range */
-    intmax_t max;   /* max in range */
-
-    bool less_than_equal;	/* true if number type must be <= min */
-    bool greater_than_equal;	/* true if number type must be >= max */
-    bool inclusive;		/* true if number type must be >= min && <= max */
-};
-struct jval_number
-{
-    /* exact number if >= 0 */
-    intmax_t number;		/* exact number exact number (must be >= 0) */
-    bool exact;			/* true if an exact match (number) must be found */
-
-    /* for number ranges */
-    struct jval_number_range range;	/* for ranges */
-};
-
 /*
  * jval - struct that holds most of the options, other settings and other data
  */
 struct jval
 {
-    /* JSON file related */
-    bool is_stdin;				/* reading from stdin */
-    FILE *json_file;				/* FILE * to json file */
-    char *file_contents;			/* file contents */
-
-    /* out file related to -o */
-    char *outfile_path;				/* -o file path */
-    FILE *outfile;				/* FILE * of -o ofile */
-    bool outfile_not_stdout;			/* -o used without stdout */
+    struct json_util common;			/* data common to all three tools: jfmt, jval and jnamval */
 
     /* string related options */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */
 
-    /* level constraints */
-    bool levels_constrained;			/* -l specified */
-    struct jval_number jval_levels;		/* -l level specified */
-
     /* printing related options */
     bool print_decoded;				/* -D used */
-    bool print_json_levels;			/* -L specified */
-    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
-    bool print_level_tab;			/* -L tab option */
-    bool invert_matches;			/* -i used */
-    bool count_only;				/* -c used, only show count */
-    bool count_and_show_values;			/* -C used, show count and values */
 
     /* search / matching related */
+    bool invert_matches;			/* -i used */
     bool json_types_specified;			/* -t used */
     uintmax_t json_types;			/* -t type */
     bool ignore_case;				/* true if -f, case-insensitive */
@@ -156,12 +119,13 @@ struct jval
     bool use_regexps;				/* -g used, allow grep-like regexps */
     uintmax_t total_matches;			/* for -c */
 
+    bool count_only;				/* -c used, only show count */
+    bool count_and_show_values;			/* -C used, show count and values */
+
     bool string_cmp_used;			/* for -S */
     struct jval_cmp_op *string_cmp;		/* for -S str */
     bool num_cmp_used;				/* for -n */
-    struct jval_cmp_op *num_cmp;			/* for -n num */
-    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-    struct json *json_tree;			/* json tree if valid merely as a convenience */
+    struct jval_cmp_op *num_cmp;		/* for -n num */
 };
 
 
@@ -181,15 +145,8 @@ bool jval_match_string(uintmax_t types);
 bool jval_match_null(uintmax_t types);
 bool jval_match_simple(uintmax_t types);
 
-/* for number range option -l */
-bool jval_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jval_number *number);
-bool jval_number_in_range(intmax_t number, intmax_t total_matches, struct jval_number *range);
-
 /* for -S and -n */
 struct jval_cmp_op *jval_parse_cmp_op(struct jval *jval, const char *option, char *optarg);
-
-/* for -L option */
-void jval_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
 
 /* functions to print matches */
 bool jval_print_count(struct jval *jval);

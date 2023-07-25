@@ -120,33 +120,11 @@ struct jfmt_array
  */
 struct jfmt
 {
-    /* JSON file related */
-    bool is_stdin;				/* reading from stdin */
-    FILE *json_file;				/* FILE * to json file */
-    char *file_contents;			/* file contents */
 
-    /* out file related to -o */
-    char *outfile_path;				/* -o file path */
-    FILE *outfile;				/* FILE * of -o outfile */
-    bool outfile_not_stdout;			/* -o used without stdout */
-
-    /* number ranges */
-    /* level constraints */
-    bool levels_constrained;			/* -l specified */
-    struct jfmt_number jfmt_levels;		/* -l level specified */
+    struct json_util common;			/* data common to all three tools: jfmt, jval, jnamval */
 
     /* printing related options */
-    bool print_json_levels;			/* -L specified */
-    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
-    bool print_level_tab;			/* -L tab option */
-    bool indent_levels;				/* -I specified */
-    uintmax_t indent_spaces;			/* -I specified */
-    bool indent_tab;				/* -I <num>[{t|s}] specified */
 
-    /* search related bools */
-    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-
-    struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
 
 
@@ -157,11 +135,6 @@ struct jfmt *alloc_jfmt(void);
 bool jfmt_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jfmt_number *number);
 bool jfmt_number_in_range(intmax_t number, intmax_t total_matches, struct jfmt_number *range);
 
-/* for -I option */
-void jfmt_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
-
-/* for -L option */
-void jfmt_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
 
 /* to free the entire struct jfmt */
 void free_jfmt(struct jfmt **jfmt);

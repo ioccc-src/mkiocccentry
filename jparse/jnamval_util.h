@@ -132,31 +132,16 @@ struct jnamval_number
  */
 struct jnamval
 {
-    /* JSON file related */
-    bool is_stdin;				/* reading from stdin */
-    FILE *json_file;				/* FILE * to json file */
-    char *file_contents;			/* file contents */
-
-    /* out file related to -o */
-    char *outfile_path;				/* -o file path */
-    FILE *outfile;				/* FILE * of -o ofile */
-    bool outfile_not_stdout;			/* -o used without stdout */
+    struct json_util common;			/* common data related to tools: jfmt, jval, jnamval */
 
     /* string related options */
     bool encode_strings;			/* -e used */
     bool quote_strings;				/* -Q used */
 
-    /* level constraints */
-    bool levels_constrained;			/* -l specified */
-    struct jnamval_number jnamval_levels;		/* -l level specified */
-
     /* printing related options */
     bool print_json_types_option;		/* -p explicitly used */
     uintmax_t print_json_types;			/* -p type specified */
     bool print_decoded;				/* -D used */
-    bool print_json_levels;			/* -L specified */
-    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
-    bool print_level_tab;			/* -L tab option */
     bool invert_matches;			/* -i used */
     bool count_only;				/* -c used, only show count */
     bool count_and_show_values;			/* -C used, show count and values */
@@ -177,8 +162,6 @@ struct jnamval
     struct jnamval_cmp_op *string_cmp;		/* for -S str */
     bool num_cmp_used;				/* for -n */
     struct jnamval_cmp_op *num_cmp;			/* for -n num */
-    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-    struct json *json_tree;			/* json tree if valid merely as a convenience */
 };
 
 
@@ -210,15 +193,8 @@ bool jnamval_print_both(uintmax_t types);
 bool jnamval_print_json(uintmax_t types);
 
 
-/* for number range option -l */
-bool jnamval_parse_number_range(const char *option, char *optarg, bool allow_negative, struct jnamval_number *number);
-bool jnamval_number_in_range(intmax_t number, intmax_t total_matches, struct jnamval_number *range);
-
 /* for -S and -n */
 struct jnamval_cmp_op *jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg);
-
-/* for -L option */
-void jnamval_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
 
 /* functions to print matches */
 bool jnamval_print_count(struct jnamval *jnamval);

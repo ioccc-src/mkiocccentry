@@ -65,7 +65,60 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
+/* structures */
 
+/* number ranges for the options -l, -n and -n of jfmt, jval and jnamval */
+struct json_util_number_range
+{
+    intmax_t min;   /* min in range */
+    intmax_t max;   /* max in range */
+
+    bool less_than_equal;	/* true if number type must be <= min */
+    bool greater_than_equal;	/* true if number type must be >= max */
+    bool inclusive;		/* true if number type must be >= min && <= max */
+};
+struct json_util_number
+{
+    /* exact number if >= 0 */
+    intmax_t number;		/* exact number exact number (must be >= 0) */
+    bool exact;			/* true if an exact match (number) must be found */
+
+    /* for number ranges */
+    struct json_util_number_range range;	/* for ranges */
+};
+
+
+/*
+ * json_util - struct related to the json utils jfmt, jval and jnamval
+ */
+struct json_util
+{
+    /* JSON file related */
+    bool is_stdin;				/* reading from stdin */
+    FILE *json_file;				/* FILE * to json file */
+    char *file_contents;			/* file contents */
+
+    /* out file related to -o */
+    char *outfile_path;				/* -o file path */
+    FILE *outfile;				/* FILE * of -o ofile */
+    bool outfile_not_stdout;			/* -o used without stdout */
+
+    /* level constraints */
+    bool levels_constrained;			/* -l specified */
+    struct json_util_number json_util_levels;		/* -l level specified */
+
+    bool print_json_levels;			/* -L specified */
+    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
+    bool print_level_tab;			/* -L tab option */
+
+    bool indent_levels;				/* -I specified */
+    uintmax_t indent_spaces;			/* -I specified */
+    bool indent_tab;				/* -I <num>[{t|s}] specified */
+
+
+    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
+    struct json *json_tree;			/* json tree if valid merely as a convenience */
+};
 /*
  * global variables
  */
@@ -105,6 +158,17 @@ extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned i
 			   void (*vcallback)(struct json *, unsigned int, va_list), ...);
 extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
+
+/* for number range option -l */
+bool json_util_parse_number_range(const char *option, char *optarg, bool allow_negative, struct json_util_number *number);
+bool json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_util_number *range);
+/* for -L option */
+void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
+/* for -I option */
+void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
+
+
+
 
 
 #endif /* INCLUDE_JSON_UTIL_H */

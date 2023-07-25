@@ -42,7 +42,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-t type] [-l lvl]\n"
     "\t[-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num] [-S op=str] [-o ofile]\n"
-    "\t[-m max_depth] [-K] file.json [arg ...]\n"
+    "\t[-m common.max_depth] [-K] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -103,9 +103,9 @@ static const char * const usage_msg0 =
     "\t\t\top may be one of: eq, lt, le, gt, ge\n"
     "\n"
     "\t-o ofile\tWrite to ofile (def: stdout)\n"
-    "\t-m max_depth\tSet the maximum JSON level depth to max_depth (0 == infinite depth, def: %d)\n"
+    "\t-m common.max_depth\tSet the maximum JSON level depth to common.max_depth (0 == infinite depth, def: %d)\n"
     "\n"
-    "\t\t\tA 0 max_depth implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n"
+    "\t\t\tA 0 common.max_depth implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n"
     "\n"
     "\t-K\t\tRun tests on jval constraints\n"
     "\n"
@@ -188,16 +188,16 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'L':
-	    jval->print_json_levels = true; /* print JSON levels */
-	    jval_parse_st_level_option(optarg, &jval->num_level_spaces, &jval->print_level_tab);
+	    jval->common.print_json_levels = true; /* print JSON levels */
+	    json_util_parse_st_level_option(optarg, &jval->common.num_level_spaces, &jval->common.print_level_tab);
 	    break;
 	case 't':
 	    jval->json_types_specified = true;
 	    jval->json_types = jval_parse_types_option(optarg);
 	    break;
 	case 'l':
-	    jval->levels_constrained = true;
-	    jval_parse_number_range("-l", optarg, false, &jval->jval_levels);
+	    jval->common.levels_constrained = true;
+	    json_util_parse_number_range("-l", optarg, false, &jval->common.json_util_levels);
 	    break;
 	case 'Q':
 	    jval->quote_strings = true;
@@ -253,12 +253,12 @@ main(int argc, char **argv)
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */
-		jval->outfile_not_stdout = true;
+		jval->common.outfile_not_stdout = true;
 	    }
-	    jval->outfile_path = optarg;
+	    jval->common.outfile_path = optarg;
 	    break;
 	case 'm': /* set maximum depth to traverse json tree */
-	    if (!string_to_uintmax(optarg, &jval->max_depth)) {
+	    if (!string_to_uintmax(optarg, &jval->common.max_depth)) {
 		free_jval(&jval);
 		err(3, "jval", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
@@ -293,14 +293,14 @@ main(int argc, char **argv)
      */
 
     /* run specific sanity checks on options etc. */
-    jval->json_file = jval_sanity_chks(jval, program, &argc, &argv);
+    jval->common.json_file = jval_sanity_chks(jval, program, &argc, &argv);
 
 
     /*
      * jval_sanity_chks() should never return a NULL FILE * but we check
      * anyway
      */
-    if (jval->json_file == NULL) {
+    if (jval->common.json_file == NULL) {
 	/*
 	 * NOTE: don't make this exit code 3 as it's an internal error if the
 	 * jval_sanity_chks() returns a NULL pointer.
@@ -317,20 +317,20 @@ main(int argc, char **argv)
      * is not so much about a sane environment as much as being unable to
      * continue after verifying the command line is correct.
      */
-    jval->file_contents = read_all(jval->json_file, &len);
-    if (jval->file_contents == NULL) {
+    jval->common.file_contents = read_all(jval->common.json_file, &len);
+    if (jval->common.file_contents == NULL) {
 	err(4, "jval", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
     /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jval->json_file);
-    rewind(jval->json_file);
+    clearerr(jval->common.json_file);
+    rewind(jval->common.json_file);
 
-    jval->json_tree = parse_json_stream(jval->json_file, argv[0], &is_valid);
-    if (!is_valid || jval->json_tree == NULL) {
-	if (jval->json_file != stdin) {
-	    fclose(jval->json_file);  /* close file prior to exiting */
-	    jval->json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+    jval->common.json_tree = parse_json_stream(jval->common.json_file, argv[0], &is_valid);
+    if (!is_valid || jval->common.json_tree == NULL) {
+	if (jval->common.json_file != stdin) {
+	    fclose(jval->common.json_file);  /* close file prior to exiting */
+	    jval->common.json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 	}
 
 	/* free our jval struct */
@@ -342,14 +342,14 @@ main(int argc, char **argv)
     dbg(DBG_MED, "valid JSON");
 
     /* only if we get here can we try and open the output file */
-    if (jval->outfile_not_stdout && jval->outfile_path != NULL && *jval->outfile_path != '\0') {
+    if (jval->common.outfile_not_stdout && jval->common.outfile_path != NULL && *jval->common.outfile_path != '\0') {
 	/*
 	 * we know the output file doesn't exist but the real question is can we
 	 * open it for writing to make it JSON ?
 	 */
-	jval->outfile = fopen(jval->outfile_path, "w");
-	if (jval->outfile == NULL) {
-	    err(1, __func__, "couldn't open output file: %s", jval->outfile_path);/*ooo*/
+	jval->common.outfile = fopen(jval->common.outfile_path, "w");
+	if (jval->common.outfile == NULL) {
+	    err(1, __func__, "couldn't open output file: %s", jval->common.outfile_path);/*ooo*/
 	    not_reached();
 	}
     }
@@ -365,13 +365,13 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jval_print_count(jval);
-	fpr(jval->outfile?jval->outfile:stdout, "jval", "%s", jval->file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     } else {
-	fpr(jval->outfile?jval->outfile:stdout, "jval", "%s", jval->file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     }
 
     /* free tree */
-    json_tree_free(jval->json_tree, jval->max_depth);
+    json_tree_free(jval->common.json_tree, jval->common.max_depth);
 
     if (jval != NULL) {
 	free_jval(&jval);	/* free jval struct */
@@ -441,16 +441,16 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
      * use of -c with -C or -L is an error and use of -C with -c or -L is an
      * error
      */
-    if (jval->count_only || jval->print_json_levels || jval->count_and_show_values) {
+    if (jval->count_only || jval->common.print_json_levels || jval->count_and_show_values) {
 	if (jval->count_and_show_values && jval->count_only) {
 	    err(3, __func__, "cannot use -c and -C together"); /*ooo*/
 	    not_reached();
 	}
-	if (jval->print_json_levels && jval->count_only) {
+	if (jval->common.print_json_levels && jval->count_only) {
 	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
 	    not_reached();
 	}
-	if (jval->print_json_levels && jval->count_and_show_values) {
+	if (jval->common.print_json_levels && jval->count_and_show_values) {
 	    err(3, __func__, "cannot use -L and -C together"); /*ooo*/
 	    not_reached();
 	}
@@ -480,8 +480,8 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
 	 * NOTE: do NOT open this file: we won't do that until we know that the
 	 * input JSON is valid.
 	 */
-	if (jval->outfile_not_stdout && jval->outfile_path != NULL && *jval->outfile_path != '\0') {
-	    if (!strcasecmp((*argv)[0], jval->outfile_path)) {
+	if (jval->common.outfile_not_stdout && jval->common.outfile_path != NULL && *jval->common.outfile_path != '\0') {
+	    if (!strcasecmp((*argv)[0], jval->common.outfile_path)) {
 		free_jval(&jval);
 		err(3, __func__, "-o ofile is the same as JSON file"); /*ooo*/
 		not_reached();
@@ -504,19 +504,19 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jval->json_file = fopen((*argv)[0], "r");
-	if (jval->json_file == NULL) {
+	jval->common.json_file = fopen((*argv)[0], "r");
+	if (jval->common.json_file == NULL) {
 	    free_jval(&jval);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
-	jval->is_stdin = true;
-	jval->json_file = stdin;
+	jval->common.is_stdin = true;
+	jval->common.json_file = stdin;
     }
 
-    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jval->max_depth, (jval->max_depth == 0?" (no limit)":
-		jval->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jval->common.max_depth, (jval->common.max_depth == 0?" (no limit)":
+		jval->common.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /*
      * final processing: some options require the use of others but they are not
@@ -532,9 +532,9 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
      * NOTE: there is a slight risk that between the time we have checked if the
      * file exists and when we want to open it to write it later that it exists
      */
-    if (jval->outfile_not_stdout && jval->outfile_path != NULL && *jval->outfile_path != '\0') {
-	if (exists(jval->outfile_path)) {
-	    err(3, __func__, "-o ofile: %s already exists: will not overwrite", jval->outfile_path); /*ooo*/
+    if (jval->common.outfile_not_stdout && jval->common.outfile_path != NULL && *jval->common.outfile_path != '\0') {
+	if (exists(jval->common.outfile_path)) {
+	    err(3, __func__, "-o ofile: %s already exists: will not overwrite", jval->common.outfile_path); /*ooo*/
 	    not_reached();
 	}
     }
@@ -546,7 +546,7 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
     parse_jval_args(jval, *argv);
 
     /* all good: return the (presumably) json FILE * */
-    return jval->json_file;
+    return jval->common.json_file;
 }
 
 /*

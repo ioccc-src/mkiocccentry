@@ -210,16 +210,16 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'L':
-	    jnamval->print_json_levels = true; /* print JSON levels */
-	    jnamval_parse_st_level_option(optarg, &jnamval->num_level_spaces, &jnamval->print_level_tab);
+	    jnamval->common.print_json_levels = true; /* print JSON levels */
+	    json_util_parse_st_level_option(optarg, &jnamval->common.num_level_spaces, &jnamval->common.print_level_tab);
 	    break;
 	case 't':
 	    jnamval->json_types_specified = true;
 	    jnamval->json_types = jnamval_parse_types_option(optarg);
 	    break;
 	case 'l':
-	    jnamval->levels_constrained = true;
-	    jnamval_parse_number_range("-l", optarg, false, &jnamval->jnamval_levels);
+	    jnamval->common.levels_constrained = true;
+	    json_util_parse_number_range("-l", optarg, false, &jnamval->common.json_util_levels);
 	    break;
 	case 'Q':
 	    jnamval->quote_strings = true;
@@ -275,12 +275,12 @@ main(int argc, char **argv)
 	    break;
 	case 'o': /* search with OR mode */
 	    if (strcmp(optarg, "-")) { /* check if we will write to stdout */
-		jnamval->outfile_not_stdout = true;
+		jnamval->common.outfile_not_stdout = true;
 	    }
-	    jnamval->outfile_path = optarg;
+	    jnamval->common.outfile_path = optarg;
 	    break;
 	case 'm': /* set maximum depth to traverse json tree */
-	    if (!string_to_uintmax(optarg, &jnamval->max_depth)) {
+	    if (!string_to_uintmax(optarg, &jnamval->common.max_depth)) {
 		free_jnamval(&jnamval);
 		err(3, "jnamval", "couldn't parse -m depth"); /*ooo*/
 		not_reached();
@@ -326,14 +326,14 @@ main(int argc, char **argv)
      */
 
     /* run specific sanity checks on options etc. */
-    jnamval->json_file = jnamval_sanity_chks(jnamval, program, &argc, &argv);
+    jnamval->common.json_file = jnamval_sanity_chks(jnamval, program, &argc, &argv);
 
 
     /*
      * jnamval_sanity_chks() should never return a NULL FILE * but we check
      * anyway
      */
-    if (jnamval->json_file == NULL) {
+    if (jnamval->common.json_file == NULL) {
 	/*
 	 * NOTE: don't make this exit code 3 as it's an internal error if the
 	 * jnamval_sanity_chks() returns a NULL pointer.
@@ -350,20 +350,20 @@ main(int argc, char **argv)
      * is not so much about a sane environment as much as being unable to
      * continue after verifying the command line is correct.
      */
-    jnamval->file_contents = read_all(jnamval->json_file, &len);
-    if (jnamval->file_contents == NULL) {
+    jnamval->common.file_contents = read_all(jnamval->common.json_file, &len);
+    if (jnamval->common.file_contents == NULL) {
 	err(4, "jnamval", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
     /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jnamval->json_file);
-    rewind(jnamval->json_file);
+    clearerr(jnamval->common.json_file);
+    rewind(jnamval->common.json_file);
 
-    jnamval->json_tree = parse_json_stream(jnamval->json_file, argv[0], &is_valid);
-    if (!is_valid || jnamval->json_tree == NULL) {
-	if (jnamval->json_file != stdin) {
-	    fclose(jnamval->json_file);  /* close file prior to exiting */
-	    jnamval->json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
+    jnamval->common.json_tree = parse_json_stream(jnamval->common.json_file, argv[0], &is_valid);
+    if (!is_valid || jnamval->common.json_tree == NULL) {
+	if (jnamval->common.json_file != stdin) {
+	    fclose(jnamval->common.json_file);  /* close file prior to exiting */
+	    jnamval->common.json_file = NULL;   /* set to NULL even though we're exiting as a safety precaution */
 	}
 
 	/* free our jnamval struct */
@@ -375,14 +375,14 @@ main(int argc, char **argv)
     dbg(DBG_MED, "valid JSON");
 
     /* only if we get here can we try and open the output file */
-    if (jnamval->outfile_not_stdout && jnamval->outfile_path != NULL && *jnamval->outfile_path != '\0') {
+    if (jnamval->common.outfile_not_stdout && jnamval->common.outfile_path != NULL && *jnamval->common.outfile_path != '\0') {
 	/*
 	 * we know the output file doesn't exist but the real question is can we
 	 * open it for writing to make it JSON ?
 	 */
-	jnamval->outfile = fopen(jnamval->outfile_path, "w");
-	if (jnamval->outfile == NULL) {
-	    err(1, __func__, "couldn't open output file: %s", jnamval->outfile_path);/*ooo*/
+	jnamval->common.outfile = fopen(jnamval->common.outfile_path, "w");
+	if (jnamval->common.outfile == NULL) {
+	    err(1, __func__, "couldn't open output file: %s", jnamval->common.outfile_path);/*ooo*/
 	    not_reached();
 	}
     }
@@ -398,13 +398,13 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jnamval_print_count(jnamval);
-	fpr(jnamval->outfile?jnamval->outfile:stdout, "jnamval", "%s", jnamval->file_contents);
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
     } else {
-	fpr(jnamval->outfile?jnamval->outfile:stdout, "jnamval", "%s", jnamval->file_contents);
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
     }
 
     /* free tree */
-    json_tree_free(jnamval->json_tree, jnamval->max_depth);
+    json_tree_free(jnamval->common.json_tree, jnamval->common.max_depth);
 
     if (jnamval != NULL) {
 	free_jnamval(&jnamval);	/* free jnamval struct */
@@ -474,16 +474,16 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
      * use of -c with -C or -L is an error and use of -C with -c or -L is an
      * error
      */
-    if (jnamval->count_only || jnamval->print_json_levels || jnamval->count_and_show_values) {
+    if (jnamval->count_only || jnamval->common.print_json_levels || jnamval->count_and_show_values) {
 	if (jnamval->count_and_show_values && jnamval->count_only) {
 	    err(3, __func__, "cannot use -c and -C together"); /*ooo*/
 	    not_reached();
 	}
-	if (jnamval->print_json_levels && jnamval->count_only) {
+	if (jnamval->common.print_json_levels && jnamval->count_only) {
 	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
 	    not_reached();
 	}
-	if (jnamval->print_json_levels && jnamval->count_and_show_values) {
+	if (jnamval->common.print_json_levels && jnamval->count_and_show_values) {
 	    err(3, __func__, "cannot use -L and -C together"); /*ooo*/
 	    not_reached();
 	}
@@ -513,8 +513,8 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	 * NOTE: do NOT open this file: we won't do that until we know that the
 	 * input JSON is valid.
 	 */
-	if (jnamval->outfile_not_stdout && jnamval->outfile_path != NULL && *jnamval->outfile_path != '\0') {
-	    if (!strcasecmp((*argv)[0], jnamval->outfile_path)) {
+	if (jnamval->common.outfile_not_stdout && jnamval->common.outfile_path != NULL && *jnamval->common.outfile_path != '\0') {
+	    if (!strcasecmp((*argv)[0], jnamval->common.outfile_path)) {
 		free_jnamval(&jnamval);
 		err(3, __func__, "-o ofile is the same as JSON file"); /*ooo*/
 		not_reached();
@@ -537,19 +537,19 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jnamval->json_file = fopen((*argv)[0], "r");
-	if (jnamval->json_file == NULL) {
+	jnamval->common.json_file = fopen((*argv)[0], "r");
+	if (jnamval->common.json_file == NULL) {
 	    free_jnamval(&jnamval);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
-	jnamval->is_stdin = true;
-	jnamval->json_file = stdin;
+	jnamval->common.is_stdin = true;
+	jnamval->common.json_file = stdin;
     }
 
-    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jnamval->max_depth, (jnamval->max_depth == 0?" (no limit)":
-		jnamval->max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
+    dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jnamval->common.max_depth, (jnamval->common.max_depth == 0?" (no limit)":
+		jnamval->common.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
     /*
      * final processing: some options require the use of others but they are not
@@ -565,9 +565,9 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
      * NOTE: there is a slight risk that between the time we have checked if the
      * file exists and when we want to open it to write it later that it exists
      */
-    if (jnamval->outfile_not_stdout && jnamval->outfile_path != NULL && *jnamval->outfile_path != '\0') {
-	if (exists(jnamval->outfile_path)) {
-	    err(3, __func__, "-o ofile: %s already exists: will not overwrite", jnamval->outfile_path); /*ooo*/
+    if (jnamval->common.outfile_not_stdout && jnamval->common.outfile_path != NULL && *jnamval->common.outfile_path != '\0') {
+	if (exists(jnamval->common.outfile_path)) {
+	    err(3, __func__, "-o ofile: %s already exists: will not overwrite", jnamval->common.outfile_path); /*ooo*/
 	    not_reached();
 	}
     }
@@ -579,7 +579,7 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
     parse_jnamval_args(jnamval, *argv);
 
     /* all good: return the (presumably) json FILE * */
-    return jnamval->json_file;
+    return jnamval->common.json_file;
 }
 
 /*
