@@ -386,7 +386,8 @@ jnamval_run_tests(void)
  * NOTE: this will not return on NULL pointers.
  */
 bool
-jnamval_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches, intmax_t line, struct json_util_number *range)
+jnamval_test_number_range_opts(bool expected, intmax_t number, intmax_t total_matches,
+	intmax_t line, struct json_util_number *range)
 {
     bool test = false;	    /* result of test */
 
