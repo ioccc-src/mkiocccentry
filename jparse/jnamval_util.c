@@ -48,6 +48,7 @@ alloc_jnamval(void)
     jnamval->common.is_stdin = false;			/* true if it's stdin */
     jnamval->common.file_contents = NULL;			/* file.json contents */
     jnamval->common.json_file = NULL;			/* JSON file * */
+    jnamval->common.json_file_path = NULL;			/* path to read */
 
     jnamval->common.outfile_path = NULL;			/* assume no -o used */
     jnamval->common.outfile = stdout;			/* default stdout */

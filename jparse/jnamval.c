@@ -343,8 +343,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * Read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file if not stdin.
+     * Read in contents of file.
      *
      * NOTE: why doesn't the jnamval_sanity_chks() function do this? Because this
      * is not so much about a sane environment as much as being unable to
@@ -355,11 +354,9 @@ main(int argc, char **argv)
 	err(4, "jnamval", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
-    /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jnamval->common.json_file);
-    rewind(jnamval->common.json_file);
 
-    jnamval->common.json_tree = parse_json_stream(jnamval->common.json_file, argv[0], &is_valid);
+    jnamval->common.json_tree = parse_json(jnamval->common.file_contents, strlen(jnamval->common.file_contents),
+	    jnamval->common.json_file_path, &is_valid);
     if (!is_valid || jnamval->common.json_tree == NULL) {
 	if (jnamval->common.json_file != stdin) {
 	    fclose(jnamval->common.json_file);  /* close file prior to exiting */
@@ -503,8 +500,17 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	not_reached();
     }
 
+    /* check that file path is not an empty string */
+    if (*(*argv)[0] == '\0') {
+	usage(3, program, "empty file path");/*ooo*/
+	not_reached();
+    }
+    /* set file path */
+    jnamval->common.json_file_path = (*argv)[0];
+
+
     /* if argv[0] != "-" we will attempt to open a regular readable file */
-    if (strcmp((*argv)[0], "-") != 0) {
+    if (strcmp(jnamval->common.json_file_path, "-") != 0) {
 	/*
 	 * first check that if -o was used that the out file is not the same as
 	 * the file.json file! Do this in a case-insensitive way for file
@@ -537,13 +543,15 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jnamval->common.json_file = fopen((*argv)[0], "r");
+	jnamval->common.json_file_path = (*argv)[0];
+	jnamval->common.json_file = fopen(jnamval->common.json_file_path, "r");
 	if (jnamval->common.json_file == NULL) {
 	    free_jnamval(&jnamval);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
+	jnamval->common.json_file_path = "-";
 	jnamval->common.is_stdin = true;
 	jnamval->common.json_file = stdin;
     }

@@ -3,9 +3,34 @@
 
 ## Release 1.0.41 2023-07-26
 
-New version of `jnamval`: "0.0.5 2023-07-26". Moved code in `jnamval` common to
-both `jval` and `jnamval` to `json_util.c` like what was done yesterday for
-`jval`.
+New version of `jfmt`, `jval` and `jnamval`: "0.0.5 2023-07-26".
+
+Moved code in `jnamval` common to both `jval` and `jnamval` to `json_util.c`
+like what was done yesterday for `jval`.
+
+Fixed bug where one could not do:
+
+```sh
+echo '"test"' | ./jfmt -
+```
+
+and the same thing with `jval` and `jnamval`. This also fixes the bug where one
+could not do:
+
+```sh
+./jfmt -
+"test"
+^D
+```
+
+and the same thing with the other too tools. The above two fixes changes the use
+of `parse_json_stream()` to `parse_json()`. Note that the `FILE *` is still
+needed.
+
+Add to `struct json_util` the file path of the JSON file as `json_file_path`.
+
+Check that the path is not an empty file name and exit with error code 3 if it
+is in all three tools.
 
 
 ## Release 1.0.40 2023-07-25

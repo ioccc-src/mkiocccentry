@@ -310,8 +310,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * Read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file if not stdin.
+     * Read in contents of file.
      *
      * NOTE: why doesn't the jval_sanity_chks() function do this? Because this
      * is not so much about a sane environment as much as being unable to
@@ -322,11 +321,9 @@ main(int argc, char **argv)
 	err(4, "jval", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
-    /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jval->common.json_file);
-    rewind(jval->common.json_file);
 
-    jval->common.json_tree = parse_json_stream(jval->common.json_file, argv[0], &is_valid);
+    jval->common.json_tree = parse_json(jval->common.file_contents, strlen(jval->common.file_contents),
+	    jval->common.json_file_path, &is_valid);
     if (!is_valid || jval->common.json_tree == NULL) {
 	if (jval->common.json_file != stdin) {
 	    fclose(jval->common.json_file);  /* close file prior to exiting */
@@ -468,6 +465,12 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
 	not_reached();
     }
 
+    /* check that file path is not an empty string */
+    if (*(*argv)[0] == '\0') {
+	usage(3, program, "empty file path");/*ooo*/
+	not_reached();
+    }
+
     /* if argv[0] != "-" we will attempt to open a regular readable file */
     if (strcmp((*argv)[0], "-") != 0) {
 	/*
@@ -502,13 +505,15 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jval->common.json_file = fopen((*argv)[0], "r");
+	jval->common.json_file_path = (*argv)[0];
+	jval->common.json_file = fopen(jval->common.json_file_path, "r");
 	if (jval->common.json_file == NULL) {
 	    free_jval(&jval);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
+	jval->common.json_file_path = "-";
 	jval->common.is_stdin = true;
 	jval->common.json_file = stdin;
     }

@@ -47,6 +47,7 @@ alloc_jfmt(void)
     jfmt->common.is_stdin = false;			/* true if it's stdin */
     jfmt->common.file_contents = NULL;			/* file.json contents */
     jfmt->common.json_file = NULL;			/* JSON file * */
+    jfmt->common.json_file_path = NULL;			/* path to JSON file to read */
 
     jfmt->common.outfile_path = NULL;			/* assume no -o used */
     jfmt->common.outfile = stdout;			/* default stdout */
