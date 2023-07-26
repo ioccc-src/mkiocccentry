@@ -32,6 +32,18 @@ Add to `struct json_util` the file path of the JSON file as `json_file_path`.
 Check that the path is not an empty file name and exit with error code 3 if it
 is in all three tools.
 
+New version of `jparse` and json parser: "1.1.3 2023-07-26".
+
+Improve how `parse_json_stream()` deals with NULL filename.  This means that the
+check for NULL is moved higher up in the function so that if the path is NULL we
+set it to `-` for stdin. This check was in the function already but the purpose
+was to make it so that if NULL it is stdin. If it's NULL though it's likely that
+the stream is also NULL which means that the check would never get triggered.
+The `stream` can still end up NULL but it shouldn't be a problem if stdin now.
+
+Improve check if file is ready (function `fd_is_ready()`) in
+`parse_json_stream()`: don't check if stdin as it should be ready anyway and not
+doing this seemed to prevent it from reading the file (in some cases).
 
 ## Release 1.0.40 2023-07-25
 
