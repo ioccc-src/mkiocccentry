@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.41 2023-07-26
+
+New version of `jnamval`: "0.0.5 2023-07-26". Moved code in `jnamval` common to
+both `jval` and `jnamval` to `json_util.c` like what was done yesterday for
+`jval`.
+
+
 ## Release 1.0.40 2023-07-25
 
 New version for `jfmt`, `jval` and `jnamval`:  "0.0.4 2023-07-25". Moved common
