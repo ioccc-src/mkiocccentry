@@ -48,6 +48,7 @@ alloc_jval(void)
     jval->common.is_stdin = false;			/* true if it's stdin */
     jval->common.file_contents = NULL;			/* file.json contents */
     jval->common.json_file = NULL;			/* JSON file * */
+    jval->common.json_file_path = NULL;			/* JSON file path */
 
     jval->common.outfile_path = NULL;			/* assume no -o used */
     jval->common.outfile = stdout;			/* default stdout */
@@ -58,7 +59,7 @@ alloc_jval(void)
     jval->json_name_val.quote_strings = false;		/* -Q used */
 
 
-    /* number range options, see struct jval_number_range in jval_util.h for details */
+    /* number range options, see struct json_util_number_range in json_util.h for details */
 
     /* -l - levels number range */
     jval->common.json_util_levels.number = 0;

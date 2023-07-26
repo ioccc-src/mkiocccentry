@@ -548,7 +548,7 @@ is_open_file_stream(FILE *stream)
  * given:
  *	name		name of the calling function
  *	open_test_only	true ==>  do not test if we can read or write, only test if open & valid
- *			false ==> unless descriptor is ready to read or write. return false
+ *			false ==> unless descriptor is ready to read or write.
  *	fd		file descriptor on which to perform an I/O test
  *
  * returns:

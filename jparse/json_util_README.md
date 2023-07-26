@@ -7,7 +7,7 @@ terms** used in this document!
 
 There is a general lack of JSON aware command line tools that allows someone to
 obtain information from within a JSON document.  By "obtaining information" we
-refer to the ability to extract data, either as a whole, or in part, that
+refer to the ability to extract data, either as a whole, or in part, that is
 contained within a [JSON document](./json_README.md#json-document).
 
 There exists a multiple JSON APIs (Application Program Interfaces) for various
@@ -17,7 +17,8 @@ contains a rich JSON parser API C programs can use, as well as a semantic JSON
 check interface for C.  However all those APIs require the user to "program" in
 a specific language in order to do something as simple as obtain a selective
 [JSON values](./json_README.md#json-value) from a [JSON
-document](./json_README.md#json-document).
+document](./json_README.md#json-document). With these tools we attempt to
+address some of these missing capabilities.
 
 
 
@@ -35,7 +36,7 @@ considering utilities that either create or modify JSON.
 
 If a command line utility is given an **invalid JSON document**, the utility
 shall exit non-zero with an error message indicating that the [JSON
-document](./json_README.md#json-document) was not valid JSON.  Therefore we're
+document](./json_README.md#json-document) is not valid JSON.  Therefore we're
 only concerned with reading various information from an existing [JSON
 document](./json_README.md#json-document) that contains [Valid
 JSON](./json_README.md#valid-json).

@@ -48,17 +48,18 @@ alloc_jnamval(void)
     jnamval->common.is_stdin = false;			/* true if it's stdin */
     jnamval->common.file_contents = NULL;			/* file.json contents */
     jnamval->common.json_file = NULL;			/* JSON file * */
+    jnamval->common.json_file_path = NULL;			/* path to read */
 
     jnamval->common.outfile_path = NULL;			/* assume no -o used */
     jnamval->common.outfile = stdout;			/* default stdout */
     jnamval->common.outfile_not_stdout = false;		/* by default we write to stdout */
 
     /* string related options */
-    jnamval->encode_strings = false;		/* -e used */
-    jnamval->quote_strings = false;		/* -Q used */
+    jnamval->json_name_val.encode_strings = false;		/* -e used */
+    jnamval->json_name_val.quote_strings = false;		/* -Q used */
 
 
-    /* number range options, see struct jnamval_number_range in jnamval_util.h for details */
+    /* number range options, see struct json_util_number_range in jnamval_util.h for details */
 
     /* -l - levels number range */
     jnamval->common.json_util_levels.number = 0;
@@ -73,41 +74,42 @@ alloc_jnamval(void)
     /* print related options */
     jnamval->print_json_types_option = false;		/* -p explicitly used */
     jnamval->print_json_types = JNAMVAL_PRINT_VALUE;	/* -p type specified */
-    jnamval->print_decoded = false;			/* -D not used if false */
+    jnamval->json_name_val.print_decoded = false;			/* -D not used if false */
     jnamval->common.print_json_levels = false;			/* -L specified */
     jnamval->common.num_level_spaces = 0;				/* number of spaces or tab for -L */
     jnamval->common.print_level_tab = false;			/* -L tab option */
-    jnamval->invert_matches = false;			/* -i used */
-    jnamval->count_only = false;				/* -c used, only show count */
-    jnamval->count_and_show_values = false;		/* -C used, count and show values */
+    jnamval->json_name_val.invert_matches = false;			/* -i used */
+    jnamval->json_name_val.count_only = false;				/* -c used, only show count */
+    jnamval->json_name_val.count_and_show_values = false;		/* -C used, count and show values */
 
     /* search / matching related */
     /* json types to look for */
-    jnamval->json_types_specified = false;			/* -t used */
-    jnamval->json_types = JNAMVAL_TYPE_SIMPLE;		/* -t type specified, default simple */
-    jnamval->ignore_case = false;				/* true if -f, case-insensitive */
-    jnamval->match_decoded = false;			/* if -d used match decoded */
-    jnamval->arg_specified = false;			/* true if an arg was specified */
-    jnamval->match_substrings = false;			/* -s used, matching substrings okay */
-    jnamval->use_regexps = false;				/* -g used, allow grep-like regexps */
+    jnamval->json_name_val.json_types_specified = false;			/* -t used */
+    jnamval->json_name_val.json_types = JNAMVAL_TYPE_SIMPLE;		/* -t type specified, default simple */
+    jnamval->json_name_val.ignore_case = false;				/* true if -f, case-insensitive */
+    jnamval->json_name_val.match_decoded = false;			/* if -d used match decoded */
+    jnamval->json_name_val.arg_specified = false;			/* true if an arg was specified */
+    jnamval->json_name_val.match_substrings = false;			/* -s used, matching substrings okay */
+    jnamval->json_name_val.use_regexps = false;				/* -g used, allow grep-like regexps */
     jnamval->match_json_member_names = false;		/* -N used, match based on member names */
     jnamval->match_hierarchies = false;			/* -H used, match any JSON member name */
 
-    /* for -S */
-    jnamval->string_cmp_used = false;
-    jnamval->string_cmp = NULL;
 
-    /* for -n */
-    jnamval->num_cmp_used = false;
-    jnamval->num_cmp = NULL;
+    /* comparison options -S and -n */
+
+    /* -S op=string */
+    jnamval->json_name_val.string_cmp_used = false;
+    jnamval->json_name_val.string_cmp = NULL;
+    /* -n op=number */
+    jnamval->json_name_val.num_cmp_used = false;
+    jnamval->json_name_val.num_cmp = NULL;
 
     /* parsing related */
     jnamval->common.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
     jnamval->common.json_tree = NULL;
 
-
     /* matches for -c / -C - subject to change */
-    jnamval->total_matches = 0;
+    jnamval->json_name_val.total_matches = 0;
 
     return jnamval;
 }
@@ -824,8 +826,8 @@ jnamval_print_count(struct jnamval *jnamval)
 	not_reached();
     }
 
-    if (jnamval->count_only || jnamval->count_and_show_values) {
-	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%ju\n", jnamval->total_matches);
+    if (jnamval->json_name_val.count_only || jnamval->json_name_val.count_and_show_values) {
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%ju\n", jnamval->json_name_val.total_matches);
 	return true;
     }
 
@@ -862,150 +864,6 @@ parse_jnamval_args(struct jnamval *jnamval, char **argv)
     }
 }
 
-/*
- * jnamval_parse_cmp_op	- parse -S / -n compare options
- *
- * given:
- *
- *	jnamval	    - pointer to our jnamval struct
- *	option	    - the option letter (without the '-') that triggered this
- *		      function
- *	optarg	    - option arg to the option
- *
- *
- *  This function fills out either the jnamval->string_cmp or jnamval->num_cmp if the
- *  syntax is correct. Or more correctly it adds to the list as more than one
- *  can be specified.
- *
- *  This function will not return on error in conversion or syntax error or NULL
- *  pointers.
- *
- *  This function returns void.
- */
-struct jnamval_cmp_op *
-jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
-{
-    char *p = NULL;		    /* to find the = separator */
-    char *mode = NULL;		    /* if -S then "str" else "num" */
-    struct json *item = NULL;	    /* to get the converted value */
-    struct jnamval_cmp_op *cmp = NULL;	/* compare operation struct */
-    int op = JNAMVAL_CMP_OP_NONE;	/* assume invalid op */
-
-    /* firewall */
-    if (jnamval == NULL) {
-	err(28, __func__, "NULL jnamval");
-	not_reached();
-    }
-    if (option == NULL) {
-	err(29, __func__, "NULL option");
-	not_reached();
-    }
-    if (optarg == NULL) {
-	err(30, __func__, "NULL optarg");
-	not_reached();
-    }
-
-    if (!strcmp(option, "S")) {
-	mode = "str";
-    } else if (!strcmp(option, "n")) {
-	mode = "num";
-    } else {
-	err(31, __func__, "invalid option used for function: -%s", option);
-	not_reached();
-    }
-
-    p = strchr(optarg, '=');
-    if (p == NULL) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
-	not_reached();
-    } else if (p == optarg) {
-	err(33, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
-	not_reached();
-    } else if (p[1] == '\0') {
-	err(34, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
-	not_reached();
-    }
-
-    if (!strncmp(optarg, "eq=", 3)) {
-	op = JNAMVAL_CMP_EQ;
-    } else if (!strncmp(optarg, "lt=", 3)) {
-	op = JNAMVAL_CMP_LT;
-    } else if (!strncmp(optarg, "le=", 3)) {
-	op = JNAMVAL_CMP_LE;
-    } else if (!strncmp(optarg, "gt=", 3)){
-	op = JNAMVAL_CMP_GT;
-    } else if (!strncmp(optarg, "ge=", 3)) {
-	op = JNAMVAL_CMP_GE;
-    } else {
-	err(35, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
-	not_reached();
-    }
-
-    if (!strcmp(option, "S")) { /* -S */
-	errno = 0;
-	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
-	if (item == NULL) {
-	    err(36, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
-	    not_reached();
-	} else {
-	    cmp = calloc(1, sizeof *cmp);
-	    if (cmp == NULL) {
-		err(37, __func__, "failed to allocate struct jval_cmp_op *");
-		not_reached();
-	    }
-	    cmp->string = &(item->item.string);
-	    if (cmp->string == NULL) {
-		err(38, __func__, "failed to convert string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
-		not_reached();
-	    } else if (!CONVERTED_PARSED_JSON_NODE(cmp->string)) {
-		err(39, __func__, "failed to convert or parse string: <%s> for option -%s but string pointer not NULL!",
-			optarg + 3, option);
-		not_reached();
-	    }
-
-	    cmp->op = op;
-
-	    cmp->next = jnamval->string_cmp;
-	    jnamval->string_cmp = cmp;
-
-	    /* XXX - add function that prints out what compare operation - XXX */
-	    json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string->str);
-
-	}
-    } else if (!strcmp(option, "n")) { /* -n */
-	item = json_conv_number(optarg + 3, strlen(optarg + 3));
-	if (item == NULL) {
-	    err(40, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
-	    not_reached();
-	} else {
-	    cmp = calloc(1, sizeof *cmp);
-	    if (cmp == NULL) {
-		err(41, __func__, "failed to allocate struct jval_cmp_op *");
-		not_reached();
-	    }
-	    cmp->number = &(item->item.number);
-	    if (!CONVERTED_PARSED_JSON_NODE(cmp->number)) {
-		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
-			optarg + 3, option);
-		not_reached();
-	    } else if (PARSED_JSON_NODE(cmp->number) && !CONVERTED_JSON_NODE(cmp->number)) {
-		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
-		not_reached();
-	    }
-
-	    cmp->op = op;
-
-	    cmp->next = jnamval->num_cmp;
-	    jnamval->num_cmp = cmp;
-
-	    /* XXX - add function that prints out what compare operation - XXX */
-	    json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->number->as_str);
-	}
-    }
-
-    return cmp;
-}
-
 /* free_jnamval_cmp_op_lists - free the compare lists
  *
  * given:
@@ -1019,7 +877,7 @@ jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg)
 void
 free_jnamval_cmp_op_lists(struct jnamval *jnamval)
 {
-    struct jnamval_cmp_op *op, *next_op;
+    struct json_util_cmp_op *op, *next_op;
 
     /* firewall */
     if (jnamval == NULL) {
@@ -1028,7 +886,7 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
     }
 
     /* first the string compare list */
-    for (op = jnamval->string_cmp; op != NULL; op = next_op) {
+    for (op = jnamval->json_name_val.string_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
 	/* XXX - free json node - XXX */
@@ -1038,7 +896,7 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
     }
 
     /* now the number compare list */
-    for (op = jnamval->num_cmp; op != NULL; op = next_op) {
+    for (op = jnamval->json_name_val.num_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
 	/* XXX - free json node - XXX */

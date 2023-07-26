@@ -155,6 +155,7 @@ struct json_util
     bool is_stdin;				/* reading from stdin */
     FILE *json_file;				/* FILE * to json file */
     char *file_contents;			/* file contents */
+    char *json_file_path;			/* path to JSON file to read */
 
     /* out file related to -o */
     char *outfile_path;				/* -o file path */

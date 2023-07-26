@@ -214,60 +214,60 @@ main(int argc, char **argv)
 	    json_util_parse_st_level_option(optarg, &jnamval->common.num_level_spaces, &jnamval->common.print_level_tab);
 	    break;
 	case 't':
-	    jnamval->json_types_specified = true;
-	    jnamval->json_types = jnamval_parse_types_option(optarg);
+	    jnamval->json_name_val.json_types_specified = true;
+	    jnamval->json_name_val.json_types = jnamval_parse_types_option(optarg);
 	    break;
 	case 'l':
 	    jnamval->common.levels_constrained = true;
 	    json_util_parse_number_range("-l", optarg, false, &jnamval->common.json_util_levels);
 	    break;
 	case 'Q':
-	    jnamval->quote_strings = true;
+	    jnamval->json_name_val.quote_strings = true;
 	    dbg(DBG_LOW, "-Q specified, will quote strings");
 	    break;
 	case 'D': /* -D - print decoded strings */
-	    jnamval->print_decoded = true;
+	    jnamval->json_name_val.print_decoded = true;
 	    break;
 	case 'd': /* -d - match decoded */
-	    jnamval->match_decoded = true;
+	    jnamval->json_name_val.match_decoded = true;
 	    break;
 	case 'i':
-	    jnamval->invert_matches = true; /* show non-matches */
+	    jnamval->json_name_val.invert_matches = true; /* show non-matches */
 	    break;
 	case 's':
-	    jnamval->match_substrings = true;
+	    jnamval->json_name_val.match_substrings = true;
 	    dbg(DBG_LOW, "-s specified, will match substrings");
 	    break;
 	case 'f':
-	    jnamval->ignore_case = true; /* make case cruel :-) */
+	    jnamval->json_name_val.ignore_case = true; /* make case cruel :-) */
 	    dbg(DBG_LOW, "-i specified, making matches case-insensitive");
 	    break;
 	case 'c':
-	    jnamval->count_only = true;
+	    jnamval->json_name_val.count_only = true;
 	    dbg(DBG_LOW, "-c specified, will only show count of matches");
 	    break;
 	case 'C':
-	    jnamval->count_and_show_values = true;
+	    jnamval->json_name_val.count_and_show_values = true;
 	    break;
 	case 'g':   /* allow grep-like ERE */
-	    jnamval->use_regexps = true;
+	    jnamval->json_name_val.use_regexps = true;
 	    dbg(DBG_LOW, "-g specified, name_args will be regexps");
 	    break;
 	case 'e':
-	    jnamval->encode_strings = true;
+	    jnamval->json_name_val.encode_strings = true;
 	    dbg(DBG_LOW, "-e specified, will encode strings");
 	    break;
 	case 'n': /* -n op=num */
-	    jnamval->num_cmp_used = true;
-	    if (jnamval_parse_cmp_op(jnamval, "n", optarg) == NULL) {
+	    jnamval->json_name_val.num_cmp_used = true;
+	    if (json_util_parse_cmp_op(&jnamval->json_name_val, "n", optarg) == NULL) {
 		free_jnamval(&jnamval);
 		err(24, "jnamval", "couldn't parse -n option");
 		not_reached();
 	    }
 	    break;
 	case 'S': /* -S op=str */
-	    jnamval->string_cmp_used = true;
-	    if (jnamval_parse_cmp_op(jnamval, "S", optarg) == NULL) {
+	    jnamval->json_name_val.string_cmp_used = true;
+	    if (json_util_parse_cmp_op(&jnamval->json_name_val, "S", optarg) == NULL) {
 		free_jnamval(&jnamval);
 		err(25, "jnamval", "couldn't parse -S option");
 		not_reached();
@@ -343,8 +343,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * Read in entire file BEFORE trying to parse it as json as the parser
-     * function will close the file if not stdin.
+     * Read in contents of file.
      *
      * NOTE: why doesn't the jnamval_sanity_chks() function do this? Because this
      * is not so much about a sane environment as much as being unable to
@@ -355,11 +354,9 @@ main(int argc, char **argv)
 	err(4, "jnamval", "could not read in file: %s", argv[0]); /*ooo*/
 	not_reached();
     }
-    /* clear EOF status and rewind for parse_json_stream() */
-    clearerr(jnamval->common.json_file);
-    rewind(jnamval->common.json_file);
 
-    jnamval->common.json_tree = parse_json_stream(jnamval->common.json_file, argv[0], &is_valid);
+    jnamval->common.json_tree = parse_json(jnamval->common.file_contents, strlen(jnamval->common.file_contents),
+	    jnamval->common.json_file_path, &is_valid);
     if (!is_valid || jnamval->common.json_tree == NULL) {
 	if (jnamval->common.json_file != stdin) {
 	    fclose(jnamval->common.json_file);  /* close file prior to exiting */
@@ -389,10 +386,10 @@ main(int argc, char **argv)
 
     /* XXX - implement core of the tool, for now just print count (if requested)
      * and file to out file or stdout - XXX */
-    if (jnamval->count_only) {
+    if (jnamval->json_name_val.count_only) {
 	/* XXX - the count will currently be 0 but we can at least test this option */
 	jnamval_print_count(jnamval);
-    } else if (jnamval->count_and_show_values) {
+    } else if (jnamval->json_name_val.count_and_show_values) {
 	/* XXX - the count will be wrong, the format will be wrong and it might
 	 * be that not the full document is requested but this is all we have at
 	 * this moment and at least we can test the option - XXX
@@ -464,7 +461,7 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
      */
 
     /* use of -g conflicts with -s and is an error. */
-    if (jnamval->use_regexps && jnamval->match_substrings) {
+    if (jnamval->json_name_val.use_regexps && jnamval->json_name_val.match_substrings) {
 	free_jnamval(&jnamval);
 	err(3, __func__, "cannot use both -g and -s"); /*ooo*/
 	not_reached();
@@ -474,16 +471,16 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
      * use of -c with -C or -L is an error and use of -C with -c or -L is an
      * error
      */
-    if (jnamval->count_only || jnamval->common.print_json_levels || jnamval->count_and_show_values) {
-	if (jnamval->count_and_show_values && jnamval->count_only) {
+    if (jnamval->json_name_val.count_only || jnamval->common.print_json_levels || jnamval->json_name_val.count_and_show_values) {
+	if (jnamval->json_name_val.count_and_show_values && jnamval->json_name_val.count_only) {
 	    err(3, __func__, "cannot use -c and -C together"); /*ooo*/
 	    not_reached();
 	}
-	if (jnamval->common.print_json_levels && jnamval->count_only) {
+	if (jnamval->common.print_json_levels && jnamval->json_name_val.count_only) {
 	    err(3, __func__, "cannot use -L and -c together"); /*ooo*/
 	    not_reached();
 	}
-	if (jnamval->common.print_json_levels && jnamval->count_and_show_values) {
+	if (jnamval->common.print_json_levels && jnamval->json_name_val.count_and_show_values) {
 	    err(3, __func__, "cannot use -L and -C together"); /*ooo*/
 	    not_reached();
 	}
@@ -503,8 +500,17 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	not_reached();
     }
 
+    /* check that file path is not an empty string */
+    if (*(*argv)[0] == '\0') {
+	usage(3, program, "empty file path");/*ooo*/
+	not_reached();
+    }
+    /* set file path */
+    jnamval->common.json_file_path = (*argv)[0];
+
+
     /* if argv[0] != "-" we will attempt to open a regular readable file */
-    if (strcmp((*argv)[0], "-") != 0) {
+    if (strcmp(jnamval->common.json_file_path, "-") != 0) {
 	/*
 	 * first check that if -o was used that the out file is not the same as
 	 * the file.json file! Do this in a case-insensitive way for file
@@ -537,13 +543,15 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	}
 
 	errno = 0; /* pre-clear errno for errp() */
-	jnamval->common.json_file = fopen((*argv)[0], "r");
+	jnamval->common.json_file_path = (*argv)[0];
+	jnamval->common.json_file = fopen(jnamval->common.json_file_path, "r");
 	if (jnamval->common.json_file == NULL) {
 	    free_jnamval(&jnamval);
 	    errp(4, __func__, "%s: could not open for reading", (*argv)[0]); /*ooo*/
 	    not_reached();
 	}
     } else { /* argv[0] is "-": will read from stdin */
+	jnamval->common.json_file_path = "-";
 	jnamval->common.is_stdin = true;
 	jnamval->common.json_file = stdin;
     }

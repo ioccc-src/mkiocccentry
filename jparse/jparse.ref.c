@@ -2977,6 +2977,14 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	*is_valid = true;
     }
 
+    if (filename == NULL) {
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	filename = "-";
+	stream = stdin;
+    } else if (!strcmp(filename, "-") && stream == NULL) {
+	stream = stdin;
+    }
+
     if (stream == NULL) {
 
 	/* report NULL stream */
@@ -2989,7 +2997,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
-    if (fd_is_ready(__func__, false, fileno(stream)) == false) {
+    if (stream != stdin && fd_is_ready(__func__, false, fileno(stream)) == false) {
 
 	/* report closed stream */
 	werr(44, __func__, "stream is not open");
@@ -3000,11 +3008,6 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
-    }
-
-    if (filename == NULL) {
-	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
-	filename = "-";
     }
 
     /*

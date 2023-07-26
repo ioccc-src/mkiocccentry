@@ -82,50 +82,15 @@
 #define JNAMVAL_PRINT_JSON   (4)
 #define JNAMVAL_PRINT_BOTH   (JNAMVAL_PRINT_NAME | JNAMVAL_PRINT_VALUE)
 
-
-#define JNAMVAL_CMP_OP_NONE (0)
-#define JNAMVAL_CMP_EQ	    (1)
-#define JNAMVAL_CMP_LT	    (2)
-#define JNAMVAL_CMP_LE	    (3)
-#define JNAMVAL_CMP_GT	    (4)
-#define JNAMVAL_CMP_GE	    (5)
+/* -S and -n */
+#define JNAMVAL_CMP_OP_NONE JSON_UTIL_CMP_OP_NONE
+#define JNAMVAL_CMP_EQ	    JSON_UTIL_CMP_OP_EQ
+#define JNAMVAL_CMP_LT	    JSON_UTIL_CMP_OP_LT
+#define JNAMVAL_CMP_LE	    JSON_UTIL_CMP_OP_LE
+#define JNAMVAL_CMP_GT	    JSON_UTIL_CMP_OP_GT
+#define JNAMVAL_CMP_GE	    JSON_UTIL_CMP_OP_GE
 
 /* structs */
-
-/* structs for various options */
-
-/* for comparison of numbers / strings - options -n and -S */
-struct jnamval_cmp_op
-{
-    struct json_number *number;	    /* for -n as signed number */
-    struct json_string *string;	    /* for -S str */
-
-    bool is_string;	    /* true if -S */
-    bool is_number;	    /* true if -n */
-    uintmax_t op;	    /* the operation - see JNAMVAL_CMP macros above */
-
-    struct jnamval_cmp_op *next;    /* next in the list */
-};
-
-/* number ranges for the options -l, -n and -n */
-struct jnamval_number_range
-{
-    intmax_t min;   /* min in range */
-    intmax_t max;   /* max in range */
-
-    bool less_than_equal;	/* true if number type must be <= min */
-    bool greater_than_equal;	/* true if number type must be >= max */
-    bool inclusive;		/* true if number type must be >= min && <= max */
-};
-struct jnamval_number
-{
-    /* exact number if >= 0 */
-    intmax_t number;		/* exact number exact number (must be >= 0) */
-    bool exact;			/* true if an exact match (number) must be found */
-
-    /* for number ranges */
-    struct jnamval_number_range range;	/* for ranges */
-};
 
 /*
  * jnamval - struct that holds most of the options, other settings and other data
@@ -134,34 +99,17 @@ struct jnamval
 {
     struct json_util common;			/* common data related to tools: jfmt, jval, jnamval */
 
-    /* string related options */
-    bool encode_strings;			/* -e used */
-    bool quote_strings;				/* -Q used */
+    struct json_util_name_val json_name_val; /* common to jval and jnamval */
+
+    /* below are those not common to any other tools */
 
     /* printing related options */
     bool print_json_types_option;		/* -p explicitly used */
     uintmax_t print_json_types;			/* -p type specified */
-    bool print_decoded;				/* -D used */
-    bool invert_matches;			/* -i used */
-    bool count_only;				/* -c used, only show count */
-    bool count_and_show_values;			/* -C used, show count and values */
 
     /* search / matching related */
-    bool json_types_specified;			/* -t used */
-    uintmax_t json_types;			/* -t type */
-    bool ignore_case;				/* true if -f, case-insensitive */
-    bool match_decoded;				/* -d used - match decoded */
-    bool arg_specified;				/* true if an arg was specified */
-    bool match_substrings;			/* -s used, match substrings */
-    bool use_regexps;				/* -g used, allow grep-like regexps */
     bool match_json_member_names;		/* -N used, match based on member names */
     bool match_hierarchies;			/* -H used, name hierarchies */
-    uintmax_t total_matches;			/* for -c */
-
-    bool string_cmp_used;			/* for -S */
-    struct jnamval_cmp_op *string_cmp;		/* for -S str */
-    bool num_cmp_used;				/* for -n */
-    struct jnamval_cmp_op *num_cmp;			/* for -n num */
 };
 
 
@@ -192,9 +140,6 @@ bool jnamval_print_value(uintmax_t types);
 bool jnamval_print_both(uintmax_t types);
 bool jnamval_print_json(uintmax_t types);
 
-
-/* for -S and -n */
-struct jnamval_cmp_op *jnamval_parse_cmp_op(struct jnamval *jnamval, const char *option, char *optarg);
 
 /* functions to print matches */
 bool jnamval_print_count(struct jnamval *jnamval);
