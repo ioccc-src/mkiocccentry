@@ -881,7 +881,7 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
 
     /* firewall */
     if (jnamval == NULL) {
-	err(42, __func__, "jnamval is NULL");
+	err(28, __func__, "jnamval is NULL");
 	not_reached();
     }
 
