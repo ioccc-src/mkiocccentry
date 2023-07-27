@@ -1,6 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.41 2023-07-27
+
+Update `json_util_README.md` document.
+
+Added missing exit code to `jval` tool. Updated version string to: "0.0.6
+2023-07-27".
+
+Sequenced exit codes.
+
+
 ## Release 1.0.41 2023-07-26
 
 New version of `jfmt`, `jval` and `jnamval`: "0.0.5 2023-07-26".

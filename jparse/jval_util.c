@@ -565,7 +565,7 @@ free_jval_cmp_op_lists(struct jval *jval)
 
     /* firewall */
     if (jval == NULL) {
-	err(41, __func__, "jval is NULL");
+	err(27, __func__, "jval is NULL");
 	not_reached();
     }
 

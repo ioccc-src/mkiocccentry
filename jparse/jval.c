@@ -121,6 +121,7 @@ static const char * const usage_msg0 =
     "    5\tfile contents is not valid JSON\n"
     "    6\ttest mode failed\n"
     "    7\tunable to represent a number\n"
+    "    8\tno matches found\n"
     " >=10\tinternal error\n"
     "\n"
     "JSON parser version: %s\n"
