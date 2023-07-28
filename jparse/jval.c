@@ -363,13 +363,21 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jval_print_count(jval);
-	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
+	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
     } else {
-	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
+	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
     }
 
     /* free tree */
     json_tree_free(jval->common.json_tree, jval->common.max_depth);
+
+    /*
+     * if no match was requested and inversion was requested we exit with no
+     * matches found
+     */
+    if (argv[0] == NULL && jval->json_name_val.invert_matches) {
+	exit_code = 8;
+    }
 
     if (jval != NULL) {
 	free_jval(&jval);	/* free jval struct */
@@ -544,10 +552,8 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
     }
     /*
      * parse args first
-     *
-     * XXX - implement this function if necessary
      */
-    parse_jval_args(jval, *argv);
+    parse_jval_args(jval, argc, argv);
 
     /* all good: return the (presumably) json FILE * */
     return jval->common.json_file;

@@ -395,13 +395,21 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jnamval_print_count(jnamval);
-	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
+	fprintf(jnamval->common.outfile?jnamval->common.outfile:stdout, "%s", jnamval->common.file_contents);
     } else {
-	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
+	fprintf(jnamval->common.outfile?jnamval->common.outfile:stdout, "%s", jnamval->common.file_contents);
     }
 
     /* free tree */
     json_tree_free(jnamval->common.json_tree, jnamval->common.max_depth);
+
+    /*
+     * if no match was requested and inversion was requested we exit with no
+     * matches found
+     */
+    if (argv[0] == NULL && jnamval->json_name_val.invert_matches) {
+	exit_code = 8;
+    }
 
     if (jnamval != NULL) {
 	free_jnamval(&jnamval);	/* free jnamval struct */
@@ -580,11 +588,8 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
 	}
     }
     /*
-     * parse args first
-     *
-     * XXX - implement this function if necessary
-     */
-    parse_jnamval_args(jnamval, *argv);
+     * parse args first */
+    parse_jnamval_args(jnamval, argc, argv);
 
     /* all good: return the (presumably) json FILE * */
     return jnamval->common.json_file;

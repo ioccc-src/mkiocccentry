@@ -1,6 +1,39 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.42 2023-07-28
+
+New versions of `jfmt`, `jval` and `jnamval` with some minor bug fixes and
+enhancements: `"0.0.6 2023-07-28"`, `"0.0.7 2023-07-28"` and `"0.0.6
+2023-07-28"`.
+
+Fixed bug where redirecting stdout to `/dev/null` resulted in an error:
+
+```
+Warning: vfpr: called from jfmt: vfprintf returned: 56 <= 0: errno[25]: Inappropriate ioctl for device
+```
+
+For `jval` and `jnamval` the functions `parse_jval_args()` and
+`parse_jnamval_args()` have been updated to take the proper struct, a pointer to
+`argc` from `main()` and a pointer to `argv` from `main()`. That is a `int *`
+and a `char ***`. The functions increment `argc`/`argv` past the file name so
+that `main()` can check if there are any args without having to worry about
+`argv[0]`. The function (not `main()` - the parsing ones) now show debug
+information about the args shown. Currently the debug level is 0 so that it's
+always printed but this will change later on. As there is no implementation yet
+(but see below) there is no list or array or searching of any kind with the
+args.
+
+Since the ability to check if any args is now easy and since `-i` flag with no
+args specified means that there are no matches and that indicates exiting 8
+`jval` and `jnamval` now have this check. That is the extent of any
+implementation details until we have discussed output, how `jfmt` should format
+code, search routines are added and numerous other things. This was just an
+aside, one might say.
+
+Update `jval(1)` man page - add exit code 8 to list of exit codes.
+
+
 ## Release 1.0.41 2023-07-27
 
 Update `json_util_README.md` document.

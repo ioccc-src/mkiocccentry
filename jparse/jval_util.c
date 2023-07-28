@@ -523,13 +523,14 @@ jval_print_count(struct jval *jval)
  * given:
  *
  *	jval	    - pointer to our struct jval
- *	argv	    - argv from main()
+ *	argc	    - pointer to argc from main() (int *)
+ *	argv	    - pointer to argv from main() (char ***)
  *
  * This function will not return on NULL pointers.
  *
  */
 void
-parse_jval_args(struct jval *jval, char **argv)
+parse_jval_args(struct jval *jval, int *argc, char ***argv)
 {
     int i;  /* to iterate through argv */
 
@@ -538,13 +539,28 @@ parse_jval_args(struct jval *jval, char **argv)
 	err(25, __func__, "jval is NULL");
 	not_reached();
     }
+    if (argc == NULL) {
+	err(26, __func__, "argc is NULL");
+	not_reached();
+    }
     if (argv == NULL) {
-	err(26, __func__, "argv is NULL");
+	err(27, __func__, "argv is NULL");
 	not_reached();
     }
 
-    for (i = 1; argv[i] != NULL; ++i) {
-	/* XXX - go through argv and add args to a list - XXX */
+    /* skip past file name */
+    (*argc)++;
+    (*argv)++;
+
+    for (i = 0; (*argv)[i] != NULL; ++i) {
+	json_dbg(JSON_DBG_NONE, __func__, "arg[%d]: %s", i, (*argv)[i]);
+	/* XXX - do we increment argc and argv? On the one hand this might seem
+	 * logical but on the other if we keep argc and argv as it is (past the
+	 * file name) then main() can check if any args are present. Now it
+	 * might be that later on we will have a list or array of some kind but
+	 * currently this is not the case so we don't update argc or argv past
+	 * the file name.
+	 */
     }
 }
 
@@ -565,7 +581,7 @@ free_jval_cmp_op_lists(struct jval *jval)
 
     /* firewall */
     if (jval == NULL) {
-	err(27, __func__, "jval is NULL");
+	err(28, __func__, "jval is NULL");
 	not_reached();
     }
 

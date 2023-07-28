@@ -68,7 +68,7 @@
 #include "jparse.h"
 
 /* jfmt version string */
-#define JFMT_VERSION "0.0.5 2023-07-26"		/* format: major.minor YYYY-MM-DD */
+#define JFMT_VERSION "0.0.6 2023-07-28"		/* format: major.minor YYYY-MM-DD */
 
 /* jfmt functions - see jfmt_util.h for most */
 
