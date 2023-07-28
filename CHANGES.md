@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.42 2023-07-29
+
+Add jparse/test_jparse/test_print test tool.
+
+
 ## Release 1.0.41 2023-07-27
 
 Update `json_util_README.md` document.

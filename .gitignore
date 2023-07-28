@@ -3,6 +3,7 @@
 .build.log
 .build.log.*
 .hostchk.*.work/
+.jparse_test.stderr.*
 .jsemcgen.*.out
 .local.dir.tags
 .sorry.*.c
@@ -25,6 +26,8 @@ dbg/dbg_test.c
 dyn_array/dyn_test
 fnamchk
 iocccsize
+jfmt_test.log
+jnamval.log
 jnum_chk
 jnum_gen
 jparse.c
@@ -33,20 +36,19 @@ jparse.output
 jparse.tab.c
 jparse.tab.h
 jparse.xml
-jparse/jparse
 jparse/jfmt
 jparse/jnamval
+jparse/jparse
 jparse/jval
 jparse/lex.yy.c
+jparse/test_jparse/test_print
 jparse_test.log
-jfmt_test.log
-jnamval.log
-jval.log
 jsemtblgen
 jstr_test.out
 jstr_test2.out
 jstrdecode
 jstrencode
+jval.log
 limit_ioccc.sh
 makefile.local
 mkiocccentry
@@ -65,7 +67,6 @@ txzchk_test.log
 utf8_test
 verge
 warnings.log
-.jparse_test.stderr.*
 
 # Prerequisites
 *.d
