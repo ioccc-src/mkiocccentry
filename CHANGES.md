@@ -23,6 +23,8 @@ All "print function call"s are now followed by a call to
 `chk_stdio_printf_err()` to properly detect if there was a
 failure in the "print function call".
 
+Add `print_test` execution to `make test` in `jparse/test_jparse/Makefile`.
+
 New versions of `jfmt`, `jval` and `jnamval` with some minor bug fixes and
 enhancements: `"0.0.6 2023-07-28"`, `"0.0.7 2023-07-28"` and `"0.0.6
 2023-07-28"`.
