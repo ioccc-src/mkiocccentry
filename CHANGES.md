@@ -1,17 +1,31 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.0.42 2023-07-28
+## Release 1.0.42 2023-07-29
+
+Add `jparse/test_jparse/print_test` test tool to test if various
+print function calls fail.  Here "print function call" refers to:
+
+```
+print(3), fprintf(3), dprintf(3), vprintf(3), vfprintf(3), vdprintf(3)
+```
+
+We also test various print-like functions from `parse/util.c` such as:
+
+```
+fprint(), fprstr(), print(), prstr(), para(), fpara(), fpr(), vfpr()
+```
+
+Added `chk_stdio_printf_err(stream, ret)` to determine of a
+print function call had an error.  
+
+All "print function call"s are now followed by a call to
+`chk_stdio_printf_err()` to properly detect if there was a
+failure in the "print function call".
 
 New versions of `jfmt`, `jval` and `jnamval` with some minor bug fixes and
 enhancements: `"0.0.6 2023-07-28"`, `"0.0.7 2023-07-28"` and `"0.0.6
 2023-07-28"`.
-
-Fixed bug where redirecting stdout to `/dev/null` resulted in an error:
-
-```
-Warning: vfpr: called from jfmt: vfprintf returned: 56 <= 0: errno[25]: Inappropriate ioctl for device
-```
 
 For `jval` and `jnamval` the functions `parse_jval_args()` and
 `parse_jnamval_args()` have been updated to take the proper struct, a pointer to

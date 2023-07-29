@@ -215,9 +215,9 @@ main(int argc, char *argv[])
 	    not_reached();
 	    break;
 	case 't':		/* -t - validate the contents of the jenc[] table */
-	    printf("%s: Beginning jencchk test on code JSON encode/decode functions ...\n", program);
+	    print("%s: Beginning jencchk test on code JSON encode/decode functions ...\n", program);
 	    jencchk();
-	    printf("%s: ... passed JSON encode/decode test\n", program);
+	    print("%s: ... passed JSON encode/decode test\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;

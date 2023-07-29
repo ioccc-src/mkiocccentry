@@ -167,7 +167,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jnum_chk.c jnum_gen.c jnum_header.c
+C_SRC= jnum_chk.c jnum_gen.c jnum_header.c print_test.c
 H_SRC= jnum_chk.h jnum_gen.h
 
 # source files that do not conform to strict picky standards
@@ -190,11 +190,11 @@ LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= jnum_chk.o jnum_test.o
+LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= jnum_gen.o
+OTHER_OBJS= jnum_gen.o jnum_chk.o jnum_test.o print_test.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -250,7 +250,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jnum_chk jnum_gen
+PROG_TARGETS= jnum_chk jnum_gen print_test
 
 # what to make by all but NOT to removed by clobber
 #
@@ -315,6 +315,12 @@ jnum_gen.o: jnum_gen.c jnum_gen.h
 
 jnum_gen: jnum_gen.o ../jparse.a ../../dyn_array/dyn_array.a ../../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
+
+print_test.o: print_test.c
+	${CC} ${CFLAGS} print_test.c -c
+
+print_test: print_test.o ../jparse.a ../../dyn_array/dyn_array.a ../../dbg/dbg.a
+	${CC} ${CFLAGS} $^ -o $@
 
 
 
@@ -638,3 +644,5 @@ jnum_header.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
     ../json_util.h ../util.h jnum_chk.h jnum_header.c
 jnum_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
     ../json_util.h ../util.h jnum_chk.h jnum_test.c
+print_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../util.h \
+    print_test.c

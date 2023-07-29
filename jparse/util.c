@@ -535,6 +535,114 @@ is_open_file_stream(FILE *stream)
 
 
 /*
+ * chk_stdio_printf_err - check for a print function call errors
+ *
+ * Here "print function call" refers to functions such as:
+ *
+ *	print(3), fprintf(3), dprintf(3),
+ *	vprintf(3), vfprintf(3), vdprintf(3)
+ *
+ * On some systems, such as macOS, the first stdio print function call
+ * that prints to a given stream first checks if the stream is associated
+ * with a TTY (presumably so that it might perform certain TTY related
+ * ioctl(2) actions on the stream).  The TTY check is performed by isatty(3).
+ *
+ * If the stream is NOT a TTY, then isatty(3) will fail.  Now on some systems
+ * the first stdio print function call that performs such a isatty(3) will
+ * such as macOS, leave errno with the value ENOTTY, even though the actual
+ * print function did not fail.
+ *
+ * The FILE structure, presumably, contains a boolean to indicate if
+ * the stream is a TTY or not.  Thus on the second and later print function
+ * calls to the stream, there is no need to call isatty(3).
+ *
+ * Consider what happens when a stream such as stdout or stderr becomes
+ * associated with "/dev/null" which is NOT a TTY.  The first print function call
+ * will call isatty(3), which will fail because "/dev/null" is not a TTY.
+ * On systems such as macOS, the errno value will be left with ENOTTY
+ * even though the stdio print function call did not fail.
+ *
+ * Because of this, we have to treat the case where the print function
+ * returned a value > 0 and errno == ENOTTY and the stream is not a TTY.
+ * We do NOT consider this situation to be a stdio print functions failure.
+ *
+ * given:
+ *	stream		open file stream being used
+ *	ret		return code from the stdio print function
+ *
+ * returns:
+ *	true ==> the stdio print function failed
+ *	false ==> the stdio print function did not fail
+ */
+bool
+chk_stdio_printf_err(FILE *stream, int ret)
+{
+    int saved_errno = errno;	/* saved errno */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	return true;	/* NULL stream is an error */
+    }
+
+    /*
+     * case: no stdio error
+     */
+    if (ret > 0 && errno == 0) {
+	return false;	/* not an stdio print function error */
+    }
+
+    /*
+     * case: errno != 0 && errno != ENOTTY
+     */
+    if (errno != 0 && errno != ENOTTY) {
+	return true;	/* errno != 0 and errno != ENOTTY is a print function error */
+    }
+    /* errno == ENOTTY or errno == 0 below here */
+
+    /*
+     * case: ret <= 0 && errno == 0
+     */
+    if (ret <= 0 && errno == 0) {
+	return true;	/* ret <= 0 and errno = 0 is a print function error */
+    }
+    /* errno == ENOTTY below here */
+
+    /*
+     * case: stream is a tty
+     */
+    if (isatty(fileno(stream))) {
+
+	/*
+	 * restore errno in case isatty() changed it
+	 */
+	errno = saved_errno;
+	return true;	/* errno == ENOTTY and stream is a TTY is a print function error */
+    }
+    /* errno == ENOTTY and not a TTY below here */
+
+    /*
+     * restore errno in case isatty() changed it
+     */
+    errno = saved_errno;
+
+    /*
+     * case: errno == ENOTTY and stream is not a TTY and ret <= 0
+     */
+    if (ret <= 0) {
+	return true;	/* errno == ENOTTY and stream is a TTY and ret <= 0 is a print function error */
+    }
+    /* errno == ENOTTY and ret > 0 and not a TTY below here */
+
+    /*
+     * case: errno == ENOTTY and ret > 0 and stream is NOT a TTY
+     */
+    return false;	/* errno == ENOTTY and stream and ret > 0 is NOT a TTY is NOT a print function error */
+}
+
+
+/*
  * fd_is_ready - test of a file descriptor is ready for I/O
  *
  * Perform a non-blocking test to determine of a given file descriptor is ready
@@ -1709,7 +1817,7 @@ vfpr(FILE *stream, char const *name, char const *fmt, va_list ap)
      */
     errno = 0;			/* pre-clear errno for warnp() */
     fret = vfprintf(stream, fmt, ap);
-    if (fret <= 0 || errno != 0) {
+    if (chk_stdio_printf_err(stream, fret)) {
 	warnp(__func__, "called from %s: vfprintf returned: %d <= 0", name, fret);
     }
 
@@ -3494,7 +3602,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 	    if (stream != NULL) {
 		errno = 0;  /* clear errno */
 		ret = fprintf(stream, "\\x%02x", c);
-		if (ret != 2) {
+		if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 		    delayed_errno = errno;
 		    success = false;
 		}
@@ -3519,7 +3627,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\0");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3535,7 +3643,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\a");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3551,7 +3659,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\b");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3567,7 +3675,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\e");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3583,7 +3691,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\f");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3599,7 +3707,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\n");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3615,7 +3723,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\r");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3631,7 +3739,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\t");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3647,7 +3755,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\v");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3663,7 +3771,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\\\");
-		    if (ret != 2) {
+		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
 			delayed_errno = errno;
 			success = false;
 		    }
@@ -3684,7 +3792,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		    if (stream != NULL) {
 			errno = 0;	/* clear errno */
 			ret = fputc(c, stream);
-			if (ret == EOF) {
+			if (chk_stdio_printf_err(stream, ret) || ret == EOF) {
 			    delayed_errno = errno;
 			    success = false;
 			}
@@ -3702,7 +3810,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		    if (stream != NULL) {
 			errno = 0;  /* clear errno */
 			ret = fprintf(stream, "\\x%02x", c);
-			if (ret != 4) {
+			if (chk_stdio_printf_err(stream, ret) || ret != 4) {
 			    delayed_errno = errno;
 			    success = false;
 			}
