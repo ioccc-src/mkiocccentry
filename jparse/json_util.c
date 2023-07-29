@@ -302,13 +302,13 @@ json_vdbg(int json_dbg_lvl, char const *name, char const *fmt, va_list ap)
      */
     errno = 0;
     ret = fprintf(stderr, "in %s(): JSON debug[%d]: ", name, json_dbg_lvl);
-    if (ret < 0) {
+    if (chk_stdio_printf_err(stderr, ret)) {
 	warn(__func__, "fprintf returned errno: %d: (%s)", errno, strerror(errno));
     }
 
     errno = 0;
     ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
+    if (chk_stdio_printf_err(stderr, ret)) {
 	warn(__func__, "vfprintf returned errno: %d: (%s)", errno, strerror(errno));
     }
 
@@ -361,7 +361,7 @@ json_putc(uint8_t const c, FILE *stream)
      */
     errno = 0;	    /* pre-clear errno for warnp */
     ret = fprintf(stream, "%s", jenc[c].enc);
-    if (ret <= 0) {
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf #1 error");
 	return false;
     }
@@ -416,7 +416,7 @@ json_fprintf_str(FILE *stream, char const *str)
     if (str == NULL) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(stream, "null");
-	if (ret <= 0) {
+	if (chk_stdio_printf_err(stream, ret)) {
 	    warnp(__func__, "fprintf #0 error for null");
 	    return false;
 	}
@@ -499,7 +499,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing lead");
 	return false;
     }
@@ -517,7 +517,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing middle");
 	return false;
     }
@@ -535,7 +535,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing end of line");
 	return false;
     }
@@ -586,7 +586,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing lead");
 	return false;
     }
@@ -604,7 +604,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing middle");
 	return false;
     }
@@ -614,7 +614,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%ld", value);
-    if (ret <= 0) {
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf for value as a long");
 	return false;
     }
@@ -624,7 +624,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing end of line");
 	return false;
     }
@@ -675,7 +675,7 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing lead");
 	return false;
     }
@@ -693,7 +693,7 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing middle");
 	return false;
     }
@@ -709,7 +709,7 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
 	/* case: signed time_t */
 	ret = fprintf(stream, "%jd", (intmax_t)value);
     }
-    if (ret <= 0) {
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf for value as a time_t");
 	return false;
     }
@@ -719,7 +719,7 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing end of line");
 	return false;
     }
@@ -767,7 +767,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing lead");
 	return false;
     }
@@ -785,7 +785,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing middle");
 	return false;
     }
@@ -795,7 +795,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", booltostr(value));
-    if (ret <= 0) {
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf for value as a boolean");
 	return false;
     }
@@ -805,7 +805,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      */
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+    if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf printing end of line");
 	return false;
     }

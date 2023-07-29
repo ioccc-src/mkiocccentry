@@ -3,7 +3,19 @@
 
 ## Release 1.0.42 2023-07-29
 
-Add jparse/test_jparse/test_print test tool.
+Add `jparse/test_jparse/test_print` test tool to test if various
+print function calls fail.  Here "print function call" refers to:
+
+```
+print(3), fprintf(3), dprintf(3), vprintf(3), vfprintf(3), vdprintf(3)
+```
+
+Added `chk_stdio_printf_err(stream, ret)` to determine of a
+print function call had an error.  
+
+All "print function call"s are now followed by a call to
+`chk_stdio_printf_err()` to properly detect if there was a
+failure in the "print function call".
 
 
 ## Release 1.0.41 2023-07-27

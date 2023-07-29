@@ -186,6 +186,7 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern bool is_open_file_stream(FILE *stream);
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
+extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
