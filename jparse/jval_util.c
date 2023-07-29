@@ -511,6 +511,8 @@ jval_print_count(struct jval *jval)
     }
 
     if (jval->json_name_val.count_only || jval->json_name_val.count_and_show_values) {
+	/* XXX - the next line will be removed when -c and -C are done - XXX */
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "XXX - the count is currently incorrect - XXX\n");
 	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%ju\n", jval->json_name_val.total_matches);
 	return true;
     }

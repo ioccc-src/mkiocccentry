@@ -1,6 +1,5 @@
 # Major changes to the IOCCC entry toolkit
 
-
 ## Release 1.0.42 2023-07-29
 
 Add `jparse/test_jparse/print_test` test tool to test if various
@@ -26,8 +25,13 @@ failure in the "print function call".
 Add `print_test` execution to `make test` in `jparse/test_jparse/Makefile`.
 
 New versions of `jfmt`, `jval` and `jnamval` with some minor bug fixes and
-enhancements: `"0.0.6 2023-07-28"`, `"0.0.7 2023-07-28"` and `"0.0.6
-2023-07-28"`.
+enhancements: `"0.0.8 2023-07-29"`, `"0.0.8 2023-07-29"` and `"0.0.8
+2023-07-29"`. The version change synchronises the version number to keep track
+of the versions since the date was the same. This does mean that the version for
+both `jfmt` and `jnamval` jumped from 0.0.6 to 0.0.8 but this seems like a
+worthy compromise to keep things together especially as the documented change
+for the version update that technically took place on 28 July 2023 was or if it
+was is no longer documented.
 
 For `jval` and `jnamval` the functions `parse_jval_args()` and
 `parse_jnamval_args()` have been updated to take the proper struct, a pointer to
@@ -46,6 +50,9 @@ args specified means that there are no matches and that indicates exiting 8
 implementation details until we have discussed output, how `jfmt` should format
 code, search routines are added and numerous other things. This was just an
 aside, one might say.
+
+Added `XXX` comment to the print count function of each tool that points out
+that currently the count is not correct. This will be removed in time.
 
 Update `jval(1)` man page - add exit code 8 to list of exit codes.
 

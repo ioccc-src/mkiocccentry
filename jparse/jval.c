@@ -363,9 +363,9 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jval_print_count(jval);
-	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     } else {
-	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     }
 
     /* free tree */

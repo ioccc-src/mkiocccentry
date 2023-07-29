@@ -395,9 +395,9 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jnamval_print_count(jnamval);
-	fprintf(jnamval->common.outfile?jnamval->common.outfile:stdout, "%s", jnamval->common.file_contents);
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
     } else {
-	fprintf(jnamval->common.outfile?jnamval->common.outfile:stdout, "%s", jnamval->common.file_contents);
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%s", jnamval->common.file_contents);
     }
 
     /* free tree */
@@ -590,6 +590,7 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
     /*
      * parse args first */
     parse_jnamval_args(jnamval, argc, argv);
+
 
     /* all good: return the (presumably) json FILE * */
     return jnamval->common.json_file;
