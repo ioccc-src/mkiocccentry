@@ -41,7 +41,7 @@ jparse/jnamval
 jparse/jparse
 jparse/jval
 jparse/lex.yy.c
-jparse/test_jparse/test_print
+jparse/test_jparse/print_test
 jparse_test.log
 jsemtblgen
 jstr_test.out

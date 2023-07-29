@@ -1,5 +1,14 @@
 /*
- * test_print - test print and related functions and macros
+ * print_test - test print function call
+ *
+ * Here "print function call" refers to functions such as:
+ *
+ *    print(3), fprintf(3), dprintf(3),
+ *    vprintf(3), vfprintf(3), vdprintf(3)
+ *
+ * We also test various print-like functions from jparse/util.c such as:
+ *
+ *    fprint(), fprstr(), print(), prstr(), para(), fpara(), fpr(), vfpr()
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
@@ -42,9 +51,9 @@
 
 
 /*
- * official test_print version
+ * official print_test version
  */
-#define JNUM_GEN_VERSION "1.0 2023-07-28"	/* format: major.minor YYYY-MM-DD */
+#define PRINT_TEST_VERSION "1.0 2023-07-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -71,7 +80,7 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "test_print version: %s";
+    "print_test version: %s";
 
 
 /*
@@ -120,7 +129,7 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", JNUM_GEN_VERSION);
+	    print("%s\n", PRINT_TEST_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -707,7 +716,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_GEN_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PRINT_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

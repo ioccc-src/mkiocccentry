@@ -3,7 +3,7 @@
 
 ## Release 1.0.42 2023-07-29
 
-Add `jparse/test_jparse/test_print` test tool to test if various
+Add `jparse/test_jparse/print_test` test tool to test if various
 print function calls fail.  Here "print function call" refers to:
 
 ```
