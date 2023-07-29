@@ -827,6 +827,8 @@ jnamval_print_count(struct jnamval *jnamval)
     }
 
     if (jnamval->json_name_val.count_only || jnamval->json_name_val.count_and_show_values) {
+	/* XXX - the next line will be removed when -c and -C are done - XXX */
+	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "XXX - the count is currently incorrect - XXX\n");
 	fpr(jnamval->common.outfile?jnamval->common.outfile:stdout, "jnamval", "%ju\n", jnamval->json_name_val.total_matches);
 	return true;
     }

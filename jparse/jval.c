@@ -363,9 +363,9 @@ main(int argc, char **argv)
 	 * this moment and at least we can test the option - XXX
 	 */
 	jval_print_count(jval);
-	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     } else {
-	fprintf(jval->common.outfile?jval->common.outfile:stdout, "%s", jval->common.file_contents);
+	fpr(jval->common.outfile?jval->common.outfile:stdout, "jval", "%s", jval->common.file_contents);
     }
 
     /* free tree */
@@ -554,6 +554,17 @@ jval_sanity_chks(struct jval *jval, char const *program, int *argc, char ***argv
      * parse args first
      */
     parse_jval_args(jval, argc, argv);
+
+    /*
+     * final checks that rely on argc and argv being shifted in
+     * parse_jval_args()
+     */
+
+    /* use of -c or -C without an arg is an error */
+    if ((jval->json_name_val.count_only || jval->json_name_val.count_and_show_values) && (*argv)[0] == NULL) {
+	err(3, __func__, "use of -c or -C without an arg is an error");/*ooo*/
+	not_reached();
+    }
 
     /* all good: return the (presumably) json FILE * */
     return jval->common.json_file;

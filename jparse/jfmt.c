@@ -308,7 +308,7 @@ main(int argc, char **argv)
     }
 
     /* XXX - change this to format the file - XXX */
-    fprintf(jfmt->common.outfile?jfmt->common.outfile:stdout, "%s", jfmt->common.file_contents);
+    fpr(jfmt->common.outfile?jfmt->common.outfile:stdout, "jfmt", "%s", jfmt->common.file_contents);
 
     /* free tree */
     json_tree_free(jfmt->common.json_tree, jfmt->common.max_depth);
