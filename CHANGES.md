@@ -51,10 +51,8 @@ implementation details until we have discussed output, how `jfmt` should format
 code, search routines are added and numerous other things. This was just an
 aside, one might say.
 
-For `jval` and `jnamval` use of `-c` or `-C` without an arg is considered an
-error and this is in the sanity check function of each tool. Added `XXX` comment
-to the print count function of each tool that points out that currently the
-count is not correct. This will be removed in time.
+Added `XXX` comment to the print count function of each tool that points out
+that currently the count is not correct. This will be removed in time.
 
 Update `jval(1)` man page - add exit code 8 to list of exit codes.
 

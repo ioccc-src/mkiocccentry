@@ -591,17 +591,6 @@ jnamval_sanity_chks(struct jnamval *jnamval, char const *program, int *argc, cha
      * parse args first */
     parse_jnamval_args(jnamval, argc, argv);
 
-    /*
-     * final checks that rely on argc and argv being shifted in
-     * parse_jnamval_args()
-     */
-
-    /* use of -c or -C without an arg is an error */
-    if ((jnamval->json_name_val.count_only || jnamval->json_name_val.count_and_show_values) && (*argv)[0] == NULL) {
-	err(3, __func__, "use of -c or -C without an arg is an error");/*ooo*/
-	not_reached();
-    }
-
 
     /* all good: return the (presumably) json FILE * */
     return jnamval->common.json_file;
