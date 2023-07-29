@@ -10,12 +10,42 @@ print function calls fail.  Here "print function call" refers to:
 print(3), fprintf(3), dprintf(3), vprintf(3), vfprintf(3), vdprintf(3)
 ```
 
+We also test various print-like functions from `parse/util.c` such as:
+
+```
+fprint(), fprstr(), print(), prstr(), para(), fpara(), fpr(), vfpr()
+```
+
 Added `chk_stdio_printf_err(stream, ret)` to determine of a
 print function call had an error.  
 
 All "print function call"s are now followed by a call to
 `chk_stdio_printf_err()` to properly detect if there was a
 failure in the "print function call".
+
+New versions of `jfmt`, `jval` and `jnamval` with some minor bug fixes and
+enhancements: `"0.0.6 2023-07-28"`, `"0.0.7 2023-07-28"` and `"0.0.6
+2023-07-28"`.
+
+For `jval` and `jnamval` the functions `parse_jval_args()` and
+`parse_jnamval_args()` have been updated to take the proper struct, a pointer to
+`argc` from `main()` and a pointer to `argv` from `main()`. That is a `int *`
+and a `char ***`. The functions increment `argc`/`argv` past the file name so
+that `main()` can check if there are any args without having to worry about
+`argv[0]`. The function (not `main()` - the parsing ones) now show debug
+information about the args shown. Currently the debug level is 0 so that it's
+always printed but this will change later on. As there is no implementation yet
+(but see below) there is no list or array or searching of any kind with the
+args.
+
+Since the ability to check if any args is now easy and since `-i` flag with no
+args specified means that there are no matches and that indicates exiting 8
+`jval` and `jnamval` now have this check. That is the extent of any
+implementation details until we have discussed output, how `jfmt` should format
+code, search routines are added and numerous other things. This was just an
+aside, one might say.
+
+Update `jval(1)` man page - add exit code 8 to list of exit codes.
 
 
 ## Release 1.0.41 2023-07-27

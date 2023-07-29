@@ -308,7 +308,7 @@ main(int argc, char **argv)
     }
 
     /* XXX - change this to format the file - XXX */
-    fpr(jfmt->common.outfile?jfmt->common.outfile:stdout, "jfmt", "%s", jfmt->common.file_contents);
+    fprintf(jfmt->common.outfile?jfmt->common.outfile:stdout, "%s", jfmt->common.file_contents);
 
     /* free tree */
     json_tree_free(jfmt->common.json_tree, jfmt->common.max_depth);
@@ -448,6 +448,8 @@ jfmt_sanity_chks(struct jfmt *jfmt, char const *program, int *argc, char ***argv
     dbg(DBG_LOW, "maximum depth to traverse: %ju%s", jfmt->common.max_depth, (jfmt->common.max_depth == 0?" (no limit)":
 		jfmt->common.max_depth==JSON_DEFAULT_MAX_DEPTH?" (default)":""));
 
+
+    /* XXX - should it be an error if any more args are specified ? - XXX */
 
     /* all good: return the (presumably) json FILE * */
     return jfmt->common.json_file;

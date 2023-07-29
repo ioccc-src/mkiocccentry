@@ -509,10 +509,10 @@ The `jval` command, without any "`args`" on the command line, will cause the
 printing of any [JSON values](./json_README.md#json-value) that are not
 otherwise restricted by a `-t type` or `-l lvl` option.
 
-The presence of "`args`" creates match conditions that may further restrict
-which [JSON values](./json_README.md#json-value) are printed.  When using the
-`jval` command with "`args`", match criteria is setup to further select which
-[JSON values](./json_README.md#json-value) are printed.
+The presence of "`args`" creates match conditions that can restrict which [JSON
+values](./json_README.md#json-value) are printed.  When using the `jval` command
+with "`args`", a match criteria is setup to further select which [JSON
+values](./json_README.md#json-value) are printed.
 
 
 #### jval command line options
@@ -571,7 +571,7 @@ JSON document.
 Because of the complexity of trying to describe a complex JSON value on
 the command line, let alone the problem of describing complex value ranges,
 the `-t type` does **NOT** include complex JSON types. For that see the
-`jnamval(1)` utility, discussed later in this document.
+`jnamval` utility, discussed later in this document.
 
 If no "`arg`" is given on the command line then any value can be considered
 unless `-i` inverts the match in which case no value is to be considered.

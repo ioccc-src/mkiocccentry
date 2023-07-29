@@ -144,11 +144,8 @@ bool jnamval_print_json(uintmax_t types);
 /* functions to print matches */
 bool jnamval_print_count(struct jnamval *jnamval);
 
-/*
- * XXX - currently does nothing functionally - might or might not be needed to
- * process argv - XXX
- */
-void parse_jnamval_args(struct jnamval *jnamval, char **argv);
+/* process argv */
+void parse_jnamval_args(struct jnamval *jnamval, int *argc, char ***argv);
 
 /* free compare lists */
 void free_jnamval_cmp_op_lists(struct jnamval *jnamval);

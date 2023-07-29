@@ -116,7 +116,7 @@ bool jval_print_count(struct jval *jval);
  * XXX - currently does nothing functionally - might or might not be needed to
  * process argv - XXX
  */
-void parse_jval_args(struct jval *jnamval, char **argv);
+void parse_jval_args(struct jval *jnamval, int *argc, char ***argv);
 
 void free_jval_cmp_op_lists(struct jval *jval);
 /* to free the entire struct jval */

@@ -63,7 +63,7 @@
 #include "jparse.h"
 
 /* jnamval version string */
-#define JNAMVAL_VERSION "0.0.5 2023-07-26"		/* format: major.minor YYYY-MM-DD */
+#define JNAMVAL_VERSION "0.0.6 2023-07-28"		/* format: major.minor YYYY-MM-DD */
 
 /* jnamval functions - see jnamval_util.h for most */
 
