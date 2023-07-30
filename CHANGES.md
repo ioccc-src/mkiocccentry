@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.43 2023-07-30
+
+Improve, typo fix and bug fix `jparse/test_jparse/print_test.c`. Now checks the
+file descriptor versions of the printf functions. Added `not_reached();` call
+after an error function was called. New version `"1.0.1 2023-07-30"`.
+
+
 ## Release 1.0.42 2023-07-29
 
 Add `jparse/test_jparse/print_test` test tool to test if various
