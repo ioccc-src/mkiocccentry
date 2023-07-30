@@ -3,7 +3,7 @@
  *
  * Here "print function call" refers to functions such as:
  *
- *    print(3), fprintf(3), dprintf(3),
+ *    printf(3), fprintf(3), dprintf(3),
  *    vprintf(3), vfprintf(3), vdprintf(3)
  *
  * We also test various print-like functions from jparse/util.c such as:
@@ -12,31 +12,19 @@
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
- * Copyright (c) 2023 by Landon Curt Noll.  All Rights Reserved.
+ * This JSON parser was co-developed in 2022 by:
  *
- * Permission to use, copy, modify, and distribute this software and
- * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright, this permission notice and text
- * this comment, and the disclaimer below appear in all of the following:
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- *       supporting documentation
- *       source copies
- *       source works derived from this source
- *       binaries derived from this source or from derived source
- *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Share and enjoy! :-)
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
-
 
 /* special comments for the seqcexit tool */
 /* exit code out of numerical order - ignore in sequencing - ooo */
@@ -53,7 +41,7 @@
 /*
  * official print_test version
  */
-#define PRINT_TEST_VERSION "1.0 2023-07-28"	/* format: major.minor YYYY-MM-DD */
+#define PRINT_TEST_VERSION "1.0.1 2023-07-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -156,6 +144,7 @@ main(int argc, char *argv[])
     devnull = fopen("/dev/null", "w");
     if (devnull == NULL) {
 	errp(10, __func__, "FATAL: cannot open /dev/null for writing");
+	not_reached();
     }
 
     /*
@@ -225,7 +214,7 @@ notatty_test(void)
     int err_cnt = 0;		/* number of errors detected */
 
     /*
-     * test vprintf to /dev/null
+     * test fprintf on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprintf(devnull, ...)", __func__);
     errno = 0;			/* pre-clear errno */
@@ -239,7 +228,7 @@ notatty_test(void)
 	if (isatty(fileno(devnull))) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "fprintf on tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "fprintf on tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -248,7 +237,7 @@ notatty_test(void)
 	} else if (saved_errno != ENOTTY) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "fprintf on non-tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "fprintf on non-tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -259,7 +248,7 @@ notatty_test(void)
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
 	    */
-	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for fprintf on non-tty to /dev/null", __func__);
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for fprintf on non-tty /dev/null", __func__);
 	   /* NOTE: this is not an error */
 	}
     }
@@ -295,7 +284,7 @@ vprint_test(char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
-     * test vprintf to /dev/null
+     * test vprintf on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfprintf(devnull, fmt, ap)", __func__);
     errno = 0;			/* pre-clear errno */
@@ -309,7 +298,7 @@ vprint_test(char const *fmt, ...)
 	if (isatty(fileno(devnull))) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "vfprintf on tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -318,7 +307,7 @@ vprint_test(char const *fmt, ...)
 	} else if (saved_errno != ENOTTY) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on non-tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "vfprintf on non-tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -329,13 +318,13 @@ vprint_test(char const *fmt, ...)
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
 	    */
-	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty to /dev/null", __func__);
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty /dev/null", __func__);
 	   /* NOTE: this is not an error */
 	}
     }
 
     /*
-     * test vprintf to stdout
+     * test vfprintf on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfprintf(stdout, fmt, ap)", __func__);
     errno = 0;			/* pre-clear errno */
@@ -346,10 +335,10 @@ vprint_test(char const *fmt, ...)
 	 * case: error on a TTY
 	 */
 	saved_errno = errno;	/* preserve errno in case isatty() changes it */
-	if (isatty(fileno(devnull))) {
+	if (isatty(fileno(stdout))) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on tty to stdout failed");
+	    fwarnp(stderr, __func__, "vfprintf on tty stdout failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -358,7 +347,7 @@ vprint_test(char const *fmt, ...)
 	} else if (saved_errno != ENOTTY) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on non-tty to stdout failed");
+	    fwarnp(stderr, __func__, "vfprintf on non-tty stdout failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -368,14 +357,15 @@ vprint_test(char const *fmt, ...)
 
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error
 	    */
-	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty to stdout", __func__);
-	   /* NOTE: this is not an error */
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty stdout", __func__);
 	}
     }
 
     /*
-     * test vprintf to stderr
+     * test vfprintf on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfprintf(stderr, fmt, ap)", __func__);
     errno = 0;			/* pre-clear errno */
@@ -386,10 +376,10 @@ vprint_test(char const *fmt, ...)
 	 * case: error on a TTY
 	 */
 	saved_errno = errno;	/* preserve errno in case isatty() changes it */
-	if (isatty(fileno(devnull))) {
+	if (isatty(fileno(stderr))) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on tty to stderr failed");
+	    fwarnp(stderr, __func__, "vfprintf on tty stderr failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -398,7 +388,48 @@ vprint_test(char const *fmt, ...)
 	} else if (saved_errno != ENOTTY) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "vfprintf on non-tty to stderr failed");
+	    fwarnp(stderr, __func__, "vfprintf on non-tty stderr failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: ignoring ENOTTY error on a non-TTY
+	 */
+	} else {
+
+	   /*
+	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error
+	    */
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty stderr", __func__);
+	}
+    }
+
+    /*
+     * test vprintf on /dev/null
+     */
+    fdbg(stderr, DBG_MED, "in %s: about to call vdprintf(fileno(devnull), fmt, ap)", __func__);
+    errno = 0;			/* pre-clear errno */
+    ret = vdprintf(fileno(devnull), fmt, ap);
+    if (ret <= 0 || errno != 0) {
+
+	/*
+	 * case: error on a TTY
+	 */
+	saved_errno = errno;	/* preserve errno in case isatty() changes it */
+	if (isatty(fileno(devnull))) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on tty /dev/null failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: non-ENOTTY error on a non-TTY
+	 */
+	} else if (saved_errno != ENOTTY) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on non-tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -409,25 +440,109 @@ vprint_test(char const *fmt, ...)
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
 	    */
-	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty to stderr", __func__);
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vdprintf on non-tty /dev/null", __func__);
 	   /* NOTE: this is not an error */
 	}
     }
 
+
     /*
-     * test vfpr to /dev/null
+     * test vdprintf on stdout
+     */
+    fdbg(stderr, DBG_MED, "in %s: about to call vdprintf(stdout, fmt, ap)", __func__);
+    errno = 0;			/* pre-clear errno */
+    ret = vdprintf(fileno(stdout), fmt, ap);
+    if (ret <= 0 || errno != 0) {
+
+	/*
+	 * case: error on a TTY
+	 */
+	saved_errno = errno;	/* preserve errno in case isatty() changes it */
+	if (isatty(fileno(stdout))) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on tty fileno(stdout) failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: non-ENOTTY error on a non-TTY
+	 */
+	} else if (saved_errno != ENOTTY) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on non-tty fileno(stdout) failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: ignoring ENOTTY error on a non-TTY
+	 */
+	} else {
+
+	   /*
+	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error
+	    */
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vdprintf on non-tty fileno(stdout)", __func__);
+	}
+    }
+
+    /*
+     * test vdprintf on fileno(stderr)
+     */
+    fdbg(stderr, DBG_MED, "in %s: about to call vdprintf(fileno(stderr), fmt, ap)", __func__);
+    errno = 0;			/* pre-clear errno */
+    ret = vdprintf(fileno(stderr), fmt, ap);
+    if (ret <= 0 || errno != 0) {
+
+	/*
+	 * case: error on a TTY
+	 */
+	saved_errno = errno;	/* preserve errno in case isatty() changes it */
+	if (isatty(fileno(stderr))) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on tty fileno(stderr) failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: non-ENOTTY error on a non-TTY
+	 */
+	} else if (saved_errno != ENOTTY) {
+
+	    errno = saved_errno;	/* restore errno in case isatty() changed it */
+	    fwarnp(stderr, __func__, "vdprintf on non-tty fileno(stderr) failed");
+	    ++err_cnt;	/* count this error */
+
+	/*
+	 * case: ignoring ENOTTY error on a non-TTY
+	 */
+	} else {
+
+	   /*
+	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error
+	    */
+	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vdprintf on non-tty fileno(stderr)", __func__);
+	}
+    }
+
+
+    /*
+     * test vfpr on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfpr(devnull, __func__, fmt, ap)", __func__);
     vfpr(devnull, __func__, fmt, ap);
 
     /*
-     * test vfpr to stdout
+     * test vfpr on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfpr(stdout, __func__, fmt, ap)", __func__);
     vfpr(stdout, __func__, fmt, ap);
 
     /*
-     * test vfpr to stderr
+     * test vfpr on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call vfpr(stderr, __func__, fmt, ap)", __func__);
     vfpr(stderr, __func__, fmt, ap);
@@ -462,7 +577,7 @@ print_test(char const *fmt, char const *string)
     int err_cnt = 0;		/* number of errors detected */
 
     /*
-     * test printf to /dev/null
+     * test fprintf on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprintf(devnull, fmt, string)", __func__);
     errno = 0;			/* pre-clear errno */
@@ -476,7 +591,7 @@ print_test(char const *fmt, char const *string)
 	if (isatty(fileno(devnull))) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "fprintf on tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "fprintf on tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -485,7 +600,7 @@ print_test(char const *fmt, char const *string)
 	} else if (errno != ENOTTY) {
 
 	    errno = saved_errno;	/* restore errno in case isatty() changed it */
-	    fwarnp(stderr, __func__, "fprintf on non-tty to /dev/null failed");
+	    fwarnp(stderr, __func__, "fprintf on non-tty /dev/null failed");
 	    ++err_cnt;	/* count this error */
 
 	/*
@@ -495,54 +610,78 @@ print_test(char const *fmt, char const *string)
 
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error.
 	    */
 	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for vfprintf on non-tty to /dev/null", __func__);
-	   /* NOTE: this is not an error */
 	}
     }
 
     /*
-     * test printf to stdout
+     * test fprintf on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprintf(stdout, fmt, string)", __func__);
     errno = 0;			/* pre-clear errno */
     ret = fprintf(stdout, fmt, string);
     if (ret <= 0 || errno != 0) {
-	fwarnp(stderr, __func__, "fprintf to stdout failed");
+	fwarnp(stderr, __func__, "fprintf on stdout failed");
 	++err_cnt;	/* count this error */
     }
 
     /*
-     * test printf to stderr
+     * test fprintf on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprintf(stderr, fmt, string)", __func__);
     errno = 0;			/* pre-clear errno */
     ret = fprintf(stderr, fmt, string);
     if (ret <= 0 || errno != 0) {
-	fwarnp(stderr, __func__, "fprintf to stderr failed");
+	fwarnp(stderr, __func__, "fprintf on stderr failed");
 	++err_cnt;	/* count this error */
     }
 
     /*
-     * test pr to stdout
+     * test dprintf on stdout
+     */
+    fdbg(stderr, DBG_MED, "in %s: about to call dprintf(fileno(stdout), fmt, string)", __func__);
+    errno = 0;			/* pre-clear errno */
+    ret = dprintf(fileno(stdout), fmt, string);
+    if (ret <= 0 || errno != 0) {
+	fwarnp(stderr, __func__, "dprintf on fileno(stdout) failed");
+	++err_cnt;	/* count this error */
+    }
+
+    /*
+     * test dprintf on stderr
+     */
+    fdbg(stderr, DBG_MED, "in %s: about to call dprintf(fileno(stderr), fmt, string)", __func__);
+    errno = 0;			/* pre-clear errno */
+    ret = dprintf(fileno(stderr), fmt, string);
+    if (ret <= 0 || errno != 0) {
+	fwarnp(stderr, __func__, "dprintf on stderr failed");
+	++err_cnt;	/* count this error */
+    }
+
+
+    /*
+     * test pr on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call pr(__func__, fmt, string)", __func__);
     pr(__func__, fmt, string);
 
     /*
-     * test fpr to /dev/null
+     * test fpr on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpr(devnull, __func__, fmt, string)", __func__);
     fpr(devnull, __func__, fmt, string);
 
     /*
-     * test fpr to stdout
+     * test fpr on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpr(stdout, __func__, fmt, string)", __func__);
     fpr(stdout, __func__, fmt, string);
 
     /*
-     * test fpr to stderr
+     * test fpr on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpr(stderr, __func__, fmt, string)", __func__);
     fpr(stderr, __func__, fmt, string);
@@ -565,57 +704,57 @@ static void
 para_test(char const *fmt, char const *string)
 {
     /*
-     * test para to /dev/null
+     * test para on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call para(...)", __func__);
-    para("test fpara to stdout",
+    para("test fpara on stdout",
          "next line is the fmt arg",
 	 fmt,
 	 "next line is the string arg",
 	 string,
-	 "last line of test para to stdout",
+	 "last line of test para on stdout",
 	 NULL  /* required end of string list */
 	 );
 
     /*
-     * test fpara to /dev/null
+     * test fpara on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpara(devnull, ...)", __func__);
     fpara(devnull,
-	  "test fpara to /dev/null",
+	  "test fpara on /dev/null",
           "next line is the fmt arg",
 	  fmt,
 	  "next line is the string arg",
 	  string,
-	  "last line of test fpara to /dev/null",
+	  "last line of test fpara on /dev/null",
 	 NULL  /* required end of string list */
 	 );
 
     /*
-     * test fpara to stdout
+     * test fpara on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpara(stdout, ...)", __func__);
     fpara(stdout,
-	  "test fpara to stdout",
+	  "test fpara on stdout",
           "next line is the fmt arg",
 	  fmt,
 	  "next line is the string arg",
 	  string,
-	  "last line of test fpara to stdout",
+	  "last line of test fpara on stdout",
 	 NULL  /* required end of string list */
 	 );
 
     /*
-     * test fpara to stdout
+     * test fpara on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fpara(stderr, ...)", __func__);
     fpara(stderr,
-	  "test fpara to stderr",
+	  "test fpara on stderr",
           "next line is the fmt arg",
 	  fmt,
 	  "next line is the string arg",
 	  string,
-	  "last line of test fpara to stderr",
+	  "last line of test fpara on stderr",
 	 NULL  /* required end of string list */
 	 );
 
@@ -630,51 +769,52 @@ static void
 pr_test(void)
 {
     /*
-     * test fprint to /dev/null
+     * test fprint on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprint(devnull, ...)", __func__);
+    fprint(devnull, "testing fprint on /dev/null via: %s\n", __func__);
 
     /*
-     * test fprstr to /dev/null
+     * test fprstr on /dev/null
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprstr(devnull, ...)", __func__);
-    fprstr(devnull, "testing fprstr to /dev/null\n");
+    fprstr(devnull, "testing fprstr on /dev/null\n");
 
     /*
-     * test fprint to stdout
+     * test fprint on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprint(stdout, ...)", __func__);
-    fprint(stdout, "testing fprint to stdout via: %s\n", __func__);
+    fprint(stdout, "testing fprint on stdout via: %s\n", __func__);
 
     /*
-     * test fprstr to stdout
+     * test fprstr on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprstr(stdout, ...)", __func__);
-    fprstr(stdout, "testing fprstr to stdout\n");
+    fprstr(stdout, "testing fprstr on stdout\n");
 
     /*
-     * test print to stdout
+     * test print on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call print(...)", __func__);
-    print("testing print to stdout via: %s\n", __func__);
+    print("testing print on stdout via: %s\n", __func__);
 
     /*
-     * test fprstr to stdout
+     * test prstr on stdout
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprstr(...)", __func__);
-    prstr("testing prstr to stdout\n");
+    prstr("testing prstr on stdout\n");
 
     /*
-     * test fprint to stderr
+     * test fprintf on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprint(stderr, ...)", __func__);
-    fprint(stderr, "testing fprint to stderr via: %s\n", __func__);
+    fprint(stderr, "testing fprint on stderr via: %s\n", __func__);
 
     /*
-     * test fprstr to stderr
+     * test fprstr on stderr
      */
     fdbg(stderr, DBG_MED, "in %s: about to call fprstr(stderr, ...)", __func__);
-    fprstr(stderr, "testing fprstr to stderr\n");
+    fprstr(stderr, "testing fprstr on stderr\n");
     return;
 }
 
