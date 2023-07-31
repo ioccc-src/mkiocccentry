@@ -2844,4 +2844,58 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
     return cmp;
 }
 
+/* parse_json_util_format - parse -F format option of jfmt, jval and jnamval
+ *
+ * given:
+ *
+ *	json_util	- pointer to struct json_util in the struct jfmt, jval
+ *			  and jnamval
+ *	name		- name of tool
+ *	optarg		- option arg to parse
+ *
+ * This function will not return on NULL pointer.
+ *
+ * This function returns an enum output_format which is also given in the struct
+ * json_util json_util in the struct of the tool used.
+ */
+enum output_format
+parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg)
+{
+    enum output_format format = JSON_FMT_DEFAULT;
+
+    /* firewall */
+
+    /* name MUST be checked first! */
+    if (name == NULL) {
+	err(3, __func__, "name is NULL");
+	not_reached();
+    }
+    if (json_util == NULL) {
+	err(3, name?name:__func__, "json_util is NULL");
+	not_reached();
+    }
+
+    if (optarg == NULL || *optarg == '\0') {
+	err(3, name?name:__func__, "optarg is NULL or empty");/*ooo*/
+	not_reached();
+    }
+
+    json_util->format_output_changed = true;	    /* set the boolean to true */
+
+    if (!strcmp(optarg, "default")) {
+	format = json_util->format = JSON_FMT_DEFAULT;
+	dbg(DBG_NONE, "%s output format", optarg);
+    } else if (!strcmp(optarg, "pedantic")) {
+	format = json_util->format = JSON_FMT_PEDANTIC;
+	dbg(DBG_NONE, "%s output format", optarg);
+    } else if (!strcmp(optarg, "colour") || !strcmp(optarg, "color")) {
+	format = json_util->format = JSON_FMT_COLOUR;
+	dbg(DBG_NONE, "%sed output format", optarg);
+    } else {
+	err(3, name?name:__func__, "invalid format type used for -F: %s", optarg); /*ooo*/
+	not_reached();
+    }
+
+    return format;
+}
 

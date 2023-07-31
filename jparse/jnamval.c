@@ -42,7 +42,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-t type] [-l lvl]\n"
     "\t[-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num] [-S op=str] [-o ofile]\n"
-    "\t[-p parts] [-N] [-H] [-m max_depth] [-K] file.json [arg ...]\n"
+    "\t[-p parts] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -130,6 +130,12 @@ static const char * const usage_msg1 =
     "\n"
     "\t-K\t\tRun tests on jnamval constraints\n"
     "\n"
+    "\t-F format\tChange the JSON format style (def: use default)\n\n"
+    "\t\t\tdefault\t\tDefault JSON style, 1 or 2 levels per line\n"
+    "\t\t\tpedantic\tOne level per lines style\n"
+    "\t\t\tcolour\t\tDefault plus ANSI colour syntax highlighting\n"
+    "\t\t\tcolor\t\tAlias for colour\n"
+    "\n"
     "\tfile.json\tJSON file to parse (- ==> read from stdin)\n"
     "\targ\t\tmatch arg(s)\n"
     "\n"
@@ -180,7 +186,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:t:l:QDdisfcCgen:S:o:m:Kp:NH")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:t:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jnamval(&jnamval);
@@ -306,6 +312,14 @@ main(int argc, char **argv)
 	case 'H':
 	    jnamval->match_hierarchies = true;
 	    jnamval->match_json_member_names = true; /* -H implies -N */
+	    break;
+	case 'F':
+	    /*
+	     * setting the common.format and common.format_output_changed is redundant
+	     * but we do it anyway
+	     */
+	    jnamval->common.format = JSON_FMT_DEFAULT; /* assume default */
+	    jnamval->common.format = parse_json_util_format(&jnamval->common, "jnamval", optarg);
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
