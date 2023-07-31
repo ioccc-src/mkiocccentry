@@ -42,7 +42,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 static const char * const usage_msg0 =
     "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-t type] [-l lvl]\n"
     "\t[-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num] [-S op=str] [-o ofile]\n"
-    "\t[-m common.max_depth] [-K] file.json [arg ...]\n"
+    "\t[-m common.max_depth] [-K] [-F fmt] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -103,9 +103,16 @@ static const char * const usage_msg0 =
     "\t\t\top may be one of: eq, lt, le, gt, ge\n"
     "\n"
     "\t-o ofile\tWrite to ofile (def: stdout)\n"
-    "\t-m common.max_depth\tSet the maximum JSON level depth to common.max_depth (0 == infinite depth, def: %d)\n"
     "\n"
-    "\t\t\tA 0 common.max_depth implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n"
+    "\t-F format\tChange the JSON format style (def: use default)\n\n"
+    "\t\t\tdefault\t\tDefault JSON style, 1 or 2 levels per line\n"
+    "\t\t\tpedantic\tOne level per lines style\n"
+    "\t\t\tcolour\t\tDefault plus ANSI colour syntax highlighting\n"
+    "\t\t\tcolor\t\tAlias for colour\n"
+    "\n"
+    "\t-m max_depth\tSet the maximum JSON level depth to max_depth (0 == infinite depth, def: %d)\n"
+    "\n"
+    "\t\t\tA 0 max_depth implies JSON_INFINITE_DEPTH: only safe with infinite variable size and RAM :-)\n"
     "\n"
     "\t-K\t\tRun tests on jval constraints\n"
     "\n"
@@ -159,7 +166,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:t:l:QDdisfcCgen:S:o:m:K")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:t:l:QDdisfcCgen:S:o:m:KF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jval(&jval);
@@ -274,6 +281,14 @@ main(int argc, char **argv)
 		free_jval(&jval);
 		exit(0); /*ooo*/
 	    }
+	    break;
+	case 'F':
+	    /*
+	     * setting the common.format and common.format_output_changed is redundant
+	     * but we do it anyway
+	     */
+	    jval->common.format = JSON_FMT_DEFAULT; /* assume default */
+	    jval->common.format = parse_json_util_format(&jval->common, "jval", optarg);
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */

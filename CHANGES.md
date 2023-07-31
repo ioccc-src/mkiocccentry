@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.44 2023-07-31
+
+Add `-F format` option to to `jfmt`, `jval` and `jnamval`. New version for tools
+`"0.0.9 2023-07-31"`. `color` is aliased to `colour`. Other options are
+`default` and `pedantic`. Debug output (with `DBG_NONE` which has to change -
+later on) is added based on the optarg. This option has NOT been added to the
+man pages. That will come later either later today or another day.
+
+Add missing setting of variables in `alloc_jnamval()`.
+
+
 ## Release 1.0.43 2023-07-30
 
 Improve, typo fix and bug fix `jparse/test_jparse/print_test.c`. Now checks the

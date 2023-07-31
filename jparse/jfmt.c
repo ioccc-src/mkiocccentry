@@ -41,7 +41,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  */
 static const char * const usage_msg0 =
     "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
-    "\t[-l lvl] [-m depth] [-K] [-o ofile] file.json\n"
+    "\t[-l lvl] [-m depth] [-K] [-o ofile] [-F fmt] file.json\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -75,6 +75,12 @@ static const char * const usage_msg0 =
     "\t-K\t\tRun test mode\n"
     "\n"
     "\t-o ofile\tOutput formatted JSON to ofile (def: stdout, same as '-')\n"
+    "\n"
+    "\t-F format\tChange the JSON format style (def: use default)\n\n"
+    "\t\t\tdefault\t\tDefault JSON style, 1 or 2 levels per line\n"
+    "\t\t\tpedantic\tOne level per lines style\n"
+    "\t\t\tcolour\t\tDefault plus ANSI colour syntax highlighting\n"
+    "\t\t\tcolor\t\tAlias for colour\n"
     "\n"
     "\tfile.json\tJSON file to parse (- ==> read from stdin)\n"
     "\n"
@@ -166,7 +172,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:I:l:m:Ko:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:I:l:m:Ko:F:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jfmt(&jfmt);
@@ -229,6 +235,14 @@ main(int argc, char **argv)
 		jfmt->common.outfile_not_stdout = true;
 	    }
 	    jfmt->common.outfile_path = optarg;
+	    break;
+	case 'F':
+	    /*
+	     * setting the common.format and common.format_output_changed is redundant
+	     * but we do it anyway
+	     */
+	    jfmt->common.format = JSON_FMT_DEFAULT; /* assume default */
+	    jfmt->common.format = parse_json_util_format(&jfmt->common, "jfmt", optarg);
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */

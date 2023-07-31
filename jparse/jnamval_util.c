@@ -72,12 +72,16 @@ alloc_jnamval(void)
     jnamval->common.levels_constrained = false;
 
     /* print related options */
+    jnamval->common.print_json_levels = false;			/* -L specified */
+    jnamval->common.num_level_spaces = 4;			/* number of spaces or tab for -L */
+    jnamval->common.print_level_tab = false;			/* -L tab option */
+    jnamval->common.indent_levels = false;			/* -I used */
+    jnamval->common.indent_spaces = 4;				/* -I number of tabs or spaces */
+    jnamval->common.indent_tab = false;				/* -I <num>[{t|s}] specified */
     jnamval->print_json_types_option = false;		/* -p explicitly used */
     jnamval->print_json_types = JNAMVAL_PRINT_VALUE;	/* -p type specified */
     jnamval->json_name_val.print_decoded = false;			/* -D not used if false */
-    jnamval->common.print_json_levels = false;			/* -L specified */
-    jnamval->common.num_level_spaces = 0;				/* number of spaces or tab for -L */
-    jnamval->common.print_level_tab = false;			/* -L tab option */
+
     jnamval->json_name_val.invert_matches = false;			/* -i used */
     jnamval->json_name_val.count_only = false;				/* -c used, only show count */
     jnamval->json_name_val.count_and_show_values = false;		/* -C used, count and show values */
@@ -95,6 +99,7 @@ alloc_jnamval(void)
     jnamval->match_hierarchies = false;			/* -H used, match any JSON member name */
 
 
+
     /* comparison options -S and -n */
 
     /* -S op=string */
@@ -110,6 +115,10 @@ alloc_jnamval(void)
 
     /* matches for -c / -C - subject to change */
     jnamval->json_name_val.total_matches = 0;
+
+    /* for -F format output option */
+    jnamval->common.format_output_changed = false;			/* -F format used */
+    jnamval->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
 
     return jnamval;
 }

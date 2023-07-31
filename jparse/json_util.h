@@ -73,6 +73,15 @@
 #define JSON_UTIL_CMP_GT	    (4)
 #define JSON_UTIL_CMP_GE	    (5)
 
+/* for -F with jfmt, jval and jnamval */
+enum output_format {
+    JSON_FMT_DEFAULT = 0,
+    JSON_FMT_PEDANTIC = 1,
+    JSON_FMT_COLOUR = 2
+};
+#define JSON_UTIL_FMT_DEFAULT	    (0)
+#define	JSON_UTIL_FMT_PEDANTIC	    (1)
+#define JSON_UTIL_FMT_COLOUR	    (2)
 
 /* structures */
 
@@ -174,6 +183,8 @@ struct json_util
     uintmax_t indent_spaces;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
 
+    bool format_output_changed;			/* -F output_format used */
+    enum output_format format;			/* for -F output_format */
 
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     struct json *json_tree;			/* json tree if valid merely as a convenience */
@@ -227,5 +238,7 @@ void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, 
 void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
 /* for -S and -n */
 struct json_util_cmp_op *json_util_parse_cmp_op(struct json_util_name_val *json_util_name_val, const char *option, char *optarg);
+/* for -F option */
+enum output_format parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg);
 
 #endif /* INCLUDE_JSON_UTIL_H */

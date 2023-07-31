@@ -71,6 +71,11 @@ alloc_jval(void)
     jval->common.json_util_levels.range.inclusive = false;
     jval->common.levels_constrained = false;
 
+    /* for -F format output option */
+    jval->common.format_output_changed = false;			/* -F format used */
+    jval->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
+
+
     /* print related options */
     jval->json_name_val.print_decoded = false;			/* -D not used if false */
     jval->common.print_json_levels = false;			/* -L specified */

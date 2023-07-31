@@ -73,6 +73,10 @@ alloc_jfmt(void)
     jfmt->common.indent_spaces = 4;				/* -I number of tabs or spaces */
     jfmt->common.indent_tab = false;				/* -I <num>[{t|s}] specified */
 
+    /* for -F format output option */
+    jfmt->common.format_output_changed = false;			/* -F format used */
+    jfmt->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
+
     /* parsing related */
     jfmt->common.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
 
