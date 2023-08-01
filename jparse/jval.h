@@ -63,7 +63,7 @@
 #include "jparse.h"
 
 /* jval version string */
-#define JVAL_VERSION "0.0.9 2023-07-31"		/* format: major.minor YYYY-MM-DD */
+#define JVAL_VERSION "0.0.10 2023-08-01"		/* format: major.minor YYYY-MM-DD */
 
 /* jval functions - see jval_util.h for most */
 

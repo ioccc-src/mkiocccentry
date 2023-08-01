@@ -75,9 +75,11 @@
 
 /* for -F with jfmt, jval and jnamval */
 enum output_format {
-    JSON_FMT_DEFAULT = 0,
-    JSON_FMT_PEDANTIC = 1,
-    JSON_FMT_COLOUR = 2
+    JSON_FMT_DEFAULT = 0,	    /* default format */
+    JSON_FMT_PEDANTIC = 1,	    /* pedantic format: one level per line style */
+    JSON_FMT_COLOUR = 2,	    /* coloured format: syntax highlighting */
+    JSON_FMT_1LINE = 3,		    /* one line output: one line for all output */
+    JSON_FMT_NOWS = 4,		    /* nows (no whitespace) output: one line for all output with no extra whitespace */
 };
 #define JSON_UTIL_FMT_DEFAULT	    (0)
 #define	JSON_UTIL_FMT_PEDANTIC	    (1)
