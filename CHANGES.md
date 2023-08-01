@@ -16,6 +16,9 @@ A thought was to have it run a new script `run_print_test.sh` but this was not
 necessary and would only add more complexity as the script would just have to
 run the tool and check for exit status.
 
+Fix `jparse.3` man page for the change in the `converted` and `parsed` boolean
+convenience macros.
+
 
 ## Release 1.0.44 2023-07-31
 
