@@ -10,6 +10,13 @@ here :-)
 
 Fix formatting in `-h` usage string of the above mentioned tools as well.
 
+New version of `jparse_test.sh`: `"1.0.3 2023-08-01"`. The script now runs
+`print_test` instead of the Makefile doing it and thus cluttering up the output.
+A thought was to have it run a new script `run_print_test.sh` but this was not
+necessary and would only add more complexity as the script would just have to
+run the tool and check for exit status.
+
+
 ## Release 1.0.44 2023-07-31
 
 Add `-F format` option to to `jfmt`, `jval` and `jnamval`. New version for tools

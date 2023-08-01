@@ -2867,11 +2867,11 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
 
     /* name MUST be checked first! */
     if (name == NULL) {
-	err(3, __func__, "name is NULL");
+	err(41, __func__, "name is NULL");
 	not_reached();
     }
     if (json_util == NULL) {
-	err(3, name?name:__func__, "json_util is NULL");
+	err(42, name?name:__func__, "json_util is NULL");
 	not_reached();
     }
 
