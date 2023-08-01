@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.45 2023-08-01
+
+New version of `jfmt`, `jval` and `jnamval`: `"0.0.10 2023-08-01"`.
+Add two new format options to `-F` option of `jfmt`, `jval` and `jnamval`:
+`1line` which prints output on one line with one space between the tokens and
+`nows` for no extra whitespace. There might or might not be a joke somewhere in
+here :-)
+
+Fix formatting in `-h` usage string of the above mentioned tools as well.
+
 ## Release 1.0.44 2023-07-31
 
 Add `-F format` option to to `jfmt`, `jval` and `jnamval`. New version for tools

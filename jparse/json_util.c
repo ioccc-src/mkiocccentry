@@ -2891,6 +2891,11 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
     } else if (!strcmp(optarg, "colour") || !strcmp(optarg, "color")) {
 	format = json_util->format = JSON_FMT_COLOUR;
 	dbg(DBG_NONE, "%sed output format", optarg);
+    } else if (!strcmp(optarg, "nows") || !strcmp(optarg, "news")) {
+	bool news = !strcmp(optarg, "news");
+	format = json_util->format = JSON_FMT_NOWS;
+	dbg(DBG_NONE, "%s %s%s%s",
+		news?"output":"no whitespace", news?"news":"output", news?"":" ",news?"":"format");
     } else {
 	err(3, name?name:__func__, "invalid format type used for -F: %s", optarg); /*ooo*/
 	not_reached();
