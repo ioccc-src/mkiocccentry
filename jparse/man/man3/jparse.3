@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "15 July 2023" "jparse"
+.TH jparse 3  "01 August 2023" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_stream() \|,
@@ -26,13 +26,13 @@
 .br
 \fB#define JSON_PARSER_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
 .br
-\fB#define VALID_JSON_NODE(item) ((item)->converted || (item)->parsed)\fP
+\fB#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))\fP
 .br
-\fB#define CONVERTED_PARSED_JSON_NODE(item) ((item)->converted && (item)->parsed)\fP
+\fB#define PARSED_JSON_NODE(item) ((item) != NULL && ((item)->parsed == true))\fP
 .br
-\fB#define CONVERTED_JSON_NODE(item) ((item)->converted && !(item)->parsed)\fP
+\fB#define CONVERTED_PARSED_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) && ((item)->converted == true)))\fP
 .br
-\fB#define PARSED_JSON_NODE(item) ((item)->parsed && !(item)->converted)\fP
+\fB#define CONVERTED_JSON_NODE(item) ((item) != NULL && (item)->converted == true)\fP
 .sp
 .B "extern const char *const json_parser_version;	/* library version format: major.minor YYYY-MM-DD */"
 .br
@@ -226,6 +226,12 @@ and
 \&, are true.
 .PP
 The macro
+.B PARSED_JSON_NODE
+checks that the node's
+.B parsed
+boolean is true.
+.PP
+The macro
 .B CONVERTED_PARSED_JSON_NODE
 checks that the node's
 .B converted
@@ -237,17 +243,7 @@ The macro
 .B CONVERTED_JSON_NODE
 checks that the node's
 .B converted
-boolean is true and its
-.B parsed
-boolean is false.
-.PP
-The macro
-.B PARSED_JSON_NODE
-checks that the node's
-.B parsed
-boolean is true and that its
-.B converted
-boolean is false.
+boolean is true.
 .SS Version strings
 The string
 .BR jparse_version ,
