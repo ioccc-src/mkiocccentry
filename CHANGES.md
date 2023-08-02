@@ -15,6 +15,8 @@ they are `"2.11 2023-08-02"` and for both `jparse` and the json parser `"1.1.4
 Remove `parse_verbosity(3)` from `dyn_array(3)` facility as it is in the
 `dbg(3)` facility and the `dyn_array(3)` facility uses the `dbg(3)` facility.
 
+Update `jfmt.1`, `jval.1` and `jnamval.1` for `-F` option. There might be a
+colourful update in the three files.
 
 ## Release 1.0.45 2023-08-01
 
