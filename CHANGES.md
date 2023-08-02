@@ -18,6 +18,9 @@ Remove `parse_verbosity(3)` from `dyn_array(3)` facility as it is in the
 Update `jfmt.1`, `jval.1` and `jnamval.1` for `-F` option. There might be a
 colourful update in the three files.
 
+Typo fix in `print_test.c` and make a comment that exists in more than one place
+consistent in location.
+
 ## Release 1.0.45 2023-08-01
 
 New version of `jfmt`, `jval` and `jnamval`: `"0.0.10 2023-08-01"`.

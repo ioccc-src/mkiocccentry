@@ -289,10 +289,11 @@ notatty_test(void)
 
 	   /*
 	    * explain that we are ignoring ENOTTY errno on a non non-tty based stream
+	    *
+	    * NOTE: this is not an error
 	    */
 	   fdbg(stderr, DBG_HIGH, "in %s: ignoring ENOTTY errno for fprintf on non-tty /dev/null: "
 			"fileno(devnull): %d", __func__, fd2);
-	   /* NOTE: this is not an error */
 	}
     }
 
@@ -488,7 +489,7 @@ vprint_test(char const *fmt, ...)
     va_end(ap2);
 
     /*
-     * test vprintf on /dev/null
+     * test vdprintf on /dev/null
      */
     fd = fileno(devnull);
     fdbg(stderr, DBG_HIGH, "in %s: fileno(devnull): %d", __func__, fd);
