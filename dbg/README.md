@@ -1,13 +1,40 @@
+# TL;DR Try dbg
+
+
+## TL;DR Compile and test dbg
+
+```sh
+make clobber all test
+```
+
+
+## TL;DR Install dbg
+
+```sh
+sudo make install
+```
+
+
 # dbg - info, debug, warning, error and usage message facility
 
-When linked into your program, the `dbg` facility provides a way to write
-informative messages, debug messages, warning messages, fatal (and non-fatal)
-error messages and usage messages to a stream such as `stderr`, an open file or
-a buffer of a fixed size.
+When linked into your program, the `dbg` facility provides a way to
+write informative messages, debug messages, warning messages, fatal
+(and non-fatal) error messages and usage messages to a stream such as
+`stderr`, an open file or a buffer of a fixed size.
 
-The `dbg` function calls are easy to add to your C code. There are a number of
-ways to control them including the ability to silence them by default and in the
-case of debug messages, turn on increasing levels of verbosity.
+The `dbg` facility consists of function calls with argument checking,
+as well as attempting to do reasonable things when given NULL pointers,
+bogus values, or when stderr is NULL.
+
+For modern compilers, `dbg` facility function calls that use a printf-like
+format strings are checked for format / parameter mismatches.  A type
+mismatch between a format string and types of arguments will result in
+a compiler warning message.
+
+The `dbg` facility function calls are easy to add to your C code. There
+are several ways to control them including the ability to silence
+message types, and in the case of debug messages, turn on increasing
+levels of verbosity.
 
 
 # Set up

@@ -191,6 +191,9 @@ static void fusage_write(FILE *stream, int error_code, char const *caller, char 
  *	fmt	format of the warning
  *	ap	variable argument list
  *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
@@ -201,6 +204,16 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -331,6 +344,9 @@ snmsg_write(char *str, size_t size, char const *caller, char const *fmt, va_list
  *	fmt	format of the warning
  *	ap	variable argument list
  *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
@@ -341,6 +357,16 @@ fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -494,6 +520,9 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
  *	fmt	format of the warning
  *	ap	variable argument list
  *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  */
 static void
@@ -501,6 +530,16 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 {
     int ret;			/* libc function return code */
     int saved_errno;		/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -521,7 +560,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -532,7 +571,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -543,7 +582,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     ret = fputc('\n', stream);
     if (ret != '\n') {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -554,7 +593,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     ret = fflush(stream);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -587,6 +626,8 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
  *	ap	variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: If stderr is NULL, this function will not issue warnings about print errors.
  */
 static void
 snwarn_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
@@ -620,8 +661,10 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret);
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+        }
     }
 
     /*
@@ -631,9 +674,11 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
     if ((size_t)ret2 >= size-(size_t)ret) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d\n",
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
+        }
     }
 
     /*
@@ -657,13 +702,26 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
  *	fmt	format of the warning
  *	ap	variable argument list
  *
- * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
+ * NOTE: This function does nothing (just returns) if passed other NULL pointers.
  */
 static void
 fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap)
 {
     int ret;			/* libc function return code */
     int saved_errno;		/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -684,7 +742,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -695,7 +753,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -706,7 +764,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     ret = fprintf(stream, ": errno[%d]: %s\n", saved_errno, strerror(saved_errno));
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
 			       caller, name, fmt, strerror(errno));
     }
 
@@ -717,7 +775,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     ret = fflush(stream);
     if (ret < 0) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
     }
 
@@ -750,6 +808,8 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
  *	ap	variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: If stderr is NULL, this function will not issue warnings about print errors.
  */
 static void
 snwarnp_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
@@ -784,8 +844,10 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret);
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+        }
     }
 
     /*
@@ -795,9 +857,11 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
     if ((size_t)ret2 >= size-(size_t)ret) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d\n",
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
+        }
     }
 
     /*
@@ -807,9 +871,11 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     ret3 = snprintf(str+ret+ret2, size-(size_t)ret-(size_t)ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
     if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+        }
     }
 
     /*
@@ -833,7 +899,10 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
  *	fmt		format of the warning
  *	ap		variable argument list
  *
- * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
+ * NOTE: If stderr is NULL, this function will not issue warnings about print errors.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -844,6 +913,16 @@ ferr_write(FILE *stream, int error_code, char const *caller,
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -861,7 +940,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
      * write error diagnostic header to stream
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
+    ret = fprintf(stream, "ERROR[%d]: %s: ", error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf error\n",
 			       __func__, caller, error_code, name, fmt);
@@ -1000,7 +1079,10 @@ snerr_write(char *str, size_t size, int error_code, char const *caller,
  *	fmt		format of the warning
  *	ap		variable argument list
  *
- * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
+ * NOTE: This function does nothing (just returns) if passed a other NULL pointers.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -1011,6 +1093,17 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -1028,7 +1121,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
      * write error diagnostic warning header to stream
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
+    ret = fprintf(stream, "ERROR[%d]: %s: ", error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf #0 error\n",
 		      __func__, caller, error_code, name, fmt);
@@ -1095,6 +1188,8 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
+ * NOTE: If stderr is NULL, this function will not issue warnings about print errors.
+ *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
  */
@@ -1154,9 +1249,11 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
     ret3 = snprintf(str+ret+ret2, size-(size_t)ret-(size_t)ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
     if ((size_t)ret3 >= size-(size_t)ret-(size_t)ret2) {
 	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d second snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+        }
     }
 
     /*
@@ -1181,6 +1278,9 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
  *	fmt		format of the warning
  *	ap		variable argument list
  *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
+ *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
@@ -1191,6 +1291,16 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * firewall - just return if given a NULL ptr
@@ -1351,6 +1461,8 @@ usage_allowed(void)
  *
  *      msg("foobar information");
  *      msg("foo = %d\n", foo);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 msg(char const *fmt, ...)
@@ -1358,6 +1470,13 @@ msg(char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions function to write, return if not
@@ -1382,7 +1501,7 @@ msg(char const *fmt, ...)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
     }
 
     /*
@@ -1414,12 +1533,21 @@ msg(char const *fmt, ...)
  *
  *      vmsg(__func__, "foobar information", ap);
  *      vmsg(__func__, "foo = %d\n", ap);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 vmsg(char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions function to write, return if not
@@ -1441,7 +1569,7 @@ vmsg(char const *fmt, va_list ap)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
     }
 
     /*
@@ -1471,6 +1599,9 @@ vmsg(char const *fmt, va_list ap)
  *
  *      fmsg(stderr, "foobar information");
  *      fmsg(stderr, "foo = %d\n", foo);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 fmsg(FILE *stream, char const *fmt, ...)
@@ -1478,6 +1609,18 @@ fmsg(FILE *stream, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions function to write, return if not
@@ -1500,10 +1643,6 @@ fmsg(FILE *stream, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
@@ -1539,12 +1678,27 @@ fmsg(FILE *stream, char const *fmt, ...)
  *
  *      vfmsg(stderr, __func__, "foobar information", ap);
  *      vfmsg(stderr, __func__, "foo = %d\n", ap);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 vfmsg(FILE *stream, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions function to write, return if not
@@ -1564,10 +1718,6 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
@@ -1607,6 +1757,7 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
  *      snmsg(buf, BUFSIZ, "foo = %d\n", foo);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -1681,6 +1832,7 @@ snmsg(char *str, size_t size, char const *fmt, ...)
  *      vsnmsg(buf, BUFSIZ, "foo = %d\n", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -1740,6 +1892,8 @@ vsnmsg(char *str, size_t size, char const *fmt, va_list ap)
  * Example:
  *
  *	dbg(1, "foobar information: %d", value);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 dbg(int level, char const *fmt, ...)
@@ -1747,6 +1901,13 @@ dbg(int level, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -1771,7 +1932,7 @@ dbg(int level, char const *fmt, ...)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
     }
 
     /*
@@ -1803,12 +1964,21 @@ dbg(int level, char const *fmt, ...)
  * Example:
  *
  *	vdbg(1, "foobar information: %d", ap);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 vdbg(int level, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -1830,7 +2000,7 @@ vdbg(int level, char const *fmt, va_list ap)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
     }
 
     /*
@@ -1860,6 +2030,9 @@ vdbg(int level, char const *fmt, va_list ap)
  * Example:
  *
  *	fdbg(stderr, 1, "foobar information: %d", value);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 fdbg(FILE *stream, int level, char const *fmt, ...)
@@ -1867,6 +2040,18 @@ fdbg(FILE *stream, int level, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -1889,10 +2074,6 @@ fdbg(FILE *stream, int level, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
@@ -1928,12 +2109,27 @@ fdbg(FILE *stream, int level, char const *fmt, ...)
  * Example:
  *
  *	vfdbg(stream, 1, "foobar information: %d", ap);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -1953,10 +2149,6 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
 	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
@@ -1997,6 +2189,7 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
  *	sndbg(buf, BUFSIZ, DBG_VHIGH, "foobar information: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2072,6 +2265,7 @@ sndbg(char *str, size_t size, int level, char const *fmt, ...)
  *	vsndbg(buf, BUFSIZ, DBG_VHIGH, "foobar information: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2131,6 +2325,8 @@ vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap)
  * Example:
  *
  *	warn(__func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 warn(char const *name, char const *fmt, ...)
@@ -2138,6 +2334,13 @@ warn(char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2202,12 +2405,21 @@ warn(char const *name, char const *fmt, ...)
  * Example:
  *
  *	vwarn(__func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 vwarn(char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2267,6 +2479,9 @@ vwarn(char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	fwarn(stderr, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 fwarn(FILE *stream, char const *name, char const *fmt, ...)
@@ -2274,6 +2489,18 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2296,12 +2523,6 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	stream = stderr;
-	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
-			       __func__);
-    }
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
@@ -2345,12 +2566,27 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
  * Example:
  *
  *	vfwarn(stderr, __func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2370,13 +2606,6 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	name = "((NULL name))";
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
-			       __func__);
-    }
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
@@ -2424,6 +2653,7 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
  *	snwarn(buf, BUFSIZ, __func__, "whey value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2501,6 +2731,7 @@ snwarn(char *str, size_t size, char const *name, char const *fmt, ...)
  *	vsnwarn(buf, BUFSIZ, __func__, "whey value: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2563,6 +2794,8 @@ vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	warnp(__func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 warnp(char const *name, char const *fmt, ...)
@@ -2570,6 +2803,13 @@ warnp(char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2634,12 +2874,21 @@ warnp(char const *name, char const *fmt, ...)
  * Example:
  *
  *	vwarnp(__func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just returns).
  */
 void
 vwarnp(char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - do nothing if stderr is NULL
+     */
+    if (stderr == NULL) {
+	return;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2699,6 +2948,9 @@ vwarnp(char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	fwarnp(stderr, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 fwarnp(FILE *stream, char const *name, char const *fmt, ...)
@@ -2706,6 +2958,18 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2728,12 +2992,6 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
-			       __func__);
-    }
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
@@ -2777,12 +3035,27 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
  * Example:
  *
  *	vfwarnp(stderr, __func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
  */
 void
 vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr, unless that is also NULL
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	    stream = stderr;
+        } else {
+	    return;
+	}
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
@@ -2802,11 +3075,6 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	(void) fprintf(stream, "\nWarning: %s: called with NULL stream, will use stderr\n",
-			       __func__);
-    }
     if (name == NULL) {
 	name = "((NULL name))";
 	/* we cannot call warn() because that would produce an infinite loop! */
@@ -2854,6 +3122,7 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
  *	snwarnp(buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2931,6 +3200,7 @@ snwarnp(char *str, size_t size, char const *name, char const *fmt, ...)
  *	vsnwarnp(buf, BUFSIZ, __func__, "unexpected foobar: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -2996,6 +3266,8 @@ vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap)
  *	err(1, __func__, "bad foobar: %s", message);
  *
  * This function does not return.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 err(int exitcode, char const *name, char const *fmt, ...)
@@ -3023,27 +3295,41 @@ err(int exitcode, char const *name, char const *fmt, ...)
      * stage 3: firewall checks
      */
     if (exitcode < 0) {
-	warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+        }
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     } else if (exitcode > 255) {
-	warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+        }
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3072,6 +3358,8 @@ err(int exitcode, char const *name, char const *fmt, ...)
  *	verr(1, __func__, "bad foobar: %s", ap);
  *
  * This function does not return.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 verr(int exitcode, char const *name, char const *fmt, va_list ap)
@@ -3095,27 +3383,41 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
      * stage 3: firewall checks
      */
     if (exitcode < 0) {
-	warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+        }
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     } else if (exitcode > 255) {
-	warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+        }
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3142,12 +3444,25 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
  *	ferr(1, stderr, __func__, "bad foobar: %s", message);
  *
  * This function does not return.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 {
     va_list ap;			/* variable argument list */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3168,32 +3483,42 @@ ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (exitcode < 0) {
-	fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+        }
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     } else if (exitcode > 255) {
-	fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+        }
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stream, exitcode, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferr_write(stream, exitcode, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3223,11 +3548,24 @@ ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
  *	vferr(1, stderr, __func__, "bad foobar: %s", ap);
  *
  * This function does not return.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3245,32 +3583,42 @@ vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (exitcode < 0) {
-	fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     } else if (exitcode > 255) {
-	fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stream, exitcode, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferr_write(stream, exitcode, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3296,6 +3644,8 @@ vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
  *	errp(1, __func__, "bad foobar: %s", message);
  *
  * This function does not return.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 errp(int exitcode, char const *name, char const *fmt, ...)
@@ -3323,27 +3673,41 @@ errp(int exitcode, char const *name, char const *fmt, ...)
      * stage 3: firewall checks
      */
     if (exitcode < 0) {
-	warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	}
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     } else if (exitcode > 255) {
-	warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	}
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3372,6 +3736,8 @@ errp(int exitcode, char const *name, char const *fmt, ...)
  *	verrp(1, __func__, "bad foobar: %s", ap);
  *
  * This function does not return.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 verrp(int exitcode, char const *name, char const *fmt, va_list ap)
@@ -3395,27 +3761,41 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
      * stage 3: firewall checks
      */
     if (exitcode < 0) {
-	warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	}
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     } else if (exitcode > 255) {
-	warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	}
 	exitcode = 255;
-	warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3442,12 +3822,25 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
  *	ferrp(1, stderr, __func__, "bad foobar: %s", message);
  *
  * This function does not return.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 {
     va_list ap;			/* variable argument list */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3468,32 +3861,42 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (exitcode < 0) {
-	fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     } else if (exitcode > 255) {
-	fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3523,11 +3926,24 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
  *	vferrp(1, stderr, __func__, "bad foobar: %s", ap);
  *
  * This function does not return.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3545,32 +3961,42 @@ vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (exitcode < 0) {
-	fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     } else if (exitcode > 255) {
-	fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	}
 	exitcode = 255;
-	fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3597,6 +4023,8 @@ vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap
  *
  * This function writes the same message as err() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 werr(int error_code, char const *name, char const *fmt, ...)
@@ -3628,17 +4056,23 @@ werr(int error_code, char const *name, char const *fmt, ...)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stderr, error_code, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferr_write(stderr, error_code, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3668,6 +4102,8 @@ werr(int error_code, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as verr() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 vwerr(int error_code, char const *name, char const *fmt, va_list ap)
@@ -3695,17 +4131,23 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin vwerr(): called with NULL name, forcing name: %s\n", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nin vwerr(): called with NULL name, forcing name: %s\n", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin vwerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nin vwerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stderr, error_code, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferr_write(stderr, error_code, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3733,6 +4175,9 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
  *
  * This function writes the same message as err() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
@@ -3740,6 +4185,16 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno value when called */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3762,23 +4217,25 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stream, error_code, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferr_write(stream, error_code, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -3809,12 +4266,25 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as verr() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno value when called */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -3834,23 +4304,25 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nin vwerr(): called with NULL name, forcing name: %s\n", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nin vwerr(): called with NULL name, forcing name: %s\n", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nin vwerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nin vwerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic
      */
-    ferr_write(stream, error_code, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferr_write(stream, error_code, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -3882,6 +4354,7 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
  *	snwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -3960,6 +4433,7 @@ snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt
  *	vsnwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -4026,6 +4500,8 @@ vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fm
  *
  * This function writes the same message as verrp() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 werrp(int error_code, char const *name, char const *fmt, ...)
@@ -4057,17 +4533,23 @@ werrp(int error_code, char const *name, char const *fmt, ...)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stderr, error_code, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferrp_write(stderr, error_code, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -4097,6 +4579,8 @@ werrp(int error_code, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as werrp() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
@@ -4124,17 +4608,23 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stderr, error_code, __func__, name, fmt, ap);
+    if (stderr != NULL) {
+	ferrp_write(stderr, error_code, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -4162,6 +4652,9 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
  *
  * This function writes the same message as verrp() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
@@ -4169,6 +4662,16 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno value when called */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -4191,23 +4694,25 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stream, error_code, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferrp_write(stream, error_code, __func__, name, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -4238,12 +4743,25 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as werrp() but without
  * bounds checking on error_code and without calling exit().
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno value when called */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
@@ -4263,23 +4781,25 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write error diagnostic with errno details
      */
-    ferrp_write(stream, error_code, __func__, name, fmt, ap);
+    if (stream != NULL) {
+	ferrp_write(stream, error_code, __func__, name, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -4311,6 +4831,7 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
  *	snwerrp(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -4389,6 +4910,7 @@ snwerrp(int error_code, char *str, size_t size, char const *name, char const *fm
  *	vsnwerrp(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
  * NOTE: This function does nothing (just returns) if a size <= 1.
  */
 void
@@ -4458,6 +4980,9 @@ vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *f
  *	warn_or_err(1, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits or
+ *       returns depending on warning).
  */
 void
 warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
@@ -4498,31 +5023,47 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
      */
     if (warning == false) {
 	if (exitcode < 0) {
-	    warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: issue a warning or error message
      */
     if (warning == true) {
-	fwarn_write(stderr, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    fwarn_write(stderr, __func__, name, fmt, ap);
+	}
     } else {
-	ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /*
@@ -4561,6 +5102,9 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
  *	vwarn_or_err(1, __func__, true, "bad foobar: %s", ap);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits or
+ *       returns depending on warning).
  */
 void
 vwarn_or_err(int exitcode, const char *name, bool warning,
@@ -4598,31 +5142,47 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
      */
     if (warning == false) {
 	if (exitcode < 0) {
-	    warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: issue a warning or error message
      */
     if (warning == true) {
-	fwarn_write(stderr, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    fwarn_write(stderr, __func__, name, fmt, ap);
+        }
     } else {
-	ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+        }
     }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
@@ -4658,6 +5218,9 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
  *	fwarn_or_err(1, stderr, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits or returns depending on warning).
  */
 void
 fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
@@ -4666,6 +5229,16 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
     int saved_errno;		/* errno at function start */
     bool w_allowed = false;	/* true ==> warning output is allowed */
     bool e_allowed = false;	/* true ==> err output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
@@ -4696,37 +5269,49 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (warning == false) {
 	if (exitcode < 0) {
-	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: issue a warning or error message
      */
     if (warning == true) {
-	fwarn_write(stream, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    fwarn_write(stream, __func__, name, fmt, ap);
+	}
     } else {
-	ferr_write(stream, exitcode, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    ferr_write(stream, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /*
@@ -4766,6 +5351,9 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
  *	vwarn_or_err(1, stderr, __func__, true, "bad foobar: %s", ap);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits or returns depending on warning).
  */
 void
 vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
@@ -4774,6 +5362,16 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
     int saved_errno;		/* errno at function start */
     bool w_allowed = false;	/* true ==> warning output is allowed */
     bool e_allowed = false;	/* true ==> err output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
@@ -4801,37 +5399,49 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (warning == false) {
 	if (exitcode < 0) {
-	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: issue a warning or error message
      */
     if (warning == true) {
-	fwarn_write(stream, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    fwarn_write(stream, __func__, name, fmt, ap);
+	}
     } else {
-	ferr_write(stream, exitcode, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    ferr_write(stream, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
@@ -4867,6 +5477,9 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
  *	warnp_or_errp(1, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits or
+ *       returns depending on warning).
  */
 void
 warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...)
@@ -4907,31 +5520,47 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
      */
     if (warning == false) {
 	if (exitcode < 0) {
-	    warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write warning or an error w/errno diagnostic
      */
     if (warning == true) {
-	fwarnp_write(stderr, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    fwarnp_write(stderr, __func__, name, fmt, ap);
+        }
     } else {
-	ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+        }
     }
 
     /*
@@ -4970,6 +5599,9 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
  *	vwarnp_or_errp(1, __func__, true, "bad foobar: %s", ap);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits or
+ *       returns depending on warning).
  */
 void
 vwarnp_or_errp(int exitcode, const char *name, bool warning,
@@ -5005,31 +5637,47 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
      */
     if (warning == false) {
 	if (exitcode < 0) {
-	    warn(__func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    warn(__func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    warn(__func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stderr != NULL) {
+		fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write a warning or an error w/errno diagnostic
      */
     if (warning == true) {
-	fwarnp_write(stderr, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    fwarnp_write(stderr, __func__, name, fmt, ap);
+	}
     } else {
-	ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+	if (stderr != NULL) {
+	    ferrp_write(stderr, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
@@ -5066,6 +5714,9 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
  *	fwarnp_or_errp(1, stderr, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits or returns depending on warning).
  */
 void
 fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
@@ -5074,6 +5725,16 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
     int saved_errno;		/* errno at function start */
     bool w_allowed = false;	/* true ==> warning output is allowed */
     bool e_allowed = false;	/* true ==> err output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
@@ -5104,37 +5765,49 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (warning == false) {
 	if (exitcode < 0) {
-	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write warning or an error w/errno diagnostic
      */
     if (warning == true) {
-	fwarnp_write(stderr, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    fwarnp_write(stream, __func__, name, fmt, ap);
+	}
     } else {
-	ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /*
@@ -5175,6 +5848,9 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
  *	vwarnp_or_errp(1, __func__, true, "bad foobar: %s", ap);
  *
  * NOTE: This function does not return if warning == false.
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits or returns depending on warning).
  */
 void
 vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
@@ -5183,6 +5859,16 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
     int saved_errno;		/* errno at function start */
     bool w_allowed = false;	/* true ==> warning output is allowed */
     bool e_allowed = false;	/* true ==> err output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
@@ -5208,37 +5894,49 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
     /*
      * stage 2: stdarg variable argument list setup
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (warning == false) {
 	if (exitcode < 0) {
-	    fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode < 0: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	} else if (exitcode > 255) {
-	    fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nexitcode > 255: %d\n", exitcode);
+	    }
 	    exitcode = 255;
-	    fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    if (stream != NULL) {
+		fwarn(stream, __func__, "\nforcing use of exit code: %d\n", exitcode);
+	    }
 	}
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nname is NULL, forcing name to be: %s", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write warning or an error w/errno diagnostic
      */
     if (warning == true) {
-	fwarnp_write(stream, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    fwarnp_write(stream, __func__, name, fmt, ap);
+	}
     } else {
-	ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+	if (stream != NULL) {
+	    ferrp_write(stream, exitcode, __func__, name, fmt, ap);
+	}
     }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
@@ -5264,6 +5962,8 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
  *			  < 0, just return
  *	fmt		- format of the usage message
  *	...		- potential args for usage message
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 printf_usage(int exitcode, char const *fmt, ...)
@@ -5299,13 +5999,17 @@ printf_usage(int exitcode, char const *fmt, ...)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write command line usage
      */
-    fusage_write(stderr, exitcode, __func__, fmt, ap);
+    if (stderr != NULL) {
+	fusage_write(stderr, exitcode, __func__, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -5333,6 +6037,8 @@ printf_usage(int exitcode, char const *fmt, ...)
  *			  < 0, just return
  *	fmt		format of the warning
  *	ap		variable argument list
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
  */
 void
 vprintf_usage(int exitcode, char const *fmt, va_list ap)
@@ -5364,13 +6070,17 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
      */
     if (fmt == NULL) {
 	fmt = "no usage message given";
-	warn(__func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
     }
 
     /*
      * stage 4: write command line usage
      */
-    fusage_write(stderr, exitcode, __func__, fmt, ap);
+    if (stderr != NULL) {
+	fusage_write(stderr, exitcode, __func__, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
@@ -5396,6 +6106,9 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
  *	stream		- stream to write on
  *	fmt		- format of the usage message
  *	...		- potential args for usage message
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
@@ -5403,6 +6116,16 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     va_list ap;			/* variable argument list */
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
@@ -5429,19 +6152,19 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "no usage message given";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write command line usage
      */
-    fusage_write(stream, exitcode, __func__, fmt, ap);
+    if (stream != NULL) {
+	fusage_write(stream, exitcode, __func__, fmt, ap);
+    }
 
     /*
      * stage 5: stdarg variable argument list cleanup
@@ -5470,12 +6193,25 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
  *	stream		stream to write on
  *	fmt		format of the warning
  *	ap		variable argument list
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just exits).
  */
 void
 vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
 {
     int saved_errno;		/* errno at function start */
     bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
@@ -5499,19 +6235,19 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (stream == NULL) {
-	stream = stderr;
-	fwarn(stream, __func__, "called with NULL stream, will use stderr");
-    }
     if (fmt == NULL) {
 	fmt = "no usage message given";
-	fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	if (stream != NULL) {
+	    fwarn(stream, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+	}
     }
 
     /*
      * stage 4: write command line usage
      */
-    fusage_write(stream, exitcode, __func__, fmt, ap);
+    if (stream != NULL) {
+	fusage_write(stream, exitcode, __func__, fmt, ap);
+    }
 
     /* stage 5: stdarg variable argument list cleanup is not required */
 
