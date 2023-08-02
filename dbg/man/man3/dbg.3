@@ -12,14 +12,15 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dbg 3  "05 February 2023" "dbg"
+.TH dbg 3  "02 August 2023" "dbg"
 .SH NAME
 .BR dbg() \|,
 .BR vdbg() \|,
 .BR fdbg() \|,
 .BR vfdbg() \|,
 .BR sndbg() \|,
-.BR vsndbg()
+.BR vsndbg() \|,
+.BR parse_verbosity()
 \- debug message facility
 .SH SYNOPSIS
 \fB#include "dbg.h"\fP
@@ -31,6 +32,8 @@
 .B "extern int verbosity_level;		/* maximum debug level for debug messages */"
 .br
 .B "extern bool dbg_output_allowed;		/* false ==> disable debug messages */"
+.br
+.B "int parse_verbosity(char const *program, char const *arg);"
 .sp
 .B "void dbg(int level, const char *fmt, ...);"
 .br
@@ -49,6 +52,33 @@ These functions provide a way to write debug messages to a stream such as
 or to a
 .B char *
 of a fixed size.
+The messages will not be written unless the boolean
+.B dbg_output_allowed
+is true and the verbosity (debug) level is high enough.
+To parse the verbosity level you can use the function
+.BR parse_verbosity (3).
+.PP
+The general call semantics of the
+.BR dbg (3)
+functions is passing in a debug level, a format string and any format args.
+The other versions are similar except that they take additional args as well, depending on the family.
+See below subsections for details.
+.SS Parsing verbosity level
+We provide a function
+.BR parse_verbosity (3)
+to let you easily parse the verbosity level in your programs.
+The function returns an
+.BR int ,
+which you can assign to the variable
+.BR verbosity_level ,
+and takes the parameters
+.BR program ,
+the name of the program, and
+.BR arg ,
+the option argument to the option you choose for verbosity.
+We choose
+.B \-v
+but you can choose whichever you wish.
 .SS Alternative output \fBFILE *\fP stream
 The functions that do not take a
 .B FILE *
@@ -194,8 +224,10 @@ main(void)
 {
 
     /*
-     * We suggest you use getopt(3) and strtol(3) (cast to an int)
-     * to convert \-v verbosity_level on the command line.
+     * We suggest you use getopt(3) and the parse_verbosity(3) function to
+     * convert \-v verbosity_level on the command line like:
+     *
+     *	    verbosity_level = parse_verbosity(argv[0], optarg);
      */
     msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
     verbosity_level = DBG_MED; /* DBG_MED == (3) */

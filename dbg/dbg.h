@@ -41,7 +41,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.10 2023-08-01"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.11 2023-08-02"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -258,5 +258,6 @@ extern void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);
 
+extern int parse_verbosity(char const *program, char const *arg);
 
 #endif				/* INCLUDE_DBG_H */

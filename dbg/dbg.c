@@ -43,13 +43,13 @@
  * IMPORTANT WARNING: This code is widely used by a number of applications. A
  *		      great deal of care has gone in to making these debugging
  *		      facilities easy to code with, and much less likely to be
- *		      the source (pun intended) of bugs.
+ *		      the source (pun intended, obviously :-) ) of bugs.
  *
  *		      We apologize in advance for any problems this code may
  *		      introduce. We would be happy to fix a general bug by
  *		      considering a pull request to the dbg repo.
  *
- * DBG repo: https://github.com/lcn2/dbg
+ * dbg repo: https://github.com/lcn2/dbg
  *
  *		      You may also report a bug in the form of an issue using
  *		      the above URL.
@@ -6261,6 +6261,39 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
 	errno = saved_errno;
     }
     return;
+}
+
+/*
+ * parse_verbosity - parse -v option for our tools
+ *
+ * given:
+ *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
+ *	arg		- the optarg in the calling tool
+ *
+ * Returns the parsed verbosity.
+ *
+ * Returns DBG_NONE if passed NULL args or empty string.
+ */
+int
+parse_verbosity(char const *program, char const *arg)
+{
+    int verbosity;
+
+    if (program == NULL || arg == NULL || !strlen(arg)) {
+	return DBG_NONE;
+    }
+
+    /*
+     * parse verbosity
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    verbosity = (int)strtol(arg, NULL, 0);
+    if (errno != 0) {
+	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	not_reached();
+    }
+
+    return verbosity;
 }
 
 

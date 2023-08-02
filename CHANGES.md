@@ -1,5 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.46 2023-08-02
+
+Move `parse_verbosity(3)` to dbg/dbg.c as it is the dbg code that uses the
+`verbosity_level` variable. Ran `make test` to verify that this works okay.
+
+Updated `dbg.3` man page to add this function to the man page. Also improved the
+man page in some clarification of other functions (call semantics for example).
+
+New version of `dbg` facility and the `jparse` and json parser: respectively
+they are `"2.11 2023-08-02"` and for both `jparse` and the json parser `"1.1.4
+2023-08-02"`.
+
+Remove `parse_verbosity(3)` from `dyn_array(3)` facility as it is in the
+`dbg(3)` facility and the `dyn_array(3)` facility uses the `dbg(3)` facility.
+
+
 ## Release 1.0.45 2023-08-01
 
 New version of `jfmt`, `jval` and `jnamval`: `"0.0.10 2023-08-01"`.
