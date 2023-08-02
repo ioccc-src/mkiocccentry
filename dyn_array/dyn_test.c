@@ -76,7 +76,9 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
+#if !defined(DBG_USE)
 static int parse_verbosity(char const *program, char const *arg);
+#endif
 static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 int
@@ -211,7 +213,7 @@ main(int argc, char *argv[])
     exit(0); /*ooo*/
 }
 
-
+#if !defined(DBG_USE)
 /*
  * parse_verbosity - parse -v option for our tools
  *
@@ -244,7 +246,7 @@ parse_verbosity(char const *program, char const *arg)
 
     return verbosity;
 }
-
+#endif /* !defined(DBG_USE) */
 
 /*
  * usage - print usage to stderr

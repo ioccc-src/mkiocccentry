@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jfmt 1 "27 July 2023" "jfmt" "IOCCC tools"
+.TH jfmt 1 "02 August 2023" "jfmt" "IOCCC tools"
 .SH NAME
 .B jfmt
 \- IOCCC JSON printer
@@ -32,6 +32,8 @@
 .IR depth \|]
 .RB [\| \-K \|]
 .RB [\| \-o \|]
+.RB [\| \-F
+.IR fmt \|]
 .IR file.json
 .SH DESCRIPTION
 .B jfmt
@@ -42,6 +44,9 @@ One might call this pretty-printing or beautifying the JSON file (for various de
 By default the tool writes the output to stdout but if you use the
 .B \-o
 option you can change this behaviour (\- means stdout).
+The
+.B \-F
+option allows you to change the JSON output format.
 The
 .B \-m
 option allows you to change the default depth to traverse when parsing the JSON where the default is set to a reasonable value for most cases (256 or the macro
@@ -146,6 +151,34 @@ If the file cannot be opened for writing it is also an error.
 Default is stdout which is the same as if you specified
 .BR \- .
 .RE
+.TP
+.BI \-F\  fmt
+Change the JSON output format of the tool.
+.RS
+.TQ
+.B default
+Default JSON style, 1 or 2 levels per line
+.RE
+.RS
+.TQ
+.B pedantic
+One level per line style
+.RE
+.RS
+.TQ
+.B colour
+Default plus ANSI colour syntax highlighting
+.RE
+.RS
+.TQ
+.B color
+Alias for colour, see below subsection
+.RS
+.RE
+.RE
+.SS Coloured output
+Although we do allow for 'color' instead of 'colour' it should be noted that this is not only strictly incorrect but it also prevents it from being used by both you and me.
+As such we recommend that you only use 'color' if you wish to be exclusive.
 .SH EXIT STATUS
 .TP
 0

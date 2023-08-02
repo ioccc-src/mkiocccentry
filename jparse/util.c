@@ -2501,39 +2501,6 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 }
 
 
-/*
- * parse_verbosity - parse -v option for our tools
- *
- * given:
- *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
- *	arg		- the optarg in the calling tool
- *
- * Returns the parsed verbosity.
- *
- * Returns DBG_NONE if passed NULL args or empty string.
- */
-int
-parse_verbosity(char const *program, char const *arg)
-{
-    int verbosity;
-
-    if (program == NULL || arg == NULL || !strlen(arg)) {
-	return DBG_NONE;
-    }
-
-    /*
-     * parse verbosity
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    verbosity = (int)strtol(arg, NULL, 0);
-    if (errno != 0) {
-	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
-	not_reached();
-    }
-
-    return verbosity;
-}
-
 
 /*
  * is_decimal - if the buffer is a base 10 integer in ASCII

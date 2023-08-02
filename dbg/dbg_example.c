@@ -1,7 +1,7 @@
 /*
  * dbg_example.c - trivial demo
  *
- * This is just a trivial demo for the dbg api.  See the main function in dbg.c
+ * This is just a trivial demo for the dbg API.  See the main function in dbg.c
  * for a more complete example.
  *
  * Written in 2022 by:
@@ -35,8 +35,10 @@ main(void)
 {
 
     /*
-     * We suggest you use getopt(3) and strtol(3) (cast to an int)
-     * to convert -v verbosity_level on the command line.
+     * We suggest you use getopt(3) and the parse_verbosity(3) function to
+     * convert -v verbosity_level on the command line like:
+     *
+     *	    verbosity_level = parse_verbosity(argv[0], optarg);
      */
     msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
     verbosity_level = DBG_MED; /* DBG_MED == (3) */
