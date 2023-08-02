@@ -353,10 +353,10 @@ dyn_array.a: ${LIB_OBJS}
 	${RANLIB} $@
 
 dyn_test.o: dyn_test.c dyn_array.h
-	${CC} ${CFLAGS} dyn_test.c -c
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
 
 dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} dyn_test.o dyn_array.a ../dbg/dbg.a -o dyn_test
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.o dyn_array.a ../dbg/dbg.a -o dyn_test
 
 
 #########################################################

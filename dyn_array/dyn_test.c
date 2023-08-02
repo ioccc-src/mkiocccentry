@@ -76,6 +76,9 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
+#if !defined(DBG_USE)
+static int parse_verbosity(char const *program, char const *arg);
+#endif
 static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 int
@@ -210,7 +213,40 @@ main(int argc, char *argv[])
     exit(0); /*ooo*/
 }
 
+#if !defined(DBG_USE)
+/*
+ * parse_verbosity - parse -v option for our tools
+ *
+ * given:
+ *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
+ *	arg		- the optarg in the calling tool
+ *
+ * Returns the parsed verbosity.
+ *
+ * Returns DBG_NONE if passed NULL args or empty string.
+ */
+static int
+parse_verbosity(char const *program, char const *arg)
+{
+    int verbosity;
 
+    if (program == NULL || arg == NULL || !strlen(arg)) {
+	return DBG_NONE;
+    }
+
+    /*
+     * parse verbosity
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    verbosity = (int)strtol(arg, NULL, 0);
+    if (errno != 0) {
+	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	not_reached();
+    }
+
+    return verbosity;
+}
+#endif /* !defined(DBG_USE) */
 
 /*
  * usage - print usage to stderr
