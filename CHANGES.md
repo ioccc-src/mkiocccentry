@@ -1,5 +1,65 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.47 2023-08-03
+
+New version of `location` tool: `"1.0.1 2023-08-03"`.
+
+Improved tool to allow for `-a` (show all) and `-s` (substring search). Uses new
+re-entrant versions of the functions `lookup_location_name()` and
+`lookup_location_code()`. These new functions take a `size_t *idx` which is set
+to the _next_ element in the table (if != NULL) so that the next call can skip
+continue _after_ the previous element. They also take a `struct location **`
+which stores the _found_ location. This is useful for `-v 1` as one can then see
+something like:
+
+
+```sh
+./location -a -s -N -v 1 'united'
+United Arab Emirates ==> AE
+United Kingdom of Great Britain and Northern Ireland (the) ==> GB
+United States Miscellaneous Pacific Islands ==> PU
+Tanzania, United Republic of ==> TZ
+United Kingdom ==> UK
+United States Minor Outlying Islands ==> UM
+United Nations ==> UN
+United States of America ==> US
+```
+
+Without the `-v 1` it will only show:
+
+```sh
+$ ./location -a -s -N 'united'
+AE
+GB
+PU
+TZ
+UK
+UM
+UN
+US
+```
+
+If one does not use the `-N` option the `-a` is less useful as that function
+checks explicitly that the length is two characters so it has to be an exact
+match. Nevertheless there is a re-entrant version of the function that works
+much the same way as the other and the `-a` is processed without `-N`. Use of
+`-s` requires an arg much like `-N` but it does NOT require `-N` itself.
+
+The rationale behind these changes is they will make it easier for people to
+find their country code, if they do not know what it is (or they want say
+anonymous and don't know that it's `XX`). Search is done case-insensitively.
+Another example use:
+
+```sh
+$ ./location -asNv 1 germ
+German Democratic Republic ==> DD
+Germany ==> DE
+```
+
+I, that is Cody/@xexyl, observe that Germany is a country full of 'germ ridden
+people' (this is not really true of course but it's a fun pun of mine :-) )
+
+
 ## Release 1.0.46 2023-08-02
 
 Move `parse_verbosity(3)` to dbg/dbg.c as it is the dbg code that uses the

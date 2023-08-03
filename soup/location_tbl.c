@@ -146,7 +146,7 @@ struct location loc[] = {
     {"CN", "China"},
     {"CO", "Colombia"},
     {"CP", "Clipperton Island"},	/* Exceptionally reserved code */
-    {"CQ", "island of Sark"},	/* Exceptionally reserved code */
+    {"CQ", "Island of Sark"},	/* Exceptionally reserved code */
     {"CR", "Costa Rica"},
     {"CS", "Serbia and Montenegro"},	/* Transitionally reserved code */
     {"CT", "Canton and Enderbury Island"},	/* Formerly assigned code */

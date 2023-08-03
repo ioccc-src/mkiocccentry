@@ -49,21 +49,26 @@
 /*
  * official location version
  */
-#define LOCATION_VERSION "1.0 2023-06-04"		/* format: major.minor YYYY-MM-DD */
+#define LOCATION_VERSION "1.0.1 2023-08-03"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * usage message
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [location]\n"
+    "usage: %s [-h] [-v level] [-V] [-N] [-s] [-a] [location]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
     "\n"
     "\t-N\t\tlocation arg(s) are name(s) to search for (def: location arg(s) are ISO 3166 code(s))\n"
-    "\t    NOTE: Use of -N requires a location arg\n"
+    "\t\t\t\tNOTE: use of -N requires a location arg\n"
+    "\n"
+    "\t-s\t\tSearch by substrings instead of exact match.\n"
+    "\t\t\t\tNOTE: use of -s requires a location arg\n"
+    "\n"
+    "\t-a\t\tShow all matches if searching by substrings\n"
     "\n"
     "\tlocation\tISO 3166 code (or location name if -N) to print (def: print all codes and names)\n"
     "\n"
@@ -84,17 +89,22 @@ main(int argc, char **argv)
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
+    bool substrings = false;	/* search location as a substring */
+    bool show_all = false;	/* show all matches if -s */
     int arg_count = 0;		/* number of args to process */
     bool name_flag = false;	/* false ==> search for ISO 3166 code, true ==> search for location name */
     const char *ret = NULL;	/* table lookup return or NULL */
     struct location *l = NULL;	/* location table entry */
+    struct location *location = NULL; /* for saving location in table if -a */
+    size_t idx = 0;		/* location to start searching table at */
+    bool found = false;		/* true if nothing found */
     int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:VN")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:VNsa")) != -1) {
         switch (i) {
         case 'h':
 	    fprintf_usage(2, stderr, usage_msg, program, DBG_DEFAULT, LOCATION_VERSION); /*ooo*/
@@ -119,6 +129,12 @@ main(int argc, char **argv)
 	case 'N':
 	    name_flag = true;
             break;
+	case 's':
+	    substrings = true;
+	    break;
+	case 'a':
+	    show_all = true;
+	    break;
         case ':':   /* option requires an argument */
         case '?':   /* illegal option */
         default:    /* anything else but should not actually happen */
@@ -134,7 +150,11 @@ main(int argc, char **argv)
     } else if (arg_count == 0 && name_flag == true) {
 	err(3, __func__, "%s: use of -N requires location arg(s)", program); /*ooo*/
 	not_reached();
+    } else if (arg_count == 0 && substrings) {
+	err(3, __func__, "%s: use of -s requires location arg(s)", program); /*ooo*/
+	not_reached();
     }
+
 
     /*
      * paranoia - sanity check table
@@ -166,50 +186,80 @@ main(int argc, char **argv)
 	    /*
 	     * case: -N: scan for name(s)
 	     */
-	    if (name_flag == true) {
+	    if (name_flag) {
 
 		/*
 		 * search for location name given location code
 		 */
-		ret = lookup_location_code(argv[i]);
+		if (show_all) {
+		    ret = lookup_location_code_r(argv[i], &idx, &location, substrings);
+		    do {
+			if (ret != NULL) {
+			    found = true;
+			    /* print what was found */
+			    if (verbosity_level > 0 && location != NULL && location->name) {
+				(void) printf("%s ==> ", location->name);
+			    }
+			    (void) printf("%s\n", ret);
+			    ret = lookup_location_code_r(argv[i], &idx, &location, substrings);
+			}
+		    } while (ret != NULL);
+		} else {
+		    ret = lookup_location_code(argv[i]);
 
-		/*
-		 * print location code if found
-		 */
-		if (ret == NULL) {
-		    err(1, __func__, "location name not found for: %s", argv[i]); /*ooo*/
-		    not_reached();
+		    /*
+		     * print location code if found
+		     */
+		    if (ret == NULL) {
+			err(1, __func__, "location name not found for: %s", argv[i]); /*ooo*/
+			not_reached();
+		    }
+		    found = true;
+		    /* print what was found */
+		    (void) printf("%s\n", ret);
 		}
-
 	    /*
 	     * case: scan for code(s)
 	     */
 	    } else {
 
-		/*
-		 * search for location code given location name
-		 */
-		ret = lookup_location_name(argv[i]);
+		if (show_all) {
+		    ret = lookup_location_name_r(argv[i], &idx, &location, substrings);
+		    do {
+			if (ret != NULL) {
+			    found = true;
+			    /* print what was found */
+			    if (location != NULL && location->code != NULL) {
+				(void) printf("%s ==> ", location->code);
+			    }
+			    (void) printf("%s\n", ret);
+			    ret = lookup_location_name_r(argv[i], &idx, &location, substrings);
+			}
+		    } while (ret != NULL);
+		} else {
 
-		/*
-		 * print location code if found
-		 */
-		if (ret == NULL) {
-		    err(5, __func__, "location code not found for: %s", argv[i]);
-		    not_reached();
+		    /*
+		     * search for location code given location name
+		     */
+		    ret = lookup_location_name(argv[i]);
+
+		    /*
+		     * print location code if found
+		     */
+		    if (ret == NULL) {
+			err(5, __func__, "location code not found for: %s", argv[i]);
+			not_reached();
+		    }
+		    found = true;
+		    /* print what was found */
+		    (void) printf("%s\n", ret);
 		}
 	    }
-
-	    /*
-	     * print what was found
-	     */
-	    (void) printf("%s\n", ret);
-
 	}
     }
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(0); /*ooo*/
+    exit(found?0:1); /*ooo*/
 }

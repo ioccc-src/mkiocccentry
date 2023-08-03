@@ -189,6 +189,160 @@ lookup_location_code(char const *location_name)
     return p->code;
 }
 
+/*
+ * lookup_location_name_r - convert a ISO 3166-1 Alpha-2 into a location name, re-entrant version
+ *
+ * Even though the ISO 3166-1 Alpha-2 code is only UPPER CASE, the
+ * code is compared in a case independent way.  That is, a non-canonical
+ * lower case code will match the canonical UPPER CASE ISO 3166-1 Alpha-2 code.
+ *
+ * given:
+ *      code		    ISO 3166-1 Alpha-2 code
+ *      idx		    index to resume searching for -a option
+ *      location	    pointer to struct location * for caller
+ *      substrings	    whether to search by substring (strcasestr(), not strcasecmp())
+ *
+ * return:
+ *      location name or NULL ==> unlisted code
+ *
+ * This function does not return on error.
+ *
+ * If idx != NULL and we *idx < SIZEOF_LOCATION_TABLE then we start searching at
+ * element *idx of the location table. If found and idx != NULL we save the
+ * position + 1 in *idx for the next call.
+ */
+char const *
+lookup_location_name_r(char const *code, size_t *idx, struct location **location, bool substrings)
+{
+    struct location *p;		/* entry in the location table */
+    size_t length = 0;		/* length of code */
+    size_t i = 0;		/* to iterate through table */
+
+    /*
+     * firewall
+     */
+    if (code == NULL) {
+	err(11, __func__, "code is NULL");
+	not_reached();
+    }
+
+    /*
+     * sanity check - code must be 2 characters long
+     */
+    length = strlen(code);
+    if (length != 2) {
+	dbg(DBG_HIGH, "code: <%s> length: %zu != 2", code, length);
+	return NULL;
+    }
+
+    if (idx != NULL && *idx >= SIZEOF_LOCATION_TABLE) {
+	return NULL;
+    }
+
+    /*
+     * sanity check - code must be 2 ASCII alpha characters
+     */
+    if (!isascii(code[0]) || !isalpha(code[0]) ||
+	!isascii(code[1]) || !isalpha(code[1])) {
+	dbg(DBG_HIGH, "code: <%s> is not 2 ASCII alpha characters", code);
+	return NULL;
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->name != NULL; ++p, ++i) {
+	if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
+	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
+	    if (location != NULL) {
+		*location = &loc[i];
+	    }
+	    break;
+	}
+    }
+
+    /*
+     * return name or NULL
+     */
+    if (p->name == NULL) {
+	dbg(DBG_HIGH, "code: <%s> is unknown", code);
+    }
+
+    /* save index after everything even if we return NULL */
+    if (idx != NULL) {
+	*idx = i + 1;
+    }
+
+    return p->name;
+}
+/*
+ * lookup_location_code_r - convert a ISO 3166-1 Alpha-2 into a location name, re-entrant version
+ *
+ * Even though the location table contains a canonical name in a canonical case,
+ * we compare names in a case independent way.  Nevertheless, the ISO 3166-1 Alpha-2
+ * code returned will be a 2 character ASCII UPPER CASE code.
+ *
+ * given:
+ *      location_name	    location name of a ISO 3166-1 Alpha-2 entry
+ *      idx		    index to resume searching for -a option
+ *      location	    pointer to struct location * for caller
+ *      substrings	    whether to search by substring (strcasestr(), not strcasecmp())
+ *
+ * return:
+ *	ISO 3166-1 Alpha-2 in UPPER CASE code or NULL ==> unknown location name
+ *
+ * This function does not return on error. It can return a NULL pointer.
+ *
+ * If idx != NULL and we *idx < SIZEOF_LOCATION_TABLE then we start searching at
+ * element *idx of the location table. If found and idx != NULL we save the
+ * position + 1 in *idx for the next call.
+ */
+char const *
+lookup_location_code_r(char const *location_name, size_t *idx, struct location **location, bool substrings)
+{
+    struct location *p;		/* entry in the location table */
+    size_t i = 0;		/* counter for table */
+
+    /*
+     * firewall
+     */
+    if (location_name == NULL) {
+	err(12, __func__, "location_name is NULL");
+	not_reached();
+    }
+
+    if (idx != NULL && *idx >= SIZEOF_LOCATION_TABLE) {
+	return NULL;
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->name != NULL && p->code != NULL; ++p, ++i) {
+	if ((strcasecmp(location_name, p->name) == 0) || (substrings && strcasestr(p->name, location_name))) {
+	    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
+	    if (location != NULL) {
+		*location = &loc[i];
+	    }
+	    break;
+	}
+    }
+
+    /*
+     * return code or NULL
+     */
+    if (p->code == NULL) {
+	dbg(DBG_HIGH, "name: <%s> is unknown", location_name);
+    }
+
+    /* save index after everything even if we return NULL */
+    if (idx != NULL) {
+	*idx = i + 1;
+    }
+    return p->code;
+}
+
+
 
 /*
  * location_code_name_match - if a location code & location name refer to the same place
