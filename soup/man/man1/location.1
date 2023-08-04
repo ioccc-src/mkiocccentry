@@ -8,7 +8,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH location 1 "03 August 2023" "location" "IOCCC tools"
+.TH location 1 "04 August 2023" "location" "IOCCC tools"
 .SH NAME
 .B location
 \- lookup ISO 3166 codes, location names or print the table
@@ -18,7 +18,7 @@
 .RB [\| \-v
 .IR level \|]
 .RB [\| \-V \|]
-.RB [\| \-N \|]
+.RB [\| \-n \|]
 .RB [\| \-s \|]
 .RB [\| \-a \|]
 .RI [\| location
@@ -36,7 +36,7 @@ Arguments are case insensitive.
 ISO 3166 code(s) are Alpha-2 codes: two UPPER case characters.
 .sp 1
 With
-.BR \-N ,
+.BR \-n ,
 the arguments
 are assumed to be the formal location name(s).
 The
@@ -50,14 +50,14 @@ To show all matches use the
 .B \-a
 option.
 Showing all matches is less useful without the
-.B \-N
+.B \-n
 option because country codes are two characters and are exact matches.
 The use of
 .B \-s
 requires an arg to the program much like
-.B \-N
+.B \-n
 but it does not require the
-.B \-N
+.B \-n
 option itself.
 .PP
 If verbosity is > level 0 and
@@ -76,7 +76,7 @@ Set verbosity level to
 .B \-V
 Show version and exit.
 .TP
-.B \-N
+.B \-n
 Assume the arguments are formal location name(s) and print
 their corresponding ISO 3166 code(s).
 .sp
@@ -84,7 +84,7 @@ By default the arguments are ISO 3166 code(s)
 and their corresponding formal location name(s) are printed.
 .sp
 The use of
-.B \-N
+.B \-n
 requires at least one argument.
 .TP
 .B \-s
@@ -100,11 +100,11 @@ Show all matches.
 Use of
 .B \-a
 is less useful without the
-.B \-N
+.B \-n
 option but nonetheless it is possible to use
 .B \-s
 without
-.BR \-N .
+.BR \-n .
 .SH EXIT STATUS
 .TP
 0
@@ -167,7 +167,7 @@ Show all matches with the substring
 in the name:
 .sp
 .RS
-.B ./location \-a \-s \-N united
+.B ./location \-a \-s \-n united
 .RE
 .sp
 .PP
@@ -176,10 +176,40 @@ Show all matches with the substring
 in the name, showing both name and code to more easily identify each match:
 .sp
 .RS
-.B ./location \-a \-s \-N \-v 1 germ
+.B ./location \-a \-s \-n \-v 1 germ
 .RE
 .sp
 We note that, as the above example shows, Germany is a country full of 'germ ridden people' but we do not mean offence by this: it's just a fun pun of one of the author's.
+.PP
+Search by substring for both Unit and Germ with a verbosity of level 1, to show both name and code:
+.sp
+.RS
+.B ./location \-asnv1 Unit Germ
+.RE
+.sp
+This should show:
+.RS
+United Arab Emirates ==> AE
+.br
+United Kingdom of Great Britain and Northern Ireland (the) ==> GB
+.br
+United States Miscellaneous Pacific Islands ==> PU
+.br
+Tanzania, United Republic of ==> TZ
+.br
+United Kingdom ==> UK
+.br
+United States Minor Outlying Islands ==> UM
+.br
+United Nations ==> UN
+.br
+United States of America ==> US
+.br
+German Democratic Republic ==> DD
+.br
+Germany ==> DE
+.br
+.RE
 .SH EDITORIAL NOTES
 .sp
 The primary source of the location table is:

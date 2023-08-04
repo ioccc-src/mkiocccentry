@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.48 2023-08-04
+
+Bug fixes in `location` tool wrt the `-a` and `-s` options. New version `"1.0.2
+2023-08-04"`.
+
+Change `-N` to `-n`.
+
+Always use re-entrant version of the lookup functions as this allows for proper
+showing of both name and code whether or not one is using `-s` or `-n`. If `-a`
+we still show all (as before) but without `-n` we previously showed both name
+and code like `code ==> name` when it should only show both if verbosity level
+is > 0. Note that the chkentry tool _SHOULD NOT_ and _DOES NOT_ use the
+re-entrant versions.
+
+Use `parse_verbosity()` for parsing the `-v` option.
+
+Updated man page with an example added and updating `-N` to `-n`.
+
+
 ## Release 1.0.47 2023-08-03
 
 New version of `location` tool: `"1.0.1 2023-08-03"`.
