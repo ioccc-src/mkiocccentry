@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jval 1 "02 August 2023" "jval" "IOCCC tools"
+.TH jval 1 "05 August 2023" "jval" "IOCCC tools"
 .SH NAME
 .B jval
 \- IOCCC JSON printer
@@ -85,8 +85,6 @@ allows you to restrict the output based on the JSON level.
 The option
 .B \-L
 tells the program to print the JSON level followed by a given number of spaces or tabs where the default is 4 spaces.
-.B \-I
-allow for indenting the levels with a default value of 4 spaces.
 The option
 .B \-n
 allows for finding values based on different comparison modes like equality, less than, less than or equal to and so on.
@@ -121,9 +119,9 @@ Suppress some of the output (def: show more information).
 .TP
 .BI \-L\   <num>[{t|s}
 Print the JSON levels followed by the number of spaces or tabs, depending on the letter specified,
-.BR T
+.BR t
 for tabs and
-.BR S
+.BR s
 for spaces.
 Not specifying either defaults to spaces.
 As a convenience, specifying

@@ -2,6 +2,16 @@
 
 ## Release 1.0.49 2023-08-05
 
+New version of `jnamval`: `"0.0.11 2023-08-05"`. Add `-I` option with same
+semantics as `jfmt`. Updated `jnamval.1` to add this option and fix typos.
+
+Typo fixes in `jfmt.1` and `jval.1`. Removed `-I` from `jval.1` as it's not a
+valid option.
+
+Fix typo in usage string in `jnamval` which referred to non-existent option (it
+is actually an option arg, not an option, that is correct and that is now what
+it says).
+
 Update .gitignore: add `/archive`: a directory in my working repo of old files
 that although useful to me should not be added to the repo. Since archived files
 are not really something that should be in the repo anyway adding `/archive` to

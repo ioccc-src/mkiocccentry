@@ -40,9 +40,9 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-t type] [-l lvl]\n"
-    "\t[-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num] [-S op=str] [-o ofile]\n"
-    "\t[-p parts] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
+    "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
+    "\t[-t type] [-l lvl] [-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num]\n"
+    "\t[-S op=str] [-o ofile] [-p parts] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -52,6 +52,12 @@ static const char * const usage_msg0 =
     "\n"
     "\t-L <num>[{t|s}]\tPrint JSON level (root is 0) followed by a number of tabs or spaces (def: don't print levels)\n"
     "\t-L tab\t\tAlias for: '-L 1t'\n"
+    "\n"
+    "\t\t\tTrailing 't' implies indent with number of tabs whereas trailing 's' implies spaces.\n"
+    "\t\t\tNot specifying 's' or 't' implies spaces.\n"
+    "\n"
+    "\t-I <num>{[t|s]}\tWhen printing JSON syntax, indent levels (def: indent with 4 spaces)\n"
+    "\t-I tab\t\tAlias for '-I 1t'\n"
     "\n"
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.\n"
     "\t\t\tNot specifying 's' or 't' implies spaces.\n"
@@ -77,7 +83,7 @@ static const char * const usage_msg0 =
     "\t-p both\t\tAlias for '-p n,v'\n"
     "\t-p json\t\tAlias for '-p j'\n"
     "\n"
-    "\t\t\tIt is an error to use -p n or -p v with -j.\n"
+    "\t\t\tIt is an error to use -p n or -p v with -p j.\n"
     "\n"
     "\n"
     "\t-l lvl\t\tPrint values at specific JSON levels (def: print any level)\n"
@@ -188,7 +194,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:t:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:I:t:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jnamval(&jnamval);
@@ -220,6 +226,10 @@ main(int argc, char **argv)
 	case 'L':
 	    jnamval->common.print_json_levels = true; /* print JSON levels */
 	    json_util_parse_st_level_option(optarg, &jnamval->common.num_level_spaces, &jnamval->common.print_level_tab);
+	    break;
+	case 'I':
+	    jnamval->common.indent_levels = true;
+	    json_util_parse_st_indent_option(optarg, &jnamval->common.indent_spaces, &jnamval->common.indent_tab);
 	    break;
 	case 't':
 	    jnamval->json_name_val.json_types_specified = true;

@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jnamval 1 "02 August 2023" "jnamval" "IOCCC tools"
+.TH jnamval 1 "05 August 2023" "jnamval" "IOCCC tools"
 .SH NAME
 .B jnamval
 \- IOCCC JSON printer
@@ -23,6 +23,8 @@
 .IR level \|]
 .RB [\| \-q \|]
 .RB [\| \-L
+.IR <num>{[t|s]} \|]
+.RB [\| \-I
 .IR <num>{[t|s]} \|]
 .RB [\| \-t
 .IR type \|]
@@ -136,15 +138,28 @@ Suppress some of the output (def: show more information).
 .TP
 .BI \-L\   <num>[{t|s}
 Print the JSON levels followed by the number of spaces or tabs, depending on the letter specified,
-.BR T
+.BR t
 for tabs and
-.BR S
+.BR s
 for spaces.
 Not specifying either defaults to spaces.
 As a convenience, specifying
 .BI \-L\  tab
 is an alias for
 .BI \-L\  1t\c
+\&.
+.TP
+.BI \-I\  <num>[{t|s}
+Indent the JSON levels by the number of spaces or tabs, depending on the letter specified,
+.BR t
+for tabs and
+.BR s
+for spaces.
+Not specifying either defaults to spaces.
+As a convenience, specifying
+.BI \-I\  tab
+is an alias for
+.BI \-I\  1t\c
 \&.
 .TP
 .BI \-t\  type
