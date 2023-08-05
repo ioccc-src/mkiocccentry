@@ -128,7 +128,11 @@ main(int argc, char *argv[])
 	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
-	    verbosity_level = parse_verbosity(program, optarg);
+	    verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		usage(3, program, "invalid -v verbosity"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case 'V':	/* -V - print version and exit */
             print("%s\n", UTF8_TEST_VERSION);

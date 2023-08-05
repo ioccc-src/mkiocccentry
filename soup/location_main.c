@@ -114,7 +114,12 @@ main(int argc, char **argv)
             /*
              * parse verbosity
              */
-	    verbosity_level = parse_verbosity(program, optarg);
+	    verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		warn(program, "invalid -v optarg");
+		fprintf_usage(3, stderr, usage_msg, program, DBG_DEFAULT, LOCATION_VERSION); /*ooo*/
+		not_reached();
+	    }
             break;
         case 'V':               /* -V - print version and exit */
             (void) printf("%s\n", LOCATION_VERSION);

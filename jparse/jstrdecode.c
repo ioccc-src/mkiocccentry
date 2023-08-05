@@ -232,7 +232,11 @@ main(int argc, char *argv[])
 	    /*
 	     * parse verbosity
 	     */
-	    verbosity_level = parse_verbosity(program, optarg);
+	    verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		usage(3, program, "invalid -v verbosity"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case 'q':
 	    msg_warn_silent = true;

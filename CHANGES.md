@@ -1,5 +1,6 @@
 # Major changes to the IOCCC entry toolkit
 
+
 ## Release 1.0.49 2023-08-05
 
 New version of `jnamval`: `"0.0.11 2023-08-05"`. Add `-I` option with same
@@ -30,6 +31,14 @@ the README.md file - which has been updated due to slight changes).
 Fix warning message of `mkiocccentry -y` and move it to happen before the option
 to ignore all warnings as that one says no more warnings will be displayed so it
 should come last.
+
+Removed the "program" arg from `parse_verbosity()`.  The `parse_verbosity()`
+no longer exits on errors or bad arguments.  Instead `parse_verbosity()`
+returns `DBG_INVALID`, a value < 0.
+
+The return from `parse_verbosity()` is now checked for a < 0 return
+value and an appropriate error is raised when that happens.
+
 
 ## Release 1.0.48 2023-08-04
 

@@ -281,13 +281,21 @@ main(int argc, char **argv)
 	    /*
 	     * parse verbosity
 	     */
-	    verbosity_level = parse_verbosity(program, optarg);
+	    verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		usage(3, program, "invalid -v verbosity"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case 'J':		/* -J level - JSON parser verbosity level */
 	    /*
 	     * parse json verbosity level
 	     */
-	    json_verbosity_level = parse_verbosity(program, optarg);
+	    json_verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		usage(3, program, "invalid -J json_verbosity"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case 'q':		/* -q - quiet mode: silence msg(), warn(), warnp() if -v 0 */
 	    msg_warn_silent = true;
