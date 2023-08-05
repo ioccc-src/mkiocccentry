@@ -10,7 +10,6 @@
 .txzchk_test.*.test_file
 .txzchk_test.tar_err.*.out
 .txzchk_test.tarball.*.txz
-/archive/
 /dbg.clone/
 /dyn_array.clone/
 /jparse.clone/

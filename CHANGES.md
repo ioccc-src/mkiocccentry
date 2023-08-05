@@ -21,11 +21,6 @@ updated for this option. As the code is common to both `jval` and `jnamval` the
 `jval` utility could be updated easily to support this option is desired but
 this is TBD later.
 
-Update .gitignore: add `/archive`: a directory in my working repo of old files
-that although useful to me should not be added to the repo. Since archived files
-are not really something that should be in the repo anyway adding `/archive` to
-the .gitignore seems reasonable.
-
 Add some bad test JSON files in the `jparse/test_jparse/test_JSON/bad_loc`
 directory, updated Makefile rule Added appropriate `err` files.
 Updated Makefile rule `rebuild_jparse_err_files` to not show the command being
