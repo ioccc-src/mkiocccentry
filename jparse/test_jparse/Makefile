@@ -377,7 +377,6 @@ rebuild_jparse_err_files: ../jparse
 	${S} echo
 	${RM} -f test_JSON/bad_loc/*.err
 	-@for i in test_JSON/./bad_loc/*.json; do \
-	    echo "../jparse -- $$i 2> $$i.err" ;  \
 	    ../jparse -- "$$i" 2> "$$i.err" ;  \
 	done
 	${S} echo

@@ -1,5 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.49 2023-08-05
+
+Update .gitignore: add `/archive`: a directory in my working repo of old files
+that although useful to me should not be added to the repo. Since archived files
+are not really something that should be in the repo anyway adding `/archive` to
+the .gitignore seems reasonable.
+
+Add some bad test JSON files in the `jparse/test_jparse/test_JSON/bad_loc`
+directory, updated Makefile rule Added appropriate `err` files.
+Updated Makefile rule `rebuild_jparse_err_files` to not show the command being
+run for each file to make the output clean (and to show what it looks like in
+the README.md file - which has been updated due to slight changes).
+
+
 ## Release 1.0.48 2023-08-04
 
 Bug fixes in `location` tool wrt the `-a` and `-s` options. New version `"1.0.2

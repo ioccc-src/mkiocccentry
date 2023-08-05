@@ -10,6 +10,7 @@
 .txzchk_test.*.test_file
 .txzchk_test.tar_err.*.out
 .txzchk_test.tarball.*.txz
+/archive/
 /dbg.clone/
 /dyn_array.clone/
 /jparse.clone/
@@ -39,6 +40,7 @@ jparse.xml
 jparse/jfmt
 jparse/jnamval
 jparse/jparse
+*jprint*
 jparse/jval
 jparse/lex.yy.c
 jparse/test_jparse/print_test
