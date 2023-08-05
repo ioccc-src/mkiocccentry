@@ -202,8 +202,8 @@ main(int argc, char **argv)
 	    json_util_parse_st_level_option(optarg, &jval->common.num_level_spaces, &jval->common.print_level_tab);
 	    break;
 	case 't':
-	    jval->json_name_val.json_types_specified = true;
-	    jval->json_name_val.json_types = jval_parse_types_option(optarg);
+	    jval->json_name_val.match_json_types_specified = true;
+	    jval->json_name_val.match_json_types = json_util_parse_match_types(optarg);
 	    break;
 	case 'l':
 	    jval->common.levels_constrained = true;

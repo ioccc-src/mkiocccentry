@@ -201,125 +201,95 @@ jnamval_run_tests(void)
     /* test -t option bits */
 
     /* first int,float,exp */
-    bits = jnamval_parse_types_option("int,float,exp");
+    bits = json_util_parse_match_types("int,float,exp");
     /* check that any number will match */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* just exponents */
-    bits = jnamval_parse_types_option("exp");
+    bits = json_util_parse_match_types("exp");
     /* check that int and float will fail but exp will succeed */
-    test = jnamval_test_bits(false, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP");
-    if (!test) {
-	okay = false;
-    }
-
-    /* test all types */
-    bits = jnamval_parse_types_option("any");
-    /* verify that it is the any bit */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_any, "JNAMVAL_TYPE_ANY");
-    if (!test) {
-	okay = false;
-    }
-
-    /* test compound */
-    bits = jnamval_parse_types_option("compound");
-    /* verify that the compound type is set by compound match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_compound, "JNAMVAL_TYPE_COMPOUND");
-    if (!test) {
-	okay = false;
-    }
-    /* verify that the compound type is set by matching all types */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_object, "JNAMVAL_TYPE_OBJECT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_array, "JNAMVAL_TYPE_ARRAY");
-    if (!test) {
-	okay = false;
-    }
-
-    /* test member */
-    bits = jnamval_parse_types_option("member");
-    /* verify that the member type is set by member match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_member, "JNAMVAL_TYPE_MEMBER");
+    test = jnamval_test_bits(false, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* test simple */
-    bits = jnamval_parse_types_option("simple");
+    bits = json_util_parse_match_types("simple");
     /* verify that the simple type is set by simple match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_simple, "JNAMVAL_TYPE_SIMPLE");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
     /* verify that the simple type is set by matching each type */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_num, "JNAMVAL_TYPE_NUM") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_bool, "JNAMVAL_TYPE_BOOL") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
 
     /* test int */
-    bits = jnamval_parse_types_option("int");
+    bits = json_util_parse_match_types("int");
     /* verify that the int type is set by int match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT");
     if (!test) {
 	okay = false;
     }
 
     /* test float */
-    bits = jnamval_parse_types_option("float");
+    bits = json_util_parse_match_types("float");
     /* verify that the float type is set by float match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT");
     if (!test) {
 	okay = false;
     }
 
     /* test exp */
-    bits = jnamval_parse_types_option("exp");
+    bits = json_util_parse_match_types("exp");
     /* verify that the exp type is set by exp match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* test bool */
-    bits = jnamval_parse_types_option("bool");
+    bits = json_util_parse_match_types("bool");
     /* verify that the bool type is set by bool match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_bool, "JNAMVAL_TYPE_BOOL");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL");
     if (!test) {
 	okay = false;
     }
 
     /* test string */
-    bits = jnamval_parse_types_option("str");
+    bits = json_util_parse_match_types("str");
     /* verify that the string type is set by string match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR");
     if (!test) {
 	okay = false;
     }
 
     /* test null */
-    bits = jnamval_parse_types_option("null");
+    bits = json_util_parse_match_types("null");
     /* verify that the null type is set by null match function */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
 
     /* test int,str,null */
-    bits = jnamval_parse_types_option("int,str,null");
+    bits = json_util_parse_match_types("int,str,null");
     /* verify that the int,str,null types are set by match functions */
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
@@ -328,37 +298,160 @@ jnamval_run_tests(void)
      * test that none of the bits are set not via the match none function but by
      * each match function
      */
-    bits = JNAMVAL_TYPE_NONE;
-    test = jnamval_test_bits(false, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_num, "JNAMVAL_TYPE_NUM") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_bool, "JNAMVAL_TYPE_BOOL") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_object, "JNAMVAL_TYPE_OBJECT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_array, "JNAMVAL_TYPE_ARRAY") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_any, "JNAMVAL_TYPE_ANY") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_simple, "JNAMVAL_TYPE_SIMPLE") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_compound, "JNAMVAL_TYPE_COMPOUND");
+    bits = JSON_UTIL_MATCH_TYPE_NONE;
+    test = jnamval_test_bits(false, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL") &&
+	   jnamval_test_bits(false, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
 
     /* check all types */
-    bits = jnamval_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound");
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_num, "JNAMVAL_TYPE_NUM") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_bool, "JNAMVAL_TYPE_BOOL") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_object, "JNAMVAL_TYPE_OBJECT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_array, "JNAMVAL_TYPE_ARRAY") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_any, "JNAMVAL_TYPE_ANY") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_simple, "JNAMVAL_TYPE_SIMPLE") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_compound, "JNAMVAL_TYPE_COMPOUND");
+    bits = json_util_parse_match_types("int,float,exp,num,bool,str,null,simple");
+    test = jnamval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL") &&
+	   jnamval_test_bits(true, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
+    if (!test) {
+	okay = false;
+    }
+
+
+    /* test -P option bits */
+
+    /* first int,float,exp */
+    bits = json_util_parse_match_types("int,float,exp");
+    /* check that any number will match */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* just exponents */
+    bits = json_util_parse_match_types("exp");
+    /* check that int and float will fail but exp will succeed */
+    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    bits = json_util_parse_match_types("simple");
+    /* verify that the simple type is set by simple match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_TYPE_SIMPLE");
+    if (!test) {
+	okay = false;
+    }
+    /* verify that the simple type is set by matching each type */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int */
+    bits = json_util_parse_match_types("int");
+    /* verify that the int type is set by int match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test float */
+    bits = json_util_parse_match_types("float");
+    /* verify that the float type is set by float match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test exp */
+    bits = json_util_parse_match_types("exp");
+    /* verify that the exp type is set by exp match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test bool */
+    bits = json_util_parse_match_types("bool");
+    /* verify that the bool type is set by bool match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test string */
+    bits = json_util_parse_match_types("str");
+    /* verify that the string type is set by string match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test null */
+    bits = json_util_parse_match_types("null");
+    /* verify that the null type is set by null match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int,str,null */
+    bits = json_util_parse_match_types("int,str,null");
+    /* verify that the int,str,null types are set by match functions */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /*
+     * test that none of the bits are set not via the match none function but by
+     * each match function
+     */
+    bits = JNAMVAL_PRINT_TYPE_NONE;
+    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_PRINT_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_PRINT_TYPE_FLOAT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_exp, "JNAMVAL_PRINT_TYPE_EXP") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_num, "JNAMVAL_PRINT_TYPE_NUM") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_bool, "JNAMVAL_PRINT_TYPE_BOOL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_string, "JNAMVAL_PRINT_TYPE_STR") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_null, "JNAMVAL_PRINT_TYPE_NULL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_object, "JNAMVAL_PRINT_TYPE_OBJECT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_array, "JNAMVAL_PRINT_TYPE_ARRAY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_any, "JNAMVAL_PRINT_TYPE_ANY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_simple, "JNAMVAL_PRINT_TYPE_SIMPLE") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_compound, "JNAMVAL_PRINT_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+
+    /* check all types */
+    bits = json_util_parse_match_types("int,float,exp,num,bool,str,null,simple");
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_PRINT_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_PRINT_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_PRINT_TYPE_EXP") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_PRINT_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_PRINT_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_PRINT_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_PRINT_TYPE_NULL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_PRINT_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }

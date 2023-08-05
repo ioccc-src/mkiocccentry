@@ -1,5 +1,33 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.49 2023-08-05
+
+New version of `jnamval`: `"0.0.11 2023-08-05"`. Add `-I` option with same
+semantics as `jfmt`. Updated `jnamval.1` to add this option and fix typos.
+
+Change available options for `jnamval -t` to be that of `jval -t`. Updated man
+page.
+
+Typo fixes in `jfmt.1` and `jval.1`. Removed `-I` from `jval.1` as it's not a
+valid option.
+
+Fix typo in usage string in `jnamval` which referred to non-existent option (it
+is actually an option arg, not an option, that is correct and that is now what
+it says).
+
+Add option `-P` to `jnamval`. This is just like what `-t` for `jnamval` used to
+be but it will indicate what to print rather than what to match. Man page
+updated for this option. As the code is common to both `jval` and `jnamval` the
+`jval` utility could be updated easily to support this option is desired but
+this is TBD later.
+
+Add some bad test JSON files in the `jparse/test_jparse/test_JSON/bad_loc`
+directory, updated Makefile rule Added appropriate `err` files.
+Updated Makefile rule `rebuild_jparse_err_files` to not show the command being
+run for each file to make the output clean (and to show what it looks like in
+the README.md file - which has been updated due to slight changes).
+
+
 ## Release 1.0.48 2023-08-04
 
 Bug fixes in `location` tool wrt the `-a` and `-s` options. New version `"1.0.2

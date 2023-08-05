@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jnamval 1 "02 August 2023" "jnamval" "IOCCC tools"
+.TH jnamval 1 "05 August 2023" "jnamval" "IOCCC tools"
 .SH NAME
 .B jnamval
 \- IOCCC JSON printer
@@ -24,7 +24,11 @@
 .RB [\| \-q \|]
 .RB [\| \-L
 .IR <num>{[t|s]} \|]
+.RB [\| \-I
+.IR <num>{[t|s]} \|]
 .RB [\| \-t
+.IR type \|]
+.RB [\| \-P
 .IR type \|]
 .RB [\| \-l
 .IR lvl \|]
@@ -93,7 +97,9 @@ option allows you to change the default depth to traverse when parsing the JSON 
 .PP
 The option
 .B \-t
-controls what types to search for, excluding matches if they are not any of the types in the comma-separated list.
+controls what types to search for, excluding matches if they are not any of the types in the comma-separated list whereas the option
+.B \-P
+controls what types to print.
 The option
 .B \-l
 allows you to restrict the output based on the JSON level.
@@ -136,15 +142,28 @@ Suppress some of the output (def: show more information).
 .TP
 .BI \-L\   <num>[{t|s}
 Print the JSON levels followed by the number of spaces or tabs, depending on the letter specified,
-.BR T
+.BR t
 for tabs and
-.BR S
+.BR s
 for spaces.
 Not specifying either defaults to spaces.
 As a convenience, specifying
 .BI \-L\  tab
 is an alias for
 .BI \-L\  1t\c
+\&.
+.TP
+.BI \-I\  <num>[{t|s}
+Indent the JSON levels by the number of spaces or tabs, depending on the letter specified,
+.BR t
+for tabs and
+.BR s
+for spaces.
+Not specifying either defaults to spaces.
+As a convenience, specifying
+.BI \-I\  tab
+is an alias for
+.BI \-I\  1t\c
 \&.
 .TP
 .BI \-t\  type
@@ -182,6 +201,43 @@ null values
 .RS
 alias for num,bool,str,null (the default)
 .RE
+.RE
+.TP
+.BI \-P\  type
+Print only the comma separated types (def: any).
+.RS
+.B int
+.RS
+integer values
+.RE
+.B float
+.RS
+floating point values
+.RE
+.B exp
+.RS
+exponential notation values
+.RE
+.B num
+.RS
+alias for int,float,exp
+.RE
+.B bool
+.RS
+boolean values
+.RE
+.B str
+.RS
+string values
+.RE
+.B null
+.RS
+null values
+.RE
+.B simple
+.RS
+alias for num,bool,str,null
+.RE
 .B member
 .RS
 JSON members
@@ -200,9 +256,10 @@ alias for 'member,object,array'
 .RE
 .B any
 .RS
-alias for 'simple,compound' (everything)
+alias for 'simple,compound' (everything, default)
 .RE
 .RE
+
 .TP
 .BI \-l\  lvl
 Only show JSON members in the given level range (def: show all levels).

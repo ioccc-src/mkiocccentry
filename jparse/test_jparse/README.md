@@ -14,11 +14,17 @@ make rebuild_jparse_err_files
 You should see something like:
 
 ```sh
-$ rm -f test_JSON/bad_loc/*.err; make rebuild_jparse_err_files
-make: [rebuild_jparse_err_files] Error 1 (ignored)
+$ make rebuild_jparse_err_files
+
+test_jparse: make rebuild_jparse_err_files starting
+
+rm -f test_JSON/bad_loc/*.err
+make: [Makefile:379: rebuild_jparse_err_files] Error 1 (ignored)
 
 Make sure to run make test from the top level directory befor doing a
 git add on all the *.json and *.json.err files in test_json/bad_loc!
+
+test_jparse: make rebuild_jparse_err_files ending
 ```
 
 Assuming you see the above you **MUST** then run `make test` from the top level

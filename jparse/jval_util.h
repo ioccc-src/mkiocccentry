@@ -58,18 +58,6 @@
 
 /* defines */
 
-/* -t types */
-#define JVAL_TYPE_NONE	    (0)
-#define JVAL_TYPE_INT	    (1)
-#define JVAL_TYPE_FLOAT	    (2)
-#define JVAL_TYPE_EXP	    (4)
-#define JVAL_TYPE_NUM	    (8)
-#define JVAL_TYPE_BOOL	    (16)
-#define JVAL_TYPE_STR	    (32)
-#define JVAL_TYPE_NULL	    (64)
-/* JVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
-#define JVAL_TYPE_SIMPLE  (JVAL_TYPE_NUM|JVAL_TYPE_BOOL|JVAL_TYPE_STR|JVAL_TYPE_NULL)
-
 #define JVAL_CMP_OP_NONE    JSON_UTIL_CMP_OP_NONE
 #define JVAL_CMP_EQ	    JSON_UTIL_CMP_OP_EQ
 #define JVAL_CMP_LT	    JSON_UTIL_CMP_OP_LT
@@ -94,19 +82,6 @@ struct jval
 
 /* function prototypes */
 struct jval *alloc_jval(void);
-
-/* JSON types - -t option*/
-uintmax_t jval_parse_types_option(char *optarg);
-bool jval_match_none(uintmax_t types);
-bool jval_match_int(uintmax_t types);
-bool jval_match_float(uintmax_t types);
-bool jval_match_exp(uintmax_t types);
-bool jval_match_exp(uintmax_t types);
-bool jval_match_bool(uintmax_t types);
-bool jval_match_num(uintmax_t types);
-bool jval_match_string(uintmax_t types);
-bool jval_match_null(uintmax_t types);
-bool jval_match_simple(uintmax_t types);
 
 
 /* functions to print matches */

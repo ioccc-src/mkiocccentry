@@ -39,6 +39,7 @@ jparse.xml
 jparse/jfmt
 jparse/jnamval
 jparse/jparse
+*jprint*
 jparse/jval
 jparse/lex.yy.c
 jparse/test_jparse/print_test

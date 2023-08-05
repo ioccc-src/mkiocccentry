@@ -85,6 +85,20 @@ enum output_format {
 #define	JSON_UTIL_FMT_PEDANTIC	    (1)
 #define JSON_UTIL_FMT_COLOUR	    (2)
 
+/* jval and jnamval -t types */
+#define JSON_UTIL_MATCH_TYPE_NONE	    (0)
+#define JSON_UTIL_MATCH_TYPE_INT	    (1)
+#define JSON_UTIL_MATCH_TYPE_FLOAT	    (2)
+#define JSON_UTIL_MATCH_TYPE_EXP	    (4)
+#define JSON_UTIL_MATCH_TYPE_NUM	    (8)
+#define JSON_UTIL_MATCH_TYPE_BOOL	    (16)
+#define JSON_UTIL_MATCH_TYPE_STR	    (32)
+#define JSON_UTIL_MATCH_TYPE_NULL	    (64)
+/* JSON_UTIL_MATCH_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
+#define JSON_UTIL_MATCH_TYPE_SIMPLE  \
+    (JSON_UTIL_MATCH_TYPE_NUM|JSON_UTIL_MATCH_TYPE_BOOL|JSON_UTIL_MATCH_TYPE_STR|JSON_UTIL_MATCH_TYPE_NULL)
+
+
 /* structures */
 
 /* structures for jval and jnamval */
@@ -123,8 +137,10 @@ struct json_util_name_val
 
     /* search / matching related */
     bool invert_matches;			/* -i used */
-    bool json_types_specified;			/* -t used */
-    uintmax_t json_types;			/* -t type */
+    bool match_json_types_specified;		/* -t used */
+    uintmax_t match_json_types;			/* -t types */
+    bool print_json_types_specified;		/* -P used */
+    uintmax_t print_json_types;			/* -P types */
     bool match_substrings;			/* -s used, match substrings */
     bool use_regexps;				/* -g used, allow grep-like regexps */
 
@@ -242,5 +258,18 @@ void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, boo
 struct json_util_cmp_op *json_util_parse_cmp_op(struct json_util_name_val *json_util_name_val, const char *option, char *optarg);
 /* for -F option */
 enum output_format parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg);
+/* JSON types - -t option*/
+uintmax_t json_util_parse_match_types(char *optarg);
+bool json_util_match_none(uintmax_t types);
+bool json_util_match_int(uintmax_t types);
+bool json_util_match_float(uintmax_t types);
+bool json_util_match_exp(uintmax_t types);
+bool json_util_match_exp(uintmax_t types);
+bool json_util_match_bool(uintmax_t types);
+bool json_util_match_num(uintmax_t types);
+bool json_util_match_string(uintmax_t types);
+bool json_util_match_null(uintmax_t types);
+bool json_util_match_simple(uintmax_t types);
+
 
 #endif /* INCLUDE_JSON_UTIL_H */
