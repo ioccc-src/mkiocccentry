@@ -2904,3 +2904,286 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
     return format;
 }
 
+/*
+ * json_util_parse_match_types	- parse -t types list
+ *
+ * given:
+ *
+ *	optarg	    - option argument to -t option
+ *
+ * Returns: bitvector of types requested.
+ *
+ * NOTE: if optarg is NULL (which should never happen) or empty it returns the
+ * default, JSON_UTIL_MATCH_TYPE_SIMPLE (as if '-t simple').
+ */
+uintmax_t
+json_util_parse_match_types(char *optarg)
+{
+    uintmax_t type = JSON_UTIL_MATCH_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
+    char *saveptr = NULL;   /* for strtok_r() */
+    char *dup = NULL;	    /* strdup()d copy of optarg */
+    char *p = NULL;
+
+    if (optarg == NULL || !*optarg) {
+	/* NULL or empty optarg, assume simple */
+	return type;
+    }
+    p = optarg;
+
+    errno = 0; /* pre-clear errno for errp() */
+    dup = strdup(optarg);
+    if (dup == NULL) {
+	errp(24, __func__, "strdup(%s) failed", optarg);
+	not_reached();
+    }
+
+    /*
+     * Go through comma-separated list of what to match, setting each as a bitvector
+     */
+    for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
+	if (!strcmp(p, "int")) {
+	    type |= JSON_UTIL_MATCH_TYPE_INT;
+	} else if (!strcmp(p, "float")) {
+	    type |= JSON_UTIL_MATCH_TYPE_FLOAT;
+	} else if (!strcmp(p, "exp")) {
+	    type |= JSON_UTIL_MATCH_TYPE_EXP;
+	} else if (!strcmp(p, "num")) {
+	    type |= JSON_UTIL_MATCH_TYPE_NUM;
+	} else if (!strcmp(p, "bool")) {
+	    type |= JSON_UTIL_MATCH_TYPE_BOOL;
+	} else if (!strcmp(p, "str")) {
+	    type |= JSON_UTIL_MATCH_TYPE_STR;
+	} else if (!strcmp(p, "null")) {
+	    type |= JSON_UTIL_MATCH_TYPE_NULL;
+	} else if (!strcmp(p, "simple")) {
+	    type |= JSON_UTIL_MATCH_TYPE_SIMPLE;
+	} else {
+	    /* unknown or unsupported type */
+	    err(3, __func__, "unknown or unsupported type '%s'", p); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    return type;
+}
+
+/*
+ * json_util_match_none	- if no types should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types == 0.
+ */
+bool
+json_util_match_none(uintmax_t types)
+{
+    return types == JSON_UTIL_MATCH_TYPE_NONE;
+}
+
+/*
+ * json_util_match_int	- if ints should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_INT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_int(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_INT) != 0;
+}
+/*
+ * json_util_match_float	- if floats should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_FLOAT set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_float(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_FLOAT) != 0;
+}
+/*
+ * json_util_match_exp	- if exponents should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_EXP set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_exp(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_EXP) != 0;
+}
+/*
+ * json_util_match_num	- if numbers of any type should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_NUM (or any of the number types) set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_num(uintmax_t types)
+{
+    return ((types & JSON_UTIL_MATCH_TYPE_NUM)||(types & JSON_UTIL_MATCH_TYPE_INT) || (types & JSON_UTIL_MATCH_TYPE_FLOAT) ||
+	    (types & JSON_UTIL_MATCH_TYPE_EXP))!= 0;
+}
+/*
+ * json_util_match_bool	- if booleans should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_BOOL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_bool(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_BOOL) != 0;
+}
+/*
+ * json_util_match_string	    - if strings should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_STR set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_string(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_STR) != 0;
+}
+/*
+ * json_util_match_null	- if null should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_NULL set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_null(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_NULL) != 0;
+}
+/*
+ * json_util_match_simple	- if simple types should match
+ *
+ * given:
+ *
+ *	types	- types set
+ *
+ * Simple is defined as a number, a bool, a string or a null.
+ *
+ * Returns true if types has JSON_UTIL_MATCH_TYPE_SIMPLE set.
+ *
+ * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
+ * bitwise AND? Because in some cases (like the test routines) we compare the
+ * expected true value to the result of the function. But depending on the bits
+ * set it might not end up being 1 so it ends up not comparing true to true but
+ * another value to true which it might not be. This could be done a different
+ * way where the test would be something like:
+ *
+ *	if ((test && !expected) || (expected && !test))
+ *
+ * but this seems like needless complications.
+ */
+bool
+json_util_match_simple(uintmax_t types)
+{
+    return (types & JSON_UTIL_MATCH_TYPE_SIMPLE) != 0;
+}
+
+

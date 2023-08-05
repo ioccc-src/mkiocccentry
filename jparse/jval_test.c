@@ -145,95 +145,95 @@ jval_run_tests(void)
     /* test -t option bits */
 
     /* first int,float,exp */
-    bits = jval_parse_types_option("int,float,exp");
+    bits = json_util_parse_match_types("int,float,exp");
     /* check that any number will match */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* just exponents */
-    bits = jval_parse_types_option("exp");
+    bits = json_util_parse_match_types("exp");
     /* check that int and float will fail but exp will succeed */
-    test = jval_test_bits(false, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP");
+    test = jval_test_bits(false, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* test simple */
-    bits = jval_parse_types_option("simple");
+    bits = json_util_parse_match_types("simple");
     /* verify that the simple type is set by simple match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
     /* verify that the simple type is set by matching each type */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_num, "JVAL_TYPE_NUM") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
 
     /* test int */
-    bits = jval_parse_types_option("int");
+    bits = json_util_parse_match_types("int");
     /* verify that the int type is set by int match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT");
     if (!test) {
 	okay = false;
     }
 
     /* test float */
-    bits = jval_parse_types_option("float");
+    bits = json_util_parse_match_types("float");
     /* verify that the float type is set by float match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT");
     if (!test) {
 	okay = false;
     }
 
     /* test exp */
-    bits = jval_parse_types_option("exp");
+    bits = json_util_parse_match_types("exp");
     /* verify that the exp type is set by exp match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP");
     if (!test) {
 	okay = false;
     }
 
     /* test bool */
-    bits = jval_parse_types_option("bool");
+    bits = json_util_parse_match_types("bool");
     /* verify that the bool type is set by bool match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL");
     if (!test) {
 	okay = false;
     }
 
     /* test string */
-    bits = jval_parse_types_option("str");
+    bits = json_util_parse_match_types("str");
     /* verify that the string type is set by string match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR");
     if (!test) {
 	okay = false;
     }
 
     /* test null */
-    bits = jval_parse_types_option("null");
+    bits = json_util_parse_match_types("null");
     /* verify that the null type is set by null match function */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
 
     /* test int,str,null */
-    bits = jval_parse_types_option("int,str,null");
+    bits = json_util_parse_match_types("int,str,null");
     /* verify that the int,str,null types are set by match functions */
-    test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL");
     if (!test) {
 	okay = false;
     }
@@ -242,29 +242,29 @@ jval_run_tests(void)
      * test that none of the bits are set not via the match none function but by
      * each match function
      */
-    bits = JVAL_TYPE_NONE;
-    test = jval_test_bits(false, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_num, "JVAL_TYPE_NUM") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(false, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
+    bits = JSON_UTIL_MATCH_TYPE_NONE;
+    test = jval_test_bits(false, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL") &&
+	   jval_test_bits(false, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
 
     /* check all types */
-    bits = jval_parse_types_option("int,float,exp,num,bool,str,null");
-    test = jval_test_bits(true, bits, __LINE__, jval_match_int, "JVAL_TYPE_INT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_float, "JVAL_TYPE_FLOAT") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_exp, "JVAL_TYPE_EXP") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_num, "JVAL_TYPE_NUM") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_bool, "JVAL_TYPE_BOOL") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_string, "JVAL_TYPE_STR") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_null, "JVAL_TYPE_NULL") &&
-	   jval_test_bits(true, bits, __LINE__, jval_match_simple, "JVAL_TYPE_SIMPLE");
+    bits = json_util_parse_match_types("int,float,exp,num,bool,str,null");
+    test = jval_test_bits(true, bits, __LINE__, json_util_match_int, "JSON_UTIL_MATCH_TYPE_INT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_float, "JSON_UTIL_MATCH_TYPE_FLOAT") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_exp, "JSON_UTIL_MATCH_TYPE_EXP") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_num, "JSON_UTIL_MATCH_TYPE_NUM") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_bool, "JSON_UTIL_MATCH_TYPE_BOOL") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_string, "JSON_UTIL_MATCH_TYPE_STR") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_null, "JSON_UTIL_MATCH_TYPE_NULL") &&
+	   jval_test_bits(true, bits, __LINE__, json_util_match_simple, "JSON_UTIL_MATCH_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }

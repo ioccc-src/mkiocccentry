@@ -71,10 +71,6 @@ static const char * const usage_msg0 =
     "\t\t\t\tbool\t\tboolean values\n"
     "\t\t\t\tstr\t\tstring values\n"
     "\t\t\t\tnull\t\tnull values\n"
-    "\t\t\t\tmember\t\tmembers\n"
-    "\t\t\t\tobject\t\tobjects\n"
-    "\t\t\t\tarray\t\tarrays\n"
-    "\t\t\t\tcompound\tcompound values\n"
     "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null' (the default)\n"
     "\n"
     "\t-P types\t\tPrint only the comma-separated types (def: any):\n"
@@ -248,14 +244,13 @@ main(int argc, char **argv)
 	    json_util_parse_st_indent_option(optarg, &jnamval->common.indent_spaces, &jnamval->common.indent_tab);
 	    break;
 	case 't':
-	    jnamval->json_name_val.json_types_specified = true;
-	    jnamval->json_name_val.json_types = jnamval_parse_types_option(optarg, true);
+	    jnamval->json_name_val.match_json_types_specified = true;
+	    jnamval->json_name_val.match_json_types = json_util_parse_match_types(optarg);
 	    break;
 	case 'P':
 	    jnamval->json_name_val.print_json_types_specified = true;
-	    jnamval->json_name_val.print_json_types = jnamval_parse_types_option(optarg, false);
+	    jnamval->json_name_val.print_json_types = jnamval_parse_print_types(optarg);
 	    break;
-
 	case 'l':
 	    jnamval->common.levels_constrained = true;
 	    json_util_parse_number_range("-l", optarg, false, &jnamval->common.json_util_levels);
