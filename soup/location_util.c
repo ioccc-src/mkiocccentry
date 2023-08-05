@@ -222,7 +222,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
      * firewall
      */
     if (code == NULL) {
-	err(11, __func__, "code is NULL");
+	err(13, __func__, "code is NULL");
 	not_reached();
     }
 
@@ -307,7 +307,7 @@ lookup_location_code_r(char const *location_name, size_t *idx, struct location *
      * firewall
      */
     if (location_name == NULL) {
-	err(12, __func__, "location_name is NULL");
+	err(14, __func__, "location_name is NULL");
 	not_reached();
     }
 
@@ -368,11 +368,11 @@ location_code_name_match(char const *code, char const *location_name)
      * firewall
      */
     if (code == NULL) {
-	err(13, __func__, "code is NULL");
+	err(15, __func__, "code is NULL");
 	not_reached();
     }
     if (location_name == NULL) {
-	err(14, __func__, "location_name is NULL");
+	err(16, __func__, "location_name is NULL");
 	not_reached();
     }
 

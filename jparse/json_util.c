@@ -2933,7 +2933,7 @@ json_util_parse_match_types(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	errp(24, __func__, "strdup(%s) failed", optarg);
+	errp(43, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 

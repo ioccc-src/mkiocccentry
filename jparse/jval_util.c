@@ -171,7 +171,7 @@ jval_print_count(struct jval *jval)
 {
     /* firewall */
     if (jval == NULL) {
-	err(24, __func__, "jval is NULL");
+	err(23, __func__, "jval is NULL");
 	not_reached();
     }
 
@@ -203,15 +203,15 @@ parse_jval_args(struct jval *jval, int *argc, char ***argv)
 
     /* firewall */
     if (jval == NULL) {
-	err(25, __func__, "jval is NULL");
+	err(24, __func__, "jval is NULL");
 	not_reached();
     }
     if (argc == NULL) {
-	err(26, __func__, "argc is NULL");
+	err(25, __func__, "argc is NULL");
 	not_reached();
     }
     if (argv == NULL) {
-	err(27, __func__, "argv is NULL");
+	err(26, __func__, "argv is NULL");
 	not_reached();
     }
 
@@ -248,7 +248,7 @@ free_jval_cmp_op_lists(struct jval *jval)
 
     /* firewall */
     if (jval == NULL) {
-	err(28, __func__, "jval is NULL");
+	err(27, __func__, "jval is NULL");
 	not_reached();
     }
 
