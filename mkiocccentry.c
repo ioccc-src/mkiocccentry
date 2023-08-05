@@ -389,6 +389,18 @@ main(int argc, char *argv[])
     info.mkiocccentry_ver = MKIOCCCENTRY_VERSION;
     dbg(DBG_HIGH, "info.mkiocccentry_ver: %s", info.mkiocccentry_ver);
 
+
+    /* warn about -y option */
+    if (answer_yes) {
+	para("",
+	     "WARNING: you've chosen to answer yes to almost all prompts. If this was",
+	     "unintentional, run the program again without specifying -y. We cannot",
+	     "stress the importance of this enough! Well OK, we can over-stress most things",
+	     "but you get the point. Do not use the -y option without EXTREME caution!",
+	     "",
+	     NULL);
+    }
+
     /* if the user requested to ignore warnings, ignore this once and warn them :) */
     if (ignore_warnings) {
 	para("",
@@ -401,16 +413,6 @@ main(int argc, char *argv[])
 	     "",
 	     NULL);
     }
-    if (answer_yes) {
-	para("",
-	     "WARNING: you've chosen to answer yes to almost all prompts. If this was",
-	     "unintentional, run the program again without specifying -y. We cannot"
-	     "stress the importance of this enough! Well OK, we can over-stress most things"
-	     "but you get the point. Do not use the -y option without EXTREME caution!",
-	     "",
-	     NULL);
-    }
-
     /*
      * environment sanity checks
      */

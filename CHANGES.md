@@ -27,6 +27,9 @@ Updated Makefile rule `rebuild_jparse_err_files` to not show the command being
 run for each file to make the output clean (and to show what it looks like in
 the README.md file - which has been updated due to slight changes).
 
+Fix warning message of `mkiocccentry -y` and move it to happen before the option
+to ignore all warnings as that one says no more warnings will be displayed so it
+should come last.
 
 ## Release 1.0.48 2023-08-04
 
