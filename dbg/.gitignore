@@ -1,0 +1,13 @@
+*.[ao]
+*.dSYM/
+*~
+.*.swp
+.DS_Store
+/.local.dir.tags
+/Makefile.local
+/dbg_example
+/dbg_test
+/dbg_test.c
+/dbg_test.out
+/makefile.local
+/tags

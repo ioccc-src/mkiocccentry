@@ -1,0 +1,9 @@
+*.[ao]
+*.dSYM/
+*~
+.*.swp
+.DS_Store
+/.local.dir.tags
+/Makefile.local
+/makefile.local
+/tags
