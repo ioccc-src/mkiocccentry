@@ -41,7 +41,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.11 2023-08-02"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "3.0 2023-08-05"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -125,6 +125,7 @@ typedef unsigned char bool;
 #define DBG_VVVVVHIGH (15)	/* very very very very very verbose debugging */
 
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
+#define DBG_INVALID (-1)	/* invalid debug level - returned by parse_verbosity() on error */
 
 #define FORCED_EXIT (255)	/* exit(255) on bad exit code */
 #define DO_NOT_EXIT (-1)	/* do not let the usage printing function exit */
@@ -258,6 +259,6 @@ extern void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);
 
-extern int parse_verbosity(char const *program, char const *arg);
+extern int parse_verbosity(char const *optarg);
 
 #endif				/* INCLUDE_DBG_H */

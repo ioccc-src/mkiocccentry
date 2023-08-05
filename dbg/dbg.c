@@ -6263,36 +6263,39 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
     return;
 }
 
+
 /*
- * parse_verbosity - parse -v option for our tools
+ * parse_verbosity - parse -v optarg for our tools
  *
  * given:
- *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
- *	arg		- the optarg in the calling tool
+ *	optarg		verbosity string, must be an integer >= 0
  *
- * Returns the parsed verbosity.
- *
- * Returns DBG_NONE if passed NULL args or empty string.
+ * returns:
+ *	parsed verbosity or DBG_INVALID on conversion error
  */
 int
-parse_verbosity(char const *program, char const *arg)
+parse_verbosity(char const *optarg)
 {
-    int verbosity;
+    int verbosity = DBG_NONE;	/* parsed verbosity or DBG_NONE */
 
-    if (program == NULL || arg == NULL || !strlen(arg)) {
-	return DBG_NONE;
+    /*
+     * firewall
+     */
+    if (optarg == NULL) {
+	return DBG_INVALID;
     }
 
     /*
      * parse verbosity
      */
-    errno = 0;		/* pre-clear errno for errp() */
-    verbosity = (int)strtol(arg, NULL, 0);
+    errno = 0;		/* pre-clear errno for warnp() */
+    verbosity = (int)strtol(optarg, NULL, 0);
     if (errno != 0) {
-	errp(3, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
-	not_reached();
+	return DBG_INVALID;
     }
-
+    if (verbosity < 0) {
+	return DBG_INVALID;
+    }
     return verbosity;
 }
 

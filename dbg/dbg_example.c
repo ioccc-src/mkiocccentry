@@ -38,7 +38,10 @@ main(void)
      * We suggest you use getopt(3) and the parse_verbosity(3) function to
      * convert -v verbosity_level on the command line like:
      *
-     *	    verbosity_level = parse_verbosity(argv[0], optarg);
+     *	    verbosity_level = parse_verbosity(optarg);
+     *	    if (verbosity_level < 0) {
+     *		... report a -v optarg parsing error ...
+     *	    }
      */
     msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
     verbosity_level = DBG_MED; /* DBG_MED == (3) */
