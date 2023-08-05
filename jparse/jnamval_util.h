@@ -73,7 +73,7 @@
 #define JNAMVAL_TYPE_ANY	    (1023) /* bitwise OR of the above values */
 /* JNAMVAL_TYPE_SIMPLE is bitwise OR of num, bool, str and null */
 #define JNAMVAL_TYPE_SIMPLE  (JNAMVAL_TYPE_NUM|JNAMVAL_TYPE_BOOL|JNAMVAL_TYPE_STR|JNAMVAL_TYPE_NULL)
-/* JNAMVAL_TYPE_COMPOUND is bitwise OR of object and array */
+/* JNAMVAL_TYPE_COMPOUND is bitwise OR of member, object and array */
 #define JNAMVAL_TYPE_COMPOUND (JNAMVAL_TYPE_MEMBER|JNAMVAL_TYPE_OBJECT|JNAMVAL_TYPE_ARRAY)
 
 /* print types for -p option */
@@ -103,9 +103,9 @@ struct jnamval
 
     /* below are those not common to any other tools */
 
-    /* printing related options */
-    bool print_json_types_option;		/* -p explicitly used */
-    uintmax_t print_json_types;			/* -p type specified */
+    /* matching and printing related options */
+    bool match_json_types_option;		/* -p explicitly used */
+    uintmax_t match_json_types;			/* -p type specified */
 
     /* search / matching related */
     bool match_json_member_names;		/* -N used, match based on member names */
@@ -116,8 +116,9 @@ struct jnamval
 /* function prototypes */
 struct jnamval *alloc_jnamval(void);
 
-/* JSON types - -t option*/
-uintmax_t jnamval_parse_types_option(char *optarg);
+/* JSON types - -t option */
+uintmax_t jnamval_parse_types_option(char *optarg, bool type_option);
+/* JSON types to match for -t option */
 bool jnamval_match_none(uintmax_t types);
 bool jnamval_match_any(uintmax_t types);
 bool jnamval_match_int(uintmax_t types);
@@ -139,6 +140,24 @@ bool jnamval_print_name(uintmax_t types);
 bool jnamval_print_value(uintmax_t types);
 bool jnamval_print_both(uintmax_t types);
 bool jnamval_print_json(uintmax_t types);
+/* JSON types to match for -P option
+ * NOTE: the types bitvector is NOT the same as for -p!
+ */
+bool jnamval_print_none(uintmax_t types);
+bool jnamval_print_any(uintmax_t types);
+bool jnamval_print_int(uintmax_t types);
+bool jnamval_print_float(uintmax_t types);
+bool jnamval_print_exp(uintmax_t types);
+bool jnamval_print_bool(uintmax_t types);
+bool jnamval_print_num(uintmax_t types);
+bool jnamval_print_string(uintmax_t types);
+bool jnamval_print_null(uintmax_t types);
+bool jnamval_print_simple(uintmax_t types);
+bool jnamval_print_object(uintmax_t types);
+bool jnamval_print_array(uintmax_t types);
+bool jnamval_print_compound(uintmax_t types);
+bool jnamval_print_member(uintmax_t types);
+
 
 
 /* functions to print matches */

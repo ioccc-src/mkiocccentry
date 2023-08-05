@@ -124,7 +124,9 @@ struct json_util_name_val
     /* search / matching related */
     bool invert_matches;			/* -i used */
     bool json_types_specified;			/* -t used */
-    uintmax_t json_types;			/* -t type */
+    uintmax_t json_types;			/* -t types */
+    bool print_json_types_specified;		/* -P used */
+    uintmax_t print_json_types;			/* -P types */
     bool match_substrings;			/* -s used, match substrings */
     bool use_regexps;				/* -g used, allow grep-like regexps */
 

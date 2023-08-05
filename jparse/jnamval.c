@@ -41,7 +41,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  */
 static const char * const usage_msg0 =
     "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
-    "\t[-t type] [-l lvl] [-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num]\n"
+    "\t[-t types] [-P types] [-l lvl] [-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num]\n"
     "\t[-S op=str] [-o ofile] [-p parts] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
@@ -62,7 +62,7 @@ static const char * const usage_msg0 =
     "\t\t\tTrailing 't' implies <num> tabs whereas trailing 's' implies <num> spaces.\n"
     "\t\t\tNot specifying 's' or 't' implies spaces.\n"
     "\n"
-    "\t-t type\t\tMatch only the comma-separated types (def: simple):\n"
+    "\t-t types\t\tMatch only the comma-separated types (def: simple):\n"
     "\n"
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
@@ -76,6 +76,22 @@ static const char * const usage_msg0 =
     "\t\t\t\tarray\t\tarrays\n"
     "\t\t\t\tcompound\tcompound values\n"
     "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null' (the default)\n"
+    "\n"
+    "\t-P types\t\tPrint only the comma-separated types (def: any):\n"
+    "\n"
+    "\t\t\t\tint\t\tinteger values\n"
+    "\t\t\t\tfloat\t\tfloating point values\n"
+    "\t\t\t\texp\t\texponential notation values\n"
+    "\t\t\t\tnum\t\talias for 'int,float,exp'\n"
+    "\t\t\t\tbool\t\tboolean values\n"
+    "\t\t\t\tstr\t\tstring values\n"
+    "\t\t\t\tnull\t\tnull values\n"
+    "\t\t\t\tmember\t\tmembers\n"
+    "\t\t\t\tobject\t\tobjects\n"
+    "\t\t\t\tarray\t\tarrays\n"
+    "\t\t\t\tcompound\talias for 'member,object,array'\n"
+    "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null'\n"
+    "\t\t\t\tany\t\talias for 'int,float,exp,bool,str,null,member,object,array' (default)\n"
     "\n"
     "\t-p {n,v,b,j}\tPrint JSON key, value, both or JSON members (def: print JSON values)\n"
     "\t-p name\t\tAlias for '-p n'\n"
@@ -194,7 +210,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:I:t:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:I:t:P:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jnamval(&jnamval);
@@ -233,8 +249,13 @@ main(int argc, char **argv)
 	    break;
 	case 't':
 	    jnamval->json_name_val.json_types_specified = true;
-	    jnamval->json_name_val.json_types = jnamval_parse_types_option(optarg);
+	    jnamval->json_name_val.json_types = jnamval_parse_types_option(optarg, true);
 	    break;
+	case 'P':
+	    jnamval->json_name_val.print_json_types_specified = true;
+	    jnamval->json_name_val.print_json_types = jnamval_parse_types_option(optarg, false);
+	    break;
+
 	case 'l':
 	    jnamval->common.levels_constrained = true;
 	    json_util_parse_number_range("-l", optarg, false, &jnamval->common.json_util_levels);
@@ -315,8 +336,8 @@ main(int argc, char **argv)
 	    }
 	    break;
 	case 'p':
-	    jnamval->print_json_types_option = true;
-	    jnamval->print_json_types = jnamval_parse_print_option(optarg);
+	    jnamval->match_json_types_option = true;
+	    jnamval->match_json_types = jnamval_parse_print_option(optarg);
 	    break;
 	case 'N':
 	    jnamval->match_json_member_names = true;

@@ -201,7 +201,7 @@ jnamval_run_tests(void)
     /* test -t option bits */
 
     /* first int,float,exp */
-    bits = jnamval_parse_types_option("int,float,exp");
+    bits = jnamval_parse_types_option("int,float,exp", true);
     /* check that any number will match */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
@@ -211,7 +211,7 @@ jnamval_run_tests(void)
     }
 
     /* just exponents */
-    bits = jnamval_parse_types_option("exp");
+    bits = jnamval_parse_types_option("exp", true);
     /* check that int and float will fail but exp will succeed */
     test = jnamval_test_bits(false, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
 	   jnamval_test_bits(false, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
@@ -221,7 +221,7 @@ jnamval_run_tests(void)
     }
 
     /* test all types */
-    bits = jnamval_parse_types_option("any");
+    bits = jnamval_parse_types_option("any", true);
     /* verify that it is the any bit */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_any, "JNAMVAL_TYPE_ANY");
     if (!test) {
@@ -229,7 +229,7 @@ jnamval_run_tests(void)
     }
 
     /* test compound */
-    bits = jnamval_parse_types_option("compound");
+    bits = jnamval_parse_types_option("compound", true);
     /* verify that the compound type is set by compound match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_compound, "JNAMVAL_TYPE_COMPOUND");
     if (!test) {
@@ -243,7 +243,7 @@ jnamval_run_tests(void)
     }
 
     /* test member */
-    bits = jnamval_parse_types_option("member");
+    bits = jnamval_parse_types_option("member", true);
     /* verify that the member type is set by member match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_member, "JNAMVAL_TYPE_MEMBER");
     if (!test) {
@@ -251,7 +251,7 @@ jnamval_run_tests(void)
     }
 
     /* test simple */
-    bits = jnamval_parse_types_option("simple");
+    bits = jnamval_parse_types_option("simple", true);
     /* verify that the simple type is set by simple match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_simple, "JNAMVAL_TYPE_SIMPLE");
     if (!test) {
@@ -267,7 +267,7 @@ jnamval_run_tests(void)
     }
 
     /* test int */
-    bits = jnamval_parse_types_option("int");
+    bits = jnamval_parse_types_option("int", true);
     /* verify that the int type is set by int match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT");
     if (!test) {
@@ -275,7 +275,7 @@ jnamval_run_tests(void)
     }
 
     /* test float */
-    bits = jnamval_parse_types_option("float");
+    bits = jnamval_parse_types_option("float", true);
     /* verify that the float type is set by float match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT");
     if (!test) {
@@ -283,7 +283,7 @@ jnamval_run_tests(void)
     }
 
     /* test exp */
-    bits = jnamval_parse_types_option("exp");
+    bits = jnamval_parse_types_option("exp", true);
     /* verify that the exp type is set by exp match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP");
     if (!test) {
@@ -291,7 +291,7 @@ jnamval_run_tests(void)
     }
 
     /* test bool */
-    bits = jnamval_parse_types_option("bool");
+    bits = jnamval_parse_types_option("bool", true);
     /* verify that the bool type is set by bool match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_bool, "JNAMVAL_TYPE_BOOL");
     if (!test) {
@@ -299,7 +299,7 @@ jnamval_run_tests(void)
     }
 
     /* test string */
-    bits = jnamval_parse_types_option("str");
+    bits = jnamval_parse_types_option("str", true);
     /* verify that the string type is set by string match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR");
     if (!test) {
@@ -307,7 +307,7 @@ jnamval_run_tests(void)
     }
 
     /* test null */
-    bits = jnamval_parse_types_option("null");
+    bits = jnamval_parse_types_option("null", true);
     /* verify that the null type is set by null match function */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_null, "JNAMVAL_TYPE_NULL");
     if (!test) {
@@ -315,7 +315,7 @@ jnamval_run_tests(void)
     }
 
     /* test int,str,null */
-    bits = jnamval_parse_types_option("int,str,null");
+    bits = jnamval_parse_types_option("int,str,null", true);
     /* verify that the int,str,null types are set by match functions */
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_string, "JNAMVAL_TYPE_STR") &&
@@ -346,7 +346,7 @@ jnamval_run_tests(void)
     }
 
     /* check all types */
-    bits = jnamval_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound");
+    bits = jnamval_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound", true);
     test = jnamval_test_bits(true, bits, __LINE__, jnamval_match_int, "JNAMVAL_TYPE_INT") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_float, "JNAMVAL_TYPE_FLOAT") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_exp, "JNAMVAL_TYPE_EXP") &&
@@ -359,6 +359,172 @@ jnamval_run_tests(void)
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_any, "JNAMVAL_TYPE_ANY") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_simple, "JNAMVAL_TYPE_SIMPLE") &&
 	   jnamval_test_bits(true, bits, __LINE__, jnamval_match_compound, "JNAMVAL_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+
+
+    /* test -P option bits */
+
+    /* first int,float,exp */
+    bits = jnamval_parse_types_option("int,float,exp", false);
+    /* check that any number will match */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* just exponents */
+    bits = jnamval_parse_types_option("exp", false);
+    /* check that int and float will fail but exp will succeed */
+    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test all types */
+    bits = jnamval_parse_types_option("any", false);
+    /* verify that it is the any bit */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_any, "JNAMVAL_TYPE_ANY");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test compound */
+    bits = jnamval_parse_types_option("compound", false);
+    /* verify that the compound type is set by compound match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_compound, "JNAMVAL_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+    /* verify that the compound type is set by matching all types */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_object, "JNAMVAL_TYPE_OBJECT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_array, "JNAMVAL_TYPE_ARRAY");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test member */
+    bits = jnamval_parse_types_option("member", false);
+    /* verify that the member type is set by member match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_member, "JNAMVAL_TYPE_MEMBER");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test simple */
+    bits = jnamval_parse_types_option("simple", false);
+    /* verify that the simple type is set by simple match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_TYPE_SIMPLE");
+    if (!test) {
+	okay = false;
+    }
+    /* verify that the simple type is set by matching each type */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int */
+    bits = jnamval_parse_types_option("int", false);
+    /* verify that the int type is set by int match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test float */
+    bits = jnamval_parse_types_option("float", false);
+    /* verify that the float type is set by float match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test exp */
+    bits = jnamval_parse_types_option("exp", false);
+    /* verify that the exp type is set by exp match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test bool */
+    bits = jnamval_parse_types_option("bool", false);
+    /* verify that the bool type is set by bool match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test string */
+    bits = jnamval_parse_types_option("str", false);
+    /* verify that the string type is set by string match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test null */
+    bits = jnamval_parse_types_option("null", false);
+    /* verify that the null type is set by null match function */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /* test int,str,null */
+    bits = jnamval_parse_types_option("int,str,null", false);
+    /* verify that the int,str,null types are set by match functions */
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL");
+    if (!test) {
+	okay = false;
+    }
+
+    /*
+     * test that none of the bits are set not via the match none function but by
+     * each match function
+     */
+    bits = JNAMVAL_TYPE_NONE;
+    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_num, "JNAMVAL_TYPE_NUM") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_object, "JNAMVAL_TYPE_OBJECT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_array, "JNAMVAL_TYPE_ARRAY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_any, "JNAMVAL_TYPE_ANY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_simple, "JNAMVAL_TYPE_SIMPLE") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_compound, "JNAMVAL_TYPE_COMPOUND");
+    if (!test) {
+	okay = false;
+    }
+
+    /* check all types */
+    bits = jnamval_parse_types_option("int,float,exp,num,bool,str,null,object,array,any,simple,compound", false);
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_TYPE_EXP") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_TYPE_NULL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_object, "JNAMVAL_TYPE_OBJECT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_array, "JNAMVAL_TYPE_ARRAY") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_any, "JNAMVAL_TYPE_ANY") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_TYPE_SIMPLE") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_compound, "JNAMVAL_TYPE_COMPOUND");
     if (!test) {
 	okay = false;
     }

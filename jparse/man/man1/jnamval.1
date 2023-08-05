@@ -28,6 +28,8 @@
 .IR <num>{[t|s]} \|]
 .RB [\| \-t
 .IR type \|]
+.RB [\| \-P
+.IR type \|]
 .RB [\| \-l
 .IR lvl \|]
 .RB [\| \-Q \|]
@@ -95,7 +97,9 @@ option allows you to change the default depth to traverse when parsing the JSON 
 .PP
 The option
 .B \-t
-controls what types to search for, excluding matches if they are not any of the types in the comma-separated list.
+controls what types to search for, excluding matches if they are not any of the types in the comma-separated list whereas the option
+.B \-P
+controls what types to print.
 The option
 .B \-l
 allows you to restrict the output based on the JSON level.
@@ -218,6 +222,64 @@ alias for 'member,object,array'
 alias for 'simple,compound' (everything)
 .RE
 .RE
+.TP
+.BI \-P\  type
+Print only the comma separated types (def: any).
+.RS
+.B int
+.RS
+integer values
+.RE
+.B float
+.RS
+floating point values
+.RE
+.B exp
+.RS
+exponential notation values
+.RE
+.B num
+.RS
+alias for int,float,exp
+.RE
+.B bool
+.RS
+boolean values
+.RE
+.B str
+.RS
+string values
+.RE
+.B null
+.RS
+null values
+.RE
+.B simple
+.RS
+alias for num,bool,str,null
+.RE
+.B member
+.RS
+JSON members
+.RE
+.B object
+.RS
+JSON objects
+.RE
+.B array
+.RS
+JSON arrays
+.RE
+.B compound
+.RS
+alias for 'member,object,array'
+.RE
+.B any
+.RS
+alias for 'simple,compound' (everything, default)
+.RE
+.RE
+
 .TP
 .BI \-l\  lvl
 Only show JSON members in the given level range (def: show all levels).

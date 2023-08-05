@@ -12,6 +12,11 @@ Fix typo in usage string in `jnamval` which referred to non-existent option (it
 is actually an option arg, not an option, that is correct and that is now what
 it says).
 
+Add option `-P` to `jnamval`. This is just like `-t` but it will indicate what
+to print rather than what to match. Man page updated for this option. As the
+code is common to both `jval` and `jnamval` the `jval` utility could be updated
+easily to support this option is desired but this is TBD later.
+
 Update .gitignore: add `/archive`: a directory in my working repo of old files
 that although useful to me should not be added to the repo. Since archived files
 are not really something that should be in the repo anyway adding `/archive` to
