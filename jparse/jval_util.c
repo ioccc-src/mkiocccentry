@@ -73,7 +73,7 @@ alloc_jval(void)
 
     /* for -F format output option */
     jval->common.format_output_changed = false;			/* -F format used */
-    jval->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
+    jval->common.format = JSON_FMT_TTY;				/* default format for -F */
 
 
     /* print related options */

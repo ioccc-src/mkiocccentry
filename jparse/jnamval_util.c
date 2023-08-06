@@ -119,8 +119,8 @@ alloc_jnamval(void)
     jnamval->json_name_val.total_matches = 0;
 
     /* for -F format output option */
-    jnamval->common.format_output_changed = false;			/* -F format used */
-    jnamval->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
+    jnamval->common.format_output_changed = false;		/* -F format used */
+    jnamval->common.format = JSON_FMT_TTY;			/* default format for -F */
 
     return jnamval;
 }

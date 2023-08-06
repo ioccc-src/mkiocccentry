@@ -75,7 +75,7 @@ alloc_jfmt(void)
 
     /* for -F format output option */
     jfmt->common.format_output_changed = false;			/* -F format used */
-    jfmt->common.format = JSON_FMT_DEFAULT;		/* default format for -F */
+    jfmt->common.format = JSON_FMT_TTY;		/* default format for -F */
 
     /* parsing related */
     jfmt->common.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */

@@ -2861,7 +2861,7 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 enum output_format
 parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg)
 {
-    enum output_format format = JSON_FMT_DEFAULT;
+    enum output_format format = JSON_FMT_TTY;
 
     /* firewall */
 
@@ -2882,15 +2882,18 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
 
     json_util->format_output_changed = true;	    /* set the boolean to true */
 
-    if (!strcmp(optarg, "default")) {
-	format = json_util->format = JSON_FMT_DEFAULT;
+    if (!strcmp(optarg, "tty") || !strcmp(optarg, "default")) {
+	format = json_util->format = JSON_FMT_TTY;
 	dbg(DBG_NONE, "%s output format", optarg);
-    } else if (!strcmp(optarg, "pedantic")) {
-	format = json_util->format = JSON_FMT_PEDANTIC;
+    } else if (!strcmp(optarg, "simple")) {
+	format = json_util->format = JSON_FMT_SIMPLE;
 	dbg(DBG_NONE, "%s output format", optarg);
     } else if (!strcmp(optarg, "colour") || !strcmp(optarg, "color")) {
 	format = json_util->format = JSON_FMT_COLOUR;
 	dbg(DBG_NONE, "%sed output format", optarg);
+    } else if (!strcmp(optarg, "1line")) {
+	format = json_util->format = JSON_FMT_1LINE;
+	dbg(DBG_NONE, "%s output format", optarg);
     } else if (!strcmp(optarg, "nows") || !strcmp(optarg, "news")) {
 	bool news = !strcmp(optarg, "news");
 	format = json_util->format = JSON_FMT_NOWS;
