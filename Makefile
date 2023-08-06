@@ -973,123 +973,492 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # The following rules are used by the people who maintain this repo.
 # If you are not someone who maintains this repo, the rules in this section
 # are probably not for you.
-
-.PHONY: dbg.clone dbg.diff dbg.fetch dbg.reclone dbg.reload dbg.rsync dbg.status \
-        dyn_array/dyn_array.clone dyn_array.diff dyn_array.fetch dyn_array.reclone dyn_array.reload \
-	dyn_array.rsync dyn_array.status jparse.clone jparse.diff jparse.fetch jparse.reclone \
-	jparse.reload jparse.rsync jparse.status all.clone all.diff all.fetch all.reclone \
-	all.reload all.rsync all.status local_dir_tags all_tags
-
-# dbg external repo
 #
+# p.s. Yes, we know about "git Submodules".  However we believe that "git Submodules"
+#      are "not ready for prime time" / not ready for production as of 2023 Aug 05
+#      (the date when this comment was updated).
+
+.PHONY: dbg.help dbg.setup dbg.clone dbg.clone_status dbg.update_clone dbg.reload_clone \
+	dbg.update_from_clone dbg.update_into_clone dbg.replace_from_clone \
+	dbg.diff_dbg_clone dbg.diff_clone_dbg dbg.diff_summary \
+	dyn_array.help dyn_array.setup dyn_array.clone dyn_array.clone_status dyn_array.update_clone dyn_array.reload_clone \
+	dyn_array.update_from_clone dyn_array.update_into_clone dyn_array.replace_from_clone \
+	dyn_array.diff_dyn_array_clone dyn_array.diff_clone_dyn_array dyn_array.diff_summary \
+	jparse.help jparse.setup jparse.clone jparse.clone_status jparse.update_clone jparse.reload_clone \
+	jparse.update_from_clone jparse.update_into_clone jparse.replace_from_clone \
+	jparse.diff_jparse_clone jparse.diff_clone_jparse jparse.diff_summary \
+	all.help all.setup all.clone all.clone_status all.update_clone all.reload_clone \
+	all.update_from_clone all.update_into_clone all.replace_from_clone \
+	all.diff_all_clone all.diff_clone_all all.diff_summary
+
+# rules to help incorporate the external dbg repo
+#
+dbg.help:
+	${S} echo "The following rules are used by the people who maintain this repo."
+	${S} echo
+	${S} echo "Summary of rules to help incorporate the external dbg repo:"
+	${S} echo
+	${S} echo "${MAKE} dbg.help - print this message"
+	${S} echo "${MAKE} dbg.setup - create or update dbg.clone directory from remote repo"
+	${S} echo "${MAKE} dbg.clone - create missing dbg.clone directory from remote repo"
+	${S} echo "${MAKE} dbg.clone_status - git status of dbg.clone directory"
+	${S} echo "${MAKE} dbg.update_clone - update dbg.clone directory from remote repo"
+	${S} echo "${MAKE} dbg.recreate_clone - remove then clone dbg.clone directory from remote repo"
+	${S} echo "${MAKE} dbg.update_from_clone - modify dbg directory from dbg.clone directory"
+	${S} echo "${MAKE} dbg.update_into_clone - modify dbg.clone directory from dbg directory"
+	${S} echo "${MAKE} dbg.replace_from_clone - remove dbg then copy dbg.clone directory into it"
+	${S} echo "${MAKE} dbg.diff_dbg_clone - compare dbg directory with dbg.clone directory"
+	${S} echo "${MAKE} dbg.diff_clone_dbg - compare dbg.clone directory with dbg directory"
+	${S} echo "${MAKE} dbg.diff_summary - summarize differnces between dbg and dbg.clone directories"
+
+dbg.setup:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-@if [[ -d dbg.clone ]]; then \
+	    ${MAKE} dbg.update_clone; \
+	else \
+	    ${MAKE} dbg.clone \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
 dbg.clone:
-	@echo If this git clone fails because you do not have the ssh key, try:
-	@echo
-	@echo '	' ${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
-	@echo
-	${E} ${GIT} clone git@github.com:lcn2/dbg.git dbg.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if [[ -d dbg.clone ]]; then \
+	    echo "ERROR: dbg.clone exists"; \
+	    exit 1; \
+	else \
+	    echo "If git clone fails because you do not have the ssh key, try:"; \
+	    echo; \
+	    echo "	${GIT} clone https://github.com/lcn2/dbg.git dbg.clone"; \
+	    echo; \
+	    ${GIT} clone git@github.com:lcn2/dbg.git dbg.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dbg.diff: dbg.clone/ dbg/ .exclude
-	${E} ${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
+dbg.clone_status: dbg.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${GIT} status dbg.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dbg.fetch: dbg.clone/
+dbg.update_clone: dbg.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} cd dbg.clone && ${GIT} fetch
 	${E} cd dbg.clone && ${GIT} fetch --prune --tags
 	${E} cd dbg.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	${E} ${GIT} status dbg.clone
+	${E} ${MAKE} dbg.clone_status
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dbg.reclone:
+dbg.recreate_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${RM} -rf dbg.clone
 	${E} ${MAKE} dbg.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dbg.reload: dbg.clone/
+dbg.update_from_clone: dbg.clone/ dbg/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg.clone/ dbg
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+dbg.update_into_clone: dbg/ dbg.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg dbg.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+dbg.replace_from_clone: dbg.clone/ dbg/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${RM} -rf dbg
-	${E} ${MAKE} dbg.rsync
+	${E} ${MAKE} dbg.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dbg.rsync: dbg.clone/
-	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dbg.clone/ dbg
+dbg.diff_dbg_clone: dbg.clone/ dbg/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
 
-dbg.status: dbg.clone/
-	${E} ${GIT} status dbg.clone
+dbg.diff_clone_dbg: dbg/ dbg.clone/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude dbg dbg.clone
 
-# dyn_array external repo
+dbg.diff_summary: dbg.clone/ dbg/ .exclude
+	-${E} ${DIFF} -r --brief --exclude-from=.exclude dbg.clone dbg
+
+# rules to help incorporate the external dyn_array repo
 #
+dyn_array.help:
+	${S} echo "The following rules are used by the people who maintain this repo."
+	${S} echo
+	${S} echo "Summary of rules to help incorporate the external dyn_array repo:"
+	${S} echo
+	${S} echo "${MAKE} dyn_array.help - print this message"
+	${S} echo "${MAKE} dyn_array.setup - create or update dyn_array.clone directory from remote repo"
+	${S} echo "${MAKE} dyn_array.clone - create missing dyn_array.clone directory from remote repo"
+	${S} echo "${MAKE} dyn_array.clone_status - git status of dyn_array.clone directory"
+	${S} echo "${MAKE} dyn_array.update_clone - update dyn_array.clone directory from remote repo"
+	${S} echo "${MAKE} dyn_array.recreate_clone - remove then clone dyn_array.clone directory from remote repo"
+	${S} echo "${MAKE} dyn_array.update_from_clone - modify dyn_array directory from dyn_array.clone directory"
+	${S} echo "${MAKE} dyn_array.update_into_clone - modify dyn_array.clone directory from dyn_array directory"
+	${S} echo "${MAKE} dyn_array.replace_from_clone - remove dyn_array then copy dyn_array.clone directory into it"
+	${S} echo "${MAKE} dyn_array.diff_dyn_array_clone - compare dyn_array directory with dyn_array.clone directory"
+	${S} echo "${MAKE} dyn_array.diff_clone_dyn_array - compare dyn_array.clone directory with dyn_array directory"
+	${S} echo "${MAKE} dyn_array.diff_summary - summarize differnces between dyn_array and dyn_array.clone directories"
+
+dyn_array.setup:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-@if [[ -d dyn_array.clone ]]; then \
+	    ${MAKE} dyn_array.update_clone; \
+	else \
+	    ${MAKE} dyn_array.clone \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
 dyn_array.clone:
-	@echo If this git clone fails because you do not have the ssh key, try:
-	@echo
-	@echo '	' ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone
-	@echo
-	${E} ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if [[ -d dyn_array.clone ]]; then \
+	    echo "ERROR: dyn_array.clone exists"; \
+	    exit 1; \
+	else \
+	    echo "If git clone fails because you do not have the ssh key, try:"; \
+	    echo; \
+	    echo "	${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array.clone"; \
+	    echo; \
+	    ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dyn_array.diff: dyn_array.clone/ dyn_array/ .exclude
-	${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array.clone dyn_array
+dyn_array.clone_status: dyn_array.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${GIT} status dyn_array.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dyn_array.fetch: dyn_array.clone/
+dyn_array.update_clone: dyn_array.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} cd dyn_array.clone && ${GIT} fetch
 	${E} cd dyn_array.clone && ${GIT} fetch --prune --tags
 	${E} cd dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	${E} ${GIT} status dyn_array.clone
+	${E} ${MAKE} dyn_array.clone_status
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dyn_array.reclone:
+dyn_array.recreate_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${RM} -rf dyn_array.clone
 	${E} ${MAKE} dyn_array.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dyn_array.reload: dyn_array.clone/
+dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array.clone/ dyn_array
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+dyn_array.update_into_clone: dyn_array/ dyn_array.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array dyn_array.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+dyn_array.replace_from_clone: dyn_array.clone/ dyn_array/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${RM} -rf dyn_array
-	${E} ${MAKE} dyn_array.rsync
+	${E} ${MAKE} dyn_array.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-dyn_array.rsync: dyn_array.clone/
-	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v dyn_array.clone/ dyn_array
+dyn_array.diff_dyn_array_clone: dyn_array.clone/ dyn_array/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array.clone dyn_array
 
-dyn_array.status: dyn_array.clone/
-	${E} ${GIT} status dyn_array.clone
+dyn_array.diff_clone_dyn_array: dyn_array/ dyn_array.clone/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array dyn_array.clone
 
-# jparse external repo
+dyn_array.diff_summary: dyn_array.clone/ dyn_array/ .exclude
+	-${E} ${DIFF} -r --brief --exclude-from=.exclude dyn_array.clone dyn_array
+
+# rules to help incorporate the external jparse repo
 #
+jparse.help:
+	${S} echo "The following rules are used by the people who maintain this repo."
+	${S} echo
+	${S} echo "Summary of rules to help incorporate the external jparse repo:"
+	${S} echo
+	${S} echo "${MAKE} jparse.help - print this message"
+	${S} echo "${MAKE} jparse.setup - create or update jparse.clone directory from remote repo"
+	${S} echo "${MAKE} jparse.clone - create missing jparse.clone directory from remote repo"
+	${S} echo "${MAKE} jparse.clone_status - git status of jparse.clone directory"
+	${S} echo "${MAKE} jparse.update_clone - update jparse.clone directory from remote repo"
+	${S} echo "${MAKE} jparse.recreate_clone - remove then clone jparse.clone directory from remote repo"
+	${S} echo "${MAKE} jparse.update_from_clone - modify jparse directory from jparse.clone directory"
+	${S} echo "${MAKE} jparse.update_into_clone - modify jparse.clone directory from jparse directory"
+	${S} echo "${MAKE} jparse.replace_from_clone - remove jparse then copy jparse.clone directory into it"
+	${S} echo "${MAKE} jparse.diff_jparse_clone - compare jparse directory with jparse.clone directory"
+	${S} echo "${MAKE} jparse.diff_clone_jparse - compare jparse.clone directory with jparse directory"
+	${S} echo "${MAKE} jparse.diff_summary - summarize differnces between jparse and jparse.clone directories"
+
+jparse.setup:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-@if [[ -d jparse.clone ]]; then \
+	    ${MAKE} jparse.update_clone; \
+	else \
+	    ${MAKE} jparse.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
 jparse.clone:
-	@echo 'rule disabled, enable once jparse repo exists'
-	@#${E} ${GIT} clone https://github.com/xexyl/jparse.git jparse.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if [[ -d jparse.clone ]]; then \
+	    echo "ERROR: jparse.clone exists"; \
+	    exit 1; \
+	else \
+	    echo "If git clone fails because you do not have the ssh key, try:"; \
+	    echo; \
+	    echo "	${GIT} clone https://github.com/lcn2/jparse.git jparse.clone"; \
+	    echo; \
+	    ${GIT} clone git@github.com:lcn2/jparse.git jparse.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.diff: jparse.clone/ jparse/ .exclude
-	@#${E} ${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
+jparse.clone_status: jparse.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${GIT} status jparse.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.fetch: jparse.clone/
-	@#${E} cd jparse.clone && ${GIT} fetch
-	@#${E} cd jparse.clone && ${GIT} fetch --prune --tags
-	@#${E} cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	@#${E} ${GIT} status jparse.clone
+jparse.update_clone: jparse.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} cd jparse.clone && ${GIT} fetch
+	${E} cd jparse.clone && ${GIT} fetch --prune --tags
+	${E} cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	${E} ${MAKE} jparse.clone_status
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.reclone:
-	@echo 'rule disabled, enable once jparse repo exists'
-	@#${E} ${RM} -rf jparse.clone
-	@#${E} ${MAKE} jparse.clone
+jparse.recreate_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} -rf jparse.clone
+	${E} ${MAKE} jparse.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.reload: jparse.clone/
-	@#${E} ${RM} -rf jparse
-	@#${E} ${MAKE} jparse.rsync
+jparse.update_from_clone: jparse.clone/ jparse/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse.clone/ jparse
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.rsync: jparse.clone/
-	@#${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.gitignore -C --delete -v jparse.clone/ jparse
+jparse.update_into_clone: jparse/ jparse.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse jparse.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-jparse.status: jparse.clone/
-	@#${E} ${GIT} status jparse.clone
+jparse.replace_from_clone: jparse.clone/ jparse/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} -rf jparse
+	${E} ${MAKE} jparse.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
+jparse.diff_jparse_clone: jparse.clone/ jparse/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
 
-# rules to operate on all external repositories
+jparse.diff_clone_jparse: jparse/ jparse.clone/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude jparse jparse.clone
+
+jparse.diff_summary: jparse.clone/ jparse/ .exclude
+	-${E} ${DIFF} -r --brief --exclude-from=.exclude jparse.clone jparse
+
+# rules to help incorporate external repos
 #
-all.clone: dbg.clone dyn_array/dyn_array.clone jparse.clone
+all.help:
+	${S} echo "The following rules are used by the people who maintain this repo."
+	${S} echo
+	${S} echo "Summary of rules to help incorporate external repos:"
+	${S} echo
+	${S} echo "${MAKE} all.help - print this message"
+	${S} echo "${MAKE} all.setup - create or update clone directories from all remote repos"
+	${S} echo "${MAKE} all.clone - create missing clone directories from all remote repos"
+	${S} echo "${MAKE} all.clone_status - git status of all clone directories"
+	${S} echo "${MAKE} all.update_clone - update clone directories from all remote repos"
+	${S} echo "${MAKE} all.recreate_clone - remove then clone clone directories from remote repos"
+	${S} echo "${MAKE} all.update_from_clone - modify directories from clone directories"
+	${S} echo "${MAKE} all.update_into_clone - modify clone directories from dbg directories"
+	${S} echo "${MAKE} all.replace_from_clone - remove directories then copy clone directory into them"
+	${S} echo "${MAKE} all.diff_dbg_clone - compare directories with clone directories"
+	${S} echo "${MAKE} all.diff_clone_dbg - compare clone directories with dbg directories"
+	${S} echo "${MAKE} all.diff_summary - summarize differnces between directories and clone directories"
 
-all.diff: dbg.diff dyn_array.diff jparse.diff
+all.setup:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.setup
+	${E} ${MAKE} dyn_array.setup
+	${E} ${MAKE} jparse.setup
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.fetch: dbg.fetch dyn_array.fetch jparse.fetch
+all.clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.clone
+	${E} ${MAKE} dyn_array.clone
+	${E} ${MAKE} jparse.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.reclone: dbg.reclone dyn_array.reclone jparse.reclone
+all.clone_status:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.clone_status
+	${E} ${MAKE} dyn_array.clone_status
+	${E} ${MAKE} jparse.clone_status
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.reload: dbg.reload dyn_array.reload jparse.reload
+all.update_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.update_clone
+	${E} ${MAKE} dyn_array.update_clone
+	${E} ${MAKE} jparse.update_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.rsync: dbg.rsync dyn_array.rsync jparse.rsync
+all.recreate_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.recreate_clone
+	${E} ${MAKE} dyn_array.recreate_clone
+	${E} ${MAKE} jparse.recreate_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.status: dbg.status dyn_array.status jparse.status
+all.update_from_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.update_from_clone
+	${E} ${MAKE} dyn_array.update_from_clone
+	${E} ${MAKE} jparse.update_from_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+all.update_into_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.update_into_clone
+	${E} ${MAKE} dyn_array.update_into_clone
+	${E} ${MAKE} jparse.update_into_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+all.replace_from_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.replace_from_clone
+	${E} ${MAKE} dyn_array.replace_from_clone
+	${E} ${MAKE} jparse.replace_from_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+all.diff_dir_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.diff_dbg_clone
+	${E} echo
+	${E} ${MAKE} dyn_array.diff_dyn_array_clone
+	${E} echo
+	${E} ${MAKE} jparse.diff_jparse_clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+all.diff_clone_dir:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.diff_clone_dbg
+	${E} echo
+	${E} ${MAKE} dyn_array.diff_clone_dyn_array
+	${E} echo
+	${E} ${MAKE} jparse.diff_clone_jparse
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+all.diff_summary:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${MAKE} dbg.diff_summary
+	${E} echo
+	${E} ${MAKE} dyn_array.diff_summary
+	${E} echo
+	${E} ${MAKE} jparse.diff_summary
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################

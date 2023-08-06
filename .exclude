@@ -1,5 +1,7 @@
 *.a
 *.o
-.?*
+.*.swp
+.DS_Store
 .git
-.gitignore
+.github
+.local.dir.tags
