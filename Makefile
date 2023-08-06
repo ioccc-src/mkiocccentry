@@ -1018,7 +1018,7 @@ dbg.setup:
 	-@if [[ -d dbg.clone ]]; then \
 	    ${MAKE} dbg.update_clone; \
 	else \
-	    ${MAKE} dbg.clone \
+	    ${MAKE} dbg.clone; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1129,7 +1129,7 @@ dyn_array.setup:
 	-@if [[ -d dyn_array.clone ]]; then \
 	    ${MAKE} dyn_array.update_clone; \
 	else \
-	    ${MAKE} dyn_array.clone \
+	    ${MAKE} dyn_array.clone; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
