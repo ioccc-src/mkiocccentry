@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.51 2023-08-07
+
+Fix link in make rule `jparse.clone` to use
+`https://github.com/xexyl/jparse.git` as the link used,
+`https://github.com/lcn2/jparse.git`, is actually a clone of the repo I set up
+(empty for now) which will be populated with `jparse` later on when the parser
+is tested more fully.
+
+Add `-F` to common options of `json_util_README.md`.
 
 ## Release 1.0.50 2023-08-06
 

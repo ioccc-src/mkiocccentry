@@ -1255,9 +1255,9 @@ jparse.clone:
 	else \
 	    echo "If git clone fails because you do not have the ssh key, try:"; \
 	    echo; \
-	    echo "	${GIT} clone https://github.com/lcn2/jparse.git jparse.clone"; \
+	    echo "	${GIT} clone https://github.com/xexyl/jparse.git jparse.clone"; \
 	    echo; \
-	    ${GIT} clone git@github.com:lcn2/jparse.git jparse.clone; \
+	    ${GIT} clone git@github.com:xexyl/jparse.git jparse.clone; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

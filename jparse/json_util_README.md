@@ -73,6 +73,15 @@ options:
 	-m		Maximum depth to traverse in the JSON tree
 	-K		Run test mode and exit
 	-o ofile	Output formatted JSON to ofile (def: standard output, - ==> standard output)
+	-F fmt		Change the JSON format style (def: use default)
+
+			tty		When output is to a TTY, use colour, otherwise use simple
+			simple		Each line has one JSON level determined by '[]'s and '{}'s
+			colour		Simple plus ANSI colour syntax highlighting
+			color		Alias for colour (colour excluding you :-) )
+			1line		One line output
+			nows		One line output, no extra whitespace
+
 ```
 
 Additional command line options will be added on a utility by utility basis.
