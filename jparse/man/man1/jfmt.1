@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jfmt 1 "05 August 2023" "jfmt" "IOCCC tools"
+.TH jfmt 1 "06 August 2023" "jfmt" "IOCCC tools"
 .SH NAME
 .B jfmt
 \- IOCCC JSON printer
@@ -156,23 +156,32 @@ Default is stdout which is the same as if you specified
 Change the JSON output format of the tool.
 .RS
 .TQ
-.B default
-Default JSON style, 1 or 2 levels per line
+.B tty
+When output is to a TTY, use
+.BR colour ,
+otherwise use
+.BR simple .
 .RE
 .RS
 .TQ
-.B pedantic
-One level per line style
+.B simple
+Each line has one JSON level determined by '[]'s and '{}'s
 .RE
 .RS
 .TQ
 .B colour
-Default plus ANSI colour syntax highlighting
+.B simple
+plus ANSI colour syntax highlighting
 .RE
 .RS
 .TQ
 .B color
-Alias for colour, see below subsection
+Alias for
+.B colour
+.RB (  colour
+excluding yo(\c
+.BR u )
+:\-) ), see below subsection
 .RS
 .RE
 .RE
@@ -187,8 +196,16 @@ One line output
 One line output, no extra whitespace
 .RE
 .SS Coloured output
-Although we do allow for 'color' instead of 'colour' it should be noted that this is not only strictly incorrect but it also prevents it from being used by both you and me.
-As such we recommend that you only use 'color' if you wish to be exclusive.
+Although we do allow for
+.B color
+instead of
+.B colour
+it should be noted that this is not only strictly incorrect but it also prevents it from being used by both you and me.
+In particular it excludes yo(\c
+.BR u )
+so we recommend that you only use
+.B color
+if you want to exclude yourself. :\-)
 .SH EXIT STATUS
 .TP
 0

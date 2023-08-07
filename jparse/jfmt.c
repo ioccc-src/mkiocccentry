@@ -77,10 +77,10 @@ static const char * const usage_msg0 =
     "\t-o ofile\tOutput formatted JSON to ofile (def: stdout, same as '-')\n"
     "\n"
     "\t-F fmt\t\tChange the JSON format style (def: use default)\n\n"
-    "\t\t\tdefault\t\tDefault JSON style, 1 or 2 levels per line\n"
-    "\t\t\tpedantic\tOne level per line style\n"
-    "\t\t\tcolour\t\tDefault plus ANSI colour syntax highlighting\n"
-    "\t\t\tcolor\t\tAlias for colour\n"
+    "\t\t\ttty\t\tWhen output is to a TTY, use colour, otherwise use simple\n"
+    "\t\t\tsimple\t\tEach line has one JSON level determined by '[]'s and '{}'s\n"
+    "\t\t\tcolour\t\tSimple plus ANSI colour syntax highlighting\n"
+    "\t\t\tcolor\t\tAlias for colour (colour excluding you :-) )\n"
     "\t\t\t1line\t\tOne line output\n"
     "\t\t\tnows\t\tOne line output, no extra whitespace\n"
     "\n"
@@ -251,7 +251,7 @@ main(int argc, char **argv)
 	     * setting the common.format and common.format_output_changed is redundant
 	     * but we do it anyway
 	     */
-	    jfmt->common.format = JSON_FMT_DEFAULT; /* assume default */
+	    jfmt->common.format = JSON_FMT_TTY; /* assume default */
 	    jfmt->common.format = parse_json_util_format(&jfmt->common, "jfmt", optarg);
 	    break;
 	case ':':   /* option requires an argument */

@@ -75,15 +75,12 @@
 
 /* for -F with jfmt, jval and jnamval */
 enum output_format {
-    JSON_FMT_DEFAULT = 0,	    /* default format */
-    JSON_FMT_PEDANTIC = 1,	    /* pedantic format: one level per line style */
+    JSON_FMT_TTY = 0,		    /* tty (default): when output is to a TTY, use colour, otherwise use simple */
+    JSON_FMT_SIMPLE = 1,	    /* simple: each line has one JSON level determined by '[]'s and '{}'s */
     JSON_FMT_COLOUR = 2,	    /* coloured format: syntax highlighting */
     JSON_FMT_1LINE = 3,		    /* one line output: one line for all output */
     JSON_FMT_NOWS = 4,		    /* nows (no whitespace) output: one line for all output with no extra whitespace */
 };
-#define JSON_UTIL_FMT_DEFAULT	    (0)
-#define	JSON_UTIL_FMT_PEDANTIC	    (1)
-#define JSON_UTIL_FMT_COLOUR	    (2)
 
 /* jval and jnamval -t types */
 #define JSON_UTIL_MATCH_TYPE_NONE	    (0)

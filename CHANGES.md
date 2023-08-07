@@ -1,6 +1,34 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.50 2023-08-06
+
+New version of `jfmt`, `jval` and `jnamval`: `"0.0.12 2023-08-06"`. `jfmt` and
+`jval` jumped from 0.0.10 to make them match. Later on after version 1.0.0 this
+will no longer happen.
+
+Updated the `-F` option list. It now is:
+
+```
+-f fmt		change the json format style (def: use default)
+
+		tty		when output is to a tty, use colour, otherwise use simple
+		simple		each line has one json level determined by '[]'s and '{}'s
+		colour		simple plus ansi colour syntax highlighting
+		color		alias for colour (colour excluding you :-) )
+		1line		one line output
+		nows		One line output, no extra whitespace
+```
+
+Updated man pages for the three tools for this change as well as a typo fix in
+`jnamval.1` for the `-p` option (wrongly listed as `-P` which is something
+else).
+
+Updated `tmp/TODO.md`: the options for the three tools should be in the same
+order, particularly the common options, both in usage string and man pages. But
+since the specs are not finalised this needn't be done yet.
+
+
 ## Release 1.0.49 2023-08-05
 
 New version of `jnamval`: `"0.0.11 2023-08-05"`. Add `-I` option with same
