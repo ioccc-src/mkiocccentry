@@ -8,6 +8,7 @@ Fix link in make rule `jparse.clone` to use
 (empty for now) which will be populated with `jparse` later on when the parser
 is tested more fully.
 
+Add `-F` to common options of `json_util_README.md`.
 
 ## Release 1.0.50 2023-08-06
 
