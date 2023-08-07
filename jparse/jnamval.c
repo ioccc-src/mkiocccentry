@@ -40,9 +40,9 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}]\n"
-    "\t[-t types] [-P types] [-l lvl] [-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num]\n"
-    "\t[-S op=str] [-o ofile] [-p parts] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
+    "usage:\t%s [-h] [-V] [-v level] [-J level] [-q] [-L <num>{[t|s]}] [-I <num>{[t|s]}] [-t types]\n"
+    "\t[-r types] [-p parts] [-l lvl] [-Q] [-D] [-d] [-i] [-s] [-f] [-c] [-C] [-g] [-e] [-n op=num]\n"
+    "\t[-S op=str] [-o ofile] [-N] [-H] [-m max_depth] [-K] [-F fmt] file.json [arg ...]\n"
     "\n"
     "\t-h\t\tPrint help and exit\n"
     "\t-V\t\tPrint version and exit\n"
@@ -73,7 +73,7 @@ static const char * const usage_msg0 =
     "\t\t\t\tnull\t\tnull values\n"
     "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null' (the default)\n"
     "\n"
-    "\t-P types\t\tPrint only the comma-separated types (def: any):\n"
+    "\t-r types\t\tRestrict printing to only the comma-separated types (def: do not restrict):\n"
     "\n"
     "\t\t\t\tint\t\tinteger values\n"
     "\t\t\t\tfloat\t\tfloating point values\n"
@@ -89,14 +89,14 @@ static const char * const usage_msg0 =
     "\t\t\t\tsimple\t\talias for 'int,float,exp,bool,str,null'\n"
     "\t\t\t\tany\t\talias for 'int,float,exp,bool,str,null,member,object,array' (default)\n"
     "\n"
-    "\t-p {n,v,b,j}\tPrint JSON key, value, both or JSON members (def: print JSON values)\n"
+    "\t-p {n,v,b,j}\tPrint JSON name, value, name & value, or valid JSON (def: print JSON values)\n"
     "\t-p name\t\tAlias for '-p n'\n"
     "\t-p value\tAlias for '-p v'\n"
-    "\t-p both\t\tAlias for '-p n,v'\n"
+    "\t-p both\t\tAlias for '-p b'\n"
     "\t-p json\t\tAlias for '-p j'\n"
-    "\n"
-    "\t\t\tIt is an error to use -p n or -p v with -p j.\n"
-    "\n"
+    "\t\n"
+    "\t\t\tLater -p instances in the command override earlier -p instances.\n"
+    "\t\t\tFor -p b, name is separated from value by the same number of whitespaces used to indent one level.\n"
     "\n"
     "\t-l lvl\t\tPrint values at specific JSON levels (def: print any level)\n"
     "\n"
@@ -206,7 +206,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hVv:J:qL:I:t:P:l:QDdisfcCgen:S:o:m:Kp:NHF:")) != -1) {
+    while ((i = getopt(argc, argv, ":hVv:J:qL:I:t:r:p:l:QDdisfcCgen:S:o:m:KNHF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    free_jnamval(&jnamval);
