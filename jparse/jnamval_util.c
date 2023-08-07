@@ -89,9 +89,9 @@ alloc_jnamval(void)
     /* search / matching related */
     /* json types to look for */
     jnamval->json_name_val.match_json_types_specified = false;			/* -t used */
-    jnamval->json_name_val.match_json_types = JNAMVAL_PRINT_TYPE_SIMPLE;		/* -t type specified, default simple */
+    jnamval->json_name_val.match_json_types = JNAMVAL_RESTRICT_TYPE_SIMPLE;		/* -t type specified, default simple */
     jnamval->json_name_val.print_json_types_specified = false;		/* -P used */
-    jnamval->json_name_val.print_json_types = JNAMVAL_PRINT_TYPE_ANY;		/* -P types, default any */
+    jnamval->json_name_val.print_json_types = JNAMVAL_RESTRICT_TYPE_ANY;		/* -P types, default any */
     jnamval->json_name_val.ignore_case = false;				/* true if -f, case-insensitive */
     jnamval->json_name_val.match_decoded = false;			/* if -d used match decoded */
     jnamval->json_name_val.arg_specified = false;			/* true if an arg was specified */
@@ -137,7 +137,7 @@ alloc_jnamval(void)
 bool
 jnamval_print_none(uintmax_t types)
 {
-    return types == JNAMVAL_PRINT_TYPE_NONE;
+    return types == JNAMVAL_RESTRICT_TYPE_NONE;
 }
 
 /*
@@ -147,7 +147,7 @@ jnamval_print_none(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_INT set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_INT set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -163,7 +163,7 @@ jnamval_print_none(uintmax_t types)
 bool
 jnamval_print_int(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_INT) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_INT) != 0;
 }
 /*
  * jnamval_print_float	- if floats should print
@@ -172,7 +172,7 @@ jnamval_print_int(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_FLOAT set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_FLOAT set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -188,7 +188,7 @@ jnamval_print_int(uintmax_t types)
 bool
 jnamval_print_float(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_FLOAT) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_FLOAT) != 0;
 }
 /*
  * jnamval_print_exp	- if exponents should print
@@ -197,7 +197,7 @@ jnamval_print_float(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_EXP set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_EXP set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -213,7 +213,7 @@ jnamval_print_float(uintmax_t types)
 bool
 jnamval_print_exp(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_EXP) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_EXP) != 0;
 }
 /*
  * jnamval_print_num	- if numbers of any type should print
@@ -222,7 +222,7 @@ jnamval_print_exp(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_NUM (or any of the number types) set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_NUM (or any of the number types) set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -238,8 +238,8 @@ jnamval_print_exp(uintmax_t types)
 bool
 jnamval_print_num(uintmax_t types)
 {
-    return ((types & JNAMVAL_PRINT_TYPE_NUM)||(types & JNAMVAL_PRINT_TYPE_INT) || (types & JNAMVAL_PRINT_TYPE_FLOAT) ||
-	    (types & JNAMVAL_PRINT_TYPE_EXP))!= 0;
+    return ((types & JNAMVAL_RESTRICT_TYPE_NUM)||(types & JNAMVAL_RESTRICT_TYPE_INT) || (types & JNAMVAL_RESTRICT_TYPE_FLOAT) ||
+	    (types & JNAMVAL_RESTRICT_TYPE_EXP))!= 0;
 }
 /*
  * jnamval_print_bool	- if booleans should print
@@ -248,7 +248,7 @@ jnamval_print_num(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_BOOL set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_BOOL set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -264,7 +264,7 @@ jnamval_print_num(uintmax_t types)
 bool
 jnamval_print_bool(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_BOOL) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_BOOL) != 0;
 }
 /*
  * jnamval_print_string	    - if strings should print
@@ -273,7 +273,7 @@ jnamval_print_bool(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_STR set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_STR set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -289,7 +289,7 @@ jnamval_print_bool(uintmax_t types)
 bool
 jnamval_print_string(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_STR) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_STR) != 0;
 }
 /*
  * jnamval_print_null	- if null should print
@@ -298,7 +298,7 @@ jnamval_print_string(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_NULL set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_NULL set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -314,7 +314,7 @@ jnamval_print_string(uintmax_t types)
 bool
 jnamval_print_null(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_NULL) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_NULL) != 0;
 }
 
 /*
@@ -324,7 +324,7 @@ jnamval_print_null(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_OBJECT set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_OBJECT set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -340,7 +340,7 @@ jnamval_print_null(uintmax_t types)
 bool
 jnamval_print_object(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_OBJECT) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_OBJECT) != 0;
 }
 
 /*
@@ -350,7 +350,7 @@ jnamval_print_object(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_ARRAY set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_ARRAY set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -366,7 +366,7 @@ jnamval_print_object(uintmax_t types)
 bool
 jnamval_print_array(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_ARRAY) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_ARRAY) != 0;
 }
 
 
@@ -379,7 +379,7 @@ jnamval_print_array(uintmax_t types)
  *
  * Simple is defined as a number, a bool, a string or a null.
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_SIMPLE set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_SIMPLE set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -395,7 +395,7 @@ jnamval_print_array(uintmax_t types)
 bool
 jnamval_print_simple(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_SIMPLE) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_SIMPLE) != 0;
 }
 /*
  * jnamval_print_member   - if members should print
@@ -406,7 +406,7 @@ jnamval_print_simple(uintmax_t types)
  *
  * A member is defined as an object or array.
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_MEMBER set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_MEMBER set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -422,7 +422,7 @@ jnamval_print_simple(uintmax_t types)
 bool
 jnamval_print_member(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_MEMBER) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_MEMBER) != 0;
 }
 
 
@@ -435,7 +435,7 @@ jnamval_print_member(uintmax_t types)
  *
  * A compound is defined as an object or array.
  *
- * Returns true if types has JNAMVAL_PRINT_TYPE_COMPOUND set.
+ * Returns true if types has JNAMVAL_RESTRICT_TYPE_COMPOUND set.
  *
  * NOTE: why do we return that the bitwise AND is not != 0 rather than just the
  * bitwise AND? Because in some cases (like the test routines) we compare the
@@ -451,7 +451,7 @@ jnamval_print_member(uintmax_t types)
 bool
 jnamval_print_compound(uintmax_t types)
 {
-    return (types & JNAMVAL_PRINT_TYPE_COMPOUND) != 0;
+    return (types & JNAMVAL_RESTRICT_TYPE_COMPOUND) != 0;
 }
 
 
@@ -462,20 +462,20 @@ jnamval_print_compound(uintmax_t types)
  *
  *	types	- types set
  *
- * Returns true if types is equal to JNAMVAL_PRINT_TYPE_ANY.
+ * Returns true if types is equal to JNAMVAL_RESTRICT_TYPE_ANY.
  *
- * Why does it have to equal JNAMVAL_PRINT_TYPE_ANY if it checks for any type? Because
- * the point is that if JNAMVAL_PRINT_TYPE_ANY is set it can be any type but not
+ * Why does it have to equal JNAMVAL_RESTRICT_TYPE_ANY if it checks for any type? Because
+ * the point is that if JNAMVAL_RESTRICT_TYPE_ANY is set it can be any type but not
  * specific types. For the specific types those bits have to be set instead. If
- * JNAMVAL_PRINT_TYPE_ANY is set then any type can be set but if types is say
- * JNAMVAL_PRINT_TYPE_INT then checking for JNAMVAL_PRINT_TYPE_INT & JNAMVAL_PRINT_TYPE_ANY would be
+ * JNAMVAL_RESTRICT_TYPE_ANY is set then any type can be set but if types is say
+ * JNAMVAL_RESTRICT_TYPE_INT then checking for JNAMVAL_RESTRICT_TYPE_INT & JNAMVAL_RESTRICT_TYPE_ANY would be
  * != 0 (as it's a bitwise OR of all the types) which would suggest that any
- * type is okay even if JNAMVAL_PRINT_TYPE_INT was the only type.
+ * type is okay even if JNAMVAL_RESTRICT_TYPE_INT was the only type.
  */
 bool
 jnamval_print_any(uintmax_t types)
 {
-    return types == JNAMVAL_PRINT_TYPE_ANY;
+    return types == JNAMVAL_RESTRICT_TYPE_ANY;
 }
 
 /*
@@ -488,7 +488,7 @@ jnamval_print_any(uintmax_t types)
  * Returns: bitvector of types requested.
  *
  * NOTE: if optarg is NULL (which should never happen) or empty it returns the
- * default, JNAMVAL_PRINT_TYPE_SIMPLE (as if '-t simple' or '-P simple').
+ * default, JNAMVAL_RESTRICT_TYPE_SIMPLE (as if '-t simple' or '-P simple').
  */
 uintmax_t
 jnamval_parse_print_types(char *optarg)
@@ -497,7 +497,7 @@ jnamval_parse_print_types(char *optarg)
     char *saveptr = NULL;   /* for strtok_r() */
     char *dup = NULL;	    /* strdup()d copy of optarg */
 
-    uintmax_t type = JNAMVAL_PRINT_TYPE_ANY; /* default depends on option used */
+    uintmax_t type = JNAMVAL_RESTRICT_TYPE_ANY; /* default depends on option used */
 
     /* firewall */
     if (optarg == NULL || !*optarg) {
@@ -517,7 +517,7 @@ jnamval_parse_print_types(char *optarg)
      * set type to none before we parse the types as not doing so can mess up
      * the bits as we have to do bitwise OR for each type found.
      */
-    type = JNAMVAL_PRINT_TYPE_NONE;
+    type = JNAMVAL_RESTRICT_TYPE_NONE;
 
     /*
      * Go through comma-separated list of types, setting each as a bitvector
@@ -527,31 +527,31 @@ jnamval_parse_print_types(char *optarg)
      */
     for (p = strtok_r(dup, ",", &saveptr); p; p = strtok_r(NULL, ",", &saveptr)) {
 	if (!strcmp(p, "int")) {
-	    type |= JNAMVAL_PRINT_TYPE_INT;
+	    type |= JNAMVAL_RESTRICT_TYPE_INT;
 	} else if (!strcmp(p, "float")) {
-	    type |= JNAMVAL_PRINT_TYPE_FLOAT;
+	    type |= JNAMVAL_RESTRICT_TYPE_FLOAT;
 	} else if (!strcmp(p, "exp")) {
-	    type |= JNAMVAL_PRINT_TYPE_EXP;
+	    type |= JNAMVAL_RESTRICT_TYPE_EXP;
 	} else if (!strcmp(p, "num")) {
-	    type |= JNAMVAL_PRINT_TYPE_NUM;
+	    type |= JNAMVAL_RESTRICT_TYPE_NUM;
 	} else if (!strcmp(p, "bool")) {
-	    type |= JNAMVAL_PRINT_TYPE_BOOL;
+	    type |= JNAMVAL_RESTRICT_TYPE_BOOL;
 	} else if (!strcmp(p, "str")) {
-	    type |= JNAMVAL_PRINT_TYPE_STR;
+	    type |= JNAMVAL_RESTRICT_TYPE_STR;
 	} else if (!strcmp(p, "null")) {
-	    type |= JNAMVAL_PRINT_TYPE_NULL;
+	    type |= JNAMVAL_RESTRICT_TYPE_NULL;
 	} else if (!strcmp(p, "object")) {
-	    type |= JNAMVAL_PRINT_TYPE_OBJECT;
+	    type |= JNAMVAL_RESTRICT_TYPE_OBJECT;
 	} else if (!strcmp(p, "array")) {
-	    type |= JNAMVAL_PRINT_TYPE_ARRAY;
+	    type |= JNAMVAL_RESTRICT_TYPE_ARRAY;
 	} else if (!strcmp(p, "simple")) {
-	    type |= JNAMVAL_PRINT_TYPE_SIMPLE;
+	    type |= JNAMVAL_RESTRICT_TYPE_SIMPLE;
 	} else if (!strcmp(p, "compound")) {
-	    type |= JNAMVAL_PRINT_TYPE_COMPOUND;
+	    type |= JNAMVAL_RESTRICT_TYPE_COMPOUND;
 	} else if (!strcmp(p, "member")) {
-	    type |= JNAMVAL_PRINT_TYPE_MEMBER;
+	    type |= JNAMVAL_RESTRICT_TYPE_MEMBER;
 	} else if (!strcmp(p, "any")) {
-	    type |= JNAMVAL_PRINT_TYPE_ANY;
+	    type |= JNAMVAL_RESTRICT_TYPE_ANY;
 	} else {
 	    /* unknown type */
 	    err(3, __func__, "unknown type '%s'", p); /*ooo*/
@@ -745,12 +745,12 @@ jnamval_parse_print_option(char *optarg)
  * Returns: bitvector of types requested.
  *
  * NOTE: if optarg is NULL (which should never happen) or empty it returns the
- * default, JNAMVAL_PRINT_TYPE_SIMPLE (as if '-t simple').
+ * default, JNAMVAL_RESTRICT_TYPE_SIMPLE (as if '-t simple').
  */
 uintmax_t
 jnamval_parse_value_type_option(char *optarg)
 {
-    uintmax_t type = JNAMVAL_PRINT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
+    uintmax_t type = JNAMVAL_RESTRICT_TYPE_SIMPLE; /* default is simple: num, bool, str and null */
     char *p = NULL;
 
     if (optarg == NULL || !*optarg) {
@@ -761,21 +761,21 @@ jnamval_parse_value_type_option(char *optarg)
 
     /* Determine if the arg is a valid type.  */
     if (!strcmp(p, "int")) {
-	type = JNAMVAL_PRINT_TYPE_INT;
+	type = JNAMVAL_RESTRICT_TYPE_INT;
     } else if (!strcmp(p, "float")) {
-	type = JNAMVAL_PRINT_TYPE_FLOAT;
+	type = JNAMVAL_RESTRICT_TYPE_FLOAT;
     } else if (!strcmp(p, "exp")) {
-	type = JNAMVAL_PRINT_TYPE_EXP;
+	type = JNAMVAL_RESTRICT_TYPE_EXP;
     } else if (!strcmp(p, "num")) {
-	type = JNAMVAL_PRINT_TYPE_NUM;
+	type = JNAMVAL_RESTRICT_TYPE_NUM;
     } else if (!strcmp(p, "bool")) {
-	type = JNAMVAL_PRINT_TYPE_BOOL;
+	type = JNAMVAL_RESTRICT_TYPE_BOOL;
     } else if (!strcmp(p, "str")) {
-	type = JNAMVAL_PRINT_TYPE_STR;
+	type = JNAMVAL_RESTRICT_TYPE_STR;
     } else if (!strcmp(p, "null")) {
-	type = JNAMVAL_PRINT_TYPE_NULL;
+	type = JNAMVAL_RESTRICT_TYPE_NULL;
     } else if (!strcmp(p, "simple")) {
-	type = JNAMVAL_PRINT_TYPE_SIMPLE;
+	type = JNAMVAL_RESTRICT_TYPE_SIMPLE;
     } else {
 	/* unknown or unsupported type */
 	err(3, __func__, "unknown or unsupported type '%s'", p); /*ooo*/

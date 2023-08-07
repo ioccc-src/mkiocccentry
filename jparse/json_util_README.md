@@ -1601,17 +1601,30 @@ we recommend the following additional command line options for `jnamval`:
 
 			Use of -H implies -N.
 
-	-p parts	Parts of a JSON member to print (def: print JSON member values)
+	-r types	Restrict printing to only the comma-separated types (def: do not restrict):
 
-				n		print JSON member names
-				v		print JSON member values
-				b		print JSON member names and values
-				j		print JSON member with JSON syntax
+			int		integer values
+			float		floating point values
+			exp		exponential notation values
+			num		alias for 'int,float,exp'
+			bool		boolean values
+			str		string values
+			null		null values
+			member		members
+			object		objects
+			array		arrays
+			compound	alias for 'member,object,array'
+			simple		alias for 'int,float,exp,bool,str,null'
+			any		alias for 'int,float,exp,bool,str,null,member,object,array' (default)
 
-				name		alias for n
-				value		alias for v
-				both		alias for b
-				json		alias for j
+	-p {n,v,b,j}	Print JSON name, value, name & value, or valid JSON (def: print JSON values)
+	-p name		Alias for '-p n'
+	-p value	Alias for '-p v'
+	-p both		Alias for '-p b'
+	-p json		Alias for '-p j'
+
+			Later -p instances in the command override earlier -p instances.
+			For -p b, name is separated from value by the same number of whitespaces used to indent one level.
 ```
 
 The `-t type` applies to the type of the [JSON member

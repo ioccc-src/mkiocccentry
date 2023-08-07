@@ -10,6 +10,13 @@ is tested more fully.
 
 Add `-F` to common options of `json_util_README.md`.
 
+Change `jnamval -P` to `jnamval -r` (restrict printing types). There might be a
+reference to something non-programming in this change. New version `"0.0.13
+2023-08-07"`.
+
+Slightly improve `dbg_example.c` by adding a call to `not_reached()` after the
+`errp()` call.
+
 ## Release 1.0.50 2023-08-06
 
 New version of `jfmt`, `jval` and `jnamval`: `"0.0.12 2023-08-06"`. `jfmt` and

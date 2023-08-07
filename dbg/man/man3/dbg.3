@@ -286,6 +286,7 @@ main(void)
     errno = EPERM;
     msg("NOTE: The next line should read: \\"ERROR[2]: main: test: errno[%d]: %s\\"", errno, strerror(errno));
     errp(2, __func__, "test");
+    not_reached();
 
     return 2; /* this return is never reached */
 }

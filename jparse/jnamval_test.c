@@ -425,33 +425,33 @@ jnamval_run_tests(void)
      * test that none of the bits are set not via the match none function but by
      * each match function
      */
-    bits = JNAMVAL_PRINT_TYPE_NONE;
-    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_PRINT_TYPE_INT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_PRINT_TYPE_FLOAT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_exp, "JNAMVAL_PRINT_TYPE_EXP") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_num, "JNAMVAL_PRINT_TYPE_NUM") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_bool, "JNAMVAL_PRINT_TYPE_BOOL") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_string, "JNAMVAL_PRINT_TYPE_STR") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_null, "JNAMVAL_PRINT_TYPE_NULL") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_object, "JNAMVAL_PRINT_TYPE_OBJECT") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_array, "JNAMVAL_PRINT_TYPE_ARRAY") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_any, "JNAMVAL_PRINT_TYPE_ANY") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_simple, "JNAMVAL_PRINT_TYPE_SIMPLE") &&
-	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_compound, "JNAMVAL_PRINT_TYPE_COMPOUND");
+    bits = JNAMVAL_RESTRICT_TYPE_NONE;
+    test = jnamval_test_bits(false, bits, __LINE__, jnamval_print_int, "JNAMVAL_RESTRICT_TYPE_INT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_float, "JNAMVAL_RESTRICT_TYPE_FLOAT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_exp, "JNAMVAL_RESTRICT_TYPE_EXP") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_num, "JNAMVAL_RESTRICT_TYPE_NUM") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_bool, "JNAMVAL_RESTRICT_TYPE_BOOL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_string, "JNAMVAL_RESTRICT_TYPE_STR") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_null, "JNAMVAL_RESTRICT_TYPE_NULL") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_object, "JNAMVAL_RESTRICT_TYPE_OBJECT") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_array, "JNAMVAL_RESTRICT_TYPE_ARRAY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_any, "JNAMVAL_RESTRICT_TYPE_ANY") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_simple, "JNAMVAL_RESTRICT_TYPE_SIMPLE") &&
+	   jnamval_test_bits(false, bits, __LINE__, jnamval_print_compound, "JNAMVAL_RESTRICT_TYPE_COMPOUND");
     if (!test) {
 	okay = false;
     }
 
     /* check all types */
     bits = json_util_parse_match_types("int,float,exp,num,bool,str,null,simple");
-    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_PRINT_TYPE_INT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_PRINT_TYPE_FLOAT") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_PRINT_TYPE_EXP") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_PRINT_TYPE_NUM") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_PRINT_TYPE_BOOL") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_PRINT_TYPE_STR") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_PRINT_TYPE_NULL") &&
-	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_PRINT_TYPE_SIMPLE");
+    test = jnamval_test_bits(true, bits, __LINE__, jnamval_print_int, "JNAMVAL_RESTRICT_TYPE_INT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_float, "JNAMVAL_RESTRICT_TYPE_FLOAT") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_exp, "JNAMVAL_RESTRICT_TYPE_EXP") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_num, "JNAMVAL_RESTRICT_TYPE_NUM") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_bool, "JNAMVAL_RESTRICT_TYPE_BOOL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_string, "JNAMVAL_RESTRICT_TYPE_STR") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_null, "JNAMVAL_RESTRICT_TYPE_NULL") &&
+	   jnamval_test_bits(true, bits, __LINE__, jnamval_print_simple, "JNAMVAL_RESTRICT_TYPE_SIMPLE");
     if (!test) {
 	okay = false;
     }
