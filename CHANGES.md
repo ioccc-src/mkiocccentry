@@ -1,5 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.52 2023-08-08
+
+New `jparse` and JSON parser version `"1.1.5 2023-08-08"`. Now the structs
+`json_number`, `json_string`, `json_boolean` and `json_null` have a `struct json
+*node` which points to the `struct json *` that contains the JSON number,
+string, boolean or null.
+
+The above change allows us to take a `struct json_foo` and free the `struct json
+*` in it which is useful for `jval` and `jnamval` which now both free the
+`struct json *` nodes of the `-S` and `-n` option with the new version (for
+both) `"0.0.14 2023-08-08"`. This is necessary because those options allocate a
+`struct json_string *` and `struct json_number *` to verify that parsing is okay
+in the command line.
+
+The tool `jnum_gen` was updated to set the node of the `struct json_number` to
+NULL and the version was updated to `"1.0.1 2023-08-08"`. Update `jnum_test.c`
+through `make rebuild_jnum_test` rule.
+
+Fix `make picky` in `jnamval_util.c` from changing some macros to have the
+prefix `JNAMVAL_RESTRICT` (was `JNAMVAL_PRINT`). This was done by expanding the
+macro (which is a bunch of bitwise ORs) to another line through `\` at the EOL.
+
 ## Release 1.0.51 2023-08-07
 
 Fix link in make rule `jparse.clone` to use

@@ -256,7 +256,11 @@ free_jval_cmp_op_lists(struct jval *jval)
     for (op = jval->json_name_val.string_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
-	/* XXX - free json node - XXX */
+	/* free the operator json node */
+	if (op->string != NULL && op->string->node != NULL) {
+	    json_free(op->string->node, jval->common.max_depth);
+	    op->string = NULL;
+	}
 
 	free(op);
 	op = NULL;
@@ -266,7 +270,11 @@ free_jval_cmp_op_lists(struct jval *jval)
     for (op = jval->json_name_val.num_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
-	/* XXX - free json node - XXX */
+	/* free the operator json node */
+	if (op->number != NULL && op->number->node != NULL) {
+	    json_free(op->number->node, jval->common.max_depth);
+	    op->number = NULL;
+	}
 
 	free(op);
 	op = NULL;

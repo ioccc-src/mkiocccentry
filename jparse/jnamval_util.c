@@ -736,7 +736,7 @@ jnamval_parse_print_option(char *optarg)
 
 
 /*
- * jnamval_parse_value_option	- parse -t types list
+ * jnamval_parse_value_type_option	- parse -t types list
  *
  * given:
  *
@@ -925,7 +925,11 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
     for (op = jnamval->json_name_val.string_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
-	/* XXX - free json node - XXX */
+	/* free the operator json node */
+	if (op->string != NULL && op->string->node != NULL) {
+	    json_free(op->string->node, jnamval->common.max_depth);
+	    op->string = NULL;
+	}
 
 	free(op);
 	op = NULL;
@@ -935,7 +939,11 @@ free_jnamval_cmp_op_lists(struct jnamval *jnamval)
     for (op = jnamval->json_name_val.num_cmp; op != NULL; op = next_op) {
 	next_op = op->next;
 
-	/* XXX - free json node - XXX */
+	/* free the operator json node */
+	if (op->number != NULL && op->number->node != NULL) {
+	    json_free(op->number->node, jnamval->common.max_depth);
+	    op->number = NULL;
+	}
 
 	free(op);
 	op = NULL;

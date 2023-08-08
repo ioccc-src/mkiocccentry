@@ -62,8 +62,8 @@ struct encode
  *
  * If converted == false, then the JSON number string was not able to be
  * converted into a C numeric value (neither integer, nor floating point), OR
- * the JSON number string was invalid (malformed), or the JSON number string
- * was too large or otherwise could not be converted into a C numeric value
+ * the JSON number string was invalid (malformed), OR the JSON number string
+ * was too large OR otherwise could not be converted into a C numeric value
  * by the standard libc conversion functions.
  *
  * If the allocation of as_str fails, then as_str == NULL and parsed == false.
@@ -195,6 +195,8 @@ struct json_number
     bool longdouble_sized;	/* true ==> converted JSON float to C long double */
     long double as_longdouble;	/* JSON floating point value in long double form, if longdouble_sized  == true */
     bool as_longdouble_int;	/* if longdouble_sized == true, true ==> as_longdouble is an integer */
+
+    struct json *node;		/* the actual json node */
 };
 
 
@@ -236,6 +238,8 @@ struct json_string
     bool posix_safe;		/* true ==> all chars are POSIX portable safe plus + and maybe / after decoding */
     bool first_alphanum;	/* true ==> first char is alphanumeric after decoding */
     bool upper;			/* true ==> UPPER case chars found after decoding */
+
+    struct json *node;		/* the actual json node */
 };
 
 
@@ -259,6 +263,8 @@ struct json_boolean
     size_t as_str_len;		/* length of as_str */
 
     bool value;			/* converted JSON boolean value */
+
+    struct json *node;		/* the actual json node */
 };
 
 
@@ -281,6 +287,8 @@ struct json_null
     size_t as_str_len;		/* length of as_str */
 
     void *value;		/* NULL */
+
+    struct json *node;		/* the actual json node */
 };
 
 

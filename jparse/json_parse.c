@@ -1274,6 +1274,10 @@ parse_json_string(char const *string, size_t len)
 	err(152, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     }
+
+    /* set item's node to the node that we just parsed */
+    item->node = str;
+
     return str;
 }
 
@@ -1359,6 +1363,9 @@ parse_json_bool(char const *string)
 	}
     }
 
+    /* set item's node to the node that we just parsed */
+    item->node = boolean;
+
     return boolean;
 }
 
@@ -1408,6 +1415,9 @@ parse_json_null(char const *string)
 	not_reached();
     }
 
+    /* set item's node to the node that we just parsed */
+    item->node = null;
+
     return null;
 }
 
@@ -1455,6 +1465,10 @@ parse_json_number(char const *string)
 	err(170, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     }
+
+    /* set item's node to the node that we just parsed */
+    item->node = number;
+
     return number;
 }
 
@@ -1655,6 +1669,7 @@ json_alloc(enum item_type type)
 	    item->parsed = false;
 	    item->converted = false;
 	    item->as_str = NULL;
+	    item->node = NULL;
 	};
 	break;
     case JTYPE_STRING:
@@ -1665,6 +1680,7 @@ json_alloc(enum item_type type)
 	    item->converted = false;
 	    item->as_str = NULL;
 	    item->str = NULL;
+	    item->node = NULL;
 	};
 	break;
     case JTYPE_BOOL:
@@ -1674,6 +1690,7 @@ json_alloc(enum item_type type)
 	    item->parsed = false;
 	    item->converted = false;
 	    item->as_str = NULL;
+	    item->node = NULL;
 	};
 	break;
     case JTYPE_NULL:
@@ -1683,6 +1700,7 @@ json_alloc(enum item_type type)
 	    item->parsed = false;
 	    item->converted = false;
 	    item->as_str = NULL;
+	    item->node = NULL;
 	};
 	break;
     case JTYPE_MEMBER:

@@ -45,7 +45,7 @@
 /*
  * official jnum_gen version
  */
-#define JNUM_GEN_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "1.0.1 2023-08-08"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -325,6 +325,7 @@ main(int argc, char *argv[])
 	/*
 	 * print end of json_number structure
 	 */
+	prstr("        NULL\t\t/* json_number's struct json *node */\n");
 	prstr("    },\n\n");
     }
     prstr("    /* MUST BE LAST */\n");
