@@ -300,7 +300,7 @@ main(int argc, char **argv)
 	    dbg(DBG_LOW, "-e specified, will encode strings");
 	    break;
 	case 'n': /* -n op=num */
-	    jnamval->json_name_val.num_cmp_used = true;
+	    jnamval->json_name_val.numcmp_used = true;
 	    if (json_util_parse_cmp_op(&jnamval->json_name_val, "n", optarg) == NULL) {
 		free_jnamval(&jnamval);
 		err(24, "jnamval", "couldn't parse -n option");
@@ -308,7 +308,7 @@ main(int argc, char **argv)
 	    }
 	    break;
 	case 'S': /* -S op=str */
-	    jnamval->json_name_val.string_cmp_used = true;
+	    jnamval->json_name_val.strcmp_used = true;
 	    if (json_util_parse_cmp_op(&jnamval->json_name_val, "S", optarg) == NULL) {
 		free_jnamval(&jnamval);
 		err(25, "jnamval", "couldn't parse -S option");

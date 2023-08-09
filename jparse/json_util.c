@@ -2726,9 +2726,9 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 {
     char *p = NULL;		    /* to find the = separator */
     char *mode = NULL;		    /* if -S then "str" else "num" */
-    struct json *item = NULL;	    /* to get the converted value */
     struct json_util_cmp_op *cmp = NULL; /* to add to list */
-    int op = JSON_UTIL_CMP_OP_NONE;	    /* assume no op for syntax wrong */
+    struct json_util_cmp_op *tmp_cmp = NULL; /* to append to list */
+    enum JSON_UTIL_CMP_OP op = JSON_CMP_OP_NONE;	    /* assume no op for syntax error */
 
     /* firewall */
     if (json_name_val == NULL) {
@@ -2749,99 +2749,152 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
     } else if (!strcmp(option, "n")) {
 	mode = "num";
     } else {
-	err(30, __func__, "invalid option used for function: -%s", option);
+	err(30, __func__, "invalid arg used for option: -%s", option);
 	not_reached();
     }
 
     p = strchr(optarg, '=');
     if (p == NULL) {
-	err(31, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(31, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     } else if (p == optarg) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     } else if (p[1] == '\0') {
-	err(33, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge}=%s", option, mode);
+	err(33, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge,ne}=%s", option, mode);
 	not_reached();
     }
 
     if (!strncmp(optarg, "eq=", 3)) {
-	op = JSON_UTIL_CMP_EQ;
+	op = JSON_CMP_OP_EQ;
     } else if (!strncmp(optarg, "lt=", 3)) {
-	op = JSON_UTIL_CMP_LT;
+	op = JSON_CMP_OP_LT;
     } else if (!strncmp(optarg, "le=", 3)) {
-	op = JSON_UTIL_CMP_LE;
+	op = JSON_CMP_OP_LE;
     } else if (!strncmp(optarg, "gt=", 3)){
-	op = JSON_UTIL_CMP_GT;
+	op = JSON_CMP_OP_GT;
     } else if (!strncmp(optarg, "ge=", 3)) {
-	op = JSON_UTIL_CMP_GE;
+	op = JSON_CMP_OP_GE;
+    } else if (!strncmp(optarg, "ne=", 3)) {
+	op = JSON_CMP_OP_NE;
     } else {
-	err(34, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge}=%s", option, option, mode);
+	err(34, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     }
 
+    errno = 0; /* pre-clear errno for errp() */
+    cmp = calloc(1, sizeof *cmp);
+    if (cmp == NULL) {
+	errp(36, __func__, "failed to allocate struct json_util_cmp_op * for -%s %s=%s", option, optarg, optarg + 3);
+	not_reached();
+    } else {
+	/* explicitly clear out struct */
+	cmp->string = NULL;
+
+	cmp->is_string = false;
+	cmp->is_number = false;
+
+	/* set up operator which we already have */
+	cmp->op = op;
+
+	/* next in list starts at NULL */
+	cmp->next = NULL;
+    }
     if (!strcmp(option, "S")) { /* -S */
-	errno = 0;
-	item = json_conv_string(optarg + 3, strlen(optarg + 3), *(optarg +3) == '"' ? true : false);
-	if (item == NULL) {
-	    err(35, __func__, "failed to convert string <%s> for -%s", optarg + 3, option);
+	errno = 0; /* pre-clear errno for errp() */
+	cmp->string = strdup(optarg + 3);
+	if (cmp->string == NULL) {
+	    errp(37, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
 	    not_reached();
-	} else {
-	    cmp = calloc(1, sizeof *cmp);
-	    if (cmp == NULL) {
-		err(36, __func__, "failed to allocate struct json_util_cmp_op *");
-		not_reached();
-	    }
-	    cmp->string = &(item->item.string);
-	    if (cmp->string == NULL) {
-		err(37, __func__, "failed to convert string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
-		not_reached();
-	    } else if (!CONVERTED_PARSED_JSON_NODE(cmp->string)) {
-		err(38, __func__, "failed to convert or parse string: <%s> for option -%s but string pointer not NULL!",
-			optarg + 3, option);
-		not_reached();
-	    }
-
-	    cmp->op = op;
-
-	    cmp->next = json_name_val->string_cmp;
-	    json_name_val->string_cmp = cmp;
-
-	    /* XXX - add function that prints out what compare operation - XXX */
-	    json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string->str);
 	}
+
+	cmp->is_string = true;
+
+	/* append to string compare list */
+	for (tmp_cmp = json_name_val->strcmp; tmp_cmp && tmp_cmp->next != NULL; tmp_cmp = tmp_cmp->next)
+	    ;; /* on a separate line to silence dubious warnings */
+
+	if (tmp_cmp == NULL) {
+	    json_name_val->strcmp = cmp;
+	} else {
+	    tmp_cmp->next = cmp;
+	}
+
+	/* XXX - add function that prints out what compare operation - XXX */
+	json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string);
     } else if (!strcmp(option, "n")) { /* -n */
-	item = json_conv_number(optarg + 3, strlen(optarg + 3));
-	if (item == NULL) {
-	    err(39, __func__, "syntax error in -%s: no number found: <%s>", option, optarg + 3);
+	errno = 0; /* pre-clear errno for errp() */
+	cmp->string = strdup(optarg + 3);
+	if (cmp->string == NULL) {
+	    err(37, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
 	    not_reached();
-	} else {
-	    cmp = calloc(1, sizeof *cmp);
-	    if (cmp == NULL) {
-		err(40, __func__, "failed to allocate struct json_util_cmp_op *");
-		not_reached();
-	    }
-	    cmp->number = &(item->item.number);
-	    if (!CONVERTED_PARSED_JSON_NODE(cmp->number)) {
-		err(7, __func__, "failed to convert or parse number: <%s> for option -%s but number pointer not NULL!",/*ooo*/
-			optarg + 3, option);
-		not_reached();
-	    } else if (PARSED_JSON_NODE(cmp->number) && !CONVERTED_JSON_NODE(cmp->number)) {
-		err(7, __func__, "failed to convert number: <%s> for option -%s", optarg +3 , option); /*ooo*/
-		not_reached();
-	    }
-
-	    cmp->op = op;
-
-	    cmp->next = json_name_val->num_cmp;
-	    json_name_val->num_cmp = cmp;
-
-	    /* XXX - add function that prints out what compare operation - XXX */
-	    json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->number->as_str);
 	}
+	cmp->is_number = true;
+
+	/* append to number compare list */
+	for (tmp_cmp = json_name_val->numcmp; tmp_cmp && tmp_cmp->next != NULL; tmp_cmp = tmp_cmp->next)
+	    ;; /* on a separate line to silence dubious warnings */
+
+	if (tmp_cmp == NULL) {
+	    json_name_val->numcmp = cmp;
+	} else {
+	    tmp_cmp->next = cmp;
+	}
+
+	/* XXX - add function that prints out what compare operation - XXX */
+	json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->string);
     }
 
     return cmp;
+}
+
+/* free_json_util_cmp_list  - free a compare list for jval / jnamval -S and -n options
+ *
+ * given:
+ *
+ *	json_name_val	- struct with the compare lists
+ *
+ * This function does not return on NULL pointer passed in.
+ *
+ * This function returns void.
+ */
+void
+free_json_util_cmp_list(struct json_util_name_val *json_name_val)
+{
+    struct json_util_cmp_op *op, *next_op;
+
+    /* firewall */
+    if (json_name_val == NULL) {
+	err(35, __func__, "NULL json_name_val");
+	not_reached();
+    }
+
+    /* first the string compare list */
+    for (op = json_name_val->strcmp; op != NULL; op = next_op) {
+	next_op = op->next;
+
+	if (op->string != NULL) {
+	    free(op->string);
+	    op->string = NULL;
+	}
+
+	free(op);
+	op = NULL;
+    }
+
+    /* now the number compare list */
+    for (op = json_name_val->numcmp; op != NULL; op = next_op) {
+	next_op = op->next;
+
+	if (op->string != NULL) {
+	    free(op->string);
+	    op->string = NULL;
+	}
+
+	free(op);
+	op = NULL;
+    }
+
 }
 
 /* parse_json_util_format - parse -F format option of jfmt, jval and jnamval
@@ -2855,13 +2908,13 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
  *
  * This function will not return on NULL pointer.
  *
- * This function returns an enum output_format which is also given in the struct
+ * This function returns an enum JSON_UTIL_OUTPUT_FMT which is also given in the struct
  * json_util json_util in the struct of the tool used.
  */
-enum output_format
+enum JSON_UTIL_OUTPUT_FMT
 parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg)
 {
-    enum output_format format = JSON_FMT_TTY;
+    enum JSON_UTIL_OUTPUT_FMT format = JSON_FMT_TTY;
 
     /* firewall */
 

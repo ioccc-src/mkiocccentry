@@ -97,12 +97,12 @@ alloc_jval(void)
     jval->json_name_val.use_regexps = false;				/* -g used, allow grep-like regexps */
 
     /* for -S */
-    jval->json_name_val.string_cmp_used = false;
-    jval->json_name_val.string_cmp = NULL;
+    jval->json_name_val.strcmp_used = false;
+    jval->json_name_val.strcmp = NULL;
 
     /* for -n */
-    jval->json_name_val.num_cmp_used = false;
-    jval->json_name_val.num_cmp = NULL;
+    jval->json_name_val.numcmp_used = false;
+    jval->json_name_val.numcmp = NULL;
 
     /* parsing related */
     jval->common.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
@@ -244,31 +244,11 @@ parse_jval_args(struct jval *jval, int *argc, char ***argv)
 void
 free_jval_cmp_op_lists(struct jval *jval)
 {
-    struct json_util_cmp_op *op, *next_op;
-
     /* firewall */
     if (jval == NULL) {
 	err(27, __func__, "jval is NULL");
 	not_reached();
     }
 
-    /* first the string compare list */
-    for (op = jval->json_name_val.string_cmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	/* XXX - free json node - XXX */
-
-	free(op);
-	op = NULL;
-    }
-
-    /* now the number compare list */
-    for (op = jval->json_name_val.num_cmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	/* XXX - free json node - XXX */
-
-	free(op);
-	op = NULL;
-    }
+    free_json_util_cmp_list(&jval->json_name_val);
 }
