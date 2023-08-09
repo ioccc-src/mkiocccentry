@@ -105,11 +105,11 @@ alloc_jnamval(void)
     /* comparison options -S and -n */
 
     /* -S op=string */
-    jnamval->json_name_val.string_cmp_used = false;
-    jnamval->json_name_val.string_cmp = NULL;
+    jnamval->json_name_val.strcmp_used = false;
+    jnamval->json_name_val.strcmp = NULL;
     /* -n op=number */
-    jnamval->json_name_val.num_cmp_used = false;
-    jnamval->json_name_val.num_cmp = NULL;
+    jnamval->json_name_val.numcmp_used = false;
+    jnamval->json_name_val.numcmp = NULL;
 
     /* parsing related */
     jnamval->common.max_depth = JSON_DEFAULT_MAX_DEPTH;		/* max depth to traverse set by -m depth */
@@ -913,31 +913,11 @@ parse_jnamval_args(struct jnamval *jnamval, int *argc, char ***argv)
 void
 free_jnamval_cmp_op_lists(struct jnamval *jnamval)
 {
-    struct json_util_cmp_op *op, *next_op;
-
     /* firewall */
     if (jnamval == NULL) {
 	err(29, __func__, "jnamval is NULL");
 	not_reached();
     }
 
-    /* first the string compare list */
-    for (op = jnamval->json_name_val.string_cmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	/* XXX - free json node - XXX */
-
-	free(op);
-	op = NULL;
-    }
-
-    /* now the number compare list */
-    for (op = jnamval->json_name_val.num_cmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	/* XXX - free json node - XXX */
-
-	free(op);
-	op = NULL;
-    }
+    free_json_util_cmp_list(&jnamval->json_name_val);
 }

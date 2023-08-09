@@ -1,5 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.52 2023-08-09
+
+New version of `jval` and `jnamval`, `"0.0.14 2023-08-09"`.
+
+Fixed the lists of `-S` and `-n` option parsing. For now it should just be a
+string that's strdup()d. The operators are in the list in the order specified,
+one list for strings and one list for numbers. This can be changed to a single
+list later on if necessary (as I suspect it might need to be but the way it is
+now is set up as two which is what I'm operating under).
+
+The function that frees the `-S` and `-n` lists in `jval` and `jnamval` is now
+in `json_util.c` as they are actually in a struct common to both `jval` and
+`jnamval`. The functions that free them in `jval_util.c` and `jnamval_util.c`
+simply check that `jval` or `jnamval` is not NULL and then calls the new
+`free_json_util_cmp_list()` function.
+
+Made the json util operator macros an enum.
+
+Rename the enum `output_format` to `JSON_UTIL_OUTPUT_FMT`.
+
+
 ## Release 1.0.51 2023-08-07
 
 Fix link in make rule `jparse.clone` to use

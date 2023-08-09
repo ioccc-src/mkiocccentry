@@ -65,16 +65,22 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
-/* for json tools jval and jnamval */
-#define JSON_UTIL_CMP_OP_NONE	    (0)
-#define JSON_UTIL_CMP_EQ	    (1)
-#define JSON_UTIL_CMP_LT	    (2)
-#define JSON_UTIL_CMP_LE	    (3)
-#define JSON_UTIL_CMP_GT	    (4)
-#define JSON_UTIL_CMP_GE	    (5)
+/* for json tools jval and jnamval -S and -n options */
+enum JSON_UTIL_CMP_OP
+{
+    JSON_CMP_OP_NONE = 0,	/* must be first */
+    JSON_CMP_OP_EQ = 1,		/* equality check */
+    JSON_CMP_OP_LT = 2,		/* less than check */
+    JSON_CMP_OP_LE = 3,		/* less than or equal check */
+    JSON_CMP_OP_GT = 4,		/* greater than check */
+    JSON_CMP_OP_GE = 5,		/* greater than or equal check */
+    JSON_CMP_OP_NE = 6,		/* not equal */
+};
+
 
 /* for -F with jfmt, jval and jnamval */
-enum output_format {
+enum JSON_UTIL_OUTPUT_FMT
+{
     JSON_FMT_TTY = 0,		    /* tty (default): when output is to a TTY, use colour, otherwise use simple */
     JSON_FMT_SIMPLE = 1,	    /* simple: each line has one JSON level determined by '[]'s and '{}'s */
     JSON_FMT_COLOUR = 2,	    /* coloured format: syntax highlighting */
@@ -103,8 +109,7 @@ enum output_format {
 /* for comparison of numbers / strings - options -n and -S */
 struct json_util_cmp_op
 {
-    struct json_number *number;	    /* for -n as signed number */
-    struct json_string *string;	    /* for -S str */
+    char *string;
 
     bool is_string;	    /* true if -S */
     bool is_number;	    /* true if -n */
@@ -127,10 +132,10 @@ struct json_util_name_val
     bool count_only;				/* -c used, only show count */
     bool count_and_show_values;			/* -C used, show count and values */
 
-    bool string_cmp_used;			/* for -S */
-    struct json_util_cmp_op *string_cmp;		/* for -S str */
-    bool num_cmp_used;				/* for -n */
-    struct json_util_cmp_op *num_cmp;		/* for -n num */
+    bool strcmp_used;			/* for -S */
+    struct json_util_cmp_op *strcmp;		/* for -S str */
+    bool numcmp_used;				/* for -n */
+    struct json_util_cmp_op *numcmp;		/* for -n num */
 
     /* search / matching related */
     bool invert_matches;			/* -i used */
@@ -198,8 +203,8 @@ struct json_util
     uintmax_t indent_spaces;			/* -I specified */
     bool indent_tab;				/* -I <num>[{t|s}] specified */
 
-    bool format_output_changed;			/* -F output_format used */
-    enum output_format format;			/* for -F output_format */
+    bool format_output_changed;			/* -F JSON_UTIL_OUTPUT_FMT used */
+    enum JSON_UTIL_OUTPUT_FMT format;			/* for -F JSON_UTIL_OUTPUT_FMT */
 
     uintmax_t max_depth;			/* max depth to traverse set by -m depth */
     struct json *json_tree;			/* json tree if valid merely as a convenience */
@@ -253,8 +258,9 @@ void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, 
 void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
 /* for -S and -n */
 struct json_util_cmp_op *json_util_parse_cmp_op(struct json_util_name_val *json_util_name_val, const char *option, char *optarg);
+void free_json_util_cmp_list(struct json_util_name_val *json_name_val);
 /* for -F option */
-enum output_format parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg);
+enum JSON_UTIL_OUTPUT_FMT parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg);
 /* JSON types - -t option*/
 uintmax_t json_util_parse_match_types(char *optarg);
 bool json_util_match_none(uintmax_t types);
