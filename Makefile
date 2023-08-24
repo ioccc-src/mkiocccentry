@@ -1080,7 +1080,7 @@ dbg.update_into_clone: dbg/ dbg.clone/
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg dbg.clone/
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg/ dbg.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1191,7 +1191,7 @@ dyn_array.update_into_clone: dyn_array/ dyn_array.clone/
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array dyn_array.clone/
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array/ dyn_array.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1302,7 +1302,7 @@ jparse.update_into_clone: jparse/ jparse.clone/
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse jparse.clone/
+	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse/ jparse.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
