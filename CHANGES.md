@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.53 2023-09-13
+
+Minor fix in `jval` and `jnamval` - new version `"0.0.15 2023-09-13"`. The `ne`
+operator for `-S` and `-n` already was parsed (by foresight that it would
+be needed, maybe) but it was not in the help. Also I decided to change the order
+of the enum so that `JSON_CMP_OP_NE` comes right after `JSON_CMP_OP_EQ` rather
+than at the end.
+
+Man pages updated - added `ne` to `-S` and `-n` options.
+
+
 ## Release 1.0.52 2023-08-09
 
 New version of `jval` and `jnamval`, `"0.0.14 2023-08-09"`.
