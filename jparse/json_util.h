@@ -70,11 +70,11 @@ enum JSON_UTIL_CMP_OP
 {
     JSON_CMP_OP_NONE = 0,	/* must be first */
     JSON_CMP_OP_EQ = 1,		/* equality check */
-    JSON_CMP_OP_LT = 2,		/* less than check */
-    JSON_CMP_OP_LE = 3,		/* less than or equal check */
-    JSON_CMP_OP_GT = 4,		/* greater than check */
-    JSON_CMP_OP_GE = 5,		/* greater than or equal check */
-    JSON_CMP_OP_NE = 6,		/* not equal */
+    JSON_CMP_OP_NE = 2,		/* not equal */
+    JSON_CMP_OP_LT = 3,		/* less than check */
+    JSON_CMP_OP_LE = 4,		/* less than or equal check */
+    JSON_CMP_OP_GT = 5,		/* greater than check */
+    JSON_CMP_OP_GE = 6,		/* greater than or equal check */
 };
 
 

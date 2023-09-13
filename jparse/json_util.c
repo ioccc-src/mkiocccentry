@@ -2755,18 +2755,20 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 
     p = strchr(optarg, '=');
     if (p == NULL) {
-	err(31, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
+	err(31, __func__, "syntax error in -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     } else if (p == optarg) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
+	err(32, __func__, "syntax error in -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     } else if (p[1] == '\0') {
-	err(33, __func__, "nothing found after =: use -%s {eq,lt,le,gt,ge,ne}=%s", option, mode);
+	err(33, __func__, "nothing found after =: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, mode);
 	not_reached();
     }
 
     if (!strncmp(optarg, "eq=", 3)) {
 	op = JSON_CMP_OP_EQ;
+    } else if (!strncmp(optarg, "ne=", 3)) {
+	op = JSON_CMP_OP_NE;
     } else if (!strncmp(optarg, "lt=", 3)) {
 	op = JSON_CMP_OP_LT;
     } else if (!strncmp(optarg, "le=", 3)) {
@@ -2775,17 +2777,15 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 	op = JSON_CMP_OP_GT;
     } else if (!strncmp(optarg, "ge=", 3)) {
 	op = JSON_CMP_OP_GE;
-    } else if (!strncmp(optarg, "ne=", 3)) {
-	op = JSON_CMP_OP_NE;
     } else {
-	err(34, __func__, "invalid op found for -%s: use -%s {eq,lt,le,gt,ge,ne}=%s", option, option, mode);
+	err(34, __func__, "invalid op found for -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     cmp = calloc(1, sizeof *cmp);
     if (cmp == NULL) {
-	errp(36, __func__, "failed to allocate struct json_util_cmp_op * for -%s %s=%s", option, optarg, optarg + 3);
+	errp(35, __func__, "failed to allocate struct json_util_cmp_op * for -%s %s=%s", option, optarg, optarg + 3);
 	not_reached();
     } else {
 	/* explicitly clear out struct */
@@ -2804,7 +2804,7 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 	errno = 0; /* pre-clear errno for errp() */
 	cmp->string = strdup(optarg + 3);
 	if (cmp->string == NULL) {
-	    errp(37, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
+	    errp(36, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
 	    not_reached();
 	}
 
@@ -2865,7 +2865,7 @@ free_json_util_cmp_list(struct json_util_name_val *json_name_val)
 
     /* firewall */
     if (json_name_val == NULL) {
-	err(35, __func__, "NULL json_name_val");
+	err(38, __func__, "NULL json_name_val");
 	not_reached();
     }
 
@@ -2920,11 +2920,11 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
 
     /* name MUST be checked first! */
     if (name == NULL) {
-	err(41, __func__, "name is NULL");
+	err(39, __func__, "name is NULL");
 	not_reached();
     }
     if (json_util == NULL) {
-	err(42, name?name:__func__, "json_util is NULL");
+	err(40, name?name:__func__, "json_util is NULL");
 	not_reached();
     }
 
@@ -2989,7 +2989,7 @@ json_util_parse_match_types(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	errp(43, __func__, "strdup(%s) failed", optarg);
+	errp(41, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 

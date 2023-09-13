@@ -129,10 +129,10 @@ static const char * const usage_msg0 =
     "\n"
     "\t-n op=num\tMatch if numeric op with num is true (def: do not)\n"
     "\n"
-    "\t\t\top may be one of: eq, lt, le, gt, ge\n"
+    "\t\t\top may be one of: eq, ne, lt, le, gt, ge\n"
     "\n"
     "\t-S op=str\n"
-    "\t\t\top may be one of: eq, lt, le, gt, ge\n"
+    "\t\t\top may be one of: eq, ne, lt, le, gt, ge\n"
     "\n"
     "\t-o ofile\tWrite to ofile (def: stdout)\n";
 
