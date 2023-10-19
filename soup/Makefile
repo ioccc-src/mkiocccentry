@@ -340,7 +340,7 @@ all: ${TARGETS}
 #################################################
 
 .PHONY: all \
-	depend soup eat eating eat_soup eating_soup legacy_clean legacy_clobber \
+	depend kitchen soup_kitchen soup eat eating eat_soup eating_soup legacy_clean legacy_clobber \
 	configure clean clobber install depend tags local_dir_tags all_tags \
 	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
 	limit_ioccc.sh all_sem_ref all_sem_ref_ptch
@@ -425,6 +425,8 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
 
+kitchen soup_kitchen: kitchen.sh
+	-@./kitchen.sh
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
