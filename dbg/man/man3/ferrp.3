@@ -1,1 +1,205 @@
-err.3
+.\" section 3 man page for dbg
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022. The man page is dedicated to Grace Hopper who popularised the
+.\" term 'debugging' after a real moth in a mainframe was causing it to
+.\" malfunction (the term had already existed but she made it popular
+.\" because of actually removing an insect that was causing a malfunction).
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH err 3  "30 January 2023" "err"
+.SH NAME
+.BR err() \|,
+.BR verr() \|,
+.BR ferr() \|,
+.BR vferr() \|,
+.BR errp() \|,
+.BR verrp() \|,
+.BR ferrp() \|,
+.BR vferrp()
+\- fatal error message facility
+.SH SYNOPSIS
+\fB#include "dbg.h"\fP
+.sp
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.br
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+.sp
+.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
+.sp
+.B "void err(int exitcode, const char *name, const char *fmt, ...);"
+.br
+.B "void verr(int exitcode, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.B "void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.B "void errp(int exitcode, const char *name, const char *fmt, ...);"
+.br
+.B "void verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.B "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.SH DESCRIPTION
+These functions provide a way to write fatal error messages to a stream such as
+.BR stderr .
+.SS Errno versions
+.PP
+The functions
+.B errp()
+and
+.B ferrp()
+write a message according to the value of
+.BR errno ,
+making sure to restore the
+.B errno
+value in the case the function returns.
+.SS Alternative output FILE * stream
+The functions that do not take a
+.B FILE *
+or a
+.B char *
+write to
+.BR stderr .
+The functions
+.BR ferr() \|,
+.BR vferr() \|,
+.BR ferrp()
+and
+.BR vferrp()
+can write to an alternative
+.B FILE *
+stream.
+.SS Variadic versions
+.PP
+The functions
+.BR verr() \|,
+.BR vferr() \|,
+.BR verrp()
+and
+.BR vferrp()
+are equivalent to the functions
+.BR err() \|,
+.BR ferr() \|,
+.BR errp()
+and
+.BR ferrp()
+except that they are called with a
+.I va_list
+instead of a variable number of arguments.
+The state of the
+.I va_list
+is not modified by these functions.
+.SS Format of the fmt string
+The format string is a character string in the same form as
+.BR printf (3).
+As these are quite complex please refer to the
+.BR printf (3)
+man page for more details and examples.
+.SS Output control
+.PP
+When
+.I err_output_allowed
+is false the
+.B err()
+functions will not print anything.
+.SS Version string
+The string
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
+.B dbg
+library.
+.SH RETURN VALUE
+.PP
+These functions do not return at all.
+More specifically they do call
+.BR exit (3)
+with the appropriate exit code but immediately after call either
+.B __builtin_unreachable
+or
+.BR abort (3)
+depending on the value of
+.BR __has_builtin(__builtin_unreachable) ,
+thereby terminating the program.
+.SH NOTES
+.SS Variadic arguments
+In the
+.I va_list
+functions, the argument
+.I ap
+is not checked for consistency like they are using the primary interfaces.
+For this reason these versions are not recommended for use.
+.SS In case of NULL name
+If
+.I name
+is NULL it will be set to
+.B "((NULL name))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
+.sp
+where
+.B foo
+is the name of the function.
+.SS The fmt argument
+The
+.I fmt
+argument in the functions is a
+.BR printf (3)
+style format.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
+Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
+.SS In case of NULL fmt
+If
+.I fmt
+is NULL it will be set to
+.B "((NULL fmt))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
+.sp
+where
+.B foo
+is the name of the function.
+.sp
+When the
+.I fmt
+is NULL or contains no
+.B %
+specifiers the arguments following
+.I fmt
+will be ignored.
+.SS Error checking
+All writes are checked for errors.
+Write error messages are written to stderr.
+However, a persistent problem writing to the stream (such as if the stream being written to was previously closed) will likely prevent such an error from being seen.
+.SS Newlines
+All functions output extra newlines to help let the messages stand out better.
+.SH EXAMPLE
+.PP
+For an example proper please refer to
+.BR dbg (3).
+.SH SEE ALSO
+.BR dbg (3),
+.BR msg (3),
+.BR printf_usage (3),
+.BR warn (3),
+.BR werr (3),
+.BR warn_or_err (3),
+.BR printf (3)
+.SH HISTORY
+The dbg facility was first written by Landon Curt Noll in 1989.
+Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

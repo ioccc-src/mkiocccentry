@@ -1,1 +1,414 @@
-jsemcgen.8
+.\" section 8 man page for jsemcgen.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jsemcgen.sh 8 "30 January 2023" "jsemcgen.sh" "jparse tools"
+.SH NAME
+.BR jsemcgen.sh (8)
+\- generate JSON semantics table via the
+.BR jsemtblgen (8)
+tool
+.SH SYNOPSIS
+.B jsemcgen.sh
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.RB [\| \-s \|]
+.RB [\| \-I \|]
+.RB [\| \-N
+.IR name \|]
+.RB [\| \-D
+.IR def_func \|]
+.RB [\| \-P
+.IR prefix \|]
+.RB [\| \-1
+.IR func \|]
+.RB [\| \-S
+.IR func \|]
+.RB [\-B
+.IR func \|]
+.RB [\-0
+.IR func \|]
+.RB [\-M
+.IR func \|]
+.RB [\-O
+.IR func \|]
+.RB [\-A
+.IR func \|]
+.RB [\-U
+.IR func \|]
+.RB [\-j
+.IR jsemtblgen \|]
+.RB [\-p
+.IR patch_tool \|]
+.I file.json
+.I head
+.I patch
+.I tail
+.I out
+.SH DESCRIPTION
+This tool is a wrapper to the
+.BR jsemtblgen (8)
+tool which itself creates JSON semantics tables.
+JSON semantics tables allow for semantic tests on valid JSON such as testing counts of JSON objects at various depths and testing values of JSON objects as well as testing relationships between values of JSON objects.
+.PP
+The
+.I file.json
+file is expected to be a valid JSON file used to generate the initial JSON semantics table.
+.sp
+The
+.I head
+file is a file add to the beginning of the
+.BR jsemtblgen (8)
+output (before patched
+.BR jsemtblgen (8)
+output).
+If
+.I head
+is
+.I .
+(dot) then no file is prepended.
+.sp 1
+The
+.I patch
+file is a patch file to apply to the output of
+.BR jsemtblgen (8)
+with
+.I head
+and
+.IR tail .
+If
+.I patch
+is
+.I .
+(dot) then no patch is applied.
+.sp
+The
+.I tail
+file is a file to add to the end of the
+.BR jsemtblgen (8)
+output (after patching the
+.BR jsemtblgen (8)
+output).
+If
+.I tail
+is
+.I .
+(dot) then no file is appended.
+.sp 1
+The
+.I out
+argument is the
+.BR jsemtblgen (8)
+output with possible head, tail and patch applied.
+.SH OPTIONS
+.TP
+.B \-h
+print help and exit.
+.TP
+.BI \-v\  level
+set verbosity level to
+.IR level .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-J\  level
+set JSON verbosity level to
+.IR level .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.B \-q
+set quiet mode.
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.B \-V
+print version and exit.
+.TP
+.B \-s
+specify that arg is a string to be processed rather than a file.
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.B \-I
+output as a C header file.
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-N\  name
+set name of the semantics table to
+.IR name .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-D\  def_func
+validate with
+.I def_func()
+unless overridden by another flag.
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-P\  prefix
+validate
+.B JTYPE_MEMBER
+JSON nodes with
+.B prefix_name()
+(def: do not)
+.RS
+Note that the name is based on the
+.B JTYPE_MEMBER
+JSON decoded name string.
+Underscore (_) replaces any name chars that are not valid in a C function name.
+.B \-P
+overrides any use of
+.BR \-M .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.RE
+.TP
+.BI \-1\  func
+validate
+.B JTYPE_NUMBER
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-S\  func
+validate
+.B JTYPE_STRING
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-B\  func
+validate
+.B JTYPE_BOOL
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-0\  func
+validate
+.B JTYPE_NULL
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-M\  func
+validate
+.B JTYPE_MEMBER
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-O\  func
+validate
+.B JTYPE_OBJECT
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-A\  func
+validate
+.B JTYPE_ARRAY
+JSON nodes with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-U\  func
+validate nodes with unknown types with
+.IR func() .
+.sp 1
+This option is passed to
+.BR jsemtblgen (8)
+when it is invoked.
+.TP
+.BI \-j\  jsemtblgen
+set path to
+.BR jsemtblgen (8)
+to
+.IR jsemtblgen .
+.TP
+.BI \-p\  patch_tool
+set path to the patch program to
+.IR patch_tool .
+.SH EXAMPLE
+Prepending a
+.I head
+file and
+appending a
+.I tail
+file is useful for forming a complete C source
+or C header file.
+.PP
+Consider this example:
+.sp 1
+.in +0.5i
+.nf
+jsemcgen.sh \-P chk file.json head.c . . json_chk.c
+jsemcgen.sh \-I \-P chk file.json head.h . tail.h json_chk.h
+.fi
+.in -0.5i
+.PP
+The following
+.I head.c
+file would be useful as a prepending file when forming
+.IR json_chk.c :
+.sp 1
+.in +0.5i
+.nf
+/*
+ * json_chk - JSON semantic check table
+ */
+
+#include "json_chk.h"
+.fi
+.in -0.5i
+.PP
+The following
+.I head.h
+file would be useful as a prepending file when forming
+.IR json_chk.h :
+.sp 1
+.in +0.5i
+.nf
+/*
+ * json_chk - JSON semantic check table
+ */
+
+#if !defined(INCLUDE_JSON_CHK_H)
+#    define  INCLUDE_JSON_CHK_H
+
+#include "json_sem.h"
+.fi
+.in -0.5i
+.PP
+Along with the following
+.I tail.h
+file would be useful as an appending file when forming
+.IR json_chk.h :
+.sp 1
+.in +0.5i
+.nf
+#endif /* INCLUDE_JSON_CHK_H */
+.fi
+.in -0.5i
+.PP
+The
+.I patch
+file is useful to modify the default output of
+.BR jsemtblgen (8)
+especially when forming the C json semantic table.
+For example, the default
+.B min
+value is always set to 1.
+A
+.I patch
+file can be used to change the minimum value.
+.PP
+As another example, the default
+.B max
+value is set to count.
+A
+.I patch
+file can be used to change the maximum values to a value
+such as
+.B INF
+(infinite value).
+.SH EXIT STATUS
+.TP
+0
+valid JSON
+.TQ
+1
+invalid JSON
+.TQ
+2
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
+.TQ
+3
+command line error
+.TQ
+4
+.I
+jsemtblgen
+or
+.I patch_tool
+is not an executable file
+.TQ
+5
+one of the files
+.IR file.json ,
+.IR head ,
+.I patch
+or
+.I tail
+is not a readable file
+.TQ
+>= 10
+internal error
+.SH NOTES
+.PP
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+It can be found at
+.br
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+.SH SEE ALSO
+.BR jsemtblgen (8),
+.BR jparse (3)

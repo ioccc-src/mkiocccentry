@@ -327,6 +327,10 @@ show_tarball_info(char const *tarball_path)
 	dbg(DBG_MED, "%s has %ju file%s named '.'", tarball_path, tarball.named_dot, singular_or_plural(tarball.named_dot));
 	dbg(DBG_MED, "%s has %ju file%s with at least one unsafe char", tarball_path, tarball.unsafe_chars,
 		singular_or_plural(tarball.unsafe_chars));
+	if (tarball.invalid_filenames) {
+	    dbg(DBG_MED, "%s has %ju invalidly named file%s", tarball_path, tarball.invalid_filenames,
+		    singular_or_plural(tarball.invalid_filenames));
+	}
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
 		    singular_or_plural(tarball.total_feathers));
@@ -648,6 +652,12 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    ++tarball.unsafe_chars;
 	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
 			   tarball_path, file->basename);
+	} else if (!strcasecmp(file->basename, README_MD_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
+		   !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_FILENAME) ||
+		   !strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME)) {
+	    ++tarball.total_feathers;
+	    ++tarball.invalid_filenames;
+	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
 	}
     }
 

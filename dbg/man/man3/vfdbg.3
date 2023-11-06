@@ -1,1 +1,336 @@
-dbg.3
+.\" section 3 man page for dbg
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022. The man page is dedicated to Grace Hopper who popularised the
+.\" term 'debugging' after a real moth in a mainframe was causing it to
+.\" malfunction (the term had already existed but she made it popular
+.\" because of actually removing an insect that was causing a malfunction).
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH dbg 3  "05 August 2023" "dbg"
+.SH NAME
+.BR dbg() \|,
+.BR vdbg() \|,
+.BR fdbg() \|,
+.BR vfdbg() \|,
+.BR sndbg() \|,
+.BR vsndbg() \|,
+.BR parse_verbosity()
+\- debug message facility
+.SH SYNOPSIS
+\fB#include "dbg.h"\fP
+.sp
+\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.br
+\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+.sp
+.B "extern int verbosity_level;		     /* maximum debug level for debug messages */"
+.br
+.B "extern bool dbg_output_allowed;		/* false ==> disable debug messages */"
+.sp
+.B "void dbg(int level, const char *fmt, ...);"
+.br
+.B "void vdbg(int level, char const *fmt, va_list ap);"
+.br
+.B "void fdbg(FILE *stream, int level, const char *fmt, ...);"
+.br
+.B "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
+.br
+.B "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
+.br
+.B "void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);"
+.br
+.B "int parse_verbosity(char const *arg);"
+.SH DESCRIPTION
+These functions provide a way to write debug messages to a stream such as
+.B stderr
+or to a
+.B char *
+of a fixed size.
+The messages will not be written unless the boolean
+.B dbg_output_allowed
+is true and the verbosity (debug) level is high enough.
+To parse the verbosity level you can use the function
+.BR parse_verbosity (3).
+.PP
+The general call semantics of the
+.BR dbg (3)
+functions is passing in a debug level, a format string and any format args.
+The other versions are similar except that they take additional args as well, depending on the family.
+See below subsections for details.
+.SS Alternative output \fBFILE *\fP stream
+The functions that do not take a
+.B FILE *
+or a
+.B char *
+write to
+.BR stderr .
+The functions
+.BR fdbg()
+and
+.BR vfdbg()
+can write to an alternative
+.B FILE *
+stream.
+.SS Writing to a \fBchar *\fP buffer
+The function
+.BR sndbg()
+writes a message to a buffer of a fixed size.
+It does not write a newline after the message but the string is NUL terminated.
+It does not do anything if passed a NULL pointer or
+.I size
+<=\ 1.
+.SS Variadic versions
+.PP
+The functions
+.BR vdbg() \|,
+.BR vfdbg()
+and
+.BR vsndbg()
+are equivalent to the functions
+.BR dbg() \|,
+.BR fdbg()
+and
+.BR sndbg()
+except that they are called with a
+.I va_list
+instead of a variable number of arguments.
+The state of the
+.I va_list
+is not modified by these functions.
+.SS Format of the fmt string
+The format string is a character string in the same form as
+.BR printf (3).
+As these are quite complex please refer to the
+.BR printf (3)
+man page for more details and examples.
+.SS Output control
+.PP
+When
+.I dbg_output_allowed
+is false these functions will not print anything.
+If
+.I level
+>
+.I verbosity_level
+these functions will not print anything.
+.SS Parsing verbosity level
+We provide a function
+.BR parse_verbosity (3)
+to let you easily parse the verbosity level in your programs.
+The function returns an
+.BR int ,
+which you can assign to the variable
+.BR verbosity_level ,
+and takes
+.BR arg ,
+the option argument to the option you choose for verbosity.
+.PP
+The return from
+.BR parse_verbosity (3)
+should be checked for values < 0
+as they indicate that some form of error occurred
+while parsing the verbosity level argument.
+.PP
+If
+.B arg
+is
+.BR NULL ,
+or a negative number, or otherwise cannot be converted as
+an integer, then
+.B DBG_INVALID
+(a value < 0) is returned.
+.PP
+A common command line convention is t use
+.B \-v
+as the verbosity option.
+You may choose whichever you wish as
+.BR parse_verbosity (3)
+does not depend the for of the command line,
+or even of the command line is used to
+specify the verbosity in the first place.
+.SS Version string
+The string
+.BR dbg_version ,
+which points to
+.BR DBG_VERSION ,
+is the current version of the
+.B dbg
+library.
+.SH RETURN VALUE
+These functions return void.
+.SH NOTES
+.SS Variadic arguments
+In the
+.I va_list
+functions, the argument
+.I ap
+is not checked for consistency like they are using the primary interfaces.
+For this reason these versions are not recommended for use.
+.SS In case of NULL name
+If
+.I name
+is NULL it will be set to
+.B "((NULL name))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
+.sp
+where
+.B foo
+is the name of the function.
+.SS The fmt argument
+The
+.I fmt
+argument in the functions is a
+.BR printf (3)
+style format.
+If the format requires arguments, then such arguments may be given after the
+.IR fmt .
+For modern C compilers, the agreement between any % directives in
+.IR fmt ,
+and any arguments that may follow is checked by the format attribute facility.
+Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
+.SS In case of NULL fmt
+If
+.I fmt
+is NULL it will be set to
+.B "((NULL fmt))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
+.sp
+where
+.B foo
+is the name of the function.
+.sp
+When the
+.I fmt
+is NULL or contains no
+.B %
+specifiers the arguments following
+.I fmt
+will be ignored.
+.SS Error checking
+All writes are checked for errors.
+Write error messages are written to stderr.
+However, a persistent problem writing to the stream (such as if the stream being written to was previously closed) will likely prevent such an error from being seen.
+.SS Newlines
+All functions output extra newlines to help let the messages stand out better.
+.SH EXAMPLE
+.SS Program source
+.RS 4
+.nf
+$ cat dbg_example.c
+/*
+ * This is just a trivial demo for the dbg api, see the main function in dbg.c
+ * for a better example.
+ */
+
+#include "dbg.h"
+
+#define filename "foo.bar"
+
+long length = 7;
+
+int
+main(void)
+{
+
+    /*
+     * We suggest you use getopt(3) and the parse_verbosity(3) function to
+     * convert \-v verbosity_level on the command line like:
+     *
+     *	    verbosity_level = parse_verbosity(optarg);
+     *	    if (verbosity_level < 0) {
+     *		... report a -v optarg parsing error ...
+     *	    }
+     */
+    msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
+    verbosity_level = DBG_MED; /* DBG_MED == (3) */
+
+    /*
+     * This will print:
+     *
+     *	    Warning: main: elephant is sky\-blue pink
+     *
+     * with newlines as described.
+     */
+    msg("NOTE: The next line should say: \e"Warning: %s: %s", __func__, "elephant is sky\-blue pink\e"");
+    warn(__func__, "elephant is sky\-blue pink\n");
+
+    /* this will not print anything as verbosity_level 3 (DBG_MED) < 5 (DBG_HIGH): */
+    dbg(DBG_HIGH, "starting critical section");
+
+    /*
+     * Because verbosity_level == 3 (DBG_MED) and filename is "foo.bar" and
+     * length == 7 this will print (with newlines added as described):
+     *
+     *	    debug[3]: file: foo.bar has length: 7
+     */
+    msg("NOTE: The next line should read: \e"debug[3]: file: %s has length: %ld\e"", filename, length);
+    dbg(DBG_MED, "file: %s has length: %ld\n", filename, length);
+
+    /*
+     * If EPERM == 1 then this will print:
+     *
+     *	    ERROR[2]: main: test: errno[1]: Operation not permitted
+     *
+     * with newlines as discussed and then exit 2.
+     */
+    errno = EPERM;
+    msg("NOTE: The next line should read: \\"ERROR[2]: main: test: errno[%d]: %s\\"", errno, strerror(errno));
+    errp(2, __func__, "test");
+    not_reached();
+
+    return 2; /* this return is never reached */
+}
+.fi
+.RE
+.SS Compiling and running the example
+.PP
+To compile:
+.RS 4
+.nf
+.RB "$ " "cc \-c dbg.c"
+.RB "$ " "cc \-o dbg_example dbg_example.c dbg.o"
+.sp
+.B # The above two commands could be shortened to just:
+.RB "$ " "cc \-o dbg_example dbg_example.c dbg.c"
+.fi
+.RE
+.sp
+.PP
+To run:
+.RS 4
+.nf
+.RB "$ " "./dbg_example"
+NOTE: Setting verbosity_level to DBG_MED: 3
+NOTE: The next line should say: "Warning: main: elephant is sky\-blue pink"
+Warning: main: elephant is sky\-blue pink
+
+NOTE: The next line should read: "debug[3]: file: foo.bar has length: 7"
+debug[3]: file: foo.bar has length: 7
+
+NOTE: The next line should read: "ERROR[2]: main: test: errno[1]: Operation not permitted"
+ERROR[2]: main: test: errno[1]: Operation not permitted
+$ echo $?
+2
+.fi
+.RE
+.SH SEE ALSO
+.BR msg (3),
+.BR printf_usage (3),
+.BR warn (3),
+.BR werr (3),
+.BR err (3),
+.BR warn_or_err (3),
+.BR printf (3)
+.SH HISTORY
+The dbg facility was first written by Landon Curt Noll in 1989.
+Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.
