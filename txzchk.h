@@ -110,6 +110,7 @@ struct tarball
     uintmax_t named_dot;		    /* number of files called just '.' */
     uintmax_t total_files;		    /* total files in the tarball */
     uintmax_t abnormal_files;		    /* total number of abnormal files in tarball (i.e. not regular files) */
+    uintmax_t invalid_filenames;	    /* total number of invalid filenames in tarball */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
