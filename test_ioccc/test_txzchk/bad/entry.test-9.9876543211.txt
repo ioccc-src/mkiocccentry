@@ -1,0 +1,14 @@
+drwxr-xr-x  0 501    20          0 Feb  6 02:28 test-9/
+-rw-r--r--  0 501    20          0 Feb  6 02:28 test-9/Makefile
+-rw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/prog.c
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/prog
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/prog.orig
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/prog.orig.c
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/README.md
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/index.html
+-rw-r--r--  0 501    20         29 Feb  6 02:30 test-9/inventory.html
+-rw-r--r--  0 501    20          0 Feb  6 02:28 test-9/.auth.json
+-rw-r--r--  0 501    20          0 Feb  6 02:28 test-9/remarks.md
+-rw-r--r--  0 501    20          0 Feb  6 02:28 test-9/.info.json
+-rw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra1
