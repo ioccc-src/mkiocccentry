@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.54 2023-11-06
+
+The following filenames are no longer allowed in an entry's extra files list:
+
+- README.md
+- prog
+- prog.orig
+- prog.orig.c
+- index.html
+- inventory.html
+
+The mkiocccentry tool checks for this, giving an error early on (rather than
+making the user retry after inputting more details). The function
+`test_extra_file()` now checks for these files too, giving an error if any are
+found.
+
+New mkiocccentry version: 1.0.2 2023-11-06.
+
+
 ## Release 1.0.53 2023-09-13
 
 Minor fix in `jval` and `jnamval` - new version `"0.0.15 2023-09-13"`. The `ne`

@@ -1,1 +1,192 @@
-ioccc_test.8
+.\" section 8 man page for ioccc_test.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2023.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH ioccc_test.sh 8 "05 February 2023" "ioccc_test.sh" "IOCCC tools"
+.SH NAME
+.B ioccc_test.sh
+\- perform the complete suite of tests for the mkiocccentry repo
+.SH SYNOPSIS
+.B ioccc_test.sh
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-J
+.IR level \|]
+.RB [\| \-V \|]
+.RB [\| \-t
+.IR tar \|]
+.RB [\| \-Z
+.IR topdir \|]
+.SH DESCRIPTION
+.B ioccc_test.sh
+runs the entire test suite for the
+.BR
+mkiocccentry
+toolkit.
+Although this is mostly used by repo maintainers it is also run via the
+.BR bug_report.sh (1)
+script through
+.sp
+.RS
+.ft B
+make test
+.ft R
+.RE
+.sp
+to help report bugs or other problems.
+.SH OPTIONS
+.TP
+.B \-h
+Print help and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-J\  level
+Set JSON verbosity level to
+.IR level
+(def: 0).
+.TP
+.B \-V
+Print version and exit.
+.TP
+.BI \-t\  tar
+Set
+.B tar
+path to
+.IR tar .
+The
+.BR tar (1)
+command must support the
+.B \-J
+option and the
+.B v7
+format.
+.TP
+.BI \-Z\  topdir
+Declare the top level directory of this repository.
+The
+.B topdir
+directory must contain the source file
+.IR mkiocccentry.c .
+By default, the source file
+.I mkiocccentry.c
+is searched for in the current directory and then the parent of current directory.
+.sp 1
+If
+.BI \-Z\  topdir
+is used on the command line, then the source file
+.I mkiocccentry.c
+need not exist in the
+.B topdir
+directory.
+If
+.BI \-Z\   topdir
+is not used on the command line, and the source file
+.I mkiocccentry.c
+is not found in the current directory or the parent of current directory, then this command exits as if there was a command line error.
+.sp 1
+Once the
+.B topdir
+directory is established, this command moves to that directory.
+.SH EXIT STATUS
+.TP
+0
+all OK
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+4
+could not create a writable log file
+.TQ
+5
+something not found, not the right file type, or not executable
+.TQ
+>=20
+some test failed
+.SH FILES
+.I test_ioccc.log
+.RS
+The log file kept by
+.BR ioccc_test.sh .
+It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
+.RE
+.SH NOTES
+Although one can certainly run this script directly it is better to run it via
+.sp
+.RS
+.ft B
+ make clobber all test
+.ft R
+.RE
+.sp
+from the main directory.
+You can also run the test suite of specific directories by running
+.sp
+.RS
+.ft B
+make clobber all test
+.ft R
+.RE
+.sp
+from those directories to run just the test suite of said directories.
+This is much less useful, however.
+For a more exhaustive test you should try running
+.sp
+.RS
+.ft B
+make prep
+.ft R
+.RE
+.sp
+from the main directory.
+This will also run
+.BR bug_report.sh (1)
+(with much less output) and, as long as no issues are detected, it will remove the bug report log file.
+.SH BUGS
+If you have a problem with the tool you can report it at the GitHub issues page.
+It can be found at
+.br
+.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+It would be helpful if you run
+.sp
+.RS
+.ft B
+make bug_report
+.ft R
+.RE
+.sp
+from the main repo when reporting the issue.
+.SH EXAMPLES
+.PP
+Run the test suite the preferred way:
+.sp
+.RS
+.ft B
+make clobber all test
+.ft R
+.RE
+.PP
+Run the test script directly:
+.sp
+.RS
+.ft B
+make clobber all && ./test_ioccc/ioccc_test.sh
+.ft R
+.RE
+.SH SEE ALSO
+.BR bug_report.sh (1)
