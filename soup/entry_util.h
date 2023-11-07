@@ -40,13 +40,13 @@
 #define PROG_C_FILENAME "prog.c"
 #define REMARKS_FILENAME "remarks.md"
 #define MAKEFILE_FILENAME "Makefile"
-#define README_MD_FILENAME "README.md"
-#define PROG_ORIG_C_FILENAME "prog.orig.c"
-#define PROG_FILENAME "prog"
-#define PROG_ORIG_FILENAME "prog.orig"
 #define INDEX_HTML_FILENAME "index.html"
 #define INVENTORY_HTML_FILENAME "inventory.html"
-
+#define PROG_FILENAME "prog"
+#define PROG_ALT_FILENAME "prog.alt"
+#define PROG_ORIG_FILENAME "prog.orig"
+#define PROG_ORIG_C_FILENAME "prog.orig.c"
+#define README_MD_FILENAME "README.md"
 
 /*
  * IOCCC author information

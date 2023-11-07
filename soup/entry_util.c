@@ -2879,52 +2879,21 @@ test_extra_file(char const *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    if (strcasecmp(str, INFO_JSON_FILENAME) == 0) {
+    if (!strcasecmp(str, AUTH_JSON_FILENAME) || !strcasecmp(str, INFO_JSON_FILENAME) ||
+	!strcasecmp(str, MAKEFILE_FILENAME) || !strcasecmp(str, PROG_C_FILENAME) ||
+	!strcasecmp(str, REMARKS_FILENAME)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file %s", INFO_JSON_FILENAME);
-	return false;
-    } else if (strcasecmp(str, AUTH_JSON_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file %s", AUTH_JSON_FILENAME);
-	return false;
-    } else if (strcasecmp(str, PROG_C_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file %s", PROG_C_FILENAME);
-	return false;
-    } else if (strcasecmp(str, MAKEFILE_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file %s", MAKEFILE_FILENAME);
-	return false;
-    } else if (strcasecmp(str, REMARKS_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file %s", REMARKS_FILENAME);
+		 "invalid: extra_file matches a mandatory file: <%s>", str);
 	return false;
     }
     /* also verify it does not match a disallowed filename */
-    else if (strcasecmp(str, README_MD_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", README_MD_FILENAME);
-	return false;
-    } else if (strcasecmp(str, PROG_ORIG_C_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", PROG_ORIG_C_FILENAME);
-	return false;
-    } else if (strcasecmp(str, PROG_ORIG_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", PROG_ORIG_FILENAME);
-	return false;
-    } else if (strcasecmp(str, INDEX_HTML_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", INDEX_HTML_FILENAME);
-	return false;
-    } else if (strcasecmp(str, INVENTORY_HTML_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", INVENTORY_HTML_FILENAME);
-	return false;
-    } else if (strcasecmp(str, PROG_FILENAME) == 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		"invalid: extra_file matches invalid filename %s", PROG_FILENAME);
-	return false;
+    else if (!strcasecmp(str, INDEX_HTML_FILENAME) || !strcasecmp(str, INVENTORY_HTML_FILENAME) ||
+	     !strcasecmp(str, PROG_FILENAME) || !strcasecmp(str, PROG_ALT_FILENAME) ||
+	     !strcasecmp(str, PROG_ORIG_FILENAME) || !strcasecmp(str, PROG_ORIG_C_FILENAME) ||
+	     !strcasecmp(str, README_MD_FILENAME)) {
+		json_dbg(JSON_DBG_MED, __func__,
+			"invalid: extra_file matches disallowed filename: <%s>", str);
+		return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
     return true;

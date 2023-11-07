@@ -37,12 +37,6 @@
 		{"c_src" : "prog.c"},
 		{"Makefile" : "Makefile"},
 		{"remarks" : "remarks.md"},
-		{"extra_file" : "README.md"},
-		{"extra_file" : "prog.orig.c"},
-		{"extra_file" : "prog.alt"},
-		{"extra_file" : "prog.orig"},
-		{"extra_file" : "prog"},
-		{"extra_file" : "index.html"},
 		{"extra_file" : "inventory.html"}
 	],
 	"formed_timestamp" : 1675547786,

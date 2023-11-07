@@ -3038,8 +3038,10 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	    not_reached();
 	}
 
-	if (!strcasecmp(args[i], "README.md") || !strcasecmp(args[i], "index.html") || !strcasecmp(args[i], "inventory.html") ||
-	    !strcasecmp(args[i], "prog.orig.c") || !strcasecmp(args[i], "prog.orig") || !strcasecmp(args[i], "prog")) {
+	if (!strcasecmp(args[i], README_MD_FILENAME) || !strcasecmp(args[i], INDEX_HTML_FILENAME) ||
+	    !strcasecmp(args[i], INVENTORY_HTML_FILENAME) || !strcasecmp(args[i], PROG_FILENAME) ||
+	    !strcasecmp(args[i], PROG_ALT_FILENAME) || !strcasecmp(args[i], PROG_ORIG_FILENAME) ||
+	    !strcasecmp(args[i], PROG_ORIG_C_FILENAME)) {
 	    fpara(stderr,
 		"",
 		"An extra file cannot be named any of:",
