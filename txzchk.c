@@ -652,9 +652,10 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    ++tarball.unsafe_chars;
 	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
 			   tarball_path, file->basename);
-	} else if (!strcasecmp(file->basename, README_MD_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
-		   !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_FILENAME) ||
-		   !strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME)) {
+	} else if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME) ||
+	    !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ALT_FILENAME) ||
+	    !strcasecmp(file->basename, PROG_ORIG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
+		   !strcasecmp(file->basename, README_MD_FILENAME)) {
 	    ++tarball.total_feathers;
 	    ++tarball.invalid_filenames;
 	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);

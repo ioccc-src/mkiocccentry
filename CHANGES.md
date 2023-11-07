@@ -1,5 +1,29 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.55 2023-11-07
+
+Add another forbidden file name in submissions: `prog.alt` (prog.alt.c is
+allowed).
+
+Modularise the checks for invalid filenames in entries. For instance in
+`check_extra_file()` there's no need to check each extra filename and then give
+the same error message changing the macro of the filename that's disallowed when
+we can just print the string being tested against. The only difference is that
+there's one if (with multiple checks) and instead of duplicating the same error
+message we just print it once with the string being tested against. Note that
+there are two sets of checks: one for extra files being required filenames and
+another for disallowed filenames.
+
+Make sure to use the macros for the filenames, not the literal strings (e.g. use
+`PROG_FILENAME` not `"prog"`).
+
+Check filenames in alphabetical order (I think :-) .. very tired so maybe missed
+one or two).
+
+Note that the function `check_extra_file()` CANNOT be used in every case so it's
+not used except in chkentry!
+
+
 ## Release 1.0.54 2023-11-06
 
 The following filenames are no longer allowed in an entry's extra files list:
