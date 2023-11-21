@@ -19,13 +19,18 @@
  * too of course and there's plenty of humour as well. Of course one has to
  * figure out how to trigger them too but that shouldn't be too hard to do.
  *
- * This tool and the JSON parser were co-developed in 2022 by:
+ * This tool was written in 2022 by:
+ *
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * with improvements by
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- * and:
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * The JSON parser was co-developed in 2022 by Cody Boone Ferguson and Landon
+ * Curt Noll.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -1668,7 +1673,11 @@ static char const *oebxergfB[] =
 "Hqe oyfba yksqb flmabyta:\n"
 "\n"
 "Ilmabyta plsx km lwrlsdqfuep bnwiawtvwa. Tnwm fsiw ewylwab bs kwuep ytuvw so\n"
-"ytt iuewlyta.\n"
+"ytt iuewlyta. Ce oyfb, ue Lwzufs, bnwlw'a y fyvw so puyeb flmabyta. Uww\n"
+"nbbra://fwe.yfa.slp/rnmaufyt-fnwiuablm/pwsfnwiuablm/Fyufya-flmabyt-fyvw-fyrbuvybwa-fnwiuaba/96/u0\n"
+"osl sew ylbuftw yksqb ub. Cb ua y dyepwlsqa rtyfw bs kw yb yksqb 51 dwplwwa\n"
+"Iwtauqa yed lwtybuvw nqiudubm so svwl 91% xnwlw axwybuep nya es fsstuep\n"
+"woowfbwd. Hsl bnua lwyase yffwaa bs bnw fyvw ua lwablufbwd.\n"
 "\n"
 "Ilmabyta, fseblylm bs rsrqtyl kwtuwo, ylw esb yfbqyttm lsfha.\n"
 ,
@@ -3801,7 +3810,7 @@ static char const *oebxergfB[] =
 "C iwye awlvw kyfbwluy bs bnw fqabsiwl kqb nwlw'a y oqeem yed ftwvwl gshw bnyb C\n"
 "lwyd lwfwebtm yksqb kyfbwluy ya fqabsiwla bs y kyl:\n"
 "\n"
-"    Usiw kyfbwluy xytha uebs y kyl.\n"
+"    Usiw kyfbwluy xyth uebs y kyl.\n"
 "\n"
 "    Tnw kylbwedwl bwtta bnwi 'Vw dse'b awlvw kyfbwluy nwlw.'\n"
 "\n"
