@@ -218,72 +218,8 @@ NOTE: This tool may be found as: `./bug_report.sh`.
 
 
 
-## HOW TO ENTER THE IOCCC
+## How do I submit my entry to the IOCCC?
 
-0) check to see of the IOCCC is open
-
-Check the [status.json](https://www.ioccc.org/status.json) URL and
-check the [IOCCC news](https://www.ioccc.org/index.html#news) to
-see of the IOCCC is open.
-
-1) register for the IOCCC
-
-```
-XXX - instructions TBD - XXX
-```
-
-2) obtain the latest mkiocccentry toolkit
-
-If you do not have an mkiocccentry tool directory:
-
-```sh
-cd some_directory
-git clone git@github.com:ioccc-src/mkiocccentry.git
-cd mkiocccentry
-```
-
-If you already have an mkiocccentry tool directory:
-
-```sh
-cd mkiocccentry
-git fetch
-git rebase
-```
-
-3) Make the mkiocccentry toolkit
-
-```sh
-make clobber all
-```
-
-4) run the mkiocccentry tool to form your entry tarball
-
-```sh
-./mkiocccentry work_dir prog.c Makefile remarks.md [file ...]
-```
-
-where:
-
-```
-work_dir	directory where the entry directory and tarball are formed
-prog.c		path to the C source for your entry
-
-
-Makefile	Makefile to build (make all) and cleanup (make clean & make clobber)
-
-remarks.md	Remarks about your entry in markdown format
-		NOTE: See the [markdown syntax[(https://www.markdownguide.org/basic-syntax) guide.
-
-[file ...]	extra data files to include with your entry
-```
-
-NOTE: It is *NOT* necessary to install the tools to use them as you can run
-the tools from the top of the _mkiocccentry repo_ directory just fine.
-
-5) upload your entry to the IOCCC submit server
-
-```
-XXX - instructions TBD - XXX
-```
-
-
+To submit your entry to the IOCCC, follow the
+[FAQ 1.0 - How do I submit my entry to the IOCCC](https://www.ioccc.org/faq#submit)
+instructions.
