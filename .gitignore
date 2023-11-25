@@ -1,8 +1,9 @@
 *.[ao]
 *.dSYM/
 *~
-.*.swp
+.*.sw[a-zA-Z0-9]
 .DS_Store
+._.DS_Store
 /.build.log.*
 /.local.dir.tags
 /Makefile.local
@@ -17,7 +18,6 @@
 /iocccsize
 /jparse.clone/
 /jparse_test.log
-/makefile.local
 /man/
 /mkiocccentry
 /soup/.all_ref.*.out
@@ -40,3 +40,5 @@
 /test_ioccc/txzchk_test.log
 /test_ioccc/utf8_test
 /txzchk
+makefile.local
+oebxergfB.txt

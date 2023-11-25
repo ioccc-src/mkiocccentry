@@ -34,7 +34,7 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * BTW: If you want to win the IOCCC every time all you need to do
+ * BTW: if you want to win the IOCCC every time all you need to do
  * (supposedly :-) ) is decipher this quote with a top secret hint from Landon
  * to me in private. It's so secret and seems so ridiculously simple in fact
  * that I've decided to not use it as it all seems more like a misleading
@@ -125,7 +125,8 @@ static char const *oebxergfB[] =
 "xutdoulwa islw olwcqweb yed islw dyepwlsqa yed ub'a iwtbuep ufw yb ytyliuep yed\n"
 "lwfsld-klwyhuep lybwa. Tnua iwtbuep ufw ue bqle ua ueflwyauep bnw awyxybwl\n"
 "twvwt xnufn awlusqatm wedyepwla fsyabyt bsxea yed iyhwa ub nyldwl osl asiw\n"
-"yeuiyta tuhw rstyl kwyla bs wvwe aqlvuvw.\n"
+"yeuiyta tuhw rstyl kwyla bs wvwe aqlvuvw. De bsr so bnyb, xyliwl xybwl ytas\n"
+"wzryeda bnw xybwl, iyhuep bnw awyxybwl twvwt wvwe nupnwl abutt.\n"
 "\n"
 "Nqb esx asiw afuwebuaba yed yfbuvuaba ylw nupntupnbuep y rsaubuvw pyue yksqb\n"
 "ftuiybw fnyepw. Ga bnw rtyewb pwba nsbbwl yed dluwl, bnw bszuf pya dunmdlspwe\n"
