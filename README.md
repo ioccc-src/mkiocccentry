@@ -221,5 +221,5 @@ NOTE: This tool may be found as: `./bug_report.sh`.
 ## How do I submit my entry to the IOCCC?
 
 To submit your entry to the IOCCC, follow the
-[FAQ 1.0 - How do I submit my entry to the IOCCC](https://www.ioccc.org/faq#submit)
+[FAQ 1.0 - How do I submit my entry to the IOCCC](https://www.ioccc.org/faq.html#submit)
 instructions.
