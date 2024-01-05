@@ -1,7 +1,8 @@
 /*
  * iocccsize - IOCCC Source Size Tool
  *
- * Public Domain 1992, 2015, 2018, 2019, 2021, 2022 by Anthony Howe.  All rights released.
+ * Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
+ * With IOCCC mods in 2019-2024 by chongo (Landon Curt Noll) ^oo^
  */
 
 
@@ -36,15 +37,21 @@ typedef unsigned char bool;
 #endif
 
 #ifndef IOCCCSIZE_VERSION
-#define IOCCCSIZE_VERSION "unofficial iocccsize version"
+#define IOCCCSIZE_VERSION	"NOTE: IOCCCSIZE_VERSION is set in soup/version.h"
 #endif
 
 #ifndef WORD_BUFFER_SIZE
 #define WORD_BUFFER_SIZE	256
 #endif
 
+/*
+ * For an historical NOTE on Rule 2 sizes, see:
+ *
+ * https://www.ioccc.org/faq.html#size_rule
+ */
+
 #ifndef RULE_2A_SIZE
-#define RULE_2A_SIZE		4096	/* IOCCC Rule 2a */
+#define RULE_2A_SIZE		4993	/* IOCCC Rule 2a */
 #endif
 
 #ifndef RULE_2B_SIZE

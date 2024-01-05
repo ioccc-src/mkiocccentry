@@ -31,7 +31,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2023 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -76,7 +76,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.13 2023-02-04"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.14 2024-01-04"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official mkiocccentry version
