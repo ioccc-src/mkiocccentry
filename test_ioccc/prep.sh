@@ -181,14 +181,14 @@ exec_command()
 {
     local COMMAND=$*
     if [[ -n "$LOGFILE" ]]; then
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2086
 	# shellcheck disable=SC2086
 	command ${COMMAND} >> "$LOGFILE" 2>&1
 	return $?
     else
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2086
 	# shellcheck disable=SC2086
 	command ${COMMAND} 2>&1
 	return $?

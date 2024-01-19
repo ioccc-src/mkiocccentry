@@ -158,7 +158,8 @@ if [[ -n $TOPDIR ]]; then
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
     fi
-    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # SC2164 (warning): Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+    # https://www.shellcheck.net/wiki/SC2164
     # shellcheck disable=SC2164
     cd "$TOPDIR"
     status="$?"

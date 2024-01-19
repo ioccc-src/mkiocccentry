@@ -452,10 +452,10 @@ kitchen soup_kitchen: kitchen.sh
 limit_ioccc.sh: limit_ioccc.h version.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/run_bison.sh \
 		../jparse/run_flex.sh ../jparse/verge.c
 	${Q} ${RM} -f $@
-	${V} echo '#!/usr/bin/env bash' > $@
-	${V} echo '#' >> $@
-	${V} echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
-	${V} echo '#' >> $@
+	${Q} echo '#!/usr/bin/env bash' > $@
+	${Q} echo '#' >> $@
+	${Q} echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
+	${Q} echo '#' >> $@
 	${Q} ${GREP} -Eh '^export .*_VERSION=' ../jparse/run_bison.sh ../jparse/run_flex.sh >> $@
 	${Q} ${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \

@@ -219,8 +219,10 @@ echo 1>&2
 # possible) for man pages. This is not perfect by any stretch of the
 # imagination.
 #
-# We need to use single quotes for awk which shellcheck does not understand:
-# note: Expressions don't expand in single quotes, use double quotes for that. [SC2016]
+# We need to use single quotes for awk which shellcheck does not understand.
+#
+# SC2016 (info): Expressions don't expand in single quotes, use double quotes for that.
+# https://www.shellcheck.net/wiki/SC2016
 # shellcheck disable=SC2016
 USAGE_FMT=$(./"$1" -h 2>&1 | $GREP usage: | $CUT -f2- -d: | $SED -e 's/^[[:space:]]*//g' -e 's,./,,g' | \
     $SED -e 's,^,\\fB,g' | $AWK '{$1=$1"\\fP"}1' | $SED -e 's,-,\\-,g');

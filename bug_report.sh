@@ -207,14 +207,14 @@ exec_command()
 {
     local COMMAND=$*
     if [[ -z "$L_FLAG" ]]; then
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2086
 	# shellcheck disable=SC2086
 	command ${COMMAND} 2>&1 | tee -a -- "$LOGFILE"
 	return "${PIPESTATUS[0]}"
     else
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2086
 	# shellcheck disable=SC2086
 	command ${COMMAND} >> "$LOGFILE" 2>&1
 	return $?
@@ -228,14 +228,14 @@ exec_command_lines()
     local LINES="$1"
     local COMMAND="${*:2}"
     if [[ -z "$L_FLAG" ]]; then
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2086
 	# shellcheck disable=SC2086
 	command ${COMMAND} 2>&1 | head -n "$LINES" | tee -a -- "$LOGFILE"
 	return "${PIPESTATUS[0]}"
     else
-	# prep.sh:169:10: note: Double quote to prevent globbing and word splitting. [SC2086]
-	#
+	# SC2086 (info): Double quote to prevent globbing and word splitting.
+	# https://www.shellcheck.net/wiki/SC2053
 	# shellcheck disable=SC2086
 	command ${COMMAND} | head -n "$LINES" >> "$LOGFILE" 2>&1
 	return "${PIPESTATUS[0]}"
@@ -947,6 +947,9 @@ run_optional_check()
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
     # will cause the command to fail making sure that the script is worthless.
+    #
+    # SC2086 (info): Double quote to prevent globbing and word splitting.
+    # https://www.shellcheck.net/wiki/SC2086
     # shellcheck disable=SC2086
     exec_command ${COMMAND} </dev/null
     status=$?

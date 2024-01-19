@@ -406,7 +406,8 @@ on_path() {
 # This warning is specifically triggered because we check for the number of args
 # passed to the function to make sure none are given so we have to disable it:
 #
-# warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
+# SC2120 (warning): use_bison_backup references arguments, but none are ever passed.
+# https://www.shellcheck.net/wiki/SC2120
 # shellcheck disable=SC2120
 use_bison_backup() {
 
@@ -544,7 +545,8 @@ add_sorry() {
 	exit 19
     fi
     echo "#line 1 \"$FILE\"" >> "$TMP_FILE"
-    # warning: This $? refers to echo/printf, not a previous command. Assign to variable to avoid it being overwritten. [SC2320]
+    # SC2320 (warning): This $? refers to echo/printf, not a previous command. Assign to variable to avoid it being overwritten.
+    # https://www.shellcheck.net/wiki/SC2320
     # shellcheck disable=SC2320
     status="$?"
     if [[ $status -ne 0 ]]; then

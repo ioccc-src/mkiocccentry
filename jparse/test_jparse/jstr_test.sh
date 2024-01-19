@@ -93,7 +93,8 @@ if [[ -n $TOPDIR ]]; then
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
     fi
-    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # SC2164 (warning): Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+    # https://www.shellcheck.net/wiki/SC2164
     # shellcheck disable=SC2164
     cd "$TOPDIR"
     status="$?"
@@ -171,9 +172,10 @@ fi
 echo "$0: about to run test #1"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is not correct in our case:
-# note: Make sure not to read and write the same file in the same pipeline. [SC2094]
-# shellcheck disable=SC2094
 #
+# SC2094 (info): Make sure not to read and write the same file in the same pipeline.
+# https://www.shellcheck.net/wiki/SC2094
+# shellcheck disable=SC2094
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed"
@@ -184,7 +186,9 @@ fi
 echo "$0: about to run test #2"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is incorrect in our case:
-# note: Make sure not to read and write the same file in the same pipeline. [SC2094]
+#
+# SC2094 (info): Make sure not to read and write the same file in the same pipeline.
+# https://www.shellcheck.net/wiki/SC2094
 # shellcheck disable=SC2094
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
@@ -205,9 +209,6 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 # catting the list of files as a single file name which obviously would not work
 # so we disable the following check:
 #
-# note: Double quote to prevent globbing and word splitting. [SC2086]
-# shellcheck disable=SC2086
-#
 # And although this issue won't be detected until the previous test is resolved
 # (or in our case ignored) the below is not a useless use of cat. If we were to
 # reorder the command line to say:
@@ -223,10 +224,11 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 #   < $SRC_SET "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 #
 # we would see similar. There might be a way to do it but the typical ways won't
-# work so we disable the useless use of cat check SC2002 as well:
+# work so we disable the useless use of cat check SC2002 as well.
 #
-# note: Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead. [SC2002]
-# shellcheck disable=SC2002
+# SC2086 (info): Double quote to prevent globbing and word splitting.
+# https://www.shellcheck.net/wiki/SC2086
+# shellcheck disable=SC2086
 cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 # copy the PIPESTATUS array as the following command will destroy its contents
 STATUS=("${PIPESTATUS[@]}")
@@ -244,6 +246,9 @@ if [[ -z "$ERROR" ]]; then
     # We cannot double quote "$SRC_SET" because it would make the shell think it's a
     # single file which of course does not exist by that name as it's actually a
     # list of files. Thus we disable shellcheck check SC2086.
+    #
+    # SC2086 (info): Double quote to prevent globbing and word splitting.
+    # https://www.shellcheck.net/wiki/SC2086
     # shellcheck disable=SC2086
     if ! cat $SRC_SET > "$TEST_FILE2"; then
 	echo "$0: test #3 failed" 1>&2

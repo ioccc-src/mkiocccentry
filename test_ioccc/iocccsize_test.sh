@@ -17,9 +17,7 @@
 # which seems silly and pointless so we disable it for the next two
 # lines.
 #
-# shellcheck disable=SC1007
 export DIGRAPHS=	# assume #undef DIGRAPHS
-# shellcheck disable=SC1007
 export TRIGRAPHS=	# assume #undef TRIGRAPHS
 export LIMIT_IOCCC="./soup/limit_ioccc.sh"
 export WORK_DIR="./test_ioccc/test_iocccsize"
@@ -102,7 +100,8 @@ if [[ -n $TOPDIR ]]; then
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
     fi
-    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # SC2164 (warning): Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+    # https://www.shellcheck.net/wiki/SC2164
     # shellcheck disable=SC2164
     cd "$TOPDIR"
     status="$?"
@@ -191,6 +190,8 @@ if [[ $LIMIT_IOCCC != "." ]]; then
     # requires the -x option to shellcheck and not all versions support this
     # option so we have to disable the warning instead.
     #
+    # SC1090 (warning): ShellCheck can't follow non-constant source. Use a directive to specify location.
+    # https://www.shellcheck.net/wiki/SC1090
     # shellcheck disable=SC1090
     source "$LIMIT_IOCCC"
     status="$?"

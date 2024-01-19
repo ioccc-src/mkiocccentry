@@ -216,23 +216,13 @@ if [[ -n $LIST_CHANGE && -n $LIST_NOCHANGE ]]; then
 # case: -l: list .json files that WILL change
 #
 elif [[ -n $LIST_CHANGE ]]; then
-# This warning is an example where shellcheck is incorrect. Yes '*.json' is a
-# glob but --include '*.json' is not the actual pattern to search for.
-# Specifically this option, if specified, says that only files matching the
-# given filename pattern are searched.
-#
-# shellcheck disable=SC2063
+
      grep -F -R --include '*.json' -l -- "$OLD_VER" "$JSON_TREE" 2>/dev/null | sort -u
 
 # case: -L: list .json files that WILL NOT change
 #
 elif [[ -n $LIST_NOCHANGE ]]; then
-# This warning is an example where shellcheck is incorrect. Yes '*.json' is a
-# glob but --include '*.json' is not the actual pattern to search for.
-# Specifically this option, if specified, says that only files matching the
-# given filename pattern are searched.
-#
-# shellcheck disable=SC2063
+
      grep -F -R --include '*.json' -L -- "$OLD_VER" "$JSON_TREE" 2>/dev/null | sort -u
 fi
 

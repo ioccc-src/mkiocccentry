@@ -169,7 +169,8 @@ if [[ -n $TOPDIR ]]; then
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
     fi
-    # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
+    # SC2164 (warning): Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+    # https://www.shellcheck.net/wiki/SC2164
     # shellcheck disable=SC2164
     cd "$TOPDIR"
     status="$?"
@@ -344,7 +345,8 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 |
 # redefine it as well. The error is ironically erroneous as if one is to move up
 # in the file they'll see that answers is actually defined above as well.
 #
-# error: This function is only defined later. Move the definition up. [SC2218]
+# SC2218 (error): This function is only defined later. Move the definition up.
+# https://www.shellcheck.net/wiki/SC2218
 # shellcheck disable=SC2218
 answers >>answers.txt
 
@@ -447,8 +449,10 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 |
 # Append answers + EOF marker
 #
 # We disable this shellcheck error because answers already is defined but we
-# redefine it as well. The error is ironically erroneous as if one is to move up
-# error: This function is only defined later. Move the definition up. [SC2218]
+# redefine it as well. The error is ironically erroneous.
+#
+# SC2218 (error): This function is only defined later. Move the definition up.
+# https://www.shellcheck.net/wiki/SC2218
 # shellcheck disable=SC2218
 answers >>answers.txt
 
