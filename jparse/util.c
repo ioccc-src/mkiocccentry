@@ -682,6 +682,9 @@ fd_is_ready(char const *name, bool open_test_only, int fd)
     if (fd < 0) {
 	dbg(DBG_VVHIGH, "%s: called via %s: fd: %d < 0, returning false", __func__, name, fd);
 	return false;
+    } else if (isatty(fd)) {
+	dbg(DBG_VVHIGH, "%s: called via %s: fd: isatty(%d) == 1, returning true", __func__, name, fd);
+	return true;
     }
 
     /*

@@ -4,7 +4,7 @@
 	"IOCCC_contest" : "IOCCCmock",
 	"IOCCC_year" : 2023,
 	"mkiocccentry_version" : "1.0.2 2023-11-06",
-	"iocccsize_version" : "28.13 2023-02-04",
+	"iocccsize_version" : "28.14 2024-01-04",
 	"chkentry_version" : "1.0 2023-02-04",
 	"fnamchk_version" : "1.0 2023-02-04",
 	"txzchk_version" : "1.0.2 2023-11-06",
