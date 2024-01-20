@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.56 2024-01-20
+
+Changed `"iocccsize_version"` in JSON files (those that were `"28.13
+2023-02-04"`) to `""28.14 2024-01-04"`. This fixed a problem with `make prep`
+failing due to the script `chkentry_test.sh` failing due to many errors
+reported, some of which didn't seem to make any sense whatever.
+
+Change `fd_is_ready()` to return true if `isatty(fd)`.
+
+
 ## Release 1.0.55 2023-11-07
 
 Add another forbidden file name in submissions: `prog.alt` (prog.alt.c is
