@@ -105,7 +105,7 @@ static const char * const usage_msg =
     "\n"
     "Exit codes:\n"
     "     0   no feathers stuck in tarball  :-)\n"
-    "     1   tarball was successfully parsed :-) but there's at least one feather stuck in it  :-(\n"
+    "     1   tarball was successfully parsed :-) but there's at least one feather stuck in it :-(\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error has occurred or unknown tar listing format has been encountered\n"
