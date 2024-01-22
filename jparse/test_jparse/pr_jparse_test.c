@@ -1,5 +1,5 @@
 /*
- * print_test - test print function call
+ * pr_jparse_test - test print function call
  *
  * Here "print function call" refers to functions such as:
  *
@@ -50,9 +50,9 @@
 
 
 /*
- * official print_test version
+ * official pr_jparse_test version
  */
-#define PRINT_TEST_VERSION "1.0.2 2023-08-01"	/* format: major.minor YYYY-MM-DD */
+#define PR_JPARSE_TEST_VERSION "1.0.2 2023-08-01"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -79,7 +79,7 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "print_test version: %s";
+    "pr_jparse_test version: %s";
 
 
 /*
@@ -93,7 +93,7 @@ static FILE *devnull = NULL;	/* write stream to /dev/null */
  */
 static int notatty_test(void);
 static int vprint_test(char const *fmt, ...);
-static int print_test(char const *fmt, char const *string);
+static int pr_jparse_test(char const *fmt, char const *string);
 static void para_test(char const *fmt, char const *string);
 static void pr_test(void);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
@@ -108,7 +108,7 @@ main(int argc, char *argv[])
     int arg_count = 0;		/* number of args to process */
     int notatty_test_cnt = 0;	/* error count from notatty_test() */
     int vprint_test_cnt = 0;	/* error count from vprint_test() */
-    int print_test_cnt = 0;	/* error count from print_test() */
+    int pr_jparse_test_cnt = 0;	/* error count from pr_jparse_test() */
     int i;
 
     /*
@@ -132,7 +132,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", PRINT_TEST_VERSION);
+	    print("%s\n", PR_JPARSE_TEST_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -193,12 +193,12 @@ main(int argc, char *argv[])
     }
 
     /*
-     * print_test - test various print functions
+     * pr_jparse_test - test various print functions
      */
-    fdbg(stderr, DBG_LOW, "in %s: about to run print_test(fmt, string)", __func__);
-    print_test_cnt = print_test("print_test: %s\n", "string");
-    if (print_test_cnt > 0) {
-	fwarn(stderr, __func__, "print_test error count: %d", print_test_cnt);
+    fdbg(stderr, DBG_LOW, "in %s: about to run pr_jparse_test(fmt, string)", __func__);
+    pr_jparse_test_cnt = pr_jparse_test("pr_jparse_test: %s\n", "string");
+    if (pr_jparse_test_cnt > 0) {
+	fwarn(stderr, __func__, "pr_jparse_test error count: %d", pr_jparse_test_cnt);
     }
 
     /*
@@ -216,7 +216,7 @@ main(int argc, char *argv[])
     /*
      * exit depending on error count
      */
-    if (notatty_test_cnt > 0 || vprint_test_cnt > 0 || print_test_cnt > 0) {
+    if (notatty_test_cnt > 0 || vprint_test_cnt > 0 || pr_jparse_test_cnt > 0) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/
@@ -673,7 +673,7 @@ vprint_test(char const *fmt, ...)
 
 
 /*
- * print_test - test various print functions
+ * pr_jparse_test - test various print functions
  *
  * given:
  *	fmt	format string
@@ -683,7 +683,7 @@ vprint_test(char const *fmt, ...)
  *	error count
  */
 static int
-print_test(char const *fmt, char const *string)
+pr_jparse_test(char const *fmt, char const *string)
 {
     int ret;			/* libc function return value */
     int saved_errno;		/* preserved errno */
@@ -1060,7 +1060,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PRINT_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -1,5 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.0.57 2024-01-21
+
+Rename "print_test" to "pr_jparse_test".  The name "print_test" was
+too generic and might conflict with some test print application
+if it was installed.
+
+
 ## Release 1.0.56 2024-01-20
 
 Changed `"iocccsize_version"` in JSON files (those that were `"28.13
@@ -273,6 +281,7 @@ colourful update in the three files.
 
 Typo fix in `print_test.c` and make a comment that exists in more than one place
 consistent in location.
+
 
 ## Release 1.0.45 2023-08-01
 

@@ -41,10 +41,10 @@
 export JPARSE_TEST_VERSION="1.0.3 2023-08-01"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
-export PRINT_TEST="./jparse/test_jparse/print_test"
+export PR_JPARSE_TEST="./jparse/test_jparse/pr_jparse_test"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
 export SUBDIR="."
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-p print_test] [-d json_tree] [-s subdir] [-k] [-L] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-p pr_jparse_test] [-d json_tree] [-s subdir] [-k] [-L] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -53,7 +53,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
     -j jparse		path to jparse tool (def: $JPARSE)
-    -p print_test	path to print_test tool (def: $PRINT_TEST)
+    -p pr_jparse_test	path to pr_jparse_test tool (def: $PR_JPARSE_TEST)
     -d json_tree	read files under json_tree/subdir/good and json_tree/subdir/bad (def: $JSON_TREE)
 			    These subdirectories are expected:
 				json_tree/tree/subdir/bad
@@ -110,7 +110,7 @@ while getopts :hVv:D:J:qj:p:d:s:kL flag; do
 	;;
     j)	JPARSE="$OPTARG";
 	;;
-    p)	PRINT_TEST="$OPTARG";
+    p)	PR_JPARSE_TEST="$OPTARG";
 	PRINT_TEST_FLAG_USED="1"
 	;;
     d)	JSON_TREE="$OPTARG"
@@ -147,7 +147,7 @@ if [[ $V_FLAG -ge 1 ]]; then
     fi
     echo "$0: debug[1]: jparse: $JPARSE" 1>&2
     if [[ -n "$PRINT_TEST_FLAG_USED" ]]; then
-	echo "$0: debug[1]: print_test: $PRINT_TEST" 1>&2
+	echo "$0: debug[1]: pr_jparse_test: $PR_JPARSE_TEST" 1>&2
     fi
 fi
 
@@ -175,16 +175,16 @@ fi
 
 
 if [[ -n "$PRINT_TEST_FLAG_USED" ]]; then
-    if [[ ! -e $PRINT_TEST ]]; then
-	echo "$0: ERROR: print_test not found: $PRINT_TEST"
+    if [[ ! -e $PR_JPARSE_TEST ]]; then
+	echo "$0: ERROR: pr_jparse_test not found: $PR_JPARSE_TEST"
 	exit 5
     fi
-    if [[ ! -f $PRINT_TEST ]]; then
-	echo "$0: ERROR: print_test not a regular file: $PRINT_TEST"
+    if [[ ! -f $PR_JPARSE_TEST ]]; then
+	echo "$0: ERROR: pr_jparse_test not a regular file: $PR_JPARSE_TEST"
 	exit 5
     fi
-    if [[ ! -x $PRINT_TEST ]]; then
-	echo "$0: ERROR: print_test not executable: $PRINT_TEST"
+    if [[ ! -x $PR_JPARSE_TEST ]]; then
+	echo "$0: ERROR: pr_jparse_test not executable: $PR_JPARSE_TEST"
 	exit 5
     fi
 fi
@@ -482,24 +482,24 @@ run_file_test()
     return
 }
 
-# run_print_test - run print_test tool, making sure it passes
+# run_pr_jparse_test - run pr_jparse_test tool, making sure it passes
 #
 # usage:
-#	run_print_test print_test dbg_level quiet_mode
+#	run_pr_jparse_test pr_jparse_test dbg_level quiet_mode
 #
-#	print_test		path to the print_test program
-#	dbg_level		internal test debugging level to use as in: print_test -v dbg_level
-#	quiet_mode		quiet mode to use in: print_test -q
+#	pr_jparse_test		path to the pr_jparse_test program
+#	dbg_level		internal test debugging level to use as in: pr_jparse_test -v dbg_level
+#	quiet_mode		quiet mode to use in: pr_jparse_test -q
 #
-run_print_test()
+run_pr_jparse_test()
 {
     # parse args
     #
     if [[ $# -ne 3 ]]; then
-	echo "$0: ERROR: expected 3 args to run_print_test, found $#" 1>&2
+	echo "$0: ERROR: expected 3 args to run_pr_jparse_test, found $#" 1>&2
 	exit 10
     fi
-    declare print_test="$1"
+    declare pr_jparse_test="$1"
     declare dbg_level="$2"
     declare quiet_mode="$3"
 
@@ -507,36 +507,36 @@ run_print_test()
     # debugging
     #
     if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_print_test: print_test: $print_test" 1>&2
-	echo "$0: debug[9]: in run_print_test: dbg_level: $dbg_level" 1>&2
-	echo "$0: debug[9]: in run_print_test: json_dbg_level: $json_dbg_level" 1>&2
-	echo "$0: debug[9]: in run_print_test: quiet_mode: $quiet_mode" 1>&2
+	echo "$0: debug[9]: in run_pr_jparse_test: pr_jparse_test: $pr_jparse_test" 1>&2
+	echo "$0: debug[9]: in run_pr_jparse_test: dbg_level: $dbg_level" 1>&2
+	echo "$0: debug[9]: in run_pr_jparse_test: json_dbg_level: $json_dbg_level" 1>&2
+	echo "$0: debug[9]: in run_pr_jparse_test: quiet_mode: $quiet_mode" 1>&2
     fi
 
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $pr_jparse_test -v $dbg_level >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$print_test" -v "$dbg_level" >> "${LOGFILE}" 2>&1
+	echo "$0: debug[3]: about to run test that must pass: $pr_jparse_test -v $dbg_level >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$pr_jparse_test" -v "$dbg_level" >> "${LOGFILE}" 2>&1
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $pr_jparse_test -v $dbg_level -q >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$print_test" -v "$dbg_level" -q >> "${LOGFILE}" 2>&1
+	echo "$0: debug[3]: about to run test that must pass: $pr_jparse_test -v $dbg_level -q >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$pr_jparse_test" -v "$dbg_level" -q >> "${LOGFILE}" 2>&1
     fi
     status="$?"
 
     # examine test result
     #
     if [[ $status -eq 0 ]]; then
-	echo "$0: in test that must pass: print_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	echo "$0: in test that must pass: pr_jparse_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: print_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	    echo "$0: debug[3]: pr_jparse_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	fi
     else
-	echo "$0: in test that must pass: print_test FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	echo "$0: in test that must pass: pr_jparse_test FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	PRINT_TEST_FAILURE="1"
 	EXIT_CODE=2
     fi
@@ -724,9 +724,9 @@ if [[ -n "$L_FLAG" ]]; then
     done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
 fi
 
-# run print_test tool if -p used
+# run pr_jparse_test tool if -p used
 if [[ -n "$PRINT_TEST_FLAG_USED" ]]; then
-    run_print_test "$PRINT_TEST" "$DBG_LEVEL" "$Q_FLAG"
+    run_pr_jparse_test "$PR_JPARSE_TEST" "$DBG_LEVEL" "$Q_FLAG"
 fi
 
 if [[ -n "$FILE_FAILURE_SUMMARY" ]]; then
@@ -742,7 +742,7 @@ if [[ -n "$STRING_FAILURE_SUMMARY" ]]; then
     echo "--" | tee -a -- "${LOGFILE}"
 fi
 if [[ -n "$PRINT_TEST_FAILURE" ]]; then
-    echo "NOTE: the print_test test failed. See the log for details."
+    echo "NOTE: the pr_jparse_test test failed. See the log for details."
 fi
 
 # explicitly delete the temporary files
