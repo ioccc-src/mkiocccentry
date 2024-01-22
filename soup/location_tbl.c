@@ -432,7 +432,7 @@ struct location loc[] = {
     {"XU", "User-assigned code XU"},	/* User-assigned code */
     {"XV", "User-assigned code XV"},	/* User-assigned code */
     {"XW", "User-assigned code XW"},	/* User-assigned code */
-    {"XX", "Anonymous location"},	/* User-assigned code - used by IOCCC for  anonymous locations */
+    {"XX", "Anonymous location"},	/* User-assigned code - used by IOCCC for anonymous locations */
     {"XY", "User-assigned code XY"},	/* User-assigned code */
     {"XZ", "International waters"},	/* User-assigned code - UN/LOCODE assigns XZ to represent international waters */
     {"YD", "Democratic Yemen"},	/* User-assigned code - Formerly assigned code */
@@ -444,7 +444,7 @@ struct location loc[] = {
     {"ZM", "Zambia"},
     {"ZR", "Zaire"},		/* User-assigned code - Transitionally reserved code */
     {"ZW", "Zimbabwe"},
-    {"ZZ", "User-assigned code ZZ"},	/* User-assigned code */
+    {"ZZ", "Unknown location"},	/* User-assigned code - used by IOCCC for when the location is unknown */
     {NULL, NULL}		/* MUST BE LAST */
 };
 
