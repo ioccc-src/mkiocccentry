@@ -1,5 +1,5 @@
---- ref/auth.reference.json.c	2023-01-09 08:20:23
-+++ chk_sem_auth.c	2023-01-09 08:20:03
+--- ref/auth.reference.json.c	2024-03-02 05:59:50
++++ chk_sem_auth.c	2024-03-02 06:00:54
 @@ -40,25 +40,25 @@
  struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name */
@@ -21,7 +21,7 @@
 -  { 4,	JTYPE_MEMBER,	1,	5,	5,	12,	13,	chk_location_name,	"location_name" },
 -  { 4,	JTYPE_MEMBER,	1,	5,	5,	13,	8,	chk_mastodon,	"mastodon" },
 -  { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	4,	chk_name,	"name" },
--  { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	11,	chk_past_winner,	"past_winner" },
+-  { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	19,	chk_past_winning_author,	"past_winning_author" },
 -  { 4,	JTYPE_MEMBER,	1,	5,	5,	16,	3,	chk_url,	"url" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	5,	13,	chk_author_handle,	"author_handle" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	6,	13,	chk_author_number,	"author_number" },
@@ -32,7 +32,7 @@
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	11,	13,	chk_location_name,	"location_name" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	12,	8,	chk_mastodon,	"mastodon" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	13,	4,	chk_name,	"name" },
-+  { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	11,	chk_past_winner,	"past_winner" },
++  { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	19,	chk_past_winning_author,	"past_winning_author" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	3,	chk_url,	"url" },
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	16,	7,	chk_alt_url,	"alt_url" },
    { 3,	JTYPE_OBJECT,	1,	5,	5,	17,	0,	NULL,	NULL },

@@ -43,7 +43,7 @@
 /*
  * official verge tool version
  */
-#define VERGE_VERSION "1.0 2023-02-04"		/* format: major.minor YYYY-MM-DD */
+#define VERGE_VERSION "1.0.1 2024-03-02"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message

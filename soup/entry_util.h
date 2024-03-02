@@ -65,7 +65,7 @@ struct author
     char *mastodon;		/* author mastodon handle or empty string ==> not provided */
     char *github;		/* author GitHub username or empty string ==> not provided */
     char *affiliation;		/* author affiliation or empty string ==> not provided */
-    bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
+    bool past_winning_author;	/* true ==> author claims to have won before, false ==> author claims they haven't won before */
     bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
     char *author_handle;	/* IOCCC author handle (for winning entries) */
     int author_num;		/* author number */
@@ -95,7 +95,7 @@ struct auth
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /* entry information */
     char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
+    int submission_num;		/* IOCCC entry number */
     char *tarball;		/* tarball filename */
     /* test or non-test mode */
     bool test_mode;		/* true ==> test mode entered */
@@ -140,7 +140,7 @@ struct info
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /* entry information */
     char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
+    int submission_num;		/* IOCCC entry number */
     char *title;		/* entry title */
     char *abstract;		/* entry abstract */
     char *tarball;		/* tarball filename */
@@ -217,7 +217,7 @@ extern bool object2manifest(struct json *node, unsigned int depth, struct json_s
 			    char const *name, struct json_sem_val_err **val_err,
 			    struct manifest *manp);
 extern bool timestr_eq_tstamp(char const *timestr, time_t timestamp);
-extern char *form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
+extern char *form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mode,
 			       time_t formed_timestamp);
 
 extern bool test_IOCCC_auth_version(char const *str);
@@ -237,7 +237,7 @@ extern bool test_chkentry_version(char const *str);
 extern bool test_default_handle(bool boolean);
 extern bool test_email(char const *str);
 extern bool test_empty_override(bool boolean);
-extern bool test_entry_num(int entry_num);
+extern bool test_submission_num(int submission_num);
 extern bool test_extra_file(char const *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char const *str);
@@ -261,14 +261,14 @@ extern bool test_mkiocccentry_version(char const *str);
 extern bool test_name(char const *str);
 extern bool test_no_comment(char const *str);
 extern bool test_nul_warning(bool boolean);
-extern bool test_past_winner(bool boolean);
+extern bool test_past_winning_author(bool boolean);
 extern bool test_remarks(char const *str);
 extern bool test_rule_2a_mismatch(bool boolean);
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_size(off_t rule_2a_size);
 extern bool test_rule_2b_override(bool boolean);
 extern bool test_rule_2b_size(size_t rule_2b_size);
-extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
+extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int submission_num, bool test_mode,
 			 time_t formed_timestamp);
 extern bool test_test_mode(bool boolean);
 extern bool test_timestamp_epoch(char const *str);

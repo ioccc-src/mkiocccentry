@@ -39,7 +39,7 @@
 
 # setup
 #
-export RESET_TSTAMP_VERSION="1.0 2023-02-04"
+export RESET_TSTAMP_VERSION="1.0.1 2024-03-02"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
     -h			print help and exit

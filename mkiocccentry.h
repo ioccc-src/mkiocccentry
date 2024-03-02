@@ -31,7 +31,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2023 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -144,30 +144,31 @@ static void warn_trigraph(char const *prog_c);
 static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule_2b_size(struct info *infop, char const *prog_c);
-static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
+static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
-static int get_entry_num(struct info *infop);
-static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
+static int get_submission_num(struct info *infop);
+static char *mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num,
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(char const *Makefile, struct info *infop);
-static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
-static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
-static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
+static void check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile);
+static void check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md);
+static void check_extra_data_files(struct info *infop, char const *submission_dir, char const *cp, int count, char **args);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct author **author_set_p);
-static void verify_entry_dir(char const *entry_dir, char const *ls);
-static void write_info(struct info *infop, char const *entry_dir, char const *chkentry, char const *fnamchk);
+static void verify_submission_dir(char const *submission_dir, char const *ls);
+static void write_info(struct info *infop, char const *submission_dir, char const *chkentry, char const *fnamchk);
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
-static void write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk);
-static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
+static void write_auth(struct auth *authp, char const *submission_dir, char const *chkentry, char const *fnamchk);
+static void form_tarball(char const *work_dir, char const *submission_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
-static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
+static void remind_user(char const *work_dir, char const *submission_dir, char const *tar, char const *tarball_path,
+	bool test_mode);
 static void show_registration_url(void);
 static void show_submit_url(char const *work_dir, char const *tarball_path);
 #endif /* INCLUDE_MKIOCCCENTRY_H */

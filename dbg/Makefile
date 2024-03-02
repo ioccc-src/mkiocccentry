@@ -2,7 +2,7 @@
 #
 # dbg - info, debug, warning, error and usage message facilities
 #
-# Copyright (c) 1989,1997,2018-2023 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 1989,1997,2018-2024 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,

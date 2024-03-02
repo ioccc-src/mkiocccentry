@@ -6,16 +6,16 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: foun
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .test
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: no directory found in filename .test
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found incorrect directory in filename .test
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory entry: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 .
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found non .auth.json and .info.json dot file .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found file called '.' in path .
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found incorrect directory in filename .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory entry: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found non .auth.json and .info.json dot file .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found file called '.' in path test-6/.
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory entry: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found more than one directory: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found non .auth.json and .info.json dot file .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: found file called '.' in path test-6/.
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/entry.test-6.16444111149.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .

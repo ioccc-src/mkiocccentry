@@ -44,7 +44,7 @@
 /*
  * official jnum_chk version
  */
-#define JNUM_CHK_VERSION "1.0 2023-02-04"      /* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "1.0.1 2024-03-02"      /* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message

@@ -1265,7 +1265,7 @@ int
 shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
-    char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
+    char *cmd = NULL;		/* e.g. cp prog.c submission_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
 
     /*
@@ -1415,7 +1415,7 @@ FILE *
 pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
-    char *cmd = NULL;		/* e.g., cp prog.c entry_dir/prog.c */
+    char *cmd = NULL;		/* e.g., cp prog.c submission_dir/prog.c */
     FILE *stream = NULL;	/* open pipe to shell command or NULL */
     int ret;			/* libc function return */
 

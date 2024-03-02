@@ -3,7 +3,7 @@
  *
  * "Because even POSIX needs an extra plus." :-)
  *
- * An author_handle, for an IOCCC winner, will be used to form
+ * An author_handle, for an IOCCC winning author, will be used to form
  * a winner_handle.  These winner handles will become part of a
  * JSON filename on the www.ioccc.org website.  For this reason,
  * (and other reasons), we must restrict an author_handle to

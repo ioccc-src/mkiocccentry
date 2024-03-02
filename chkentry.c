@@ -16,7 +16,7 @@
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  *
- * Copyright (c) 2022-2023 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -79,7 +79,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] entry_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] submission_dir\n"
     "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json auth.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
@@ -89,7 +89,7 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "\tentry_dir\tIOCCC entry directory with .info.json and auth.json files\n"
+    "\tsubmission_dir\tIOCCC entry directory with .info.json and auth.json files\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\n"
@@ -294,7 +294,7 @@ main(int argc, char *argv[])
     char const *program = NULL;		/* our name */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *entry_dir = ".";	/* entry directory to process, or NULL ==> process files */
+    char const *submission_dir = ".";	/* entry directory to process, or NULL ==> process files */
     char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
     char *info_path = NULL;		/* full path of .info.json or NULL */
@@ -378,12 +378,12 @@ main(int argc, char *argv[])
     argv += optind;
     switch (argc) {
     case 1:
-	entry_dir = argv[0];
+	submission_dir = argv[0];
 	info_filename = NULL;
 	auth_filename = NULL;
 	break;
     case 2:
-	entry_dir = NULL;
+	submission_dir = NULL;
 	info_filename = argv[0];
 	auth_filename = argv[1];
 	break;
@@ -393,14 +393,14 @@ main(int argc, char *argv[])
 	break;
     }
     if (info_filename != NULL && strcmp(info_filename, ".") == 0 &&
-        auth_filename != NULL && strcmp(auth_filename, ".") == 0 && entry_dir == NULL) {
+        auth_filename != NULL && strcmp(auth_filename, ".") == 0 && submission_dir == NULL) {
 	vrergfB(-1, -1); /* Easter egg */
 	not_reached();
     }
-    if (entry_dir == NULL) {
-	dbg(DBG_LOW, "entry_dir is NULL");
+    if (submission_dir == NULL) {
+	dbg(DBG_LOW, "submission_dir is NULL");
     } else {
-	dbg(DBG_LOW, "entry_dir: %s", entry_dir);
+	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
     }
     if (info_filename == NULL) {
 	dbg(DBG_LOW, "info_filename is NULL");
@@ -420,32 +420,32 @@ main(int argc, char *argv[])
     /*
      * case: 1 arg - directory
      */
-    if (entry_dir != NULL && info_filename == NULL && auth_filename == NULL) {
+    if (submission_dir != NULL && info_filename == NULL && auth_filename == NULL) {
 
 	/*
-	 * open the .info.json file under entry_dir
+	 * open the .info.json file under submission_dir
 	 */
 	info_filename = ".info.json";
-	info_stream = open_json_dir_file(entry_dir, info_filename);
+	info_stream = open_json_dir_file(submission_dir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(22, __func__, "info_stream = open_json_dir_file(%s, %s) returned NULL", entry_dir, info_filename);
+	    err(22, __func__, "info_stream = open_json_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
 	    not_reached();
 	}
 
 	/*
-	 * open the .auth.json file under entry_dir
+	 * open the .auth.json file under submission_dir
 	 */
 	auth_filename = ".auth.json";
-	auth_stream = open_json_dir_file(entry_dir, auth_filename);
+	auth_stream = open_json_dir_file(submission_dir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(23, __func__, "auth_stream = open_json_dir_file(%s, %s) returned NULL", entry_dir, auth_filename);
+	    err(23, __func__, "auth_stream = open_json_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
 	    not_reached();
 	}
 
     /*
      * case: 2 args - info path and author path
      */
-    } else if (entry_dir == NULL && info_filename != NULL && auth_filename != NULL) {
+    } else if (submission_dir == NULL && info_filename != NULL && auth_filename != NULL) {
 
 	/*
 	 * open the .info.json file unless it is .
@@ -480,12 +480,12 @@ main(int argc, char *argv[])
 	err(26, __func__, "we should not get here; please report, making sure to use make bug_report");
 	not_reached();
     }
-    info_path = calloc_path(entry_dir, info_filename);
+    info_path = calloc_path(submission_dir, info_filename);
     if (info_path == NULL) {
 	err(27, __func__, "info_path is NULL");
 	not_reached();
     }
-    auth_path = calloc_path(entry_dir, auth_filename);
+    auth_path = calloc_path(submission_dir, auth_filename);
     if (auth_path == NULL) {
 	err(28, __func__, "auth_path is NULL");
 	not_reached();

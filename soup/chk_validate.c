@@ -1071,7 +1071,7 @@ chk_empty_override(struct json const *node,
 
 
 /*
- * chk_entry_num - JSON semantic check for entry_num
+ * chk_submission_num - JSON semantic check for submission_num
  *
  * given:
  *	node	JSON parse node being checked
@@ -1085,7 +1085,7 @@ chk_empty_override(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_entry_num(struct json const *node,
+chk_submission_num(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;				/* JSON_NUMBER as decoded int */
@@ -1103,10 +1103,10 @@ chk_entry_num(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_entry_num(*value);
+    test = test_submission_num(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid entry_num");
+	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid submission_num");
 	}
 	return false;
     }
@@ -2511,7 +2511,7 @@ chk_nul_warning(struct json const *node,
 
 
 /*
- * chk_past_winner - JSON semantic check for past_winner
+ * chk_past_winning_author - JSON semantic check for past_winning_author
  *
  * given:
  *	node	JSON parse node being checked
@@ -2525,7 +2525,7 @@ chk_nul_warning(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_past_winner(struct json const *node,
+chk_past_winning_author(struct json const *node,
 		unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2543,10 +2543,10 @@ chk_past_winner(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_past_winner(*boolean);
+    test = test_past_winning_author(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid past_winner");
+	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid past_winning_author");
 	}
 	return false;
     }
@@ -2889,8 +2889,8 @@ chk_tarball(struct json const *node,
     struct json *parent = NULL;			/* JSON parse tree node parent */
     struct json *IOCCC_contest_id_node = NULL;	/* JSON parse node containing IOCCC_contest_id */
     char const *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
-    struct json *entry_num_node = NULL;		/* JSON parse node containing entry_num */
-    int *entry_num = NULL;			/* pointer to author count as int from JSON parse node for entry_num */
+    struct json *submission_num_node = NULL;		/* JSON parse node containing submission_num */
+    int *submission_num = NULL;			/* pointer to author count as int from JSON parse node for submission_num */
     struct json *test_mode_node = NULL;		/* JSON parse node containing test_mode */
     bool *test_mode = NULL;			/* pointer to author count as int from JSON parse node for test_mode */
     struct json *formed_timestamp_node = NULL;	/* JSON parse node containing formed_timestamp */
@@ -2967,12 +2967,12 @@ chk_tarball(struct json const *node,
     }
 
     /*
-     * find entry_num in parent node
+     * find submission_num in parent node
      *
      * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
-    entry_num_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "entry_num");
-    if (entry_num_node == NULL) {
+    submission_num_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "submission_num");
+    if (submission_num_node == NULL) {
 	/* sem_object_find_name() will have set *val_err */
 	return false;
     }
@@ -2980,15 +2980,15 @@ chk_tarball(struct json const *node,
     /*
      * obtain the entry number
      */
-    entry_num = sem_member_value_int(entry_num_node, depth, sem, __func__, val_err);
-    if (entry_num == NULL) {
+    submission_num = sem_member_value_int(submission_num_node, depth, sem, __func__, val_err);
+    if (submission_num == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;
     }
-    test = test_entry_num(*entry_num);
+    test = test_submission_num(*submission_num);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid entry_num");
+	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid submission_num");
 	}
 	return false;
     }
@@ -3050,7 +3050,7 @@ chk_tarball(struct json const *node,
     /*
      * test the tarball with related data
      */
-    test = test_tarball(str, IOCCC_contest_id, *entry_num, *test_mode, *formed_timestamp);
+    test = test_tarball(str, IOCCC_contest_id, *submission_num, *test_mode, *formed_timestamp);
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(170, node, depth, sem, __func__, "invalid tarball");

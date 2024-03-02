@@ -13,7 +13,7 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: foun
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found file with '..' in the path: test-3/.././file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found more than one directory in path test-3/.././file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found empty remarks.md
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found more than one directory entry: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-3/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found more than one directory: drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-3/
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found empty Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found absolute path //test-3/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-3.19944411114.txt: found incorrect directory in filename //test-3/Makefile

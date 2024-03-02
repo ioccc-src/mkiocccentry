@@ -910,7 +910,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
      * strips the initial '/'s this would probably not get flagged.
      *
      * Note also that if the tar output does not have a trailing '/' in a
-     * directory entry itself it would not count as another directory. However
+     * submission directory itself it would not count as another directory. However
      * since we also check for more than one 'd' line in the output it would
      * trigger more than one directory in the tarball.
      *
@@ -1362,7 +1362,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     if (*linep == 'd') {
 	++(*dir_count);
 	if (*dir_count > 1) {
-	    warn("txzchk", "%s: found more than one directory entry: %s", tarball_path, linep);
+	    warn("txzchk", "%s: found more than one directory: %s", tarball_path, linep);
 	    ++tarball.total_feathers;
 	}
 	++tarball.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
@@ -1490,7 +1490,7 @@ check_tarball(char const *tar, char const *fnamchk)
      *
      * Note that the reason we don't exit if fnamchk reports an error is we
      * still can detect other feathers/issues; we just won't detect feathers
-     * with the entry number and directory.
+     * with the submission number and directory.
      */
     if (fnamchk_okay) {
 
