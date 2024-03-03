@@ -1,14 +1,14 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_auth_version" : "1.19 2023-02-04",
+	"IOCCC_auth_version" : "1.20 2024-03-02",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.2 2023-11-06",
-	"chkentry_version" : "1.0 2023-02-04",
-	"fnamchk_version" : "1.0 2023-02-04",
+	"mkiocccentry_version" : "1.0.3 2024-03-02",
+	"chkentry_version" : "1.0.1 2024-03-02",
+	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "test",
 	"tarball" : "entry.test-0.1675547786.txz",
-	"entry_num" : 0,
+	"submission_num" : 0,
 	"author_count" : 5,
 	"test_mode" : true,
 	"authors" : [
@@ -21,7 +21,7 @@
 			"mastodon" : "@mastodon0@example.com",
 			"github" : "@github0",
 			"affiliation" : "an affiliation for #0 author",
-			"past_winner" : false,
+			"past_winning_author" : false,
 			"default_handle" : true,
 			"author_handle" : "author0_middle0_thisisaveryveryl",
 			"author_number" : 0
@@ -35,7 +35,7 @@
 			"mastodon" : null,
 			"github" : null,
 			"affiliation" : null,
-			"past_winner" : false,
+			"past_winning_author" : false,
 			"default_handle" : false,
 			"author_handle" : "replaced-author1-handle",
 			"author_number" : 1
@@ -49,7 +49,7 @@
 			"mastodon" : "@mastodon2@example.com",
 			"github" : "@github2",
 			"affiliation" : "an affiliation for #2 author",
-			"past_winner" : true,
+			"past_winning_author" : true,
 			"default_handle" : true,
 			"author_handle" : "author2_acfo_last2",
 			"author_number" : 2
@@ -63,7 +63,7 @@
 			"mastodon" : "@mastodon3@example.com",
 			"github" : "@github3",
 			"affiliation" : "an affiliation for #3 author",
-			"past_winner" : true,
+			"past_winning_author" : true,
 			"default_handle" : false,
 			"author_handle" : "author3_last3",
 			"author_number" : 3
@@ -76,7 +76,7 @@
 			"mastodon" : "@mastodon4@example.com",
 			"github" : "@github4",
 			"affiliation" : "an affiliation for #4 author",
-			"past_winner" : false,
+			"past_winning_author" : false,
 			"default_handle" : true,
 			"author_handle" : "jrandom+5af89d19308010a8481f79d",
 			"author_number" : 4

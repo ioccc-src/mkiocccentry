@@ -22,7 +22,7 @@
 .IR level \|]
 .RB [\| \-V \|]
 .RB [\| \-q \|]
-.I entry_dir
+.I submission_dir
 .br
 .B chkentry
 .RB [\| \-h \|]
@@ -56,16 +56,16 @@ is
 .I .
 (dot), then this file is ignored.
 In the one argument form,
-.I entry_dir
+.I submission_dir
 is assumed to be a directory containing both
 .I .info.json
 and
 .I .auth.json
 files.
 The one argument form is equivalent to calling the command with two arguments:
-.I entry_dir/.info.json
+.I submission_dir/.info.json
 and
-.IR entry_dir/.auth.json .
+.IR submission_dir/.auth.json .
 .PP
 As a sanity check, the
 .BR mkiocccentry (1)

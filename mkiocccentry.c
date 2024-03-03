@@ -37,7 +37,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2023 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -138,23 +138,23 @@ static const char * const usage_msg1 =
 static const char * const usage_msg2 =
     "\t-C chkentry	path to chkentry executable (def: %s)\n";
 static const char * const usage_msg3 =
-    "\t-a answers\twrite answers to a file for easier updating of an entry\n"
+    "\t-a answers\twrite answers to a file for easier updating of a submission\n"
     "\t-A answers\twrite answers file even if it already exists\n"
     "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
     "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
     "\n"
-    "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your entry\n";
+    "\twork_dir\tdirectory where the submission directory and tarball are formed\n"
+    "\tprog.c\t\tpath to the C source for your submission\n";
 static const char * const usage_msg4 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
-    "\tremarks.md\tRemarks about your entry in markdown format\n"
+    "\tremarks.md\tRemarks about your submission in markdown format\n"
     "\t\t\tNOTE: The following is a guide to markdown:\n"
     "\n"
     "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
     "\n"
-    "\t[file ...]\textra data files to include with your entry\n"
+    "\t[file ...]\textra data files to include with your submission\n"
     "\n"
     "Exit codes:\n"
     "     0   all OK\n"
@@ -188,7 +188,7 @@ main(int argc, char *argv[])
     extern char *optarg;			/* option argument */
     extern int optind;				/* argv index of the next arg */
     struct timeval tp;				/* gettimeofday time value */
-    char const *work_dir = NULL;		/* where the entry directory and tarball are formed */
+    char const *work_dir = NULL;		/* where the submission directory and tarball are formed */
     char const *prog_c = NULL;			/* path to prog.c */
     char const *Makefile = NULL;		/* path to Makefile */
     char const *remarks_md = NULL;		/* path to remarks.md */
@@ -200,7 +200,7 @@ main(int argc, char *argv[])
     char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
     char const *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
-    char *entry_dir = NULL;			/* entry directory from which to form a compressed tarball */
+    char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
     int extra_count = 0;			/* number of extra files */
     char **extra_list = NULL;			/* list of extra files (if any) */
@@ -480,15 +480,15 @@ main(int argc, char *argv[])
     }
 
     /*
-     * obtain entry number
+     * obtain submission number
      */
-    info.entry_num = get_entry_num(&info);
-    dbg(DBG_MED, "entry number: %d", info.entry_num);
+    info.submission_num = get_submission_num(&info);
+    dbg(DBG_MED, "submission number: %d", info.submission_num);
 
     /*
-     * create entry directory
+     * create submission directory
      */
-    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp, info.test_mode);
+    submission_dir = mk_submission_dir(work_dir, info.ioccc_id, info.submission_num, &tarball_path, info.tstamp, info.test_mode);
     errno = 0;
     info.tarball = strdup(tarball_path);
     if (info.tarball == NULL) {
@@ -496,11 +496,11 @@ main(int argc, char *argv[])
 	not_reached();
     }
 
-    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
+    dbg(DBG_LOW, "formed submission directory: %s", submission_dir);
 
     /*
      * if -a, open the answers file. We only do it after verifying that we can
-     * make the entry directory because if we get input before and find out the
+     * make the submission directory because if we get input before and find out the
      * directory already exists then the answers file will have invalid data.
      */
     if (answers_flag_used && answers != NULL && strlen(answers) > 0) {
@@ -519,7 +519,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * write the IOCCC id and entry number to the answers file
+     * write the IOCCC id and submission number to the answers file
      */
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
@@ -529,9 +529,9 @@ main(int argc, char *argv[])
 	    ++answers_errors;
 	}
 	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(answerp, "%d\n", info.entry_num);
+	ret = fprintf(answerp, "%d\n", info.submission_num);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing entry number to the answers file");
+	    warnp(__func__, "fprintf error printing submission number to the answers file");
 	    ++answers_errors;
 	}
     }
@@ -542,7 +542,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Checking prog.c ...", NULL);
     }
-    size = check_prog_c(&info, entry_dir, cp, prog_c);
+    size = check_prog_c(&info, submission_dir, cp, prog_c);
     if (!quiet) {
 	para("... completed prog.c check.", "", NULL);
     }
@@ -554,7 +554,7 @@ main(int argc, char *argv[])
 	para("Checking Makefile ...", NULL);
     }
 
-    check_Makefile(&info, entry_dir, cp, Makefile);
+    check_Makefile(&info, submission_dir, cp, Makefile);
 
     if (!quiet) {
 	para("... completed Makefile check.", "", NULL);
@@ -566,7 +566,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("Checking remarks.md ...", NULL);
     }
-    check_remarks_md(&info, entry_dir, cp, remarks_md);
+    check_remarks_md(&info, submission_dir, cp, remarks_md);
     if (!quiet) {
 	para("... completed remarks.md check.", "", NULL);
     }
@@ -577,7 +577,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("Checking extra data files ...", NULL);
     }
-    check_extra_data_files(&info, entry_dir, cp, extra_count, extra_list);
+    check_extra_data_files(&info, submission_dir, cp, extra_count, extra_list);
     if (!quiet) {
 	para("... completed extra data files check.", "", NULL);
     }
@@ -586,7 +586,7 @@ main(int argc, char *argv[])
      * obtain the title
      */
     info.title = get_title(&info);
-    dbg(DBG_LOW, "entry title: %s", info.title);
+    dbg(DBG_LOW, "submission title: %s", info.title);
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.title);
@@ -600,7 +600,7 @@ main(int argc, char *argv[])
      * obtain the abstract
      */
     info.abstract = get_abstract(&info);
-    dbg(DBG_LOW, "entry abstract: %s", info.abstract);
+    dbg(DBG_LOW, "submission abstract: %s", info.abstract);
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.abstract);
@@ -641,7 +641,7 @@ main(int argc, char *argv[])
 		"%s\n"	/* mastodon handle */
 		"%s\n"	/* GitHub */
 		"%s\n"	/* affiliation */
-		"%s\n"  /* past winner */
+		"%s\n"  /* past winning author */
 		"%s\n"  /* author_handle */
 		,
 		author_set[i].name,
@@ -652,7 +652,7 @@ main(int argc, char *argv[])
 		author_set[i].mastodon,
 		author_set[i].github,
 		author_set[i].affiliation,
-		author_set[i].past_winner?"y":"n",
+		author_set[i].past_winning_author?"y":"n",
 		author_set[i].author_handle);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author info to the answers file");
@@ -667,7 +667,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .info.json file ...", NULL);
     }
-    write_info(&info, entry_dir, chkentry, fnamchk);
+    write_info(&info, submission_dir, chkentry, fnamchk);
     if (!quiet) {
 	para("... completed the .info.json file.", "", NULL);
     }
@@ -683,7 +683,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .auth.json file ...", NULL);
     }
-    write_auth(&auth, entry_dir, chkentry, fnamchk);
+    write_auth(&auth, submission_dir, chkentry, fnamchk);
     if (!quiet) {
 	para("... completed .auth.json file.", "", NULL);
     }
@@ -739,9 +739,9 @@ main(int argc, char *argv[])
     if (answers != NULL) {
 	if (need_hints) {
 	    errno = 0;			/* pre-clear errno for warnp() */
-	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
+	    ret = printf("\nTo more easily update this submission you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
 	    if (ret <= 0) {
-		warnp(__func__, "unable to tell user how to more easily update entry");
+		warnp(__func__, "unable to tell user how to more easily update submission");
 	    }
 	}
     }
@@ -763,7 +763,7 @@ main(int argc, char *argv[])
 
     /*
      * If the answers file (-i answers) was used, and there were warnings/problems
-     * discovered with the entry that were overridden, warn the user.
+     * discovered with the submission that were overridden, warn the user.
      */
     if (read_answers_flag_used) {
 	if (info.empty_override ||
@@ -819,19 +819,19 @@ main(int argc, char *argv[])
     /*
      * form the .txz file
      */
-    form_tarball(work_dir, entry_dir, tarball_path, tar, ls, txzchk, fnamchk);
+    form_tarball(work_dir, submission_dir, tarball_path, tar, ls, txzchk, fnamchk);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, info.test_mode);
+    remind_user(work_dir, submission_dir, tar, tarball_path, info.test_mode);
 
     /*
      * free storage
      */
-    if (entry_dir != NULL) {
-	free(entry_dir);
-	entry_dir = NULL;
+    if (submission_dir != NULL) {
+	free(submission_dir);
+	submission_dir = NULL;
     }
     if (tarball_path != NULL) {
 	free(tarball_path);
@@ -908,7 +908,7 @@ usage(int exitcode, char const *prog, char const *str)
  * given:
  *
  *      infop           - pointer to info structure
- *      work_dir        - where the entry directory and tarball are formed
+ *      work_dir        - where the submission directory and tarball are formed
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
@@ -1490,7 +1490,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
     }
 
     /*
-     * keep asking for an entry number until we get a valid reply
+     * keep asking for a submission number until we get a valid reply
      */
     do {
 
@@ -1586,19 +1586,19 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 
 
 /*
- * get_entry_num - obtain the entry number
+ * get_submission_num - obtain the submission number
  *
  * given:
  *      infop   - pointer to info structure
  *
  * returns:
- *      entry number >= 0 <= MAX_ENTRY_NUM
+ *      submission number >= 0 <= MAX_SUBMISSION_NUM
  */
 static int
-get_entry_num(struct info *infop)
+get_submission_num(struct info *infop)
 {
-    int entry_num;		/* entry number */
-    char *entry_str;		/* entry number string */
+    int submission_num;		/* submission number */
+    char *submission_str;	/* submission number string */
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
 
@@ -1611,79 +1611,80 @@ get_entry_num(struct info *infop)
     }
 
     /*
-     * keep asking for an entry number until we get a valid reply
+     * keep asking for a submission number until we get a valid reply
      */
     do {
 
 	/*
-	 * explain entry numbers
+	 * explain submission numbers
 	 */
 	if (need_hints) {
 	    errno = 0;		/* pre-clear errno for errp() */
-	    ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM + 1);
+	    ret = printf("\nYou are allowed to submit up to %d submissions to a given IOCCC.\n", MAX_SUBMISSION_NUM + 1);
 	    if (ret <= 0) {
-		errp(55, __func__, "printf error printing number of entries allowed");
+		errp(55, __func__, "printf error printing number of submissions allowed");
 		not_reached();
 	    }
 	    para("",
-		 "As in C, entry numbers start with 0.  If you are updating a previous entry, PLEASE",
-		 "use the same entry number that you previously uploaded so we know which entry we",
-		 "should replace. If this is your first entry to this given IOCCC, enter 0.",
+		 "As in C, submission numbers start with 0.  If you are updating a previous submission, PLEASE",
+		 "use the same submission number that you previously uploaded so we know which submission we",
+		 "should replace. If this is your first submission to this given IOCCC, enter 0.",
 		 "",
 		 NULL);
 	}
 
 	/*
-	 * ask for the entry number
+	 * ask for the submission number
 	 */
-	entry_str = prompt("Enter the entry number", NULL);
+	submission_str = prompt("Enter the submission number", NULL);
 
 	/*
-	 * check the entry number
+	 * check the submission number
 	 */
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = sscanf(entry_str, "%d%c", &entry_num, &guard);
-	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
+	ret = sscanf(submission_str, "%d%c", &submission_num, &guard);
+	if (ret != 1 || submission_num < 0 || submission_num > MAX_SUBMISSION_NUM) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 through %d; please re-enter.\n", MAX_ENTRY_NUM);
+	    ret = fprintf(stderr, "\nThe submission number must be a number from 0 through %d; please re-enter.\n",
+		    MAX_SUBMISSION_NUM);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error while informing about the valid entry number range");
+		warnp(__func__, "fprintf error while informing about the valid submission number range");
 	    }
-	    entry_num = -1;	/* invalidate input */
+	    submission_num = -1;	/* invalidate input */
 	}
 
 	/*
 	 * free storage
 	 */
-	if (entry_str != NULL) {
-	    free(entry_str);
-	    entry_str = NULL;
+	if (submission_str != NULL) {
+	    free(submission_str);
+	    submission_str = NULL;
 	}
 
-    } while (entry_num < 0 || entry_num > MAX_ENTRY_NUM);
+    } while (submission_num < 0 || submission_num > MAX_SUBMISSION_NUM);
 
     /*
-     * report on the result of the entry number validation
+     * report on the result of the submission number validation
      */
-    dbg(DBG_MED, "IOCCC entry number is valid: %d", entry_num);
+    dbg(DBG_MED, "IOCCC submission number is valid: %d", submission_num);
 
     /*
-     * return the entry number
+     * return the submission number
      */
-    return entry_num;
+    return submission_num;
 }
 
 
 /*
- * mk_entry_dir - make the entry directory
+ * mk_submission_dir - make the submission directory
  *
  * Make a directory, under work_dir, from which the compressed tarball
  * will be formed.
  *
  * given:
- *      work_dir        - working directory under which the entry directory is formed
- *      ioccc_id        - IOCCC entry ID (or test)
- *      entry_num       - entry number
+ *      work_dir        - working directory under which the submission directory is formed
+ *      ioccc_id        - IOCCC submission ID (or test)
+ *      submission_num       - submission number
  *      tarball_path    - pointer to the allocated path to where the compressed tarball will be formed
  *      tstamp          - now as a timestamp
  *      test_mode       - true ==> test mode, do not upload
@@ -1691,14 +1692,14 @@ get_entry_num(struct info *infop)
  * returns:
  *      the path of the working directory
  *
- * This function does not return on error or if the entry directory cannot be formed.
+ * This function does not return on error or if the submission directory cannot be formed.
  */
 static char *
-mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
+mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num,
 	     char **tarball_path, time_t tstamp, bool test_mode)
 {
-    size_t entry_dir_len;	/* length of entry directory */
-    char *entry_dir = NULL;	/* allocated entry directory path */
+    size_t submission_dir_len;	/* length of submission directory */
+    char *submission_dir = NULL;	/* allocated submission directory path */
     bool test = false;		/* test result */
     int ret;			/* libc function return */
 
@@ -1709,59 +1710,59 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
 	err(56, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    test = test_entry_num(entry_num);
+    test = test_submission_num(submission_num);
     if (test == false) {
-	err(57, __func__, "entry number: %d must >= 0 and <= %d", entry_num, MAX_ENTRY_NUM);
+	err(57, __func__, "submission number: %d must >= 0 and <= %d", submission_num, MAX_SUBMISSION_NUM);
 	not_reached();
     }
 
     /*
-     * determine length of entry directory path
+     * determine length of submission directory path
      */
     /*
      * work_dir/ioccc_id-entry
      */
-    entry_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + 1 + 1;
+    submission_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMISSION_CHARS + 1 + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    entry_dir = (char *)malloc(entry_dir_len + 1);
-    if (entry_dir == NULL) {
-	errp(58, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(entry_dir_len + 1));
+    submission_dir = (char *)malloc(submission_dir_len + 1);
+    if (submission_dir == NULL) {
+	errp(58, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(submission_dir_len + 1));
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(entry_dir, entry_dir_len + 1, "%s/%s-%d", work_dir, ioccc_id, entry_num);
+    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", work_dir, ioccc_id, submission_num);
     if (ret <= 0) {
-	errp(59, __func__, "snprintf to form entry directory failed");
+	errp(59, __func__, "snprintf to form submission directory failed");
 	not_reached();
     }
-    dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
+    dbg(DBG_HIGH, "submission directory path: %s", submission_dir);
 
     /*
-     * verify that the entry directory does not exist
+     * verify that the submission directory does not exist
      */
-    if (exists(entry_dir)) {
+    if (exists(submission_dir)) {
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nentry directory already exists: %s\n", entry_dir);
+	ret = fprintf(stderr, "\nsubmission directory already exists: %s\n", submission_dir);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error while informing that the entry directory already exists");
+	    warnp(__func__, "fprintf error while informing that the submission directory already exists");
 	}
 	fpara(stderr,
 	      "",
 	      "You need to move that directory, or remove it, or use a different work_dir.",
 	      "",
 	      NULL);
-	err(60, __func__, "entry directory exists: %s", entry_dir);
+	err(60, __func__, "submission directory exists: %s", submission_dir);
 	not_reached();
     }
-    dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
+    dbg(DBG_HIGH, "submission directory path: %s", submission_dir);
 
     /*
-     * make the entry directory
+     * make the submission directory
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = mkdir(entry_dir, 0755);
+    ret = mkdir(submission_dir, 0755);
     if (ret < 0) {
-	errp(61, __func__, "cannot mkdir %s with mode 0755", entry_dir);
+	errp(61, __func__, "cannot mkdir %s with mode 0755", submission_dir);
 	not_reached();
     }
 
@@ -1770,7 +1771,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
      *
      * We assume timestamps will be values of 12 decimal digits or less in the future. :-)
      */
-    *tarball_path = form_tar_filename(ioccc_id, entry_num, test_mode, tstamp);
+    *tarball_path = form_tar_filename(ioccc_id, submission_num, test_mode, tstamp);
     if (*tarball_path == NULL) {
 	errp(62, __func__, "failed to form compressed tarball path");
 	not_reached();
@@ -1778,9 +1779,9 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
     dbg(DBG_HIGH, "compressed tarball path: %s", *tarball_path);
 
     /*
-     * return entry directory
+     * return submission directory
      */
-    return entry_dir;
+    return submission_dir;
 }
 
 
@@ -1815,12 +1816,12 @@ warn_empty_prog(char const *prog_c)
 	  "",
 	  "The guidelines indicate that we tend to dislike programs that:",
 	  "",
-	  "    * are rather similar to previous winners  :-(",
+	  "    * are rather similar to previous winning entries  :-(",
 	  "",
 	  "Perhaps you have a different twist on an empty prog.c than yet another",
 	  "smallest self-replicating program.  If so, the you may proceed, although",
 	  "we STRONGLY suggest that you put into your remarks.md file, why your",
-	  "entry prog.c is not another smallest self-replicating program.",
+	  "submission prog.c is not another smallest self-replicating program.",
 	  "",
 	  NULL);
 	    yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
@@ -2186,27 +2187,27 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
 
 
 /*
- * check_prog_c - check prog_c arg and if OK, copy into entry_dir/prog.c
+ * check_prog_c - check prog_c arg and if OK, copy into submission_dir/prog.c
  *
  * Check if the prog_c argument is a readable file, and
  * if it is within the guidelines of iocccsize (or if the author overrides),
  * and if all is OK or overridden,
- * use cp to copy into entry_dir/prog.c.
+ * use cp to copy into submission_dir/prog.c.
  *
  * given:
  *      infop           - pointer to info structure
- *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
  *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
  *
  * This function does not return on error.
  */
 static RuleCount
-check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
+check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
     size_t prog_c_len;		/* length of the prog_c path */
-    size_t entry_dir_len;	/* length of the entry_dir path */
+    size_t submission_dir_len;	/* length of the submission_dir path */
     int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
     RuleCount size;		/* rule_count() processing results */
@@ -2214,13 +2215,13 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || cp == NULL || prog_c == NULL) {
+    if (infop == NULL || submission_dir == NULL || cp == NULL || prog_c == NULL) {
 	err(82, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    entry_dir_len = strlen(entry_dir);
-    if (entry_dir_len <= 0) {
-	err(83, __func__, "entry_dir arg is an empty string");
+    submission_dir_len = strlen(submission_dir);
+    if (submission_dir_len <= 0) {
+	err(83, __func__, "submission_dir arg is an empty string");
 	not_reached();
     }
     prog_c_len = strlen(prog_c);
@@ -2379,13 +2380,13 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     }
 
     /*
-     * copy prog.c under entry_dir
+     * copy prog.c under submission_dir
      */
-    dbg(DBG_HIGH, "about to perform: %s -- %s %s/prog.c", cp, prog_c, entry_dir);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %/prog.c", cp, prog_c, entry_dir);
+    dbg(DBG_HIGH, "about to perform: %s -- %s %s/prog.c", cp, prog_c, submission_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/prog.c", cp, prog_c, submission_dir);
     if (exit_code != 0) {
 	err(91, __func__, "%s -- %s %s/prog.c failed with exit code: %d",
-			  cp, prog_c, entry_dir, WEXITSTATUS(exit_code));
+			  cp, prog_c, submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -2666,7 +2667,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	    fpara(stderr,
 		  "  The Makefile appears to not have a clobber rule.",
 		  "    The clobber rule should restore the directory to the original submission state.",
-		  "    The clobber rule should depend on the clean rule and should remove the entry's program,",
+		  "    The clobber rule should depend on the clean rule and should remove the submission's program,",
 		  "    clean up after program execution (if needed) and restore the entire directory back",
 		  "    to the original submission state.",
 		  "",
@@ -2688,10 +2689,10 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	fpara(stderr,
 	      "Makefiles must have the following Makefile rules:",
 	      "",
-	      "    all - compile the entry, must be the first entry",
+	      "    all - compile the submission, must be the first submission",
 	      "    clean - remove intermediate compilation files",
-	      "    clobber - clean, remove compiled entry, restore to the original entry state",
-	      "    try - invoke the entry at least once",
+	      "    clobber - clean, remove compiled submission, restore to the original submission state",
+	      "    try - invoke the submission at least once",
 	      "",
 	      "While this program's parser may have missed finding those Makefile rules,",
 	      "chances are this file is not a proper Makefile under the IOCCC rules:",
@@ -2718,22 +2719,22 @@ warn_Makefile(char const *Makefile, struct info *infop)
 
 
 /*
- * check_Makefile - check Makefile arg and if OK, copy into entry_dir/Makefile
+ * check_Makefile - check Makefile arg and if OK, copy into submission_dir/Makefile
  *
  * Check if the Makefile argument is a readable file, and
  * if it has the proper rules (starting with all:),
- * use cp to copy into entry_dir/Makefile.
+ * use cp to copy into submission_dir/Makefile.
  *
  * given:
  *      infop           - pointer to info structure
- *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
  *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
+check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
     int exit_code;		/* exit code from shell_cmd() */
@@ -2741,7 +2742,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || cp == NULL || Makefile == NULL) {
+    if (infop == NULL || submission_dir == NULL || cp == NULL || Makefile == NULL) {
 	err(98, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -2796,13 +2797,13 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     }
 
     /*
-     * copy Makefile under entry_dir
+     * copy Makefile under submission_dir
      */
-    dbg(DBG_HIGH, "about to perform: %s --  %s %s/Makefile", cp, Makefile, entry_dir);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %/Makefile", cp, Makefile, entry_dir);
+    dbg(DBG_HIGH, "about to perform: %s --  %s %s/Makefile", cp, Makefile, submission_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/Makefile", cp, Makefile, submission_dir);
     if (exit_code != 0) {
 	err(104, __func__, "%s --  %s %s/Makefile failed with exit code: %d",
-			   cp, Makefile, entry_dir, WEXITSTATUS(exit_code));
+			   cp, Makefile, submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -2820,21 +2821,21 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 
 
 /*
- * check_remarks_md - check remarks_md arg and if OK, copy into entry_dir/Makefile
+ * check_remarks_md - check remarks_md arg and if OK, copy into submission_dir/Makefile
  *
  * Check if the remarks_md argument is a readable file, and
- * if it is not empty, use cp to copy into entry_dir/remarks.md.
+ * if it is not empty, use cp to copy into submission_dir/remarks.md.
  *
  * given:
  *      infop           - pointer to info structure
- *      entry_dir       - the newly created entry directory (by mk_entry_dir()) under work_dir
+ *      submission_dir  - the newly created submission directory (by mk_submission_dir()) under work_dir
  *      cp              - cp utility path
  *      remarks_md      - remarks_md arg: given path to author's remarks markdown file
  *
  * This function does not return on error.
  */
 static void
-check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
+check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
     int exit_code;		/* exit code from shell_cmd() */
@@ -2842,7 +2843,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || cp == NULL || remarks_md == NULL) {
+    if (infop == NULL || submission_dir == NULL || cp == NULL || remarks_md == NULL) {
 	err(106, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -2886,13 +2887,13 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
 
     /*
-     * copy remarks.md under entry_dir
+     * copy remarks.md under submission_dir
      */
-    dbg(DBG_HIGH, "about to perform: %s -- %s %s/remarks.md", cp, remarks_md, entry_dir);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %/remarks.md", cp, remarks_md, entry_dir);
+    dbg(DBG_HIGH, "about to perform: %s -- %s %s/remarks.md", cp, remarks_md, submission_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -- % %/remarks.md", cp, remarks_md, submission_dir);
     if (exit_code != 0) {
 	err(112, __func__, "%s -- %s %s/remarks.md failed with exit code: %d",
-			   cp, remarks_md, entry_dir, WEXITSTATUS(exit_code));
+			   cp, remarks_md, submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -2910,14 +2911,14 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
 
 
 /*
- * check_extra_data_files - check extra data files args and if OK, copy into entry_dir/Makefile
+ * check_extra_data_files - check extra data files args and if OK, copy into submission_dir/Makefile
  *
  * Check if the check extra data files are readable, and
- * use cp to copy into entry_dir/remarks.md.
+ * use cp to copy into submission_dir/remarks.md.
  *
  * given:
  *      infop           - pointer to info structure
- *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
  *      cp              - cp utility path
  *      count           - number of extra data files arguments
  *      args            - pointer to an array of strings starting with first extra data file
@@ -2925,13 +2926,13 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
  * This function does not return on error.
  */
 static void
-check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args)
+check_extra_data_files(struct info *infop, char const *submission_dir, char const *cp, int count, char **args)
 {
     char *base;			/* basename of extra data file */
     char *dest;			/* destination path of an extra data file */
     size_t base_len;		/* length of the basename of the data file */
     size_t dest_len;		/* length of the extra data file path */
-    size_t entry_dir_len;	/* length of the entry_dir path */
+    size_t submission_dir_len;	/* length of the submission_dir path */
     int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
     int i;
@@ -2939,7 +2940,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || cp == NULL || args == NULL) {
+    if (infop == NULL || submission_dir == NULL || cp == NULL || args == NULL) {
 	err(114, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -2967,7 +2968,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
     /*
      * process all of the extra args
      */
-    entry_dir_len = strlen(entry_dir);
+    submission_dir_len = strlen(submission_dir);
     for (i = 0; i < count && args[i] != NULL; ++i) {
 
 	/*
@@ -3057,14 +3058,14 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	 * form destination path
 	 */
 	infop->extra_file[i] = base;
-	dest_len = entry_dir_len + 1 + base_len + 1;
+	dest_len = submission_dir_len + 1 + base_len + 1;
 	errno = 0;		/* pre-clear errno for errp() */
 	dest = (char *)malloc(dest_len + 1);
 	if (dest == NULL) {
 	    errp(124, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(dest_len + 1));
 	    not_reached();
 	}
-	ret = snprintf(dest, dest_len, "%s/%s", entry_dir, base);
+	ret = snprintf(dest, dest_len, "%s/%s", submission_dir, base);
 	if (ret <= 0) {
 	    errp(125, __func__, "snprintf #0 error: %d", ret);
 	    not_reached();
@@ -3085,7 +3086,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	}
 
 	/*
-	 * copy remarks_md under entry_dir
+	 * copy remarks_md under submission_dir
 	 */
 	dbg(DBG_HIGH, "about to perform: %s -- %s %s", cp, args[i], dest);
 	exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, args[i], dest);
@@ -3216,9 +3217,9 @@ yes_or_no(char const *question)
 
 
 /*
- * get_title - get the title of the entry
+ * get_title - get the title of the submission
  *
- * Ask the user for an entry title, validate the response
+ * Ask the user for an submission title, validate the response
  * and return the allocated title.
  *
  * given:
@@ -3232,7 +3233,7 @@ yes_or_no(char const *question)
 static char *
 get_title(struct info *infop)
 {
-    char *title = NULL;		/* entry title to return or NULL */
+    char *title = NULL;		/* submission title to return or NULL */
     size_t len;			/* length of title */
     int ret;			/* libc function return */
 
@@ -3248,13 +3249,13 @@ get_title(struct info *infop)
      * inform the user of the title
      */
     if (need_hints) {
-	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
+	para("A submission title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
 	      "",
-	      "If your entry wins, the title might become the directory name of your entry,",
+	      "If your submission wins, the title might become the directory name of the winning entry,",
 	      "although the IOCCC judges might change the title for various reason.",
 	      "",
-	      "If you are submitting more than one entry, please make your titles unique",
-	      "amongst the entries that you submit to the current IOCCC.",
+	      "If you have more than one submission to submit, please make your titles unique",
+	      "amongst the submissions that you submit to the current IOCCC.",
 	      "",
 	      NULL);
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -3272,7 +3273,7 @@ get_title(struct info *infop)
 	/*
 	 * obtain the reply
 	 */
-	title = prompt("Enter a title for your entry", NULL);
+	title = prompt("Enter a title for your submission", NULL);
 
 	/*
 	 * title cannot be empty
@@ -3367,9 +3368,9 @@ get_title(struct info *infop)
 
 
 /*
- * get_abstract - get the abstract of the entry
+ * get_abstract - get the abstract of the submission
  *
- * Ask the user for an entry abstract, validate the response
+ * Ask the user for a submission abstract, validate the response
  * and return the allocated abstract.
  *
  * given:
@@ -3383,7 +3384,7 @@ get_title(struct info *infop)
 static char *
 get_abstract(struct info *infop)
 {
-    char *abstract = NULL;	/* entry abstract to return or NULL */
+    char *abstract = NULL;	/* submission abstract to return or NULL */
     size_t len;			/* length of abstract */
     int ret;			/* libc function return */
 
@@ -3399,7 +3400,7 @@ get_abstract(struct info *infop)
      * inform the user of the abstract
      */
     para("",
-	 "An entry abstract is 1-line summary of your entry.",
+	 "A submission abstract is 1-line summary of your submission.",
 	 "",
 	 NULL);
 
@@ -3411,7 +3412,7 @@ get_abstract(struct info *infop)
 	/*
 	 * obtain the reply
 	 */
-	abstract = prompt("Enter a 1-line abstract of your entry", NULL);
+	abstract = prompt("Enter a 1-line abstract of your submission", NULL);
 
 	/*
 	 * abstract cannot be empty
@@ -3475,7 +3476,7 @@ get_abstract(struct info *infop)
 
 
 /*
- * get_author_info - obtain information on entry authors
+ * get_author_info - obtain information on submission authors
  *
  * given:
  *      author_set      - pointer to array of authors
@@ -3517,7 +3518,7 @@ get_author_info(struct author **author_set_p)
 	/*
 	 * ask for author count
 	 */
-	author_count_str = prompt("\nEnter the number of authors of this entry", NULL);
+	author_count_str = prompt("\nEnter the number of authors of this submission", NULL);
 
 	/*
 	 * convert author_count_str to number
@@ -3574,10 +3575,10 @@ get_author_info(struct author **author_set_p)
      */
     if (need_hints) {
 	para("",
-	     "We will now ask for information about the author(s) of this entry.",
+	     "We will now ask for information about the author(s) of this submission.",
 	     "",
-	     "Information that you supply, if your entry is selected as a winner,",
-	     "will be published with your entry.",
+	     "Information that you supply, if your submission is selected as a winning entry,",
+	     "will be published with your submission.",
 	     "",
 	     "Except for your name and location/country code, you can opt out of providing it,",
 	     "(or if you don't have the thing we are asking for), by just pressing return.",
@@ -4312,17 +4313,17 @@ get_author_info(struct author **author_set_p)
 	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
 
 	/*
-	 * ask if they are a past IOCCC winner
+	 * ask if they are a past IOCCC winning author
 	 */
 	if (need_hints) {
 	    para("",
-	        "Please note: your next answer will not affect your chances of winning the IOCCC.",
-		"We just need to know if you are a past IOCCC winner in case you do win.",
+	        "Please note: your next answer will not affect your chances of winning the IOCCC;",
+		"we just need to know if you are a past IOCCC winning author in case you do win.",
 		"This will simply help us identify all of your winning entries on the IOCCC website.",
 		"",
 		NULL);
 	}
-	author_set[i].past_winner = yes_or_no("Are you a past IOCCC winner? [yn]");
+	author_set[i].past_winning_author = yes_or_no("Are you a past IOCCC winning author? [yn]");
 
 	/*
 	 * ask for IOCCC author handle
@@ -4330,18 +4331,20 @@ get_author_info(struct author **author_set_p)
 	do {
 
 	    /*
-	     * past IOCCC winner extra prompt
+	     * past IOCCC winning author extra prompt
 	     */
-	    if (author_set[i].past_winner == true) {
+	    if (author_set[i].past_winning_author == true) {
 
 #if defined(IOCCC_WINNER_HANDLE_READY)
 		/*
-		 * explain to the past IOCCC winner
+		 * explain to the past IOCCC winning author
 		 */
 		if (need_hints) {
-		    /* TODO: update to show how past IOCCC winner can find their IOCCC winner handle */
+		    /* TODO: update to show how past IOCCC winning authors can
+		     * find their IOCCC winner handles
+		     */
 		    para("",
-		         "As a self-declared past IOCCC winner, we recommend that you enter your",
+		         "As a self-declared past IOCCC winning author, we recommend that you enter your",
 			 "IOCCC winner handle instead of just pressing return, unless of course, the",
 			 "below mentioned default IOCCC author handle happens to be your IOCCC winner handle. :-)",
 			 "",
@@ -4350,8 +4353,8 @@ get_author_info(struct author **author_set_p)
 			 "",
 			 "     TODO: explain how to find an IOCCC winner handle",
 			 "",
-			 "By entering your IOCCC winner handle, you will help us match up this entry",
-			 "on the website should you happen to win (again) with this entry.",
+			 "By entering your IOCCC winner handle, you will help us match up this submission",
+			 "on the website should you happen to win (again) with this submission.",
 			 NULL);
 		}
 #endif /* IOCCC_WINNER_HANDLE_READY */
@@ -4494,8 +4497,8 @@ get_author_info(struct author **author_set_p)
 						 printf("GitHub username: %s\n", author_set[i].github)) <= 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n") :
 						      printf("Affiliation: %s\n", author_set[i].affiliation)) <= 0 ||
-	    ((author_set[i].past_winner == true) ? printf("Author claims to be a past IOCCC winner\n") :
-						   printf("Author claims to not be a past IOCCC winner\n")) <= 0 ||
+	    ((author_set[i].past_winning_author == true) ? printf("Author claims to be a past IOCCC winning author\n") :
+						   printf("Author claims to not be a past IOCCC winning author\n")) <= 0 ||
 	    ((author_set[i].default_handle == true) ? printf("Default IOCCC author handle was accepted\n") :
 						      printf("IOCCC author handle was manually entered\n"))  <= 0 ||
 	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC author handle\n\n") :
@@ -4528,42 +4531,42 @@ get_author_info(struct author **author_set_p)
 
 
 /*
- * verify_entry_dir - ask user to verify the contents of the entry directory
+ * verify_submission_dir - ask user to verify the contents of the submission directory
  *
  * given:
- *      entry_dir       - path to entry directory
+ *      submission_dir       - path to submission directory
  *      ls              - path to ls utility
  *
  * This function does not return on error.
  */
 static void
-verify_entry_dir(char const *entry_dir, char const *ls)
+verify_submission_dir(char const *submission_dir, char const *ls)
 {
     int exit_code;		/* exit code from shell_cmd() */
     bool yorn = false;		/* response to a question */
     FILE *ls_stream;		/* pipe from iocccsize -V */
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
-    int kdirsize;		/* number of kibibyte (2^10) blocks in entry directory */
+    int kdirsize;		/* number of kibibyte (2^10) blocks in submission directory */
     char guard;			/* scanf guard to catch excess amount of input */
     int ret;			/* libc function return */
 
     /*
      * firewall
      */
-    if (entry_dir == NULL || ls == NULL) {
+    if (submission_dir == NULL || ls == NULL) {
 	err(136, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     /*
-     * list the contents of the entry_dir
+     * list the contents of the submission_dir
      */
-    para("The following is a listing of the entry directory:",
+    para("The following is a listing of the submission directory:",
 	 "",
 	 NULL);
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = printf("    %s\n", entry_dir);
+    ret = printf("    %s\n", submission_dir);
     if (ret <= 0) {
 	warnp(__func__, "printf error code: %d", ret);
     }
@@ -4571,28 +4574,28 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	 "from which the xz tarball will be formed:",
 	 "",
 	 NULL);
-    dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lak .", entry_dir, ls);
-    exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lak .", entry_dir, ls);
+    dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lak .", submission_dir, ls);
+    exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lak .", submission_dir, ls);
     if (exit_code != 0) {
 	err(137, __func__, "cd -- %s && %s -lak . failed with exit code: %d",
-			   entry_dir, ls, WEXITSTATUS(exit_code));
+			   submission_dir, ls, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
     /*
      * open pipe to the ls command
      */
-    dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lak .", entry_dir, ls);
-    ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lak .", entry_dir, ls);
+    dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lak .", submission_dir, ls);
+    ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lak .", submission_dir, ls);
     if (ls_stream == NULL) {
-	err(138, __func__, "popen filed for: cd -- %s && %s -lak .", entry_dir, ls);
+	err(138, __func__, "popen filed for: cd -- %s && %s -lak .", submission_dir, ls);
 	not_reached();
     }
 
     /*
      * read the first line - contains the total kibibyte (2^10) block line
      */
-    dbg(DBG_HIGH, "reading first line from popen of ls of entry_dir: %s", entry_dir);
+    dbg(DBG_HIGH, "reading first line from popen of ls of submission_dir: %s", submission_dir);
     readline_len = readline(&linep, ls_stream);
     if (readline_len < 0) {
 	err(139, __func__, "EOF while reading first line from ls: %s", ls);
@@ -4613,7 +4616,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	err(141, __func__, "ls k-block value: %d <= 0", kdirsize);
 	not_reached();
     }
-    dbg(DBG_LOW, "entry directory %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
+    dbg(DBG_LOW, "submission directory %s size in kibibyte (1024 byte blocks): %d", submission_dir, kdirsize);
 
     /*
      * close down pipe
@@ -4629,14 +4632,14 @@ verify_entry_dir(char const *entry_dir, char const *ls)
      * ask the user to verify the list if not -y
      */
     if (!answer_yes) {
-	yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
+	yorn = yes_or_no("\nIs the above list a correct list of files in your submission? [yn]");
 	if (!yorn) {
 	    fpara(stderr,
 		  "",
-		  "We suggest you remove the existing entry directory, and then",
+		  "We suggest you remove the existing submission directory, and then",
 		  "rerun this tool with the correct set of file arguments.",
 		  NULL);
-	    err(142, __func__, "user rejected listing of entry_dir: %s", entry_dir);
+	    err(142, __func__, "user rejected listing of submission_dir: %s", submission_dir);
 	    not_reached();
 	}
     }
@@ -4654,11 +4657,11 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 /*
  * write_info - create the .info.json file
  *
- * Form a simple JSON .info file describing the entry.
+ * Form a simple JSON .info file describing the submission.
  *
  * given:
  *      infop           - pointer to info structure
- *      entry_dir       - path to entry directory
+ *      submission_dir  - path to submission directory
  *      chkentry	- path to chkentry tool
  *      fnamchk		- path to fnamchk tool
  *
@@ -4668,7 +4671,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, char const *chkentry, char const *fnamchk)
+write_info(struct info *infop, char const *submission_dir, char const *chkentry, char const *fnamchk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -4684,7 +4687,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || chkentry == NULL || fnamchk == NULL) {
+    if (infop == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
 	err(143, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -4749,7 +4752,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
     /*
      * open .info.json for writing
      */
-    info_path_len = strlen(entry_dir) + 1 + LITLEN(INFO_JSON_FILENAME) + 1;
+    info_path_len = strlen(submission_dir) + 1 + LITLEN(INFO_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
@@ -4757,7 +4760,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(info_path, info_path_len, "%s/%s", entry_dir, INFO_JSON_FILENAME);
+    ret = snprintf(info_path, info_path_len, "%s/%s", submission_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
 	errp(149, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
@@ -4785,7 +4788,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	json_fprintf_value_string(info_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "submission_num", " : ", (long)infop->submission_num, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
@@ -4941,14 +4944,14 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     authp->fnamchk_ver = infop->fnamchk_ver;
     authp->iocccsize_ver = infop->iocccsize_ver;
     authp->txzchk_ver = infop->txzchk_ver;
-    /* copy over entry information */
+    /* copy over submission information */
     errno = 0;			/* pre-clear errno for errp() */
     authp->ioccc_id = strdup(infop->ioccc_id);
     if (authp->ioccc_id == NULL) {
 	errp(161, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
-    authp->entry_num = infop->entry_num;
+    authp->submission_num = infop->submission_num;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
@@ -4984,18 +4987,18 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
 /*
  * write_auth - create the .auth.json file
  *
- * Form a simple JSON .author file describing the entry.
+ * Form a simple JSON .author file describing the submission.
  *
  * given:
  *      authp           - pointer to auth structure
- *      entry_dir       - path to entry directory
+ *      submission_dir  - path to submission directory
  *      chkentry	- path to chkentry tool
  *      fnamchk		- path to fnamchk tool
  *
  * This function does not return on error.
  */
 static void
-write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk)
+write_auth(struct auth *authp, char const *submission_dir, char const *chkentry, char const *fnamchk)
 {
     char *auth_path;		/* path to .auth.json file */
     size_t auth_path_len;	/* length of path to .auth.json */
@@ -5007,7 +5010,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
     /*
      * firewall
      */
-    if (authp == NULL || entry_dir == NULL || chkentry == NULL || fnamchk == NULL) {
+    if (authp == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
 	err(164, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5023,7 +5026,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
     /*
      * open .auth.json for writing
      */
-    auth_path_len = strlen(entry_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
+    auth_path_len = strlen(submission_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     auth_path = (char *)malloc(auth_path_len + 1);
     if (auth_path == NULL) {
@@ -5031,7 +5034,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(auth_path, auth_path_len, "%s/%s", entry_dir, AUTH_JSON_FILENAME);
+    ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
 	errp(168, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
@@ -5058,7 +5061,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	json_fprintf_value_string(auth_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
 	json_fprintf_value_string(auth_stream, "\t", "tarball", " : ", authp->tarball, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "entry_num", " : ", (long)authp->entry_num, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "submission_num", " : ", (long)authp->submission_num, ",\n") &&
 	json_fprintf_value_long(auth_stream, "\t", "author_count", " : ", (long)authp->author_count, ",\n") &&
 	json_fprintf_value_bool(auth_stream, "\t", "test_mode", " : ", authp->test_mode, ",\n") &&
 	fprintf(auth_stream, "\t\"authors\" : [\n") > 0;
@@ -5083,7 +5086,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
-	    json_fprintf_value_bool(auth_stream, "\t\t\t", "past_winner", " : ", ap->past_winner, ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "\t\t\t", "past_winning_author", " : ", ap->past_winning_author, ",\n") &&
 	    json_fprintf_value_bool(auth_stream, "\t\t\t", "default_handle", " : ", ap->default_handle, ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
 	    json_fprintf_value_long(auth_stream, "\t\t\t", "author_number", " : ", ap->author_num, "\n") &&
@@ -5152,13 +5155,13 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 /*
  * form_tarball - form the compressed tarball
  *
- * Given the completed entry directory, form a compressed tar file for the user to submit.
+ * Given the completed submission directory, form a compressed tarball for the user to submit.
  * Remind the user where to submit their compressed tarball file. The function
  * shows the listing of the tarball contents via the txzchk tool and the fnamchk tool.
  *
  * given:
- *      work_dir        - working directory under which the entry directory is formed
- *      entry_dir       - path to entry directory
+ *      work_dir        - working directory under which the submission directory is formed
+ *      submission_dir  - path to submission directory
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
  *      ls              - path to ls utility
@@ -5168,10 +5171,10 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
  * This function does not return on error.
  */
 static void
-form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
+form_tarball(char const *work_dir, char const *submission_dir, char const *tarball_path, char const *tar,
 	     char const *ls, char const *txzchk, char const *fnamchk)
 {
-    char *basename_entry_dir;	/* basename of the entry directory */
+    char *basename_submission_dir;	/* basename of the submission directory */
     char *basename_tarball_path;/* basename of tarball_path */
     int exit_code;		/* exit code from shell_cmd() */
     struct stat buf;		/* stat of the tarball */
@@ -5181,17 +5184,17 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * firewall
      */
-    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
+    if (work_dir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
 	err(175, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     /*
-     * verify entry directory contents
+     * verify submission directory contents
      */
-    verify_entry_dir(entry_dir, ls);
-    dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
+    verify_submission_dir(submission_dir, ls);
+    dbg(DBG_LOW, "verified submission directory: %s", submission_dir);
 
     /*
      * note the current directory so we can restore it later, after the chdir(work_dir) below
@@ -5204,7 +5207,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     }
 
     /*
-     * cd into the work_dir, just above the entry_dir and where the compressed tarball will be formed
+     * cd into the work_dir, just above the submission_dir and where the compressed tarball will be formed
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(work_dir);
@@ -5230,15 +5233,15 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	para("", NULL);
     }
 
-    basename_entry_dir = base_name(entry_dir);
+    basename_submission_dir = base_name(submission_dir);
     basename_tarball_path = base_name(tarball_path);
     dbg(DBG_HIGH, "about to perform: %s --format=v7 -cJf %s -- %s",
-		   tar, basename_tarball_path, basename_entry_dir);
+		   tar, basename_tarball_path, basename_submission_dir);
     exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
-				    tar, basename_tarball_path, basename_entry_dir);
+				    tar, basename_tarball_path, basename_submission_dir);
     if (exit_code != 0) {
 	err(178, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
-			   tar, basename_tarball_path, basename_entry_dir, WEXITSTATUS(exit_code));
+			   tar, basename_tarball_path, basename_submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -5282,12 +5285,12 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      * perform the txzchk which will indirectly show the user the tarball contents
      */
     dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s/../%s",
-		  txzchk, fnamchk, entry_dir, basename_tarball_path);
+		  txzchk, fnamchk, submission_dir, basename_tarball_path);
     exit_code = shell_cmd(__func__, false, true, "% -q -F % -- %/../%",
-					  txzchk, fnamchk, entry_dir, basename_tarball_path);
+					  txzchk, fnamchk, submission_dir, basename_tarball_path);
     if (exit_code != 0) {
 	err(183, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
-			   txzchk, fnamchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
+			   txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     para("",
@@ -5298,9 +5301,9 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * free memory
      */
-    if (basename_entry_dir != NULL) {
-	free(basename_entry_dir);
-	basename_entry_dir = NULL;
+    if (basename_submission_dir != NULL) {
+	free(basename_submission_dir);
+	basename_submission_dir = NULL;
     }
     if (basename_tarball_path != NULL) {
 	free(basename_tarball_path);
@@ -5314,8 +5317,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  * remind_user - remind the user to upload (if not in test mode)
  *
  * given:
- *      work_dir        - working directory under which the entry directory is formed
- *      entry_dir       - path to entry directory
+ *      work_dir        - working directory under which the submission directory is formed
+ *      submission_dir  - path to submission directory
  *      tar             - path to the tar utility
  *      tarball_path    - path of the compressed tarball to form
  *      test_mode       - true ==> test mode, do not upload
@@ -5323,39 +5326,39 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      infop		- pointer to info structure
  */
 static void
-remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
+remind_user(char const *work_dir, char const *submission_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */
-    char *entry_dir_esc;
+    char *submission_dir_esc;
     char *work_dir_esc;
 
     /*
      * firewall
      */
-    if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
+    if (work_dir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
 	err(184, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
-    entry_dir_esc = cmdprintf("%", entry_dir);
-    if (entry_dir_esc == NULL) {
-	err(185, __func__, "failed to cmdprintf: entry_dir");
+    submission_dir_esc = cmdprintf("%", submission_dir);
+    if (submission_dir_esc == NULL) {
+	err(185, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
     /*
-     * tell user they can now remove entry_dir
+     * tell user they can now remove submission_dir
      */
     para("Now that we have formed the compressed tarball file, you",
-	 "can remove the entry directory we have formed by executing:",
+	 "can remove the submission directory we have formed by executing:",
 	 "",
 	 NULL);
-    ret = printf("    rm -rf %s%s\n", entry_dir[0] == '-' ? "-- " : "", entry_dir_esc);
+    ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
 	errp(186, __func__, "printf #0 error");
 	not_reached();
     }
-    free(entry_dir_esc);
+    free(submission_dir_esc);
 
     work_dir_esc = cmdprintf("%", work_dir);
     if (work_dir_esc == NULL) {
@@ -5381,17 +5384,18 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
     if (test_mode) {
 
 	/*
-	 * remind them that this is a test entry, not an official entry
+	 * remind them that this is a test submission, not an official
+	 * submission
 	 */
 	para("",
 	     "As you entered an IOCCC contest ID of 'test', the compressed tarball",
-	     "that was just formed CANNOT be used as an IOCCC entry. Please",
-	     "do NOT email the Judges your entry!"
+	     "that was just formed CANNOT be used as an IOCCC submission. Please",
+	     "do NOT email the Judges your submission!"
 	     "", "",
 	     NULL);
 
     /*
-     * case: entry mode
+     * case: submission mode
      */
     } else {
 
@@ -5410,7 +5414,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
  *
  * If the submit server is ready we will tell the user how to register as a
  * contestant. If it is NOT ready we will tell them they cannot register as a
- * contestant and implicitly that they may NOT submit an entry.
+ * contestant and implicitly that they may NOT submit to the contest.
  *
  */
 static void
@@ -5424,7 +5428,7 @@ show_registration_url(void)
      * print information about how to register for the IOCCC
      */
     para("",
-	 "To submit entries to the IOCCC, you must be a registered contestant and have received an",
+	 "To submit to the IOCCC, you must be a registered contestant and have received an",
 	 "IOCCC contest ID (via email) shortly after you've successfully registered.  To do so,",
 	 "please visit:",
 	 "",
@@ -5466,13 +5470,13 @@ show_registration_url(void)
  * show_submit_url
  *
  * If the submit server is ready we will tell the user where they may submit
- * their entry if the contest is still open. If the submit server is NOT open
+ * their submission if the contest is still open. If the submit server is NOT open
  * we will tell them that the server is not ready and that they CANNOT submit
- * their entry.
+ * their submission.
  *
  * given:
  *	    work_dir	    - work directory
- *	    tarball_path    - path to the entry tarball
+ *	    tarball_path    - path to the submission tarball
  *
  * NOTE: if either work_dir or tarball_path is NULL we will do nothing in the
  * assumption that the server is NOT ready (though they shouldn't be NULL
@@ -5499,8 +5503,7 @@ show_submit_url(char const *work_dir, char const *tarball_path)
      * print information the tarball that was formed
      */
     para("",
-	 "Once you've registered, you may submit your entry by uploading",
-	 "the following tarball:",
+	 "Once you've registered, you may submit the following tarball:",
 	 "",
 	 NULL);
     ret = printf("    %s/%s\n", work_dir, tarball_path);

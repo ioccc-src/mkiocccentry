@@ -41,7 +41,7 @@
 #
 # Maintain this list towards the top of file, in sorted order.
 #
-# Do NOT put this tool (bug_report.sh) in the list, it you will
+# Do NOT put this tool (bug_report.sh) in the list, it will
 # cause an infinite loop.
 #
 export TOOLS="

@@ -21,7 +21,7 @@
 #
 export FAILURE_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0 2023-02-04"
+export PREP_VERSION="1.0.1 2024-03-02"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 

@@ -70,8 +70,6 @@ extern bool chk_chkentry_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_empty_override(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_entry_num(struct json const *node,
-	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_first_rule_is_all(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_fnamchk_version(struct json const *node,
@@ -113,6 +111,8 @@ extern bool chk_rule_2a_size(struct json const *node,
 extern bool chk_rule_2b_override(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_rule_2b_size(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_submission_num(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_tarball(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

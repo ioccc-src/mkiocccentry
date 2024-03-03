@@ -486,9 +486,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     char *affiliation = NULL;		/* author affiliation or NULL ==> not provided */
     bool found_affiliation = false;	/* true ==> found affiliation in node */
     bool affiliation_withheld = false;	/* true ==> author affiliation withheld */
-    bool past_winner = false;		/* true ==> author claims to have won before */
-					/* false ==> author claims not a prev winner */
-    bool found_past_winner = false;	/* true ==> found past_winner in node */
+    bool past_winning_author = false;		/* true ==> author claims to have won before */
+					/* false ==> author claims they have not won before */
+    bool found_past_winning_author = false;	/* true ==> found past_winning_author in node */
     bool default_handle = false;	/* true ==> default author_handle accepted */
 					/* false ==> author_handle entered */
     bool found_default_handle = false;	/* true ==> found default_handle in node */
@@ -831,11 +831,11 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		affiliation_withheld = false;
 	    }
 
-	/* case: IOCCC author past_winner */
-	} else if (strcmp(obj_name, "past_winner") == 0) {
+	/* case: IOCCC author past_winning_author */
+	} else if (strcmp(obj_name, "past_winning_author") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
-	    if (found_past_winner == true) {
+	    if (found_past_winning_author == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(75, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
@@ -843,7 +843,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		}
 		return false;
 	    }
-	    found_past_winner = true;
+	    found_past_winning_author = true;
 
 	    /* obtain value as JTYPE_BOOL */
 	    bool_val = sem_member_value_bool(e, depth+2, sem, __func__, NULL);
@@ -855,7 +855,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		}
 		return false;
 	    }
-	    past_winner = *bool_val;
+	    past_winning_author = *bool_val;
 
 	/* case: IOCCC author default_handle */
 	} else if (strcmp(obj_name, "default_handle") == 0) {
@@ -1005,10 +1005,10 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-    if (found_past_winner == false) {
+    if (found_past_winning_author == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(92, node, depth, sem, __func__,
-				    "author array index[%d]: missing past_winner", author_num);
+				    "author array index[%d]: missing past_winning_author", author_num);
 	}
 	return false;
     }
@@ -1157,10 +1157,10 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-    if (test_past_winner(past_winner) == false) {
+    if (test_past_winning_author(past_winning_author) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(109, node, depth, sem, __func__,
-				    "author array index[%d]: past_winner is invalid", author_num);
+				    "author array index[%d]: past_winning_author is invalid", author_num);
 	}
 	return false;
     }
@@ -1281,7 +1281,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	free_author_array(auth, 1);
 	return false;
     }
-    auth->past_winner = past_winner;
+    auth->past_winning_author = past_winning_author;
     auth->default_handle = default_handle;
     errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->author_handle = strdup(author_handle);
@@ -1821,7 +1821,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *
  * given:
  *	IOCCC_contest_id	IOCCC contest UUID or test
- *	entry_num		IOCCC entry number
+ *	submission_num		IOCCC entry number
  *	test_mode		true ==> IOCCC entry is just a test
  *	formed_timestamp	timestamp of when entry was formed
  *
@@ -1829,7 +1829,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *	malloced tarball filename or NULL ==> error
  */
 char *
-form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
+form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mode,
 		  time_t formed_timestamp)
 {
     size_t tarball_len;			/* length of the compressed tarball path */
@@ -1848,9 +1848,9 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 		 "invalid: IOCCC_contest_id is empty");
 	return NULL;
     }
-    test = test_entry_num(entry_num);
+    test = test_submission_num(submission_num);
     if (test == false) {
-	/* test_entry_num() already issued json_dbg() messages */
+	/* test_submission_num() already issued json_dbg() messages */
 	return NULL;
     }
     test = test_formed_timestamp(formed_timestamp);
@@ -1894,7 +1894,7 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
     /*
      * allocate space for tarball filename
      */
-    tarball_len = LITLEN("entry.") + strlen(IOCCC_contest_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.txz") + 1;
+    tarball_len = LITLEN("entry.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMISSION_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for warnp() */
     tarball_filename = (char *)malloc(tarball_len + 1);
     if (tarball_filename == NULL) {
@@ -1910,11 +1910,11 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%ju.txz",
-		       IOCCC_contest_id, entry_num, (uintmax_t)formed_timestamp);
+		       IOCCC_contest_id, submission_num, (uintmax_t)formed_timestamp);
     } else {
 	/* case: signed time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%jd.txz",
-		       IOCCC_contest_id, entry_num, (intmax_t)formed_timestamp);
+		       IOCCC_contest_id, submission_num, (intmax_t)formed_timestamp);
     }
     if (ret <= 0) {
 	warnp(__func__, "snprintf to form compressed tarball path failed");
@@ -2806,33 +2806,33 @@ test_empty_override(bool boolean)
 
 
 /*
- * test_entry_num - test if entry_num is valid
+ * test_submission_num - test if submission_num is valid
  *
- * Determine if entry_num is within the proper limits.
+ * Determine if submission_num is within the proper limits.
  *
  * given:
- *	entry_num	author number
+ *	submission_num	author number
  *
  * returns:
- *	true ==> entry_num is valid,
- *	false ==> entry_num is NOT valid, or some internal error
+ *	true ==> submission_num is valid,
+ *	false ==> submission_num is NOT valid, or some internal error
  */
 bool
-test_entry_num(int entry_num)
+test_submission_num(int submission_num)
 {
     /*
      * validate count
      */
-    if (entry_num < 0) {
+    if (submission_num < 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: entry_num: %d < 0", entry_num);
+		 "invalid: submission_num: %d < 0", submission_num);
 	return false;
-    } else if (entry_num > MAX_ENTRY_NUM) {
+    } else if (submission_num > MAX_SUBMISSION_NUM) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: entry_num: %d > MAX_AUTHORS: %d", entry_num, MAX_ENTRY_NUM);
+		 "invalid: submission_num: %d > MAX_AUTHORS: %d", submission_num, MAX_SUBMISSION_NUM);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "entry_num is valid");
+    json_dbg(JSON_DBG_MED, __func__, "submission_num is valid");
     return true;
 }
 
@@ -3900,9 +3900,9 @@ test_nul_warning(bool boolean)
 
 
 /*
- * test_past_winner - test if past_winner is valid
+ * test_past_winning_author - test if past_winning_author is valid
  *
- * Determine if past_winner boolean is valid.  :-)
+ * Determine if past_winning_author boolean is valid.  :-)
  * Well this isn't much of a test, but we have to keep
  * up with the general form of tests!  :-)
  *
@@ -3914,9 +3914,9 @@ test_nul_warning(bool boolean)
  *	false ==> bool is NOT valid, or some internal error
  */
 bool
-test_past_winner(bool boolean)
+test_past_winning_author(bool boolean)
 {
-    json_dbg(JSON_DBG_MED, __func__, "past_winner is %s", booltostr(boolean));
+    json_dbg(JSON_DBG_MED, __func__, "past_winning_author is %s", booltostr(boolean));
     return true;
 }
 
@@ -4120,7 +4120,7 @@ test_rule_2b_size(size_t rule_2b_size)
  * given:
  *	str			tarball to test
  *	IOCCC_contest_id	IOCCC contest UUID or test
- *	entry_num		IOCCC entry number
+ *	submission_num		IOCCC entry number
  *	test_mode		true ==> IOCCC entry is just a test
  *	formed_timestamp	timestamp of when entry was formed
  *
@@ -4129,7 +4129,7 @@ test_rule_2b_size(size_t rule_2b_size)
  *	false ==> tarball is NOT valid, or some internal error
  */
 bool
-test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
+test_tarball(char const *str, char const *IOCCC_contest_id, int submission_num, bool test_mode,
 	     time_t formed_timestamp)
 {
     char *tar_filename = NULL;	/* formed tarball filename */
@@ -4154,9 +4154,9 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
 		 "invalid: IOCCC_contest_id is empty");
 	return false;
     }
-    test = test_entry_num(entry_num);
+    test = test_submission_num(submission_num);
     if (test == false) {
-	/* test_entry_num() already issued json_dbg() messages */
+	/* test_submission_num() already issued json_dbg() messages */
 	return false;
     }
     test = test_formed_timestamp(formed_timestamp);
@@ -4200,7 +4200,7 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
     /*
      * form a malloced valid tarball filename
      */
-    tar_filename = form_tar_filename(IOCCC_contest_id, entry_num, test_mode, formed_timestamp);
+    tar_filename = form_tar_filename(IOCCC_contest_id, submission_num, test_mode, formed_timestamp);
     if (tar_filename == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: form_tar_filename failed and returned NULL");

@@ -45,7 +45,7 @@
 /*
  * official jnum_gen version
  */
-#define JNUM_GEN_VERSION "1.0 2023-02-04"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message

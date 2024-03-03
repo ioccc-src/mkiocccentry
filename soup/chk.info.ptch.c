@@ -1,5 +1,5 @@
---- ref/info.reference.json.c	2023-01-09 08:20:22
-+++ chk_sem_info.c	2023-01-09 08:19:42
+--- ref/info.reference.json.c	2024-03-02 05:59:12
++++ chk_sem_info.c	2024-03-02 06:00:03
 @@ -39,17 +39,17 @@
  
  struct json_sem sem_info[SEM_INFO_LEN+1] = {

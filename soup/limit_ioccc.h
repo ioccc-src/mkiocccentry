@@ -49,9 +49,9 @@
 #define MANDATORY_FILE_COUNT (5)		/* number of required files in an entry */
 /* NOTE: MAX_FILE_COUNT must be > MANDATORY_FILE_COUNT */
 #define MAX_FILE_COUNT (42)		/* maximum number of files in an entry (MANDATORY_FILE_COUNT + extra files) */
-/* NOTE: MAX_ENTRY_NUM must be < 10 to the MAX_ENTRY_CHARS power */
-#define MAX_ENTRY_NUM (9)		/* entry numbers from 0 to MAX_ENTRY_NUM */
-#define MAX_ENTRY_CHARS (1)		/* characters that represent the maximum entry number */
+/* NOTE: MAX_SUBMISSION_NUM must be < 10 to the MAX_SUBMISSION_CHARS power */
+#define MAX_SUBMISSION_NUM (9)		/* entry numbers from 0 to MAX_SUBMISSION_NUM */
+#define MAX_SUBMISSION_CHARS (1)		/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)			/* maximum number of authors of an entry */
 #define MAX_AUTHORS_CHARS (1)		/* characters that represent the author number */
 #define MAX_NAME_LEN (48)		/* max author name length */

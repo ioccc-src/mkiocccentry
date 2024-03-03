@@ -1,5 +1,46 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.58 2024-03-02
+
+Address part (possibly all) of the issue of new IOCCC terms (only part because
+some things need to be decided still especially with file names and related
+specifics but possibly all if it's decided these should stay the same).
+
+Changed version of `txzchk` to `"1.0.3 2024-03-02"`.
+Changed version of `fnamchk` to `"1.0.1 2024-03-02"`.
+Changed version of `mkiocccentry` to `"1.0.3 2024-03-02"`.
+Changed `AUTH_VERSION` to `"1.20 2024-03-02"`.
+Changed `INFO_VERSION` to `"1.15 2024-03-02`".
+
+In many cases the word `entry` was changed to `submission`. For `chkentry` and
+`mkiocccentry` it has been decided to keep the names. However in text, variable
+and comments the word is now `submission`. It is not clear, however, if a
+submission directory needs to have a different prefix (currently it's `entry.`).
+If this is necessary then more changes will have to be made. If it needs to be
+renamed then changes in `fnamchk` and `txzchk` plus data files (at the very
+least - there might be other places that'd have to be updated) will have to be
+made.
+
+`winner`/`winners` changed to `winning author`/`winning authors` (a more
+thorough check has to be performed to make sure all are caught, see below). A
+winning submission is an entry and at least in some cases this is now clear. In
+the case of `winner_handle` (or even just `winner handle`) this was not changed.
+There already exists an `author_handle` and that's what is in the files but in
+comments `winner_handle` also exists. In other words this ambiguity should be
+addressed.
+
+The json `past_winner` was changed to `past_winning_author`. This
+involved updating some patch files and all the auth json files as well.
+
+Typo fix in `bug_report.sh`. No version update.
+
+In many cases (not all) the year 2023 was changed to 2024. The `IOCCC_YEAR` was
+NOT updated to 2024 as this causes other problems that require a bit more time.
+
+A fun problem to resolve is the text along the lines of 'submit your entry'
+being changed to 'submit your submission'. In some cases the surrounding text
+was reworded but not in all. If you like this can be submissions all the way
+down!
 
 ## Release 1.0.57 2024-01-21
 
@@ -281,7 +322,6 @@ colourful update in the three files.
 
 Typo fix in `print_test.c` and make a comment that exists in more than one place
 consistent in location.
-
 
 ## Release 1.0.45 2023-08-01
 
