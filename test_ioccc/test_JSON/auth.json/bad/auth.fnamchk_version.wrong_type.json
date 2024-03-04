@@ -3,7 +3,7 @@
 	"IOCCC_auth_version" : "1.20 2024-03-02",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.3 2024-03-02",
+	"mkiocccentry_version" : "1.0.4 2024-03-03",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : null,
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
