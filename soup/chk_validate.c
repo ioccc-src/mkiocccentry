@@ -2130,7 +2130,7 @@ chk_location_name(struct json const *node,
     /*
      * verify that the location name (str) and the location code refer to the same place
      */
-    test = location_code_name_match(location_code, str);
+    test = location_code_name_match(location_code, str, false);
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(148, node, depth, sem, __func__,

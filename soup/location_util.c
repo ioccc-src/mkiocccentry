@@ -68,7 +68,7 @@ check_location_table(void)
 	err(333, __func__, "found embedded NULL element in location table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
-    if (loc[i].code != NULL || loc[i].name != NULL) {
+    if (loc[i].code != NULL || loc[i].name != NULL || loc[i].common_name) {
 	err(10, __func__, "no final NULL element found in location table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
@@ -83,7 +83,8 @@ check_location_table(void)
  * lower case code will match the canonical UPPER CASE ISO 3166-1 Alpha-2 code.
  *
  * given:
- *      code      ISO 3166-1 Alpha-2 code
+ *      code		ISO 3166-1 Alpha-2 code
+ *	use_common	true ==> use common name, false ==> use official name
  *
  * return:
  *      location name or NULL ==> unlisted code
@@ -91,7 +92,7 @@ check_location_table(void)
  * This function does not return on error.
  */
 char const *
-lookup_location_name(char const *code)
+lookup_location_name(char const *code, bool use_common)
 {
     struct location *p;		/* entry in the location table */
     size_t length = 0;		/* length of code */
@@ -125,9 +126,9 @@ lookup_location_name(char const *code)
     /*
      * search location table for the code
      */
-    for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
+    for (p = &loc[0]; p->code != NULL && p->name != NULL && p->common_name != NULL; ++p) {
 	if (strcasecmp(code, p->code) == 0) {
-	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
+	    dbg(DBG_VHIGH, "code: %s found name: <%s> common_name: <%s>", p->code, p->name, p->common_name);
 	    break;
 	}
     }
@@ -135,10 +136,14 @@ lookup_location_name(char const *code)
     /*
      * return name or NULL
      */
-    if (p->name == NULL) {
+    if (p->name == NULL || p->common_name) {
 	dbg(DBG_HIGH, "code: <%s> is unknown", code);
     }
-    return p->name;
+    if (use_common) {
+	return p->common_name;
+    } else {
+	return p->name;
+    }
 }
 
 
@@ -151,6 +156,7 @@ lookup_location_name(char const *code)
  *
  * given:
  *      location_name      location name of a ISO 3166-1 Alpha-2 entry
+ *	use_common	   true ==> use common name, false ==> use official name
  *
  * return:
  *	ISO 3166-1 Alpha-2 in UPPER CASE code or NULL ==> unknown location name
@@ -158,7 +164,7 @@ lookup_location_name(char const *code)
  * This function does not return on error.
  */
 char const *
-lookup_location_code(char const *location_name)
+lookup_location_code(char const *location_name, bool use_common)
 {
     struct location *p;		/* entry in the location table */
 
@@ -173,10 +179,19 @@ lookup_location_code(char const *location_name)
     /*
      * search location table for the code
      */
-    for (p = &loc[0]; p->name != NULL && p->code != NULL; ++p) {
-	if (strcasecmp(location_name, p->name) == 0) {
-	    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
-	    break;
+    if (use_common) {
+	for (p = &loc[0]; p->common_name != NULL && p->code != NULL; ++p) {
+	    if (strcasecmp(location_name, p->common_name) == 0) {
+		dbg(DBG_VHIGH, "common_name: <%s> found code: %s", p->common_name, p->code);
+		break;
+	    }
+	}
+    } else {
+	for (p = &loc[0]; p->name != NULL && p->code != NULL; ++p) {
+	    if (strcasecmp(location_name, p->name) == 0) {
+		dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
+		break;
+	    }
 	}
     }
 
@@ -201,6 +216,7 @@ lookup_location_code(char const *location_name)
  *      idx		    index to resume searching for -a option
  *      location	    pointer to struct location * for caller
  *      substrings	    whether to search by substring (strcasestr(), not strcasecmp())
+ *	use_common	    true ==> use common name, false ==> use official name
  *
  * return:
  *      location name or NULL ==> unlisted code
@@ -212,7 +228,7 @@ lookup_location_code(char const *location_name)
  * position + 1 in *idx for the next call.
  */
 char const *
-lookup_location_name_r(char const *code, size_t *idx, struct location **location, bool substrings)
+lookup_location_name_r(char const *code, size_t *idx, struct location **location, bool substrings, bool use_common)
 {
     struct location *p;		/* entry in the location table */
     size_t length = 0;		/* length of code */
@@ -251,21 +267,39 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
     /*
      * search location table for the code
      */
-    for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->name != NULL; ++p, ++i) {
-	if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
-	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
-	    if (location != NULL) {
-		*location = &loc[i];
+    if (use_common) {
+	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->common_name != NULL; ++p, ++i) {
+	    if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
+		dbg(DBG_VHIGH, "code: %s found common_name: <%s>", p->code, p->common_name);
+		if (location != NULL) {
+		    *location = &loc[i];
+		}
+		break;
 	    }
-	    break;
+	}
+    } else {
+	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->name != NULL; ++p, ++i) {
+	    if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
+		dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
+		if (location != NULL) {
+		    *location = &loc[i];
+		}
+		break;
+	    }
 	}
     }
 
     /*
      * return name or NULL
      */
-    if (p->name == NULL) {
-	dbg(DBG_HIGH, "code: <%s> is unknown", code);
+    if (use_common) {
+	if (p->common_name == NULL) {
+	    dbg(DBG_HIGH, "code: <%s> is unknown", code);
+	}
+    } else {
+	if (p->name == NULL) {
+	    dbg(DBG_HIGH, "code: <%s> is unknown", code);
+	}
     }
 
     /* save index after everything even if we return NULL */
@@ -273,7 +307,11 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
 	*idx = i + 1;
     }
 
-    return p->name;
+    if (use_common) {
+	return p->common_name;
+    } else {
+	return p->name;
+    }
 }
 /*
  * lookup_location_code_r - convert a ISO 3166-1 Alpha-2 into a location name, re-entrant version
@@ -287,6 +325,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
  *      idx		    index to resume searching for -a option
  *      location	    pointer to struct location * for caller
  *      substrings	    whether to search by substring (strcasestr(), not strcasecmp())
+ *	use_common	    true ==> use common name, false ==> use official name
  *
  * return:
  *	ISO 3166-1 Alpha-2 in UPPER CASE code or NULL ==> unknown location name
@@ -298,7 +337,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
  * position + 1 in *idx for the next call.
  */
 char const *
-lookup_location_code_r(char const *location_name, size_t *idx, struct location **location, bool substrings)
+lookup_location_code_r(char const *location_name, size_t *idx, struct location **location, bool substrings, bool use_common)
 {
     struct location *p;		/* entry in the location table */
     size_t i = 0;		/* counter for table */
@@ -318,13 +357,25 @@ lookup_location_code_r(char const *location_name, size_t *idx, struct location *
     /*
      * search location table for the code
      */
-    for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->name != NULL && p->code != NULL; ++p, ++i) {
-	if ((strcasecmp(location_name, p->name) == 0) || (substrings && strcasestr(p->name, location_name))) {
-	    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
-	    if (location != NULL) {
-		*location = &loc[i];
-	    }
-	    break;
+    if (use_common) {
+	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->common_name != NULL && p->code != NULL; ++p, ++i) {
+		if ((strcasecmp(location_name, p->common_name) == 0) || (substrings && strcasestr(p->common_name, location_name))) {
+		    dbg(DBG_VHIGH, "common_name: <%s> found code: %s", p->common_name, p->code);
+		    if (location != NULL) {
+			*location = &loc[i];
+		    }
+		    break;
+		}
+	}
+    } else {
+	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->name != NULL && p->code != NULL; ++p, ++i) {
+		if ((strcasecmp(location_name, p->name) == 0) || (substrings && strcasestr(p->name, location_name))) {
+		    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
+		    if (location != NULL) {
+			*location = &loc[i];
+		    }
+		    break;
+		}
 	}
     }
 
@@ -353,6 +404,7 @@ lookup_location_code_r(char const *location_name, size_t *idx, struct location *
  * given:
  *	code	ISO 3166-1 Alpha-2 in UPPER CASE
  *	location_name	location name of a ISO 3166-1 Alpha-2 entry
+ *	use_common	    true ==> use common name, false ==> use official name
  *
  * return:
  *	true ==> location code and location name match,
@@ -360,7 +412,7 @@ lookup_location_code_r(char const *location_name, size_t *idx, struct location *
  *		  unknown location code, or NULL ptr
  */
 bool
-location_code_name_match(char const *code, char const *location_name)
+location_code_name_match(char const *code, char const *location_name, bool use_common)
 {
     struct location *p;		/* entry in the location table */
 
@@ -379,10 +431,19 @@ location_code_name_match(char const *code, char const *location_name)
     /*
      * search location table for the code
      */
-    for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
-	if (strcasecmp(code, p->code) == 0) {
-	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
-	    break;
+    if (use_common) {
+	for (p = &loc[0]; p->code != NULL && p->common_name != NULL; ++p) {
+	    if (strcasecmp(code, p->code) == 0) {
+		dbg(DBG_VHIGH, "code: %s found common_name: <%s>", p->code, p->common_name);
+		break;
+	    }
+	}
+    } else {
+	for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
+	    if (strcasecmp(code, p->code) == 0) {
+		dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
+		break;
+	    }
 	}
     }
     if (p->code == NULL) {
@@ -390,7 +451,7 @@ location_code_name_match(char const *code, char const *location_name)
 	return false;
     }
 
-    if (p->name == NULL) {
+    if (p->name == NULL || p->common_name) {
 	dbg(DBG_HIGH, "name: <%s> is unknown", location_name);
 	return false;
     }
@@ -398,9 +459,16 @@ location_code_name_match(char const *code, char const *location_name)
     /*
      * compare location name with name from the code found in the table
      */
-    if (strcasecmp(location_name, p->name) != 0) {
-	dbg(DBG_HIGH, "code: %s does not match name: <%s>", code, location_name);
-	return false;
+    if (use_common) {
+	if (strcasecmp(location_name, p->common_name) != 0) {
+	    dbg(DBG_HIGH, "code: %s does not match common_name: <%s>", code, location_name);
+	    return false;
+	}
+    } else {
+	if (strcasecmp(location_name, p->name) != 0) {
+	    dbg(DBG_HIGH, "code: %s does not match name: <%s>", code, location_name);
+	    return false;
+	}
     }
 
     /*

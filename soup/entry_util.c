@@ -3471,7 +3471,7 @@ test_location_code(char const *str)
     }
 
     /* validate ISO 3166-1 Alpha-2 in code */
-    location_name = lookup_location_name(str);
+    location_name = lookup_location_name(str, false);
     if (location_name == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: location_code: not a known ISO 3166-1 location/country code");
@@ -3512,7 +3512,7 @@ test_location_name(char const *str)
     /*
      * validate str
      */
-    location_code = lookup_location_code(str);
+    location_code = lookup_location_code(str, false);
     if (location_code == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: location_name: not a known ISO 3166-1 location/country name");

@@ -3863,7 +3863,7 @@ get_author_info(struct author **author_set_p)
 		yorn = false;
 		continue;
 	    }
-	    author_set[i].location_name = lookup_location_name(author_set[i].location_code);
+	    author_set[i].location_name = lookup_location_name(author_set[i].location_code, false);
 
 	    /*
 	     * verify the known location/country code

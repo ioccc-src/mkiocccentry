@@ -51,7 +51,8 @@
 struct location
 {
     const char * const code;		/* ISO 3166-1 Alpha-2 Code - 2 ASCII UPPER CASE chars */
-    const char * const name;		/* Canonical ISO 3166-1 name (short name mixed case) */
+    const char * const name;		/* "Officially Known As" name from Wikipedia, if known, else "Common" name */
+    const char * const common_name;	/* "Common" ISO 3166-1 name (using title case) */
 };
 
 /*
@@ -64,10 +65,10 @@ extern size_t SIZEOF_LOCATION_TABLE;
  * function prototypes
  */
 extern void check_location_table(void);
-extern char const *lookup_location_name(char const *code);
-extern char const *lookup_location_code(char const *location_name);
-extern char const *lookup_location_name_r(char const *code, size_t *idx, struct location **location, bool substrings);
-extern char const *lookup_location_code_r(char const *location_name, size_t *idx, struct location **location, bool substrings);
-extern bool location_code_name_match(char const *code, char const *location_name);
+extern char const *lookup_location_name(char const *code, bool use_common);
+extern char const *lookup_location_code(char const *location_name, bool use_common);
+extern char const *lookup_location_name_r(char const *code, size_t *idx, struct location **location, bool substrings, bool use_common);
+extern char const *lookup_location_code_r(char const *location_name, size_t *idx, struct location **location, bool substrings, bool use_common);
+extern bool location_code_name_match(char const *code, char const *location_name, bool use_common);
 
 #endif				/* INCLUDE_LOCATION_H */
