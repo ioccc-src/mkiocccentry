@@ -7,23 +7,25 @@
 
 1. <a href="#compiling">How do I compile the mkiocccentry tools?</a>
 
-2. <a href="#package">How do I package my entry?</a>
+2. <a href="#package">How do I package my submission?</a>
 
-3. <a href="#submitting">Can't I just submit my obfuscated C program to the judges?</a>
+3. <a href="#makefile">What do I do for the Makefile in my submission?</a>
 
-4. <a href="#mkiocccentry-requirements">Do I have to use mkiocccentry to package my entry?</a>
+4. <a href="#submitting">Can't I just submit my obfuscated C program to the judges?</a>
 
-5. <a href="#installing">Do I need to install this code to use it?</a>
+5. <a href="#mkiocccentry-requirements">Do I have to use mkiocccentry to package my submission?</a>
 
-6. <a href="#help">How can I learn more about how to use the tools?</a>
+6. <a href="#installing">Do I need to install this code to use it?</a>
 
-7. <a href="#reporting-bugs">How do I report bugs or other issues?</a>
+7. <a href="#help">How can I learn more about how to use the tools?</a>
 
-8. <a href="#how-to-help">How can I help test this repo?</a>
+8. <a href="#reporting-bugs">How do I report bugs or other issues?</a>
 
-9. <a href="#tar">What can I do if my system's tar(1) does not support the correct options?</a>
+9. <a href="#how-to-help">How can I help test this repo?</a>
 
-10. <a href="#markdown">Where can I find help with formatting markdown files for my entry?</a>
+10. <a href="#tar">What can I do if my system's tar(1) does not support the correct options?</a>
+
+11. <a href="#markdown">Where can I find help with formatting markdown files for my submission?</a>
 
 
 ## 0. <a name="download">Where can I find the mkiocccentry tool?</a>
@@ -64,9 +66,9 @@ local directory.  If something went wrong, see
 
 
 
-## 2. <a name="package">How do I package my entry?</a>
+## 2. <a name="package">How do I package my submission?</a>
 
-We recommend that you use the `mkiocccentry` tool to package your entry.
+We recommend that you use the `mkiocccentry` tool to package your submission.
 If you have not already done so, download the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry)
 (instructions <a href="#download">here</a>)
 and compile it
@@ -78,10 +80,10 @@ From the top level directory, run the `mkiocccentry` executable:
 ./mkiocccentry work_dir prog.c Makefile remarks.md [file ...]
 ```
 
-The _work_dir_ is the path where your entry's files will be packaged from.
+The _work_dir_ is the path where your submission's files will be packaged from.
 The _work_dir_ **must** exist as _mkiocccentry_ will create a subdirectory under it to
-package your entry. The entry directory depends on the IOCCC contestant id and
-the entry number.
+package your submission. The submission directory depends on the IOCCC contestant id and
+the submission number.
 
 Something like _/tmp/ioccc_ is a good choice:
 
@@ -89,56 +91,68 @@ Something like _/tmp/ioccc_ is a good choice:
 mkdir -p /tmp/ioccc
 ```
 
-The _prog.c_ is the path to the main C source code for your entry.
+The _prog.c_ is the path to the main C source code for your submission.
 
-The _Makefile_ is the path to a Makefile used to build your entry.
+The _Makefile_ is the path to a Makefile used to build your submission.
 
 The _remarks.md_ is a path to a
 [markdown file](https://www.markdownguide.org/basic-syntax)
-that describes your entry.
+that describes your submission.
 
-If you have other optional files that belong to your entry, give them
+If you have other optional files that belong to your submission, give them
 as additional paths at the end if your `mkiocccentry` tool command line.
 
 The `mkiocccentry` tool, by default, will ask you a series of
-questions about your entry and about the authors of your entry.
+questions about your submission and about the authors of your submission.
 Once you have answered all of the questions, the tool will form a
 XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
-## 3. <a name="submitting">Can't I just submit my obfuscated C program to the judges?</a>
+## 3. <a href="makefile">What do I do for the Makefile in my submission?</a>
+
+Although you are welcome to add additional rules, we recommend that you use the
+example Makefile, [Makefile.example](Makefile.example), removing and changing
+comments as appropriate, and making sure to add the correct specifics of each
+rule.
+
+XXX - make sure to link to the winner repo FAQ about the Makefile - XXX
+XXX - this is not done now because of link changes and possibly an anchor - XXX
+XXX - name being added to the entry - XXX
+
+
+## 4. <a name="submitting">Can't I just submit my obfuscated C program to the judges?</a>
 
 No. While we appreciate your enthusiasm for wanting to show us your obfuscated
 code, the [IOCCC judges](https://www.ioccc.org/judges.html) request your help by
-using the `mkiocccentry` tool to package your entry.
+using the `mkiocccentry` tool to package your submission.
 
-We need your entry in the form of an XZ compressed tarball in v7 format,
+We need your submission in the form of an XZ compressed tarball in v7 format,
 along with things like your Makefile, a pair of JSON files that
-help describe you and your entry, some remarks you wrote about your
-entry etc. The  `mkiocccentry` tool does a lot in packaging your
-entry and we kindly request that you use it.
+help describe you and your submission, some remarks you wrote about your
+submission etc. The  `mkiocccentry` tool does a lot in packaging your
+submission and we kindly request that you use it.
 
 In short, you cannot simply upload your obfuscated C program as it needs to
 be in a certain form and the `mkiocccentry` tool does that.
 
 
-## 4. <a name="mkiocccentry-requirements">Do I have to use mkiocccentry to package my entry?</a>
+## 5. <a name="mkiocccentry-requirements">Do I have to use mkiocccentry to package my submission?</a>
 
 Technically you do not have to use the `mkiocccentry` tool; however, you run the
-risk of having your entry rejected if what you upload to the submit server is
+risk of having your submission rejected if what you upload to the submit server is
 malformed.  Moreover, the contents of the XZ compressed tarball (in v7 format)
-that you upload to the submit server must be in proper form or your entry could
+that you upload to the submit server must be in proper form or your submission could
 be rejected. The mkiocccentry tool also creates two JSON files that are
 required. Therefore we highly recommend that you use the `mkiocccentry` tools.
 
-If you simply must package your entry yourself then we strongly recommend that
+If you simply must package your submission yourself then we strongly recommend that
 you use the `txzchk` tool to verify that the tarball you plan to upload to the
 submit server is OK.  We also strongly recommend that use the `chkentry` tool to
 inspect the directory that you used to form the tarball to verify that the
 contents under that directory are also OK. In particular, that tool tests that
 the JSON files are correct.
 
-## 5. <a name="installing">Do I need to install this code to use it?</a>
+## 6. <a name="installing">Do I need to install this code to use it?</a>
 
 No, installing the code in this repo is not necessary to use it. These tools
 were designed to be used from the top level directory of the source, or after
@@ -156,7 +170,7 @@ For example:
 ./mkiocccentry -h
 ```
 
-## 6. <a name="help">How can I learn more about how to use the tools?</a>
+## 7. <a name="help">How can I learn more about how to use the tools?</a>
 
 Assuming you have <a href="#download">downloaded</a> and <a
 href="#compiling">compiled</a> the code you can get a quick reminder of command
@@ -195,7 +209,7 @@ Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairl
 well commented.
 
 
-## 7. <a name="reporting-bugs">How do I report bugs or other issues?</a>
+## 8. <a name="reporting-bugs">How do I report bugs or other issues?</a>
 
 Please run the following from the main directory:
 
@@ -236,7 +250,7 @@ The script that the make rule runs, `bug_report.sh`, will tell you the name of
 the file to upload.
 
 
-## 8. <a name="how-to-help">How can I help test this repo?</a>
+## 9. <a name="how-to-help">How can I help test this repo?</a>
 
 Thank you for any and all help!
 
@@ -245,7 +259,7 @@ Please see the
 for more details on what you can do to help us.
 
 
-## 9. <a name="tar">What can I do if my system's tar(1) does not support the correct options?</a>
+## 10. <a name="tar">What can I do if my system's tar(1) does not support the correct options?</a>
 
 
 If your tar does not support the `-J` option you can either use a system
@@ -258,7 +272,7 @@ Some systems have a `GNU tar` that you can use. For instance FreeBSD has a
 specify in the tools the `-t tar` option to make this work.
 
 
-## 10. <a name="markdown">Where can I find help with formatting markdown files for my entry?</a>
+## 11. <a name="markdown">Where can I find help with formatting markdown files for my entry?</a>
 
 Please see this simple
 [markdown guide](https://www.markdownguide.org/basic-syntax) for more help.
