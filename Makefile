@@ -630,11 +630,8 @@ release: test_ioccc/prep.sh
 #	     out of date and that the difference between what is in the *.err
 #	     files and what is being generated is correct.
 #
-force_expectations_for_txzchk_test:
-	for i in ./test_ioccc/test_txzchk/bad/*.txt; do \
-	    echo "./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk $$i 2>$$i.err"; \
-	    ./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk "$$i" 2>"$$i.err"; \
-	done
+rebuild_txzchk_test_errors force_expectations_for_txzchk_test:
+	@./test_ioccc/txzchk_test.sh -B || exit 1
 
 # make parser
 #

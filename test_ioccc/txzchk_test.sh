@@ -34,7 +34,7 @@
 
 # setup
 
-# attempt to fetch system specific path to the tools we need
+# attempt to fetch system specific path to the tool (tar) we need
 #
 # get tar path
 TAR="$(type -P tar 2>/dev/null)"
@@ -51,15 +51,13 @@ TAR="$(type -P tar 2>/dev/null)"
 #   ${TAR:=/usr/bin/tar} 2>/dev/null
 #
 # but due to the reasons cited above we must rely on the more complicated form:
-if [[ -z "$TAR" ]]; then
-    TAR="/usr/bin/tar"
-fi
+[[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="1.0.1 2023-02-05"
+export TXZCHK_TEST_VERSION="1.0.2 2024-03-05"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-t tar] [-T txzchk] [-F fnamchk] [-d txzchk_tree] [-Z topdir] [-k]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-t tar] [-T txzchk] [-F fnamchk] [-d txzchk_tree] [-Z topdir] [-k] [-B]
 
     -h			    print help and exit
     -V			    print version and exit
@@ -77,6 +75,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-t tar] [-T txzchk] [-F fnamchk] [
 				    txzchk and the error file is done as an exact match
     -Z topdir		    top level build directory (def: try . or ..)
     -k			    keep temporary files on exit (def: remove temporary files before exiting)
+    -B			    rebuild error files
 
 Exit codes:
      0   all OK
@@ -95,7 +94,8 @@ export TOPDIR=
 #
 export V_FLAG="0"
 export K_FLAG=""
-while getopts :hVv:t:d:T:F:Z:k flag; do
+export B_FLAG=""
+while getopts :hVv:t:d:T:F:Z:kB flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -117,6 +117,8 @@ while getopts :hVv:t:d:T:F:Z:k flag; do
         ;;
     k)  K_FLAG="true";
         ;;
+    B)	B_FLAG="true";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -291,6 +293,43 @@ fi
 if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
     exit 29
+fi
+
+# if -B used we will just rebuild the test error files
+#
+if [[ -n "$B_FLAG" ]]; then
+    echo "Are you POSITIVE that the *.err files are simply out of date and" 1>&2
+    echo "that the difference between what is in the *.err files and" 1>&2
+    read -r -p "what is being generated is correct (YES/NO)? "
+
+    if [[ "$REPLY" != "YES" ]]; then
+	echo "$0: did not get YES as a reply, not regenerating files." 1>&2
+	exit 3
+    fi
+
+    for i in "$TXZCHK_BAD_TREE"/*.txt; do \
+	echo "$TXZCHK -q -v 0 -w -T -E txt -F $FNAMCHK $i 2>$i.err"; \
+	"$TXZCHK" -q -v 0 -w -T -E txt -F "$FNAMCHK" "$i" 2>"$i.err"; \
+    done
+
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: rebuilt test error files" 1>&2
+    fi
+
+    echo 1>&2
+    echo "You should now run, from the top level directory:" 1>&2
+    echo 1>&2
+    echo "    ./test_ioccc/txzchk_test.sh -v $V_FLAG" 1>&2
+    echo 1>&2
+    echo "to verify that everything is in order. If it is and there are any file changes," 1>&2
+    echo "you will need to then run:" 1>&2
+    echo 1>&2
+    echo "    git add test_ioccc/test_txzchk/bad/*.txt test_ioccc/test_txzchk/bad/*.err" 1>&2
+    echo 1>&2
+    echo "and then commit (and if necessary open a pull request)." 1>&2
+    echo "Otherwise, if there is a problem you will have to fix any other issues first." 1>&2
+
+    exit 0
 fi
 
 # set up for the different tests
