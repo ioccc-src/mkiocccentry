@@ -55,12 +55,14 @@ Whenever a new bad test file is added one must generate the proper err file. To
 simplify it you can from the top level directory where the mkiocccentry.c source
 file is located:
 
-    for i in ./test_ioccc/test_txzchk/bad/*.txt; do ./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk "$i" 2>"$i.err" ; done
+```sh
+make rebuild_txzchk_test_errors
+git add test_ioccc/test_txzchk/bad/*.txt test_ioccc/test_txzchk/bad/*.err
+```
 
-then do:
+BUT MAKE SURE THAT ALL FILES ARE CORRECT! The make rule will run the `-B` option
+on the test script which will first prompt you to make sure if you wish to do
+it. Again one must make sure that the files are correct!
 
-    git add ./test_txzchk/bad/*.txt ./test_txzchk/bad/*.err
-
-(assuming that there aren't any other files with those extensions that should
-not be there). We could have the `txzchk_test.sh` script do this but the problem
-is we need to manually inspect that the errors are correct.
+This, of course, is assuming that there aren't any other files with those
+extensions that should not be there.
