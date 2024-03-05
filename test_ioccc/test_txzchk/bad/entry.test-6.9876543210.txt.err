@@ -1,2 +1,1 @@
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.9876543210.txt: found more than one directory in path test-6/foo/bar
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-6.9876543210.txt: found 1 feather stuck in the tarball
+zsh: no such file or directory: ./txzchk

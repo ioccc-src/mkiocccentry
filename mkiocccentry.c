@@ -5072,6 +5072,8 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 
     /*
      * write author info to the open .auth.json file
+     *
+     * NOTE: We do not add location_name to the .auth.json file as location names can change over time.
      */
     for (i = 0; i < authp->author_count; ++i) {
 	struct author *ap = &(authp->author[i]);
@@ -5079,7 +5081,6 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	ret = fprintf(auth_stream, "\t\t{\n") > 0 &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "name", " : ", ap->name, ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "location_code", " : ", ap->location_code, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "location_name", " : ", ap->location_name, ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
 	    json_fprintf_value_string(auth_stream, "\t\t\t", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&

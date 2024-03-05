@@ -53,6 +53,9 @@
  *
  * Information we will collect for each author of an IOCCC entry to fill out the
  * authors JSON array within the .auth.json file.
+ *
+ * NOTE: While location_name is collected for user prompting and informational purposes,
+ *	 it is NO longer written to the .auth.json file.
  */
 struct author
 {
@@ -254,7 +257,6 @@ extern bool test_IOCCC_contest(char const *str);
 extern bool test_IOCCC_year(int IOCCC_year);
 extern bool test_iocccsize_version(char const *str);
 extern bool test_location_code(char const *str);
-extern bool test_location_name(char const *str);
 extern bool test_manifest(struct manifest *manp);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);

@@ -1,9 +1,9 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_auth_version" : "1.20 2024-03-02",
+	"IOCCC_auth_version" : "1.21 2024-03-04",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.4 2024-03-03",
+	"mkiocccentry_version" : "1.0.4 2024-03-04",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
@@ -16,7 +16,6 @@
 		{
 			"name" : "author0 middle0 thisisaveryverylonglastname0",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"alt_url" : "https:\/\/host0.example.com\/index.html",

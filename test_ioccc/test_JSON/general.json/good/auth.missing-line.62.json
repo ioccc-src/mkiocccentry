@@ -1,9 +1,9 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_auth_version" : "1.20 2024-03-02",
+	"IOCCC_auth_version" : "1.21 2024-03-04",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.4 2024-03-03",
+	"mkiocccentry_version" : "1.0.4 2024-03-04",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "test",
@@ -15,7 +15,6 @@
 		{
 			"name" : "author0 middle0 thisisaveryverylonglastname0",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"mastodon" : "@mastodon0@example.com",
@@ -29,7 +28,6 @@
 		{
 			"name" : "author1 middle1a middle1b last1",
 			"location_code" : "UK",
-			"location_name" : "United Kingdom",
 			"email" : null,
 			"url" : null,
 			"mastodon" : null,
@@ -43,7 +41,6 @@
 		{
 			"name" : "Author2 \u00c3\u00a5\u00e2\u0088\u00ab\u00c3\u00a7\u00e2\u0088\u0082\u00c2\u00b4\u00c6\u0092\u00c2\u00a9 LAST2",
 			"location_code" : "US",
-			"location_name" : "United States of America",
 			"email" : "user2@example.com",
 			"url" : "http:\/\/host2.example.com\/index.html",
 			"mastodon" : "@mastodon2@example.com",
@@ -57,7 +54,6 @@
 		{
 			"name" : "author3 middle3 last3",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"mastodon" : "@mastodon3@example.com",
 			"github" : "@github3",
@@ -70,7 +66,6 @@
 		{
 			"name" : "@#$%^",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"mastodon" : "@mastodon4@example.com",

@@ -179,13 +179,13 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_time.c entry_util.c \
-	location_tbl.c location_util.c location_main.c sanity.c rule_count.c
+	location_util.c location_main.c sanity.c rule_count.c
 H_SRC= chk_validate.h soup.h entry_time.h entry_util.h foo.h limit_ioccc.h location.h \
 	sanity.h utf8_posix_map.h version.h iocccsize_err.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= utf8_posix_map.c foo.c
+LESS_PICKY_CSRC= utf8_posix_map.c foo.c location_tbl.c
 LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts
@@ -400,6 +400,7 @@ chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
+	${RM} -f .jsemcgen.out.*
 
 chk.info.head.c chk.info.ptch.c chk.info.tail.c:
 	@:
@@ -410,6 +411,7 @@ chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
+	${RM} -f .jsemcgen.out.*
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
@@ -417,6 +419,7 @@ chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_auth -P chk -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
 	    chk.auth.ptch.c chk.auth.tail.c $@
+	${RM} -f .jsemcgen.out.*
 
 chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h
@@ -424,6 +427,7 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
+	${RM} -f .jsemcgen.out.*
 
 kitchen soup_kitchen: kitchen.sh
 	-@./kitchen.sh
@@ -800,6 +804,7 @@ clean:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${ALL_OBJS}
+	${RM} -f .jsemcgen.out.*
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

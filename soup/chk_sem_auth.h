@@ -38,7 +38,7 @@
 
 #if !defined(SEM_AUTH_LEN)
 
-#define SEM_AUTH_LEN (41)
+#define SEM_AUTH_LEN (40)
 
 extern struct json_sem sem_auth[SEM_AUTH_LEN+1];
 
@@ -55,8 +55,6 @@ extern bool chk_email(struct json const *node,
 extern bool chk_github(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_location_code(struct json const *node,
-	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_location_name(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_mastodon(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

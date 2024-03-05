@@ -229,11 +229,11 @@ fi
 # replace string in files
 #
 if [[ $V_FLAG -ge 1 ]]; then
-    echo "$0: debug[1]: rpl -q -x'.json' -R -- $OLD_VER $NEW_VER $JSON_TREE" 1>&2
+    echo "$0: debug[1]: rpl -q -R --glob '*.json' -F -- $OLD_VER $NEW_VER $JSON_TREE" 1>&2
 fi
 status=0
 if [[ -z $NOOP ]]; then
-    rpl -q -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
+    rpl -q -R  --glob '*.json' -F -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: rpl non-zero exit status: $status" 1>&2

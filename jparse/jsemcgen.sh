@@ -333,7 +333,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     # obtain a temporary filenames
     #
     export MKTEMP_TEMPLATE TMP_FILE
-    MKTEMP_TEMPLATE=".jsemcgen.XXXXXXXXXX.out"
+    MKTEMP_TEMPLATE=".jsemcgen.out.XXXXXXXXXX"
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run: mktemp $MKTEMP_TEMPLATE" 1>&2
     fi
@@ -358,11 +358,6 @@ if [[ -n "$PATCH_FILE" ]]; then
     if [[ ! -w $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
 	exit 14
-    fi
-    if [[ $V_FLAG -ge 3 ]]; then
-	trap "exit" 0 1 2 3 15
-    else
-	trap "rm -f \$TMP_FILE \$TMP_FILE.rej \$TMP_FILE.orig; exit" 0 1 2 3 15
     fi
     export ORIG_FILE="$TMP_FILE.orig"
     export REJ_FILE="$TMP_FILE.rej"
@@ -473,7 +468,6 @@ if [[ -n "$PATCH_FILE" ]]; then
 	    exit 26
 	fi
     fi
-    trap - 0 1 2 3 15
 
 # case: jsemtblgen is not patched
 #

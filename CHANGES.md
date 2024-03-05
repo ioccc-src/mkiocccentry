@@ -1,5 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.59 2024-03-04
+
+Added a distinction between a "common name" and "name" for locations.
+
+Added `-c` to the location command line to change using "name"
+(the default) to ""common name".
+
+Removed _location_name_ JSON member from `.auth.json`.
+
+While `mkiocccentry` will ask the user to verify their _location_code_
+by also showing them the _location_name_, it will no longer add
+the JSON member with the JSON member name of "location_name" to `.auth.json`.
+
+Changed LOCATION_VERSION from "1.0.2 2023-08-04" to "1.0.3 2024-03-03".
+Changed MKIOCCCENTRY_VERSION from "1.0.3 2024-03-02 to "1.0.4 2024-03-04".
+Changed IOCCC_auth_version from "1.20 2024-03-02" to "1.21 2024-03-04".
+Changed MKIOCCCENTRY_REPO_VERSION from "1.0.1 2023-02-14" to "1.1 2023-03-04".
+
 ## Release 1.0.58 2024-03-02
 
 Address part (possibly all) of the issue of new IOCCC terms (only part because
@@ -8,7 +26,7 @@ specifics but possibly all if it's decided these should stay the same).
 
 Changed version of `txzchk` to `"1.0.3 2024-03-02"`.
 Changed version of `fnamchk` to `"1.0.1 2024-03-02"`.
-Changed version of `mkiocccentry` to `"1.0.3 2024-03-02"`.
+Changed version of `mkiocccentry` to `"1.0.3 2024-03-04"`.
 Changed `AUTH_VERSION` to `"1.20 2024-03-02"`.
 Changed `INFO_VERSION` to `"1.15 2024-03-02`".
 
@@ -43,6 +61,7 @@ was reworded but not in all. If you like this can be submissions all the way
 down!
 
 ## Release 1.0.57 2024-01-21
+
 
 Rename "print_test" to "pr_jparse_test".  The name "print_test" was
 too generic and might conflict with some test print application

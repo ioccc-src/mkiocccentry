@@ -3,7 +3,7 @@
 	"IOCCC_auth_version" : "1.20 2024-03-02",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.1 2024-03-02",
+	"mkiocccentry_version" : "1.0.4 2024-03-03",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "test",
@@ -15,7 +15,6 @@
 		{
 			"name" : "author0 middle0 thisisaveryverylonglastname0",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https://a.host0.example.com/index.html",
 			"alt_url" : "https://b.host0.example.com/index.html",
@@ -30,7 +29,6 @@
 		{
 			"name" : "author1 middle1a middle1b last1",
 			"location_code" : "UK",
-			"location_name" : "United Kingdom",
 			"email" : null,
 			"url" : null,
 			"alt_url" : null,
@@ -45,7 +43,6 @@
 		{
 			"name" : "Author2 å∫ç∂´ƒ© LAST2",
 			"location_code" : "US",
-			"location_name" : "United States of America",
 			"email" : "user2@example.com",
 			"url" : "http://c.host2.example.com/index.html",
 			"alt_url" : "http://d.host2.example.com/index.html",
@@ -60,7 +57,6 @@
 		{
 			"name" : "author3 middle3 last3",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https://e.host0.example.com/index.html",
 			"alt_url" : "https://f.host0.example.com/index.html",
@@ -75,7 +71,6 @@
 		{
 			"name" : "@#$%^",
 			"location_code" : "AU",
-			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https://g.host0.example.com/index.html",
 			"alt_url" : null,
