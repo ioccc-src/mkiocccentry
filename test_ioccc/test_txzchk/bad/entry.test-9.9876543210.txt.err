@@ -1,1 +1,5 @@
-zsh: no such file or directory: ./txzchk
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-9.9876543210.txt: found empty .info.json file
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-9.9876543210.txt: found empty remarks.md
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-9.9876543210.txt: found empty .auth.json file
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-9.9876543210.txt: found empty Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-9.9876543210.txt: found 4 feathers stuck in the tarball
