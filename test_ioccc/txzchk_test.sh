@@ -497,7 +497,7 @@ run_test()
 		echo "$0: Warning: for more details try: $TXZCHK -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    fi
 	    echo | tee -a -- "${LOGFILE}" 1>&2
-	    # EXIT_CODE=1 # XXX - disable this error until there is a better way to address errors thrown by this code - XXX #
+	    EXIT_CODE=1
 	fi
     # Otherwise if there was output written to stderr it indicates that one or
     # more unexpected errors have occurred. This won't be because of a new test
