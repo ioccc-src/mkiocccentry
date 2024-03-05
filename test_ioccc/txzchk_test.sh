@@ -316,6 +316,19 @@ if [[ -n "$B_FLAG" ]]; then
 	echo "$0: debug[1]: rebuilt test error files" 1>&2
     fi
 
+    echo 1>&2
+    echo "You should now run, from the top level directory:" 1>&2
+    echo 1>&2
+    echo "    ./test_ioccc/txzchk_test.sh -v $V_FLAG" 1>&2
+    echo 1>&2
+    echo "to verify that everything is in order. If it is and there are any file changes," 1>&2
+    echo "you will need to then run:" 1>&2
+    echo 1>&2
+    echo "    git add test_ioccc/test_txzchk/bad/*.txt test_ioccc/test_txzchk/bad/*.err" 1>&2
+    echo 1>&2
+    echo "and then commit (and if necessary open a pull request)." 1>&2
+    echo "Otherwise, if there is a problem you will have to fix any other issues first." 1>&2
+
     exit 0
 fi
 
