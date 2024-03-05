@@ -620,6 +620,22 @@ release: test_ioccc/prep.sh
 		exit "$$EXIT_CODE"; \
 	    fi
 
+# force test_ioccc/txzchk_test.sh results into test suite *.err files
+#
+# If test_ioccc/txzchk_test.sh reports some *.err files under ./test_ioccc/test_txzchk
+# does not match the "expected" test result, force the *.err files to become what
+# is generated.
+#
+# IMPORTANT: Only run this rule of you KNOW that the *.err files are simply
+#	     out of date and that the difference between what is in the *.err
+#	     files and what is being generated is correct.
+#
+force_expectations_for_txzchk_test:
+	for i in ./test_ioccc/test_txzchk/bad/*.txt; do \
+	    echo "./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk $$i 2>$$i.err"; \
+	    ./txzchk -q -v 0 -w -T -E txt -F ./test_ioccc/fnamchk "$$i" 2>"$$i.err"; \
+	done
+
 # make parser
 #
 # Force the rebuild of the JSON parser and then form the reference copies of
