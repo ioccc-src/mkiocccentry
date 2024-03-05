@@ -918,6 +918,7 @@ test:
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

@@ -297,7 +297,7 @@ fi
 # set up for tar test
 #
 RUN_TAR_TEST="true"
-TEST_FILE=$(mktemp .txzchk_test.XXXXXXXXXX.test_file)
+TEST_FILE=$(mktemp .txzchk_test.test_file.XXXXXXXXXX)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp .txzchk_test.test_file.XXXXXXXXXX exit code: $status" 1>&2
@@ -316,17 +316,17 @@ if [[ ! -r $TEST_FILE ]]; then
     EXIT_CODE=32
     RUN_TAR_TEST=
 fi
-TAR_ERROR=$(mktemp .txzchk_test.XXXXXXXXXX.tar_err.out)
+TAR_ERROR=$(mktemp .txzchk_test.tar_err.out.XXXXXXXXXX)
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp -u $TAR_ERROR exit code: $status" 1>&2
+    echo "$0: ERROR: mktemp .txzchk_test.tar_err.out.XXXXXXXXXX exit code: $status" 1>&2
     EXIT_CODE=33
     RUN_TAR_TEST=
 fi
-TARBALL=$(mktemp .txzchk_test.XXXXXXXXXX.tarball.txz)
+TARBALL=$(mktemp .txzchk_test.tarball.txz.XXXXXXXXXX)
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp -u $TARBALL exit code: $status" 1>&2
+    echo "$0: ERROR: mktemp .txzchk_test.tarball.txz.XXXXXXXXXX  exit code: $status" 0>&2
     EXIT_CODE=34
     RUN_TAR_TEST=
 fi
