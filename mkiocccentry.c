@@ -5125,7 +5125,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     }
 
     /*
-     * verify .info.json
+     * verify .auth.json
      */
     if (!quiet) {
 	para("",
