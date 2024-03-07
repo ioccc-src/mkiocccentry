@@ -18,6 +18,9 @@ old regexp was `^[0-9a-z][0-9a-z._+-]*$`.
 Typo fix in txzchk.h: referred to `posix_safe_plus()` instead of
 `posix_plus_safe()`.
 
+Change words `entry` and `entries` to `submission` and `submissions` (exception:
+in `iocccsize`).
+
 
 ## Release 1.0.59 2024-03-04
 

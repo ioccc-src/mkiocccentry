@@ -1058,10 +1058,10 @@ write_echo ""
 # Required tool checks
 #
 # These tools are required in order to compile tools that are needed
-# by someone submitting an entry to the IOCCC.
+# by someone submitting an submission to the IOCCC.
 #
 # If your system cannot compile and/or fails in this section, you may
-# still consider submitting an IOCCC entry from this system.  However
+# still consider submitting an IOCCC submission from this system.  However
 # you will have to use a more modern and/or more capable system in which
 # to compile this tool set OR add missing tools your system.
 #
@@ -1280,7 +1280,7 @@ write_echo ""
 #
 # If is OK to not have an optional tool in that such optional tools
 # are NOT mandatory to compile the core tools that someone needs
-# to submit an entry to the IOCCC.
+# to submit an submission to the IOCCC.
 #
 # These optional tools are used by the maintainers and/or
 # there are workarounds for not having these tools.

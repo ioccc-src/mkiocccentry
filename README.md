@@ -83,7 +83,7 @@ answers to a number of possible problems as well as to see how to report issues.
 
 ### `mkiocccentry`
 
-Form an **IOCCC** entry as an XZ compressed tarball file.
+Form an **IOCCC** submission as an XZ compressed tarball file.
 
 For examples and more information, try:
 
@@ -95,7 +95,7 @@ man ./soup/man/man1/mkiocccentry.1
 
 ### `iocccsize`
 
-The official **IOCCC** entry Rule 2b size tool.
+The official **IOCCC** submission Rule 2b size tool.
 
 This code is based on code by *@SirWumpus* (**Anthony Howe**):
 
@@ -218,8 +218,8 @@ NOTE: This tool may be found as: `./bug_report.sh`.
 
 
 
-## How do I submit my entry to the IOCCC?
+## How do I submit my submission to the IOCCC?
 
-To submit your entry to the IOCCC, follow the
-[FAQ 1.0 - How do I submit my entry to the IOCCC](https://www.ioccc.org/faq.html#submit)
+To submit your submission to the IOCCC, follow the
+[FAQ 1.0 - How do I submit my submission to the IOCCC](https://www.ioccc.org/faq.html#submit)
 instructions.
