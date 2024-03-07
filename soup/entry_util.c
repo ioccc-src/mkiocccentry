@@ -2309,11 +2309,11 @@ test_author_handle(char const *str)
 		 "invalid: author_handle: <%s> is invalid", str);
 	return false;
     }
-    /* IOCCC author handle must use only lower case POSIX portable filename and + chars */
+    /* IOCCC author_handle must use POSIX portable filename and + chars */
     test = posix_plus_safe(str, false, false, true);
     if (test == false) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: author_handle does not match regexp: ^[0-9a-z][0-9a-z._+-]*$");
+		 "invalid: author_handle does not match regexp: ^[0-9A-Za-z][0-9A-Za-z._+-]*$");
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: author_handle: <%s> contains invalid characters", str);
 	return false;

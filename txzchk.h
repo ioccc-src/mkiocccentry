@@ -97,7 +97,7 @@ struct tarball
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
     off_t Makefile_size;		    /* Makefile file size */
-    uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_safe_plus()) */
+    uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_plus_safe()) */
     off_t size;				    /* size of the tarball itself */
     off_t files_size;			    /* total size of all the files combined */
     off_t previous_files_size;		    /* the previous total size of all files combined */

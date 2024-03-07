@@ -3,17 +3,17 @@
  *
  * "Because even POSIX needs an extra plus." :-)
  *
- * An author_handle, for an IOCCC winner, will be used to form
- * a winner_handle.  These winner handles will become part of a
- * JSON filename on the www.ioccc.org website.  For this reason,
- * (and other reasons), we must restrict an author_handle to
- * only lower case POSIX portable filenames, with the addition of the +,
- * and restrictions on leading characters.
+ * An author_handle, if the submission is selected by the
+ * IOCCC judges to win the IOCCC, will be used to form a
+ * JSON filename under the author directory on the IOCCC
+ * website.  For this and other reasons, we must restrict an
+ * author_handle to use only POSIX portable filenames, and we
+ * must restrict the leading character to be ASCII alphabetic,
+ * in addition to other character restrictions.
  *
- * The author_handle (and winner_handle) must fit the following
- * regular expression:
+ * The author_handle must fit the following regular expression:
  *
- *	^[0-9a-z][0-9a-z_]*$
+ *	^[0-9A-Za-z][0-9A-Za-z._+-]*$
  *
  * Copyright (c) 2022,2023 by Landon Curt Noll.  All Rights Reserved.
  *

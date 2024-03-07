@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.0.61 2024-03-07
+
+Remove from comments the `winner_handle`. Fixed the regexp of an allowed handle
+(in comments and in strings). It is regrettable but due to the use of
+`posix_plus_safe()` additional characters are allowed that might be better left
+out (these have been allowed for a long time but the comments and strings said
+otherwise). The regexp that is allowed for `author_handle`s is:
+
+```re
+^[0-9A-Za-z][0-9A-Za-z._+-]*$
+```
+
+The difference is that it allows upper case characters too. In particular the
+old regexp was `^[0-9a-z][0-9a-z._+-]*$`.
+
+Typo fix in txzchk.h: referred to `posix_safe_plus()` instead of
+`posix_plus_safe()`.
+
+
 ## Release 1.0.59 2024-03-04
 
 Added a distinction between a "common name" and "name" for locations.
