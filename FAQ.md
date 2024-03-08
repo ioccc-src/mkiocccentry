@@ -117,7 +117,7 @@ rule.
 
 XXX - make sure to link to the winner repo FAQ about the Makefile - XXX
 XXX - this is not done now because of link changes and possibly an anchor - XXX
-XXX - name being added to the entry - XXX
+XXX - name being added to this FAQ item - XXX
 
 
 ## 4. <a name="submitting">Can't I just submit my obfuscated C program to the judges?</a>
@@ -272,7 +272,7 @@ Some systems have a `GNU tar` that you can use. For instance FreeBSD has a
 specify in the tools the `-t tar` option to make this work.
 
 
-## 11. <a name="markdown">Where can I find help with formatting markdown files for my entry?</a>
+## 11. <a name="markdown">Where can I find help with formatting markdown files for my submission?</a>
 
 Please see this simple
 [markdown guide](https://www.markdownguide.org/basic-syntax) for more help.

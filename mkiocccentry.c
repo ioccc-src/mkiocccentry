@@ -3029,7 +3029,7 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	if (posix_plus_safe(base, false, false, true) == false) {
 	    fpara(stderr,
 		  "",
-		  "The basename of an extra file must match the following regexp:",
+		  "The basename of an extra file must match the following regular expression:",
 		  "",
 		  "    ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
 		  "",
@@ -4427,9 +4427,9 @@ get_author_info(struct author **author_set_p)
 		 */
 		fpara(stderr,
 		      "",
-		      "The IOCCC author handle must match the following regexp:",
+		      "The IOCCC author handle must match the following regular expression:",
 		      "",
-		      "    ^[0-9a-z][0-9a-z_]*$",
+		      "     ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
 		      "",
 		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */

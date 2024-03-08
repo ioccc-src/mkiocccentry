@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 #
-# mkiocccentry and related tools - how to form an IOCCC entry
+# mkiocccentry and related tools - how to form an IOCCC submission
 #
 # For the mkiocccentry utility:
 #
