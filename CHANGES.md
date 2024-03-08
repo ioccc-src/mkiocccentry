@@ -21,6 +21,7 @@ Typo fix in txzchk.h: referred to `posix_safe_plus()` instead of
 Change words `entry` and `entries` to `submission` and `submissions` (exception:
 in `iocccsize`).
 
+Added FAQ 12 "Why do these tools sometimes use the incorrect IOCCC terms?".
 
 ## Release 1.0.59 2024-03-04
 

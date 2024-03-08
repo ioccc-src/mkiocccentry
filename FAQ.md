@@ -27,6 +27,8 @@
 
 11. <a href="#markdown">Where can I find help with formatting markdown files for my submission?</a>
 
+12. <a href="keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
+
 
 ## 0. <a name="download">Where can I find the mkiocccentry tool?</a>
 
@@ -276,3 +278,30 @@ specify in the tools the `-t tar` option to make this work.
 
 Please see this simple
 [markdown guide](https://www.markdownguide.org/basic-syntax) for more help.
+
+
+## 12. <a name="keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
+
+According to the [Official IOCCC FAQ
+6.9](https://www.ioccc.org/faq.html#terms) this repo sometimes uses
+the wrong term.  For example the name `mkiocccentry(1)` contains
+the name _entry_ when the tool is dealing with a _submission_.  So
+why don't we call the tool _mkiocccsubmission_ and rename the this repo?
+
+Because the name `mkiocccentry(1)` and this repo name was selected
+before decisions were made in regards to the IOCCC term _entry_.
+And besides, the name `mkiocccentry(1)` contains a fun pun.  And
+renaming the repo is not worth the hassle.
+
+If the inconsistency bothers you, think of the name `mkiocccentry(1)`
+as a hopeful sign that the _submission_ it is processing might
+actually win the IOCCC and become a winning entry.  :-)  Besides,
+some submissions to go on to become winners.
+
+You may find inconsistent use of _Author_,  _Entry_, and _Submission_
+in this repo as well.  The above "excuse" was just an example.
+
+We made an attempt to correct some of the inconsistent use of the
+terms _Author_, _Entry_, and _Submission_ in this repo.  If you DO
+find a situation where the inconsistency is causing a problem and/or
+confusion, please let be know in the way of a bug report.
