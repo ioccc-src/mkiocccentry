@@ -443,7 +443,7 @@ main(int argc, char *argv[])
 	}
 
     /*
-     * case: 2 args - info path and author path
+     * case: 2 args - info path and auth path
      */
     } else if (submission_dir == NULL && info_filename != NULL && auth_filename != NULL) {
 
