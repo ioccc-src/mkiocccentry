@@ -57,6 +57,7 @@ MAKE= make
 MV= mv
 PICKY= picky
 RM= rm
+RMDIR= rmdir
 RSYNC= rsync
 SED= sed
 SEQCEXIT= seqcexit
@@ -416,7 +417,7 @@ hostchk_warning:
 
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
-	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep soup \
+	install uninstall test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep soup \
         pull release seqcexit shellcheck tags local_dir_tags all_tags test test-chkentry use_json_ref \
 	eat eating eat eating_soup kitchen soup_kitchen \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
@@ -1541,6 +1542,160 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# uninstall - uninstall all files installed and directories created via this repo
+#
+# This is a quick way to uninstall all files installed by this repo.
+# No directories are removed by this rule, however.
+#
+uninstall:
+	${RM} -f -v ${DEST_DIR}/all_sem_ref.sh
+	${RM} -f -v ${DEST_DIR}/chkentry
+	${RM} -f -v ${DEST_DIR}/dbg_example
+	${RM} -f -v ${DEST_DIR}/dbg_test
+	${RM} -f -v ${DEST_DIR}/dyn_test
+	${RM} -f -v ${DEST_DIR}/fnamchk
+	${RM} -f -v ${DEST_DIR}/hostchk.sh
+	${RM} -f -v ${DEST_DIR}/iocccsize
+	${RM} -f -v ${DEST_DIR}/jfmt
+	${RM} -f -v ${DEST_DIR}/jnamval
+	${RM} -f -v ${DEST_DIR}/jnum_chk
+	${RM} -f -v ${DEST_DIR}/jnum_gen
+	${RM} -f -v ${DEST_DIR}/jparse
+	${RM} -f -v ${DEST_DIR}/jsemtblgen
+	${RM} -f -v ${DEST_DIR}/jstrdecode
+	${RM} -f -v ${DEST_DIR}/jstrencode
+	${RM} -f -v ${DEST_DIR}/jval
+	${RM} -f -v ${DEST_DIR}/location
+	${RM} -f -v ${DEST_DIR}/mkiocccentry
+	${RM} -f -v ${DEST_DIR}/pr_jparse_test
+	${RM} -f -v ${DEST_DIR}/prep.sh
+	${RM} -f -v ${DEST_DIR}/reset_tstamp.sh
+	${RM} -f -v ${DEST_DIR}/run_usage.sh
+	${RM} -f -v ${DEST_DIR}/txzchk
+	${RM} -f -v ${DEST_DIR}/utf8_test
+	${RM} -f -v ${DEST_DIR}/verge
+	${RM} -f -v ${DEST_DIR}/vermod.sh
+	${RM} -f -v ${DEST_INCLUDE}/dbg.h
+	${RM} -f -v ${DEST_INCLUDE}/dyn_array.h
+	${RM} -f -v ${DEST_INCLUDE}/jparse.h
+	${RM} -f -v ${DEST_LIB}/dbg.a
+	${RM} -f -v ${DEST_LIB}/dyn_array.a
+	${RM} -f -v ${DEST_LIB}/jparse.a
+	${RM} -f -v ${DEST_LIB}/soup.a
+	${RM} -f -v ${MAN1_DIR}/bug_report.1
+	${RM} -f -v ${MAN1_DIR}/bug_report.sh.1
+	${RM} -f -v ${MAN1_DIR}/chkentry.1
+	${RM} -f -v ${MAN1_DIR}/fnamchk.1
+	${RM} -f -v ${MAN1_DIR}/iocccsize.1
+	${RM} -f -v ${MAN1_DIR}/jfmt.1
+	${RM} -f -v ${MAN1_DIR}/jnamval.1
+	${RM} -f -v ${MAN1_DIR}/jparse.1
+	${RM} -f -v ${MAN1_DIR}/jstrdecode.1
+	${RM} -f -v ${MAN1_DIR}/jstrencode.1
+	${RM} -f -v ${MAN1_DIR}/jval.1
+	${RM} -f -v ${MAN1_DIR}/location.1
+	${RM} -f -v ${MAN1_DIR}/mkiocccentry.1
+	${RM} -f -v ${MAN1_DIR}/txzchk.1
+	${RM} -f -v ${MAN3_DIR}/dbg.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_addr.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_alloced.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_append_set.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_append_value.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_avail.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_beyond.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_clear.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_concat_array.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_create.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_free.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_rewind.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_seek.3
+	${RM} -f -v ${MAN3_DIR}/dyn_array_tell.3
+	${RM} -f -v ${MAN3_DIR}/err.3
+	${RM} -f -v ${MAN3_DIR}/errp.3
+	${RM} -f -v ${MAN3_DIR}/fdbg.3
+	${RM} -f -v ${MAN3_DIR}/ferr.3
+	${RM} -f -v ${MAN3_DIR}/ferrp.3
+	${RM} -f -v ${MAN3_DIR}/fmsg.3
+	${RM} -f -v ${MAN3_DIR}/fprintf_usage.3
+	${RM} -f -v ${MAN3_DIR}/fwarn.3
+	${RM} -f -v ${MAN3_DIR}/fwarn_or_err.3
+	${RM} -f -v ${MAN3_DIR}/fwarnp.3
+	${RM} -f -v ${MAN3_DIR}/fwerr.3
+	${RM} -f -v ${MAN3_DIR}/fwerrp.3
+	${RM} -f -v ${MAN3_DIR}/jparse.3
+	${RM} -f -v ${MAN3_DIR}/json_dbg.3
+	${RM} -f -v ${MAN3_DIR}/json_dbg_allowed.3
+	${RM} -f -v ${MAN3_DIR}/json_err_allowed.3
+	${RM} -f -v ${MAN3_DIR}/json_warn_allowed.3
+	${RM} -f -v ${MAN3_DIR}/msg.3
+	${RM} -f -v ${MAN3_DIR}/parse_json.3
+	${RM} -f -v ${MAN3_DIR}/parse_json_file.3
+	${RM} -f -v ${MAN3_DIR}/parse_json_stream.3
+	${RM} -f -v ${MAN3_DIR}/printf_usage.3
+	${RM} -f -v ${MAN3_DIR}/sndbg.3
+	${RM} -f -v ${MAN3_DIR}/snmsg.3
+	${RM} -f -v ${MAN3_DIR}/snwarn.3
+	${RM} -f -v ${MAN3_DIR}/snwarnp.3
+	${RM} -f -v ${MAN3_DIR}/snwerr.3
+	${RM} -f -v ${MAN3_DIR}/snwerrp.3
+	${RM} -f -v ${MAN3_DIR}/vdbg.3
+	${RM} -f -v ${MAN3_DIR}/verr.3
+	${RM} -f -v ${MAN3_DIR}/verrp.3
+	${RM} -f -v ${MAN3_DIR}/vfdbg.3
+	${RM} -f -v ${MAN3_DIR}/vferr.3
+	${RM} -f -v ${MAN3_DIR}/vferrp.3
+	${RM} -f -v ${MAN3_DIR}/vfmsg.3
+	${RM} -f -v ${MAN3_DIR}/vfprintf_usage.3
+	${RM} -f -v ${MAN3_DIR}/vfwarn.3
+	${RM} -f -v ${MAN3_DIR}/vfwarn_or_err.3
+	${RM} -f -v ${MAN3_DIR}/vfwarnp.3
+	${RM} -f -v ${MAN3_DIR}/vfwerr.3
+	${RM} -f -v ${MAN3_DIR}/vfwerrp.3
+	${RM} -f -v ${MAN3_DIR}/vmsg.3
+	${RM} -f -v ${MAN3_DIR}/vprintf_usage.3
+	${RM} -f -v ${MAN3_DIR}/vsndbg.3
+	${RM} -f -v ${MAN3_DIR}/vsnmsg.3
+	${RM} -f -v ${MAN3_DIR}/vsnwarn.3
+	${RM} -f -v ${MAN3_DIR}/vsnwarnp.3
+	${RM} -f -v ${MAN3_DIR}/vsnwerr.3
+	${RM} -f -v ${MAN3_DIR}/vsnwerrp.3
+	${RM} -f -v ${MAN3_DIR}/vwarn.3
+	${RM} -f -v ${MAN3_DIR}/vwarn_or_err.3
+	${RM} -f -v ${MAN3_DIR}/vwarnp.3
+	${RM} -f -v ${MAN3_DIR}/vwerr.3
+	${RM} -f -v ${MAN3_DIR}/vwerrp.3
+	${RM} -f -v ${MAN3_DIR}/warn.3
+	${RM} -f -v ${MAN3_DIR}/warn_or_err.3
+	${RM} -f -v ${MAN3_DIR}/warnp.3
+	${RM} -f -v ${MAN3_DIR}/werr.3
+	${RM} -f -v ${MAN3_DIR}/werrp.3
+	${RM} -f -v ${MAN8_DIR}/all_sem_ref.8
+	${RM} -f -v ${MAN8_DIR}/chkentry_test.8
+	${RM} -f -v ${MAN8_DIR}/hostchk.8
+	${RM} -f -v ${MAN8_DIR}/ioccc_test.8
+	${RM} -f -v ${MAN8_DIR}/ioccc_test.sh.8
+	${RM} -f -v ${MAN8_DIR}/iocccsize_test.8
+	${RM} -f -v ${MAN8_DIR}/jnum_chk.8
+	${RM} -f -v ${MAN8_DIR}/jnum_gen.8
+	${RM} -f -v ${MAN8_DIR}/jparse_test.8
+	${RM} -f -v ${MAN8_DIR}/jsemcgen.8
+	${RM} -f -v ${MAN8_DIR}/jsemcgen.sh.8
+	${RM} -f -v ${MAN8_DIR}/jsemtblgen.8
+	${RM} -f -v ${MAN8_DIR}/jstr_test.8
+	${RM} -f -v ${MAN8_DIR}/mkiocccentry_test.8
+	${RM} -f -v ${MAN8_DIR}/prep.8
+	${RM} -f -v ${MAN8_DIR}/prep.sh.8
+	${RM} -f -v ${MAN8_DIR}/reset_tstamp.8
+	${RM} -f -v ${MAN8_DIR}/run_bison.8
+	${RM} -f -v ${MAN8_DIR}/run_bison.sh.8
+	${RM} -f -v ${MAN8_DIR}/run_flex.8
+	${RM} -f -v ${MAN8_DIR}/run_flex.sh.8
+	${RM} -f -v ${MAN8_DIR}/run_usage.8
+	${RM} -f -v ${MAN8_DIR}/txzchk_test.8
+	${RM} -f -v ${MAN8_DIR}/utf8_test.8
+	${RM} -f -v ${MAN8_DIR}/verge.8
+	${RM} -f -v ${MAN8_DIR}/vermod.8
 
 ###############
 # make depend #

@@ -41,6 +41,8 @@ Changed MKIOCCCENTRY_VERSION from "1.0.3 2024-03-02 to "1.0.4 2024-03-04".
 Changed IOCCC_auth_version from "1.20 2024-03-02" to "1.21 2024-03-04".
 Changed MKIOCCCENTRY_REPO_VERSION from "1.0.1 2023-02-14" to "1.1 2023-03-04".
 
+Added a simple `make unstall` rule to uninstall all files installed by this repo.
+
 ## Release 1.0.58 2024-03-02
 
 Address part (possibly all) of the issue of new IOCCC terms (only part because
