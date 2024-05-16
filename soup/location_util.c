@@ -281,7 +281,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
 	}
     } else {
 	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->name != NULL; ++p, ++i) {
-	    if ((strcasecmp(code, p->code) == 0) || ((substrings == true) && *strcasestr(code, p->code) != NULL)) {
+	    if ((strcasecmp(code, p->code) == 0) || ((substrings == true) && (strcasestr(code, p->code) != NULL))) {
 		dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
 		if (location != NULL) {
 		    *location = &loc[i];
