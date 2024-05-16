@@ -34,8 +34,8 @@
 /* exit code change of order - use new value in sequencing - coo */
 
 
-#include <stdio.h>
 #define _GNU_SOURCE /* for strcasestr */
+#include <stdio.h>
 #include <string.h>
 #include <strings.h> /* for strcasecmp */
 
