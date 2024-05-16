@@ -101,7 +101,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.0.3 2024-03-02"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.0.4 2024-05-16"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

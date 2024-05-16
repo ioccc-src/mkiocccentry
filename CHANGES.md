@@ -18,7 +18,8 @@ It might be that there are no more places where _entry_ or _entries_ is used
 incorrectly (except perhaps for _iocccsize.c_) but the other terms have not been
 checked.
 
-Make `txzchk(1)` not show output if `-q` specified.
+Make `txzchk(1)` not show output if `-q` specified. Updated version to `"1.0.4
+2024-05-16"`.
 
 
 ## Release 1.0.62 2024-05-15
