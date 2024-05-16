@@ -1,5 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.0.62 2024-05-15
+
+Changed MKIOCCCENTRY_REPO_VERSION from "1.0.1 2023-02-14"
+to "1.0.62 2024-05-15" to match the above release version.
+
+Changed IOCCC_CONTEST from "IOCCCMOCK"
+to "IOCCC28" for testing purposes.  :-)
+
+Changed IOCCC_YEAR from "2023"
+to "2024" for testing purposes.  :-)
+
+Changed MKIOCCCENTRY_VERSION from "1.0.4 2024-03-04"
+to "1.0.5 2024-05-15" because of the above constant changes.
+
+Updated both `test_ioccc/test_JSON/auth.json/auth.*.json`
+and ` test_ioccc/test_JSON/info.json/good/info.*.json`
+according to the above changes.
+
+
 ## Release 1.0.61 2024-03-07
 
 Remove from comments the `winner_handle`. Fixed the regexp of an allowed handle
@@ -23,6 +43,7 @@ in `iocccsize`).
 
 Added FAQ 12 "Why do these tools sometimes use the incorrect IOCCC terms?".
 
+
 ## Release 1.0.59 2024-03-04
 
 Added a distinction between a "common name" and "name" for locations.
@@ -42,6 +63,7 @@ Changed IOCCC_auth_version from "1.20 2024-03-02" to "1.21 2024-03-04".
 Changed MKIOCCCENTRY_REPO_VERSION from "1.0.1 2023-02-14" to "1.1 2023-03-04".
 
 Added a simple `make unstall` rule to uninstall all files installed by this repo.
+
 
 ## Release 1.0.58 2024-03-02
 
@@ -85,8 +107,8 @@ being changed to 'submit your submission'. In some cases the surrounding text
 was reworded but not in all. If you like this can be submissions all the way
 down!
 
-## Release 1.0.57 2024-01-21
 
+## Release 1.0.57 2024-01-21
 
 Rename "print_test" to "pr_jparse_test".  The name "print_test" was
 too generic and might conflict with some test print application
@@ -421,7 +443,7 @@ fprint(), fprstr(), print(), prstr(), para(), fpara(), fpr(), vfpr()
 ```
 
 Added `chk_stdio_printf_err(stream, ret)` to determine of a
-print function call had an error.  
+print function call had an error.
 
 All "print function call"s are now followed by a call to
 `chk_stdio_printf_err()` to properly detect if there was a

@@ -82,7 +82,7 @@
  *
  * use format: IOCCC[0-9][0-9] or IOCCCMOCK
  */
-#define IOCCC_CONTEST "IOCCCMOCK"
+#define IOCCC_CONTEST "IOCCC28"
 
 
 /*
@@ -91,7 +91,7 @@
  * NOTE: If the contest spans the new year, then the year
  *	 that IOCCC_CONTEST opens may be different.
  */
-#define IOCCC_YEAR (2023)
+#define IOCCC_YEAR (2024)
 
 
 /*

@@ -66,7 +66,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "1.0.1 2023-02-14"	/* special release format: major.minor.patch YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "1.0.62 2024-05-15"	/* special release format: major.minor.patch YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
@@ -81,7 +81,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "1.0.4 2024-03-04"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.0.5 2024-05-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.

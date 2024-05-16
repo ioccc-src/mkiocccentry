@@ -1,9 +1,9 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"IOCCC_auth_version" : "1.21 2024-03-04",
-	"IOCCC_contest" : "IOCCCMOCK",
-	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.4 2024-03-04",
+	"IOCCC_contest" : "IOCCC28",
+	"IOCCC_year" : 2024,
+	"mkiocccentry_version" : "1.0.5 2024-05-15",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "test",
