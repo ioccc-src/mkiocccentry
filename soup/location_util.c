@@ -35,8 +35,9 @@
 
 
 #include <stdio.h>
+#define _GNU_SOURCE /* for strcasestr */
 #include <string.h>
-#include <strings.h> /* strcasecmp */
+#include <strings.h> /* for strcasecmp */
 
 /*
  * location - location/country codes
