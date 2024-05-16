@@ -1,0 +1,3 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.19243435478.txt: found more than one directory in path 12345678-1234-4321-abcd-1234567890ab-3/extra1/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.19243435478.txt: found more than one directory: drwxr-xr-x  0 501    20       1000 Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-3/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.19243435478.txt: found 2 feathers stuck in the tarball

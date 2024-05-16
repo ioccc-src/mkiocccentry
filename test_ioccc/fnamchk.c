@@ -66,8 +66,8 @@ static const char * const usage_msg =
     "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-E ext\t\t\tchange extension to test (def: txz)\n"
-    "\t-t\t\t\tfilename must match test entry filename\n"
-    "\t-u\t\t\tfilename must match real entry filename\n"
+    "\t-t\t\t\tfilename must match test submit filename\n"
+    "\t-u\t\t\tfilename must match real submit filename\n"
     "\t\t\t\t\tNOTE: -t and -u cannot be used together.\n\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
@@ -75,8 +75,8 @@ static const char * const usage_msg =
     "     0\t\tall OK\n"
     "     2\t\t-h and help string printed or -V and version string printed\n"
     "     3\t\tcommand line error\n"
-    "     4\t\t\"entry.test-\" separated token length != %ju\n"
-    "     5\t\t\"entry.UUID-\" token length != %ju\n"
+    "     4\t\t\"submit.test-\" separated token length != %ju\n"
+    "     5\t\t\"submit.UUID-\" token length != %ju\n"
     "     >=10\tinternal error\n"
     "fnamchk version: %s";
 
@@ -96,7 +96,7 @@ main(int argc, char *argv[])
     char *filepath;		/* filepath argument to check */
     char *filename;		/* basename of filepath to check */
     int ret;			/* libc return code */
-    char *entry;		/* first '.' separated token - entry */
+    char *submit;		/* first '.' separated token - submit */
     char *uuid;			/* first '-' separated token - test or UUID */
     size_t len;			/* UUID length */
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
@@ -109,8 +109,8 @@ main(int argc, char *argv[])
     char *extension;		/* sixth .-separated token as a filename extension */
     char *ext = "txz";		/* user supplied extension (def: txz): used for testing purposes only */
     int i;
-    bool test_mode = false;	/* true ==> force check to test if it's a test entry filename */
-    bool uuid_mode = false;	/* true ==> force check to test if it's a UUID entry filename */
+    bool test_mode = false;	/* true ==> force check to test if it's a test submit filename */
+    bool uuid_mode = false;	/* true ==> force check to test if it's a UUID submit filename */
     char *saveptr = NULL;	/* for strtok_r() */
 
 
@@ -142,10 +142,10 @@ main(int argc, char *argv[])
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 't': /* force check to verify that the filename is a test entry filename */
+	case 't': /* force check to verify that the filename is a test submit filename */
 	    test_mode = true;
 	    break;
-	case 'u': /* force check to verify that the filename is a UUID (real) entry filename */
+	case 'u': /* force check to verify that the filename is a UUID (real) submit filename */
 	    uuid_mode = true;
 	    break;
 	case 'E': /* force extension check to be optarg instead of "txz": used for txzchk test suite */
@@ -183,25 +183,25 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "filename: %s", filename);
 
     /*
-     * first '.' separated token must be entry
+     * first '.' separated token must be submit
      */
-    entry = strtok_r(filename, ".", &saveptr);
-    if (entry == NULL) {
+    submit = strtok_r(filename, ".", &saveptr);
+    if (submit == NULL) {
 	err(10, __func__, "first strtok_r() returned NULL");
 	not_reached();
     }
-    if (strcmp(entry, "entry") != 0) {
-	err(11, __func__, "filename does not start with \"entry.\": %s", filepath);
+    if (strcmp(submit, "submit") != 0) {
+	err(11, __func__, "filename does not start with \"submit.\": %s", filepath);
 	not_reached();
     }
-    dbg(DBG_LOW, "filename starts with \"entry.\": %s", filename);
+    dbg(DBG_LOW, "filename starts with \"submit.\": %s", filename);
 
     /*
      * second '.' separated token must be test or a UUID
      */
     uuid = strtok_r(NULL, ".", &saveptr);
     if (uuid == NULL) {
-	err(12, __func__, "nothing found after \"entry.\"");
+	err(12, __func__, "nothing found after \"submit.\"");
 	not_reached();
     }
     len = strlen(uuid);
@@ -212,7 +212,7 @@ main(int argc, char *argv[])
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	/* if it starts as "test-" and -u was specified it's an error */
 	if (uuid_mode) {
-	    err(13, __func__, "-u specified and entry starts as a test mode filename");
+	    err(13, __func__, "-u specified and submit starts as a test mode filename");
 	    not_reached();
 	}
 
@@ -221,7 +221,7 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != LITLEN("test-")+MAX_SUBMISSION_CHARS) {
-	    err(4, __func__, "\"entry.test-\" separated token length: %ju != %ju: %s", /*ooo*/
+	    err(4, __func__, "\"submit.test-\" separated token length: %ju != %ju: %s", /*ooo*/
 			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_SUBMISSION_CHARS), filepath);
 	    not_reached();
 	}
@@ -230,7 +230,7 @@ main(int argc, char *argv[])
 	    err(14, __func__, "submission_number not found after \"test-\": %s", filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "entry ID is test: %s", uuid);
+	dbg(DBG_LOW, "submit ID is test: %s", uuid);
 	if (submission_num < 0) {
 	    err(15, __func__, "submission_number %d is < 0: %s", submission_num, filepath);
 	    not_reached();
@@ -247,10 +247,10 @@ main(int argc, char *argv[])
     } else {
 	/*
 	 * if -t is specified and we get here (filename does not start with
-	 * "entry.test-") then it's an error.
+	 * "submit.test-") then it's an error.
 	 */
 	if (test_mode) {
-	    err(17, __func__, "-t specified and entry does not start with \"entry.test-\"");
+	    err(17, __func__, "-t specified and submit does not start with \"submit.test-\"");
 	    not_reached();
 	}
 
@@ -259,14 +259,14 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != UUID_LEN+1+MAX_SUBMISSION_CHARS) {
-	    err(5, __func__, "\"entry.UUID-\" separated token length: %ju != %ju: %s", /*ooo*/
+	    err(5, __func__, "\"submit.UUID-\" separated token length: %ju != %ju: %s", /*ooo*/
 			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_SUBMISSION_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant,
 		&d, &e, &f, &submission_num, &guard);
 	if (ret != 9) {
-	    err(18, __func__, "UUID-submission_number not found after \"entry-\": %s", filepath);
+	    err(18, __func__, "UUID-submission_number not found after \"submit-\": %s", filepath);
 	    not_reached();
 	}
 	if (version != UUID_VERSION) {
@@ -277,7 +277,7 @@ main(int argc, char *argv[])
 	    err(20, __func__, "UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "entry ID is a valid UUID: %s", uuid);
+	dbg(DBG_LOW, "submit ID is a valid UUID: %s", uuid);
 	if (submission_num < 0) {
 	    err(21, __func__, "submission_number %d is < 0: %s", submission_num, filepath);
 	    not_reached();
@@ -286,7 +286,7 @@ main(int argc, char *argv[])
 	    err(22, __func__, "submission_number %d is > %d: %s", submission_num, MAX_SUBMISSION_NUM, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "entry number is valid: %d", submission_num);
+	dbg(DBG_LOW, "submit number is valid: %d", submission_num);
     }
 
     /*
@@ -294,7 +294,7 @@ main(int argc, char *argv[])
      */
     timestamp_str = strtok_r(NULL, ".", &saveptr);
     if (timestamp_str == NULL) {
-	err(23, __func__, "nothing found after second '.' separated token of entry number");
+	err(23, __func__, "nothing found after second '.' separated token of submit number");
 	not_reached();
     }
     ret = sscanf(timestamp_str, "%jd%c", &timestamp, &guard);
@@ -339,13 +339,13 @@ main(int argc, char *argv[])
     }
 
     /*
-     * All is OK with the filepath - print entry directory basename
+     * All is OK with the filepath - print submit directory basename
      */
     dbg(DBG_LOW, "filepath passes all checks: %s", filepath);
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("%s\n", uuid);
     if (ret <= 0) {
-	errp(30, __func__, "printf of entry directory basename failed");
+	errp(30, __func__, "printf of submit directory basename failed");
 	not_reached();
     }
 

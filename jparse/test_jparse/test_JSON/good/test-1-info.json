@@ -12,7 +12,7 @@
 	"submission_num" : 1,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.test-1.1688410575.txz",
+	"tarball" : "submit.test-1.1688410575.txz",
 	"rule_2a_size" : 61,
 	"rule_2b_size" : 38,
 	"empty_override" : false,

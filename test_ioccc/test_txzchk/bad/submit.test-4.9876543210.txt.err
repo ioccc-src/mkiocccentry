@@ -1,0 +1,4 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found non .auth.json and .info.json dot file .foo
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .foo
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found a total of 1 invalidly named dot file
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found 2 feathers stuck in the tarball

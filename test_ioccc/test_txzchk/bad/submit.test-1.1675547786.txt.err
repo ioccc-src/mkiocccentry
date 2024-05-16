@@ -1,0 +1,6 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no .info.json found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no .auth.json found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no prog.c found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no Makefile found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no remarks.md found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: found 5 feathers stuck in the tarball

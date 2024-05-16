@@ -1257,7 +1257,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
  * In .info.json, we are required to find a JTYPE_MEMBER named "manifest".
  * The value of this "manifest" JTYPE_MEMBER is a JSON array (JTYPE_ARRAY).
  * That JSON array consists of an array of JSON objects (JTYPE_OBJECT),
- * each containing JSON members (JTYPE_MEMBER) with filenames for the entry.
+ * each containing JSON members (JTYPE_MEMBER) with filenames for the submission.
  *
  * Given a node that is a JSON object (JTYPE_OBJECT) (from the JSON array),
  * we will convert a node that is a JSON object (JTYPE_OBJECT) containing
@@ -1843,7 +1843,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mo
     /*
      * allocate space for tarball filename
      */
-    tarball_len = LITLEN("entry.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMISSION_CHARS + LITLEN(".123456789012.txz") + 1;
+    tarball_len = LITLEN("submit.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMISSION_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for warnp() */
     tarball_filename = (char *)malloc(tarball_len + 1);
     if (tarball_filename == NULL) {
@@ -1858,11 +1858,11 @@ form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mo
     errno = 0;			/* pre-clear errno for warnp() */
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
-	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%ju.txz",
+	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%ju.txz",
 		       IOCCC_contest_id, submission_num, (uintmax_t)formed_timestamp);
     } else {
 	/* case: signed time_t */
-	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%jd.txz",
+	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%jd.txz",
 		       IOCCC_contest_id, submission_num, (intmax_t)formed_timestamp);
     }
     if (ret <= 0) {
@@ -3697,7 +3697,7 @@ test_mkiocccentry_version(char const *str)
  * Test that length is > 0 && <= MAX_NAME_LEN.
  *
  * NOTE: This function does NOT test if the author name is unique to the authors
- * of the entry.
+ * of the submission.
  *
  * given:
  *	str	name to test
@@ -3925,7 +3925,7 @@ test_rule_2a_override(bool boolean)
  *
  * because:
  *
- *	Failing the test_rule_2a_size() test does NOT disqualify the entry. It
+ *	Failing the test_rule_2a_size() test does NOT disqualify the submission. It
  *	just triggers, in the case of mkiocccentry, to ask the user if they
  *	really want to try and break the rule.
  *
@@ -3989,7 +3989,7 @@ test_rule_2b_override(bool boolean)
  *
  * because:
  *
- *	Failing the test_rule_2b_size() test does NOT disqualify the entry. It
+ *	Failing the test_rule_2b_size() test does NOT disqualify the submission. It
  *	just triggers, in the case of mkiocccentry, to ask the user if they
  *	really want to try and break the rule.
  *

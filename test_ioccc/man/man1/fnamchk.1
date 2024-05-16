@@ -31,7 +31,7 @@
 verifies that an IOCCC compressed tarball is properly named.
 .PP
 The program validates that the filename is correct, in the form of
-.B entry.contest_ID\-entry_num.timestamp.ext
+.B submut.contest_ID\-entry_num.timestamp.ext
 where
 .B contest_ID
 is either
@@ -57,7 +57,7 @@ option.
 More specifically, the filename
 .BR MUST :
 .IP \(bu 4
-Start with "\fBentry\fP".
+Start with "\fBsubmit\fP".
 .IP \(bu 4
 Followed by "\fB.\fP".
 .IP \(bu 4
@@ -112,13 +112,13 @@ purposes only!
 .B \-t
 If the filename does not start with the test mode filename format, issue an error.
 In other words the filename has to start with
-.I entry.test\-
+.I submit.test\-
 or it's an error.
 .TP
 .B \-u
 If the filename does not start with the normal filename format, issue an error.
 In other words if the filename starts with
-.I entry.test\-
+.I submit.test\-
 it is an error.
 .SH EXIT STATUS
 .TP
@@ -135,10 +135,10 @@ and version string printed
 command line error
 .TQ
 4
-"entry.test\-" separated token length invalid
+"submit.test\-" separated token length invalid
 .TQ
 5
-"entry.UUID\-" separated token length invalid
+"submit.UUID\-" separated token length invalid
 .TQ
 >= 10
 validation failed (see error message for details)
@@ -161,12 +161,12 @@ is
 .BR (time_t)1662145368 .
 .PP
 Run the program on the filename
-.I entry.test\-0.1562145368.txz
+.I submit.test\-0.1562145368.txz
 which will fail because the timestamp in the filename is less than the minimum timestamp:
 .sp
 .RS
 .ft B
- ./fnamchk \-t entry.test\-0.1562145368.txz
+ ./fnamchk \-t submit.test\-0.1562145368.txz
 .ft R
 .RE
 .PP
@@ -181,7 +181,7 @@ which will fail because the name format is invalid:
 .RE
 .PP
 Run the program on the filename
-.I entry.test.0.1662145368.txz
+.I submit.test.0.1662145368.txz
 with the option
 .B \-u
 which will fail because it is a test\-mode filename but the
@@ -190,26 +190,26 @@ option is specified:
 .sp
 .RS
 .ft B
- ./fnamchk \-u entry.test\-0.1662145368.txz
+ ./fnamchk \-u submit.test\-0.1662145368.txz
 .ft R
 .RE
 .PP
 Run the program on the filename
-.I entry.test.0.1662145368.txz
+.I submit.test.0.1662145368.txz
 with the option
 .I \-t
 which will pass because it is a test\-mode file and the timestamp is not less than the minimum:
 .sp
 .RS
 .ft B
- ./fnamchk \-t entry.test\-0.1662145368.txz
+ ./fnamchk \-t submit.test\-0.1662145368.txz
 .ft R
 .RE
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
 Run the program on the file
-.I entry.test.0.1662145368.txt
+.I submit.test.0.1662145368.txt
 with the option
 .BR \-t ,
 changing the extension to
@@ -222,14 +222,14 @@ option and the timestamp is correct:
 .sp
 .RS
 .ft B
- ./fnamchk \-E txt \-t entry.test\-0.1662145368.txt
+ ./fnamchk \-E txt \-t submit.test\-0.1662145368.txt
 .ft R
 .RE
 .sp
 The above will print "\fBtest\-0\fP".
 .PP
 Run the program on the file
-.I entry.test.0.1662145368.txz
+.I submit.test.0.1662145368.txz
 with the options
 .BR \-t ,
 changing the extension to
@@ -240,19 +240,19 @@ option which will fail because the extension specified does not match the extens
 .sp
 .RS
 .ft B
- ./fnamchk \-E txt \-t entry.test\-0.1662145368.txz
+ ./fnamchk \-E txt \-t submit.test\-0.1662145368.txz
 .ft R
 .RE
 .sp
 NOTE: It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
 .PP
 Run the program on the file
-.I entry.test.0.1662145368.txz
+.I submit.test.0.1662145368.txz
 without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
 .sp
 .RS
 .ft B
- ./fnamchk entry.test\-0.1662145368.txz
+ ./fnamchk submit.test\-0.1662145368.txz
 .ft R
 .RE
 .sp

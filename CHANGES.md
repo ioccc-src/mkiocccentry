@@ -15,9 +15,15 @@ to "2024" for testing purposes.  :-)
 Changed MKIOCCCENTRY_VERSION from "1.0.4 2024-03-04"
 to "1.0.5 2024-05-15" because of the above constant changes.
 
-Updated both `test_ioccc/test_JSON/auth.json/auth.*.json`
-and ` test_ioccc/test_JSON/info.json/good/info.*.json`
-according to the above changes.
+The filename formed by _mkiocccentry(1)_ was changed
+to start with _submit._ instead of _entry._.
+
+Changed FNAMCHK_VERSION from "1.0.1 2024-03-02"
+to "1.0.2 2024-05-15" because of the above change.
+
+Updated `mkiocccentry(1)` and `chkentry(1)` man pages accordingly.
+
+Updated the test files according to the above changes.
 
 
 ## Release 1.0.61 2024-03-07

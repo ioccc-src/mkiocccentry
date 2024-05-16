@@ -1,0 +1,26 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  4 04:52 test-0/extra1
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  4 04:52 test-0/extra1
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/extra1
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1430 Jun  4 04:52 test-0/.info.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1430 Jun  4 04:52 test-0/.info.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/.info.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    4454 Jun  4 04:52 test-0/remarks.md
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    4454 Jun  4 04:52 test-0/remarks.md
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/remarks.md
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    2794 Jun  4 04:52 test-0/.auth.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    2794 Jun  4 04:52 test-0/.auth.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/.auth.json
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       0 Jun  4 04:52 test-0/prog.c
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       0 Jun  4 04:52 test-0/prog.c
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/prog.c
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  4 04:52 test-0/extra2
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  4 04:52 test-0/extra2
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/extra2
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1854 Jun  4 04:52 test-0/Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1854 Jun  4 04:52 test-0/Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical UID in file in line drwxr-xr-x  0 cody   staff       0 Jun  4 04:52 test-0/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found non-numerical GID in file in line: drwxr-xr-x  0 cody   staff       0 Jun  4 04:52 test-0/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found incorrect directory in filename test-0/
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: not all files in correct directory
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1924343546.txt: found 25 feathers stuck in the tarball

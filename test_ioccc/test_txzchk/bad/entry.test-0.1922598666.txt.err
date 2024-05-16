@@ -1,5 +1,0 @@
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1922598666.txt: found empty .auth.json file
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1922598666.txt: found empty Makefile
-Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- 1000/staff         -100000 2022-02-09 09:46 test-0/prog.c
-Warning: txzchk: found non-numerical UID in line drwxr-xr-x cody/1000         0 2022-02-09 09:46 test-0/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-0.1922598666.txt: found 5 feathers stuck in the tarball
