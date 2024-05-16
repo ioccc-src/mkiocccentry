@@ -1,5 +1,5 @@
 /*
- * chkentry - check JSON files in an IOCCC entry
+ * chkentry - check JSON files in an IOCCC submission
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
@@ -53,7 +53,7 @@
 #include <fcntl.h>		/* for open() */
 
 /*
- * chkentry - check JSON files in an IOCCC entry
+ * chkentry - check JSON files in an IOCCC submission
  */
 #include "chkentry.h"
 
@@ -89,7 +89,7 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "\tsubmission_dir\tIOCCC entry directory with .info.json and auth.json files\n"
+    "\tsubmission_dir\tIOCCC submission directory with .info.json and auth.json files\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\n"
@@ -294,7 +294,7 @@ main(int argc, char *argv[])
     char const *program = NULL;		/* our name */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *submission_dir = ".";	/* entry directory to process, or NULL ==> process files */
+    char const *submission_dir = ".";	/* submission directory to process, or NULL ==> process files */
     char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
     char *info_path = NULL;		/* full path of .info.json or NULL */

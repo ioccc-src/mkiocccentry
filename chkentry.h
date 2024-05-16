@@ -1,5 +1,5 @@
 /*
- * chkentry - check JSON files in an IOCCC entry
+ * chkentry - check JSON files in an IOCCC submission
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *

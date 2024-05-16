@@ -1,5 +1,5 @@
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * util - common utility functions for the IOCCC toolkit
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
@@ -51,7 +51,7 @@
 #include "../dbg/dbg.h"
 
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * util - common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 

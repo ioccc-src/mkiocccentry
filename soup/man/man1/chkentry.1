@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "15 May 2024" "chkentry" "IOCCC tools"
+.TH chkentry 1 "16 May 2024" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check JSON files in an IOCCC entry
@@ -146,8 +146,7 @@ More than 0 humans work on it! :)
 .PP
 The IOCCC uses the term
 .B entry
-to refer to submission that won the IOCCC
-whereas the term
+to refer to a submission that won the IOCCC whereas the term
 .B submission
 is used to refer to something given to the IOCCC judges for consideration when the IOCCC is open.
 If the IOCCC was being consistent, then
@@ -155,13 +154,11 @@ If the IOCCC was being consistent, then
 and the
 .BR mkiocccentry (1)
 tools would not have "entry" in their names.
-On the other hand, if the names of those tools were named
-in a consistent fashion, they would have been named
+On the other hand, if the names of those tools were named in a consistent fashion, they would have been named
 .B chksubmission
 and
 .B mkiocccsubmission
-respectively, which is a bit too long for a tool name,
-and it would have runed the
+respectively, which is a bit too long for a tool name, and it would have ruined the
 .B mkiocccentry
 pun.
 The IOCCC decided to
@@ -174,13 +171,13 @@ As a compromise, the name of the compressed tarball produced by
 .BR mkiocccentry (1)
 was changed to start with
 .I submit
-instead.
+instead of
+.IR entry .
 The
 .BR fnamchk (1)
-tool was changed accordingly.
+tool was by necessity changed accordingly.
 .PP
-Astute proof readers will find circumstances where variables,
-comments, error messages and prompt strings use
+Astute proof readers might find circumstances where variables, comments, error messages and prompt strings use
 .B entry
 instead of
 .BR submission .
@@ -188,6 +185,26 @@ You are welcome to submit pull requests to
 .I https://github.com/ioccc-src/mkiocccentry/pulls
 correct such oversights in variables,
 comments, error messages and prompt strings.
+Note, however, that there are many cases where the words
+.B entry
+and
+.B entries
+are actually correct: they would only be incorrect if they refer to an IOCCC submission that has not won.
+In other words if it refers to submissions won then it should be
+.B entry
+or
+.BR entries .
+.PP
+Please
+.B DO NOT
+modify the files
+.I soup/foo.h
+or
+.I soup/foo.c
+or
+.I soup/oebxergfB.h
+as doing so will break something even if it does not seem to. The code in these files
+match a private tool written at the request of the IOCCC Judges by Cody Boone Ferguson, and so if you see incorrect terms in these files, even if in comments, it is meant to stay that way, unless modified by Cody himself.
 .PP
 If you have an issue with the tool you can open an issue at
 .br

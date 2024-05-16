@@ -1782,7 +1782,7 @@ default_handle(char const *name)
 	 *	 some characters that are unlikely to be pseudo-randomly
 	 *	 picked by another user.  Even if there happens to be a
 	 *	 match, this is OK as the IOCCC judges can sort it out
-	 *	 when it comes time to judge entries.  We just need a
+	 *	 when it comes time to judge submissions.  We just need a
 	 *	 somewhat reasonable j-random string in the event
 	 *	 that we cannot use a translation of the name.
 	 */

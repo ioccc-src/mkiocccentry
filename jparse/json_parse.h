@@ -21,7 +21,7 @@
 
 
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * util - common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
