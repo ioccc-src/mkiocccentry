@@ -1,5 +1,5 @@
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * util - common utility functions for the IOCCC toolkit
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *

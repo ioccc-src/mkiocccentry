@@ -14,13 +14,16 @@
  *
  * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
  *
- * This tool and the JSON parser were co-developed in 2022 by:
+ * The JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * The chkentry(1) tool was developed by Landon Curt Noll with numerous
+ * improvements (including this file) by Cody Boone Ferguson.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
