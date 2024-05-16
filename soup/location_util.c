@@ -35,6 +35,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include <strings.h> /* strcasecmp */
 
 /*
@@ -269,7 +270,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
      */
     if (use_common) {
 	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->common_name != NULL; ++p, ++i) {
-	    if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
+	    if ((strcasecmp(code, p->code) == 0) || ((substrings == true) && (strcasestr(code, p->code) != NULL))) {
 		dbg(DBG_VHIGH, "code: %s found common_name: <%s>", p->code, p->common_name);
 		if (location != NULL) {
 		    *location = &loc[i];
@@ -279,7 +280,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
 	}
     } else {
 	for (i = idx != NULL ? *idx : 0, p = &loc[i]; p->code != NULL && p->name != NULL; ++p, ++i) {
-	    if ((strcasecmp(code, p->code) == 0) || (substrings && strcasestr(code, p->code))) {
+	    if ((strcasecmp(code, p->code) == 0) || ((substrings == true) && *strcasestr(code, p->code) != NULL)) {
 		dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
 		if (location != NULL) {
 		    *location = &loc[i];
@@ -446,12 +447,16 @@ location_code_name_match(char const *code, char const *location_name, bool use_c
 	    }
 	}
     }
+
+    /*
+     * case: no match found
+     */
     if (p->code == NULL) {
 	dbg(DBG_HIGH, "code: <%s> is unknown", code);
 	return false;
     }
 
-    if (p->name == NULL || p->common_name) {
+    if (p->name == NULL || p->common_name == NULL) {
 	dbg(DBG_HIGH, "name: <%s> is unknown", location_name);
 	return false;
     }
