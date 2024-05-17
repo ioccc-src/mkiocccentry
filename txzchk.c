@@ -1576,7 +1576,12 @@ check_tarball(char const *tar, char const *fnamchk)
 	 * first execute the tar command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
+
+	if (!quiet) {
+	    exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
+	} else {
+	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
+	}
 	if (exit_code != 0) {
 	    errp(41, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));
