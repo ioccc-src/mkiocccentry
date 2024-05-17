@@ -3797,6 +3797,7 @@ get_author_info(struct author **author_set_p)
 		 * discard this invalid location/country code input
 		 */
 		author_set[i].location_name = NULL;
+		author_set[i].common_name = NULL;
 		yorn = false;
 		continue;
 
@@ -3860,17 +3861,20 @@ get_author_info(struct author **author_set_p)
 		 * discard this invalid location/country code input
 		 */
 		author_set[i].location_name = NULL;
+		author_set[i].common_name = NULL;
 		yorn = false;
 		continue;
 	    }
 	    author_set[i].location_name = lookup_location_name(author_set[i].location_code, false);
+	    author_set[i].common_name = lookup_location_name(author_set[i].location_code, true);
 
 	    /*
 	     * verify the known location/country code
 	     */
 	    if (need_confirm && !answer_yes) {
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
+		ret = printf("The location/country code you entered is assigned to: %s (%s)\n",
+			     author_set[i].location_name, author_set[i].common_name);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf location/country code assignment");
 		}
@@ -3888,9 +3892,12 @@ get_author_info(struct author **author_set_p)
 	    } else {
 		yorn = true;
 	    }
-	} while (author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn);
-
-	dbg(DBG_MED, "Author #%d location/country: %s (%s)", i, author_set[i].location_code, author_set[i].location_name);
+	} while (author_set[i].location_code == NULL ||
+		 author_set[i].location_name == NULL ||
+		 author_set[i].common_name == NULL ||
+		 !yorn);
+	dbg(DBG_MED, "Author #%d location/country: %s %s (%s)",
+		     i, author_set[i].location_code, author_set[i].location_name, author_set[i].common_name);
 
 	/*
 	 * ask for Email address
@@ -4484,7 +4491,8 @@ get_author_info(struct author **author_set_p)
 	errno = 0;	/* pre-clear errno for errp() */
 	if (printf("\nPlease verify the information about author #%d\n\n", i) <= 0 ||
 	    printf("Name: %s\n", author_set[i].name) <= 0 ||
-	    printf("Location/country code: %s (%s)\n", author_set[i].location_code, author_set[i].location_name) <= 0 ||
+	    printf("Location/country code: %s %s (%s)\n",
+		   author_set[i].location_code, author_set[i].location_name, author_set[i].common_name) <= 0 ||
 	    ((author_set[i].email[0] == '\0') ? printf("Email not given\n") :
 						printf("Email: %s\n", author_set[i].email)) <= 0 ||
 	    ((author_set[i].url[0] == '\0') ? printf("URL not given\n") :

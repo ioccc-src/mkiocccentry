@@ -62,6 +62,7 @@ struct author
     char *name;			/* name of the author */
     char *location_code;	/* author location/country code */
     char const *location_name;	/* name of author location/country (compiled in from loc[]) */
+    char const *common_name;	/* common name of author location/country (compiled in from loc[]) */
     char *email;		/* Email address of author or empty string ==> not provided */
     char *url;			/* home URL of author or empty string ==> not provided */
     char *alt_url;		/* alt URL of author or empty string ==> not provided */

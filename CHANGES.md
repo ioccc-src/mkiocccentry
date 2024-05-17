@@ -21,6 +21,10 @@ checked.
 Make `txzchk(1)` not show output if `-q` specified. Updated version to `"1.0.4
 2024-05-16"`.
 
+The `mkiocccentry(1)` tool prints both the location name and the
+common location name when prompting the user to validate author
+location data.
+
 
 ## Release 1.0.62 2024-05-15
 
