@@ -27,7 +27,7 @@
 
 11. <a href="#markdown">Where can I find help with formatting markdown files for my submission?</a>
 
-12. <a href="keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
+12. <a href="#keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
 
 
 ## 0. <a name="download">Where can I find the mkiocccentry tool?</a>
