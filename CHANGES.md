@@ -1,6 +1,43 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.0.64 2024-05-18
+
+Changed all _submission_num_ to _submit_slot_ (including json tags) and changed
+all _MAX_SUBMISSION_NUM_ to _MAX_SUBMIT_SLOT_NUM_ and
+all _MAX_SUBMISSION_CHARS_ to _MAX_SUBMIT_SLOT_CHARS_ and
+changed relater comment and prompt text to be more consistent with the
+pending submit server AND reduce the chance that someone revising their
+submission incorrectly thinks they need to increment that value each time.
+
+Remove _formed_UTC_ JSON member from `.auth.json` and `.info.json`.
+The  _formed_UTC_ JSON member was redundant in that it was simply
+a different coding of the _formed_timestamp_ in ASCII date string form.
+It was a source of errors in editing _formed_timestamp_ values.
+
+Changed INFO_VERSION from "1.15 2024-03-02"
+to "1.16 2024-05-18" as a result of the JSON member name above changes.
+
+Changed AUTH_VERSION from "1.21 2024-03-04"
+to "1.22 2024-05-18" s a result of the JSON member name above changes.
+
+Fix `soup/reset_tstamp.sh` and `soup/Makefile` to look for the
+correct location of the `limit_ioccc.h` file and fixed the prompts
+result messages.
+
+Changed `soup/reset_tstamp.sh` RESET_TSTAMP_VERSION from "1.0.1 2024-03-02"
+to "1.0.2 2024-05-15" as a result of the above changes.
+
+Changed MKIOCCCENTRY_VERSION from "1.0.5 2024-05-15"
+to "1.0.6 2024-05-19" as a result of the above changes.
+
+Changed TXZCHK_VERSION from "1.0.4 2024-05-16"
+to "1.0.5 2024-05-19" as a result of the above changes.
+
+Performed `make reset_min_timestamp` to change MIN_TIMESTAMP from 1675547786
+to 1716103155 due to the changes in both `.auth.json` and `.info.json`.
+
+
 ## Release 1.0.63 2024-05-16
 
 Add to FAQ.md a question about _soup/foo.h_, _soup/foo.c_ and _soup/oebxergfB.h_ as these

@@ -1,5 +1,5 @@
---- ref/auth.reference.json.c	2024-03-02 05:59:50
-+++ chk_sem_auth.c	2024-03-02 06:00:54
+--- ref/auth.reference.json.c	2024-05-19 00:08:13
++++ chk_sem_auth.c	2024-05-18 23:57:44
 @@ -40,24 +40,24 @@
  struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name */
@@ -35,9 +35,9 @@
 +  { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	7,	chk_alt_url,	"alt_url" },
    { 3,	JTYPE_OBJECT,	1,	5,	5,	16,	0,	NULL,	NULL },
 -  { 2,	JTYPE_NUMBER,	1,	6,	6,	17,	0,	NULL,	NULL },
--  { 2,	JTYPE_STRING,	1,	28,	28,	18,	0,	NULL,	NULL },
+-  { 2,	JTYPE_STRING,	1,	26,	26,	18,	0,	NULL,	NULL },
 +  { 2,	JTYPE_NUMBER,	6,	6,	6,	17,	0,	NULL,	NULL },
-+  { 2,	JTYPE_STRING,	28,	28,	28,	18,	0,	NULL,	NULL },
++  { 2,	JTYPE_STRING,	26,	26,	26,	18,	0,	NULL,	NULL },
    { 2,	JTYPE_BOOL,	1,	1,	1,	19,	0,	NULL,	NULL },
    { 2,	JTYPE_ARRAY,	1,	1,	1,	20,	0,	NULL,	NULL },
    { 1,	JTYPE_MEMBER,	1,	1,	1,	21,	18,	chk_IOCCC_auth_version,	"IOCCC_auth_version" },

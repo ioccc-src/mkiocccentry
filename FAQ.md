@@ -87,7 +87,7 @@ From the top level directory, run the `mkiocccentry` executable:
 The _work_dir_ is the path where your submission's files will be packaged from.
 The _work_dir_ **must** exist as _mkiocccentry_ will create a subdirectory under it to
 package your submission. The submission directory depends on the IOCCC contestant id and
-the submission number.
+the submit slot number.
 
 Something like _/tmp/ioccc_ is a good choice:
 

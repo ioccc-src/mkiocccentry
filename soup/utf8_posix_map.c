@@ -1629,7 +1629,7 @@ check_utf8_posix_map(void)
  * A default author handle attempted to be computed from the author name, using
  * the utf8_posix_map hmap[] to translate certain UTF-8 strings in the name
  * into POSIX+ safe strings.  If for some reason the translation results in
- * an empty string, a string using the author_num, submission_num and ioccc_id
+ * an empty string, a string using the author_num, submit_slot and ioccc_id
  * will be returned.  If the translation results in a string that would
  * be too long, the string will be truncated.
  *

@@ -39,13 +39,14 @@
 
 # setup
 #
-export RESET_TSTAMP_VERSION="1.0.1 2024-03-02"
+export RESET_TSTAMP_VERSION="1.0.2 2024-05-18"
+export LIMIT_IOCCC_H="./soup/limit_ioccc.h"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
     -h			print help and exit
     -V			print version and exit
     -v level		set debug level (def: 0)
-    -l limit.h		limit file (def: ./limit_ioccc.h)
+    -l limit.h		limit file (def: ./soup/limit_ioccc.h)
 
 Exit codes:
      0	    timestamp updated
@@ -57,7 +58,6 @@ Exit codes:
 reset_tstamp.sh version: $RESET_TSTAMP_VERSION"
 
 export V_FLAG="0"
-export LIMIT_IOCCC_H="./soup/limit_ioccc.h"
 
 # parse args
 #
@@ -180,7 +180,7 @@ echo 'WARNING: If you really wish to do this, please enter the following phrase:
 echo
 echo '    I understand this'
 echo
-echo 'WARNING: followed by the phrase:'
+echo 'followed by the phrase:'
 echo
 echo '    and apologise to those with existing IOCCC compressed tarballs'
 echo
@@ -206,7 +206,7 @@ fi
 # Phase 3 of verification
 #
 echo
-echo -n 'WARNING: Enter the existing value of MIN_TIMESTAMP: '
+echo -n 'Enter the existing value of MIN_TIMESTAMP: '
 read -r OLD_MIN_TIMESTAMP
 FORMED_OLD_NOW="$($GDATE_CMD -u --date=@"$OLD_MIN_TIMESTAMP" '+%a %b %d %H:%M:%S %Y UTC')"
 if [[ -z $FORMED_OLD_NOW ]]; then
@@ -216,12 +216,7 @@ fi
 export FORMED_OLD_NOW
 export NOW
 NOW="$(date '+%s')"
-if grep -q "$OLD_MIN_TIMESTAMP" "$LIMIT_IOCCC_H" >/dev/null 2>&1; then
-    echo
-    echo 'We guess that you do really really do want to change MIN_TIMESTAMP.'
-    echo 'Enter Y if you really want to change the MIN_TIMESTAMP!'
-    echo
-else
+if ! grep -q "$OLD_MIN_TIMESTAMP" "$LIMIT_IOCCC_H" >/dev/null 2>&1; then
     echo "$0: ERROR: Invalid value of MIN_TIMESTAMP" 1>&2
     exit 5
 fi
@@ -232,16 +227,37 @@ if [[ -z $FORMED_NOW ]]; then
 fi
 export FORMED_NOW
 
+echo
+echo "WARNING: About to change MIN_TIMESTAMP value from $OLD_MIN_TIMESTAMP to $NOW"
+echo
+echo "WARNING: About to change MIN_TIMESTAMP date from $FORMED_OLD_NOW to $FORMED_NOW"
+echo
+echo -n 'Enter Y if you REALLY WANT to change the MIN_TIMESTAMP: '
+read -r ANSWER
+if [[ "$ANSWER" != 'Y' ]]; then
+    echo "$0: The MIN_TIMESTAMP was not changed." 1>&2
+    exit 6
+fi
+echo
+
 # Change the timestamp
 #
-"$RPL_CMD" -w -p \
-   "#define MIN_TIMESTAMP ((time_t)$OLD_MIN_TIMESTAMP)" \
-   "#define MIN_TIMESTAMP ((time_t)$NOW)" "$LIMIT_IOCCC_H"
+perl -p -i -e 's/'"$OLD_MIN_TIMESTAMP"'/'"$NOW"'/' "$LIMIT_IOCCC_H"
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: rpl failed to modify $LIMIT_IOCCC_H: error code: $status" 1>&2
+    echo "$0: ERROR: perl -p -i -e failed to modify $LIMIT_IOCCC_H: error code: $status" 1>&2
     exit 7
 fi
+
+# verify the change
+#
+if ! grep -q "$NOW" "$LIMIT_IOCCC_H" >/dev/null 2>&1; then
+    echo "$0: ERROR: MIN_TIMESTAMP $NOW not found in $LIMIT_IOCCC_H" 1>&2
+    exit 8
+fi
+
+# report and explain what to do next
+#
 echo
 echo "FYI:"
 echo
@@ -256,14 +272,12 @@ grep '^#define MIN_TIMESTAMP' "$LIMIT_IOCCC_H"
 echo
 echo "$0: You still need to:"
 echo
-echo "	  make -C soup limit_ioccc.sh"
+echo "    make -C soup limit_ioccc.sh"
 echo "    ./soup/vermod.sh -v 1 -n -Q $OLD_MIN_TIMESTAMP $NOW"
-echo "    $RPL_CMD -s -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_ioccc/test_JSON"
 echo
 echo 'If all is well, then:'
 echo
 echo "    ./soup/vermod.sh -v 1 -Q $OLD_MIN_TIMESTAMP $NOW"
-echo "    $RPL_CMD -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_ioccc/test_JSON"
 echo
 echo 'then:'
 echo

@@ -8,7 +8,7 @@
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"IOCCC_contest_id" : "test",
 	"tarball" : "submit.test-0.1688410573.txz",
-	"submission_num" : 0,
+	"submit_slot" : 0,
 	"author_count" : 5,
 	"test_mode" : true,
 	"authors" : [
@@ -86,6 +86,5 @@
 	"formed_timestamp" : 1688410573,
 	"formed_timestamp_usec" : 858061,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1675547786,
-	"formed_UTC" : "Mon Jul 03 18:56:13 2023 UTC"
+	"min_timestamp" : 1675547786
 }

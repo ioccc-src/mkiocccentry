@@ -1,18 +1,18 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_info_version" : "1.15 2024-03-02",
+	"IOCCC_info_version" : "1.16 2024-05-18",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.5 2024-05-15",
+	"mkiocccentry_version" : "1.0.6 2024-05-19",
 	"iocccsize_version" : "28.14 2024-01-04",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.2 2024-05-15",
-	"txzchk_version" : "1.0.4 2024-05-16",
+	"txzchk_version" : "1.0.5 2024-05-19",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
-	"submission_num" : 0,
+	"submit_slot" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1675547786.txz",
+	"tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1716103155.txz",
 	"rule_2a_size" : 61,
 	"rule_2b_size" : 38,
 	"empty_override" : false,
@@ -38,10 +38,9 @@
 		{"Makefile" : "Makefile"},
 		{"remarks" : "remarks.md"}
 	],
-	"formed_timestamp" : 1675547786,
+	"formed_timestamp" : 1716103155,
 	"formed_timestamp_usec" : 216193,
 	"formed_timestamp_usec" : 216193,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1675547786,
-	"formed_UTC" : "Sat Feb 04 21:56:26 2023 UTC"
+	"min_timestamp" : 1716103155
 }

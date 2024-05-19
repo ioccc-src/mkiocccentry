@@ -480,15 +480,15 @@ main(int argc, char *argv[])
     }
 
     /*
-     * obtain submission number
+     * obtain submit slot number
      */
-    info.submission_num = get_submission_num(&info);
-    dbg(DBG_MED, "submission number: %d", info.submission_num);
+    info.submit_slot = get_submit_slot(&info);
+    dbg(DBG_MED, "submit slot number: %d", info.submit_slot);
 
     /*
      * create submission directory
      */
-    submission_dir = mk_submission_dir(work_dir, info.ioccc_id, info.submission_num, &tarball_path, info.tstamp, info.test_mode);
+    submission_dir = mk_submission_dir(work_dir, info.ioccc_id, info.submit_slot, &tarball_path, info.tstamp, info.test_mode);
     errno = 0;
     info.tarball = strdup(tarball_path);
     if (info.tarball == NULL) {
@@ -519,7 +519,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * write the IOCCC id and submission number to the answers file
+     * write the IOCCC id and submit slot number to the answers file
      */
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
@@ -529,9 +529,9 @@ main(int argc, char *argv[])
 	    ++answers_errors;
 	}
 	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(answerp, "%d\n", info.submission_num);
+	ret = fprintf(answerp, "%d\n", info.submit_slot);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing submission number to the answers file");
+	    warnp(__func__, "fprintf error printing submit slot number to the answers file");
 	    ++answers_errors;
 	}
     }
@@ -1490,7 +1490,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
     }
 
     /*
-     * keep asking for a submission number until we get a valid reply
+     * keep asking for a submit slot number until we get a valid reply
      */
     do {
 
@@ -1586,19 +1586,19 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 
 
 /*
- * get_submission_num - obtain the submission number
+ * get_submit_slot - obtain the submit slot number
  *
  * given:
  *      infop   - pointer to info structure
  *
  * returns:
- *      submission number >= 0 <= MAX_SUBMISSION_NUM
+ *      submit slot number >= 0 <= MAX_SUBMIT_SLOT
  */
 static int
-get_submission_num(struct info *infop)
+get_submit_slot(struct info *infop)
 {
-    int submission_num;		/* submission number */
-    char *submission_str;	/* submission number string */
+    int submit_slot;		/* submit slot number */
+    char *submission_str;	/* submit slot number string */
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
 
@@ -1611,46 +1611,46 @@ get_submission_num(struct info *infop)
     }
 
     /*
-     * keep asking for a submission number until we get a valid reply
+     * keep asking for a submit slot number until we get a valid reply
      */
     do {
 
 	/*
-	 * explain submission numbers
+	 * explain submit slot numbers
 	 */
 	if (need_hints) {
 	    errno = 0;		/* pre-clear errno for errp() */
-	    ret = printf("\nYou are allowed to submit up to %d submissions to a given IOCCC.\n", MAX_SUBMISSION_NUM + 1);
+	    ret = printf("\nYou are allowed to submit up to %d submissions to a given IOCCC.\n", MAX_SUBMIT_SLOT + 1);
 	    if (ret <= 0) {
 		errp(55, __func__, "printf error printing number of submissions allowed");
 		not_reached();
 	    }
 	    para("",
-		 "As in C, submission numbers start with 0.  If you are updating a previous submission, PLEASE",
-		 "use the same submission number that you previously uploaded so we know which submission we",
+		 "As in C, submit slot numbers start with 0.  If you are updating a previous submission, PLEASE",
+		 "use the same submit slot number that you previously uploaded so we know which submission we",
 		 "should replace. If this is your first submission to this given IOCCC, enter 0.",
 		 "",
 		 NULL);
 	}
 
 	/*
-	 * ask for the submission number
+	 * ask for the submit slot number
 	 */
-	submission_str = prompt("Enter the submission number", NULL);
+	submission_str = prompt("Enter the submit slot number", NULL);
 
 	/*
-	 * check the submission number
+	 * check the submit slot number
 	 */
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = sscanf(submission_str, "%d%c", &submission_num, &guard);
-	if (ret != 1 || submission_num < 0 || submission_num > MAX_SUBMISSION_NUM) {
+	ret = sscanf(submission_str, "%d%c", &submit_slot, &guard);
+	if (ret != 1 || submit_slot < 0 || submit_slot > MAX_SUBMIT_SLOT) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe submission number must be a number from 0 through %d; please re-enter.\n",
-		    MAX_SUBMISSION_NUM);
+	    ret = fprintf(stderr, "\nThe submit slot number must be a number from 0 through %d; please re-enter.\n",
+		    MAX_SUBMIT_SLOT);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error while informing about the valid submission number range");
+		warnp(__func__, "fprintf error while informing about the valid submit slot number range");
 	    }
-	    submission_num = -1;	/* invalidate input */
+	    submit_slot = -1;	/* invalidate input */
 	}
 
 	/*
@@ -1661,17 +1661,17 @@ get_submission_num(struct info *infop)
 	    submission_str = NULL;
 	}
 
-    } while (submission_num < 0 || submission_num > MAX_SUBMISSION_NUM);
+    } while (submit_slot < 0 || submit_slot > MAX_SUBMIT_SLOT);
 
     /*
-     * report on the result of the submission number validation
+     * report on the result of the submit slot number validation
      */
-    dbg(DBG_MED, "IOCCC submission number is valid: %d", submission_num);
+    dbg(DBG_MED, "IOCCC submit slot number is valid: %d", submit_slot);
 
     /*
-     * return the submission number
+     * return the submit slot number
      */
-    return submission_num;
+    return submit_slot;
 }
 
 
@@ -1684,7 +1684,7 @@ get_submission_num(struct info *infop)
  * given:
  *      work_dir        - working directory under which the submission directory is formed
  *      ioccc_id        - IOCCC submission ID (or test)
- *      submission_num       - submission number
+ *      submit_slot     - submit slot number
  *      tarball_path    - pointer to the allocated path to where the compressed tarball will be formed
  *      tstamp          - now as a timestamp
  *      test_mode       - true ==> test mode, do not upload
@@ -1695,7 +1695,7 @@ get_submission_num(struct info *infop)
  * This function does not return on error or if the submission directory cannot be formed.
  */
 static char *
-mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num,
+mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
 	     char **tarball_path, time_t tstamp, bool test_mode)
 {
     size_t submission_dir_len;	/* length of submission directory */
@@ -1710,9 +1710,9 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num
 	err(56, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    test = test_submission_num(submission_num);
+    test = test_submit_slot(submit_slot);
     if (test == false) {
-	err(57, __func__, "submission number: %d must >= 0 and <= %d", submission_num, MAX_SUBMISSION_NUM);
+	err(57, __func__, "submit slot number: %d must >= 0 and <= %d", submit_slot, MAX_SUBMIT_SLOT);
 	not_reached();
     }
 
@@ -1722,7 +1722,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num
     /*
      * work_dir/ioccc_id-entry
      */
-    submission_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMISSION_CHARS + 1 + 1;
+    submission_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMIT_SLOT_CHARS + 1 + 1;
     errno = 0;			/* pre-clear errno for errp() */
     submission_dir = (char *)malloc(submission_dir_len + 1);
     if (submission_dir == NULL) {
@@ -1730,7 +1730,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", work_dir, ioccc_id, submission_num);
+    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", work_dir, ioccc_id, submit_slot);
     if (ret <= 0) {
 	errp(59, __func__, "snprintf to form submission directory failed");
 	not_reached();
@@ -1771,7 +1771,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num
      *
      * We assume timestamps will be values of 12 decimal digits or less in the future. :-)
      */
-    *tarball_path = form_tar_filename(ioccc_id, submission_num, test_mode, tstamp);
+    *tarball_path = form_tar_filename(ioccc_id, submit_slot, test_mode, tstamp);
     if (*tarball_path == NULL) {
 	errp(62, __func__, "failed to form compressed tarball path");
 	not_reached();
@@ -4796,7 +4796,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_string(info_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "submission_num", " : ", (long)infop->submission_num, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "submit_slot", " : ", (long)infop->submit_slot, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
@@ -4857,8 +4857,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_time_t(info_stream, "\t", "formed_timestamp", " : ", infop->tstamp, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", TIMESTAMP_EPOCH, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->utctime, "\n") &&
+	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
 	errp(154, __func__, "fprintf error writing trailing part of info to %s", info_path);
@@ -4959,7 +4958,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
 	errp(161, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
-    authp->submission_num = infop->submission_num;
+    authp->submit_slot = infop->submit_slot;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
@@ -5069,7 +5068,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_string(auth_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
 	json_fprintf_value_string(auth_stream, "\t", "tarball", " : ", authp->tarball, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "submission_num", " : ", (long)authp->submission_num, ",\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "submit_slot", " : ", (long)authp->submit_slot, ",\n") &&
 	json_fprintf_value_long(auth_stream, "\t", "author_count", " : ", (long)authp->author_count, ",\n") &&
 	json_fprintf_value_bool(auth_stream, "\t", "test_mode", " : ", authp->test_mode, ",\n") &&
 	fprintf(auth_stream, "\t\"authors\" : [\n") > 0;
@@ -5114,8 +5113,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_time_t(auth_stream, "\t", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
 	json_fprintf_value_long(auth_stream, "\t", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
 	json_fprintf_value_string(auth_stream, "\t", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "formed_UTC", " : ", authp->utctime, "\n") &&
+	json_fprintf_value_long(auth_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
 	errp(172, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);

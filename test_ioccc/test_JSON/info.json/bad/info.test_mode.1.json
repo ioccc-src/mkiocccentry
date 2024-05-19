@@ -1,15 +1,15 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_info_version" : "1.15 2024-03-02",
+	"IOCCC_info_version" : "1.16 2024-05-18",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.0.5 2024-05-15",
+	"mkiocccentry_version" : "1.0.6 2024-05-19",
 	"iocccsize_version" : "28.14 2024-01-04",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.2 2024-05-15",
-	"txzchk_version" : "1.0.4 2024-05-16",
+	"txzchk_version" : "1.0.5 2024-05-19",
 	"IOCCC_contest_id" : "test",
-	"submission_num" : 0,
+	"submit_slot" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
 	"tarball" : "submit.test-0.1645219582.txz",
@@ -43,6 +43,5 @@
 	"formed_timestamp" : 1645219582,
 	"formed_timestamp_usec" : 920407,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1675547786,
-	"formed_UTC" : "Fri Feb 18 21:26:22 2022 UTC"
+	"min_timestamp" : 1716103155
 }

@@ -119,13 +119,13 @@
 #define ISO_3166_1_CODE_URL3 "\thttps://www.iso.org/obp/ui/#search"
 #define ISO_3166_1_CODE_URL4 "\thttps://www.iso.org/glossary-for-iso-3166.html"
 
-#undef IOCCC_WINNER_HANDLE_READY /* TODO: change to #define when IOCCC winner handles are available and ready */
+#undef IOCCC_WINNER_HANDLE_READY /* XXX: change to #define when IOCCC winner handles are available and ready */
 
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
 #define IOCCC_NEWS_URL "https://www.ioccc.org/index.html#news"
-#undef IOCCC_REGISTRATION_READY		/* TODO: change to #define when registration process is ready */
-#undef IOCCC_SUBMIT_SERVER_READY	/* TODO: change to #define when submit server is ready */
+#undef IOCCC_REGISTRATION_READY		/* XXX: change to #define when registration process is ready */
+#undef IOCCC_SUBMIT_SERVER_READY	/* XXX: change to #define when submit server is ready */
 
 /* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
@@ -149,8 +149,8 @@ static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, c
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
-static int get_submission_num(struct info *infop);
-static char *mk_submission_dir(char const *work_dir, char const *ioccc_id, int submission_num,
+static int get_submit_slot(struct info *infop);
+static char *mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(char const *Makefile, struct info *infop);

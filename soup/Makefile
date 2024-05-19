@@ -533,6 +533,8 @@ all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/
 #
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
+# 
+# Last, run "make all_sem_ref" before running "make all_sem_ref_ptch".
 #
 all_sem_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 	      ref/auth.reference.json.c ref/auth.reference.json.h
@@ -587,7 +589,7 @@ eat eating eat_soup eating_soup: all
 # Only IOCCC judges can perform ALL the steps needed to complete this action.
 #
 reset_min_timestamp: reset_tstamp.sh
-	./reset_tstamp.sh
+	cd ..; ./soup/reset_tstamp.sh
 
 # sequence exit codes
 #

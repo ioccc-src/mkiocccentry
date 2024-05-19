@@ -1770,7 +1770,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *
  * given:
  *	IOCCC_contest_id	IOCCC contest UUID or test
- *	submission_num		IOCCC entry number
+ *	submit_slot		IOCCC entry number
  *	test_mode		true ==> IOCCC entry is just a test
  *	formed_timestamp	timestamp of when entry was formed
  *
@@ -1778,7 +1778,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *	malloced tarball filename or NULL ==> error
  */
 char *
-form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mode,
+form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
 		  time_t formed_timestamp)
 {
     size_t tarball_len;			/* length of the compressed tarball path */
@@ -1797,9 +1797,9 @@ form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mo
 		 "invalid: IOCCC_contest_id is empty");
 	return NULL;
     }
-    test = test_submission_num(submission_num);
+    test = test_submit_slot(submit_slot);
     if (test == false) {
-	/* test_submission_num() already issued json_dbg() messages */
+	/* test_submit_slot() already issued json_dbg() messages */
 	return NULL;
     }
     test = test_formed_timestamp(formed_timestamp);
@@ -1843,7 +1843,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mo
     /*
      * allocate space for tarball filename
      */
-    tarball_len = LITLEN("submit.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMISSION_CHARS + LITLEN(".123456789012.txz") + 1;
+    tarball_len = LITLEN("submit.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMIT_SLOT_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for warnp() */
     tarball_filename = (char *)malloc(tarball_len + 1);
     if (tarball_filename == NULL) {
@@ -1859,11 +1859,11 @@ form_tar_filename(char const *IOCCC_contest_id, int submission_num, bool test_mo
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%ju.txz",
-		       IOCCC_contest_id, submission_num, (uintmax_t)formed_timestamp);
+		       IOCCC_contest_id, submit_slot, (uintmax_t)formed_timestamp);
     } else {
 	/* case: signed time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%jd.txz",
-		       IOCCC_contest_id, submission_num, (intmax_t)formed_timestamp);
+		       IOCCC_contest_id, submit_slot, (intmax_t)formed_timestamp);
     }
     if (ret <= 0) {
 	warnp(__func__, "snprintf to form compressed tarball path failed");
@@ -2755,33 +2755,33 @@ test_empty_override(bool boolean)
 
 
 /*
- * test_submission_num - test if submission_num is valid
+ * test_submit_slot - test if submit_slot is valid
  *
- * Determine if submission_num is within the proper limits.
+ * Determine if submit_slot is within the proper limits.
  *
  * given:
- *	submission_num	author number
+ *	submit_slot	author number
  *
  * returns:
- *	true ==> submission_num is valid,
- *	false ==> submission_num is NOT valid, or some internal error
+ *	true ==> submit_slot is valid,
+ *	false ==> submit_slot is NOT valid, or some internal error
  */
 bool
-test_submission_num(int submission_num)
+test_submit_slot(int submit_slot)
 {
     /*
      * validate count
      */
-    if (submission_num < 0) {
+    if (submit_slot < 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: submission_num: %d < 0", submission_num);
+		 "invalid: submit_slot: %d < 0", submit_slot);
 	return false;
-    } else if (submission_num > MAX_SUBMISSION_NUM) {
+    } else if (submit_slot > MAX_SUBMIT_SLOT) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: submission_num: %d > MAX_AUTHORS: %d", submission_num, MAX_SUBMISSION_NUM);
+		 "invalid: submit_slot: %d > MAX_SUBMIT_SLOT: %d", submit_slot, MAX_SUBMIT_SLOT);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "submission_num is valid");
+    json_dbg(JSON_DBG_MED, __func__, "submit_slot is valid");
     return true;
 }
 
@@ -2905,51 +2905,6 @@ test_fnamchk_version(char const *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
-    return true;
-}
-
-
-/*
- * test_formed_UTC - test if formed_UTC is valid
- *
- * Determine if formed_UTC is convertible into a broken-out time and
- * then back to the same time string.
- *
- * given:
- *	str			string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_formed_UTC(char const *str)
-{
-    bool match = false;			/* true ==> time string matched reconverted time string */
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-
-    /*
-     * compare time string with a reconverted time string
-     */
-    match = conv_timestr_test(str);
-    if (match == false) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: conv_timestr_test() failed");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: conv_timestr_test() failed for: <%s>", str);
-	return false;
-    }
     return true;
 }
 
@@ -4028,7 +3983,7 @@ test_rule_2b_size(size_t rule_2b_size)
  * given:
  *	str			tarball to test
  *	IOCCC_contest_id	IOCCC contest UUID or test
- *	submission_num		IOCCC entry number
+ *	submit_slot		IOCCC entry number
  *	test_mode		true ==> IOCCC entry is just a test
  *	formed_timestamp	timestamp of when entry was formed
  *
@@ -4037,7 +3992,7 @@ test_rule_2b_size(size_t rule_2b_size)
  *	false ==> tarball is NOT valid, or some internal error
  */
 bool
-test_tarball(char const *str, char const *IOCCC_contest_id, int submission_num, bool test_mode,
+test_tarball(char const *str, char const *IOCCC_contest_id, int submit_slot, bool test_mode,
 	     time_t formed_timestamp)
 {
     char *tar_filename = NULL;	/* formed tarball filename */
@@ -4062,9 +4017,9 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int submission_num, 
 		 "invalid: IOCCC_contest_id is empty");
 	return false;
     }
-    test = test_submission_num(submission_num);
+    test = test_submit_slot(submit_slot);
     if (test == false) {
-	/* test_submission_num() already issued json_dbg() messages */
+	/* test_submit_slot() already issued json_dbg() messages */
 	return false;
     }
     test = test_formed_timestamp(formed_timestamp);
@@ -4108,7 +4063,7 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int submission_num, 
     /*
      * form a malloced valid tarball filename
      */
-    tar_filename = form_tar_filename(IOCCC_contest_id, submission_num, test_mode, formed_timestamp);
+    tar_filename = form_tar_filename(IOCCC_contest_id, submit_slot, test_mode, formed_timestamp);
     if (tar_filename == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: form_tar_filename failed and returned NULL");

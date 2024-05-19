@@ -103,7 +103,7 @@ main(int argc, char *argv[])
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
     char guard;			/* scanf guard to catch excess amount of input */
-    int submission_num;		/* third .-separated token as a number */
+    int submit_slot;		/* third .-separated token as a number */
     char *timestamp_str;	/* fourth .-separated token - timestamp */
     intmax_t timestamp;		/* fifth .-separated token as a timestamp */
     char *extension;		/* sixth .-separated token as a filename extension */
@@ -207,7 +207,7 @@ main(int argc, char *argv[])
     len = strlen(uuid);
 
     /*
-     * parse a test-submission_num IOCCC contest ID
+     * parse a test-submit_slot IOCCC contest ID
      */
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	/* if it starts as "test-" and -u was specified it's an error */
@@ -220,29 +220,29 @@ main(int argc, char *argv[])
 	 * NOTE: we prevent seqcexit from modifying the exit code because the
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
-	if (len != LITLEN("test-")+MAX_SUBMISSION_CHARS) {
+	if (len != LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS) {
 	    err(4, __func__, "\"submit.test-\" separated token length: %ju != %ju: %s", /*ooo*/
-			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_SUBMISSION_CHARS), filepath);
+			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), filepath);
 	    not_reached();
 	}
-	ret = sscanf(uuid, "test-%d%c", &submission_num, &guard);
+	ret = sscanf(uuid, "test-%d%c", &submit_slot, &guard);
 	if (ret != 1) {
-	    err(14, __func__, "submission_number not found after \"test-\": %s", filepath);
+	    err(14, __func__, "submit_slotber not found after \"test-\": %s", filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "submit ID is test: %s", uuid);
-	if (submission_num < 0) {
-	    err(15, __func__, "submission_number %d is < 0: %s", submission_num, filepath);
+	if (submit_slot < 0) {
+	    err(15, __func__, "submit_slotber %d is < 0: %s", submit_slot, filepath);
 	    not_reached();
 	}
-	if (submission_num > MAX_SUBMISSION_NUM) {
-	    err(16, __func__, "submission_number %d is > %d: %s", submission_num, MAX_SUBMISSION_NUM, filepath);
+	if (submit_slot > MAX_SUBMIT_SLOT) {
+	    err(16, __func__, "submit_slotber %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "submission_number %d is valid: %s", submission_num, filepath);
+	dbg(DBG_LOW, "submit_slotber %d is valid: %s", submit_slot, filepath);
 
     /*
-     * parse a UUID-submission_num IOCCC contest ID
+     * parse a UUID-submit_slot IOCCC contest ID
      */
     } else {
 	/*
@@ -258,15 +258,15 @@ main(int argc, char *argv[])
 	 * NOTE: we prevent seqcexit from modifying the exit code because the
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
-	if (len != UUID_LEN+1+MAX_SUBMISSION_CHARS) {
+	if (len != UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS) {
 	    err(5, __func__, "\"submit.UUID-\" separated token length: %ju != %ju: %s", /*ooo*/
-			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_SUBMISSION_CHARS), filepath); /*ooo*/
+			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant,
-		&d, &e, &f, &submission_num, &guard);
+		&d, &e, &f, &submit_slot, &guard);
 	if (ret != 9) {
-	    err(18, __func__, "UUID-submission_number not found after \"submit-\": %s", filepath);
+	    err(18, __func__, "UUID-submit_slotber not found after \"submit-\": %s", filepath);
 	    not_reached();
 	}
 	if (version != UUID_VERSION) {
@@ -278,15 +278,15 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	dbg(DBG_LOW, "submit ID is a valid UUID: %s", uuid);
-	if (submission_num < 0) {
-	    err(21, __func__, "submission_number %d is < 0: %s", submission_num, filepath);
+	if (submit_slot < 0) {
+	    err(21, __func__, "submit_slotber %d is < 0: %s", submit_slot, filepath);
 	    not_reached();
 	}
-	if (submission_num > MAX_SUBMISSION_NUM) {
-	    err(22, __func__, "submission_number %d is > %d: %s", submission_num, MAX_SUBMISSION_NUM, filepath);
+	if (submit_slot > MAX_SUBMIT_SLOT) {
+	    err(22, __func__, "submit_slotber %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "submit number is valid: %d", submission_num);
+	dbg(DBG_LOW, "submit number is valid: %d", submit_slot);
     }
 
     /*
@@ -299,7 +299,7 @@ main(int argc, char *argv[])
     }
     ret = sscanf(timestamp_str, "%jd%c", &timestamp, &guard);
     if (ret != 1) {
-	err(24, __func__, "timestamp not found after \"submission_number.\": %s is not a timestamp: %s", timestamp_str, filepath);
+	err(24, __func__, "timestamp not found after \"submit_slotber.\": %s is not a timestamp: %s", timestamp_str, filepath);
 	not_reached();
     }
     if (timestamp < MIN_TIMESTAMP) {
@@ -403,8 +403,8 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_SUBMISSION_CHARS),
-	    (uintmax_t)(LITLEN("test-")+MAX_SUBMISSION_CHARS), FNAMCHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS),
+	    (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -66,7 +66,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "1.0.62 2024-05-15"	/* special release format: major.minor.patch YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "1.1 2024-05-18"	/* special release format: major.minor.patch YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
@@ -81,17 +81,17 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "1.0.5 2024-05-15"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.0.6 2024-05-19"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.15 2024-03-02"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.16 2024-05-18"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.21 2024-03-04"		/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.22 2024-05-18"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version
@@ -101,7 +101,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.0.4 2024-05-16"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.0.5 2024-05-19"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

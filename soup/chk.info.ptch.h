@@ -1,6 +1,6 @@
---- ref/info.reference.json.h	2024-03-02 05:59:12
-+++ chk_sem_info.h	2024-03-02 06:00:03
-@@ -33,7 +33,7 @@
+--- ref/info.reference.json.h	2024-05-19 00:08:13
++++ chk_sem_info.h	2024-05-18 23:59:08
+@@ -33,12 +33,12 @@
  /*
   * json_sem - JSON semantics support
   */
@@ -9,3 +9,9 @@
  
  
  #if !defined(SEM_INFO_LEN)
+ 
+-#define SEM_INFO_LEN (50)
++#define SEM_INFO_LEN (51)
+ 
+ extern struct json_sem sem_info[SEM_INFO_LEN+1];
+ 

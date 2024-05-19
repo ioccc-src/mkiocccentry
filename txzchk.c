@@ -1490,7 +1490,7 @@ check_tarball(char const *tar, char const *fnamchk)
      *
      * Note that the reason we don't exit if fnamchk reports an error is we
      * still can detect other feathers/issues; we just won't detect feathers
-     * with the submission number and directory.
+     * with the submit slot number and directory.
      */
     if (fnamchk_okay) {
 

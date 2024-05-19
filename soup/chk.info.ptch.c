@@ -1,5 +1,5 @@
---- ref/info.reference.json.c	2024-03-02 05:59:12
-+++ chk_sem_info.c	2024-03-02 06:00:03
+--- ref/info.reference.json.c	2024-05-19 00:08:13
++++ chk_sem_info.c	2024-05-18 23:59:02
 @@ -39,17 +39,17 @@
  
  struct json_sem sem_info[SEM_INFO_LEN+1] = {
@@ -16,11 +16,11 @@
    { 4,	JTYPE_MEMBER,	1,	1,	1,	6,	7,	chk_remarks,	"remarks" },
 -  { 3,	JTYPE_OBJECT,	1,	42,	42,	7,	0,	NULL,	NULL },
 -  { 2,	JTYPE_NUMBER,	1,	7,	7,	8,	0,	NULL,	NULL },
--  { 2,	JTYPE_STRING,	1,	52,	52,	9,	0,	NULL,	NULL },
+-  { 2,	JTYPE_STRING,	1,	50,	50,	9,	0,	NULL,	NULL },
 -  { 2,	JTYPE_BOOL,	1,	16,	16,	10,	0,	NULL,	NULL },
 +  { 3,	JTYPE_OBJECT,	5,	42,	42,	7,	0,	NULL,	NULL },
 +  { 2,	JTYPE_NUMBER,	7,	7,	7,	8,	0,	NULL,	NULL },
-+  { 2,	JTYPE_STRING,	52,	52,	52,	9,	0,	NULL,	NULL },
++  { 2,	JTYPE_STRING,	50,	50,	50,	9,	0,	NULL,	NULL },
 +  { 2,	JTYPE_BOOL,	16,	16,	16,	10,	0,	NULL,	NULL },
    { 2,	JTYPE_ARRAY,	1,	1,	1,	11,	0,	NULL,	NULL },
    { 1,	JTYPE_MEMBER,	1,	1,	1,	12,	13,	chk_IOCCC_contest,	"IOCCC_contest" },

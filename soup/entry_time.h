@@ -33,8 +33,6 @@
 /*
  * external function declarations
  */
-extern bool test_formed_UTC(char const *str);
-extern bool conv_timestr_test(char const *str);
 extern time_t get_now(void);
 extern bool timestr_eq_tstamp(char const *timestr, time_t timestamp);
 

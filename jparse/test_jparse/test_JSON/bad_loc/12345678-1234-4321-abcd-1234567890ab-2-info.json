@@ -9,7 +9,7 @@
 	"fnamchk_version" : "1.0.1 2024-03-02",
 	"txzchk_version" : "1.0.3 2024-03-02",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
-	"submission_num" : 2,
+	"submit_slot" : 2,
 	"title" : "title-for-entry0",
 	"abstract" : abstract for entry #0",
 	"tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-2.1688410576.txz",
@@ -45,6 +45,5 @@
 	"formed_timestamp" : 1688410576,
 	"formed_timestamp_usec" : 832694,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1675547786,
-	"formed_UTC" : "Mon Jul 03 18:56:16 2023 UTC"
+	"min_timestamp" : 1675547786
 }
