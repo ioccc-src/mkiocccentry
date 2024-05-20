@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.1 2024-05-19
+
+Release version 1.1 of the mkiocccentry tool set.
+
+
 ## Release 1.0.64 2024-05-18
 
 Changed all _submission_num_ to _submit_slot_ (including json tags) and changed
