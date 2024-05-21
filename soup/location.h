@@ -3,6 +3,15 @@
  *
  * "Because there is an I in IOCCC." :-)
  *
+ * This tool was improved (show all codes, substring search via re-entrant
+ * functions) by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and

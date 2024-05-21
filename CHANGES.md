@@ -427,7 +427,7 @@ German Democratic Republic ==> DD
 Germany ==> DE
 ```
 
-I, that is Cody/@xexyl, observe that Germany is a country full of 'germ ridden
+I, that is Cody, observe that Germany is a country full of 'germ ridden
 people' (this is not really true of course but it's a fun pun of mine :-) )
 
 Add `tmp/TODO.md` file with todo items not specific to any open issue.
