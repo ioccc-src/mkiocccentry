@@ -217,6 +217,33 @@ man ./soup/man/man1/bug_report.1
 NOTE: This tool may be found as: `./bug_report.sh`.
 
 
+###  `location`
+
+The official **IOCCC** tool to look up ISO 3166 codes and location names to help
+aid users in finding country codes. With the `-s` option one can search by
+substring and with the `-a` option one can list all codes that match, though the `-a`
+option is less useful without `-n` and is only checked for with at least one arg
+specified.
+
+This tool was developed in 2023 by:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
+with improvements (`-a` and `-s` options via new re-entrant functions) by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+
+For more information and examples, try:
+
+```sh
+man ./soup/man/man1/location.1
+```
+
+NOTE: After doing a `make all`, this tool may be found as: `./soup/location`.
+
+
 
 ## How do I submit my submission to the IOCCC?
 

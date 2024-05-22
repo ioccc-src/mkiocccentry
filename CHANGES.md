@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.1.1 2024-05-22
+
+Changed `LOCATION_VERSION` to `"1.0.4 2024-05-22"`.
+
+Fixed usage string in `location_main.c`: it did not suggest that one can specify
+more than one location but it can.
+
+Added to the README.md brief documentation of the `location(1)` tool (it was not
+there at all) and fixed some typos and added some clarity in the `location.1`
+man page.
+
+
 ## Release 1.1 2024-05-19
 
 Release version 1.1 of the mkiocccentry tool set.
@@ -399,7 +411,7 @@ United States of America ==> US
 Without the `-v 1` it will only show:
 
 ```sh
-$ ./location -a -s -N 'united'
+$ ./location -a -s -n 'united'
 AE
 GB
 PU
@@ -410,11 +422,11 @@ UN
 US
 ```
 
-If one does not use the `-N` option the `-a` is less useful as that function
+If one does not use the `-n` option the `-a` is less useful as that function
 checks explicitly that the length is two characters so it has to be an exact
 match. Nevertheless there is a re-entrant version of the function that works
-much the same way as the other and the `-a` is processed without `-N`. Use of
-`-s` requires an arg much like `-N` but it does NOT require `-N` itself.
+much the same way as the other and the `-a` is processed without `-n`. Use of
+`-s` requires an arg much like `-n` but it does NOT require `-n` itself.
 
 The rationale behind these changes is they will make it easier for people to
 find their country code, if they do not know what it is (or they want say
@@ -422,7 +434,7 @@ anonymous and don't know that it's `XX`). Search is done case-insensitively.
 Another example use:
 
 ```sh
-$ ./location -asNv 1 germ
+$ ./location -asnv 1 germ
 German Democratic Republic ==> DD
 Germany ==> DE
 ```

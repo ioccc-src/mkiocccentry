@@ -58,14 +58,14 @@
 /*
  * official location version
  */
-#define LOCATION_VERSION "1.0.3 2024-03-03"		/* format: major.minor YYYY-MM-DD */
+#define LOCATION_VERSION "1.0.4 2024-05-22"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * usage message
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-n] [-s] [-a] [location]\n"
+    "usage: %s [-h] [-v level] [-V] [-n] [-s] [-a] [location...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"

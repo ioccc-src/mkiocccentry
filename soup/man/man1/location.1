@@ -8,10 +8,10 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH location 1 "03 March 2024" "location" "IOCCC tools"
+.TH location 1 "22 May 2024" "location" "IOCCC tools"
 .SH NAME
 .B location
-\- lookup ISO 3166 codes, location names or print the table
+\- look up ISO 3166 codes, location names by name (substring, full) or print the entire table
 .SH SYNOPSIS
 .B location
 .RB [\| \-h \|]
@@ -52,7 +52,7 @@ To show all matches use the
 option.
 Showing all matches is less useful without the
 .B \-n
-option because country codes are two characters and are exact matches.
+option because country codes are two characters and are exact matches and the option is only relevant if an arg is specified.
 The use of
 .B \-s
 requires an arg to the program much like
@@ -105,8 +105,8 @@ Use of
 .B \-a
 is less useful without the
 .B \-n
-option but nonetheless it is possible to use
-.B \-s
+option and only checked for if at least one arg is specified but nonetheless it is possible to use
+.B \-a
 without
 .BR \-n .
 .SH EXIT STATUS
