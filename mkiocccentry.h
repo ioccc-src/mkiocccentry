@@ -123,7 +123,7 @@
 
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
-#define IOCCC_NEWS_URL "https://www.ioccc.org/index.html#news"
+#define IOCCC_NEWS_URL "https://www.ioccc.org/index.html#news" /* XXX: change to news.html after the Great Fork Merge is done */
 #undef IOCCC_REGISTRATION_READY		/* XXX: change to #define when registration process is ready */
 #undef IOCCC_SUBMIT_SERVER_READY	/* XXX: change to #define when submit server is ready */
 
