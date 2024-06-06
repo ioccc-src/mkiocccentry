@@ -454,7 +454,7 @@ of comments being supported. This is where an Easter egg in the json files of
 the IOCCC comes from!
 
 Also, despite what the creators of the **so-called JSON spec** claim,
-their web site does [change from time to
+their website does [change from time to
 time](https://web.archive.org/web/changes/https://www.json.org/json-en.html),
 albeit sometimes for minor reasons such as a cosmetic change or
 to link to a new language translation.  It may be best to use the
