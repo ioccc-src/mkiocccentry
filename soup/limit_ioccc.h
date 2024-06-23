@@ -42,7 +42,7 @@
 #undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
 #undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */
 
-#define RULE_2A_SIZE ((off_t)(4096))		/* Rule 2a size of prog.c */
+#define RULE_2A_SIZE ((off_t)(4993))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
 #define MAX_SUM_FILELEN ((off_t)(27651*1024))	/* maximum sum of the byte lengths of all files in the entry */

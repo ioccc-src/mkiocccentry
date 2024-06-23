@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.1.1 2024-05-22
+## Release 1.1.1 2024-06-23
 
 Changed `LOCATION_VERSION` to `"1.0.4 2024-05-22"`.
 
@@ -11,6 +11,10 @@ more than one location but it can.
 Added to the README.md brief documentation of the `location(1)` tool (it was not
 there at all) and fixed some typos and added some clarity in the `location.1`
 man page.
+
+Updated the Rule 2a size from 4096 to 4993: a change that keeps the
+"Rule 2b:Rule 2a" ratio (that was recently changed from 2053 to 2503)
+similar to the 2001-2020 IOCCC era.
 
 
 ## Release 1.1 2024-05-19
