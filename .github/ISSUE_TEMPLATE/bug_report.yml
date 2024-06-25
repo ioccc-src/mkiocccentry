@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a bug
+title: "[Bug] <title>"
+body:
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue already exists for the problem you're reporting.
+    options:
+    - label: I have searched for existing issues and did not find anything like it
+      required: true
+- type: textarea
+  attributes:
+    label: Describe the bug
+    description: Please give a **clear** and **concise** description of what the bug is.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: What you expect
+    description: |
+        Please describe what you think it should be instead and why, as best you can (the more details you provide the better).
+
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Environment
+    description: |
+      Example:
+        - **OS**: macOS Sonoma 14.5
+        - **Device**: MacBook Pro M1
+        - **Compiler**: Apple clang version 15.0.0 (clang-1500.3.9.4)
+
+        **PLEASE** provide **AT** **LEAST** the above items. If you have the **SAME** problem with more than one device please list the above for **ALL** **RELEVANT** **devices** with **any** **relevant** **context**.
+    value: |
+        - OS:
+        - Device:
+        - Compiler:
+    render: markdown
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: bug_report.sh output
+    description: |
+      Please attach the log file of './bug_report.sh' as well as anything else you think might be useful.
+
+      Tip: you can attach files by clicking the text area to highlight it and then click the link that says paste, drop or click to add files.
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Anything else?
+    description: |
+      Do you have any additional context or information that might be helpful? Please let us know!
+
+      Tip: you can attach files by clicking the text area to highlight it and then click the link that says paste, drop or click to add files.
+  validations:
+    required: false
+
