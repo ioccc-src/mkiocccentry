@@ -48,6 +48,7 @@
 #include <strings.h>	/* strcasecmp() */
 #include <ctype.h>
 #include <stdint.h>
+#include <sys/wait.h>	/* for WEXITSTATUS() */
 
 /*
  * txzchk - IOCCC tarball validation check tool
