@@ -369,7 +369,7 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%ju>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_bool(jparse_get_text(scanner));");
 	}
@@ -399,7 +399,7 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_bool(jparse_get_text(scanner))");
 	}
@@ -429,7 +429,7 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_null(jparse_get_text(scanner));");
 	}
@@ -797,7 +797,7 @@ json_string:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", jparse_get_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
 					       "$json_string = parse_json_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
 	}
@@ -829,7 +829,7 @@ json_number:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", jparse_get_leng(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
 					       "$json_number = parse_json_number(jparse_get_text(scanner));");
 	}
