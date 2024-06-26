@@ -53,7 +53,6 @@ GIT= git
 GREP= grep
 INDEPEND= independ
 INSTALL= install
-MAKE= make
 MV= mv
 PICKY= picky
 RM= rm

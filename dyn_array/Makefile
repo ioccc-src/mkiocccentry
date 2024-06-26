@@ -43,7 +43,6 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
-MAKE= make
 PICKY= picky
 RANLIB= ranlib
 RM= rm
