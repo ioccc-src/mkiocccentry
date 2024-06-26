@@ -93,7 +93,13 @@ export SUBDIRS="
     ./test_ioccc
     "
 
-export BUG_REPORT_VERSION="1.0.2 2023-06-29"
+# we need to determine if the system has gmake first
+MAKE="$(type -P gmake)"
+if [[ -z "$MAKE" ]]; then
+	MAKE="$(type -P make)"
+fi
+export MAKE
+export BUG_REPORT_VERSION="1.0.3 2024-06-26"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -103,17 +109,18 @@ export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-M make_flags]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-m make] [-M make_flags]
 
-    -h			    print help and exit
-    -V			    print version and exit
-    -v level		    set verbosity level for this script: (def level: $V_FLAG)
-    -D level		    set verbosity level for tests (def: $DBG_LEVEL)
-    -t			    disable make actions (def: run make actions)
-    -x			    remove bug report if no problems detected
-    -l			    only write to log file
-    -L logfile		    specify logfile name (def: based on date and time)
-    -M make_flags	    set any make flags (def: $MAKE_FLAGS)
+    -h              print help and exit
+    -V              print version and exit
+    -v level        set verbosity level for this script: (def level: $V_FLAG)
+    -D level        set verbosity level for tests (def: $DBG_LEVEL)
+    -t              disable make actions (def: run make actions)
+    -x              remove bug report if no problems detected
+    -l              only write to log file
+    -L logfile      specify logfile name (def: based on date and time)
+    -m make         specify path to make(1) (def: $MAKE)
+    -M make_flags   set any make flags (def: $MAKE_FLAGS)
 
 Exit codes:
      0	    all tests OK
@@ -135,42 +142,77 @@ LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:txlL:M: flag; do
+while getopts :hVv:D:txlL:m:M: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-	exit 2
-	;;
+		exit 2
+		;;
     V)	echo "$BUG_REPORT_VERSION" 1>&2
-	exit 2
-	;;
+		exit 2
+		;;
     v)	V_FLAG="$OPTARG";
-	;;
+		;;
     D)  DBG_LEVEL="$OPTARG";
-	;;
+		;;
     t)  T_FLAG="-t"
-	;;
+		;;
     x)	X_FLAG="-x"
-	;;
+		;;
     l)	L_FLAG="-l"
-	;;
+		;;
     L)	LOGFILE="$OPTARG"
-	;;
+		;;
+	m)	MAKE="$OPTARG"
+		;;
     M)  MAKE_FLAGS="$OPTARG"
-	;;
+		;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-	echo 1>&2
-	echo "$USAGE" 1>&2
-	exit 3
-	;;
+		echo 1>&2
+		echo "$USAGE" 1>&2
+		exit 3
+		;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-	echo 1>&2
-	echo "$USAGE" 1>&2
-	exit 3
-	;;
-   *)
-	;;
-    esac
+		echo 1>&2
+		echo "$USAGE" 1>&2
+		exit 3
+		;;
+	*)
+		;;
+	esac
 done
+
+# make sure that make is an executable file
+#
+# First, if the user for some reason provided an empty string, try an correct it
+# for them:
+if [[ -z "$MAKE" ]]; then
+	# try for gmake first
+	MAKE="$(type -P gmake)"
+	if [[ -z "$MAKE" ]]; then
+		MAKE="$(type -P make)"
+	fi
+fi
+if [[ -z "$MAKE" ]]; then
+	echo "make variable MAKE unset! Try -m make option." 1>&2
+	exit 3
+fi
+
+if [[ ! -e "$MAKE" ]]; then
+	echo "make does not exist: $MAKE" 1>&2
+	echo "Use -m make option to set path." 1>&2
+	exit 3
+fi
+if [[ ! -f "$MAKE" ]]; then
+	echo "make is not a regular file: $MAKE" 1>&2
+	echo "Use -m make option to set path." 1>&2
+	exit 3
+fi
+if [[ ! -x "$MAKE" ]]; then
+	echo "make is not an executable file: $MAKE" 1>&2
+	echo "Use -m make option to set path." 1>&2
+	exit 3
+fi
+
 
 # the LOGFILE name will have been either generated or specified by the -L option
 # but now we have to export it and create it.
@@ -1368,8 +1410,15 @@ run_check 38 "cc -v"
 # type -a make: get all makes :-)
 type_of 39 "make"
 
+# type -a of gmake: although we prefer GNU make it might not be installed as
+# gmake so it's an optional tool.
+type_of_optional "gmake"
+
 # try and get version of make
 get_version "make"
+
+# try and get version of gmake
+get_version "gmake"
 
 # cpp -dM /dev/null: get predefined macros
 run_check 40 "cpp -dM /dev/null"
@@ -1390,7 +1439,7 @@ write_echo ""
 
 if [[ -z "$T_FLAG" ]]; then
     # make clobber: start clean
-    run_check 41 "make $MAKE_FLAGS clobber"
+    run_check 41 "$MAKE $MAKE_FLAGS clobber"
 
     # make all: compile everything before we do anything else
     #
@@ -1414,10 +1463,10 @@ if [[ -z "$T_FLAG" ]]; then
     # use of this repo so each time the script fails we report the issue for that
     # very reason.
     #
-    run_check 42 "make $MAKE_FLAGS all" # the answer to life, the universe and everything conveniently makes all :-)
+    run_check 42 "$MAKE $MAKE_FLAGS all" # the answer to life, the universe and everything conveniently makes all :-)
 
     # make test: run the IOCCC toolkit test suite
-    run_check 43 "make $MAKE_FLAGS test"
+    run_check 43 "$MAKE $MAKE_FLAGS test"
 fi
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
@@ -1458,16 +1507,16 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "make -C jparse ${MAKE_FLAGS} run_bison-v7"
+run_check 45 "$MAKE -C jparse ${MAKE_FLAGS} run_bison-v7"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "make -C jparse ${MAKE_FLAGS} run_flex-v7"
+run_check 46 "$MAKE -C jparse ${MAKE_FLAGS} run_flex-v7"
 
 if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
     # recompilation
-    write_echo "## RUNNING make all a second time"
-    run_check 47 "make $MAKE_FLAGS all"
+    write_echo "## RUNNING $MAKE all a second time"
+    run_check 47 "$MAKE $MAKE_FLAGS all"
 fi
 
 # post-clean
@@ -1538,7 +1587,7 @@ done
 # the user would have these tools but if one or both are not available this file
 # will not be as useful. This is why we don't mark it as an error.
 #
-run_optional_check "make -C soup ${MAKE_FLAGS} limit_ioccc.sh"
+run_optional_check "$MAKE -C soup ${MAKE_FLAGS} limit_ioccc.sh"
 write_echo "## Checking for limit_ioccc.sh"
 if [[ -e "./soup/limit_ioccc.sh" ]]; then
     if [[ -r "./soup/limit_ioccc.sh" ]]; then
