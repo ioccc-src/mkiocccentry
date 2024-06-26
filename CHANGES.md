@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.1.2 2024-06-25
+
+Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
+Thanks to @SirWumpus for the report! Updated `TXZCHK_VERSION` to `"1.0.6
+2024-06-25"` (this is backdated from the date it was fixed, 25 June 2024).
+
+
 ## Release 1.1.1 2024-06-23
 
 Changed `LOCATION_VERSION` to `"1.0.4 2024-05-22"`.
@@ -53,7 +60,7 @@ Changed MKIOCCCENTRY_VERSION from "1.0.5 2024-05-15"
 to "1.0.6 2024-05-19" as a result of the above changes.
 
 Changed TXZCHK_VERSION from "1.0.4 2024-05-16"
-to "1.0.5 2024-05-19" as a result of the above changes.
+to "1.0.6 2024-06-25" as a result of the above changes.
 
 Performed `make reset_min_timestamp` to change MIN_TIMESTAMP from 1675547786
 to 1716103155 due to the changes in both `.auth.json` and `.info.json`.

@@ -7,7 +7,7 @@
 	"iocccsize_version" : "28.14 2024-01-04",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"fnamchk_version" : "1.0.1 2024-03-02",
-	"txzchk_version" : "1.0.3 2024-03-02",
+	"txzchk_version" : "1.0.6 2024-06-25",
 	"IOCCC_contest_id" : "test",
 	"submit_slot" : 1,
 	"title" : "title-for-entry0",
