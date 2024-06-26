@@ -99,7 +99,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.3 2024-06-26"
+export BUG_REPORT_VERSION="1.0.4 2024-06-26"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1412,13 +1412,17 @@ type_of 39 "make"
 
 # type -a of gmake: although we prefer GNU make it might not be installed as
 # gmake so it's an optional tool.
-type_of_optional "gmake"
+if [[ $(basename "$MAKE") == gmake ]]; then
+    type_of_optional "gmake"
+fi
 
 # try and get version of make
 get_version "make"
 
 # try and get version of gmake
-get_version "gmake"
+if [[ $(basename "$MAKE") == gmake ]]; then
+    get_version "gmake"
+fi
 
 # cpp -dM /dev/null: get predefined macros
 run_check 40 "cpp -dM /dev/null"

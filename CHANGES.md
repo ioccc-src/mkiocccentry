@@ -13,7 +13,11 @@ it will look for `make`. In the case that it is not a regular executable file it
 is considered a command line error along the lines of 'command not found'. This
 helps simplify the handling of the error codes as without `make(1)` the script
 is essentially useless anyway (or mostly useless). The `BUG_REPORT_VERSION` is
-now `"1.0.3 2024-06-26"`. Man page updated for these changes.
+now `"1.0.4 2024-06-26"`. Man page updated for these changes.
+
+Fixed bugs that prevented NetBSD from compiling this code.  Fixed
+a number of compiler warnings under NetBSD.  Thanks to @SirWumpus
+for the detailed bug report and his assistance in testing.
 
 
 
