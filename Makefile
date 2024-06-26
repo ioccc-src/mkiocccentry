@@ -170,7 +170,7 @@ C_OPT= -O3 -g3
 
 # Compiler warnings
 #
-WARN_FLAGS= -Wall -Wextra
+WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -Wall -Wextra -Werror
 
 # linker options
