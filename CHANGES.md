@@ -7,6 +7,15 @@ Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
 Thanks to @SirWumpus for the report! Updated `TXZCHK_VERSION` to `"1.0.6
 2024-06-25"` (this is backdated from the date it was fixed, 25 June 2024).
 
+Updated `bug_report.sh` script with new option `-m make` to specify path to
+`make(1)`. The script now also tries to find `gmake`, first and if that fails
+it will look for `make`. In the case that it is not a regular executable file it
+is considered a command line error along the lines of 'command not found'. This
+helps simplify the handling of the error codes as without `make(1)` the script
+is essentially useless anyway (or mostly useless). The `BUG_REPORT_VERSION` is
+now `"1.0.3 2024-06-26"`. Man page updated for these changes.
+
+
 
 ## Release 1.1.1 2024-06-23
 
