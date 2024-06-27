@@ -390,6 +390,7 @@ soup.a: ${LIB_OBJS}
 	${RM} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
+	${MAKE} limit_ioccc.sh
 
 chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c
@@ -450,8 +451,7 @@ kitchen soup_kitchen: kitchen.sh
 # rules for use by other Makefiles #
 ####################################
 
-limit_ioccc.sh: limit_ioccc.h version.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/run_bison.sh \
-		../jparse/run_flex.sh ../jparse/verge.c
+limit_ioccc.sh:
 	${Q} ${RM} -f $@
 	${Q} echo '#!/usr/bin/env bash' > $@
 	${Q} echo '#' >> $@
