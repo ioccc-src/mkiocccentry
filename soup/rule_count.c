@@ -250,6 +250,9 @@ rule_count(FILE *fp_in)
 /* If quote == NO_STRING (0) and is_comment == NO_COMMENT (0) then its code. */
 #define IS_CODE	(quote == is_comment)
 
+    /* paranoia and to keep valgrind happy */
+				(void) memset(word, 0, sizeof (word));
+
 	while ((ch = fgetc(fp_in)) != EOF) {
 		if (ch == '\r') {
 			/* Discard bare CR and those part of CRLF. */
