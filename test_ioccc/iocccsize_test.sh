@@ -7,6 +7,10 @@
 # Public Domain 1992, 2015, 2019 by Anthony Howe.  All rights released.
 #
 # IOCCC mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
+#
+# ***
+# *** NOTE when editing this file it contains UTF8 multibyte characters.
+# ***
 
 # setup
 #
@@ -327,8 +331,9 @@ test_size crlf.c "2 8 1"
 
 #######################################################################
 
-printf 'char str[] = "\xe8\xe9\xf8";\r\n' >"$WORK_DIR/utf8.c"
-test_size utf8.c "12 21 1"
+# String literal with multibyte characters (mb2).
+printf 'char str[] = "èéø";\r\n' >"${WORK_DIR}/utf8.c"
+test_size utf8.c "15 24 1"
 
 #######################################################################
 
@@ -654,6 +659,57 @@ main(int argc, char **argv)
 }
 EOF
 test_size semicolon2.c "67 127 8"
+
+#######################################################################
+
+# String literal with multibyte charaters (mb3).
+cat <<EOF >"${WORK_DIR}/hello-jp.c"
+#include <stdio.h>
+
+int
+main(int argc, char **argv)
+{
+	(void) printf("こんにちは世界！\n");
+	return 0;
+}
+EOF
+test_size hello-jp.c "71 113 6"
+
+#######################################################################
+
+# Unicode identifier using hiragana and kanji.
+cat <<EOF >"${WORK_DIR}/hello-jp2.c"
+#include <stdio.h>
+
+int
+main(int argc, char **argv)
+{
+	char str_こんにちは世界！[] = "Kon'nichiwa sekai!\n";
+	(void) printf(str_こんにちは世界！);
+	return 0;
+}
+EOF
+test_size hello-jp2.c "124 176 7"
+
+#######################################################################
+
+# Long Unicode identifier
+cat <<EOF >"${WORK_DIR}/hello-jp3.c"
+#include <stdio.h>
+
+int
+main(int argc, char **argv)
+{
+	/* Identifier with 4 ASCII + 20 hiragana, katakana, and kanji.
+	 * There is nothing wrong with this source code.
+	 */
+	char str_このソースコードには何も問題はありません[] = "Kono sōsukōdo ni wa nani mo mondai wa arimasen.\n";
+	(void) printf(str_このソースコードには何も問題はありません);
+	return 0;
+}
+EOF
+test_size hello-jp3.c "313 398 7"
+
 
 # All Done!!! -- Jessica Noll, Age 2
 #

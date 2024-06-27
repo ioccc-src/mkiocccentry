@@ -243,7 +243,7 @@ RuleCount
 rule_count(FILE *fp_in)
 {
 	size_t wordi = 0;
-	char word[WORD_BUFFER_SIZE+1];
+	char word[WORD_BUFFER_SIZE];
 	RuleCount counts = { 0, 0, 0, false, false, false, false, false };
 	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT;
 
@@ -431,11 +431,20 @@ rule_count(FILE *fp_in)
 
 		/* Collect next word not in a string or comment. */
 		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
+			word[wordi++] = (char) ch;
 			if (sizeof (word) <= wordi) {
+				/* ISO C11 section 5.2.4.1 Translation limits, identifiers
+				 * can have 63 significant initial characters, which can be
+				 * multibyte.  The C keywords are all ASCII, longest is 14
+				 * bytes.
+				 *
+				 * We only care about the C keywords and not the identifiers,
+				 * so the buffer can overflow regularly as long words or
+				 * identifiers are ignored.
+				 */
 				counts.wordbuf_warning = true;
 				wordi = 0;
 			}
-			word[wordi++] = (char) ch;
 			word[wordi] = '\0';
 		}
 
