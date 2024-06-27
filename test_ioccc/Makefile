@@ -129,23 +129,21 @@ MAKE_CD_Q= --no-print-directory
 
 # C source standards being used
 #
-# This repo supports c11 and later.
+# This repo supports c17 and later.
 #
-# NOTE: The use of -std=gnu11 is because there are a few older systems
-#	in late 2021 that do not have compilers that (yet) support gnu17.
-#	While there may be even more out of date systems that do not
-#	support gnu11, we have to draw the line somewhere.
+# NOTE: at one point we used -std=gnu11 because there were a few older systems
+#       in late 2021 that did not have compilers that (yet) supported gnu17.
+#       While there may be even more out of date systems that do not support
+#       gnu11, we have to draw the line somewhere. Besides, one of those systems
+#       reaches its EOL on 30 June 2024 and that's three days away at this
+#       point.
 #
 #	--------------------------------------------------
 #
 #	^^ the line is above :-)
 #
-# TODO - ############################################################################### - TODO #
-# TODO - Sometime in 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
-# TODO - ############################################################################### - TODO #
-#
-C_STD= -std=gnu11
-#C_STD= -std=gnu17
+#C_STD= -std=gnu11
+C_STD= -std=gnu17
 
 # optimization and debug level
 #
