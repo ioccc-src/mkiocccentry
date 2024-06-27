@@ -41,7 +41,7 @@ typedef unsigned char bool;
 #endif
 
 #ifndef WORD_BUFFER_SIZE
-#define WORD_BUFFER_SIZE	256
+#define WORD_BUFFER_SIZE	16
 #endif
 
 /*
