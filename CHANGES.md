@@ -1,24 +1,38 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.1.2 2024-06-25
+## Release 1.2 2024-06-27
 
 Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
-Thanks to @SirWumpus for the report! Updated `TXZCHK_VERSION` to `"1.0.6
-2024-06-25"` (this is backdated from the date it was fixed, 25 June 2024).
+Thanks to @SirWumpus for the report!
+
+Changed `txzchk` TXZCHK_VERSION` "1.0.3 2024-03-02"
+to `"1.0.6 2024-06-25".
 
 Updated `bug_report.sh` script with new option `-m make` to specify path to
 `make(1)`. The script now also tries to find `gmake`, first and if that fails
 it will look for `make`. In the case that it is not a regular executable file it
 is considered a command line error along the lines of 'command not found'. This
 helps simplify the handling of the error codes as without `make(1)` the script
-is essentially useless anyway (or mostly useless). The `BUG_REPORT_VERSION` is
-now `"1.0.4 2024-06-26"`. Man page updated for these changes.
+is essentially useless anyway (or mostly useless).
+
+Changed `bug_report.sh` BUG_REPORT_VERSION from "1.0.3 2024-06-26""
+to "1.0.4 2024-06-26"`. Man page updated for these changes.
 
 Fixed bugs that prevented NetBSD from compiling this code.  Fixed
 a number of compiler warnings under NetBSD.  Thanks to @SirWumpus
 for the detailed bug report and his assistance in testing.
 
+Fixed a bug that caused `iocccsize(1)` to crash on some systems, such
+as MacOS under Apple Silicon, when given a binary blob such as the
+`iocccsize` binary as input.
+
+Changed `iocccsize` IOCCCSIZE_VERSION from "28.14 2024-01-04"
+to "28.15 2024-06-27".
+
+Changed MKIOCCCENTRY_REPO_VERSION from "1.1 2024-05-19"
+to "1.2 2024-06-27" in preparation for a later 1.2 release of this repo
+after more testing.
 
 
 ## Release 1.1.1 2024-06-23

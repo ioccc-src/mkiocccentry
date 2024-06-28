@@ -16,7 +16,7 @@
 	"highbit_warning" : false,
 	"IOCCC_contest" : "IOCCC28",
 	"IOCCC_year" : 2024,
-	"iocccsize_version" : "28.14 2024-01-04",
+	"iocccsize_version" : "28.15 2024-06-27",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"manifest" : [
 		{"info_JSON" : ".info.json"},

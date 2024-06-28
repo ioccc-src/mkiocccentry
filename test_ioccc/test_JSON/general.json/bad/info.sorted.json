@@ -25,7 +25,7 @@
 	"highbit_warning" : false,
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"iocccsize_version" : "28.14 2024-01-04",
+	"iocccsize_version" : "28.15 2024-06-27",
 	"chkentry_version" : "1.0.1 2024-03-02",
 	"min_timestamp" : 1716103155,
 	"mkiocccentry_version" : "1.0.6 2024-05-19",
