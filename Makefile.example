@@ -1,13 +1,9 @@
 #!/usr/bin/env make
 #
-# prog - an example Makefile
+# prog - an example Makefile <<=== change "an example Makefile" to a suitable title for entry
 #
-# IMPORTANT: You need to change this Makefile, including
-#	     removing this comment!
-#
-# We suggest you rename this file to Makefile before using.
-#
-# Modify this Makefile as needed before submitting with your submission.
+# Please copy this file into your entry directory under the name: Makefile
+# Modify the resulting Makefile as needed.
 
 # utilities
 #
