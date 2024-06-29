@@ -1,7 +1,5 @@
 # Official IOCCC submission toolkit
 
-*NOTE*: This code is currently under alpha-test.
-
 *NOTE*: you may wish to also read our
 [FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md).
 
@@ -16,12 +14,13 @@ under different platforms.
 
 In order to help you help us, we provide the following information.
 
+
 ### Running the test suite
 
 Perhaps the most important thing you can do for us is run the `bug_report.sh`
 script with all information like:
 
-```sh
+``` <!---sh-->
 make bug_report
 ```
 
@@ -36,7 +35,7 @@ do so.
 If the script does not report any issues you may delete the file safely (it will
 tell you the log file name). Alternatively you can run:
 
-```sh
+``` <!---sh-->
 ./bug_report -x
 ```
 
@@ -88,7 +87,7 @@ Form an **IOCCC** submission as an XZ compressed tarball file.
 For examples and more information, try:
 
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/mkiocccentry.1
 ```
 
@@ -103,7 +102,7 @@ This code is based on code by *@SirWumpus* (**Anthony Howe**):
 
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/iocccsize.1
 ```
 
@@ -130,11 +129,12 @@ used and there was no screwing around with the resultant tarball.
 
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/txzchk.1
 ```
 
 NOTE: After doing a `make all`, this tool may be found as: `./txzchk`.
+
 
 ###  `chkentry`
 
@@ -156,10 +156,9 @@ with improvements made by:
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
 
 
-
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/chkentry.1
 ```
 
@@ -172,7 +171,7 @@ The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./test_ioccc/man/man1/fnamchk.1
 ```
 
@@ -210,7 +209,7 @@ with minor improvements by:
 
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/bug_report.1
 ```
 
@@ -237,12 +236,11 @@ with improvements (`-a` and `-s` options via new re-entrant functions) by:
 
 For more information and examples, try:
 
-```sh
+``` <!---sh-->
 man ./soup/man/man1/location.1
 ```
 
 NOTE: After doing a `make all`, this tool may be found as: `./soup/location`.
-
 
 
 ## How do I submit my submission to the IOCCC?

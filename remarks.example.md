@@ -2,7 +2,7 @@
 
 0.  For help with markdown format please see this [helpful guide](https://www.markdownguide.org/basic-syntax/).
 
-1.  Please see the [IOCCC markdown guidelines](https://ioccc-src.github.io/temp-test-ioccc/markdown.html).
+1.  Please see the [IOCCC markdown guidelines](https://www.isthe.com/markdown.html).
 
 2.  Copy this file into your entry directory under the name: remarks.md
 

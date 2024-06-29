@@ -30,7 +30,9 @@
 12. <a href="#keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
 
 
-## 0. <a name="download">Where can I find the mkiocccentry tool?</a>
+<div id=="download">
+## 0. Where can I find the mkiocccentry tool?
+</div>
 
 The `mkiocccentry` tool source code is found in the
 [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
@@ -38,8 +40,8 @@ If you have not already done so, you may download the source by using `git
 clone`:
 
 
-```sh
-git clone git@github.com:ioccc-src/mkiocccentry.git
+``` <!---sh-->
+git clone https://github.com/ioccc-src/mkiocccentry.git
 ```
 
 If you don't have `git` you may
@@ -47,18 +49,20 @@ If you don't have `git` you may
 and then extract that file.
 
 
-## 1. <a name="compiling">How do I compile the mkiocccentry tool?</a>
+<div id=="compiling">
+## 1. How do I compile the mkiocccentry tool?
+</div>
 
 After downloading the repo (making sure that if you downloaded the zip file that
 you unzip it first) move into the _mkiocccentry_ directory:
 
-```sh
+``` <!---sh-->
 cd mkiocccentry
 ```
 
 and compile everything from scratch:
 
-```sh
+``` <!---sh-->
 make clobber all
 ```
 
@@ -67,8 +71,9 @@ local directory.  If something went wrong, see
 <a href="#reporting-bugs">how do I report bugs or other issues?</a>
 
 
-
-## 2. <a name="package">How do I package my submission?</a>
+<div id=="package">
+## 2. How do I package my submission?
+</div>
 
 We recommend that you use the `mkiocccentry` tool to package your submission.
 If you have not already done so, download the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry)
@@ -78,7 +83,7 @@ and compile it
 
 From the top level directory, run the `mkiocccentry` executable:
 
-```sh
+``` <!---sh-->
 ./mkiocccentry work_dir prog.c Makefile remarks.md [file ...]
 ```
 
@@ -89,7 +94,7 @@ the submit slot number.
 
 Something like _/tmp/ioccc_ is a good choice:
 
-```sh
+``` <!---sh-->
 mkdir -p /tmp/ioccc
 ```
 
@@ -110,19 +115,19 @@ Once you have answered all of the questions, the tool will form a
 XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
-## 3. <a href="makefile">What do I do for the Makefile in my submission?</a>
+<div id=="makefile">
+#<# 3. What do I do for the Makefile in my submission?
+</div>
 
 Although you are welcome to add additional rules, we recommend that you use the
 example Makefile, [Makefile.example](Makefile.example), removing and changing
 comments as appropriate, and making sure to add the correct specifics of each
 rule.
 
-XXX - make sure to link to the winner repo FAQ about the Makefile - XXX
-XXX - this is not done now because of link changes and possibly an anchor - XXX
-XXX - name being added to this FAQ item - XXX
 
-
-## 4. <a name="submitting">Can't I just submit my obfuscated C program to the judges?</a>
+<div id=="submitting">
+## 4. Can't I just submit my obfuscated C program to the judges?
+</div>
 
 No. While we appreciate your enthusiasm for wanting to show us your obfuscated
 code, the [IOCCC judges](https://www.ioccc.org/judges.html) request your help by
@@ -138,7 +143,9 @@ In short, you cannot simply upload your obfuscated C program as it needs to
 be in a certain form and the `mkiocccentry` tool does that.
 
 
-## 5. <a name="mkiocccentry-requirements">Do I have to use mkiocccentry to package my submission?</a>
+<div id=="mkiocccentry-requirements">
+## 5. Do I have to use mkiocccentry to package my submission?
+</div>
 
 Technically you do not have to use the `mkiocccentry` tool; however, you run the
 risk of having your submission rejected if what you upload to the submit server is
@@ -154,7 +161,10 @@ inspect the directory that you used to form the tarball to verify that the
 contents under that directory are also OK. In particular, that tool tests that
 the JSON files are correct.
 
-## 6. <a name="installing">Do I need to install this code to use it?</a>
+
+<div id=="installing">
+## 6. Do I need to install this code to use it?
+</div>
 
 No, installing the code in this repo is not necessary to use it. These tools
 were designed to be used from the top level directory of the source, or after
@@ -168,11 +178,14 @@ put _./_ before the name of a command.
 
 For example:
 
-```shell
+``` <!---sh-->
 ./mkiocccentry -h
 ```
 
-## 7. <a name="help">How can I learn more about how to use the tools?</a>
+
+<div id=="help">
+## 7. How can I learn more about how to use the tools?
+</div>
 
 Assuming you have <a href="#download">downloaded</a> and <a
 href="#compiling">compiled</a> the code you can get a quick reminder of command
@@ -180,7 +193,7 @@ options and arguments by use of the `-h` option of any tool:
 
 For instance:
 
-```shell
+``` <!---sh-->
 ./mkiocccentry -h
 ./iocccsize -h
 ./chkentry -h
@@ -196,7 +209,7 @@ directory at the top of the source directory.
 
 For example:
 
-```shell
+``` <!---sh-->
 man man/man1/mkiocccentry.1
 man man/man1/iocccsize.1
 man man/man1/chkentry.1
@@ -211,12 +224,14 @@ Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairl
 well commented.
 
 
-## 8. <a name="reporting-bugs">How do I report bugs or other issues?</a>
+<div id=="reporting-bugs">
+## 8. How do I report bugs or other issues?
+</div>
 
 Please run the following from the main directory:
 
 
-```sh
+``` <!---sh-->
 make bug_report
 ```
 
@@ -227,7 +242,7 @@ making sure to attach the bug report file.
 
 You may also run the `bug_report.sh` tool directly:
 
-```sh
+``` <!---sh-->
 ./bug_report.sh -v 1
 ```
 
@@ -252,7 +267,9 @@ The script that the make rule runs, `bug_report.sh`, will tell you the name of
 the file to upload.
 
 
-## 9. <a name="how-to-help">How can I help test this repo?</a>
+<div id=="how-to-help">
+## 9. How can I help test this repo?
+</div>
 
 Thank you for any and all help!
 
@@ -261,7 +278,9 @@ Please see the
 for more details on what you can do to help us.
 
 
-## 10. <a name="tar">What can I do if my system's tar(1) does not support the correct options?</a>
+<div id=="tar">
+## 10. What can I do if my system's tar(1) does not support the correct options?
+</div>
 
 
 If your tar does not support the `-J` option you can either use a system
@@ -274,17 +293,27 @@ Some systems have a `GNU tar` that you can use. For instance FreeBSD has a
 specify in the tools the `-t tar` option to make this work.
 
 
-## 11. <a name="markdown">Where can I find help with formatting markdown files for my submission?</a>
+<div id=="markdown">
+## 11. Where can I find help with formatting markdown files for my submission?
+</div>
 
-Please see this simple
-[markdown guide](https://www.markdownguide.org/basic-syntax) for more help.
+The IOCCC makes extensive use of [markdown](https://daringfireball.net/projects/markdown/).
+
+Please see [Official IOCCC FAQ FAQ 0.6](https://www.ioccc.org/faq.html#markdown)
+
+**IMPORTANT**: Please read the [IOCCC markdown best practices](markdown.html) guide
+as it lists things you **should not use** in markdown files.
+
+See the [markdown syntax](https://www.markdownguide.org/basic-syntax) guide.
+See also [CommonMark Spec](https://spec.commonmark.org/current/).
 
 
-## 12. <a name="keyword">Why do these tools sometimes use incorrect IOCCC terms?</a>
+<div id=="keyword">
+## 12. Why do these tools sometimes use incorrect IOCCC terms?
+</div>
 
-According to the [Official IOCCC FAQ
-6.9](https://www.ioccc.org/faq.html#terms) this repo sometimes uses
-the wrong term.  For example the name `mkiocccentry(1)` contains
+According to the [Official IOCCC FAQ 6.9](https://www.ioccc.org/faq.html#terms)
+this repo sometimes uses the wrong term.  For example the name `mkiocccentry(1)` contains
 the name _entry_ when the tool is dealing with a _submission_.  So
 why don't we call the tool _mkiocccsubmission_ and rename the this repo?
 

@@ -440,7 +440,7 @@ which stores the _found_ location. This is useful for `-v 1` as one can then see
 something like:
 
 
-```sh
+``` <!---sh-->
 ./location -a -s -N -v 1 'united'
 United Arab Emirates ==> AE
 United Kingdom of Great Britain and Northern Ireland (the) ==> GB
@@ -454,7 +454,7 @@ United States of America ==> US
 
 Without the `-v 1` it will only show:
 
-```sh
+``` <!---sh-->
 $ ./location -a -s -n 'united'
 AE
 GB
@@ -477,7 +477,7 @@ find their country code, if they do not know what it is (or they want say
 anonymous and don't know that it's `XX`). Search is done case-insensitively.
 Another example use:
 
-```sh
+``` <!---sh-->
 $ ./location -asnv 1 germ
 German Democratic Republic ==> DD
 Germany ==> DE
@@ -624,14 +624,14 @@ like what was done yesterday for `jval`.
 
 Fixed bug where one could not do:
 
-```sh
+``` <!---sh-->
 echo '"test"' | ./jfmt -
 ```
 
 and the same thing with `jval` and `jnamval`. This also fixes the bug where one
 could not do:
 
-```sh
+``` <!---sh-->
 ./jfmt -
 "test"
 ^D
@@ -2613,7 +2613,7 @@ The JSON parser is code complete!
 
 The following JSON parses now work:
 
-```sh
+``` <!---sh-->
 ./jparse -J 3 -s '{ "curds" : "whey", "foo" : 23209 }'
 ./jparse -J 3 test_JSON/info.json/good/info.good.json
 ./jparse -J 3 test_JSON/author.json/good/author.default.json
@@ -2702,7 +2702,7 @@ Added `-T` flag to `mkiocccentry`, `fnamchk`, `txzchk`, `jstrencode` and
 `jstrdecode` to print the IOCCC entry tool set release tag:
 
 
-```sh
+``` <!---sh-->
 ./mkiocccentry -T
 ./fnamchk -T
 ./txzchk -T
