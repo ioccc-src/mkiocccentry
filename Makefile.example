@@ -27,7 +27,7 @@ TRUE= true
 # Example: CSILENCE= -Wno-some-thing -Wno-another-thing
 #
 # NOTE: If you add -Wno-stuff to CSILENCE, please update
-#	CUNKNOWN in the next section.
+#	CUNKNOWN in the next comment block.
 #
 # NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
 #
@@ -56,7 +56,7 @@ CWARN= -Wall -Wextra -pedantic ${CSILENCE} ${CUNKNOWN}
 #
 CSTD= -std=gnu17
 
-# Specify the architecture to build for
+# Compiler bit architecture
 #
 # Example for 32-bitness: ARCH= -m32
 # Example for 64-bitness: ARCH= -m64
