@@ -24,13 +24,27 @@ TRUE= true
 
 # Common C compiler warnings to silence
 #
-# Example: CSILENCE= -Wno-some-thing -Wno-another-thing -Wno-unknown-warning-option
+# Example: CSILENCE= -Wno-some-thing -Wno-another-thing
+#
+# NOTE: If you add -Wno-stuff to CSILENCE, please update
+#	CUNKNOWN in the next section.
+#
+# NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
+#
 #
 CSILENCE=
 
+# Attempt to silence unknown warnings
+#
+# If you add -Wno-stuff to CSILENCE, then please change CUNKNOWN to read:
+#
+#	CUNKNOWN= -Wno-unknown-warning-option
+#
+CUNKNOWN=
+
 # Common C compiler warning flags
 #
-CWARN= -Wall -Wextra -pedantic ${CSILENCE}
+CWARN= -Wall -Wextra -pedantic ${CSILENCE} ${CUNKNOWN}
 
 # The standard to compile against
 #
