@@ -113,9 +113,9 @@ endif
 #
 ifeq "$(findstring $(GCC),${CC})" "$(GCC)"
 #
-#CSILENCE+=
+CSILENCE+=
 #
-#CWARN+=
+CWARN+=
 #
 endif
 
