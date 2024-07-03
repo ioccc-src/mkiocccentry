@@ -1,0 +1,35 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: install ctags
+      run: sudo apt-get install -y universal-ctags
+    - name: install shellcheck
+      run: sudo apt-get install -y shellcheck
+    - name: clone seqcexit
+      run: git clone https://github.com/lcn2/seqcexit
+    - name: install seqcexit
+      run: cd seqcexit && make install
+    - name: clone picky
+      run: git clone https://github.com/xexyl/picky
+    - name: install picky
+      run: cd picky && make && cp -p picky /usr/local/bin
+    - name: make
+      run: make
+    - name: make slow_prep
+      run: make slow_prep
+    - name: make clobber all test
+      run: make clobber all test
+    - name: make clobber
+      run: make clobber

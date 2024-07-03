@@ -558,7 +558,7 @@ reset_min_timestamp: soup/Makefile
 #
 prep: test_ioccc/prep.sh
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
-	${Q} ./test_ioccc/prep.sh -l "${TMP_BUILD_LOG}"; \
+	${Q} ./test_ioccc/prep.sh -m${MAKE} -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
@@ -576,7 +576,7 @@ prep: test_ioccc/prep.sh
 #
 slow_prep: test_ioccc/prep.sh
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
-	${Q} ./test_ioccc/prep.sh; \
+	${Q} ./test_ioccc/prep.sh -m${MAKE}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
@@ -605,7 +605,7 @@ build: release
 pull: release
 release: test_ioccc/prep.sh
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
-	${Q} ./test_ioccc/prep.sh -e -o -l "${TMP_BUILD_LOG}"; \
+	${Q} ./test_ioccc/prep.sh -m${MAKE} -e -o -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \

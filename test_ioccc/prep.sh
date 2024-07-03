@@ -64,7 +64,7 @@ while getopts :hv:Veom:M:l: flag; do
     V)	echo "$PREP_VERSION"
 	exit 1
 	;;
-    m)	MAKE="$OPTARG";
+    m)	export MAKE="$OPTARG";
 	;;
     M)	MAKEFILE="$OPTARG";
 	;;
@@ -316,7 +316,7 @@ make_bug_report() {
 	EXIT_CODE="$CODE"
 
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	make bug_report-txl $EXIT_CODE: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
+	$MAKE bug_report-txl $EXIT_CODE: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	fi
