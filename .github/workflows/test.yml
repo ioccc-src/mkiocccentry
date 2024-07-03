@@ -13,6 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: install shellcheck
+      run: yum install shellcheck
+    - name: install seqcexit
+      run: git clone https://github.com/lcn2/seqcexit
+      run: cd seqcexit && make install
+    - name: install picky
+      run: git clone https://github.com/xexyl/picky
+      run: cd picky && make && cp -p picky /usr/local/bin
     - name: make
       run: make
     - name: make prep
