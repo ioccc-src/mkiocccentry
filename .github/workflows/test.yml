@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: install shellcheck
-      run: apt-get install shellcheck
+      run: sudo apt-get install -y shellcheck
     - name: clone seqcexit
       run: git clone https://github.com/lcn2/seqcexit
     - name: install seqcexit
