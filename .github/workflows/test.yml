@@ -25,8 +25,8 @@ jobs:
       run: cd picky && make && cp -p picky /usr/local/bin
     - name: make
       run: make
-    - name: make prep
-      run: make prep
+    - name: make slow_prep
+      run: make slow_prep
     - name: make test
       run: make test
     - name: make clobber
