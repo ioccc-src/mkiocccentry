@@ -29,7 +29,7 @@ jobs:
       run: make
     - name: make slow_prep
       run: make slow_prep
-    - name: make test
-      run: make test
+    - name: make clobber all test
+      run: make clobber all test
     - name: make clobber
       run: make clobber
