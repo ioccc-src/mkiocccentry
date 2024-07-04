@@ -915,6 +915,7 @@ test:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
+	exit 1 # XXX - deliberate failure to test code test.yml - XXX
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # run test-chkentry on test_JSON files
