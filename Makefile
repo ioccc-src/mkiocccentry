@@ -569,6 +569,8 @@ prep: test_ioccc/prep.sh
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
+	    else \
+	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
 	    fi
 
 # a slower version of prep that does not write to a log file so one can see the
@@ -586,6 +588,8 @@ slow_prep: test_ioccc/prep.sh
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
+	    else \
+	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
 	    fi
 
 
@@ -616,6 +620,8 @@ release: test_ioccc/prep.sh
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
+	    else \
+	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
 	    fi
 
 # force test_ioccc/txzchk_test.sh results into test suite *.err files
@@ -916,6 +922,7 @@ test:
 	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
 
 # run test-chkentry on test_JSON files
 #
