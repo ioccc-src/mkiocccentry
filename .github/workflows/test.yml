@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C CI
 
 on:
   push:
@@ -23,6 +23,10 @@ jobs:
       run: cd seqcexit && make install
     - name: clone picky
       run: git clone https://github.com/xexyl/picky
+    - name: clone checknr
+      run: git clone https://github.com/lcn2/checknr.git
+    - name: install checknr
+      run: cd checknr && make install
     - name: install picky
       run: cd picky && make && cp -p picky /usr/local/bin
     - name: make
