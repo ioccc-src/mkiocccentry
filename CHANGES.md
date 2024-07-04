@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.2 2024-07-03
+## Release 1.2 2024-07-04
 
 Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
 Thanks to @SirWumpus for the report!
