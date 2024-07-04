@@ -261,7 +261,7 @@ if [[ -z "$ERROR" ]]; then
     fi
 fi
 
-# All Done!!! -- Jessica Noll, Age 2
+# All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
 if [[ $EXIT_CODE == 0 ]]; then
     echo "$0: all tests passed"

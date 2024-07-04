@@ -286,6 +286,6 @@ echo
 echo "$0: And if all is well, commit and push the change to the GitHub repo!"
 echo
 
-# All Done!!! -- Jessica Noll, Age 2
+# All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
 exit 0

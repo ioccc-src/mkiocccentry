@@ -359,7 +359,7 @@ main(int argc, char *argv[])
     result_array = NULL;
 
     /*
-     * All Done!!! - Jessica Noll, age 2
+     * All Done!!! All Done!!! -- Jessica Noll, Age 2
      */
     exit(0); /*ooo*/
 }

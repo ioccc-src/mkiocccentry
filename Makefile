@@ -570,7 +570,7 @@ prep: test_ioccc/prep.sh
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
 	    else \
-	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
+	        echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 
 # a slower version of prep that does not write to a log file so one can see the
@@ -589,7 +589,7 @@ slow_prep: test_ioccc/prep.sh
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
 	    else \
-	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
+	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 
 
@@ -621,7 +621,7 @@ release: test_ioccc/prep.sh
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
 	    else \
-	        echo "All done!!! All done!!! -- Jessica Noll, Age 2." \
+	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 
 # force test_ioccc/txzchk_test.sh results into test suite *.err files

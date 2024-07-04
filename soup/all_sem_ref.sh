@@ -469,7 +469,7 @@ find "$AUTH_DIR" -type f -name '*.json' -print 2>/dev/null | while read -r path;
     fi
 done
 
-# All Done!!! -- Jessica Noll, Age 2
+# All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
 rm -f "$TMP_FILE"
 exit 0

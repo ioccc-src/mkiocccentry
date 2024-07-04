@@ -297,7 +297,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * All Done!!! - Jessica Noll, age 2
+     * All Done!!! All Done!!! -- Jessica Noll, Age 2
      */
     exit(found?0:1); /*ooo*/
 }

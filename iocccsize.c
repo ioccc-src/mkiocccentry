@@ -205,7 +205,7 @@ main(int argc, char **argv)
 	}
 
 	/*
-	 * All Done!!! All Done!!! -- Jessica Noll, age 2
+	 * All Done!!! All Done!!! -- Jessica Noll, Age 2
 	 */
 	if ((count.rule_2a_size > RULE_2A_SIZE) || (count.rule_2b_size > RULE_2B_SIZE)) {
 		exit(1); /*ooo*/

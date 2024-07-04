@@ -255,7 +255,7 @@ main(int argc, char **argv)
     show_tarball_info(tarball_path);
 
     /*
-     * All Done!!! - Jessica Noll, age 2
+     * All Done!!! All Done!!! -- Jessica Noll, Age 2
      */
     if (tarball.total_feathers != 0) {
 	exit(1); /*ooo*/

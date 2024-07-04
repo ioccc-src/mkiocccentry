@@ -337,7 +337,7 @@ main(int argc, char **argv)
     /* free tree */
     json_tree_free(jfmt->common.json_tree, jfmt->common.max_depth);
 
-    /* All Done!!! -- Jessica Noll, Age 2 */
+    /* All Done!!! All Done!!! -- Jessica Noll, Age 2 */
     if (jfmt != NULL) {
 	free_jfmt(&jfmt);	/* free jfmt struct */
     }
