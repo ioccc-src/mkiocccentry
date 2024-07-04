@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.2 2024-06-28
+## Release 1.2 2024-07-03
 
 Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
 Thanks to @SirWumpus for the report!
@@ -39,6 +39,12 @@ Updated `Makefile.example` to be more like IOCCC winning entry Makefiles.
 Expanded `remarks.example.md` to include more information about
 IOCCC markdown guidelines as well as more consistent with the new
 IOCCC submission process.
+
+Improve the Makefile to allow for NetBSD to run `make prep`,
+`make slow_prep` and `make release`.
+
+Changed `test_ioccc/prep.sh`  PREP_VERSION from "1.0.1 2024-03-02"
+to "1.0.2 2024-07-03".
 
 
 ## Release 1.1.1 2024-06-23
