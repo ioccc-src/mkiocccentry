@@ -20,15 +20,15 @@ jobs:
     - name: clone seqcexit
       run: git clone https://github.com/lcn2/seqcexit
     - name: install seqcexit
-      run: cd seqcexit && make install
+      run: cd seqcexit && sudo make install
     - name: clone picky
       run: git clone https://github.com/xexyl/picky
     - name: clone checknr
       run: git clone https://github.com/lcn2/checknr.git
     - name: install checknr
-      run: cd checknr && make install
+      run: cd checknr && sudo make install
     - name: install picky
-      run: cd picky && make && cp -p picky /usr/local/bin
+      run: cd picky && make && sudo cp -p picky /usr/local/bin
     - name: make
       run: make
     - name: make slow_prep
