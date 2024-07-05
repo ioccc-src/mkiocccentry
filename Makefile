@@ -138,6 +138,14 @@ INSTALL_V= -v
 MAKE_CD_Q= --no-print-directory
 #MAKE_CD_Q=
 
+# Disable parallel Makefile execution
+#
+# We do not support parallel make.  We have found most
+# parallel make systems do not get the rule dependency order
+# correct, resulting in a failed attempt to compile.
+#
+.NOTPARALLEL:
+
 
 ##################
 # How to compile #
