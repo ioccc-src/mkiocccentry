@@ -46,6 +46,16 @@ Improve the Makefile to allow for NetBSD to run `make prep`,
 Changed `test_ioccc/prep.sh`  PREP_VERSION from "1.0.1 2024-03-02"
 to "1.0.2 2024-07-03".
 
+Disabled parallel make for most of the repo.
+
+Updated `.github/workflows/codeql.yml` to use up to date actions for
+checkout, node setup, Initialize CodeQL, Autobuild, and Perform CodeQL Analysis.
+
+Added `.github/workflows/test.yml` to perform make actions such as
+`make slow_prep` and `make test` as part of the GitHub workflow.
+
+Fix `.github/dependabot.yml` to set an update schedule for GitHub Actions.
+
 
 ## Release 1.1.1 2024-06-23
 
