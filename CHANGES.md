@@ -30,10 +30,6 @@ as MacOS under Apple Silicon, when given a binary blob such as the
 Changed `iocccsize` IOCCCSIZE_VERSION from "28.14 2024-01-04"
 to "28.15 2024-06-27".
 
-Changed MKIOCCCENTRY_REPO_VERSION from "1.1 2024-05-19"
-to "1.2 2024-06-28" in preparation for a later 1.2 release of this repo
-after more testing.
-
 Updated `Makefile.example` to be more like IOCCC winning entry Makefiles.
 
 Expanded `remarks.example.md` to include more information about
@@ -55,6 +51,9 @@ Added `.github/workflows/test.yml` to perform make actions such as
 `make slow_prep` and `make test` as part of the GitHub workflow.
 
 Fix `.github/dependabot.yml` to set an update schedule for GitHub Actions.
+
+Changed MKIOCCCENTRY_REPO_VERSION from "1.1 2024-05-19"
+to "1.2 2024-07-04".
 
 
 ## Release 1.1.1 2024-06-23
