@@ -1,5 +1,15 @@
 # Command line utilities that read and process JSON in different ways
 
+## WARNING: status of the tools
+
+### XXX - remove this WARNING once the tools are complete - XXX
+
+Please be advised that the tools `jfmt`, `jval` and `jnamval` are **VERY
+INCOMPLETE** and **WILL BE HEAVILY MODIFIED**. It is also highly likely that
+they will be almost **entirely rewritten** as things changed as they were first
+worked on. Almost everything will be redone at this point. When this is done
+this notice will be removed.
+
 ## Introduction to this document
 
 NOTE: Please see [json_README.md](./json_README.md) for some important **JSON

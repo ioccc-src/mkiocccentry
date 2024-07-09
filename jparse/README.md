@@ -30,6 +30,7 @@ We recommend that you read the [json_README.md](json_README.md) document
 to better understand the JSON terms used in this repo.
 
 
+
 ## Compiling
 
 We determine if you have a recent enough `flex(1)` and `bison(1)`. If you do not
@@ -213,3 +214,18 @@ man ./man/man1/jstrdecode.1
 ```
 
 NOTE: After doing a `make all`, this tool may be found as: `./jstrdecode`.
+
+
+## Other `jparse` tools:
+
+We also provide a number of tools that are, at least in what they will do when
+completed, in [json_util_README.md](json_util_README.md). But please note the
+warning there that says:
+
+<hr>
+Please be advised that the tools `jfmt`, `jval` and `jnamval` are **VERY
+INCOMPLETE** and **WILL BE HEAVILY MODIFIED**. It is also highly likely that
+they will be almost **entirely rewritten** as things changed as they were first
+worked on. Almost everything will be redone at this point. When this is done
+this notice will be removed.
+<hr>
