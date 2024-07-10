@@ -1,6 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.2.1 2024-07-10
+
+Fixed `txzchk(1)` to NOT show warnings if `-q` is used unless `-w` is used
+which now disables `-q` as it's necessary for the test suite (that always held
+but with this fix it caused problems to not disable quiet mode and since `-q`
+does not make sense with `-w` anyway it is not a problem).
+
+`txzchk_test.sh` no longer uses `-q` but this is only because there is no point
+in using it due to the change in `txzchk(1)`.
+
+I (@xexyl) (re)discovered this problem when working on adding the details of
+using `txzchk(1)` to the guidelines, as I know how it works best and I felt
+there were some details that could be clarified.
+
+Changed `TXZCHK_VERSION` to `"1.0.7 2024-07-10"`.
+Changed `TXZCHK_TEST_VERSION` to `"1.0.3 2024-07-10"`.
+
+
 ## Release 1.2 2024-07-04
 
 Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.

@@ -53,7 +53,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="1.0.2 2024-03-05"
+export TXZCHK_TEST_VERSION="1.0.3 2024-07-10"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
@@ -308,8 +308,8 @@ if [[ -n "$B_FLAG" ]]; then
     fi
 
     for i in "$TXZCHK_BAD_TREE"/*.txt; do \
-	echo "$TXZCHK -q -v 0 -w -T -E txt -F $FNAMCHK $i 2>$i.err"; \
-	"$TXZCHK" -q -v 0 -w -T -E txt -F "$FNAMCHK" "$i" 2>"$i.err"; \
+	echo "$TXZCHK -v 0 -w -T -E txt -F $FNAMCHK $i 2>$i.err"; \
+	"$TXZCHK" -v 0 -w -T -E txt -F "$FNAMCHK" "$i" 2>"$i.err"; \
     done
 
     if [[ $V_FLAG -ge 1 ]]; then
@@ -507,10 +507,10 @@ run_test()
     fi
 
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -q -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
+	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
     fi
 
-    "$TXZCHK" -w -v 0 -q -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
+    "$TXZCHK" -w -v 0 -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
     status="$?"
 
     if [[ $V_FLAG -ge 7 ]]; then
