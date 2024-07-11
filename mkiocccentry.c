@@ -5291,12 +5291,12 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
     /*
      * perform the txzchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -w -e -v 1 -F %s -- %s/../%s",
+    dbg(DBG_HIGH, "about to perform: %s -w -v 1 -F %s -- %s/../%s",
 		  txzchk, fnamchk, submission_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, false, true, "% -w -e -v 1 -F % -- %/../%",
+    exit_code = shell_cmd(__func__, false, true, "% -w -v 1 -F % -- %/../%",
 					  txzchk, fnamchk, submission_dir, basename_tarball_path);
     if (exit_code != 0) {
-	err(183, __func__, "%s -w -e -v 1 -F %s -- %s/../%s failed with exit code: %d",
+	err(183, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
 			   txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
