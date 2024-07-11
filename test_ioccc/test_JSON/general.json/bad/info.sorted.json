@@ -42,6 +42,6 @@
 	"trigraph_warning" : false,
 	"ungetc_warning" : false,
 	"fnamchk_version" : "1.0.2 2024-05-15",
-	"txzchk_version" : "1.0.6 2024-06-25",
+	"txzchk_version" : "1.0.8 2024-07-11",
 	"wordbuf_warning" : false
 }

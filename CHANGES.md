@@ -1,6 +1,47 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.2.2 2024-07-11
+
+Removed `-q` from `txzchk(1)` and make it always show warnings. If one wants to
+not see warnings they can do `2> /dev/null`. The point of this change is so that
+the submit server does not have to use `-q` but also warnings should be showed
+in any case if there are any. The option to show warnings, `-w`, still exists
+but using this should not normally be required. This commit will require an
+update to the guidelines which I will do when this has been merged.
+
+The punny messages in `txzchk(1)` are now in their own option (or actually
+options): `-e` and `-f`; `-f` requires an argument that can be converted to an
+unsigned integer but you will have to either try it out, read the source or
+check the man page if you wish to know more as I (@xexyl) do not want to spoil
+the fun of finding it (including the additional ones)! `mkiocccentry(1)` will
+use the first option but not the second one. This was suggested on GitHub just
+like the removal of `-q` was.
+
+Updated `TXZCHK_VERSION` to `"1.0.8 2024-07-11"`.
+
+Ran `make rebuild_txzchk_test_errors` due to slight message changes and then
+`make release` to test everything.
+
+
+## Release 1.2.1 2024-07-10
+
+Fixed `txzchk(1)` to NOT show warnings if `-q` is used unless `-w` is used
+which now disables `-q` as it's necessary for the test suite (that always held
+but with this fix it caused problems to not disable quiet mode and since `-q`
+does not make sense with `-w` anyway it is not a problem).
+
+`txzchk_test.sh` no longer uses `-q` but this is only because there is no point
+in using it due to the change in `txzchk(1)`.
+
+I (@xexyl) (re)discovered this problem when working on adding the details of
+using `txzchk(1)` to the guidelines, as I know how it works best and I felt
+there were some details that could be clarified.
+
+Changed `TXZCHK_VERSION` to `"1.0.7 2024-07-10"`.
+Changed `TXZCHK_TEST_VERSION` to `"1.0.3 2024-07-10"`.
+
+
 ## Release 1.2 2024-07-04
 
 Fixed `txzchk(1)` for BSD (in particular NetBSD) by `#include <sys/wait.h>`.
