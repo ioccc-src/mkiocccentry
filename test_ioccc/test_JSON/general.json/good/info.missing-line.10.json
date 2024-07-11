@@ -6,7 +6,7 @@
 	"mkiocccentry_version" : "1.0.6 2024-05-19",
 	"iocccsize_version" : "28.15 2024-06-27",
 	"chkentry_version" : "1.0.1 2024-03-02",
-	"txzchk_version" : "1.0.7 2024-07-10",
+	"txzchk_version" : "1.0.8 2024-07-11",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"submit_slot" : 2,
 	"title" : "title-for-entry0",

@@ -66,13 +66,14 @@
  */
 static intmax_t sum_check;			/* negative of previous sum */
 static intmax_t count_check;			/* negative of previous count */
-static bool quiet = false;			/* true ==> quiet mode */
 static char const *tarball_path = NULL;		/* the tarball (by path) being checked */
 static char const *program = NULL;		/* our name */
 static bool read_from_text_file = false;	/* true ==> assume tarball_path refers to a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 static char const *tok_sep = " \t";		/* token separators for strtok_r */
-static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
+static bool show_warnings = false;	/* true ==> show warnings even if -q */
+static bool entertain = false;			/* true ==> show entertaining messages */
+static uintmax_t feathery = 3;			/* for entertain option */
 
 /*
  * txzchk specific structs
@@ -87,13 +88,13 @@ static struct txz_file *txz_files;		/* linked list of the files in the tarball *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
+    "usage: %s [-h] [-v level] [-e] [-f feathers] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
-    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-w\t\tshow warning messages even if -q would normally disable them\n"
+    "\t-e\t\tentertainment mode (def: be boring :-) )\n"
+    "\t-f feathers\tdefine how many feathers is feathery (for -e)\n"
+    "\t-w\t\talways show warning messages\n"
     "\t-V\t\tprint version string and exit\n"
     "\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
@@ -135,7 +136,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVF:t:TE:w")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:VF:t:TE:wef:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -150,10 +151,6 @@ main(int argc, char **argv)
 		usage(3, program, "invalid -v verbosity"); /*ooo*/
 		not_reached();
 	    }
-	    break;
-	case 'q':   /* -q - enable quiet mode unless -w specified */
-	    quiet = true;
-	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s\n", TXZCHK_VERSION);
@@ -174,8 +171,17 @@ main(int argc, char **argv)
 	case 'E':   /* -E ext - specify extension (used with -T for test suite) */
 	    ext = optarg;
 	    break;
-	case 'w':   /* -w - always show warnings - important for test suite */
-	    always_show_warnings = true;
+	case 'w':   /* -w - always show warnings */
+	    show_warnings = true;
+	    break;
+	case 'e': /* whee! */
+	    entertain = true;
+	    break;
+	case 'f': /* how many feathers is feathery? */
+	    if (!string_to_uintmax(optarg, &feathery)) {
+		usage(3, program, "invalid -f feathers"); /*ooo*/
+		not_reached();
+	    }
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -193,20 +199,26 @@ main(int argc, char **argv)
 	not_reached();
     }
     tarball_path = argv[optind];
-    dbg(DBG_LOW, "tarball path: %s", tarball_path);
+    dbg(DBG_MED, "tarball path: %s", tarball_path);
 
-    /* if -w used then we do not want quiet output and we always show warnings from warn() */
-    if (always_show_warnings) {
+    /* if -w used then we always show warnings from warn() */
+    if (show_warnings) {
 	warn_output_allowed = true;
 	msg_warn_silent = false;
-	quiet = false;
     }
 
-    if (!quiet) {
+    if (entertain) {
 	/*
 	 * Welcome
 	 */
 	print("Welcome to txzchk version: %s\n", TXZCHK_VERSION);
+    }
+
+    /*
+     * environment sanity checks
+     */
+    if (entertain) {
+	para("", "Checking if your environment is full of tar ...", NULL);
     }
 
     /*
@@ -231,28 +243,29 @@ main(int argc, char **argv)
 		   fnamchk_flag_used, &fnamchk, false, NULL);
     }
 
-    /*
-     * environment sanity checks
-     */
-    if (!quiet) {
-	para("", "Performing sanity checks on your environment ...", NULL);
-    }
-
+    /* additional sanity checks */
     txzchk_sanity_chks(tar, fnamchk);
-    if (!quiet) {
-	para("... environment looks OK", NULL);
+    if (entertain) {
+	para("... environment looks tarry.", NULL);
     }
 
     /*
      * check the tarball
      */
-    if (!quiet) {
-	para("", "Performing checks on tarball ...", NULL);
+    if (entertain) {
+	para("", "Looking for feathers in tarball ...", NULL);
     }
 
     tarball.total_feathers = check_tarball(tar, fnamchk);
-    if (!quiet && !tarball.total_feathers) {
-	para("No feathers stuck in tarball.", NULL);
+    if (entertain) {
+	if (!tarball.total_feathers) {
+	    para("No feathers stuck in tarball.", NULL);
+	} else {
+	    if (tarball.total_feathers >= feathery) {
+		para("\n... looks like someone has been throwing feathers",
+		     "about, because that is quite a feathery ball of tar!", NULL);
+	    }
+	}
     }
     show_tarball_info(tarball_path);
 
@@ -617,10 +630,8 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
     if (!posix_plus_safe(file->filename, false, true, false)) {
 	++tarball.total_feathers; /* report it once and consider it only one feather */
 	++tarball.unsafe_chars;
-	if (!quiet) {
-	    warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
-		tarball_path, file->filename);
-	}
+	warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
+	    tarball_path, file->filename);
     }
 
     /*
@@ -645,9 +656,7 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    if (file->basename[1] == '\0') {
 		++tarball.total_feathers;
 		++tarball.named_dot;
-		if (!quiet) {
-		    warn("txzchk", "%s: found file called '.' in path %s", tarball_path, file->filename);
-		}
+		warn("txzchk", "%s: found file called '.' in path %s", tarball_path, file->filename);
 	    }
 	}
 
@@ -657,19 +666,15 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	if (!posix_plus_safe(file->basename, false, false, true)) {
 	    ++tarball.total_feathers; /* report it once and consider it only one feather */
 	    ++tarball.unsafe_chars;
-	    if (!quiet) {
-		warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
-		    tarball_path, file->basename);
-	    }
+	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
+		tarball_path, file->basename);
 	} else if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME) ||
 	    !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ALT_FILENAME) ||
 	    !strcasecmp(file->basename, PROG_ORIG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
 		   !strcasecmp(file->basename, README_MD_FILENAME)) {
 	    ++tarball.total_feathers;
 	    ++tarball.invalid_filenames;
-	    if (!quiet) {
-		warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
-	    }
+	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
 	}
     }
 
@@ -709,28 +714,20 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
     if (size == 0) {
 	if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
 	    ++tarball.total_feathers;
-	    if (!quiet) {
-		warn("txzchk", "%s: found empty %s file", tarball_path, AUTH_JSON_FILENAME);
-	    }
+	    warn("txzchk", "%s: found empty %s file", tarball_path, AUTH_JSON_FILENAME);
 	    tarball.empty_auth_json = true;
 	} else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    ++tarball.total_feathers;
 	    tarball.empty_info_json = true;
-	    if (!quiet) {
-		warn("txzchk", "%s: found empty %s file", tarball_path, INFO_JSON_FILENAME);
-	    }
+	    warn("txzchk", "%s: found empty %s file", tarball_path, INFO_JSON_FILENAME);
 	} else if (!strcmp(file->basename, "remarks.md")) {
 	    ++tarball.total_feathers;
 	    tarball.empty_remarks_md = true;
-	    if (!quiet) {
-		warn("txzchk", "%s: found empty remarks.md", tarball_path);
-	    }
+	    warn("txzchk", "%s: found empty remarks.md", tarball_path);
 	} else if (!strcmp(file->basename, "Makefile")) {
 	    ++tarball.total_feathers;
 	    tarball.empty_Makefile = true;
-	    if (!quiet) {
-		warn("txzchk", "%s: found empty Makefile", tarball_path);
-	    }
+	    warn("txzchk", "%s: found empty Makefile", tarball_path);
 	} else if (!strcmp(file->basename, "prog.c")) {
 	    /* this is NOT a feather: it's only for informational purposes! */
 	    tarball.empty_prog_c = true;
@@ -800,17 +797,13 @@ check_all_txz_files(char const *dir_name)
 
 	if (dir_name != NULL && tarball.correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
-		if (!quiet) {
-		    warn("txzchk", "%s: found directory change in filename %s", tarball_path, file->filename);
-		}
+		warn("txzchk", "%s: found directory change in filename %s", tarball_path, file->filename);
 		++tarball.total_feathers;
 	    }
 	}
 
 	if (file->count > 1) {
-	    if (!quiet) {
-		warn("txzchk", "%s: found a total of %ju files with the name %s", tarball_path, file->count, file->basename);
-	    }
+	    warn("txzchk", "%s: found a total of %ju files with the name %s", tarball_path, file->count, file->basename);
 	    tarball.total_feathers += file->count - 1;
 	}
     }
@@ -818,39 +811,27 @@ check_all_txz_files(char const *dir_name)
     /* determine if the required files are there */
     if (!tarball.has_info_json) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: no .info.json found", tarball_path);
-	}
+	warn("txzchk", "%s: no .info.json found", tarball_path);
     }
     if (!tarball.has_auth_json) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: no .auth.json found", tarball_path);
-	}
+	warn("txzchk", "%s: no .auth.json found", tarball_path);
     }
     if (!tarball.has_prog_c) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: no prog.c found", tarball_path);
-	}
+	warn("txzchk", "%s: no prog.c found", tarball_path);
     }
     if (!tarball.has_Makefile) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: no Makefile found", tarball_path);
-	}
+	warn("txzchk", "%s: no Makefile found", tarball_path);
     }
     if (!tarball.has_remarks_md) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: no remarks.md found", tarball_path);
-	}
+	warn("txzchk", "%s: no remarks.md found", tarball_path);
     }
     if (tarball.correct_directory < tarball.total_files) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: not all files in correct directory", tarball_path);
-	}
+	warn("txzchk", "%s: not all files in correct directory", tarball_path);
     }
 
     /*
@@ -859,20 +840,16 @@ check_all_txz_files(char const *dir_name)
      * check_txz_file().
      */
     if (tarball.invalid_dot_files > 0) {
-	if (!quiet) {
-	    warn("txzchk", "%s: found a total of %ju invalidly named dot file%s",
-		tarball_path, tarball.invalid_dot_files, tarball.invalid_dot_files==1?"":"s");
-	}
+	warn("txzchk", "%s: found a total of %ju invalidly named dot file%s",
+	    tarball_path, tarball.invalid_dot_files, tarball.invalid_dot_files==1?"":"s");
     }
 
     /*
      * report total feathers found
      */
     if (tarball.total_feathers > 0) {
-	if (!quiet) {
-	    warn("txzchk", "%s: found %ju feather%s stuck in the tarball",
-		tarball_path, tarball.total_feathers, tarball.total_feathers==1?"":"s");
-	}
+	warn("txzchk", "%s: found %ju feather%s stuck in the tarball",
+	    tarball_path, tarball.total_feathers, tarball.total_feathers==1?"":"s");
     }
 }
 
@@ -909,9 +886,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
 
     /* check that there is a directory */
     if (strchr(file->filename, '/') == NULL && strcmp(file->filename, ".")) {
-	if (!quiet) {
-	    warn("txzchk", "%s: no directory found in filename %s", tarball_path, file->filename);
-	}
+	warn("txzchk", "%s: no directory found in filename %s", tarball_path, file->filename);
 	++tarball.total_feathers;
     }
     if (strstr(file->filename, "..")) /* check for '..' in path */ {
@@ -921,15 +896,11 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
 	 * is okay.
 	 */
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: found file with '..' in the path: %s", tarball_path, file->filename);
-	}
+	warn("txzchk", "%s: found file with '..' in the path: %s", tarball_path, file->filename);
     }
     if (*(file->filename) == '/') {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: found absolute path %s", tarball_path, file->filename);
-	}
+	warn("txzchk", "%s: found absolute path %s", tarball_path, file->filename);
     }
 
     /*
@@ -978,9 +949,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
 
     if (dir_count > 1) {
 	++tarball.total_feathers;
-	if (!quiet) {
-	    warn("txzchk", "%s: found more than one directory in path %s", tarball_path, file->filename);
-	}
+	warn("txzchk", "%s: found more than one directory in path %s", tarball_path, file->filename);
     }
 
     /*
@@ -993,9 +962,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
     if (dir_name != NULL && *dir_name != '\0')
     {
 	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
-	    if (!quiet) {
-		warn("txzchk", "%s: found incorrect directory in filename %s", tarball_path, file->filename);
-	    }
+	    warn("txzchk", "%s: found incorrect directory in filename %s", tarball_path, file->filename);
 	    ++tarball.total_feathers;
 	} else {
 	    /* This file is in the right directory */
@@ -1044,21 +1011,18 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	not_reached();
     }
 
+    /* verify that this is a UID, not a username */
     for ( ; *p && isdigit(*p) && *p != '/'; ) {
 	++p;
     }
 
     if (*p != '/') {
-	if (!quiet) {
-	    warn("txzchk", "found non-numerical UID in line %s", line_dup);
-	}
+	warn("txzchk", "found non-numerical UID in line %s", line_dup);
 	++tarball.total_feathers;
 	p = strchr(p, '/');
     }
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
-	}
+	warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
 	++tarball.total_feathers;
 	return;
     }
@@ -1072,26 +1036,22 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
 
     if (*p) {
-	if (!quiet) {
-	    warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
-	}
+	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
 	++tarball.total_feathers;
     }
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
+	    msg("skipping to next line");
 	}
-	msg("skipping to next line");
 	++tarball.total_feathers;
 	return;
     }
 
     test = string_to_intmax(p, &length);
     if (!test) {
-	if (!quiet) {
-	    warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
-	}
+	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
 
 	/*
@@ -1101,7 +1061,9 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	if (normal_file) {
 	    count_and_sum(tarball_path, sum, count, length);
 	}
-	msg("skipping to next line due to inability to parse file size");
+	if (verbosity_level) {
+	    msg("skipping to next line due to inability to parse file size");
+	}
 	return;
     }
 
@@ -1117,8 +1079,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     for (i = 0; i < 3; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    if (!quiet) {
-		warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
+	    warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
+	    if (verbosity_level) {
 		msg("skipping to next line");
 	    }
 	    ++tarball.total_feathers;
@@ -1136,9 +1098,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     do {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p != NULL) {
-	    if (!quiet) {
-		warn("txzchk", "%s: bogus field found after filename: %s", tarball_path, p);
-	    }
+	    warn("txzchk", "%s: bogus field found after filename: %s", tarball_path, p);
 	    ++tarball.total_feathers;
 	}
     } while (p != NULL);
@@ -1201,25 +1161,19 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
     if (*sum < 0) {
 	++tarball.total_feathers;
 	++tarball.negative_files_size;
-	if (!quiet) {
-	    warn("txzchk", "%s: total file size went below 0: %jd", tarball_path, *sum);
-	}
+	warn("txzchk", "%s: total file size went below 0: %jd", tarball_path, *sum);
 	if (*sum < tarball.previous_files_size) {
 	    ++tarball.files_size_shrunk;
-	    if (!quiet) {
-		warn("txzchk", "%s: total files size %jd < previous file size %jd", tarball_path, *sum,
-		    (intmax_t)tarball.previous_files_size);
-	    }
+	    warn("txzchk", "%s: total files size %jd < previous file size %jd", tarball_path, *sum,
+		(intmax_t)tarball.previous_files_size);
 	}
     }
     /* check for sum of total file lengths being too big */
     if (*sum > MAX_SUM_FILELEN) {
 	++tarball.total_feathers;
 	++tarball.files_size_too_big;
-	if (!quiet) {
-	    warn("txzchk", "%s: total file size too big: %jd > %jd", tarball_path,
-		*sum, (intmax_t)MAX_SUM_FILELEN);
-	}
+	warn("txzchk", "%s: total file size too big: %jd > %jd", tarball_path,
+	    *sum, (intmax_t)MAX_SUM_FILELEN);
     }
     /* update the previous files size */
     tarball.previous_files_size = *sum;
@@ -1228,18 +1182,14 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
     if (*count <= 0) {
 	++tarball.total_feathers;
 	++tarball.invalid_files_count;
-	if (!quiet) {
-	    warn("txzchk", "%s: files count <= 0: %jd", tarball_path, *count);
-	}
+	warn("txzchk", "%s: files count <= 0: %jd", tarball_path, *count);
     }
     /* check for too many files */
     if (*count - (intmax_t)tarball.abnormal_files > MAX_FILE_COUNT) {
 	++tarball.total_feathers;
 	++tarball.invalid_files_count;
-	if (!quiet) {
-	    warn("txzchk", "%s: too many files: %jd > %jd", tarball_path,
-		*count - (intmax_t)tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
-	}
+	warn("txzchk", "%s: too many files: %jd > %jd", tarball_path,
+	    *count - (intmax_t)tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
     }
 }
 
@@ -1286,8 +1236,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
 	    msg("skipping to next line");
 	}
 	++tarball.total_feathers;
@@ -1295,17 +1245,15 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
 
     /*
-     * attempt to find !isdigit() chars (i.e. the tarball listing includes
-     * the owner name of the file).
+     * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
+     * the UID, not the user name).
      */
     for (; p && *p && isdigit(*p); ) {
 	++p; /* satisfy frivolous warning (give loop a body instead of having the loop do the actual action) */
     }
 
     if (*p) {
-	if (!quiet) {
-	    warn("txzchk", "%s: found non-numerical UID in file in line %s", tarball_path, line_dup);
-	}
+	warn("txzchk", "%s: found non-numerical UID in file in line %s", tarball_path, line_dup);
 	++tarball.total_feathers;
     }
 
@@ -1314,28 +1262,31 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
      */
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
 	    msg("skipping to next line");
 	}
 	++tarball.total_feathers;
 	return;
     }
+
+    /*
+     * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
+     * the GID of the file, not group name).
+     */
     for (; p && *p && isdigit(*p); ) {
 	++p; /* satisfy frivolous warnings */
     }
 
     if (*p) {
-	if (!quiet) {
-	    warn("txzchk", "%s: found non-numerical GID in file in line: %s", tarball_path, line_dup);
-	}
+	warn("txzchk", "%s: found non-numerical GID in file in line: %s", tarball_path, line_dup);
 	++tarball.total_feathers;
     }
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
 	    msg("skipping to next line");
 	}
 	++tarball.total_feathers;
@@ -1344,9 +1295,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
     test = string_to_intmax(p, &length);
     if (!test) {
-	if (!quiet) {
-	    warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
-	}
+	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
 
 	/*
@@ -1356,7 +1305,9 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	if (normal_file) {
 	    count_and_sum(tarball_path, sum, count, length);
 	}
-	msg("skipping to next line due to inability to parse file size");
+	if (verbosity_level) {
+	    msg("skipping to next line due to inability to parse file size");
+	}
 	return;
     }
 
@@ -1372,8 +1323,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     for (i = 0; i < 4; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    if (!quiet) {
-		warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
+	    warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
+	    if (verbosity_level) {
 		msg("skipping to next line");
 	    }
 	    ++tarball.total_feathers;
@@ -1391,9 +1342,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     do {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p != NULL) {
-	    if (!quiet) {
-		warn("txzchk", "%s: bogus field found after filename: %s", tarball_path, p);
-	    }
+	    warn("txzchk", "%s: bogus field found after filename: %s", tarball_path, p);
 	    ++tarball.total_feathers;
 	}
     } while (p != NULL);
@@ -1452,9 +1401,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     if (*linep == 'd') {
 	++(*dir_count);
 	if (*dir_count > 1) {
-	    if (!quiet) {
-		warn("txzchk", "%s: found more than one directory: %s", tarball_path, linep);
-	    }
+	    warn("txzchk", "%s: found more than one directory: %s", tarball_path, linep);
 	    ++tarball.total_feathers;
 	}
 	++tarball.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
@@ -1462,10 +1409,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
      * look for non-directory non-regular non-hard-linked items
      */
     } else if (*linep != '-') {
-	if (!quiet) {
-	    warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s",
-		tarball_path, linep);
-	}
+	warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s",
+	    tarball_path, linep);
 	++tarball.total_feathers;
 	++tarball.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
     } else {
@@ -1475,8 +1420,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, tok_sep, &saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
 	    msg("skipping to next line");
 	}
 	++tarball.total_feathers;
@@ -1484,9 +1429,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     }
 
     if (has_special_bits(p)) {
-	if (!quiet) {
-	    warn("txzchk", "%s: found special bits on line: %s", tarball_path, line_dup);
-	}
+	warn("txzchk", "%s: found special bits on line: %s", tarball_path, line_dup);
 	++tarball.total_feathers;
     }
 
@@ -1496,8 +1439,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
      */
     p = strtok_r(NULL, tok_sep, &saveptr);
     if (p == NULL) {
-	if (!quiet) {
-	    warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
+	if (verbosity_level) {
 	    msg("skipping to next line");
 	}
 	++tarball.total_feathers;
@@ -1577,9 +1520,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	exit_code = shell_cmd(__func__, false, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
     }
     if (exit_code != 0) {
-	if (!quiet) {
-	    warn("txzchk", "%s: %s %s failed with exit code: %d", tarball_path, fnamchk, tarball_path, WEXITSTATUS(exit_code));
-	}
+	warn("txzchk", "%s: %s %s failed with exit code: %d", tarball_path, fnamchk, tarball_path, WEXITSTATUS(exit_code));
 	++tarball.total_feathers;
     } else {
 	fnamchk_okay = true;
@@ -1611,9 +1552,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	readline_len = readline(&dir_name, fnamchk_stream);
 	if (readline_len < 0) {
-	    if (!quiet) {
-		warn("txzchk", "%s: unexpected EOF from fnamchk", tarball_path);
-	    }
+	    warn("txzchk", "%s: unexpected EOF from fnamchk", tarball_path);
 	}
 
 	/*
@@ -1635,13 +1574,12 @@ check_tarball(char const *tar, char const *fnamchk)
 
     /* determine size of tarball */
     tarball.size = file_size(tarball_path);
-    /* report size if too big or !quiet */
+    /* report size if too big */
     if (tarball.size < 0) {
 	err(38, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
-	if (!quiet) {
 	    fpara(stderr,
 		  "",
 		  "The compressed tarball exceeds the maximum allowed size, sorry.",
@@ -1649,8 +1587,7 @@ check_tarball(char const *tar, char const *fnamchk)
 		  NULL);
 	    warn("txzchk", "%s: the compressed tarball size %jd > %jd",
 		     tarball_path, (intmax_t)tarball.size, (intmax_t)MAX_TARBALL_LEN);
-	}
-    } else if (!quiet) {
+    } else if (verbosity_level) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = printf("txzchk: %s size of %jd bytes OK\n", tarball_path, (intmax_t) tarball.size);
 	if (ret <= 0)
@@ -1683,7 +1620,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
 
-	if (!quiet) {
+	if (verbosity_level) {
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	} else {
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
@@ -1733,8 +1670,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;		/* pre-clear errno for warnp() */
 	p = (char *)memchr(linep, 0, (size_t)readline_len);
 	if (p != NULL) {
+	    ++tarball.total_feathers;
 	    warnp("txzchk", "found NUL before end of line");
-	    msg("skipping to next line");
+	    if (verbosity_level) {
+		msg("skipping to next line");
+	    }
 	    /* free the allocated memory */
 	    if (linep != NULL) {
 		free(linep);
@@ -1921,9 +1861,7 @@ parse_all_txz_lines(char const *dir_name, char const *tarball_path)
 
     for (line = txz_lines; line != NULL; line = line->next) {
 	if (line->line == NULL) {
-	    if (!quiet) {
-		warn("txzchk", "encountered NULL string on line %ju", line->line_num);
-	    }
+	    warn("txzchk", "encountered NULL string on line %ju", line->line_num);
 	    ++tarball.total_feathers;
 	    continue;
 	}
