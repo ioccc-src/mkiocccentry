@@ -25,6 +25,10 @@ jobs:
       run: git clone https://github.com/lcn2/seqcexit
     - name: install seqcexit
       run: cd seqcexit && sudo make install
+    - name: clone independ
+      run: git clone https://github.com/lcn2/independ
+    - name: install independ
+      run: cd independ && sudo make install
     - name: clone picky
       run: git clone https://github.com/xexyl/picky
     - name: clone checknr
