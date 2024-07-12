@@ -81,7 +81,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "1.0.6 2024-05-19"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.0.7 2024-07-12"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.

@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.2.3 2024-07-12
+
+Add `-e` option to `mkiocccentry(1)` which if specified will be passed to
+`txzchk(1)`. The test suite always uses this option. The man page for
+`mkiocccentry(1)` was updated to show this new option. The guidelines might want
+to be updated for this but they might not want to be. This is TBD later.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.0.7 2024-07-12"` for the `-e` option.
+
+
+
 ## Release 1.2.2 2024-07-11
 
 Removed `-q` from `txzchk(1)` and make it always show warnings. If one wants to
