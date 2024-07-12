@@ -134,6 +134,7 @@ static const char * const usage_msg1 =
     "\t-c cp\t\tpath to cp executable (def: %s)\n"
     "\t-l ls\t\tpath to ls executable (def: %s)\n"
     "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
+    "\t-e\t\tentertainment mode\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
     "\t-C chkentry	path to chkentry executable (def: %s)\n";
@@ -174,6 +175,7 @@ static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does 
 static FILE *input_stream = NULL;	/* input file: stdin or answers file  */
 static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
 static bool answer_yes = false;		/* true ==> -y used: always answer yes (use with EXTREME caution!) */
+static bool entertain = false;          /* for -e mode for txzchk -e */
 
 /*
  * forward declarations
@@ -227,7 +229,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:F:C:y")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:eF:C:y")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -295,6 +297,9 @@ main(int argc, char *argv[])
 	    txzchk_flag_used = true;
 	    txzchk = optarg;
 	    break;
+        case 'e':
+            entertain = true;
+            break;
 	case 'F':
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
@@ -5291,14 +5296,27 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
     /*
      * perform the txzchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -w -v 1 -F %s -- %s/../%s",
-		  txzchk, fnamchk, submission_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, false, true, "% -w -v 1 -F % -- %/../%",
-					  txzchk, fnamchk, submission_dir, basename_tarball_path);
-    if (exit_code != 0) {
-	err(183, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
-			   txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
-	not_reached();
+    if (entertain) {
+        dbg(DBG_HIGH, "about to perform: %s -e -w -v 1 -F %s -- %s/../%s",
+                      txzchk, fnamchk, submission_dir, basename_tarball_path);
+        exit_code = shell_cmd(__func__, false, true, "% -e -w -v 1 -F % -- %/../%",
+                                              txzchk, fnamchk, submission_dir, basename_tarball_path);
+        if (exit_code != 0) {
+            err(183, __func__, "%s -e -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                               txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
+            not_reached();
+        }
+
+    } else {
+        dbg(DBG_HIGH, "about to perform: %s -w -v 1 -F %s -- %s/../%s",
+                      txzchk, fnamchk, submission_dir, basename_tarball_path);
+        exit_code = shell_cmd(__func__, false, true, "% -w -v 1 -F % -- %/../%",
+                                              txzchk, fnamchk, submission_dir, basename_tarball_path);
+        if (exit_code != 0) {
+            err(184, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                               txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
+            not_reached();
+        }
     }
     para("",
 	 "... the output above is the listing of the compressed tarball.",
@@ -5344,13 +5362,13 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
      * firewall
      */
     if (work_dir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(184, __func__, "called with NULL arg(s)");
+	err(185, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     submission_dir_esc = cmdprintf("%", submission_dir);
     if (submission_dir_esc == NULL) {
-	err(185, __func__, "failed to cmdprintf: submission_dir");
+	err(186, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
@@ -5363,14 +5381,14 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
 	 NULL);
     ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
-	errp(186, __func__, "printf #0 error");
+	errp(187, __func__, "printf #0 error");
 	not_reached();
     }
     free(submission_dir_esc);
 
     work_dir_esc = cmdprintf("%", work_dir);
     if (work_dir_esc == NULL) {
-	err(187, __func__, "failed to cmdprintf: work_dir");
+	err(188, __func__, "failed to cmdprintf: work_dir");
 	not_reached();
     }
 
@@ -5381,7 +5399,7 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
-	errp(188, __func__, "printf #2 error");
+	errp(189, __func__, "printf #2 error");
 	not_reached();
     }
     free(work_dir_esc);
@@ -5444,7 +5462,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	err(189, __func__, "fprintf error printing IOCCC_REGISTER_URL");
+	err(190, __func__, "fprintf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
 
@@ -5462,7 +5480,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "    %s\n\n", IOCCC_NEWS_URL);
     if (ret <= 0) {
-	err(190, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	err(191, __func__, "fprintf error printing IOCCC_NEWS_URL");
 	not_reached();
     }
     para("",
@@ -5516,7 +5534,7 @@ show_submit_url(char const *work_dir, char const *tarball_path)
 	 NULL);
     ret = printf("    %s/%s\n", work_dir, tarball_path);
     if (ret <= 0) {
-	errp(191, __func__, "printf #4 error");
+	errp(192, __func__, "printf #4 error");
 	not_reached();
     }
 
@@ -5530,7 +5548,7 @@ show_submit_url(char const *work_dir, char const *tarball_path)
 	 NULL);
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(192, __func__, "printf #5 error");
+	errp(193, __func__, "printf #5 error");
 	not_reached();
     }
 
@@ -5547,7 +5565,7 @@ show_submit_url(char const *work_dir, char const *tarball_path)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "    %s\n", IOCCC_NEWS_URL);
     if (ret <= 0) {
-	err(193, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	err(194, __func__, "fprintf error printing IOCCC_NEWS_URL");
 	not_reached();
     }
     para("",

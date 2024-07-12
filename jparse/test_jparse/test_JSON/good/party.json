@@ -59,7 +59,7 @@
 			"alias" : "Precious",
 			"alias" : "Sméagol",
 			"alias" : "Dígol",
-			"RSVP_requested" : false,
+			"RSVP_requested" : true,
 			"attendance" : "denied",
 			"guest_number":	 -1,
 			"Gross" : false,
@@ -77,7 +77,7 @@
 			"RSVP_state" : "pending"
 		},
 		{
-			"name": "Sackville-Baggins",
+			"name": "Sackville-Bagginses",
 			"alias": "Spoons thieves",
 			"RSVP_requested" : false,
 			"attendance" : "tolerated",
