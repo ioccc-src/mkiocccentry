@@ -34,7 +34,7 @@ jobs:
     - name: install checknr
       run: cd checknr && sudo make install
     - name: clone picky
-      run: git clone https://github.com/lcn2/picky
+      run: git clone https://github.com/xexyl/picky
     - name: install picky
       run: cd picky && sudo make install
     - name: make
