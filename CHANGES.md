@@ -1,5 +1,9 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.2.4 2024-07-14
+
+Add constants for `test_formed_timestamp_usec()` in `entry_util.c`.
+
 
 ## Release 1.2.3 2024-07-12
 

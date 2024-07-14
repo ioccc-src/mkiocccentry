@@ -2992,13 +2992,14 @@ test_formed_timestamp_usec(int formed_timestamp_usec)
     /*
      * validate count
      */
-    if (formed_timestamp_usec < 0) {
+    if (formed_timestamp_usec < MIN_FORMED_TIMESTAMP_USEC) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: formed_timestamp_usec: %d < 0", formed_timestamp_usec);
+		 "invalid: formed_timestamp_usec: %d < %d", formed_timestamp_usec, MIN_FORMED_TIMESTAMP_USEC);
 	return false;
-    } else if (formed_timestamp_usec > 999999) {
+    } else if (formed_timestamp_usec > MAX_FORMED_TIMESTAMP_USEC) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: formed_timestamp_usec: %d > 999999", formed_timestamp_usec);
+		 "invalid: formed_timestamp_usec: %d > MAX_FORMED_TIMESTAMP_USEC %d", formed_timestamp_usec,
+                 MAX_FORMED_TIMESTAMP_USEC);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "formed_timestamp_usec is valid");

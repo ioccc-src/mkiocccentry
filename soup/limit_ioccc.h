@@ -71,6 +71,9 @@
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 #define MAX_CLOCK_ERROR ((42*60)-1)	/* maximum seconds allowed for a clock to be in error */
 
+#define MIN_FORMED_TIMESTAMP_USEC (1)       /* minimum formed_timestamp_usec value */
+#define MAX_FORMED_TIMESTAMP_USEC (999999)  /* maximum formed_timestamp_usec value */
+
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
