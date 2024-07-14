@@ -488,7 +488,7 @@ picky: ${ALL_SRC}
 	    echo 1>&2; \
 	    echo 'See the following GitHub repo for ${PICKY}:'; 1>&2; \
 	    echo 1>&2; \
-	    echo '    https://github.com/xexyl/picky' 1>&2; \
+	    echo '    https://github.com/lcn2/picky' 1>&2; \
 	    echo 1>&2; \
 	    exit 1; \
 	else \
