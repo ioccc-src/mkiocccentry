@@ -2,15 +2,14 @@
 
 ## Supported Versions
 
-These Release versions (see the `MKIOCCCENTRY_REPO_VERSION` in `soup/version.h`) are currently being supported with security updates:
+Only the [most recent mkiocccentry repo release version](https://github.com/ioccc-src/mkiocccentry/releases)
+is being supported with security updates.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.2.x   | :white_check_mark: |
-| < 1.2   | :x:                |
+To determine your release version. see the `MKIOCCCENTRY_REPO_VERSION`
+value as defined in the `soup/version.h` file.
 
 ## Reporting a Vulnerability
 
 To report a Security Vulnerability,
-please send email the IOCCC judges by consulting the bottom section
+please **send email the IOCCC judges** by consulting the bottom section
 of the "[How to contact the IOCCC](https://www.ioccc.org/contact.html)" web page.
