@@ -4,6 +4,11 @@
 
 Add constants for `test_formed_timestamp_usec()` in `entry_util.c`.
 
+Fix error messages in a number of `sem_member_value_*` functions in
+`jparse/json_sem.c`, where the `*` is some of the number checks. In particular
+a number of non-boolean checks reported incorrectly that the type was not a bool
+when it actually expects something else.
+
 
 ## Release 1.2.3 2024-07-12
 

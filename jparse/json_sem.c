@@ -1259,7 +1259,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
      */
     if (value->type != JTYPE_NUMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(66, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(66, node, depth, sem, name, "node value type %s != JTYPE_NUMBER",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -1336,7 +1336,7 @@ sem_member_value_size_t(struct json const *node, unsigned int depth, struct json
      */
     if (value->type != JTYPE_NUMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(69, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(69, node, depth, sem, name, "node value type %s != JTYPE_NUMBER",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -1414,7 +1414,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
      */
     if (value->type != JTYPE_NUMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(72, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(72, node, depth, sem, name, "node value type %s != JTYPE_NUMBER",
 				    json_type_name(value->type));
 	}
 	return NULL;
