@@ -209,7 +209,7 @@ indent.c: ${PROG}.c
 
 
 ######################################
-# optional include of 133t hacker rulz
+# optional include of 1337 hacker rulz
 ######################################
 
--include 133t.mk ../133t.mk ../../133t.mk
+-include 1337.mk ../1337.mk ../../1337.mk
