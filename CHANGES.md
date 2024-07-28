@@ -25,6 +25,15 @@ The jparse/README.md file has been updated to move the history section to the
 very bottom and to discuss (briefly) the testing procedure that Landon and I
 (Cody) have implemented.
 
+The `make test`, `make prep` and `make slow_prep` rules now show the time of
+starting and time of ending.
+
+Also, since this was not mentioned, we recently added (with thanks to
+@SirWumpus) a workflow that runs `make slow_prep` on push and pull request so we
+can more easily find problems (in case someone forgets to run the rule prior to
+commit or if there is a case where the local environment of the committer makes
+the test pass even though it should not, which has happened before).
+
 
 ## Release 1.2.4 2024-07-14
 
