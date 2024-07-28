@@ -109,17 +109,6 @@ process at the same time is not tested so even though it should be okay there
 might be some issues that have yet to be discovered.
 
 
-# History
-
-For more detailed history that goes beyond this humble document we
-recommend you check `jparse(1)` and the `chkentry(1)` man page in the
-`mkiocccentry` repo as well as its `CHANGES.md` and `README.md` files. If you
-want to go further than that you can read the GitHub git log as well as reading
-the source code. If you do read the source code we **STRONGLY** recommend you
-read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
-code! This is because the generated code might give you nightmares and cause
-other horrible symptoms. :-) See `sorry.tm.ca.h` for more details.
-
 # Examples
 
 Parse the JSON string `{ "test_mode" : false }`:
@@ -215,17 +204,45 @@ man ./man/man1/jstrdecode.1
 
 NOTE: After doing a `make all`, this tool may be found as: `./jstrdecode`.
 
+# Our testing suite:
 
-## Other `jparse` tools:
+In the [jparse/test_jparse](jparse/test_jparse/README.md) subdirectory we have a
+test suite script [jparse_test.sh](jparse/test_jparse/jparse_test.sh) which runs
+a battery of tests on both valid and invalid JSON files, both as strings and as
+files, and if valid JSON files do **NOT** pass as valid **OR** if invalid JSON
+files **DO** pass as valid then it is an error.
+
+We have used our own files (with some Easter eggs included due to a shared
+interest between Landon and Cody :-) ) as well as from the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo (and with **MUCH
+GRATITUDE** to the maintainers: **THANK YOU**!) and all is good. If for some
+reason the parser were to be modified, in error or otherwise, and the test fails
+then we know there is a problem. As the GitHub repo has workflows to make sure
+that this does not happen it should never be added to the repo.
+
+
+## Other `jparse` tools (WARNING: these are **VERY INCOMPLETE and will be heavily modified**):
 
 We also provide a number of tools that are, at least in what they will do when
 completed, in [json_util_README.md](json_util_README.md). But please note the
 warning there that says:
 
 <hr>
-Please be advised that the tools `jfmt`, `jval` and `jnamval` are **VERY
+As above, please be advised that the tools `jfmt`, `jval` and `jnamval` are **VERY
 INCOMPLETE** and **WILL BE HEAVILY MODIFIED**. It is also highly likely that
 they will be almost **entirely rewritten** as things changed as they were first
 worked on. Almost everything will be redone at this point. When this is done
 this notice will be removed.
 <hr>
+
+# History
+
+For more detailed history that goes beyond this humble document we
+recommend you check `jparse(1)` and the `chkentry(1)` man page in the
+`mkiocccentry` repo as well as its `CHANGES.md` and `README.md` files. If you
+want to go further than that you can read the GitHub git log as well as reading
+the source code. If you do read the source code we **STRONGLY** recommend you
+read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
+code! This is because the generated code might give you nightmares and cause
+other horrible symptoms. :-) See [sorry.tm.ca.h](sorry.tm.ca.h) for more details
+on this.
