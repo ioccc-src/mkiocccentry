@@ -565,6 +565,7 @@ reset_min_timestamp: soup/Makefile
 # rule instead.
 #
 prep: test_ioccc/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh -m${MAKE} -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
@@ -576,8 +577,10 @@ prep: test_ioccc/prep.sh
 	    echo; \
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 		exit "$$EXIT_CODE"; \
 	    else \
+		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 	        echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 
@@ -585,6 +588,7 @@ prep: test_ioccc/prep.sh
 # full details.
 #
 slow_prep: test_ioccc/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh -m${MAKE}; \
 	    EXIT_CODE="$$?"; \
@@ -595,8 +599,10 @@ slow_prep: test_ioccc/prep.sh
 	    echo; \
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 		exit "$$EXIT_CODE"; \
 	    else \
+		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 
@@ -940,7 +946,7 @@ all_tags:
 #
 test:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
@@ -949,7 +955,7 @@ test:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
 	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
 
 # run test-chkentry on test_JSON files

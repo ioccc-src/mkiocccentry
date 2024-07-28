@@ -1,5 +1,40 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.2.5 2024-07-28
+
+We add a lot of good and bad JSON files to the test JSON directories
+(`test_ioccc/test_JSON/good` and `test_ioccc/test_JSON/bad` respectively) that
+come from the [JSONTestSuite](https://github.com/nst/JSONTestSuite) repo with
+all tests succeeding. We give our gratitude to the maintainers of the repo! For
+a quick note on why these results are significant, besides the fact that it is
+more validation that our parser is in good shape, is from the maintainers of the
+repo. They write about the files:
+
+    These files contain weird structures and characters that parsers may understand
+    differently, e.g.:
+
+        huge numbers
+        dictionaries with similar keys
+        NULL characters
+        escaped invalid strings
+
+Again we give a **HUGE THANK YOU** to the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo maintainers!
+
+The jparse/README.md file has been updated to move the history section to the
+very bottom and to discuss (briefly) the testing procedure that Landon and I
+(Cody) have implemented.
+
+The `make test`, `make prep` and `make slow_prep` rules now show the time of
+starting and time of ending.
+
+Also, since this was not mentioned, we recently added (with thanks to
+@SirWumpus) a workflow that runs `make slow_prep` on push and pull request so we
+can more easily find problems (in case someone forgets to run the rule prior to
+commit or if there is a case where the local environment of the committer makes
+the test pass even though it should not, which has happened before).
+
+
 ## Release 1.2.4 2024-07-14
 
 Add constants for `test_formed_timestamp_usec()` in `entry_util.c`.
