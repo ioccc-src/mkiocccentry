@@ -116,7 +116,7 @@ XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
 <div id=="makefile">
-#<# 3. What do I do for the Makefile in my submission?
+## 3. What do I do for the Makefile in my submission?
 </div>
 
 Although you are welcome to add additional rules, we recommend that you use the
