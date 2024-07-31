@@ -32,7 +32,7 @@
 12. [Why do these tools sometimes use the incorrect IOCCC terms?](#12-why-do-these-tools-sometimes-use-incorrect-ioccc-terms)
 
 
-<div id=="download"></div>
+<div id="download"></div>
 
 ## 0. Where can I find the mkiocccentry tool?
 
@@ -52,7 +52,7 @@ and then extract that file.
 
 
 
-<div id=="compiling"></div>
+<div id="compiling"></div>
 
 ## 1. How do I compile the mkiocccentry tool?
 
@@ -74,7 +74,7 @@ local directory.  If something went wrong, see
 <a href="#reporting-bugs">how do I report bugs or other issues?</a>
 
 
-<div id=="package"></div>
+<div id="package"></div>
 
 ## 2. How do I package my submission?
 
@@ -118,7 +118,7 @@ Once you have answered all of the questions, the tool will form a
 XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
-<div id=="makefile"></div>
+<div id="makefile"></div>
 
 ## 3. What do I do for the Makefile in my submission?
 
@@ -128,7 +128,7 @@ comments as appropriate, and making sure to add the correct specifics of each
 rule.
 
 
-<div id=="submitting"></div>
+<div id="submitting"></div>
 
 ## 4. Can't I just submit my obfuscated C program to the judges?
 
@@ -146,7 +146,7 @@ In short, you cannot simply upload your obfuscated C program as it needs to
 be in a certain form and the `mkiocccentry` tool does that.
 
 
-<div id=="mkiocccentry-requirements"></div>
+<div id="mkiocccentry-requirements"></div>
 
 ## 5. Do I have to use mkiocccentry to package my submission?
 
@@ -165,7 +165,7 @@ contents under that directory are also OK. In particular, that tool tests that
 the JSON files are correct.
 
 
-<div id=="installing"></div>
+<div id="installing"></div>
 
 ## 6. Do I need to install this code to use it?
 
@@ -186,7 +186,7 @@ For example:
 ```
 
 
-<div id=="help"></div>
+<div id="help"></div>
 
 ## 7. How can I learn more about how to use the tools?
 
@@ -227,7 +227,7 @@ Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairl
 well commented.
 
 
-<div id=="reporting-bugs"></div>
+<div id="reporting-bugs"></div>
 
 ## 8. How do I report bugs or other issues?
 
@@ -270,7 +270,7 @@ The script that the make rule runs, `bug_report.sh`, will tell you the name of
 the file to upload.
 
 
-<div id=="how-to-help"></div>
+<div id="how-to-help"></div>
 
 ## 9. How can I help test this repo?
 
@@ -281,7 +281,7 @@ Please see the
 for more details on what you can do to help us.
 
 
-<div id=="tar"></div>
+<div id="tar"></div>
 
 ## 10. What can I do if my system's tar(1) does not support the correct options?
 
@@ -296,7 +296,7 @@ Some systems have a `GNU tar` that you can use. For instance FreeBSD has a
 specify in the tools the `-t tar` option to make this work.
 
 
-<div id=="markdown"></div>
+<div id="markdown"></div>
 
 ## 11. Where can I find help with formatting markdown files for my submission?
 
@@ -311,7 +311,7 @@ See the [markdown syntax](https://www.markdownguide.org/basic-syntax) guide.
 See also [CommonMark Spec](https://spec.commonmark.org/current/).
 
 
-<div id=="keyword"></div>
+<div id="keyword"></div>
 
 ## 12. Why do these tools sometimes use incorrect IOCCC terms?
 
