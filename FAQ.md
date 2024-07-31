@@ -1,36 +1,38 @@
 # Frequently Asked Questions about the `mkiocccentry` repo
 
 
-<a name="toc">Table of Contents</a>
+<div id="toc"></div>
+## Table of Contents
 
-0. <a href="#download">Where can I download the mkiocccentry tool?</a>
+0. [Where can I download the mkiocccentry tool?](#0-where-can-i-find-the-mkiocccentry-tool)
 
-1. <a href="#compiling">How do I compile the mkiocccentry tools?</a>
+1. [How do I compile the mkiocccentry tools?](#1-how-do-i-compile-the-mkiocccentry-tool)
 
-2. <a href="#package">How do I package my submission?</a>
+2. [How do I package my submission?](#2-how-do-i-package-my-submission)
 
-3. <a href="#makefile">What do I do for the Makefile in my submission?</a>
+3. [What do I do for the Makefile in my submission?](#3-what-do-i-do-for-the-makefile-in-my-submission)
 
-4. <a href="#submitting">Can't I just submit my obfuscated C program to the judges?</a>
+4. [Can't I just submit my obfuscated C program to the judges?](#4-cant-i-just-submit-my-obfuscated-c-program-to-the-judges)
 
-5. <a href="#mkiocccentry-requirements">Do I have to use mkiocccentry to package my submission?</a>
+5. [Do I have to use mkiocccentry to package my submission?](#5-do-i-have-to-use-mkiocccentry-to-package-my-submission)
 
-6. <a href="#installing">Do I need to install this code to use it?</a>
+6. [Do I need to install this code to use it?](#6-do-i-need-to-install-this-code-to-use-it)
 
-7. <a href="#help">How can I learn more about how to use the tools?</a>
+7. [How can I learn more about how to use the tools?](#7-how-can-i-learn-more-about-how-to-use-the-tools)
 
-8. <a href="#reporting-bugs">How do I report bugs or other issues?</a>
+8. [How do I report bugs or other issues?](#8-how-do-i-report-bugs-or-other-issues)
 
-9. <a href="#how-to-help">How can I help test this repo?</a>
+9. [How can I help test this repo?](#9-how-can-i-help-test-this-repo)
 
-10. <a href="#tar">What can I do if my system's tar(1) does not support the correct options?</a>
+10. [What can I do if my system's tar(1) does not support the correct options?](#10-what-can-i-do-if-my-systems-tar1-does-not-support-the-correct-options)
 
-11. <a href="#markdown">Where can I find help with formatting markdown files for my submission?</a>
+11. [Where can I find help with formatting markdown files for my submission?](#11-where-can-i-find-help-with-formatting-markdown-files-for-my-submission)
 
-12. <a href="#keyword">Why do these tools sometimes use the incorrect IOCCC terms?</a>
+12. [Why do these tools sometimes use the incorrect IOCCC terms?](#12-why-do-these-tools-sometimes-use-incorrect-ioccc-terms)
 
 
 <div id=="download"></div>
+
 ## 0. Where can I find the mkiocccentry tool?
 
 The `mkiocccentry` tool source code is found in the
@@ -48,7 +50,9 @@ If you don't have `git` you may
 and then extract that file.
 
 
+
 <div id=="compiling"></div>
+
 ## 1. How do I compile the mkiocccentry tool?
 
 After downloading the repo (making sure that if you downloaded the zip file that
@@ -70,6 +74,7 @@ local directory.  If something went wrong, see
 
 
 <div id=="package"></div>
+
 ## 2. How do I package my submission?
 
 We recommend that you use the `mkiocccentry` tool to package your submission.
@@ -113,6 +118,7 @@ XZ compressed tarball, in v7 format, under the _work_dir_ directory.
 
 
 <div id=="makefile"></div>
+
 ## 3. What do I do for the Makefile in my submission?
 
 Although you are welcome to add additional rules, we recommend that you use the
@@ -122,6 +128,7 @@ rule.
 
 
 <div id=="submitting"></div>
+
 ## 4. Can't I just submit my obfuscated C program to the judges?
 
 No. While we appreciate your enthusiasm for wanting to show us your obfuscated
@@ -139,6 +146,7 @@ be in a certain form and the `mkiocccentry` tool does that.
 
 
 <div id=="mkiocccentry-requirements"></div>
+
 ## 5. Do I have to use mkiocccentry to package my submission?
 
 Technically you do not have to use the `mkiocccentry` tool; however, you run the
@@ -157,6 +165,7 @@ the JSON files are correct.
 
 
 <div id=="installing"></div>
+
 ## 6. Do I need to install this code to use it?
 
 No, installing the code in this repo is not necessary to use it. These tools
@@ -177,6 +186,7 @@ For example:
 
 
 <div id=="help"></div>
+
 ## 7. How can I learn more about how to use the tools?
 
 Assuming you have <a href="#download">downloaded</a> and <a
@@ -217,6 +227,7 @@ well commented.
 
 
 <div id=="reporting-bugs"></div>
+
 ## 8. How do I report bugs or other issues?
 
 Please run the following from the main directory:
@@ -259,6 +270,7 @@ the file to upload.
 
 
 <div id=="how-to-help"></div>
+
 ## 9. How can I help test this repo?
 
 Thank you for any and all help!
@@ -269,6 +281,7 @@ for more details on what you can do to help us.
 
 
 <div id=="tar"></div>
+
 ## 10. What can I do if my system's tar(1) does not support the correct options?
 
 
@@ -283,6 +296,7 @@ specify in the tools the `-t tar` option to make this work.
 
 
 <div id=="markdown"></div>
+
 ## 11. Where can I find help with formatting markdown files for my submission?
 
 The IOCCC makes extensive use of [markdown](https://daringfireball.net/projects/markdown/).
@@ -297,6 +311,7 @@ See also [CommonMark Spec](https://spec.commonmark.org/current/).
 
 
 <div id=="keyword"></div>
+
 ## 12. Why do these tools sometimes use incorrect IOCCC terms?
 
 According to the [Official IOCCC FAQ 6.9](https://www.ioccc.org/faq.html#terms)
