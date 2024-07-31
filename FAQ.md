@@ -259,6 +259,7 @@ won then it should be `entry` (or `entries`).
 
 ## 8. How do I participate in the IOCCC?
 
+<!--XXX Update these links after the Great Fork Merge! -->
 Please see the [official IOCCC website
 FAQ](https://ioccc-src.github.io/temp-test-ioccc/faq.html) and in particular the
 FAQ on
