@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.3 2024-08-02
+
+Changed MKIOCCCENTRY_REPO_VERSION from "1.2 2024-07-04".
+to "1.3 2024-08-02".
+
+
 ## Release 1.2.5 2024-07-28
 
 We add a lot of good and bad JSON files to the test JSON directories
