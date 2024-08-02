@@ -1,5 +1,37 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.2.6 2024-08-02
+
+Added structs for .entry.json and author_handle.json files and a few functions
+as well. These will be needed for updates to `chkentry` to validate these files.
+
+Much work needs to be done still and this will happen at different points as the
+other repo has much more work to do too. The function `object2entry()` is
+incomplete but this is because of a lack of time. Much discussion also will
+occur before much more can be done but this is a nice start and should help with
+discussion as well. The chkentry itself has NOT been modified to use these
+functions and that is one of the reasons they are not complete (it seems likely,
+in hindsight, that the functions that test the directory and entry_ids will need
+to be updated, perhaps with a new function that takes both strings to verify
+that the `YYYY` in the two strings are the same).
+
+Some `free_` functions were also added but these will possibly have to be
+updated as well when more is done. Note that only one `object2foo` function has
+been added (started) at this time but it is hoped that this will help discussion
+a fair bit.
+
+New `#define`d constants added in `soup/version.h`.
+
+Added XXX comments to indicate that this is a work in progress and that some of
+this might have been premature (or a bit premature). This was done in any case
+because a bit of discussion has started already. As the other repo has much more
+to be done, however, it is quite probable that this will stand for a while yet.
+
+New defined macros for the .entry.json and author_handle.json versions (can be
+found in the other repo). New macros also for min and max directory length,
+based on the maximum handle length (+ 5 for the YYYY[\_/]).
+
+
 ## Release 1.2.5 2024-07-28
 
 We add a lot of good and bad JSON files to the test JSON directories

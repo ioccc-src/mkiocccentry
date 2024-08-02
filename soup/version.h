@@ -94,6 +94,18 @@
 #define AUTH_VERSION "1.22 2024-05-18"		/* format: major.minor YYYY-MM-DD */
 
 /*
+ * Version of info for JSON the .entry.json files.
+ */
+#define ENTRY_VERSION "1.1 2024-02-11"		/* format: major.minor YYYY-MM-DD */
+
+/*
+ * Version of info for JSON the author_handle.json files.
+ */
+#define AUTHOR_VERSION "1.1 2024-02-11"		/* format: major.minor YYYY-MM-DD */
+
+
+
+/*
  * official fnamchk version
  */
 #define FNAMCHK_VERSION "1.0.2 2024-05-15"	/* format: major.minor YYYY-MM-DD */
