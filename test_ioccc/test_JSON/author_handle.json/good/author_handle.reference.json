@@ -1,0 +1,19 @@
+{
+    "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+    "author_JSON_format_version" : "1.1 2024-02-11",
+    "author_handle" : "Landon_Curt_Noll",
+    "full_name" : "Landon Curt Noll",
+    "sort_word" : "noll",
+    "location_code" : "US",
+    "email" : "q.2024@ioccc.org",
+    "url" : "http://www.isthe.com/chongo/index.html",
+    "alt_url" : null,
+    "deprecated_twitter_handle" : null,
+    "mastodon" : "@landonnoll@fosstodon.org",
+    "mastodon_url" : "https://fosstodon.org/@landonnoll",
+    "github" : "@lcn2",
+    "affiliation" : null,
+    "winning_entry_set" : [
+	{ "entry_id" : "2024_noll" }
+    ]
+}
