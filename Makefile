@@ -577,12 +577,11 @@ prep: test_ioccc/prep.sh
 	    echo; \
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 		exit "$$EXIT_CODE"; \
 	    else \
-		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 	        echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 
 # a slower version of prep that does not write to a log file so one can see the
 # full details.
@@ -599,12 +598,11 @@ slow_prep: test_ioccc/prep.sh
 	    echo; \
 	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 		exit "$$EXIT_CODE"; \
 	    else \
-		${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 
 
 # make build release pull
