@@ -83,8 +83,8 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
  * jstrdecode_stream - decode an open file stream onto another open file stream
  *
  * given:
- *	in_stream	open file steam to decode
- *	out_stream	open file where to write encoded data
+ *	in_stream	open file stream to decode
+ *	out_stream	open file stream to write encoded data
  *	write_quote	true ==> output enclosing quotes
  *
  * returns:

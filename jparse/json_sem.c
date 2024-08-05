@@ -2003,7 +2003,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	++(sem[index].count);
 
 	/*
-	 * execute validation function is available
+	 * execute validation function if available
 	 */
 	if (sem[index].validate != NULL) {
 
