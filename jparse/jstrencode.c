@@ -83,8 +83,8 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
  * jstrencode_stream - encode an open file stream onto another open file stream
  *
  * given:
- *	in_stream	open file steam to encode
- *	out_stream	open file where to write encoded data
+ *	in_stream	open file stream to encode
+ *	out_stream	open file stream to write encoded data
  *	skip_quote	true ==> ignore any double quotes if they are both
  *				 at the start and end of the memory block
  *			false ==> process all bytes in the block
