@@ -2821,7 +2821,7 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 	}
 
 	/* XXX - add function that prints out what compare operation - XXX */
-	json_dbg(JSON_DBG_NONE, __func__, "string to compare: <%s>", cmp->string);
+	json_dbg(JSON_DBG_LOW, __func__, "string to compare: <%s>", cmp->string);
     } else if (!strcmp(option, "n")) { /* -n */
 	errno = 0; /* pre-clear errno for errp() */
 	cmp->string = strdup(optarg + 3);
@@ -2842,7 +2842,7 @@ json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *opt
 	}
 
 	/* XXX - add function that prints out what compare operation - XXX */
-	json_dbg(JSON_DBG_NONE, __func__, "number to compare: <%s>", cmp->string);
+	json_dbg(JSON_DBG_LOW, __func__, "number to compare: <%s>", cmp->string);
     }
 
     return cmp;
@@ -2937,20 +2937,20 @@ parse_json_util_format(struct json_util *json_util, char const *name, char const
 
     if (!strcmp(optarg, "tty") || !strcmp(optarg, "default")) {
 	format = json_util->format = JSON_FMT_TTY;
-	dbg(DBG_NONE, "%s output format", optarg);
+	dbg(DBG_LOW, "%s output format", optarg);
     } else if (!strcmp(optarg, "simple")) {
 	format = json_util->format = JSON_FMT_SIMPLE;
-	dbg(DBG_NONE, "%s output format", optarg);
+	dbg(DBG_LOW, "%s output format", optarg);
     } else if (!strcmp(optarg, "colour") || !strcmp(optarg, "color")) {
 	format = json_util->format = JSON_FMT_COLOUR;
-	dbg(DBG_NONE, "%sed output format", optarg);
+	dbg(DBG_LOW, "%sed output format", optarg);
     } else if (!strcmp(optarg, "1line")) {
 	format = json_util->format = JSON_FMT_1LINE;
-	dbg(DBG_NONE, "%s output format", optarg);
+	dbg(DBG_LOW, "%s output format", optarg);
     } else if (!strcmp(optarg, "nows") || !strcmp(optarg, "news")) {
 	bool news = !strcmp(optarg, "news");
 	format = json_util->format = JSON_FMT_NOWS;
-	dbg(DBG_NONE, "%s %s%s%s",
+	dbg(DBG_LOW, "%s %s%s%s",
 		news?"output":"no whitespace", news?"news":"output", news?"":" ",news?"":"format");
     } else {
 	err(3, name?name:__func__, "invalid format type used for -F: %s", optarg); /*ooo*/

@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.3.1 2024-08-08
+
+Fixed a bug where `jparse/jfmt` was printing debug messages even at debug level 0.
+
+
 ## Release 1.3 2024-08-02
 
 Changed MKIOCCCENTRY_REPO_VERSION from "1.2 2024-07-04".
