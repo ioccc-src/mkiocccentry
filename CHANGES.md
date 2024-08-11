@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.4 2024-08-11
+
+Prep for "**Release 1.4 2024-08-11**".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.3 2024-08-02"
+to "1.4 2024-08-11".
+
+
 ## Release 1.3.2 2024-08-10
 
 Removed code files and documentation related to `jfmt(1)`, `jval(1)` and `jnamval(1)`
@@ -15,7 +23,7 @@ Fixed a bug where `jparse/jfmt` was printing debug messages even at debug level 
 
 ## Release 1.3 2024-08-02
 
-Changed MKIOCCCENTRY_REPO_VERSION from "1.2 2024-07-04".
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.2 2024-07-04".
 to "1.3 2024-08-02".
 
 
