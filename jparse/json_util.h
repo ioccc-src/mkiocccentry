@@ -65,7 +65,7 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
-/* for json tools jval and jnamval -S and -n options */
+/* compassion enum - for json tools that might wish to compare JSON related values */
 enum JSON_UTIL_CMP_OP
 {
     JSON_CMP_OP_NONE = 0,	/* must be first */
@@ -78,17 +78,7 @@ enum JSON_UTIL_CMP_OP
 };
 
 
-/* for -F with jfmt, jval and jnamval */
-enum JSON_UTIL_OUTPUT_FMT
-{
-    JSON_FMT_TTY = 0,		    /* tty (default): when output is to a TTY, use colour, otherwise use simple */
-    JSON_FMT_SIMPLE = 1,	    /* simple: each line has one JSON level determined by '[]'s and '{}'s */
-    JSON_FMT_COLOUR = 2,	    /* coloured format: syntax highlighting */
-    JSON_FMT_1LINE = 3,		    /* one line output: one line for all output */
-    JSON_FMT_NOWS = 4,		    /* nows (no whitespace) output: one line for all output with no extra whitespace */
-};
-
-/* jval and jnamval -t types */
+/* JSON element match types - for json tools that might wish to match based on JSON types */
 #define JSON_UTIL_MATCH_TYPE_NONE	    (0)
 #define JSON_UTIL_MATCH_TYPE_INT	    (1)
 #define JSON_UTIL_MATCH_TYPE_FLOAT	    (2)
@@ -104,57 +94,8 @@ enum JSON_UTIL_OUTPUT_FMT
 
 /* structures */
 
-/* structures for jval and jnamval */
+/* structures this may be useful for json tools that need to compare JSON related values */
 
-/* for comparison of numbers / strings - options -n and -S */
-struct json_util_cmp_op
-{
-    char *string;
-
-    bool is_string;	    /* true if -S */
-    bool is_number;	    /* true if -n */
-    uintmax_t op;	    /* the operation - see JVAL_CMP macros above */
-
-    struct json_util_cmp_op *next;	/* next in the list */
-};
-
-
-/* structures common to jval and jnamval  */
-struct json_util_name_val
-{
-    /* string related options */
-    bool encode_strings;			/* -e used */
-    bool quote_strings;				/* -Q used */
-
-    /* printing related options */
-    bool print_decoded;				/* -D used */
-
-    bool count_only;				/* -c used, only show count */
-    bool count_and_show_values;			/* -C used, show count and values */
-
-    bool strcmp_used;			/* for -S */
-    struct json_util_cmp_op *strcmp;		/* for -S str */
-    bool numcmp_used;				/* for -n */
-    struct json_util_cmp_op *numcmp;		/* for -n num */
-
-    /* search / matching related */
-    bool invert_matches;			/* -i used */
-    bool match_json_types_specified;		/* -t used */
-    uintmax_t match_json_types;			/* -t types */
-    bool print_json_types_specified;		/* -P used */
-    uintmax_t print_json_types;			/* -P types */
-    bool match_substrings;			/* -s used, match substrings */
-    bool use_regexps;				/* -g used, allow grep-like regexps */
-
-    bool ignore_case;				/* true if -f, case-insensitive */
-    bool match_decoded;				/* -d used - match decoded */
-    bool arg_specified;				/* true if an arg was specified */
-    uintmax_t total_matches;			/* for -c */
-};
-
-/* structures common to jfmt, jval and jnamval */
-
-/* number ranges for the options -l, -n and -n of jfmt, jval and jnamval */
 struct json_util_number_range
 {
     intmax_t min;   /* min in range */
@@ -164,6 +105,7 @@ struct json_util_number_range
     bool greater_than_equal;	/* true if number type must be >= max */
     bool inclusive;		/* true if number type must be >= min && <= max */
 };
+
 struct json_util_number
 {
     /* exact number if >= 0 */
@@ -175,40 +117,6 @@ struct json_util_number
 };
 
 
-/*
- * json_util - struct related to the json utils jfmt, jval and jnamval
- */
-struct json_util
-{
-    /* JSON file related */
-    bool is_stdin;				/* reading from stdin */
-    FILE *json_file;				/* FILE * to json file */
-    char *file_contents;			/* file contents */
-    char *json_file_path;			/* path to JSON file to read */
-
-    /* out file related to -o */
-    char *outfile_path;				/* -o file path */
-    FILE *outfile;				/* FILE * of -o ofile */
-    bool outfile_not_stdout;			/* -o used without stdout */
-
-    /* level constraints */
-    bool levels_constrained;			/* -l specified */
-    struct json_util_number json_util_levels;		/* -l level specified */
-
-    bool print_json_levels;			/* -L specified */
-    uintmax_t num_level_spaces;			/* number of spaces or tab for -L */
-    bool print_level_tab;			/* -L tab option */
-
-    bool indent_levels;				/* -I specified */
-    uintmax_t indent_spaces;			/* -I specified */
-    bool indent_tab;				/* -I <num>[{t|s}] specified */
-
-    bool format_output_changed;			/* -F JSON_UTIL_OUTPUT_FMT used */
-    enum JSON_UTIL_OUTPUT_FMT format;			/* for -F JSON_UTIL_OUTPUT_FMT */
-
-    uintmax_t max_depth;			/* max depth to traverse set by -m depth */
-    struct json *json_tree;			/* json tree if valid merely as a convenience */
-};
 /*
  * global variables
  */
@@ -249,18 +157,9 @@ extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned i
 extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
 
-/* for number range option -l */
 bool json_util_parse_number_range(const char *option, char *optarg, bool allow_negative, struct json_util_number *number);
 bool json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_util_number *range);
-/* for -L option */
 void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
-/* for -I option */
-void json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab);
-/* for -S and -n */
-struct json_util_cmp_op *json_util_parse_cmp_op(struct json_util_name_val *json_util_name_val, const char *option, char *optarg);
-void free_json_util_cmp_list(struct json_util_name_val *json_name_val);
-/* for -F option */
-enum JSON_UTIL_OUTPUT_FMT parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg);
 /* JSON types - -t option*/
 uintmax_t json_util_parse_match_types(char *optarg);
 bool json_util_match_none(uintmax_t types);

@@ -169,13 +169,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jfmt.c jfmt_util.c \
-       jfmt_test.c jval.c jval_util.c jval_test.c jnamval.c jnamval_util.c jnamval_test.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
-       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jfmt.h jfmt_util.h \
-       jfmt_test.h jval.h jval_util.h jval_test.h jnamval.h jnamval_util.h jnamval_test.h \
-       jparse.tab.ref.h
-
+       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC= jparse.ref.c jparse.tab.ref.c
@@ -192,8 +188,7 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/jfmt.1 \
-	    man/man1/jval.1 man/man1/jnamval.1
+MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
 MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
 	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
 	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
@@ -224,9 +219,7 @@ LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o \
-	jfmt.o jfmt_test.o jfmt_util.o jnamval.o jnamval_test.o jnamval_util.o \
-	jval.o jval_test.o jval_util.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -361,7 +354,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jfmt jval jnamval
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
@@ -451,44 +444,6 @@ jsemtblgen.o: jsemtblgen.c jparse.tab.h
 
 jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
-
-jfmt_test.o: jfmt_test.c jfmt_test.h jfmt_test.h json_util.h json_util.c
-	${CC} ${CFLAGS} jfmt_test.c -c
-
-jfmt_util.o: jfmt.c jfmt_util.h jfmt.h json_util.h json_util.c
-	${CC} ${CFLAGS} jfmt_util.c -c
-
-jfmt.o: jfmt.c jfmt.h jfmt_util.h jfmt_test.h json_util.h json_util.c
-	${CC} ${CFLAGS} jfmt.c -c
-
-jfmt: jfmt.o jfmt_util.o jfmt_test.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
-
-jval_test.o: jval_test.c jval_test.h jval_test.h json_util.h json_util.c
-	${CC} ${CFLAGS} jval_test.c -c
-
-jval_util.o: jval_util.c jval_util.h jval_util.h json_util.h json_util.c
-	${CC} ${CFLAGS} jval_util.c -c
-
-jval.o: jval.c jval.h json_util.h jval_test.h json_util.c
-	${CC} ${CFLAGS} jval.c -c
-
-jval: jval.o jval_util.o jval_test.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
-
-jnamval_test.o: jnamval_test.c jnamval_test.h jnamval_test.h json_util.h json_util.c
-	${CC} ${CFLAGS} jnamval_test.c -c
-
-jnamval_util.o: jnamval_util.c jnamval_util.h jnamval_util.h json_util.h json_util.c
-	${CC} ${CFLAGS} jnamval_util.c -c
-
-jnamval.o: jnamval.c jnamval.h json_util.h jnamval_test.h json_util.c
-	${CC} ${CFLAGS} jnamval.c -c
-
-jnamval: jnamval.o jnamval_util.o jnamval_test.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
-
-
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -975,23 +930,6 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jfmt.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jfmt.c jfmt.h jfmt_test.h \
-    jfmt_util.h jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h \
-    util.h
-jfmt_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jfmt_test.c jfmt_test.h \
-    jfmt_util.h jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h \
-    util.h
-jfmt_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jfmt_util.c jfmt_util.h \
-    jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jnamval.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnamval.c jnamval.h \
-    jnamval_test.h jnamval_util.h jparse.h jparse.tab.h json_parse.h \
-    json_sem.h json_util.h util.h
-jnamval_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnamval_test.c \
-    jnamval_test.h jnamval_util.h jparse.h jparse.tab.h json_parse.h \
-    json_sem.h json_util.h util.h
-jnamval_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jnamval_util.c \
-    jnamval_util.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_util.h util.h
 jparse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.c jparse.h \
     jparse.tab.h json_parse.h json_sem.h json_util.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
@@ -1016,13 +954,5 @@ jstrdecode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
     jstrdecode.c jstrdecode.h util.h
 jstrencode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
     jstrencode.c jstrencode.h util.h
-jval.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    json_parse.h json_sem.h json_util.h jval.c jval.h jval_test.h \
-    jval_util.h util.h
-jval_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    json_parse.h json_sem.h json_util.h jval_test.c jval_test.h jval_util.h \
-    util.h
-jval_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    json_parse.h json_sem.h json_util.h jval_util.c jval_util.h util.h
 util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.h verge.c verge.h

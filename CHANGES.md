@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.3.2 2024-08-10
+
+Removed code files and documentation related to `jfmt(1)`, `jval(1)` and `jnamval(1)`
+as these tools are not yet ready for release and we do not want people to become
+confused about their functionality in the interim.
+
+
 ## Release 1.3.1 2024-08-08
 
 Fixed a bug where `jparse/jfmt` was printing debug messages even at debug level 0.

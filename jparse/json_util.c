@@ -2380,7 +2380,10 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, b
     return;
 }
 
-/* json_util_parse_number_range	- parse a number range for options -l, -N, -n
+/*
+ * json_util_parse_number_range	- parse a number ranges
+ *
+ * This may be useful for json tools that need to compare JSON related values.
  *
  * given:
  *
@@ -2504,7 +2507,10 @@ json_util_parse_number_range(const char *option, char *optarg, bool allow_negati
     return true;
 }
 
-/* json_util_number_in_range   - check if number is in required range
+/*
+ * json_util_number_in_range   - check if number is in required range
+ *
+ * This may be useful for json tools that need to compare JSON related values.
  *
  * given:
  *
@@ -2570,7 +2576,11 @@ json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_u
     return false; /* no match */
 }
 
-/* json_util_parse_st_level_option    - parse -L [num]{s,t}/-b level option
+/*
+ * json_util_parse_st_level_option    - parse -L [num]{s,t}/-b level option
+ *
+ * This may be useful for json tools need to focus on various levels in
+ * a JSON parse tree.
  *
  * This function parses the -L option.
  *
@@ -2634,332 +2644,6 @@ json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool 
     }
 }
 
-/* json_util_parse_st_indent_option    - parse -I [num]{s,t}
- *
- * This function parses the -I option. It's necessary to have it this way
- * because some options like -j imply it and rather than duplicate code we just
- * have it here once.
- *
- * given:
- *
- *	optarg		    - option argument to -I option (can be faked)
- *	indent_level	    - pointer to number of indent spaces or tabs
- *	indent_tab	    - pointer to boolean indicating if tab or spaces are to be used
- *
- * Function returns void.
- *
- * NOTE: syntax errors are an error just like it was when it was in main().
- *
- * NOTE: this function does not return on NULL pointers.
- */
-void
-json_util_parse_st_indent_option(char *optarg, uintmax_t *indent_level, bool *indent_tab)
-{
-    char ch = '\0';	/* whether spaces or tabs are to be used, 's' or 't' */
-
-    /* firewall checks */
-    if (optarg == NULL || *optarg == '\0') {
-	err(3, __func__, "NULL or empty optarg"); /*ooo*/
-	not_reached();
-    } else if (indent_level == NULL) {
-	err(3, __func__, "NULL indent_level"); /*ooo*/
-	not_reached();
-    } else if (indent_tab == NULL) {
-	err(3, __func__, "NULL print_token_tab"); /*ooo*/
-	not_reached();
-    } else {
-	/* ensure that the variables are empty */
-
-	/* make *indent_level == 0 */
-	*indent_level = 0;
-	/* make *ident_tab == false */
-	*indent_tab = false;
-    }
-
-
-    if (sscanf(optarg, "%ju%c", indent_level, &ch) == 2) {
-	if (ch == 't') {
-	    *indent_tab = true;
-	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
-	} else if (ch == 's') {
-	    *indent_tab = false; /* ensure it's false in case specified previously */
-	    dbg(DBG_LOW, "will indent with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
-	} else {
-	    err(3, __func__, "syntax error for -I"); /*ooo*/
-	    not_reached();
-	}
-    } else if (!strcmp(optarg, "tab")) {
-	    *indent_tab = true;
-	    *indent_level = 1;
-	    dbg(DBG_LOW, "will indent with %ju tab%s after levels", *indent_level, *indent_level==1?"":"s");
-    } else if (!string_to_uintmax(optarg, indent_level)) {
-	err(3, __func__, "couldn't parse -I spaces"); /*ooo*/
-	not_reached();
-    } else {
-	*indent_tab = false; /* ensure it's false in case specified previously */
-	dbg(DBG_LOW, "will ident with %jd space%s after levels", *indent_level, *indent_level==1?"":"s");
-    }
-}
-
-/*
- * json_util_parse_cmp_op	- parse -S / -n compare options
- *
- * given:
- *
- *	json_name_val	    - pointer to our json_util_name_val struct
- *	option	    - the option letter (without the '-') that triggered this
- *		      function
- *	optarg	    - option arg to the option
- *
- *
- *  This function fills out either the jval->json_name_val.string_cmp or
- *  jval->json_name_val.num_cmp if the syntax is correct. Or more correctly it
- *  adds to the list as more than one can be specified.
- *
- *  This function will not return on error in conversion or syntax error or NULL
- *  pointers.
- *
- *  This function returns void.
- */
-struct json_util_cmp_op *
-json_util_parse_cmp_op(struct json_util_name_val *json_name_val, const char *option, char *optarg)
-{
-    char *p = NULL;		    /* to find the = separator */
-    char *mode = NULL;		    /* if -S then "str" else "num" */
-    struct json_util_cmp_op *cmp = NULL; /* to add to list */
-    struct json_util_cmp_op *tmp_cmp = NULL; /* to append to list */
-    enum JSON_UTIL_CMP_OP op = JSON_CMP_OP_NONE;	    /* assume no op for syntax error */
-
-    /* firewall */
-    if (json_name_val == NULL) {
-	err(27, __func__, "NULL json_name_val");
-	not_reached();
-    }
-    if (option == NULL) {
-	err(28, __func__, "NULL option");
-	not_reached();
-    }
-    if (optarg == NULL) {
-	err(29, __func__, "NULL optarg");
-	not_reached();
-    }
-
-    if (!strcmp(option, "S")) {
-	mode = "str";
-    } else if (!strcmp(option, "n")) {
-	mode = "num";
-    } else {
-	err(30, __func__, "invalid arg used for option: -%s", option);
-	not_reached();
-    }
-
-    p = strchr(optarg, '=');
-    if (p == NULL) {
-	err(31, __func__, "syntax error in -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
-	not_reached();
-    } else if (p == optarg) {
-	err(32, __func__, "syntax error in -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
-	not_reached();
-    } else if (p[1] == '\0') {
-	err(33, __func__, "nothing found after =: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, mode);
-	not_reached();
-    }
-
-    if (!strncmp(optarg, "eq=", 3)) {
-	op = JSON_CMP_OP_EQ;
-    } else if (!strncmp(optarg, "ne=", 3)) {
-	op = JSON_CMP_OP_NE;
-    } else if (!strncmp(optarg, "lt=", 3)) {
-	op = JSON_CMP_OP_LT;
-    } else if (!strncmp(optarg, "le=", 3)) {
-	op = JSON_CMP_OP_LE;
-    } else if (!strncmp(optarg, "gt=", 3)){
-	op = JSON_CMP_OP_GT;
-    } else if (!strncmp(optarg, "ge=", 3)) {
-	op = JSON_CMP_OP_GE;
-    } else {
-	err(34, __func__, "invalid op found for -%s: use -%s {eq,ne,lt,le,gt,ge,ne}=%s", option, option, mode);
-	not_reached();
-    }
-
-    errno = 0; /* pre-clear errno for errp() */
-    cmp = calloc(1, sizeof *cmp);
-    if (cmp == NULL) {
-	errp(35, __func__, "failed to allocate struct json_util_cmp_op * for -%s %s=%s", option, optarg, optarg + 3);
-	not_reached();
-    } else {
-	/* explicitly clear out struct */
-	cmp->string = NULL;
-
-	cmp->is_string = false;
-	cmp->is_number = false;
-
-	/* set up operator which we already have */
-	cmp->op = op;
-
-	/* next in list starts at NULL */
-	cmp->next = NULL;
-    }
-    if (!strcmp(option, "S")) { /* -S */
-	errno = 0; /* pre-clear errno for errp() */
-	cmp->string = strdup(optarg + 3);
-	if (cmp->string == NULL) {
-	    errp(36, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
-	    not_reached();
-	}
-
-	cmp->is_string = true;
-
-	/* append to string compare list */
-	for (tmp_cmp = json_name_val->strcmp; tmp_cmp && tmp_cmp->next != NULL; tmp_cmp = tmp_cmp->next)
-	    ;; /* on a separate line to silence dubious warnings */
-
-	if (tmp_cmp == NULL) {
-	    json_name_val->strcmp = cmp;
-	} else {
-	    tmp_cmp->next = cmp;
-	}
-
-	/* XXX - add function that prints out what compare operation - XXX */
-	json_dbg(JSON_DBG_LOW, __func__, "string to compare: <%s>", cmp->string);
-    } else if (!strcmp(option, "n")) { /* -n */
-	errno = 0; /* pre-clear errno for errp() */
-	cmp->string = strdup(optarg + 3);
-	if (cmp->string == NULL) {
-	    err(37, __func__, "failed to strdup string: <%s> for -%s: cmp->string is NULL", optarg + 3, option);
-	    not_reached();
-	}
-	cmp->is_number = true;
-
-	/* append to number compare list */
-	for (tmp_cmp = json_name_val->numcmp; tmp_cmp && tmp_cmp->next != NULL; tmp_cmp = tmp_cmp->next)
-	    ;; /* on a separate line to silence dubious warnings */
-
-	if (tmp_cmp == NULL) {
-	    json_name_val->numcmp = cmp;
-	} else {
-	    tmp_cmp->next = cmp;
-	}
-
-	/* XXX - add function that prints out what compare operation - XXX */
-	json_dbg(JSON_DBG_LOW, __func__, "number to compare: <%s>", cmp->string);
-    }
-
-    return cmp;
-}
-
-/* free_json_util_cmp_list  - free a compare list for jval / jnamval -S and -n options
- *
- * given:
- *
- *	json_name_val	- struct with the compare lists
- *
- * This function does not return on NULL pointer passed in.
- *
- * This function returns void.
- */
-void
-free_json_util_cmp_list(struct json_util_name_val *json_name_val)
-{
-    struct json_util_cmp_op *op, *next_op;
-
-    /* firewall */
-    if (json_name_val == NULL) {
-	err(38, __func__, "NULL json_name_val");
-	not_reached();
-    }
-
-    /* first the string compare list */
-    for (op = json_name_val->strcmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	if (op->string != NULL) {
-	    free(op->string);
-	    op->string = NULL;
-	}
-
-	free(op);
-	op = NULL;
-    }
-
-    /* now the number compare list */
-    for (op = json_name_val->numcmp; op != NULL; op = next_op) {
-	next_op = op->next;
-
-	if (op->string != NULL) {
-	    free(op->string);
-	    op->string = NULL;
-	}
-
-	free(op);
-	op = NULL;
-    }
-
-}
-
-/* parse_json_util_format - parse -F format option of jfmt, jval and jnamval
- *
- * given:
- *
- *	json_util	- pointer to struct json_util in the struct jfmt, jval
- *			  and jnamval
- *	name		- name of tool
- *	optarg		- option arg to parse
- *
- * This function will not return on NULL pointer.
- *
- * This function returns an enum JSON_UTIL_OUTPUT_FMT which is also given in the struct
- * json_util json_util in the struct of the tool used.
- */
-enum JSON_UTIL_OUTPUT_FMT
-parse_json_util_format(struct json_util *json_util, char const *name, char const *optarg)
-{
-    enum JSON_UTIL_OUTPUT_FMT format = JSON_FMT_TTY;
-
-    /* firewall */
-
-    /* name MUST be checked first! */
-    if (name == NULL) {
-	err(39, __func__, "name is NULL");
-	not_reached();
-    }
-    if (json_util == NULL) {
-	err(40, name?name:__func__, "json_util is NULL");
-	not_reached();
-    }
-
-    if (optarg == NULL || *optarg == '\0') {
-	err(3, name?name:__func__, "optarg is NULL or empty");/*ooo*/
-	not_reached();
-    }
-
-    json_util->format_output_changed = true;	    /* set the boolean to true */
-
-    if (!strcmp(optarg, "tty") || !strcmp(optarg, "default")) {
-	format = json_util->format = JSON_FMT_TTY;
-	dbg(DBG_LOW, "%s output format", optarg);
-    } else if (!strcmp(optarg, "simple")) {
-	format = json_util->format = JSON_FMT_SIMPLE;
-	dbg(DBG_LOW, "%s output format", optarg);
-    } else if (!strcmp(optarg, "colour") || !strcmp(optarg, "color")) {
-	format = json_util->format = JSON_FMT_COLOUR;
-	dbg(DBG_LOW, "%sed output format", optarg);
-    } else if (!strcmp(optarg, "1line")) {
-	format = json_util->format = JSON_FMT_1LINE;
-	dbg(DBG_LOW, "%s output format", optarg);
-    } else if (!strcmp(optarg, "nows") || !strcmp(optarg, "news")) {
-	bool news = !strcmp(optarg, "news");
-	format = json_util->format = JSON_FMT_NOWS;
-	dbg(DBG_LOW, "%s %s%s%s",
-		news?"output":"no whitespace", news?"news":"output", news?"":" ",news?"":"format");
-    } else {
-	err(3, name?name:__func__, "invalid format type used for -F: %s", optarg); /*ooo*/
-	not_reached();
-    }
-
-    return format;
-}
-
 /*
  * json_util_parse_match_types	- parse -t types list
  *
@@ -2989,7 +2673,7 @@ json_util_parse_match_types(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	errp(41, __func__, "strdup(%s) failed", optarg);
+	errp(38, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 

@@ -228,12 +228,6 @@ completed, in [json_util_README.md](json_util_README.md). But please note the
 warning there that says:
 
 <hr>
-As above, please be advised that the tools `jfmt`, `jval` and `jnamval` are **VERY
-INCOMPLETE** and **WILL BE HEAVILY MODIFIED**. It is also highly likely that
-they will be almost **entirely rewritten** as things changed as they were first
-worked on. Almost everything will be redone at this point. When this is done
-this notice will be removed.
-<hr>
 
 # History
 
