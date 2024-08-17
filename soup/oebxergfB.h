@@ -1171,7 +1171,7 @@ static char const *oebxergfB[] =
 "\n"
 "Vnwe C ayx bnua C oulab tyqpnwd sqb tsqd. Tnwe C tyqpnwd sqb tsqd ypyue. C\n"
 "abutt tyqpn sqb tsqd yed bnwe tyqpn sqb tsqd mwb ypyue, xnwewvwl C bnueh yksqb\n"
-"ub yed bnua xya mwyla yps!\n"
+"ub yed bnua xya mwyla yps, cqubw asiw mwyla yps!\n"
 "\n"
 "-- Xwzmt\n"
 ,
@@ -4865,6 +4865,25 @@ static char const *oebxergfB[] =
 "kwfsiw islw asrnuabufybwd ya bnwm iybqlw.\n"
 "\n"
 "Us Vuedsxa ua esb y vulqa. Cb'a y kqp.\n"
+,
+"Tnsaw so qa xns nyvw lwyd Tnw Ysld so bnw Muepa (yed uo msq'lw esb yisepab qa,\n"
+"xnm?) xutt hesx bnyb bnwlw ua ye Oeb fyttwd Pqufhkwyi. Tnua ua gqab y eufheyiw:\n"
+"nw xya puvwe ub xnwe nw nyd (xnwe msqepwl) yeaxwlwd ye wtdwl Oeb xubn 'Zwa'\n"
+"kwoslw bnw Oeb nyd oueuanwd yahuep bnw cqwabuse. Tnua ua ftwvwl kqb bnwlw ua\n"
+"iqfn islw ftwvwlewaa bs bnua.\n"
+"\n"
+"Tnw bwli cqufhkwyi ua yesbnwl bwli osl 'isqebyue yan'. Nqb xnyb ua 'isqebyue\n"
+"yan'? Vw aww olsi bnw dufbuseylm (xnufn ua nsx C duafsvwlwd bnua, cqubw km\n"
+"yffudweb): 'y aiytt dwfudqsqa blww so bnw lsaw oyiutm, xubn fsirsqed twyvwa,\n"
+"xnubw otsxwla, yed lwd kwlluwa. Isirylw xubn lsxye'. Ged xnyb ua 'lsxye'? 'G\n"
+"aiytt dwfudqsqa blww so bnw lsaw oyiutm, xubn fsirsqed twyvwa, xnubw otsxwla,\n"
+"yed lwd kwlluwa. Isirylw xubn isqebyue yan'.\n"
+"\n"
+"Pqufhkwyi tsvwd bnw lsawa yed bnwlw xwlw lsxye blwwa ue nua nsiw! Us ytbnsqpn\n"
+"ub'a blqw bnyb nw xya fseaudwlwd (osl Oeba) 'nyabm' yed bnyb ua xnm nw nya nua\n"
+"eufheyiw Pqufhkwyi, bnwlw xya yesbnwl lwyase olsi Tsthuwe bnyb nw nyd bnw eyiw.\n"
+"\n"
+"-- Xwzmt\n"
 ,
 NULL
 };
