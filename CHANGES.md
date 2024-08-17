@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.4.1 2024-08-17
+
+Add macros `ENTRY_VERSION` and `AUTHOR_VERSION` that correspond to the
+`.entry.json` file of each winning entry and the `author_handle.json` file that
+corresponds to each winning author.
+
 
 ## Release 1.4 2024-08-11
 
