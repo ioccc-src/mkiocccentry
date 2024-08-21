@@ -19,18 +19,13 @@
  * too of course and there's plenty of humour as well. Of course one has to
  * figure out how to trigger them too but that shouldn't be too hard to do.
  *
- * This tool was written in 2022 by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * with improvements by
+ * This tool and the JSON parser were co-developed in 2022-2024 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * The JSON parser was co-developed in 2022 by Cody Boone Ferguson and Landon
- * Curt Noll.
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
