@@ -520,7 +520,8 @@ test:
 #
 # rule used by ../test_ioccc/prep.sh
 #
-all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good ../test_ioccc/test_JSON/auth.json/good all_sem_ref.sh
+all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good \
+    ../test_ioccc/test_JSON/auth.json/good all_sem_ref.sh
 	${E} rm -rf ref
 	${E} mkdir -p ref
 	${E} ./all_sem_ref.sh -v 1 -j ../jparse/jsemtblgen -J ../jparse/jsemcgen.sh -- \
@@ -534,7 +535,7 @@ all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/
 # Given a correct set of chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
 # diff patch relative to the ref/*.reference.json.{c,h} files.
 #
-# rule should never be invoked by ../test_ioccc/prep.sh
+# This rule should never be invoked by ../test_ioccc/prep.sh.
 #
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
