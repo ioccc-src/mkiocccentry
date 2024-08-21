@@ -14,7 +14,7 @@
  * If you do find a problem with this code, please let the judges know.
  * To contact the judges please see:
  *
- *      https://www.ioccc.org/judges.html
+ *      https://www.ioccc.org/contact.html
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
