@@ -1,9 +1,12 @@
 #!/usr/bin/env make
 #
-# prog - an example Makefile <<=== change "an example Makefile" to a suitable title for entry
+# XXX - Please remove these 2 XXX-ed comment lines - XXX
+# XXX - Change "an example Makefile" in the line below to a suitable and short 1-line title for your entry - XXX
+# prog - an example Makefile
 #
-# Please copy this file into your entry directory under the name: Makefile
-# Modify the resulting Makefile as needed.
+# XXX - Please remove these 3 XXX-ed comment lines - XXX
+# XXX - Please copy this file into your entry directory under the name: Makefile - XXX
+# XXX - Modify the resulting Makefile as needed - especially lines with XXX's in them - XXX
 
 
 #############################
@@ -28,7 +31,6 @@ RM= rm
 #	CUNKNOWN in the next comment block.
 #
 # NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
-#
 #
 CSILENCE=
 
@@ -155,9 +157,9 @@ data: ${DATA}
 # one suggested way to run the program
 #
 try: ${PROG} ${DATA}
-	@# XXX - remove these 3 XXX-ed comment lines - XXX
-	@# XXX - notice how we do not assume that . is a component our PATH - XXX
-	@# XXX - change the next line as needed - XXX
+	@# XXX - Please remove these 3 XXX-ed comment lines - XXX
+	@# XXX - Notice how we do not assume that . is a component our PATH - XXX
+	@# XXX - Change the next line as needed - XXX
 	./${PROG} some arguments
 
 
