@@ -20,7 +20,6 @@ SHELL= bash
 # common tool locations
 #######################
 #
-CC= cc
 RM= rm
 
 # Common C compiler warnings to silence
