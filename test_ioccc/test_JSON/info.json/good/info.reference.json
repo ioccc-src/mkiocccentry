@@ -1,82 +1,166 @@
 {
-	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_info_version" : "1.16 2024-05-18",
-	"IOCCC_contest" : "IOCCC28",
-	"IOCCC_year" : 2024,
-	"mkiocccentry_version" : "1.0.7 2024-07-12",
-	"iocccsize_version" : "28.15 2024-06-27",
-	"chkentry_version" : "1.0.1 2024-03-02",
-	"fnamchk_version" : "1.0.2 2024-05-15",
-	"txzchk_version" : "1.0.8 2024-07-11",
-	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
-	"submit_slot" : 0,
-	"title" : "title-for-entry0",
-	"abstract" : "abstract for entry #0",
-	"tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1716103155.txz",
-	"rule_2a_size" : 61,
-	"rule_2b_size" : 38,
-	"empty_override" : false,
-	"rule_2a_override" : false,
-	"rule_2a_mismatch" : false,
-	"rule_2b_override" : false,
-	"highbit_warning" : false,
-	"nul_warning" : false,
-	"trigraph_warning" : false,
-	"wordbuf_warning" : false,
-	"ungetc_warning" : false,
-	"Makefile_override" : false,
-	"first_rule_is_all" : true,
-	"found_all_rule" : true,
-	"found_clean_rule" : true,
-	"found_clobber_rule" : true,
-	"found_try_rule" : true,
-	"test_mode" : false,
-	"manifest" : [
-		{"info_JSON" : ".info.json"},
-		{"auth_JSON" : ".auth.json"},
-		{"c_src" : "prog.c"},
-		{"Makefile" : "Makefile"},
-		{"remarks" : "remarks.md"},
-		{"extra_file" : "extra.06"},
-		{"extra_file" : "extra.07"},
-		{"extra_file" : "extra.08"},
-		{"extra_file" : "extra.09"},
-		{"extra_file" : "extra.10"},
-		{"extra_file" : "extra.11"},
-		{"extra_file" : "extra.12"},
-		{"extra_file" : "extra.13"},
-		{"extra_file" : "extra.14"},
-		{"extra_file" : "extra.15"},
-		{"extra_file" : "extra.16"},
-		{"extra_file" : "extra.17"},
-		{"extra_file" : "extra.18"},
-		{"extra_file" : "extra.19"},
-		{"extra_file" : "extra.20"},
-		{"extra_file" : "extra.21"},
-		{"extra_file" : "extra.22"},
-		{"extra_file" : "extra.23"},
-		{"extra_file" : "extra.24"},
-		{"extra_file" : "extra.25"},
-		{"extra_file" : "extra.26"},
-		{"extra_file" : "extra.27"},
-		{"extra_file" : "extra.28"},
-		{"extra_file" : "extra.29"},
-		{"extra_file" : "extra.30"},
-		{"extra_file" : "extra.31"},
-		{"extra_file" : "extra.32"},
-		{"extra_file" : "extra.33"},
-		{"extra_file" : "extra.34"},
-		{"extra_file" : "extra.35"},
-		{"extra_file" : "extra.36"},
-		{"extra_file" : "extra.37"},
-		{"extra_file" : "extra.38"},
-		{"extra_file" : "extra.39"},
-		{"extra_file" : "extra.40"},
-		{"extra_file" : "extra.41"},
-		{"extra_file" : "extra.42"}
-	],
-	"formed_timestamp" : 1716103155,
-	"formed_timestamp_usec" : 216193,
-	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1716103155
+    "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+    "IOCCC_info_version" : "1.16 2024-05-18",
+    "IOCCC_contest" : "IOCCC28",
+    "IOCCC_year" : 2024,
+    "mkiocccentry_version" : "1.0.7 2024-07-12",
+    "iocccsize_version" : "28.15 2024-06-27",
+    "chkentry_version" : "1.0.1 2024-03-02",
+    "fnamchk_version" : "1.0.2 2024-05-15",
+    "txzchk_version" : "1.0.8 2024-07-11",
+    "IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+    "submit_slot" : 0,
+    "title" : "title-for-entry0",
+    "abstract" : "abstract for entry #0",
+    "tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1716103155.txz",
+    "rule_2a_size" : 61,
+    "rule_2b_size" : 38,
+    "empty_override" : false,
+    "rule_2a_override" : false,
+    "rule_2a_mismatch" : false,
+    "rule_2b_override" : false,
+    "highbit_warning" : false,
+    "nul_warning" : false,
+    "trigraph_warning" : false,
+    "wordbuf_warning" : false,
+    "ungetc_warning" : false,
+    "Makefile_override" : false,
+    "first_rule_is_all" : true,
+    "found_all_rule" : true,
+    "found_clean_rule" : true,
+    "found_clobber_rule" : true,
+    "found_try_rule" : true,
+    "test_mode" : false,
+    "manifest" : [
+        {
+            "info_JSON" : ".info.json"
+        },
+        {
+            "auth_JSON" : ".auth.json"
+        },
+        {
+            "c_src" : "prog.c"
+        },
+        {
+            "Makefile" : "Makefile"
+        },
+        {
+            "remarks" : "remarks.md"
+        },
+        {
+            "extra_file" : "extra.06"
+        },
+        {
+            "extra_file" : "extra.07"
+        },
+        {
+            "extra_file" : "extra.08"
+        },
+        {
+            "extra_file" : "extra.09"
+        },
+        {
+            "extra_file" : "extra.10"
+        },
+        {
+            "extra_file" : "extra.11"
+        },
+        {
+            "extra_file" : "extra.12"
+        },
+        {
+            "extra_file" : "extra.13"
+        },
+        {
+            "extra_file" : "extra.14"
+        },
+        {
+            "extra_file" : "extra.15"
+        },
+        {
+            "extra_file" : "extra.16"
+        },
+        {
+            "extra_file" : "extra.17"
+        },
+        {
+            "extra_file" : "extra.18"
+        },
+        {
+            "extra_file" : "extra.19"
+        },
+        {
+            "extra_file" : "extra.20"
+        },
+        {
+            "extra_file" : "extra.21"
+        },
+        {
+            "extra_file" : "extra.22"
+        },
+        {
+            "extra_file" : "extra.23"
+        },
+        {
+            "extra_file" : "extra.24"
+        },
+        {
+            "extra_file" : "extra.25"
+        },
+        {
+            "extra_file" : "extra.26"
+        },
+        {
+            "extra_file" : "extra.27"
+        },
+        {
+            "extra_file" : "extra.28"
+        },
+        {
+            "extra_file" : "extra.29"
+        },
+        {
+            "extra_file" : "extra.30"
+        },
+        {
+            "extra_file" : "extra.31"
+        },
+        {
+            "extra_file" : "extra.32"
+        },
+        {
+            "extra_file" : "extra.33"
+        },
+        {
+            "extra_file" : "extra.34"
+        },
+        {
+            "extra_file" : "extra.35"
+        },
+        {
+            "extra_file" : "extra.36"
+        },
+        {
+            "extra_file" : "extra.37"
+        },
+        {
+            "extra_file" : "extra.38"
+        },
+        {
+            "extra_file" : "extra.39"
+        },
+        {
+            "extra_file" : "extra.40"
+        },
+        {
+            "extra_file" : "extra.41"
+        },
+        {
+            "extra_file" : "extra.42"
+        }
+    ],
+    "formed_timestamp" : 1716103155,
+    "formed_timestamp_usec" : 216193,
+    "timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
+    "min_timestamp" : 1716103155
 }

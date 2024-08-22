@@ -1,34 +1,34 @@
 {
-	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_auth_version" : "1.22 2024-05-18",
-	"IOCCC_contest" : "IOCCC28",
-	"IOCCC_year" : 2024,
-	"mkiocccentry_version" : "1.0.7 2024-07-12",
-	"chkentry_version" : "1.0.1 2024-03-02",
-	"fnamchk_version" : "1.0.2 2024-05-15",
-	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
-	"tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1716103155.txz",
-	"submit_slot" : 0,
-	"author_count" : 1,
-	"test_mode" : false,
-	"authors" : [
-		{
-			"name" : "author0 middle0 last0",
-			"location_code" : "AU",
-			"email" : "user0@example.com",
-			"url" : "https:\/\/host0.example.com\/index.html",
-			"alt_url" : null,
-			"mastodon" : "@mastodon0@example.com",
-			"github" : "@github0",
-			"affiliation" : null,
-			"past_winning_author" : false,
-			"default_handle" : true,
-			"author_handle" : "author0_middle0_last0",
-			"author_number" : 0
-		}
-	],
-	"formed_timestamp" : 1716103155,
-	"formed_timestamp_usec" : 506171,
-	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1716103155
+    "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+    "IOCCC_auth_version" : "1.22 2024-05-18",
+    "IOCCC_contest" : "IOCCC28",
+    "IOCCC_year" : 2024,
+    "mkiocccentry_version" : "1.0.7 2024-07-12",
+    "chkentry_version" : "1.0.1 2024-03-02",
+    "fnamchk_version" : "1.0.2 2024-05-15",
+    "IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+    "tarball" : "submit.12345678-1234-4321-abcd-1234567890ab-0.1716103155.txz",
+    "submit_slot" : 0,
+    "author_count" : 1,
+    "test_mode" : false,
+    "authors" : [
+        {
+            "name" : "author0 middle0 last0",
+            "location_code" : "AU",
+            "email" : "user0@example.com",
+            "url" : "https:\/\/host0.example.com\/index.html",
+            "alt_url" : null,
+            "mastodon" : "@mastodon0@example.com",
+            "github" : "@github0",
+            "affiliation" : null,
+            "past_winning_author" : false,
+            "default_handle" : true,
+            "author_handle" : "author0_middle0_last0",
+            "author_number" : 0
+        }
+    ],
+    "formed_timestamp" : 1716103155,
+    "formed_timestamp_usec" : 506171,
+    "timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
+    "min_timestamp" : 1716103155
 }

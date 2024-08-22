@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.4.2 2024-08-21
+
+Changed `mkiocccentry(1)` to form `.info.json` and `.auth.json` with
+multiples of 4 spaces and no TAB characters.
+
+Further simplified the `Makefile.example` file.
+
+
 ## Release 1.4.1 2024-08-17
 
 Add macros `ENTRY_VERSION` and `AUTHOR_VERSION` that correspond to the
