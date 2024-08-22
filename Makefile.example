@@ -18,9 +18,7 @@ SHELL= bash
 #######################
 #
 CC= cc
-MV= mv
 RM= rm
-TRUE= true
 
 # Common C compiler warnings to silence
 #
@@ -140,7 +138,7 @@ DATA=
 #################
 #
 all: data ${TARGET}
-	@${TRUE}
+	@:
 
 .PHONY: all data try clean clobber
 
@@ -152,14 +150,14 @@ ${PROG}: ${PROG}.c
 # data files
 #
 data: ${DATA}
-	@${TRUE}
+	@:
 
 # one suggested way to run the program
 #
 try: ${PROG} ${DATA}
-	@# remove these comments
-	@# notice how we do not assume that . is a component of the $PATH environment variable
-	@# change this next line as needed
+	@# XXX - remove these 3 XXX-ed comment lines - XXX
+	@# XXX - notice how we do not assume that . is a component our PATH - XXX
+	@# XXX - change the next line as needed - XXX
 	./${PROG} some arguments
 
 
