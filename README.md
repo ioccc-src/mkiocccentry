@@ -106,7 +106,7 @@ For more information and examples, try:
 man ./soup/man/man1/iocccsize.1
 ```
 
-NOTE: After doing a `make all`, this tool may be found as: `./iocccsize`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./iocccsize`.
 
 
 ### `txzchk`
@@ -133,27 +133,28 @@ For more information and examples, try:
 man ./soup/man/man1/txzchk.1
 ```
 
-NOTE: After doing a `make all`, this tool may be found as: `./txzchk`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./txzchk`.
 
 
 ###  `chkentry`
 
 The official **IOCCC** `.info.json` and `.auth.json` sanity checker tool.
-Invoked by `mkiocccentry` after the `.info.json` and `.auth.json` files have
-been created, it will attempt to validate the files. If it does not successfully
-validate the files there is a mismatch between what is expected and what is
-actually there and `mkiocccentry` will fail.
+Invoked by `mkiocccentry` on the `.info.json` file after it has been created and
+invoked on the `.auth.json` file after it has been created, it will attempt to
+validate the files. If there is any validation issue it is an error as there is
+a mismatch between what is expected and what is actually there; in this case
+`mkiocccentry` will fail.
 
 As a stand-alone tool it will report whether the files are validly formed.
 
-This tool was developed in 2022 by:
-
-*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
-
-with improvements made by:
+This tool was co-developed in 2022-2024 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 
 For more information and examples, try:
@@ -162,7 +163,7 @@ For more information and examples, try:
 man ./soup/man/man1/chkentry.1
 ```
 
-NOTE: After doing a `make all`, this tool may be found as: `./chkentry`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./chkentry`.
 
 
 ###  `fnamchk`
@@ -175,7 +176,7 @@ For more information and examples, try:
 man ./test_ioccc/man/man1/fnamchk.1
 ```
 
-NOTE: After doing a `make all`, this tool may be found as: `./test_ioccc/fnamchk`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./test_ioccc/fnamchk`.
 
 This tool was written in 2022 by:
 
@@ -196,7 +197,9 @@ Without any arguments, this tool produces a bug report file of the form:
 bug-report.YYYYMMDD.HHMMSS.txt
 ```
 
-This bug report file is intended to be uploaded to a [mkiocccentry repo related bug report](https://github.com/ioccc-src/mkiocccentry/issues).
+This bug report file is intended to be uploaded to a [mkiocccentry repo related
+bug
+report](https://github.com/ioccc-src/mkiocccentry/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml&title=%5BBug%5D+%3Ctitle%3E).
 
 This tool was written in 2022 by:
 
@@ -213,7 +216,9 @@ For more information and examples, try:
 man ./soup/man/man1/bug_report.1
 ```
 
-NOTE: This tool may be found as: `./bug_report.sh`.
+**NOTE**: this tool may be found as: `./bug_report.sh`.
+
+**NOTE**: this tool **MUST** be run from the mkiocccentry directory.
 
 
 ###  `location`
@@ -240,7 +245,7 @@ For more information and examples, try:
 man ./soup/man/man1/location.1
 ```
 
-NOTE: After doing a `make all`, this tool may be found as: `./soup/location`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./soup/location`.
 
 
 ## How do I submit my submission to the IOCCC?
