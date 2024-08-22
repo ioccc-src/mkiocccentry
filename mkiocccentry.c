@@ -4791,39 +4791,39 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "{\n") > 0 &&
-	json_fprintf_value_string(info_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "submit_slot", " : ", (long)infop->submit_slot, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "empty_override", " : ", infop->empty_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "rule_2a_override", " : ", infop->rule_2a_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "rule_2a_mismatch", " : ", infop->rule_2a_mismatch, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "rule_2b_override", " : ", infop->rule_2b_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "highbit_warning", " : ", infop->highbit_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "nul_warning", " : ", infop->nul_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "trigraph_warning", " : ", infop->trigraph_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "wordbuf_warning", " : ", infop->wordbuf_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "ungetc_warning", " : ", infop->ungetc_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "first_rule_is_all", " : ", infop->first_rule_is_all, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", infop->test_mode, ",\n") &&
-	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
+	json_fprintf_value_string(info_stream, "    ", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "submit_slot", " : ", (long)infop->submit_slot, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "title", " : ", infop->title, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "abstract", " : ", infop->abstract, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "tarball", " : ", infop->tarball, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "empty_override", " : ", infop->empty_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "rule_2a_override", " : ", infop->rule_2a_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "rule_2a_mismatch", " : ", infop->rule_2a_mismatch, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "rule_2b_override", " : ", infop->rule_2b_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "highbit_warning", " : ", infop->highbit_warning, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "nul_warning", " : ", infop->nul_warning, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "trigraph_warning", " : ", infop->trigraph_warning, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "wordbuf_warning", " : ", infop->wordbuf_warning, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "ungetc_warning", " : ", infop->ungetc_warning, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "first_rule_is_all", " : ", infop->first_rule_is_all, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
+	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {
 	errp(151, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
@@ -4832,12 +4832,21 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     /*
      * write mandatory files to the open .info.json file
      */
-    ret = json_fprintf_value_string(info_stream, "\t\t{", "info_JSON", " : ", INFO_JSON_FILENAME, "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "auth_JSON", " : ", AUTH_JSON_FILENAME, "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "c_src", " : ", infop->prog_c, "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "Makefile", " : ", infop->Makefile, "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
-				    ((infop->extra_count > 0) ?  "},\n" : "}\n"));
+    ret =                   fprintf(info_stream, "        {\n") > 0 &&
+	  json_fprintf_value_string(info_stream, "            ", "info_JSON", " : ", INFO_JSON_FILENAME, "\n") &&
+			    fprintf(info_stream, "        },\n") > 0 &&
+			    fprintf(info_stream, "        {\n") > 0 &&
+	  json_fprintf_value_string(info_stream, "            ", "auth_JSON", " : ", AUTH_JSON_FILENAME, "\n") &&
+			    fprintf(info_stream, "        },\n") > 0 &&
+			    fprintf(info_stream, "        {\n") > 0 &&
+	  json_fprintf_value_string(info_stream, "            ", "c_src", " : ", infop->prog_c, "\n") &&
+			    fprintf(info_stream, "        },\n") > 0 &&
+			    fprintf(info_stream, "        {\n") > 0 &&
+	  json_fprintf_value_string(info_stream, "            ", "Makefile", " : ", infop->Makefile, "\n") &&
+			    fprintf(info_stream, "        },\n") > 0 &&
+			    fprintf(info_stream, "        {\n") > 0 &&
+	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", infop->remarks_md, "\n") &&
+			    fprintf(info_stream, "        }%s\n", (infop->extra_count > 0) ?  "," : "") > 0;
     if (!ret) {
 	errp(152, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
@@ -4847,8 +4856,10 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
      * write extra files to the open .info.json file
      */
     for (i=0, q=infop->extra_file; i < infop->extra_count && *q != NULL; ++i, ++q) {
-        if (json_fprintf_value_string(info_stream, "\t\t{", "extra_file", " : ", *q,
-				     (((i+1) < infop->extra_count) ? "},\n" : "}\n")) != true) {
+	ret =                   fprintf(info_stream, "        {\n") > 0 &&
+              json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", *q, "\n") &&
+			        fprintf(info_stream, "        }%s\n", ((i+1) < infop->extra_count) ?  "," : "") > 0;
+	if (!ret) {
 	    errp(153, __func__, "fprintf error writing extra filename[%d] to %s", i, info_path);
 	    not_reached();
 	}
@@ -4858,11 +4869,11 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
      * write trailing part of info to the open .info.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(info_stream, "\t],\n") > 0 &&
-	json_fprintf_value_time_t(info_stream, "\t", "formed_timestamp", " : ", infop->tstamp, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", TIMESTAMP_EPOCH, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
+    ret = fprintf(info_stream, "    ],\n") > 0 &&
+	json_fprintf_value_time_t(info_stream, "    ", "formed_timestamp", " : ", infop->tstamp, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "timestamp_epoch", " : ", TIMESTAMP_EPOCH, ",\n") &&
+	json_fprintf_value_long(info_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
 	errp(154, __func__, "fprintf error writing trailing part of info to %s", info_path);
@@ -5064,19 +5075,19 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(auth_stream, "{\n") > 0 &&
-	json_fprintf_value_string(auth_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "tarball", " : ", authp->tarball, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "submit_slot", " : ", (long)authp->submit_slot, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "author_count", " : ", (long)authp->author_count, ",\n") &&
-	json_fprintf_value_bool(auth_stream, "\t", "test_mode", " : ", authp->test_mode, ",\n") &&
-	fprintf(auth_stream, "\t\"authors\" : [\n") > 0;
+	json_fprintf_value_string(auth_stream, "    ", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "tarball", " : ", authp->tarball, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "submit_slot", " : ", (long)authp->submit_slot, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "author_count", " : ", (long)authp->author_count, ",\n") &&
+	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
+	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
     if (!ret) {
 	errp(170, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
 	not_reached();
@@ -5090,20 +5101,20 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     for (i = 0; i < authp->author_count; ++i) {
 	struct author *ap = &(authp->author[i]);
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(auth_stream, "\t\t{\n") > 0 &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "name", " : ", ap->name, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "location_code", " : ", ap->location_code, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
-	    json_fprintf_value_bool(auth_stream, "\t\t\t", "past_winning_author", " : ", ap->past_winning_author, ",\n") &&
-	    json_fprintf_value_bool(auth_stream, "\t\t\t", "default_handle", " : ", ap->default_handle, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "\t\t\t", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
-	    json_fprintf_value_long(auth_stream, "\t\t\t", "author_number", " : ", ap->author_num, "\n") &&
-	    fprintf(auth_stream, "\t\t}%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
+	ret = fprintf(auth_stream, "        {\n") > 0 &&
+	    json_fprintf_value_string(auth_stream, "            ", "name", " : ", ap->name, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "location_code", " : ", ap->location_code, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "email", " : ", strnull(ap->email), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "url", " : ", strnull(ap->url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "github", " : ", strnull(ap->github), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "            ", "past_winning_author", " : ", ap->past_winning_author, ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "            ", "default_handle", " : ", ap->default_handle, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
+	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
+	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
 	if (ret == false) {
 	    errp(171, __func__, "fprintf error writing author %d info to %s", i, auth_path);
 	    not_reached();
@@ -5114,11 +5125,11 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
      * write trailing part of authorship to the open .auth.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(auth_stream, "\t],\n") > 0 &&
-	json_fprintf_value_time_t(auth_stream, "\t", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
-	json_fprintf_value_string(auth_stream, "\t", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
-	json_fprintf_value_long(auth_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
+    ret = fprintf(auth_stream, "    ],\n") > 0 &&
+	json_fprintf_value_time_t(auth_stream, "    ", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
 	errp(172, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
