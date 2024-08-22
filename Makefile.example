@@ -172,10 +172,3 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGET}
-
-
-######################################
-# optional include of 1337 hacker rulz
-######################################
-
--include 1337.mk ../1337.mk ../../1337.mk
