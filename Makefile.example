@@ -158,7 +158,7 @@ data: ${DATA}
 #
 try: ${PROG} ${DATA}
 	@# XXX - Please remove these 3 XXX-ed comment lines - XXX
-	@# XXX - Notice how we do not assume that . is a component our PATH - XXX
+	@# XXX - Notice how we do not assume that . is a component in our PATH - XXX
 	@# XXX - Change the next line as needed - XXX
 	./${PROG} some arguments
 
