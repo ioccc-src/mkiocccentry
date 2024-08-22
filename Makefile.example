@@ -15,11 +15,12 @@
 #
 SHELL= bash
 
-
 #######################
 # common tool locations
 #######################
 #
+CLANG= clang
+GCC= gcc
 RM= rm
 
 # Common C compiler warnings to silence
