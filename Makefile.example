@@ -1,12 +1,12 @@
 #!/usr/bin/env make
 #
 # XXX - Please remove these 3 XXX-ed comment lines - XXX
-# XXX - Hint: Lines with XXX's in them should be removed are you read them and consider their suggestions - XXX
-# XXX - Change "an example Makefile" in the line below to a suitable and short 1-line title for your entry - XXX
+# XXX - Hint: Lines with XXX's in them should be removed once you read them and consider their suggestions - XXX
+# XXX - Change "an example Makefile" in the line below to a suitable and short 1-line title for your submission - XXX
 # prog - an example Makefile
 #
 # XXX - Please remove these 3 XXX-ed comment lines - XXX
-# XXX - Please copy this file into your entry directory under the name: Makefile - XXX
+# XXX - Please copy this file into your submission directory under the name: Makefile - XXX
 # XXX - Modify the resulting Makefile as needed - especially lines with XXX's in them - XXX
 
 
