@@ -1,6 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.4.3 2024-08-23
+
+Added a number of test JSON files to demonstrate that the JSON parser is okay
+with mixed spacing (spaces and tabs or different number of spaces with or
+without tabs etc.), no spacing and so on, even though the `mkiocccentry(1)` tool
+will form json files with multiples of 4 spaces and no tabs.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.0.8 2024-08-23"`.
+
+
 ## Release 1.4.2 2024-08-21
 
 Changed `mkiocccentry(1)` to form `.info.json` and `.auth.json` with
