@@ -1,6 +1,7 @@
 *.[ao]
 *.dSYM/
 *~
+.sw[a-zA-Z0-9]
 .*.sw[a-zA-Z0-9]
 .DS_Store
 ._.DS_Store
