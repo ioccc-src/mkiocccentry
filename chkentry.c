@@ -79,7 +79,6 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] submission_dir\n"
     "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json auth.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
@@ -89,7 +88,6 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "\tsubmission_dir\tIOCCC submission directory with .info.json and auth.json files\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\n"
@@ -282,7 +280,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -378,9 +376,8 @@ main(int argc, char *argv[])
     argv += optind;
     switch (argc) {
     case 1:
-	submission_dir = argv[0];
-	info_filename = NULL;
-	auth_filename = NULL;
+	usage(3, program, "single argument mode is reserved for future use");	/*ooo*/
+	not_reached();
 	break;
     case 2:
 	submission_dir = NULL;

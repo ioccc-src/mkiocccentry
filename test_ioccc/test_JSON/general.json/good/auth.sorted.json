@@ -75,7 +75,7 @@
 	"formed_timestamp_usec" : 506171,
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"chkentry_version" : "1.0.1 2024-03-02",
+	"chkentry_version" : "1.0.2 2024-08-26",
 	"min_timestamp" : 1716103155,
 	"mkiocccentry_version" : "1.0.8 2024-08-23",
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",

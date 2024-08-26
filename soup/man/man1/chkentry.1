@@ -20,16 +20,6 @@
 .IR level \|]
 .RB [\| \-J
 .IR level \|]
-.RB [\| \-V \|]
-.RB [\| \-q \|]
-.I submission_dir
-.br
-.B chkentry
-.RB [\| \-h \|]
-.RB [\| \-v
-.IR level \|]
-.RB [\| \-J
-.IR level \|]
 .RB [\| \-q \|]
 .I info.json
 .I auth.json
@@ -62,10 +52,6 @@ is assumed to be a directory containing both
 and
 .I .auth.json
 files.
-The one argument form is equivalent to calling the command with two arguments:
-.I submission_dir/.info.json
-and
-.IR submission_dir/.auth.json .
 .PP
 As a sanity check, the
 .BR mkiocccentry (1)
@@ -205,7 +191,7 @@ Run the tool on an IOCCC entry located in the directory
 .sp
 .RS
 .ft B
- ./chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666
+ ./chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666/{.info,.auth}.json
 .ft R
 .RE
 .PP

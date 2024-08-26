@@ -26,7 +26,7 @@
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
 	"iocccsize_version" : "28.15 2024-06-27",
-	"chkentry_version" : "1.0.1 2024-03-02",
+	"chkentry_version" : "1.0.2 2024-08-26",
 	"min_timestamp" : 1716103155,
 	"mkiocccentry_version" : "1.0.8 2024-08-23",
 	"nul_warning" : false,

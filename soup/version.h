@@ -106,7 +106,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "1.0.2 2024-08-26"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.

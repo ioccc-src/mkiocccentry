@@ -4,7 +4,7 @@
 "IOCCC_contest" : "IOCCC28",
    "IOCCC_year" : 2024,
 "mkiocccentry_version" : "1.0.8 2024-08-23",
-  "chkentry_version" : "1.0.1 2024-03-02",
+  "chkentry_version" : "1.0.2 2024-08-26",
 "fnamchk_version" : "1.0.2 2024-05-15",
 "IOCCC_contest_id" : "test",
 "tarball" : "submit.test-0.1716103155.txz",
