@@ -1,7 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.4.4 2024-08-28
+## Release 1.5 2024-08-27
+
+Prep for "**Release 1.5 2024-08-27**".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.4 2024-08-11"
+to "1.5 2024-08-27".
+
+
+## Release 1.4.4 2024-08-27
 
 Running `chkentry(1)` with a single argument is now reserved for future use
 (related to a winning IOCCC entry instead of a submission).
