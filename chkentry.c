@@ -474,7 +474,7 @@ main(int argc, char *argv[])
      * case: paranoia
      */
     } else {
-	err(26, __func__, "we should not get here; please report, making sure to use make bug_report");
+	err(26, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
 	not_reached();
     }
     info_path = calloc_path(submission_dir, info_filename);
