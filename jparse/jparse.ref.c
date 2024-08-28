@@ -2553,7 +2553,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 /*
  * low_byte_scan - detect certain low byte values
  *
- * A scan data for bytes in the class: [\x00-\x08\x0e-\x1f]
+ * Scan data for bytes in the class: [\x00-\x08\x0e-\x1f]
  *
  * A flex programmer's apology:
  *
