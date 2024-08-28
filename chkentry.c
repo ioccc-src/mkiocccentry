@@ -3,11 +3,14 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool was improved by:
+ * This tool and the JSON parser were co-developed in 2022-2024 by Cody Boone
+ * Ferguson and Landon Curt Noll:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -15,30 +18,6 @@
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
- *
- * Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
- *
- * Permission to use, copy, modify, and distribute this software and
- * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright, this permission notice and text
- * this comment, and the disclaimer below appear in all of the following:
- *
- *       supporting documentation
- *       source copies
- *       source works derived from this source
- *       binaries derived from this source or from derived source
- *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * Share and enjoy! :-)
  */
 
 
@@ -50,7 +29,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
-#include <fcntl.h>		/* for open() */
 
 /*
  * chkentry - check JSON files in an IOCCC submission
@@ -105,143 +83,7 @@ static const char * const usage_msg =
 /*
  * functions
  */
-static FILE *open_json_dir_file(char const *dir, char const *file);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-
-
-/*
- * open_json_dir_file - open a readable JSON file in a given directory
- *
- * Temporarily chdir to the directory, if non-NULL, try to open the file,
- * and then chdir back to the current directory.
- *
- * If dir == NULL, just try to open the file without a chdir.
- *
- * given:
- *	dir	directory into which we will temporarily chdir or
- *		    NULL ==> do not chdir
- *	file	path of readable JSON file to open
- *
- * returns:
- *	open readable JSON file stream
- *
- * NOTE: This function does not return if path is NULL,
- *	 if we cannot chdir to a non-NULL dir, if not a readable file,
- *	 or if unable to open file.
- *
- * NOTE: This function will NOT return NULL.
- */
-static FILE *
-open_json_dir_file(char const *dir, char const *file)
-{
-    FILE *ret_stream = NULL;		/* open file stream to return */
-    int ret = 0;		/* libc function return */
-    int cwd = -1;		/* current working directory */
-
-    /*
-     * firewall
-     */
-    if (file == NULL) {
-	err(10, __func__, "called with NULL file");
-	not_reached();
-    }
-
-    /*
-     * note the current directory so we can restore it later, after the chdir(work_dir) below
-     */
-    errno = 0;                  /* pre-clear errno for errp() */
-    cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-    if (cwd < 0) {
-        errp(11, __func__, "cannot open .");
-        not_reached();
-    }
-
-    /*
-     * Temporarily chdir if dir is non-NULL
-     */
-    if (dir != NULL && cwd >= 0) {
-
-	/*
-	 * check if we can search / work within the directory
-	 */
-	if (!exists(dir)) {
-	    err(12, __func__, "directory does not exist: %s", dir);
-	    not_reached();
-	}
-	if (!is_dir(dir)) {
-	    err(13, __func__, "is not a directory: %s", dir);
-	    not_reached();
-	}
-	if (!is_exec(dir)) {
-	    err(14, __func__, "directory is not searchable: %s", dir);
-	    not_reached();
-	}
-
-	/*
-	 * chdir to to the directory
-	 */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = chdir(dir);
-	if (ret < 0) {
-	    errp(15, __func__, "cannot cd %s", dir);
-	    not_reached();
-	}
-    }
-
-    /*
-     * must be a readable file
-     */
-    if (!exists(file)) {
-	err(16, __func__, "file does not exist: %s", file);
-	not_reached();
-    }
-    if (!is_file(file)) {
-	err(17, __func__, "file is not a regular file: %s", file);
-	not_reached();
-    }
-    if (!is_read(file)) {
-	err(18, __func__, "file is not a readable file: %s", file);
-	not_reached();
-    }
-
-    /*
-     * open the readable JSON file
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    ret_stream = fopen(file, "r");
-    if (ret_stream == NULL) {
-	errp(19, __func__, "cannot open file: %s", file);
-	not_reached();
-    }
-
-    /*
-     * if we did a chdir to dir, chdir back to cwd
-     */
-    if (dir != NULL && cwd >= 0) {
-
-	/*
-	 * switch back to the previous current directory
-	 */
-	errno = 0;                  /* pre-clear errno for errp() */
-	ret = fchdir(cwd);
-	if (ret < 0) {
-	    errp(20, __func__, "cannot fchdir to the previous current directory");
-	    not_reached();
-	}
-	errno = 0;                  /* pre-clear errno for errp() */
-	ret = close(cwd);
-	if (ret < 0) {
-	    errp(21, __func__, "close of previous current directory failed");
-	    not_reached();
-	}
-    }
-
-    /*
-     * return open stream
-     */
-    return ret_stream;
-}
-
 
 /*
  * usage - print usage to stderr
@@ -423,9 +265,9 @@ main(int argc, char *argv[])
 	 * open the .info.json file under submission_dir
 	 */
 	info_filename = ".info.json";
-	info_stream = open_json_dir_file(submission_dir, info_filename);
+	info_stream = open_dir_file(submission_dir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(22, __func__, "info_stream = open_json_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
+	    err(22, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
 	    not_reached();
 	}
 
@@ -433,9 +275,9 @@ main(int argc, char *argv[])
 	 * open the .auth.json file under submission_dir
 	 */
 	auth_filename = ".auth.json";
-	auth_stream = open_json_dir_file(submission_dir, auth_filename);
+	auth_stream = open_dir_file(submission_dir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(23, __func__, "auth_stream = open_json_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
+	    err(23, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
 	    not_reached();
 	}
 
@@ -448,9 +290,9 @@ main(int argc, char *argv[])
 	 * open the .info.json file unless it is .
 	 */
 	if (strcmp(info_filename, ".") != 0) {
-	    info_stream = open_json_dir_file(NULL, info_filename);
+	    info_stream = open_dir_file(NULL, info_filename);
 	    if (info_stream == NULL) { /* paranoia */
-		err(24, __func__, "open_json_dir_file for returned NULL for .info.json path: %s", info_filename);
+		err(24, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
 		not_reached();
 	    }
 	} else {
@@ -461,9 +303,9 @@ main(int argc, char *argv[])
 	 * open the .auth.json file unless it is .
 	 */
 	if (strcmp(auth_filename, ".") != 0) {
-	    auth_stream = open_json_dir_file(NULL, auth_filename);
+	    auth_stream = open_dir_file(NULL, auth_filename);
 	    if (auth_stream == NULL) { /* paranoia */
-		err(25, __func__, "open_json_dir_file for returned NULL for .auth.json path: %s", auth_filename);
+		err(25, __func__, "open_dir_file returned NULL for .auth.json path: %s", auth_filename);
 		not_reached();
 	    }
 	} else {
