@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.2 2024-08-28
+
+Remove dependence of `jparse/jsemtblgen.h` on `../iocccsize.h`.
+
+
 ## Release 1.5.1 2024-08-28
 
 Move `open_json_dir_file()` from `chkentry.c` to `open_dir_file()` in

@@ -941,9 +941,8 @@ jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
     json_util.h util.h
 jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
     jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
-jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../iocccsize.h jparse.h \
-    jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
-    json_util.h util.h
+jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
 json_parse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.c \
     json_parse.h json_util.h util.h
 json_sem.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_sem.c \
