@@ -221,6 +221,7 @@ extern void clearerr_or_fclose(FILE *stream);
 extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
 extern char *calloc_path(char const *dirname, char const *filename);
+extern FILE *open_dir_file(char const *dir, char const *file);
 
 extern size_t count_char(char const *str, int ch);
 

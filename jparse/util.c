@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <poll.h>
+#include <fcntl.h>		/* for open() */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -4423,6 +4424,141 @@ calloc_path(char const *dirname, char const *filename)
     return buf;
 }
 
+/*
+ * open_dir_file - open a readable file in a given directory
+ *
+ * Temporarily chdir to the directory, if non-NULL, try to open the file,
+ * and then chdir back to the current directory.
+ *
+ * If dir == NULL, just try to open the file without a chdir.
+ *
+ * given:
+ *	dir	directory into which we will temporarily chdir or
+ *		    NULL ==> do not chdir
+ *	file	path of readable file to open
+ *
+ * returns:
+ *	open readable file stream
+ *
+ * NOTE: This function does not return if path is NULL,
+ *	 if we cannot chdir to a non-NULL dir, if not a readable file,
+ *	 or if unable to open file.
+ *
+ * NOTE: This function will NOT return NULL.
+ */
+FILE *
+open_dir_file(char const *dir, char const *file)
+{
+    FILE *ret_stream = NULL;		/* open file stream to return */
+    int ret = 0;		/* libc function return */
+    int cwd = -1;		/* current working directory */
+
+    /*
+     * firewall
+     */
+    if (file == NULL) {
+	err(158, __func__, "called with NULL file");
+	not_reached();
+    }
+
+    /*
+     * note the current directory so we can restore it later, after the chdir(work_dir) below
+     */
+    errno = 0;                  /* pre-clear errno for errp() */
+    cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+    if (cwd < 0) {
+        errp(159, __func__, "cannot open .");
+        not_reached();
+    }
+
+    /*
+     * Temporarily chdir if dir is non-NULL
+     */
+    if (dir != NULL && cwd >= 0) {
+
+	/*
+	 * check if we can search / work within the directory
+	 */
+	if (!exists(dir)) {
+	    err(160, __func__, "directory does not exist: %s", dir);
+	    not_reached();
+	}
+	if (!is_dir(dir)) {
+	    err(161, __func__, "is not a directory: %s", dir);
+	    not_reached();
+	}
+	if (!is_exec(dir)) {
+	    err(162, __func__, "directory is not searchable: %s", dir);
+	    not_reached();
+	}
+
+	/*
+	 * chdir to to the directory
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = chdir(dir);
+	if (ret < 0) {
+	    errp(163, __func__, "cannot cd %s", dir);
+	    not_reached();
+	}
+    }
+
+    /*
+     * must be a readable file
+     */
+    if (!exists(file)) {
+	err(164, __func__, "file does not exist: %s", file);
+	not_reached();
+    }
+    if (!is_file(file)) {
+	err(165, __func__, "file is not a regular file: %s", file);
+	not_reached();
+    }
+    if (!is_read(file)) {
+	err(166, __func__, "file is not a readable file: %s", file);
+	not_reached();
+    }
+
+    /*
+     * open the readable file
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret_stream = fopen(file, "r");
+    if (ret_stream == NULL) {
+	errp(167, __func__, "cannot open file: %s", file);
+	not_reached();
+    }
+
+    /*
+     * if we did a chdir to dir, chdir back to cwd
+     */
+    if (dir != NULL && cwd >= 0) {
+
+	/*
+	 * switch back to the previous current directory
+	 */
+	errno = 0;                  /* pre-clear errno for errp() */
+	ret = fchdir(cwd);
+	if (ret < 0) {
+	    errp(168, __func__, "cannot fchdir to the previous current directory");
+	    not_reached();
+	}
+	errno = 0;                  /* pre-clear errno for errp() */
+	ret = close(cwd);
+	if (ret < 0) {
+	    errp(169, __func__, "close of previous current directory failed");
+	    not_reached();
+	}
+    }
+
+    /*
+     * return open stream
+     */
+    return ret_stream;
+}
+
+
+
 
 /*
  * count_char - count the number of instances of a char in the string
@@ -4444,7 +4580,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(158, __func__, "given NULL str");
+	err(170, __func__, "given NULL str");
 	not_reached();
     }
 

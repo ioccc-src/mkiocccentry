@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.1 2024-08-28
+
+Move `open_json_dir_file()` from `chkentry.c` to `open_dir_file()` in
+`jparse/util.c`.
+
+Updated `MKIOCCCENTRY_REPO_VERSION` version to "1.5.1 2024-08-28".
+
+
 ## Release 1.5 2024-08-27
 
 Prep for "**Release 1.5 2024-08-27**".
