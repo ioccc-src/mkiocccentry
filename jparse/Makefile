@@ -930,28 +930,34 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.c jparse.h \
-    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
-    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \
-    jparse.tab.c jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h \
+jparse.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h jparse.c \
+    jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.ref.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    jparse.h jparse.ref.c jparse.tab.h json_parse.h json_sem.h json_util.h \
+    util.h
+jparse.tab.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    jparse.h jparse.lex.h jparse.tab.c jparse.tab.h json_parse.h json_sem.h \
     json_util.h util.h
-jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
-jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
-    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
-json_parse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.c \
-    json_parse.h json_util.h util.h
-json_sem.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_sem.c \
+jparse.tab.ref.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    jparse.h jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h \
     json_sem.h json_util.h util.h
-json_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_util.c \
+jparse_main.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    jparse.h jparse.tab.h jparse_main.c jparse_main.h json_parse.h \
+    json_sem.h json_util.h util.h
+jsemtblgen.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    jparse.h jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
     json_util.h util.h
-jstrdecode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
-    jstrdecode.c jstrdecode.h util.h
-jstrencode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
-    jstrencode.c jstrencode.h util.h
-util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.c util.h
-verge.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.h verge.c verge.h
+json_parse.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    json_parse.c json_parse.h json_util.h util.h
+json_sem.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    json_parse.h json_sem.c json_sem.h json_util.h util.h
+json_util.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    json_parse.h json_util.c json_util.h util.h
+jstrdecode.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    json_parse.h jstrdecode.c jstrdecode.h util.h
+jstrencode.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
+    json_parse.h jstrencode.c jstrencode.h util.h
+util.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h util.c \
+    util.h
+verge.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h util.h \
+    verge.c verge.h

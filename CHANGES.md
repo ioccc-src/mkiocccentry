@@ -5,6 +5,10 @@
 
 Remove dependence of `jparse/jsemtblgen.h` on `../iocccsize.h`.
 
+Update `dyn_array/`, `dbg/`, `jparse/` trees as per their GitHub repos.
+
+Require `MKIOCCCENTRY_SRC` to be defined in order to compile.
+
 
 ## Release 1.5.1 2024-08-28
 

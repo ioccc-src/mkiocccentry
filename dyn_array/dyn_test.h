@@ -34,12 +34,16 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
 
 /*
  * official versions
  */
-#define DYN_TEST_VERSION "1.10 2023-08-05"	/* format: major.minor YYYY-MM-DD */
+#define DYN_TEST_VERSION "1.10.1 2024-08-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * dyn_array - dynamic array facility

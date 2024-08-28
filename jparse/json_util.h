@@ -25,7 +25,11 @@
 /*
  * dyn_array - dynamic array facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dyn_array/dyn_array.h"
+#else
+#include <dyn_array.h>
+#endif
 
 /*
  * util - utilities and macros

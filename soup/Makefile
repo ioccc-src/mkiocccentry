@@ -173,7 +173,7 @@ WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 LDFLAGS=
 
 # how to compile
-CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= -DMKIOCCCENTRY_SRC ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 

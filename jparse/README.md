@@ -1,5 +1,14 @@
 # jparse - JSON parser written in C
 
+## WARNING: THIS REPO IS STILL BEING POPULATED
+
+The code in this parser (library and applications) relies on a couple of
+libraries that are not currently _here_. This means that the library is **NOT** yet
+ready for other people, at least not easily. This will be resolved in the
+hopefully not too distant future, as time is found to do so. Once this is done
+this note will be removed. Thank you.
+
+## The real README.md
 
 `jparse` is a JSON parser (a stand-alone tool and a library) written in C with
 the help of `flex(1)` and `bison(1)`. It was co-developed in 2022 by:

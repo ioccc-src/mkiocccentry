@@ -31,7 +31,11 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
 
 /*
  * util - common utility functions for the IOCCC toolkit
@@ -41,7 +45,11 @@
 /*
  * dyn_array - dynamic array facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dyn_array/dyn_array.h"
+#else
+#include <dyn_array.h>
+#endif
 
 /*
  * json_util - general JSON parser utility support functions

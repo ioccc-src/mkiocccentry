@@ -53,13 +53,17 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
 
 
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.3 2023-02-04"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.3.1 2024-08-28"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

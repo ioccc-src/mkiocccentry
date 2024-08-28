@@ -32,7 +32,11 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
+#if defined(MKIOCCCENTRY_SRC)
 #include "../dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
 
 /*
  * json_sem - JSON semantics support

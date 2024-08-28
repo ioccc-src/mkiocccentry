@@ -640,13 +640,17 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
-    ../json_util.h ../util.h jnum_chk.c jnum_chk.h
-jnum_gen.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
-    ../json_util.h ../util.h jnum_gen.c jnum_gen.h
-jnum_header.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
-    ../json_util.h ../util.h jnum_chk.h jnum_header.c
-jnum_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
-    ../json_util.h ../util.h jnum_chk.h jnum_test.c
-pr_jparse_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../util.h \
-    pr_jparse_test.c
+jnum_chk.o: ../json_parse.h ../json_util.h ../util.h \
+    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.c \
+    jnum_chk.h
+jnum_gen.o: ../json_parse.h ../json_util.h ../util.h \
+    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_gen.c \
+    jnum_gen.h
+jnum_header.o: ../json_parse.h ../json_util.h ../util.h \
+    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.h \
+    jnum_header.c
+jnum_test.o: ../json_parse.h ../json_util.h ../util.h \
+    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.h \
+    jnum_test.c
+pr_jparse_test.o: ../util.h /usr/local/include/dbg.h \
+    /usr/local/include/dyn_array.h pr_jparse_test.c
