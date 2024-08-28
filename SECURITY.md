@@ -5,7 +5,7 @@
 Only the [most recent mkiocccentry repo release version](https://github.com/ioccc-src/mkiocccentry/releases)
 is being supported with security updates.
 
-To determine your release version. see the `MKIOCCCENTRY_REPO_VERSION`
+To determine your release version. See the `MKIOCCCENTRY_REPO_VERSION`
 value as defined in the `soup/version.h` file.
 
 ## Reporting a Vulnerability
