@@ -1028,7 +1028,7 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # If you are not someone who maintains this repo, the rules in this section
 # are probably not for you.
 #
-# p.s. Yes, we know about "git Submodules".  However we believe that "git Submodules"
+# p.s. Yes, we know about "git submodules".  However we believe that "git submodules"
 #      are "not ready for prime time" / not ready for production as of 2023 Aug 05
 #      (the date when this comment was updated).
 
