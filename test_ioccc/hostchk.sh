@@ -63,7 +63,7 @@ CC="$(type -P cc 2>/dev/null)"
 if [[ -z $CC ]]; then
     CC="/usr/bin/cc"
 fi
-export HOSTCHK_VERSION="1.0.1 2023-02-22"
+export HOSTCHK_VERSION="1.0.2 2024-08-28"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f] [-Z topdir]
 
     -h			    Print help and exit
@@ -237,9 +237,8 @@ if [[ -n $F_FLAG ]]; then
     #
     printf "%s\\n%s\\n" "$(grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
 	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
-	"$TOPDIR"/jparse/test_jparse/*.[hc] | grep -F -v '<dbg.h' | grep -F -v '<dyn_array.h>' |
-	cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
-	    "${CC}" -DMKIOCCCENTRY_SRC -x c - -o "$PROG_FILE"
+	"$TOPDIR"/jparse/test_jparse/*.[hc]|grep -vE '<dbg\.h>|<dyn_array\.h>' |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
+	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
 	EXIT_CODE=14	# will exit 14 at the end unless EXIT_CODE is changed later on

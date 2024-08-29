@@ -1,6 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.3 2024-08-28
+
+Fix `hostchk.sh` that was broken with the recent change of `MKIOCCCENTRY_SRC`.
+New version for hostchk.sh: `"1.0.2 2024-08-28"`.
+
+
 ## Release 1.5.2 2024-08-28
 
 Remove dependence of `jparse/jsemtblgen.h` on `../iocccsize.h`.
