@@ -151,14 +151,18 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL=
+
 # linker options
 #
 LDFLAGS=
 
 # how to compile
 #
-CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
-#CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
+CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
+#CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 
 ###############
@@ -559,9 +563,9 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${MAKE} local_dir_tags
+	${E} ${MAKE} local_dir_tags C_SPECIAL=${C_SPECIAL}
 	${Q} echo
-	${E} ${MAKE} all_tags
+	${E} ${MAKE} all_tags C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -675,7 +679,7 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \

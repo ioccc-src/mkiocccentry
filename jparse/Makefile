@@ -153,13 +153,17 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unused-but-set-variable -Wno-char-subscripts
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL=
+
 # linker options
 #
 LDFLAGS=
 
 # how to compile
-CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
-#CFLAGS= -O3 -g3 -pedantic -Wall -Werror
+CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
+#CFLAGS= -O3 -g3 -pedantic -Wall -Werror ${C_SPECIAL}
 
 
 ###############
@@ -501,16 +505,16 @@ run_flex-v7: verge sorry.tm.ca.h
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json C_SPECIAL=${C_SPECIAL}
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json C_SPECIAL=${C_SPECIAL}
 
 
 ####################################
@@ -554,12 +558,12 @@ man/man8/jparse_test.8:
 parser: jparse.y jparse.l
 	${RM} -f jparse.tab.c jparse.tab.h
 	@# make jparse.tab.c implies make jparse.tab.h too
-	${E} ${MAKE} jparse.tab.c
-	${E} ${MAKE} jparse.tab.o
+	${E} ${MAKE} jparse.tab.c C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} jparse.tab.o C_SPECIAL=${C_SPECIAL}
 	${RM} -f jparse.c jparse.lex.h
 	@# make jparse.c implies make jparse.lex.h too
-	${E} ${MAKE} jparse.c
-	${E} ${MAKE} jparse.o
+	${E} ${MAKE} jparse.c C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} jparse.o C_SPECIAL=${C_SPECIAL}
 	${RM} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
 	${RM} -f jparse.tab.ref.h
@@ -574,7 +578,7 @@ parser: jparse.y jparse.l
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse.y jparse.l
-	${E} ${MAKE} parser RUN_O_FLAG='-o'
+	${E} ${MAKE} parser RUN_O_FLAG='-o' C_SPECIAL=${C_SPECIAL}
 
 # load reference code from the previous successful make parser
 #
@@ -614,7 +618,7 @@ rebuild_jnum_test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -628,7 +632,7 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -643,7 +647,7 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -666,7 +670,7 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -701,7 +705,7 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -777,14 +781,14 @@ tags:
 	fi
 	${Q} for dir in ../dbg ../dyn_alloc; do \
 	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
-		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
-		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
+		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
+		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
 	    fi; \
 	done
 	${Q} echo
-	${E} ${MAKE} local_dir_tags
+	${E} ${MAKE} local_dir_tags C_SPECIAL=${C_SPECIAL}
 	${Q} echo
-	${E} ${MAKE} all_tags
+	${E} ${MAKE} all_tags C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -805,7 +809,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${Q} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
@@ -818,7 +822,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${Q} echo
 	${Q} ${RM} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc test_jparse; do \
@@ -835,7 +839,7 @@ legacy_clean: test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
@@ -845,7 +849,7 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
@@ -871,7 +875,7 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
 	${RM} -f jsemcgen.out.*
@@ -883,7 +887,7 @@ install: all test_jparse/Makefile install_man
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
@@ -899,7 +903,7 @@ install: all test_jparse/Makefile install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
@@ -915,7 +919,7 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
 	      ${SED} -e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
@@ -930,34 +934,28 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h jparse.c \
-    jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h util.h
-jparse.ref.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    jparse.h jparse.ref.c jparse.tab.h json_parse.h json_sem.h json_util.h \
-    util.h
-jparse.tab.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    jparse.h jparse.lex.h jparse.tab.c jparse.tab.h json_parse.h json_sem.h \
+jparse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.c jparse.h \
+    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.ref.c \
+    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.tab.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.lex.h \
+    jparse.tab.c jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
+    jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h \
     json_util.h util.h
-jparse.tab.ref.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    jparse.h jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h \
+jparse_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jparse_main.c jparse_main.h json_parse.h json_sem.h json_util.h util.h
+jsemtblgen.o: ../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h jparse.tab.h \
+    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
+json_parse.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.c \
+    json_parse.h json_util.h util.h
+json_sem.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_sem.c \
     json_sem.h json_util.h util.h
-jparse_main.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    jparse.h jparse.tab.h jparse_main.c jparse_main.h json_parse.h \
-    json_sem.h json_util.h util.h
-jsemtblgen.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    jparse.h jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
+json_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h json_util.c \
     json_util.h util.h
-json_parse.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    json_parse.c json_parse.h json_util.h util.h
-json_sem.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    json_parse.h json_sem.c json_sem.h json_util.h util.h
-json_util.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    json_parse.h json_util.c json_util.h util.h
-jstrdecode.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    json_parse.h jstrdecode.c jstrdecode.h util.h
-jstrencode.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h \
-    json_parse.h jstrencode.c jstrencode.h util.h
-util.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h util.c \
-    util.h
-verge.o: /usr/local/include/dbg.h /usr/local/include/dyn_array.h util.h \
-    verge.c verge.h
+jstrdecode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
+    jstrdecode.c jstrdecode.h util.h
+jstrencode.o: ../dbg/dbg.h ../dyn_array/dyn_array.h json_parse.h \
+    jstrencode.c jstrencode.h util.h
+util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.c util.h
+verge.o: ../dbg/dbg.h ../dyn_array/dyn_array.h util.h verge.c verge.h

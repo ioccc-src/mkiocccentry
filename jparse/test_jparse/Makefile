@@ -154,6 +154,10 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL=
+
 # linker options
 #
 LDFLAGS=
@@ -162,8 +166,8 @@ LDFLAGS=
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
-#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
+CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
+#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 
 ###############
@@ -334,13 +338,13 @@ pr_jparse_test: pr_jparse_test.o ../jparse.a ../../dyn_array/dyn_array.a ../../d
 #########################################################
 
 ../../dbg/dbg.a: ../../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 ../../dyn_array/dyn_array.a: ../../dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 ../jparse.a: ../Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C .. extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C .. extern_liba C_SPECIAL=${C_SPECIAL}
 
 
 ####################################
@@ -512,14 +516,14 @@ tags:
 	${S} echo
 	${Q} for dir in ../../dbg ../../dyn_alloc ..; do \
 	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
-		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
-		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags; \
+		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
+		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
 	    fi; \
 	done
 	${Q} echo
-	${E} ${MAKE} local_dir_tags
+	${E} ${MAKE} local_dir_tags C_SPECIAL=${C_SPECIAL}
 	${Q} echo
-	${E} ${MAKE} all_tags
+	${E} ${MAKE} all_tags C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -623,7 +627,7 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i\.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I\. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
+	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
 	      ${SED} -e 's;\.\./\.\./jparse/\.\./dyn_array/;../../dyn_array/;g' \
 	             -e 's;\.\./\.\./dyn_array/\.\./dbg/;../../dbg/;g' \
 	             -e 's;\.\./\.\./jparse/;../;g' | \
@@ -640,17 +644,13 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_chk.o: ../json_parse.h ../json_util.h ../util.h \
-    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.c \
-    jnum_chk.h
-jnum_gen.o: ../json_parse.h ../json_util.h ../util.h \
-    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_gen.c \
-    jnum_gen.h
-jnum_header.o: ../json_parse.h ../json_util.h ../util.h \
-    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.h \
-    jnum_header.c
-jnum_test.o: ../json_parse.h ../json_util.h ../util.h \
-    /usr/local/include/dbg.h /usr/local/include/dyn_array.h jnum_chk.h \
-    jnum_test.c
-pr_jparse_test.o: ../util.h /usr/local/include/dbg.h \
-    /usr/local/include/dyn_array.h pr_jparse_test.c
+jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_chk.c jnum_chk.h
+jnum_gen.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_gen.c jnum_gen.h
+jnum_header.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_chk.h jnum_header.c
+jnum_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../json_parse.h \
+    ../json_util.h ../util.h jnum_chk.h jnum_test.c
+pr_jparse_test.o: ../../dbg/dbg.h ../../dyn_array/dyn_array.h ../util.h \
+    pr_jparse_test.c

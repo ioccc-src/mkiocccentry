@@ -14,6 +14,41 @@ Remove dependence of `jparse/jsemtblgen.h` on `../iocccsize.h`.
 Update `dyn_array/`, `dbg/`, `jparse/` trees as per their GitHub repos.
 
 Require `MKIOCCCENTRY_SRC` to be defined in order to compile.
+We add `C_SPECIAL=${C_SPECIAL}` to all calls to `${MAKE}` in
+the `Makefile`.
+
+Added `${C_SPECIAL}` make variable so we can define special things
+on the compile line.  Bu default we use `C_SPECIAL= -DMKIOCCCENTRY_SRC`.
+
+Improved the `make dbg.help`, and `make dyn_array.help` and `make jparse.help`.
+Removed `make dgb.replace_from_clone`, `make dyn_array.replace_from_clone`,
+and `make parse.replace_from_clone`.
+
+When `make dbg.update_from_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-DMKIOCCCENTRY_SRC`.
+
+When `make dyn_array.update_from_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-DMKIOCCCENTRY_SRC`.
+
+When `make jparse.update_from_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-DMKIOCCCENTRY_SRC`.
+
+The above 3 items allows us to clone from the repo and then to force
+`make depend` under `-DMKIOCCCENTRY_SRC` so that include files for
+`dbg` and `dyn_array` will be found under this directory tree.
+
+When `make dbg.update_into_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-UMKIOCCCENTRY_SRC`.
+
+When `make dyn_array.update_into_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-UMKIOCCCENTRY_SRC`.
+
+When `make jparse.update_into_clone` is used, we also perform
+a `make depend` where we force `C_SPECIAL=-UMKIOCCCENTRY_SRC`.
+
+The above 3 items allows us to clone from the repo and then to force
+`make depend` under `-UMKIOCCCENTRY_SRC` so that include files for
+`dbg` and `dyn_array` will be found under `/usr/local/include`.
 
 
 ## Release 1.5.1 2024-08-28

@@ -163,6 +163,10 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL= -DMKIOCCCENTRY_SRC
+
 # linker options
 #
 LDFLAGS=
@@ -171,7 +175,7 @@ LDFLAGS=
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= -DMKIOCCCENTRY_SRC ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 
 ###############

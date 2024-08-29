@@ -110,8 +110,8 @@ which gives more information about the most important functions.
 
 Although the scanner and parser are both re-entrant, only one parse at one time
 in a process has been tested. The testing of more than one parse at the same
-time is way out of scope of this repo but will be tested more as I (@xexyl, Cody
-Boone Ferguson) move this to a separate repo.
+time might be done at a later time but that will only happen if a tool requires
+it.
 
 If it's not clear this means that having more than one parse active in the same
 process at the same time is not tested so even though it should be okay there

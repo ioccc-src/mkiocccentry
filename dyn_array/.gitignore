@@ -1,9 +1,11 @@
+*~
+.DS_Store
+/Makefile.local
+/NOTES
 *.[ao]
 *.dSYM/
-*~
-.*.swp
-.DS_Store
+dyn_test
 /.local.dir.tags
-/Makefile.local
 /makefile.local
+.*.swp
 /tags

@@ -168,13 +168,17 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL= -DMKIOCCCENTRY_SRC
+
 # linker options
 #
 LDFLAGS=
 
 # how to compile
-CFLAGS= -DMKIOCCCENTRY_SRC ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
-#CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
+CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
+#CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 
 ###############

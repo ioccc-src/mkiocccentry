@@ -179,6 +179,10 @@ C_OPT= -O3 -g3
 WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 #WARN_FLAGS= -Wall -Wextra -Werror
 
+# special compiler flags
+#
+C_SPECIAL= -DMKIOCCCENTRY_SRC
+
 # linker options
 #
 LDFLAGS=
@@ -187,7 +191,7 @@ LDFLAGS=
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= -DMKIOCCCENTRY_SRC ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 
 ###############
@@ -360,7 +364,7 @@ fast_hostchk: test_ioccc/hostchk.sh
 	-${Q} ./test_ioccc/hostchk.sh -f -v 0 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
-	    ${MAKE} hostchk_warning; \
+	    ${MAKE} hostchk_warning C_SPECIAL=${C_SPECIAL}; \
 	fi
 
 bug_report: bug_report.sh
@@ -384,7 +388,7 @@ hostchk: test_ioccc/hostchk.sh
 	-${Q} ./test_ioccc/hostchk.sh -v 1 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
-	    ${MAKE} hostchk_warning; \
+	    ${MAKE} hostchk_warning C_SPECIAL=${C_SPECIAL}; \
 	fi
 
 # get the users attention when hostchk.sh finds a problem
@@ -464,79 +468,79 @@ chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 #########################################################
 
 all_dbg: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all C_SPECIAL=${C_SPECIAL}
 
 all_dyn_array: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all C_SPECIAL=${C_SPECIAL}
 
 all_jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all C_SPECIAL=${C_SPECIAL}
 
 all_jparse_test: jparse/test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all C_SPECIAL=${C_SPECIAL}
 
 soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup soup
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup soup C_SPECIAL=${C_SPECIAL}
 
 all_soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all C_SPECIAL=${C_SPECIAL}
 
 eat eating eat_soup eating_soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup eat
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup eat C_SPECIAL=${C_SPECIAL}
 
 kitchen soup_kitchen: soup/kitchen.sh
-	-${Q} ${MAKE} ${MAKE_CD_Q} -C soup kitchen
+	-${Q} ${MAKE} ${MAKE_CD_Q} -C soup kitchen C_SPECIAL=${C_SPECIAL}
 
 all_test_ioccc: test_ioccc/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all C_SPECIAL=${C_SPECIAL}
 
 dbg/dbg.h: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include C_SPECIAL=${C_SPECIAL}
 
 dbg/dbg.a: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 dbg/dbg_test: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test C_SPECIAL=${C_SPECIAL}
 
 dyn_array/dyn_array.h: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include C_SPECIAL=${C_SPECIAL}
 
 dyn_array/dyn_array.a: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 jparse/jparse.h: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include C_SPECIAL=${C_SPECIAL}
 
 jparse/jparse.a: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba C_SPECIAL=${C_SPECIAL}
 
 jparse/jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
 
 jparse/jsemtblgen: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
 
 jparse/jsemcgen.sh: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
 
 soup/soup.a: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba C_SPECIAL=${C_SPECIAL}
 
 soup/chk_sem_info.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
 
 soup/chk_sem_auth.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
 
 soup/soup.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
 
 soup/limit_ioccc.sh: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog C_SPECIAL=${C_SPECIAL}
 
 reset_min_timestamp: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp C_SPECIAL=${C_SPECIAL}
 
 
 ####################################
@@ -675,7 +679,7 @@ rebuild_txzchk_test_errors force_expectations_for_txzchk_test:
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -683,26 +687,26 @@ parser: jparse/Makefile
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 
 # load bison/flex reference code from the previous successful make parser
 #
 load_json_ref: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 
 # restore bison/flex reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
 use_json_ref: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
 # rule used by ../test_ioccc/prep.sh
 #
 all_sem_ref: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
 
 # form chk.????.ptch.{c,h} files
 #
@@ -715,7 +719,7 @@ all_sem_ref: soup/Makefile
 # are updated by hand.
 #
 all_sem_ref_ptch: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
 
 
 # rebuild jparse error files for testing
@@ -724,7 +728,7 @@ all_sem_ref_ptch: soup/Makefile
 #	     the tables produced by jparse are CORRECT!
 #
 rebuild_jparse_err_files: jparse/test_jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
 
 # sequence exit codes
 #
@@ -733,11 +737,11 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -759,11 +763,11 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -799,11 +803,11 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -833,11 +837,11 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -849,15 +853,15 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V=
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
 
@@ -879,11 +883,11 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg local_dir_tags
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array local_dir_tags
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse local_dir_tags
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg local_dir_tags C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array local_dir_tags C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse local_dir_tags C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags C_SPECIAL=${C_SPECIAL}
 	${Q} echo
 	${E} ${MAKE} local_dir_tags
 	${Q} echo
@@ -919,11 +923,11 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${Q} echo
 	${E} ${RM} -f tags
 	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
@@ -946,11 +950,11 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
@@ -964,17 +968,17 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh
 # rule used by prep.sh and make clean
 #
 clean_generated_obj: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj C_SPECIAL=${C_SPECIAL}
 
 # rule used by prep.sh
 #
 clean_mkchk_sem: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
 
 # rule used by prep.sh
 #
 mkchk_sem: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
 
 # clean legacy code and files - files that are no longer needed
 #
@@ -983,11 +987,11 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -999,12 +1003,12 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1033,16 +1037,16 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 #      (the date when this comment was updated).
 
 .PHONY: dbg.help dbg.setup dbg.clone dbg.clone_status dbg.update_clone dbg.reload_clone \
-	dbg.update_from_clone dbg.update_into_clone dbg.replace_from_clone \
+	dbg.update_from_clone dbg.update_into_clone \
 	dbg.diff_dbg_clone dbg.diff_clone_dbg dbg.diff_summary \
 	dyn_array.help dyn_array.setup dyn_array.clone dyn_array.clone_status dyn_array.update_clone dyn_array.reload_clone \
-	dyn_array.update_from_clone dyn_array.update_into_clone dyn_array.replace_from_clone \
+	dyn_array.update_from_clone dyn_array.update_into_clone \
 	dyn_array.diff_dyn_array_clone dyn_array.diff_clone_dyn_array dyn_array.diff_summary \
 	jparse.help jparse.setup jparse.clone jparse.clone_status jparse.update_clone jparse.reload_clone \
-	jparse.update_from_clone jparse.update_into_clone jparse.replace_from_clone \
+	jparse.update_from_clone jparse.update_into_clone \
 	jparse.diff_jparse_clone jparse.diff_clone_jparse jparse.diff_summary \
 	all.help all.setup all.clone all.clone_status all.update_clone all.reload_clone \
-	all.update_from_clone all.update_into_clone all.replace_from_clone \
+	all.update_from_clone all.update_into_clone \
 	all.diff_all_clone all.diff_clone_all all.diff_summary
 
 # rules to help incorporate the external dbg repo
@@ -1052,18 +1056,17 @@ dbg.help:
 	${S} echo
 	${S} echo "Summary of rules to help incorporate the external dbg repo:"
 	${S} echo
-	${S} echo "${MAKE} dbg.help - print this message"
-	${S} echo "${MAKE} dbg.setup - create or update dbg.clone directory from remote repo"
-	${S} echo "${MAKE} dbg.clone - create missing dbg.clone directory from remote repo"
-	${S} echo "${MAKE} dbg.clone_status - git status of dbg.clone directory"
-	${S} echo "${MAKE} dbg.update_clone - update dbg.clone directory from remote repo"
-	${S} echo "${MAKE} dbg.recreate_clone - remove then clone dbg.clone directory from remote repo"
-	${S} echo "${MAKE} dbg.update_from_clone - modify dbg directory from dbg.clone directory"
-	${S} echo "${MAKE} dbg.update_into_clone - modify dbg.clone directory from dbg directory"
-	${S} echo "${MAKE} dbg.replace_from_clone - remove dbg then copy dbg.clone directory into it"
-	${S} echo "${MAKE} dbg.diff_dbg_clone - compare dbg directory with dbg.clone directory"
-	${S} echo "${MAKE} dbg.diff_clone_dbg - compare dbg.clone directory with dbg directory"
-	${S} echo "${MAKE} dbg.diff_summary - summarize differnces between dbg and dbg.clone directories"
+	${S} echo "make dbg.help - print this message"
+	${S} echo "make dbg.setup - create or update dbg.clone directory from remote repo"
+	${S} echo "make dbg.clone - create missing dbg.clone directory from remote repo"
+	${S} echo "make dbg.clone_status - git status of dbg.clone directory"
+	${S} echo "make dbg.update_clone - update dbg.clone directory from remote repo"
+	${S} echo "make dbg.recreate_clone - remove then clone dbg.clone directory from remote repo"
+	${S} echo "make dbg.update_from_clone - modify dbg directory from dbg.clone directory"
+	${S} echo "make dbg.update_into_clone - modify dbg.clone directory from dbg directory"
+	${S} echo "make dbg.diff_dbg_clone - compare dbg directory with dbg.clone directory"
+	${S} echo "make dbg.diff_clone_dbg - compare dbg.clone directory with dbg directory"
+	${S} echo "make dbg.diff_summary - summarize differnces between dbg and dbg.clone directories"
 
 dbg.setup:
 	${S} echo
@@ -1127,6 +1130,7 @@ dbg.update_from_clone: dbg.clone/ dbg/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg.clone/ dbg
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1135,15 +1139,7 @@ dbg.update_into_clone: dbg/ dbg.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg/ dbg.clone
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
-
-dbg.replace_from_clone: dbg.clone/ dbg/
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
-	${S} echo
-	${E} ${RM} -rf dbg
-	${E} ${MAKE} dbg.clone
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1163,18 +1159,17 @@ dyn_array.help:
 	${S} echo
 	${S} echo "Summary of rules to help incorporate the external dyn_array repo:"
 	${S} echo
-	${S} echo "${MAKE} dyn_array.help - print this message"
-	${S} echo "${MAKE} dyn_array.setup - create or update dyn_array.clone directory from remote repo"
-	${S} echo "${MAKE} dyn_array.clone - create missing dyn_array.clone directory from remote repo"
-	${S} echo "${MAKE} dyn_array.clone_status - git status of dyn_array.clone directory"
-	${S} echo "${MAKE} dyn_array.update_clone - update dyn_array.clone directory from remote repo"
-	${S} echo "${MAKE} dyn_array.recreate_clone - remove then clone dyn_array.clone directory from remote repo"
-	${S} echo "${MAKE} dyn_array.update_from_clone - modify dyn_array directory from dyn_array.clone directory"
-	${S} echo "${MAKE} dyn_array.update_into_clone - modify dyn_array.clone directory from dyn_array directory"
-	${S} echo "${MAKE} dyn_array.replace_from_clone - remove dyn_array then copy dyn_array.clone directory into it"
-	${S} echo "${MAKE} dyn_array.diff_dyn_array_clone - compare dyn_array directory with dyn_array.clone directory"
-	${S} echo "${MAKE} dyn_array.diff_clone_dyn_array - compare dyn_array.clone directory with dyn_array directory"
-	${S} echo "${MAKE} dyn_array.diff_summary - summarize differnces between dyn_array and dyn_array.clone directories"
+	${S} echo "make dyn_array.help - print this message"
+	${S} echo "make dyn_array.setup - create or update dyn_array.clone directory from remote repo"
+	${S} echo "make dyn_array.clone - create missing dyn_array.clone directory from remote repo"
+	${S} echo "make dyn_array.clone_status - git status of dyn_array.clone directory"
+	${S} echo "make dyn_array.update_clone - update dyn_array.clone directory from remote repo"
+	${S} echo "make dyn_array.recreate_clone - remove then clone dyn_array.clone directory from remote repo"
+	${S} echo "make dyn_array.update_from_clone - modify dyn_array directory from dyn_array.clone directory"
+	${S} echo "make dyn_array.update_into_clone - modify dyn_array.clone directory from dyn_array directory"
+	${S} echo "make dyn_array.diff_dyn_array_clone - compare dyn_array directory with dyn_array.clone directory"
+	${S} echo "make dyn_array.diff_clone_dyn_array - compare dyn_array.clone directory with dyn_array directory"
+	${S} echo "make dyn_array.diff_summary - summarize differnces between dyn_array and dyn_array.clone directories"
 
 dyn_array.setup:
 	${S} echo
@@ -1238,6 +1233,7 @@ dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array.clone/ dyn_array
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1246,15 +1242,7 @@ dyn_array.update_into_clone: dyn_array/ dyn_array.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array/ dyn_array.clone
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
-
-dyn_array.replace_from_clone: dyn_array.clone/ dyn_array/
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
-	${S} echo
-	${E} ${RM} -rf dyn_array
-	${E} ${MAKE} dyn_array.clone
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1274,18 +1262,17 @@ jparse.help:
 	${S} echo
 	${S} echo "Summary of rules to help incorporate the external jparse repo:"
 	${S} echo
-	${S} echo "${MAKE} jparse.help - print this message"
-	${S} echo "${MAKE} jparse.setup - create or update jparse.clone directory from remote repo"
-	${S} echo "${MAKE} jparse.clone - create missing jparse.clone directory from remote repo"
-	${S} echo "${MAKE} jparse.clone_status - git status of jparse.clone directory"
-	${S} echo "${MAKE} jparse.update_clone - update jparse.clone directory from remote repo"
-	${S} echo "${MAKE} jparse.recreate_clone - remove then clone jparse.clone directory from remote repo"
-	${S} echo "${MAKE} jparse.update_from_clone - modify jparse directory from jparse.clone directory"
-	${S} echo "${MAKE} jparse.update_into_clone - modify jparse.clone directory from jparse directory"
-	${S} echo "${MAKE} jparse.replace_from_clone - remove jparse then copy jparse.clone directory into it"
-	${S} echo "${MAKE} jparse.diff_jparse_clone - compare jparse directory with jparse.clone directory"
-	${S} echo "${MAKE} jparse.diff_clone_jparse - compare jparse.clone directory with jparse directory"
-	${S} echo "${MAKE} jparse.diff_summary - summarize differnces between jparse and jparse.clone directories"
+	${S} echo "make jparse.help - print this message"
+	${S} echo "make jparse.setup - create or update jparse.clone directory from remote repo"
+	${S} echo "make jparse.clone - create missing jparse.clone directory from remote repo"
+	${S} echo "make jparse.clone_status - git status of jparse.clone directory"
+	${S} echo "make jparse.update_clone - update jparse.clone directory from remote repo"
+	${S} echo "make jparse.recreate_clone - remove then clone jparse.clone directory from remote repo"
+	${S} echo "make jparse.update_from_clone - modify jparse directory from jparse.clone directory"
+	${S} echo "make jparse.update_into_clone - modify jparse.clone directory from jparse directory"
+	${S} echo "make jparse.diff_jparse_clone - compare jparse directory with jparse.clone directory"
+	${S} echo "make jparse.diff_clone_jparse - compare jparse.clone directory with jparse directory"
+	${S} echo "make jparse.diff_summary - summarize differnces between jparse and jparse.clone directories"
 
 jparse.setup:
 	${S} echo
@@ -1349,6 +1336,7 @@ jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse.clone/ jparse
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1357,15 +1345,7 @@ jparse.update_into_clone: jparse/ jparse.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse/ jparse.clone
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
-
-jparse.replace_from_clone: jparse.clone/ jparse/
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
-	${S} echo
-	${E} ${RM} -rf jparse
-	${E} ${MAKE} jparse.clone
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1385,18 +1365,17 @@ all.help:
 	${S} echo
 	${S} echo "Summary of rules to help incorporate external repos:"
 	${S} echo
-	${S} echo "${MAKE} all.help - print this message"
-	${S} echo "${MAKE} all.setup - create or update clone directories from all remote repos"
-	${S} echo "${MAKE} all.clone - create missing clone directories from all remote repos"
-	${S} echo "${MAKE} all.clone_status - git status of all clone directories"
-	${S} echo "${MAKE} all.update_clone - update clone directories from all remote repos"
-	${S} echo "${MAKE} all.recreate_clone - remove then clone clone directories from remote repos"
-	${S} echo "${MAKE} all.update_from_clone - modify directories from clone directories"
-	${S} echo "${MAKE} all.update_into_clone - modify clone directories from dbg directories"
-	${S} echo "${MAKE} all.replace_from_clone - remove directories then copy clone directory into them"
-	${S} echo "${MAKE} all.diff_dbg_clone - compare directories with clone directories"
-	${S} echo "${MAKE} all.diff_clone_dbg - compare clone directories with dbg directories"
-	${S} echo "${MAKE} all.diff_summary - summarize differnces between directories and clone directories"
+	${S} echo "make all.help - print this message"
+	${S} echo "make all.setup - create or update clone directories from all remote repos"
+	${S} echo "make all.clone - create missing clone directories from all remote repos"
+	${S} echo "make all.clone_status - git status of all clone directories"
+	${S} echo "make all.update_clone - update clone directories from all remote repos"
+	${S} echo "make all.recreate_clone - remove then clone clone directories from remote repos"
+	${S} echo "make all.update_from_clone - modify directories from clone directories"
+	${S} echo "make all.update_into_clone - modify clone directories from dbg directories"
+	${S} echo "make all.diff_dbg_clone - compare directories with clone directories"
+	${S} echo "make all.diff_clone_dbg - compare clone directories with dbg directories"
+	${S} echo "make all.diff_summary - summarize differnces between directories and clone directories"
 
 all.setup:
 	${S} echo
@@ -1468,16 +1447,6 @@ all.update_into_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-all.replace_from_clone:
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
-	${S} echo
-	${E} ${MAKE} dbg.replace_from_clone
-	${E} ${MAKE} dyn_array.replace_from_clone
-	${E} ${MAKE} jparse.replace_from_clone
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
-
 all.diff_dir_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1527,11 +1496,11 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
@@ -1543,12 +1512,12 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
@@ -1567,11 +1536,11 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 	${V} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
@@ -1740,11 +1709,11 @@ uninstall:
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
