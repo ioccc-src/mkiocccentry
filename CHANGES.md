@@ -1,5 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.4 2024-08-29
+
+Rename libraries for easier linking in other applications. In particular the
+[jparse repo](https://github.com/xexyl/jparse/) (which currently requires some
+changes in order to work on its own but this release is part of that) needs the
+`dbg` and `dyn_array` libraries but in order to link these in properly one must
+name them `libdbg.a` and `libdyn_array.a` (i.e. add the `lib`) so that one can
+then do `-ldbg` and `-ldyn_array`. Along the same lines `jparse.a` has been
+renamed to `libjparse.a` for linking in (this is something that has not yet been
+done in the jparse repo but in order to link it in it will have to be done).
+
+Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.4 2024-08-29"`.
+
 
 ## Release 1.5.3 2024-08-28
 
