@@ -237,7 +237,8 @@ if [[ -n $F_FLAG ]]; then
     #
     printf "%s\\n%s\\n" "$(grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
 	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
-	"$TOPDIR"/jparse/test_jparse/*.[hc] |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
+	"$TOPDIR"/jparse/test_jparse/*.[hc] | grep -F -v '<dbg.h' | grep -F -v '<dyn_array.h>' |
+	cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -DMKIOCCCENTRY_SRC -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
