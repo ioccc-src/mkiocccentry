@@ -262,7 +262,7 @@ DEST_DIR= /usr/local/bin
 EXTERN_H= dyn_array.h
 EXTERN_O= dyn_array.o
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-EXTERN_LIBA= dyn_array.a
+EXTERN_LIBA= libdyn_array.a
 EXTERN_PROG= dyn_test
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
@@ -283,7 +283,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
 #
-LIBA_TARGETS= dyn_array.a
+LIBA_TARGETS= libdyn_array.a
 
 # shell targets to make by all and removed by clobber
 #
@@ -347,7 +347,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS}
 dyn_array.o: dyn_array.c dyn_array.h
 	${CC} ${CFLAGS} dyn_array.c -c
 
-dyn_array.a: ${LIB_OBJS}
+libdyn_array.a: ${LIB_OBJS}
 	${RM} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
@@ -355,15 +355,15 @@ dyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
 
-dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.o dyn_array.a ../dbg/dbg.a -o dyn_test
+dyn_test: dyn_test.o libdyn_array.a ../dbg/libdbg.a
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.o libdyn_array.a ../dbg/libdbg.a -o dyn_test
 
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/dbg.a: ../dbg/Makefile
+../dbg/libdbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 

@@ -2743,7 +2743,7 @@ chk_tarball(struct json const *node,
     }
 
     /*
-     * find tarball_count in parent node
+     * find IOCCC_contest_id in parent node
      *
      * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
@@ -3412,6 +3412,206 @@ chk_wordbuf_warning(struct json const *node,
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(178, node, depth, sem, __func__, "invalid wordbuf_warning");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+/*
+ * chk_author_set - JSON semantic check for .entry.json author_set
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_author_set(struct json const *node,
+	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct json *parent = NULL;			/* JSON parse tree node parent */
+    struct json *IOCCC_contest_id_node = NULL;	/* JSON parse node containing IOCCC_contest_id */
+    char const *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
+    struct json *submit_slot_node = NULL;	/* JSON parse node containing submit_slot */
+    int *submit_slot = NULL;			/* pointer to author count as int from JSON parse node for submit_slot */
+    struct json *test_mode_node = NULL;		/* JSON parse node containing test_mode */
+    bool *test_mode = NULL;			/* pointer to author count as int from JSON parse node for test_mode */
+    struct json *formed_timestamp_node = NULL;	/* JSON parse node containing formed_timestamp */
+    time_t *formed_timestamp = NULL;		/* pointer to formed_timestamp as time_t */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * firewall - node type
+     */
+    test = sem_node_valid(node, depth, sem, __func__, val_err);
+    if (test == false) {
+	/* sem_node_valid() will have set *val_err */
+	return false;
+    }
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(179, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return false;
+    }
+
+    /*
+     * obtain the tarball filename
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * look at parent of the tarball array
+     */
+    parent = sem_node_parent(node, depth, sem, __func__, val_err);
+    if (parent == NULL) {
+	/* sem_node_parent() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * find IOCCC_contest_id in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    IOCCC_contest_id_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "IOCCC_contest_id");
+    if (IOCCC_contest_id_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the IOCCC_contest_id
+     */
+    IOCCC_contest_id = sem_member_value_decoded_str(IOCCC_contest_id_node, depth, sem, __func__, val_err);
+    if (IOCCC_contest_id == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+    test = test_IOCCC_contest_id(IOCCC_contest_id);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(180, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	}
+	return false;
+    }
+
+    /*
+     * find submit_slot in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    submit_slot_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "submit_slot");
+    if (submit_slot_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the entry number
+     */
+    submit_slot = sem_member_value_int(submit_slot_node, depth, sem, __func__, val_err);
+    if (submit_slot == NULL) {
+	/* sem_member_value_int() will have set *val_err */
+	return false;
+    }
+    test = test_submit_slot(*submit_slot);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(181, node, depth, sem, __func__, "invalid submit_slot");
+	}
+	return false;
+    }
+
+    /*
+     * find test_mode in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    test_mode_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "test_mode");
+    if (test_mode_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the entry number
+     */
+    test_mode = sem_member_value_bool(test_mode_node, depth, sem, __func__, val_err);
+    if (test_mode == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
+	return false;
+    }
+    test = test_test_mode(*test_mode);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(182, node, depth, sem, __func__, "invalid test_mode");
+	}
+	return false;
+    }
+
+    /*
+     * find formed_timestamp in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    formed_timestamp_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "formed_timestamp");
+    if (formed_timestamp_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the "formed_timestamp" from under the parent node
+     */
+    formed_timestamp = sem_member_value_time_t(formed_timestamp_node, depth, sem, __func__, val_err);
+    if (formed_timestamp == NULL) {
+	/* sem_member_value_time_t() will have set *val_err */
+	return false;
+    }
+    test = test_formed_timestamp(*formed_timestamp);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(183, node, depth, sem, __func__, "invalid formed_timestamp");
+	}
+	return false;
+    }
+
+    /*
+     * test the tarball with related data
+     */
+    test = test_tarball(str, IOCCC_contest_id, *submit_slot, *test_mode, *formed_timestamp);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(184, node, depth, sem, __func__, "invalid tarball");
 	}
 	return false;
     }

@@ -441,25 +441,25 @@ hostchk_warning:
 mkiocccentry.o: mkiocccentry.c
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+mkiocccentry: mkiocccentry.o soup/soup.a jparse/jparse.a dyn_array/libdyn_array.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
-iocccsize: iocccsize.o soup/soup.a dbg/dbg.a
+iocccsize: iocccsize.o soup/soup.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 txzchk.o: txzchk.c
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+txzchk: txzchk.o soup/soup.a jparse/jparse.a dyn_array/libdyn_array.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 chkentry.o: chkentry.c
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/libdyn_array.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 
@@ -497,7 +497,7 @@ all_test_ioccc: test_ioccc/Makefile
 dbg/dbg.h: dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include C_SPECIAL=${C_SPECIAL}
 
-dbg/dbg.a: dbg/Makefile
+dbg/libdbg.a: dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 dbg/dbg_test: dbg/Makefile
@@ -506,7 +506,7 @@ dbg/dbg_test: dbg/Makefile
 dyn_array/dyn_array.h: dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include C_SPECIAL=${C_SPECIAL}
 
-dyn_array/dyn_array.a: dyn_array/Makefile
+dyn_array/libdyn_array.a: dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 jparse/jparse.h: jparse/Makefile
@@ -1583,8 +1583,8 @@ uninstall:
 	${RM} -f -v ${DEST_INCLUDE}/dbg.h
 	${RM} -f -v ${DEST_INCLUDE}/dyn_array.h
 	${RM} -f -v ${DEST_INCLUDE}/jparse.h
-	${RM} -f -v ${DEST_LIB}/dbg.a
-	${RM} -f -v ${DEST_LIB}/dyn_array.a
+	${RM} -f -v ${DEST_LIB}/libdbg.a
+	${RM} -f -v ${DEST_LIB}/libdyn_array.a
 	${RM} -f -v ${DEST_LIB}/jparse.a
 	${RM} -f -v ${DEST_LIB}/soup.a
 	${RM} -f -v ${MAN1_DIR}/bug_report.1

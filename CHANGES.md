@@ -1,6 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.4 2024-08-29
+
+Rename `dbg.a` and `dyn_array.a` to `libdbg.a` and `libdyn_array.a`
+respectively. These respective repos have had the respective change done as
+well. This is important for the [jparse repo](https://github.com/xexyl/jparse)
+(not the `jparse/` subdirectory here though this has also been updated) to be
+usable outside _this_ repo without having to have `../dbg` and `../dyn_array`
+directories containing the correct respective libraries. The [jparse
+repo](https://github.com/xexyl/jparse) still has to be updated (and there might
+be some additional changes here as well) but that cannot happen until the [dbg
+repo](https://github.com/lcn2/dbg) and [dyn_array
+repo](https://github.com/lcn2/dyn_array) have also had this done (or rather
+merged, which hopefully will be soon, as long as no changes have to be made).
+
+The Makefiles here do **NOT** use `-ldbg` or `-ldyn_array` (yet?).
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to match this release version (this means it
+jumped from `1.5.2` to `1.5.4` as it was not updated when `1.5.2 2024-08-28`
+was updated to `1.5.3 2024-08-29`).
+
+
 ## Release 1.5.3 2024-08-28
 
 Fix `hostchk.sh` that was broken with the recent change of `MKIOCCCENTRY_SRC`.

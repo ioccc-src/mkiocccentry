@@ -425,19 +425,19 @@ jparse_main.o: jparse_main.c
 jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} jparse.c -c
 
-jparse: jparse_main.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+jparse: jparse_main.o jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+jstrencode: jstrencode.o jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+jstrdecode: jstrdecode.o jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_parse.o: json_parse.c
@@ -446,7 +446,7 @@ json_parse.o: json_parse.c
 jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_sem.o: json_sem.c
@@ -485,7 +485,7 @@ util.o: util.c util.h
 verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o util.o ../dbg/dbg.a ../dyn_array/dyn_array.a
+verge: verge.o util.o ../dbg/libdbg.a ../dyn_array/libdyn_array.a
 	${CC} ${CFLAGS} $^ -o $@
 
 jparse.a: ${LIB_OBJS}
@@ -504,10 +504,10 @@ run_flex-v7: verge sorry.tm.ca.h
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/dbg.a: ../dbg/Makefile
+../dbg/libdbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
-../dyn_array/dyn_array.a: ../dyn_array/Makefile
+../dyn_array/libdyn_array.a: ../dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile

@@ -63,6 +63,8 @@
 #define MAX_TITLE_LEN (32)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
 #define MAX_HANDLE (32)			/* maximum length of IOCCC winner handle */
+#define MAX_DIR_LEN (5) + (MAX_HANDLE)	/* maximum length of an entry directory */
+#define MIN_DIR_LEN (6)			/* min length of an entry directory (YYYY/ + at least one char for winner) */
 #define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
 #define UUID_LEN (36)			/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)		/* version 4 - random UUID */

@@ -350,7 +350,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 utf8_test.o: utf8_test.c
 	${CC} ${CFLAGS} utf8_test.c -c
 
-utf8_test: utf8_test.o ../soup/soup.a ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+utf8_test: utf8_test.o ../soup/soup.a ../jparse/jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
@@ -359,7 +359,7 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 fnamchk.o: fnamchk.c fnamchk.h
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
@@ -367,13 +367,13 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/dbg.a: ../dbg/Makefile
+../dbg/libdbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
 
 ../dbg/dbg_test: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_prog
 
-../dyn_array/dyn_array.a: ../dyn_array/Makefile
+../dyn_array/libdyn_array.a: ../dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile

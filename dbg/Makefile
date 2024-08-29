@@ -265,7 +265,7 @@ DEST_DIR= /usr/local/bin
 EXTERN_H= dbg.h
 EXTERN_O= dbg.o
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-EXTERN_LIBA= dbg.a
+EXTERN_LIBA= libdbg.a
 EXTERN_PROG= dbg_example dbg_test
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
@@ -286,7 +286,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
 #
-LIBA_TARGETS= dbg.a
+LIBA_TARGETS= libdbg.a
 
 # shell targets to make by all and removed by clobber
 #
@@ -352,7 +352,7 @@ all: ${TARGETS}
 dbg.o: dbg.c
 	${CC} ${CFLAGS} dbg.c -c
 
-dbg.a: ${LIB_OBJS}
+libdbg.a: ${LIB_OBJS}
 	${RM} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
@@ -364,14 +364,14 @@ dbg_test.c: dbg.c
 dbg_test.o: dbg_test.c
 	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
 
-dbg_test: dbg_test.o dbg.a
-	${CC} ${CFLAGS} dbg_test.o dbg.a -o $@
+dbg_test: dbg_test.o libdbg.a
+	${CC} ${CFLAGS} dbg_test.o libdbg.a -o $@
 
 dbg_example.o: dbg_example.c
 	${CC} ${CFLAGS} dbg_example.c -c
 
-dbg_example: dbg_example.o dbg.a
-	${CC} ${CFLAGS} dbg_example.o dbg.a -o $@
+dbg_example: dbg_example.o libdbg.a
+	${CC} ${CFLAGS} dbg_example.o libdbg.a -o $@
 
 
 #########################################################

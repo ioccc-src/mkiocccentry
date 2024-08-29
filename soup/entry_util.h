@@ -191,6 +191,7 @@ struct info
     char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
 };
 
+
 /*
  * IOCCC manifest - information on the file IOCCC manifest for an entry
  */
@@ -202,8 +203,71 @@ struct manifest
     intmax_t count_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
     intmax_t count_remarks;	/* count of remarks JSON member found (will be "remarks") */
     intmax_t count_extra_file;	/* count of extra JSON members found */
+
     struct dyn_array *extra;	/* dynamic array of extra JSON member filenames (char *) */
 };
+
+
+/*
+ * IOCCC .entry.json information
+ *
+ * Information in the .entry.json files.
+ */
+struct entry
+{
+    /*
+     * .entry.json information before the authors array
+     */
+    /* file format strings */
+    char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
+    char const *entry_version;	/* IOCCC .entry.json format version (compiled in ENTRY_VERSION) */
+    char *award;		/* entry award string */
+    /* contest year */
+    int year;			/* IOCCC year */
+
+    char const *entry_id;	/* entry_id */
+
+    /*
+     * author set
+     */
+    int author_count;		/* number of authors - length of author array */
+    struct author *author;	/* set of authors for this entry */
+
+    struct manifest manifest;
+};
+
+/*
+ * IOCCC author_handle.json information
+ *
+ * Information in the author_handle.json files.
+ */
+struct author_handle
+{
+    /*
+     * .entry.json information before the authors array
+     */
+    /* file format strings */
+    char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
+    char const *author_version;	/* IOCCC author_handle.json format version (compiled in AUTHOR_VERSION) */
+    char const *author_handle;	/* author handle string */
+    char *full_name;	/* author full name */
+    char *sort_word;	/* sort word */
+    char *location_code;	/* location code (US, CA, DE etc.) */
+    char *email;		/* Email address of author or empty string ==> not provided */
+    char *url;			/* home URL of author or empty string ==> not provided */
+    char *alt_url;		/* alt URL of author or empty string ==> not provided */
+    char *mastodon;		/* author mastodon handle or empty string ==> not provided */
+    char *github;		/* author GitHub username or empty string ==> not provided */
+    char *affiliation;		/* author affiliation or empty string ==> not provided */
+
+    /*
+     * entries set
+     */
+    int entry_count;		/* number of entries - length of entries array */
+    struct entry *entries;	/* set of entries for this entry */
+};
+
+
 
 
 /*
@@ -213,6 +277,8 @@ extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 extern void free_manifest(struct manifest *manp);
+extern void free_entry(struct entry *entryp);
+extern void free_author_handle(struct author_handle *auth_handle);
 extern bool valid_contest_id(char *str);
 extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 			  char const *name, struct json_sem_val_err **val_err,
@@ -261,6 +327,9 @@ extern bool test_manifest(struct manifest *manp);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);
 extern bool test_name(char const *str);
+extern bool test_dir(char const *str);
+extern bool test_award(char const *str);
+extern bool test_entry_id(char const *str);
 extern bool test_no_comment(char const *str);
 extern bool test_nul_warning(bool boolean);
 extern bool test_past_winning_author(bool boolean);
