@@ -237,7 +237,7 @@ if [[ -n $F_FLAG ]]; then
     #
     printf "%s\\n%s\\n" "$(grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
 	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
-	"$TOPDIR"/jparse/test_jparse/*.[hc]|grep -vE '<dbg.h>|<dyn_array.h>' |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
+	"$TOPDIR"/jparse/test_jparse/*.[hc]|grep -vE '<dbg\.h>|<dyn_array\.h>' |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -274,6 +274,8 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
     #
     grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] "$TOPDIR"/dyn_array/*.[hc] \
         "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] "$TOPDIR"/jparse/*.[hcly] "$TOPDIR"/jparse/test_jparse/*.[hc] | \
+	grep -F -v '<dyn_array.h>' |
+	grep -F -v '<dbg.h>' |
 	cut -f 2- -d:|sort -u| while read -r h; do
 
 	# form C prog
@@ -282,7 +284,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	    echo "Compiling code with \"$h\"" 1>&2
 	fi
 	rm -f "$PROG_FILE"
-	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
+	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -DMKIOCCCENTRY_SRC -x c - -o "$PROG_FILE"
 
 	# test compile
 	#
