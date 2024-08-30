@@ -316,19 +316,19 @@ jnum_test.o: jnum_test.c
 jnum_chk.o: jnum_chk.c jnum_chk.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o jnum_test.o ../jparse.a
+jnum_chk: jnum_chk.o jnum_test.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldyn_array -ldbg
 
 jnum_gen.o: jnum_gen.c jnum_gen.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../jparse.a
+jnum_gen: jnum_gen.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c
 	${CC} ${CFLAGS} pr_jparse_test.c -c
 
-pr_jparse_test: pr_jparse_test.o ../jparse.a
+pr_jparse_test: pr_jparse_test.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -o $@ -L. -ldyn_array -ldbg
 
 
@@ -337,13 +337,7 @@ pr_jparse_test: pr_jparse_test.o ../jparse.a
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../../dbg/dbg.a: ../../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dbg extern_liba C_SPECIAL=${C_SPECIAL}
-
-../../dyn_array/dyn_array.a: ../../dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
-
-../jparse.a: ../Makefile
+../libjparse.a: ../Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C .. extern_liba C_SPECIAL=${C_SPECIAL}
 
 

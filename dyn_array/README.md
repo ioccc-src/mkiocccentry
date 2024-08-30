@@ -3,6 +3,22 @@
 When linked into your program, the `dyn_array` facility will give you a way to have a
 general purpose dynamic array in your program.
 
+## Dependencies
+
+In order to compile and use `dyn_array` you will need to download, compile and
+install the [dbg repo](https://github.com/lcn2/dbg).
+
+To do this, you might try:
+
+```sh
+    git clone https://github.com/lcn2/dbg
+    cd dbg && make all
+    # then as root or via sudo:
+    make install
+```
+
+and then proceed with the below steps.
+
 
 ## Set up
 

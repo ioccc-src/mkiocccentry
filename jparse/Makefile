@@ -329,7 +329,7 @@ DEST_DIR= /usr/local/bin
 EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-EXTERN_LIBA= jparse.a
+EXTERN_LIBA= libjparse.a
 EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
@@ -350,7 +350,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
 #
-LIBA_TARGETS= jparse.a
+LIBA_TARGETS= libjparse.a
 
 # shell targets to make by all and removed by clobber
 #
@@ -425,19 +425,19 @@ jparse_main.o: jparse_main.c
 jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} jparse.c -c
 
-jparse: jparse_main.o jparse.a
+jparse: jparse_main.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o jparse.a
+jstrencode: jstrencode.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o jparse.a
+jstrdecode: jstrdecode.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
@@ -446,7 +446,7 @@ json_parse.o: json_parse.c
 jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.a
+jsemtblgen: jsemtblgen.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
@@ -488,7 +488,7 @@ verge.o: verge.c verge.h
 verge: verge.o util.o
 	${CC} ${CFLAGS} $^ -o $@ -L. -ldbg -ldyn_array
 
-jparse.a: ${LIB_OBJS}
+libjparse.a: ${LIB_OBJS}
 	${RM} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
@@ -503,12 +503,6 @@ run_flex-v7: verge sorry.tm.ca.h
 #########################################################
 # rules that invoke Makefile rules in other directories #
 #########################################################
-
-../dbg/dbg.a: ../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
-
-../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json C_SPECIAL=${C_SPECIAL}

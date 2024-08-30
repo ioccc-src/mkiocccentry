@@ -1,14 +1,5 @@
 # jparse - JSON parser written in C
 
-## WARNING: THIS REPO IS STILL BEING POPULATED
-
-The code in this parser (library and applications) relies on a couple of
-libraries that are not currently _here_. This means that the library is **NOT** yet
-ready for other people, at least not easily. This will be resolved in the
-hopefully not too distant future, as time is found to do so. Once this is done
-this note will be removed. Thank you.
-
-## The real README.md
 
 `jparse` is a JSON parser (a stand-alone tool and a library) written in C with
 the help of `flex(1)` and `bison(1)`. It was co-developed in 2022 by:
@@ -29,8 +20,8 @@ anyone may use it.
 As a stand-alone tool it is less useful, perhaps save for validating json
 documents and to see how it works. The library is much more useful because you
 can integrate it into your own applications and work with the parsed tree. More
-details on the library will be documented at a later date although we do give a
-bit of information below.
+details (beyond the man page) on the library will be documented at a later date,
+depending on need, although we do give a bit of information below.
 
 We also have some additional tools, some of which will be documented later and
 some of which are documented below, namely `jstrencode` and `jstrdecode`.
@@ -38,6 +29,31 @@ some of which are documented below, namely `jstrencode` and `jstrdecode`.
 We recommend that you read the [json_README.md](json_README.md) document
 to better understand the JSON terms used in this repo.
 
+
+## Dependencies
+
+In order to compile and use `jparse` (the applications and the library) you will
+need to download, compile and install the [dbg
+repo](https://github.com/lcn2/dbg) and the [dyn_array
+repo](https://github.com/lcn2/dyn_array).
+
+To do this you might try:
+
+```sh
+    git clone https://github.com/lcn2/dbg
+    cd dbg && make all
+    # then as root or via sudo:
+    make install
+
+    git clone https://github.com/lcn2/dyn_array
+    cd dyn_array
+    make all
+    # then as root or via sudo:
+    make install
+```
+
+If there are any issues with this then please open an issue in the respective
+repo.
 
 
 ## Compiling
@@ -48,6 +64,26 @@ we use backup files. Either way, to compile you need only run:
 
 ```sh
 make all
+```
+
+
+### Running the test-suite:
+
+We provide a test-suite, should you wish to test a variety of json files and
+other things. To run it:
+
+```sh
+make clobber all test
+```
+
+
+## Installing
+
+If you wish to install this, which is recommended, especially if you want to use
+the library, you can do as root or via sudo:
+
+```sh
+    make install
 ```
 
 
@@ -89,7 +125,7 @@ their application and then interact with the parsed tree.
 
 ### Linking the library into your own code
 
-To use you need to include `jparse.h` and then link in the `jparse.a` static
+To use you need to include `jparse.h` and then link in the `libjparse.a` static
 library. This will be documented at a later date.
 
 
@@ -229,23 +265,17 @@ reason the parser were to be modified, in error or otherwise, and the test fails
 then we know there is a problem. As the GitHub repo has workflows to make sure
 that this does not happen it should never be added to the repo.
 
-
-## Other `jparse` tools (WARNING: these are **VERY INCOMPLETE and will be heavily modified**):
-
-We also provide a number of tools that are, at least in what they will do when
-completed, in [json_util_README.md](json_util_README.md). But please note the
-warning there that says:
-
 <hr>
 
 # History
 
-For more detailed history that goes beyond this humble document we
-recommend you check `jparse(1)` and the `chkentry(1)` man page in the
+For more detailed history that goes beyond this humble document we recommend you
+check `jparse(1)` man page here and the `chkentry(1)` man page in the
 `mkiocccentry` repo as well as its `CHANGES.md` and `README.md` files. If you
-want to go further than that you can read the GitHub git log as well as reading
-the source code. If you do read the source code we **STRONGLY** recommend you
-read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
+want to go further than that you can read the GitHub git log in the
+`mkiocccentry` repo under the `jparse/` subdirectory as well as reading the
+source code. If you do read the source code we **STRONGLY** recommend you read
+the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
 code! This is because the generated code might give you nightmares and cause
 other horrible symptoms. :-) See [sorry.tm.ca.h](sorry.tm.ca.h) for more details
 on this.

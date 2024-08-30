@@ -356,15 +356,15 @@ libdyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
 
-dyn_test: dyn_test.o ../dbg/dbg.a
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -ldyn_array ../dbg/dbg.a -o dyn_test
+dyn_test: dyn_test.o
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -ldyn_array -ldbg -o dyn_test
 
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/dbg.a: ../dbg/Makefile
+../dbg/libdbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 
