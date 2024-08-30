@@ -329,7 +329,7 @@ DEST_DIR= /usr/local/bin
 EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-EXTERN_LIBA= libjparse.a
+EXTERN_LIBA= jparse.a
 EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
@@ -350,7 +350,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
 #
-LIBA_TARGETS= libjparse.a
+LIBA_TARGETS= jparse.a
 
 # shell targets to make by all and removed by clobber
 #
@@ -395,7 +395,7 @@ TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 ###########################################
 
 all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
-	@:
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse all C_SPECIAL=${C_SPECIAL}
 
 
 #################################################
@@ -425,20 +425,20 @@ jparse_main.o: jparse_main.c
 jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} jparse.c -c
 
-jparse: jparse_main.o libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
+jparse: jparse_main.o jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
+jstrencode: jstrencode.o jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
+jstrdecode: jstrdecode.o jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
@@ -446,8 +446,8 @@ json_parse.o: json_parse.c
 jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -lm -o $@
+jsemtblgen: jsemtblgen.o jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ -L. -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -485,10 +485,10 @@ util.o: util.c util.h
 verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o util.o ../dbg/libdbg.a ../dyn_array/libdyn_array.a
-	${CC} ${CFLAGS} $^ -o $@
+verge: verge.o util.o
+	${CC} ${CFLAGS} $^ -o $@ -L. -ldbg -ldyn_array
 
-libjparse.a: ${LIB_OBJS}
+jparse.a: ${LIB_OBJS}
 	${RM} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
@@ -504,10 +504,10 @@ run_flex-v7: verge sorry.tm.ca.h
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/libdbg.a: ../dbg/Makefile
+../dbg/dbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
-../dyn_array/libdyn_array.a: ../dyn_array/Makefile
+../dyn_array/dyn_array.a: ../dyn_array/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile

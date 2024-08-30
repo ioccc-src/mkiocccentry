@@ -5,7 +5,7 @@
 /answers.txt
 *.[ao]
 /bug-report*.txt
-/.build.log.*
+build.log
 /chkentry
 *.dSYM/
 /dbg.clone/
@@ -13,6 +13,8 @@
 /dyn_array/dyn_test
 /iocccsize
 /jparse.clone/
+/jparse.clone.lcn2/
+/jparse.clone.xexyl/
 /jparse/.github
 /jparse_test.log
 /.local.dir.tags

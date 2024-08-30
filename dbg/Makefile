@@ -45,6 +45,7 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
+LN= ln
 PICKY= picky
 RANLIB= ranlib
 RM= rm
@@ -365,13 +366,13 @@ dbg_test.o: dbg_test.c
 	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
 
 dbg_test: dbg_test.o libdbg.a
-	${CC} ${CFLAGS} dbg_test.o libdbg.a -o $@
+	${CC} ${CFLAGS} dbg_test.o -L. -ldbg -o $@
 
 dbg_example.o: dbg_example.c
 	${CC} ${CFLAGS} dbg_example.c -c
 
-dbg_example: dbg_example.o libdbg.a
-	${CC} ${CFLAGS} dbg_example.o libdbg.a -o $@
+dbg_example: dbg_example.o
+	${CC} ${CFLAGS} dbg_example.o -L. -ldbg -o $@
 
 
 #########################################################
@@ -651,6 +652,8 @@ install: all install_man
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${I} ${RM} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
+	${I} ${LN} -s ${LIBA_TARGETS} ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
@@ -679,7 +682,9 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
+		${SED} -E -e 's;\s/usr/local/include/\S+;;' -e 's;\s/usr/include/\S+;;' | \
+	        ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \

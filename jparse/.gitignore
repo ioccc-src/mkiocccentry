@@ -7,6 +7,7 @@
 /.local.dir.tags
 /.sorry.*.c
 /Makefile.local
+/Makefile.orig
 /jfmt
 /jnamval
 /jparse
@@ -21,6 +22,7 @@
 /makefile.local
 /tags
 /test_jparse/Makefile.local
+/test_jparse/Makefile.orig
 /test_jparse/jnum_chk
 /test_jparse/jnum_gen
 /test_jparse/jparse_test.log

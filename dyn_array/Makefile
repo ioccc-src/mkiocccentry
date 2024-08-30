@@ -43,6 +43,7 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
+LN= ln
 PICKY= picky
 RANLIB= ranlib
 RM= rm
@@ -355,15 +356,15 @@ libdyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
 
-dyn_test: dyn_test.o libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.o libdyn_array.a ../dbg/libdbg.a -o dyn_test
+dyn_test: dyn_test.o ../dbg/dbg.a
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -ldyn_array ../dbg/dbg.a -o dyn_test
 
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../dbg/libdbg.a: ../dbg/Makefile
+../dbg/dbg.a: ../dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
 
 
@@ -621,6 +622,8 @@ install: all install_man
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${I} ${RM} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
+	${I} ${LN} -s ${LIBA_TARGETS} ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
@@ -649,7 +652,9 @@ depend: ${ALL_CSRC}
 		exit 1; \
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
-	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
+		${SED} -E -e 's;\s/usr/local/include/\S+;;' -e 's;\s/usr/include/\S+;;' | \
+		${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \

@@ -6,13 +6,37 @@ general purpose dynamic array in your program.
 
 ## Set up
 
-1. Compile `dyn_array.c` to produce `dyn_array.o`.
-2. Add `#include "dyn_array.h"` to the C source files that you wish to use the
-   facility in.
-4. Compile your source file(s) and link in `dyn_array.o`.
-
-
 For more information including an example see the next section.
+
+
+### If you do not wish to install the library:
+
+0. Compile `dyn_array.c` to produce `dyn_array.o`.
+1. Add `#include "dyn_array.h"` to the C source files that you wish to use the
+   facility in.
+2. Compile your source file(s) and link in `dyn_array.o`.
+
+
+### Installing the library:
+
+First, compile the library:
+
+```sh
+    make clobber all
+```
+
+Next, install the library (as root or via sudo):
+
+```sh
+    make install
+```
+
+Then, set up the code kind of like above, but with these changes:
+
+0. Add `#include <dyn_array.h>` to the C source files that you wish to use the
+   facility in.
+1. Compile your source file(s) and link in `dyn_array.a` (e.g. pass to the
+compiler `-ldyn_array`).
 
 
 ## The `dyn_array` API

@@ -39,15 +39,40 @@ levels of verbosity.
 
 # Set up
 
-1. Compile `dbg.c` to produce `dbg.o`.
+For more information and an example see the [dbg API](#dbg-api) section.
+
+## If you do not wish to install the library:
+
+0. Compile `dbg.c` to produce `dbg.o`.
 2. Add `#include "dbg.h"` to the C source files that you wish to use one or more
    of the `dbg` functions in.
-3. Set `verbosity_level` to some verbosity level such as `DBG_LOW` (1) or
+2. Set `verbosity_level` to some verbosity level such as `DBG_LOW` (1) or
    `DBG_MED` (3) (see `dbg.h` for other levels).
-4. Compile your source file(s) and link in `dbg.o`.
+3. Compile your source file(s) and link in `dbg.o`.
 
 
-For more information including an example see the next section.
+## Installing the library:
+
+First, compile the library:
+
+```sh
+    make clobber all
+```
+
+Next, install the library (as root or via sudo):
+
+```sh
+    make install
+```
+
+Then, set up the code kind of like above, but with these changes:
+
+0. Add `#include <dbg.h>` to the C source files that you wish to use one or more
+of the `dbg` functions in.
+1. Set the `verbosity_level` to some verbosity level such as `DBG_LOW` (1) or
+`DBG_MED` (3) (see `dbg.h` for other levels and the example further below).
+2. Compile your source file(s) and link in `libdbg.a` (e.g. pass to the compiler
+`-ldbg`).
 
 
 # The dbg API
