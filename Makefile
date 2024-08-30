@@ -181,7 +181,7 @@ WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 
 # special compiler flags
 #
-C_SPECIAL= -DMKIOCCCENTRY_SRC
+C_SPECIAL= -DINTERNAL_INCLUDE
 
 # linker options
 #
@@ -1130,7 +1130,7 @@ dbg.update_from_clone: dbg.clone/ dbg/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg.clone/ dbg
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1139,7 +1139,7 @@ dbg.update_into_clone: dbg/ dbg.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg/ dbg.clone
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1233,7 +1233,7 @@ dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array.clone/ dyn_array
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1242,7 +1242,7 @@ dyn_array.update_into_clone: dyn_array/ dyn_array.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array/ dyn_array.clone
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1336,7 +1336,7 @@ jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse.clone/ jparse
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1345,7 +1345,7 @@ jparse.update_into_clone: jparse/ jparse.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse/ jparse.clone
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UMKIOCCCENTRY_SRC
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

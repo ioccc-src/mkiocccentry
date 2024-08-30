@@ -1,5 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.5.5 2024-08-30
+
+We updated `dbg/` from the dbg repo.
+
+We updated `dyn_array/` from the dyn_array repo.
+
+We updated `jparse/` from the jparse repo.
+
+Renamed `MKIOCCCENTRY_SRC` to `INTERNAL_INCLUDE`.
+
+Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.5 2024-08-30"`.
+
+
 ## Release 1.5.4 2024-08-29
 
 Rename libraries for easier linking in other applications. In particular the

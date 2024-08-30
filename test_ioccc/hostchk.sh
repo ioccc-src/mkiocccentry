@@ -284,7 +284,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	    echo "Compiling code with \"$h\"" 1>&2
 	fi
 	rm -f "$PROG_FILE"
-	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -DMKIOCCCENTRY_SRC -x c - -o "$PROG_FILE"
+	printf "%s\\n%s\\n" "$h" "int main(void){ return 0; }" | "${CC}" -DINTERNAL_INCLUDE -x c - -o "$PROG_FILE"
 
 	# test compile
 	#

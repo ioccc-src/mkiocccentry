@@ -170,7 +170,7 @@ WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 
 # special compiler flags
 #
-C_SPECIAL= -DMKIOCCCENTRY_SRC
+C_SPECIAL= -DINTERNAL_INCLUDE
 
 # linker options
 #

@@ -25,7 +25,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#if defined(MKIOCCCENTRY_SRC)
+#if defined(INTERNAL_INCLUDE)
 #include "../../dbg/dbg.h"
 #else
 #include <dbg.h>

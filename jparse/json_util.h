@@ -25,7 +25,7 @@
 /*
  * dyn_array - dynamic array facility
  */
-#if defined(MKIOCCCENTRY_SRC)
+#if defined(INTERNAL_INCLUDE)
 #include "../dyn_array/dyn_array.h"
 #else
 #include <dyn_array.h>
