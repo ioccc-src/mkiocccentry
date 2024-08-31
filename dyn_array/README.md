@@ -5,14 +5,14 @@ general purpose dynamic array in your program.
 
 ## Dependencies
 
-In order to compile and use `dyn_array` you will need to download, compile and
+In order to use `dyn_array` you will need to download, compile and
 install the [dbg repo](https://github.com/lcn2/dbg).
 
 To do this, you might try:
 
 ```sh
     git clone https://github.com/lcn2/dbg
-    cd dbg && make all
+    cd dbg && make clobber all test
     # then as root or via sudo:
     make install
 ```
@@ -35,10 +35,10 @@ For more information including an example see the next section.
 
 ### Installing the library:
 
-First, compile the library:
+First, compile and test the library:
 
 ```sh
-    make clobber all
+    make clobber all test
 ```
 
 Next, install the library (as root or via sudo):

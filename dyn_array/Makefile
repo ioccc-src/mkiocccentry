@@ -354,18 +354,10 @@ libdyn_array.a: ${LIB_OBJS}
 	${RANLIB} $@
 
 dyn_test.o: dyn_test.c dyn_array.h
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
+	${CC} ${CFLAGS} -UDBG_USE dyn_test.c -c
 
-dyn_test: dyn_test.o
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -ldyn_array -ldbg -o dyn_test
-
-
-#########################################################
-# rules that invoke Makefile rules in other directories #
-#########################################################
-
-../dbg/libdbg.a: ../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
+dyn_test: dyn_test.o dyn_array.o
+	${CC} ${CFLAGS} dyn_test.o dyn_array.o -o dyn_test
 
 
 ####################################
@@ -522,12 +514,6 @@ tags:
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${Q} for dir in ../dbg; do \
-	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
-		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
-		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
-	    fi; \
-	done
 	${Q} echo
 	${E} ${MAKE} local_dir_tags C_SPECIAL=${C_SPECIAL}
 	${Q} echo
@@ -564,7 +550,7 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} -f tags
-	${Q} for dir in . ../dbg; do \
+	${Q} for dir in .; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
 		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
