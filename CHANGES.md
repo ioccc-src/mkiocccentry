@@ -11,6 +11,10 @@ Add to `jparse/Makefile` `-L../dbg -L../dyn_array` for the same reasons as
 above. If this works then the `jparse` repo Makefile will also have to be
 updated for this (along with some other pending changes).
 
+Add to `jparse/test_jparse/Makefile` `-L../dbg -L../dyn_array` for the above
+reasons as well.
+
+
 
 ## Release 1.5.5 2024-08-30
 
