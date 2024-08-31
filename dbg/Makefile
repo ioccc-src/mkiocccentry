@@ -683,7 +683,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
-		${SED} -E -e 's;\s/usr/local/include/\S+;;' -e 's;\s/usr/include/\S+;;' | \
+		${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
 	        ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \

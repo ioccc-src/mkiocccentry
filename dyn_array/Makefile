@@ -356,13 +356,6 @@ libdyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} -UDBG_USE dyn_test.c -c
 
-#########################################################
-# rules that invoke Makefile rules in other directories #
-#########################################################
-
-../dbg/libdbg.a: ../dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba C_SPECIAL=${C_SPECIAL}
-
 dyn_test: dyn_test.o dyn_array.o
 	${CC} ${CFLAGS} dyn_test.o dyn_array.o -o dyn_test
 
@@ -646,7 +639,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
-		${SED} -E -e 's;\s/usr/local/include/\S+;;' -e 's;\s/usr/include/\S+;;' | \
+		${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
 		${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
