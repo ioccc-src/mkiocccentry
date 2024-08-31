@@ -1,5 +1,30 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.7 2024-08-31
+
+Synced `jparse` subdirectory from the [jparse
+repo](https://github.com/xexyl/jparse/). There was no code change and the only
+functionality changes are that the install rule installs more header files (now
+in a subdirectory - `/usr/local/include/jparse) and an uninstall rule is added
+(for those who wish to deobfuscate their system :-) ).
+
+Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.6 2024-08-31"`.
+
+
+## Release 1.5.6 2024-08-31
+
+Add to `dyn_array/Makefile` or `dyn_test` the flag `-L../dbg` in hopes to solve
+the workflow failure. If this works then the `dyn_array` repo will also have to
+have this added to its Makefile.
+
+Add to `jparse/Makefile` `-L../dbg -L../dyn_array` for the same reasons as
+above. If this works then the `jparse` repo Makefile will also have to be
+updated for this (along with some other pending changes).
+
+Add to `jparse/test_jparse/Makefile` `-L../dbg -L../dyn_array` for the above
+reasons as well.
+
+
 
 ## Release 1.5.5 2024-08-30
 

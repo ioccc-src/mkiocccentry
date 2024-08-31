@@ -1,9 +1,21 @@
 # Command line utilities that read and process JSON in different ways
 
 
+## XXX - this document is for tools that have not yet been written - XXX
+
+This document was prior to setting up this repo and it describes tools to be
+written (that were being worked on until one of us got sick). As such these
+tools have **NOT** been written yet. Additionally there might be some changes
+in how they work, when it is time to write them. As well, another utility is
+going to be created as well. All of these will happen at a later time as there
+are other things that are of higher priority. When the tools exist then this
+note will be either removed (if the tools are complete) or modified (if the
+tools are still being worked on but do exist).
+
+
 ## Introduction to this document
 
-NOTE: Please see [json_README.md](./json_README.md) for some important **JSON
+**NOTE**: Please see [json_README.md](./json_README.md) for some important **JSON
 terms** used in this document.
 
 There is a general lack of JSON aware command line tools that allow someone to
