@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.6 2024-08-31
+
+Add to `dyn_array/Makefile` or `dyn_test` the flag `-L../dbg` in hopes to solve
+the workflow failure. If this works then the `dyn_array` repo will also have to
+have this added to its Makefile.
+
+
 ## Release 1.5.5 2024-08-30
 
 We updated `dbg/` from the dbg repo.

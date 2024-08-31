@@ -357,7 +357,7 @@ dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} -DDBG_USE dyn_test.c -c
 
 dyn_test: dyn_test.o
-	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -ldyn_array -ldbg -o dyn_test
+	${CC} ${CFLAGS} -DDBG_USE dyn_test.o -L. -L../dbg -ldyn_array -ldbg -o dyn_test
 
 
 #########################################################
