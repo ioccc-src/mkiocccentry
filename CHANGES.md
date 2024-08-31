@@ -7,6 +7,10 @@ Add to `dyn_array/Makefile` or `dyn_test` the flag `-L../dbg` in hopes to solve
 the workflow failure. If this works then the `dyn_array` repo will also have to
 have this added to its Makefile.
 
+Add to `jparse/Makefile` `-L../dbg -L../dyn_array` for the same reasons as
+above. If this works then the `jparse` repo Makefile will also have to be
+updated for this (along with some other pending changes).
+
 
 ## Release 1.5.5 2024-08-30
 
