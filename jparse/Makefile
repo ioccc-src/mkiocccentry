@@ -101,10 +101,18 @@ Q_V_OPTION="1"
 endif
 
 # INSTALL_V=				install w/o -v flag (quiet mode)
-# INSTALL_V= -v				install with -v (debug / verbose mode
+# INSTALL_V= -v				install with -v (debug / verbose mode)
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# RM_V=					rm w/o -v flag (quiet mode)
+# RM_V= -v				rm with -v (debug / verbose mode)
+#
+#RM_V=
+RM_V= -v
+
+
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
 # MAKE_CD_Q=				silence make cd messages (quiet mode)
@@ -315,7 +323,7 @@ ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 MAN1_DIR= /usr/local/share/man/man1
 MAN3_DIR= /usr/local/share/man/man3
 MAN8_DIR= /usr/local/share/man/man8
-DEST_INCLUDE= /usr/local/include
+DEST_INCLUDE= /usr/local/include/jparse
 DEST_LIB= /usr/local/lib
 DEST_DIR= /usr/local/bin
 
@@ -362,7 +370,8 @@ PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
-H_SRC_TARGETS= jparse.h
+H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
+	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h
 
 # what to make by all but NOT to removed by clobber
 #
@@ -402,11 +411,11 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 # .PHONY list of rules that do not create files #
 #################################################
 
-.PHONY: all \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_json_ref rebuild_jnum_test bison flex test tags local_dir_tags all_tags check_man \
-	legacy_clean legacy_clobber load_json_ref install_man \
-	configure clean clobber install depend
+.PHONY: all extern_include extern_objs extern_liba extern_man extern_prog \
+	extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
+	parser parser-o use_json_ref rebuild_jnum_test bison flex test \
+	tags local_dir_tags all_tags check_man legacy_clean legacy_clobber \
+	load_json_ref install_man configure clean clobber install depend
 
 
 ####################################
@@ -426,19 +435,19 @@ jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../dbg -L../dyn_array -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../dbg -L../dyn_array -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../dbg -L../dyn_array -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
@@ -447,7 +456,7 @@ jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../dbg -L../dyn_array -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -486,7 +495,7 @@ verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
 verge: verge.o util.o
-	${CC} ${CFLAGS} $^ -o $@ -L. -L../dbg -L../dyn_array -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -o $@ -ldbg -ldyn_array
 
 libjparse.a: ${LIB_OBJS}
 	${RM} -f $@
@@ -888,6 +897,47 @@ install: all test_jparse/Makefile install_man
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+uninstall:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libjparse.a
+	${I} ${RM} -r -f ${RM_V} ${DEST_INCLUDE}
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jparse
+	${RM} -r -f ${RM_V} ${DEST_DIR}/verge
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jsemtblgen
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jstrdecode
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jstrencode
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jsemcgen.sh
+	${RM} -r -f ${RM_V} ${DEST_DIR}/run_bison.sh
+	${RM} -r -f ${RM_V} ${DEST_DIR}/run_flex.sh
+	${RM} -r -f ${RM_V} ${MAN1_DIR}/jparse.1
+	${RM} -r -f ${RM_V} ${MAN1_DIR}/jstrdecode.1
+	${RM} -r -f ${RM_V} ${MAN1_DIR}/jstrencode.1
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/jparse.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_dbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_dbg_allowed.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_err_allowed.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_warn_allowed.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json_file.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json_stream.3
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jnum_chk.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jnum_gen.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jparse_test.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemcgen.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemtblgen.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jstr_test.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/verge.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_bison.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_bison.sh.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_flex.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_flex.sh.8
+	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemcgen.sh.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

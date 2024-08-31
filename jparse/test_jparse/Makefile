@@ -317,19 +317,19 @@ jnum_chk.o: jnum_chk.c jnum_chk.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
 jnum_chk: jnum_chk.o jnum_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../../dbg -L../../dyn_array -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldyn_array -ldbg
 
 jnum_gen.o: jnum_gen.c jnum_gen.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -L. -L../../dbg -L../../dyn_array -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c
 	${CC} ${CFLAGS} pr_jparse_test.c -c
 
 pr_jparse_test: pr_jparse_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ -L. -L../../dbg -L../../dyn_array -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -o $@ -ldyn_array -ldbg
 
 
 

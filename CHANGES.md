@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.7 2024-08-31
+
+Synced `jparse` subdirectory from the [jparse
+repo](https://github.com/xexyl/jparse/). There was no code change and the only
+functionality changes are that the install rule installs more header files (now
+in a subdirectory - `/usr/local/include/jparse) and an uninstall rule is added
+(for those who wish to deobfuscate their system :-) ).
+
+Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.6 2024-08-31"`.
+
 
 ## Release 1.5.6 2024-08-31
 

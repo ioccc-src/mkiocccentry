@@ -21,7 +21,7 @@
 
 
 /*
- * util - common utility functions for the IOCCC toolkit
+ * util - common utility functions for the JSON parser
  */
 #include "util.h"
 
