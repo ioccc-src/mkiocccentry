@@ -1,6 +1,6 @@
 # Frequently Asked Questions about the `mkiocccentry` repo
 
-This is FAQ version **28.0.0 2024-07-31**.
+This is FAQ version **28.0.1 2024-09-01**.
 
 <div id="toc"></div>
 
@@ -10,7 +10,7 @@ This is FAQ version **28.0.0 2024-07-31**.
 
 1. [How do I compile the mkiocccentry tools?](#compiling)
 
-2. [Do I need to install this code to use it?](#install)
+2. [How may I install the tools if I wish to and is it required?](#install)
 
 3. [What can I do if my system's tar(1) does not support the correct options?](#tar)
 
@@ -23,6 +23,8 @@ This is FAQ version **28.0.0 2024-07-31**.
 7. [Why do these tools sometimes use the incorrect IOCCC terms?](#terms)
 
 8. [How do I participate in the IOCCC?](#ioccc)
+
+9. [How do I uninstall the toolkit?](#uninstalling)
 
 
 <div id="download"></div>
@@ -70,7 +72,33 @@ local directory.  If something went wrong, see
 <div id="install"></div>
 <div id="installing"></div>
 
-## 2. Do I need to install this code to use it?
+
+## 2.  How may I install the tools if I wish to and is it required?
+
+You do not need to install the code (see below) but it can be helpful to do so
+as you can then run the tools from any directory including your submission
+directory, so you do not have to specify paths.
+
+If you do wish to install the toolkit, you can do:
+
+```sh
+    make install
+```
+
+as either root or via sudo. By default this will install with the `PREFIX` of
+`/usr/local` so the programs will be installed to `/usr/local/bin`, libraries in
+`/usr/local/lib`, man pages in `/usr/local/share/man/man[138]` etc. If you wish
+to have them elsewhere, for instance `/usr` or some other location, you can
+override the default location with the `PREFIX` variable. For instance, to
+install with the `PREFIX` of `/usr`:
+
+
+```sh
+    make PREFIX=/usr install
+```
+
+
+### Is installing required?
 
 No, installing the code in this repo is not necessary to use it. These tools
 were designed to be used from the top level directory of the source, or after
@@ -278,3 +306,30 @@ the [Rules](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html) and the
 
 Pay especial care to [Rule
 17](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule17)!
+
+
+<div id="uninstalling">
+## 9. How do I uninstall the toolkit?
+</div>
+
+If you have installed the tools and you wish to uninstall them, you can do so
+from the top level repo directory by typing:
+
+```sh
+    make uninstall
+```
+
+as either root or via sudo.
+
+Remember that if you installed with a different `PREFIX` you will have to use
+that same `PREFIX` to successfully uninstall the programs, library and man
+pages. For instance if you installed with the `PREFIX` of `/usr` you would type
+instead:
+
+```sh
+    make PREFIX=/usr uninstall
+```
+
+After this all the files installed should be removed. If this is not the case by
+some chance it is likely a bug and you may report it as a bug
+[here](https://github.com/ioccc-src/mkiocccentry/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml&title=%5BBug%5D+%3Ctitle%3E).

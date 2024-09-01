@@ -1,5 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.8 2024-09-01
+
+Add to Makefiles the `PREFIX` variable to allow for installing to a different
+location than the default `/usr/local`.
+
+Added some uninstall rules to the Makefile in a number of subdirectories. The
+external repos that are synced to this repo have not had any direct changes as
+those repos first need those rules (which will be done soon). This is also why
+the top level Makefile does not run `make uninstall` in those subdirectories.
+Once these are all done the top level Makefile can have a simpler uninstall
+rule.
+
+Along the lines of silencing (non-verbose) `install` in the `install` rule one
+may now do the same with the uninstall (instead of `INSTALL_V` it is `RM_V`).
+This is only done to be congruent with the `install` rule.
+
+Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.7 2024-09-01"`.
+
 ## Release 1.5.7 2024-08-31
 
 Synced `jparse` subdirectory from the [jparse

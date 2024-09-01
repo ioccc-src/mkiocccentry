@@ -70,11 +70,12 @@ Finally we thank you once again in helping to make the IOCCC toolkit even better
 in order to improve the IOCCC itself!
 
 
-## Getting help
+## Getting help / reporting issues
 
-If you have a problem with anything in this repo, please see the
-[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) for
-answers to a number of possible problems as well as to see how to report issues.
+If you have a problem with anything in this repo, including with compiling
+and/or installing (which is not required), please see the
+[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) for answers
+to a number of possible problems as well as to see how to report issues.
 
 
 ## The mkiocccentry toolkit
