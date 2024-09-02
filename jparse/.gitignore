@@ -4,6 +4,7 @@
 .*.sw[a-zA-Z0-9]*
 .sw[a-zA-Z0-9]*
 .DS_Store
+/bug-report*
 /.jsemcgen.*.out
 /.local.dir.tags
 /.sorry.*.c

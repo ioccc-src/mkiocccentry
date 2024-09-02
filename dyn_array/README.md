@@ -47,12 +47,37 @@ Next, install the library (as root or via sudo):
     make install
 ```
 
+If you need or want to install to a different location than the default
+`/usr/local` you can do so by changing the `PREFIX` like:
+
+```sh
+    make PREFIX=/usr install
+```
+
+
 Then, set up the code kind of like above, but with these changes:
 
 0. Add `#include <dyn_array.h>` to the C source files that you wish to use the
    facility in.
 1. Compile your source file(s) and link in `dyn_array.a` (e.g. pass to the
 compiler `-ldyn_array`).
+
+## Uninstalling
+
+If you wish to uninstall everything from this repo you can do like:
+
+```sh
+    make uninstall
+```
+
+If you changed the `PREFIX` when installing make sure to specify that. For
+instance if you installed with `PREFIX=/usr` you should do:
+
+
+```sh
+    make PREFIX=/usr uninstall
+```
+
 
 
 ## The `dyn_array` API

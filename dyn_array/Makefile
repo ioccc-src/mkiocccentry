@@ -111,11 +111,34 @@ else
 Q_V_OPTION="1"
 endif
 
+# installing variables
+#
+
 # INSTALL_V=				install w/o -v flag (quiet mode)
 # INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# where to install
+#
+# Default PREFIX is /usr/local so binaries would be installed in /usr/local/bin,
+# libraries in /usr/local/lib etc. If one wishes to override this, say
+# installing to /usr, they can do so like:
+#
+#	make PREFIX=/usr install
+#
+PREFIX= /usr/local
+
+# uninstalling variables
+#
+
+# RM_V=					rm w/o -v flag (quiet mode)
+# RM_V= -v				rm with -v (debug / verbose mode)
+#
+#RM_V=
+RM_V= -v
+
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
 # MAKE_CD_Q=				silence make cd messages (quiet mode)
@@ -160,9 +183,13 @@ WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 #
 C_SPECIAL=
 
+# special linker flags
+#
+LD_SPECIAL=
+
 # linker options
 #
-LDFLAGS=
+LDFLAGS= ${LD_SPECIAL}
 
 # how to compile
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
@@ -246,12 +273,12 @@ ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
 # where to install
 #
-MAN1_DIR= /usr/local/share/man/man1
-MAN3_DIR= /usr/local/share/man/man3
-MAN8_DIR= /usr/local/share/man/man8
-DEST_INCLUDE= /usr/local/include
-DEST_LIB= /usr/local/lib
-DEST_DIR= /usr/local/bin
+MAN1_DIR= ${PREFIX}/share/man/man1
+MAN3_DIR= ${PREFIX}/share/man/man3
+MAN8_DIR= ${PREFIX}/share/man/man8
+DEST_INCLUDE= ${PREFIX}/include
+DEST_LIB= ${PREFIX}/lib
+DEST_DIR= ${PREFIX}/bin
 
 
 #################################
@@ -614,6 +641,29 @@ install: all install_man
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+uninstall:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libdyn_array.a
+	${I} ${RM} -r -f ${RM_V} ${DEST_DIR}/dyn_test
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

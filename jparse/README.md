@@ -18,17 +18,18 @@ Contest](https://www.ioccc.org)), originally in the [mkiocccentry
 repo](https://github.com/ioccc-src/mkiocccentry), but we provide it here so that
 anyone may use it.
 
-As a stand-alone tool it is less useful, perhaps save for validating json
-documents and to see how it works. The library is much more useful because you
-can integrate it into your own applications and work with the parsed tree. More
-details (beyond the man page) on the library will be documented at a later date,
-depending on need, although we do give a bit of information below.
+As a stand-alone tool it is less useful, except for validating json
+documents/strings, and to see how it works. The library is much more useful
+because you can integrate it into your own applications and work with the parsed
+tree(s). More details (beyond the man page) on the library will be documented at
+a later date, depending on need, although we do give a bit of information below.
 
 We also have some additional tools, some of which will be documented later and
 some of which are documented below, namely `jstrencode` and `jstrdecode`.
 
-We recommend that you read the [json_README.md](json_README.md) document
-to better understand the JSON terms used in this repo.
+We recommend that you read the
+[json_README.md](https://github.com/xexyl/jparse/blob/master/json_README.md)
+document to better understand the JSON terms used in this repo.
 
 
 # Dependencies
@@ -38,7 +39,7 @@ need to download, compile and install the [dbg
 repo](https://github.com/lcn2/dbg) and the [dyn_array
 repo](https://github.com/lcn2/dyn_array).
 
-To do this you might try:
+To do clone, make and install these dependencies:
 
 ```sh
 git clone https://github.com/lcn2/dbg
@@ -53,28 +54,71 @@ make all
 make install
 ```
 
-If there are any issues with this then please open an issue in the respective
-repo.
+The default `PREFIX` to the install rules is `/usr/local` but if you need to
+change this, say due to a system policy, you can do so with the `PREFIX`
+variable. For instance if you need or want to install the libraries to
+`/usr/lib` and the binaries to `/usr/bin` etc. you can do instead:
+
+```sh
+make PREFIX=/usr install
+```
+
+Of course, you can specify a different `PREFIX` than `/usr` if you wish.
+Remember if you do this though, that if you uninstall them, you will have to
+specify the same `PREFIX`.
+
+If there are any issues with compiling or installing either of these, then
+please open an issue in the respective repo.
 
 
 # Compiling
 
-We determine if you have a recent enough `flex(1)` and `bison(1)`. If you do not
-we use backup files. Either way, to compile you need only run:
+The parser uses both `flex(1)` and `bison(1)` but we determine if you have a
+recent enough version of each, and if you do not we use the backup files (the
+ones we generate when a `flex(1)` or `bison(1)` file is changed).
+
+Either way, to compile you need only run:
 
 
 ```sh
 make all
 ```
 
-
 # Installing
 
-If you wish to install this, which is recommended, especially if you want to use
-the library, you can do as root or via sudo:
+If you wish to install this, which is **highly** recommended, especially if you
+want to use the library, you can do as root or via sudo:
 
 ```sh
 make install
+```
+
+We also support the `PREFIX` standard so if you need to install the binaries to
+`/usr/bin`, library to `/usr/lib`, the header files to `/usr/include/jparse` and
+the man pages to `/usr/share/man/man[138]`, then do:
+
+```sh
+make PREFIX=/usr install
+```
+
+Of course, you can specify a different `PREFIX` than `/usr` if you wish.
+
+
+# Uninstalling
+
+If you wish to deobfuscate your system a bit :-), you can uninstall the programs,
+library and header files by running:
+
+```sh
+make uninstall
+```
+
+If you installed to a different `PREFIX` than the default then you must specify
+that same `PREFIX`. For instance if you installed with the `PREFIX` of `/usr`
+then you must do instead:
+
+```
+make PREFIX=/usr uninstall
 ```
 
 
@@ -398,7 +442,7 @@ might be some issues that have yet to be discovered.
 
 # See also
 
-For more information, try:
+For more information, try from the repo directory:
 
 ```sh
 man ./man/man1/jparse.1
@@ -407,21 +451,35 @@ man ./man/man1/jstrencode.1
 man ./man/man1/jstrdecode.1
 ```
 
+or if you have installed everything (i.e. you ran `make install` as root or via
+`sudo(1)`) then you can do:
+
+```
+man 1 jparse
+man 3 jparse
+man jstrencode
+man jstrdecode
+```
+
 **NOTE**: the library man page currently has no example but you can always look
-at [jparse_main.c](jparse_main.c) for a relatively simple example (as described
-earlier).
+at [jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c)
+for a relatively simple example (the source code for `jparse(1)` itself, as
+described earlier).
+
 
 # Our testing suite:
 
-In the [jparse/test_jparse](jparse/test_jparse/README.md) subdirectory we have a
-test suite script [jparse_test.sh](jparse/test_jparse/jparse_test.sh) which runs
-a battery of tests on both valid and invalid JSON files, both as strings and as
-files, and if valid JSON files do **NOT** pass as valid **OR** if invalid JSON
-files **DO** pass as valid then it is an error.
+In the
+[jparse/test_jparse](https://github.com/xexyl/jparse/blob/master/test_jparse/README.md)
+subdirectory we have a test suite script
+[jparse_test.sh](https://github.com/xexyl/jparse/blob/master/test_jparse/jparse_test.sh)
+which runs a battery of tests on both valid and invalid JSON files, both as
+strings and as files, and if valid JSON files do **NOT** pass as valid **OR** if
+invalid JSON files **DO** pass as valid then it is an error.
 
 We have used our own files (with some Easter eggs included due to a shared
 interest between Landon and Cody :-) ) as well as from the
-[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo (and with **MUCH
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo (with **MUCH
 GRATITUDE** to the maintainers: **THANK YOU**!) and all is good. If for some
 reason the parser were to be modified, in error or otherwise, and the test fails
 then we know there is a problem. As the GitHub repo has workflows to make sure
@@ -435,17 +493,31 @@ If you wish to run this test-suite, try from the repo directory:
 make clobber all test
 ```
 
+# Bug reporting
 
-# Uninstalling
-
-If you wish to deobfuscate your system a bit :-) you can uninstall the programs,
-library and header files by running:
+If you have a problem with this repo in some form, for example you cannot
+compile it in your system, or if you think there is a bug of some kind, please
+kindly run from the repo directory:
 
 ```sh
-make uninstall
+make bug_report
 ```
 
-as root or via sudo.
+and attach the log file (it will tell you what the name is) to a new issue at
+the [jparse issues page](https://github.com/xexyl/jparse/issues). If it's a bug
+please select the bug template.
+
+Note that the script,
+[jparse_bug_report.sh](https://github.com/xexyl/jparse/blob/master/jparse_bug_report.sh),
+will tell you if it finds any problems and if it does not it tells you that you
+can safely delete it. Of course just because it does not find any problems does
+not necessarily mean there is not a problem. On the other hand, just because it
+tells you that there is a problem does not mean that there is a problem with the
+repo; it could be your environment or something else entirely.
+
+Please do **NOT** report a problem with JSON: we know that there are a number
+of, shall we say, 'issues', but this is not an issue here but rather
+[there](https://www.json.org/json-en.html). :-)
 
 
 <hr>
@@ -457,8 +529,12 @@ check `jparse(1)` man page here and the `chkentry(1)` man page in the
 `mkiocccentry` repo as well as its `CHANGES.md` and `README.md` files. If you
 want to go further than that you can read the GitHub git log in the
 `mkiocccentry` repo under the `jparse/` subdirectory as well as reading the
-source code. If you do read the source code we **STRONGLY** recommend you read
-the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
-code! This is because the generated code might give you nightmares and cause
-other horrible symptoms. :-) See [sorry.tm.ca.h](sorry.tm.ca.h) for more details
-on this.
+source code.
+
+If you do read the source code we **STRONGLY** recommend you read the `jparse.l`
+and `jparse.y` files and **NOT** the bison or flex generated code! This is
+because the generated code might give you nightmares and cause other horrible
+symptoms. :-) See
+[sorry.tm.ca.h](https://github.com/xexyl/jparse/blob/master/sorry.tm.ca.h) for
+more details on this. Of course if you're brave enough to read the generated
+code you're welcome to but don't say we did not warn you! :-)

@@ -69,7 +69,7 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
-/* compassion enum - for json tools that might wish to compare JSON related values */
+/* comparison enum - for json tools that might wish to compare JSON related values */
 enum JSON_UTIL_CMP_OP
 {
     JSON_CMP_OP_NONE = 0,	/* must be first */

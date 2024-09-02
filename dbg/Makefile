@@ -107,11 +107,36 @@ endif
 I=
 #I= @
 
+# installing variables
+#
+
 # INSTALL_V=				install w/o -v flag (quiet mode)
 # INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# where to install
+#
+# Default PREFIX is /usr/local so binaries would be installed in /usr/local/bin,
+# libraries in /usr/local/lib etc. If one wishes to override this, say
+# installing to /usr, they can do so like:
+#
+#	make PREFIX=/usr install
+#
+PREFIX= /usr/local
+
+# uninstalling variables
+#
+
+# RM_V=					rm w/o -v flag (quiet mode)
+# RM_V= -v				rm with -v (debug / verbose mode)
+#
+#RM_V=
+RM_V= -v
+
+# Additional controls
+#
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
 # MAKE_CD_Q=				silence make cd messages (quiet mode)
@@ -156,9 +181,13 @@ WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
 #
 C_SPECIAL=
 
+# special linker flags
+#
+LD_SPECIAL=
+
 # linker options
 #
-LDFLAGS=
+LDFLAGS= ${LD_SPECIAL}
 
 # how to compile
 #
@@ -249,12 +278,12 @@ ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
 # where to install
 #
-MAN1_DIR= /usr/local/share/man/man1
-MAN3_DIR= /usr/local/share/man/man3
-MAN8_DIR= /usr/local/share/man/man8
-DEST_INCLUDE= /usr/local/include
-DEST_LIB= /usr/local/lib
-DEST_DIR= /usr/local/bin
+MAN1_DIR= ${PREFIX}/share/man/man1
+MAN3_DIR= ${PREFIX}/share/man/man3
+MAN8_DIR= ${PREFIX}/share/man/man8
+DEST_INCLUDE= ${PREFIX}/include
+DEST_LIB= ${PREFIX}/lib
+DEST_DIR= ${PREFIX}/bin
 
 
 #################################
@@ -661,6 +690,66 @@ install: all install_man
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+uninstall:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libdbg.a
+
+	${RM} -r -f ${RM_V} ${DEST_DIR}/dbg_example
+	${RM} -r -f ${RM_V} ${DEST_DIR}/dbg_test
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/dbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/err.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/msg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/warn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/werr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/printf_usage.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/warn_or_err.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/errp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fdbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/ferr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/ferrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fmsg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fprintf_usage.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fwarn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fwarn_or_err.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fwarnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fwerr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/fwerrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/sndbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/snmsg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/snwarn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/snwarnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/snwerr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/snwerrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vdbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/verr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/verrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfdbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vferr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vferrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfmsg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfprintf_usage.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfwarn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfwarn_or_err.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfwarnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfwerr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vfwerrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vmsg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vprintf_usage.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsndbg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsnmsg.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsnwarn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsnwarnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsnwerr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vsnwerrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vwarn.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vwarn_or_err.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vwarnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vwerr.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/vwerrp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/warnp.3
+	${RM} -r -f ${RM_V} ${MAN3_DIR}/werrp.3
 
 ###############
 # make depend #

@@ -101,11 +101,36 @@ else
 Q_V_OPTION="1"
 endif
 
+# installing variables
+
 # INSTALL_V=				install w/o -v flag (quiet mode)
 # INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# where to install
+#
+# Default PREFIX is /usr/local so binaries would be installed in /usr/local/bin,
+# libraries in /usr/local/lib etc. If one wishes to override this, say
+# installing to /usr, they can do so like:
+#
+#	make PREFIX=/usr install
+#
+PREFIX= /usr/local
+
+# uninstalling variables
+#
+
+# RM_V=					rm w/o -v flag (quiet mode)
+# RM_V= -v				rm with -v (debug / verbose mode)
+#
+#RM_V=
+RM_V= -v
+
+
+
+
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
 # MAKE_CD_Q=				silence make cd messages (quiet mode)
@@ -158,9 +183,14 @@ WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
 #
 C_SPECIAL=
 
+
+# special linker flags
+#
+LD_SPECIAL=
+
 # linker options
 #
-LDFLAGS=
+LDFLAGS= ${LD_SPECIAL}
 
 # how to compile
 #
@@ -229,8 +259,8 @@ ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 # where to install
 #
 DEST_INCLUDE= /usr/local/include
-DEST_LIB= /usr/local/lib
-DEST_DIR= /usr/local/bin
+DEST_LIB= ${PREFIX}/lib
+DEST_DIR= ${PREFIX}/bin
 
 
 #################################
@@ -600,6 +630,16 @@ install: all
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+uninstall:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_chk
+	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_gen
+	${RM} -r -f ${RM_V} ${DEST_DIR}/pr_jparse_test
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ###############
 # make depend #
@@ -615,6 +655,18 @@ depend: ${ALL_CSRC}
 	    echo 'See the following GitHub repo for ${INDEPEND}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/independ'; 1>&2; \
+	elif ! type -P ${SED} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${SED} command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The ${SED} command is required to run the $@ rule'; 1>&2; \
+	    echo ''; 1>&2; \
+	elif ! type -P ${GREP} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${GREP} command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The ${GREP} command is required to run the $@ rule'; 1>&2; \
+	    echo ''; 1>&2; \
+	elif ! type -P ${CMP} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${CMP} command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The ${CMP} command is required to run the $@ rule'; 1>&2; \
+	    echo ''; 1>&2; \
 	else \
 	    if ! ${GREP} -q '^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$' Makefile; then \
 	        echo "${OUR_NAME}: make $@ aborting, Makefile missing: ### DO NOT CHANGE MANUALLY BEYOND THIS LINE" 1>&2; \

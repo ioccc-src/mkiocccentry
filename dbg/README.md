@@ -14,6 +14,30 @@ make clobber all test
 sudo make install
 ```
 
+If you wish to install to another directory prefix, say to `/usr` instead of the
+default `/usr/local`, you can override it by specifying the `PREFIX` variable:
+
+```sh
+sudo make PREFIX=/usr install
+```
+
+
+## TL;DR Uninstall dbg
+
+If you wish to uninstall the programs, library and man pages, you can do so
+like:
+
+```sh
+sudo make uninstall
+```
+
+If you specified a different `PREFIX` when installing you'll have to specify
+that `PREFIX`. For instance if you installed to `/usr`:
+
+```sh
+sudo make PREFIX=/usr uninstall
+```
+
 
 # dbg - info, debug, warning, error and usage message facility
 
@@ -65,6 +89,16 @@ Next, install the library (as root or via sudo):
     make install
 ```
 
+If you wish to change the `PREFIX`, say to `/usr` instead of `/usr/local`, you
+can do so like:
+
+```sh
+make PREFIX=/usr install
+```
+
+as root or via sudo.
+
+
 Then, set up the code kind of like above, but with these changes:
 
 0. Add `#include <dbg.h>` to the C source files that you wish to use one or more
@@ -73,6 +107,27 @@ of the `dbg` functions in.
 `DBG_MED` (3) (see `dbg.h` for other levels and the example further below).
 2. Compile your source file(s) and link in `libdbg.a` (e.g. pass to the compiler
 `-ldbg`).
+
+
+# Uninstalling
+
+If you're tired of bugs :-) you can uninstall the programs, library and man
+pages like:
+
+```sh
+make uninstall
+```
+
+as either root or via sudo.
+
+If you installed with a different `PREFIX` make sure to specify that. For
+instance if you used `PREFIX=/usr` do instead:
+
+```sh
+make PREFIX=/usr uninstall
+```
+
+as either root or via sudo.
 
 
 # The dbg API
