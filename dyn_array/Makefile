@@ -648,22 +648,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libdyn_array.a
-	${I} ${RM} -r -f ${RM_V} ${DEST_DIR}/dyn_test
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
+	${I} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
+	${I} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
+	${I} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
+	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
