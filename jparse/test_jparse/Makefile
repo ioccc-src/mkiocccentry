@@ -192,6 +192,12 @@ LD_SPECIAL=
 #
 LDFLAGS= ${LD_SPECIAL}
 
+# where to find libdbg.a and libdyn_array.a
+#
+# LD_DIR2 - locations of libdbg.a and libdyn_array.a passed down from 2 directories above
+#
+LD_DIR2=
+
 # how to compile
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
@@ -347,19 +353,19 @@ jnum_chk.o: jnum_chk.c jnum_chk.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
 jnum_chk: jnum_chk.o jnum_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
 jnum_gen.o: jnum_gen.c jnum_gen.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c
 	${CC} ${CFLAGS} pr_jparse_test.c -c
 
 pr_jparse_test: pr_jparse_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
 
 

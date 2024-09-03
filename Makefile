@@ -212,6 +212,14 @@ C_SPECIAL= -DINTERNAL_INCLUDE
 #
 LDFLAGS=
 
+# where to find libdbg.a and libdyn_array.a
+#
+# LD_DIR - locations of libdbg.a and libdyn_array.a for the next sub-directory down
+# LD_DIR2 - locations of libdbg.a and libdyn_array.a for 2 sub-directories down
+#
+LD_DIR= -L../dbg -L../dyn_array
+LD_DIR2= -L../../dbg -L../../dyn_array
+
 # how to compile
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
@@ -389,7 +397,7 @@ fast_hostchk: test_ioccc/hostchk.sh
 	-${Q} ./test_ioccc/hostchk.sh -f -v 0 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
-	    ${MAKE} hostchk_warning C_SPECIAL=${C_SPECIAL}; \
+	    ${MAKE} hostchk_warning C_SPECIAL="${C_SPECIAL}"; \
 	fi
 
 bug_report: bug_report.sh
@@ -413,7 +421,7 @@ hostchk: test_ioccc/hostchk.sh
 	-${Q} ./test_ioccc/hostchk.sh -v 1 -Z .; \
 	EXIT_CODE="$$?"; \
 	if [ "$$EXIT_CODE" -ne 0 ]; then \
-	    ${MAKE} hostchk_warning C_SPECIAL=${C_SPECIAL}; \
+	    ${MAKE} hostchk_warning C_SPECIAL="${C_SPECIAL}"; \
 	fi
 
 # get the users attention when hostchk.sh finds a problem
@@ -493,79 +501,86 @@ chkentry: chkentry.o soup/soup.a jparse/libjparse.a dyn_array/libdyn_array.a dbg
 #########################################################
 
 all_dbg: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg all C_SPECIAL="${C_SPECIAL}"
 
 all_dyn_array: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array all C_SPECIAL="${C_SPECIAL}"
 
 all_jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse all C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 all_jparse_test: jparse/test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse all C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR2="${LD_DIR2}"
 
 soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup soup C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup soup C_SPECIAL="${C_SPECIAL}"
 
 all_soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup all C_SPECIAL="${C_SPECIAL}"
 
 eat eating eat_soup eating_soup: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup eat C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup eat C_SPECIAL="${C_SPECIAL}"
 
 kitchen soup_kitchen: soup/kitchen.sh
-	-${Q} ${MAKE} ${MAKE_CD_Q} -C soup kitchen C_SPECIAL=${C_SPECIAL}
+	-${Q} ${MAKE} ${MAKE_CD_Q} -C soup kitchen C_SPECIAL="${C_SPECIAL}"
 
 all_test_ioccc: test_ioccc/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all C_SPECIAL="${C_SPECIAL}"
 
 dbg/dbg.h: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include C_SPECIAL="${C_SPECIAL}"
 
 dbg/libdbg.a: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_liba C_SPECIAL="${C_SPECIAL}"
 
 dbg/dbg_test: dbg/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg dbg_test C_SPECIAL="${C_SPECIAL}"
 
 dyn_array/dyn_array.h: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_include C_SPECIAL="${C_SPECIAL}"
 
 dyn_array/libdyn_array.a: dyn_array/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array extern_liba C_SPECIAL="${C_SPECIAL}"
 
 jparse/jparse.h: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_include C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 jparse/libjparse.a: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_liba C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 jparse/jparse: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 jparse/jsemtblgen: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 jparse/jsemcgen.sh: jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse extern_prog C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 soup/soup.a: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_liba C_SPECIAL="${C_SPECIAL}"
 
 soup/chk_sem_info.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL="${C_SPECIAL}"
 
 soup/chk_sem_auth.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL="${C_SPECIAL}"
 
 soup/soup.h: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_include C_SPECIAL="${C_SPECIAL}"
 
 soup/limit_ioccc.sh: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog C_SPECIAL="${C_SPECIAL}"
 
 reset_min_timestamp: soup/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp C_SPECIAL="${C_SPECIAL}"
 
 
 ####################################
@@ -704,7 +719,8 @@ rebuild_txzchk_test_errors force_expectations_for_txzchk_test:
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -712,26 +728,29 @@ parser: jparse/Makefile
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 # load bison/flex reference code from the previous successful make parser
 #
 load_json_ref: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 # restore bison/flex reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
 use_json_ref: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
 # rule used by ../test_ioccc/prep.sh
 #
 all_sem_ref: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 
 # form chk.????.ptch.{c,h} files
 #
@@ -744,7 +763,7 @@ all_sem_ref: soup/Makefile
 # are updated by hand.
 #
 all_sem_ref_ptch: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 
 
 # rebuild jparse error files for testing
@@ -753,7 +772,8 @@ all_sem_ref_ptch: soup/Makefile
 #	     the tables produced by jparse are CORRECT!
 #
 rebuild_jparse_err_files: jparse/test_jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR2="${LD_DIR2}"
 
 # sequence exit codes
 #
@@ -762,11 +782,12 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -788,11 +809,12 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -828,11 +850,12 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -862,11 +885,12 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -878,15 +902,21 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ INSTALL_V= C_SPECIAL=${C_SPECIAL}
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
 
@@ -908,11 +938,12 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg local_dir_tags C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array local_dir_tags C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse local_dir_tags C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg local_dir_tags C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array local_dir_tags C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse local_dir_tags C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags C_SPECIAL="${C_SPECIAL}"
 	${Q} echo
 	${E} ${MAKE} local_dir_tags
 	${Q} echo
@@ -948,11 +979,12 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} echo
 	${E} ${RM} -f tags
 	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
@@ -975,11 +1007,12 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
@@ -993,17 +1026,18 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh
 # rule used by prep.sh and make clean
 #
 clean_generated_obj: jparse/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse clean_generated_obj C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 
 # rule used by prep.sh
 #
 clean_mkchk_sem: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 
 # rule used by prep.sh
 #
 mkchk_sem: soup/Makefile
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 
 # clean legacy code and files - files that are no longer needed
 #
@@ -1012,11 +1046,12 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1028,12 +1063,14 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR2="${LD_DIR2}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1361,7 +1398,8 @@ jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse.clone/ jparse
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1370,7 +1408,8 @@ jparse.update_into_clone: jparse/ jparse.clone/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse/ jparse.clone
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UINTERNAL_INCLUDE \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1521,11 +1560,12 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${V} echo
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
@@ -1537,12 +1577,14 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR2="${LD_DIR2}"
 	${V} echo
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
@@ -1556,16 +1598,16 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: We do NOT install dbg nor do we install dyn_array, nor jparse.
+#       This repo do not use installed dbg, nor dyn_array, nor jparse code.
+#
 install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
         soup/Makefile test_ioccc/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
@@ -1578,156 +1620,48 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # No directories are removed by this rule, however.
 #
 uninstall:
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${RM} -f ${RM_V} ${DEST_DIR}/all_sem_ref.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/chkentry
-	${RM} -f ${RM_V} ${DEST_DIR}/dbg_example
-	${RM} -f ${RM_V} ${DEST_DIR}/dbg_test
-	${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
 	${RM} -f ${RM_V} ${DEST_DIR}/fnamchk
 	${RM} -f ${RM_V} ${DEST_DIR}/hostchk.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/iocccsize
-	${RM} -f ${RM_V} ${DEST_DIR}/jfmt
-	${RM} -f ${RM_V} ${DEST_DIR}/jnamval
-	${RM} -f ${RM_V} ${DEST_DIR}/jnum_chk
-	${RM} -f ${RM_V} ${DEST_DIR}/jnum_gen
-	${RM} -f ${RM_V} ${DEST_DIR}/jparse
-	${RM} -f ${RM_V} ${DEST_DIR}/jsemtblgen
-	${RM} -f ${RM_V} ${DEST_DIR}/jstrdecode
-	${RM} -f ${RM_V} ${DEST_DIR}/jstrencode
-	${RM} -f ${RM_V} ${DEST_DIR}/jval
 	${RM} -f ${RM_V} ${DEST_DIR}/location
 	${RM} -f ${RM_V} ${DEST_DIR}/mkiocccentry
-	${RM} -f ${RM_V} ${DEST_DIR}/pr_jparse_test
 	${RM} -f ${RM_V} ${DEST_DIR}/prep.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/reset_tstamp.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/run_usage.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/txzchk
 	${RM} -f ${RM_V} ${DEST_DIR}/utf8_test
-	${RM} -f ${RM_V} ${DEST_DIR}/verge
 	${RM} -f ${RM_V} ${DEST_DIR}/vermod.sh
-	${RM} -f ${RM_V} ${DEST_INCLUDE}/dbg.h
-	${RM} -f ${RM_V} ${DEST_INCLUDE}/dyn_array.h
-	${RM} -f ${RM_V} ${DEST_INCLUDE}/jparse.h
-	${RM} -f ${RM_V} ${DEST_LIB}/libdbg.a
-	${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
-	${RM} -f ${RM_V} ${DEST_LIB}/libjparse.a
 	${RM} -f ${RM_V} ${DEST_LIB}/soup.a
-	${RM} -f ${RM_V} ${MAN1_DIR}/bug_report.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/bug_report.sh.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/chkentry.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/fnamchk.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/iocccsize.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jfmt.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jnamval.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jparse.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jstrdecode.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jstrencode.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/jval.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/location.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/mkiocccentry.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/txzchk.1
-	${RM} -f ${RM_V} ${MAN3_DIR}/dbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/err.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/errp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fdbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/ferr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/ferrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fmsg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fprintf_usage.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fwarn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fwarn_or_err.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fwarnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fwerr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/fwerrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/jparse.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/json_dbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/json_dbg_allowed.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/json_err_allowed.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/json_warn_allowed.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/msg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/parse_json.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/parse_json_file.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/parse_json_stream.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/printf_usage.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/sndbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/snmsg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/snwarn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/snwarnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/snwerr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/snwerrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vdbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/verr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/verrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfdbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vferr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vferrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfmsg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfprintf_usage.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfwarn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfwarn_or_err.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfwarnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfwerr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vfwerrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vmsg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vprintf_usage.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsndbg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsnmsg.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsnwarn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsnwarnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsnwerr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vsnwerrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vwarn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vwarn_or_err.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vwarnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vwerr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/vwerrp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/warn.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/warn_or_err.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/warnp.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/werr.3
-	${RM} -f ${RM_V} ${MAN3_DIR}/werrp.3
 	${RM} -f ${RM_V} ${MAN8_DIR}/all_sem_ref.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/chkentry_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/hostchk.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.sh.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/iocccsize_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jnum_chk.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jnum_gen.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jparse_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jsemcgen.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jsemcgen.sh.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jsemtblgen.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/jstr_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/mkiocccentry_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/prep.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/prep.sh.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/reset_tstamp.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/run_bison.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/run_bison.sh.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/run_flex.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/run_flex.sh.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/run_usage.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/txzchk_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/utf8_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/verge.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/vermod.8
+	@if [[ -f /usr/local/lib/jparse.a ]]; then \
+	    echo "Legacy uninstall follows:"; \
+	    echo ${RM} -f ${RM_V} ${DEST_LIB}/jparse.a; \
+	    ${RM} -f ${RM_V} ${DEST_LIB}/jparse.a; \
+	fi
 
 ###############
 # make depend #
@@ -1736,11 +1670,12 @@ uninstall:
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL=${C_SPECIAL}
-	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \

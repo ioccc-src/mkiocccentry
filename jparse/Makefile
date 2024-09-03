@@ -190,6 +190,14 @@ LD_SPECIAL=
 #
 LDFLAGS= ${LD_SPECIAL}
 
+# where to find libdbg.a and libdyn_array.a
+#
+# LD_DIR - locations of libdbg.a and libdyn_array.a passed down from the directory above
+# LD_DIR2 - locations of libdbg.a and libdyn_array.a passed down from 2 directories above
+#
+LD_DIR=
+LD_DIR2=
+
 # how to compile
 #
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
@@ -425,7 +433,8 @@ TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 ###########################################
 
 all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse all C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse all C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 
 bug_report: jparse_bug_report.sh
 	-${Q} ./jparse_bug_report.sh -v 1
@@ -472,19 +481,19 @@ jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
@@ -493,7 +502,7 @@ jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -532,7 +541,7 @@ verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
 verge: verge.o util.o
-	${CC} ${CFLAGS} $^ -o $@ -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 libjparse.a: ${LIB_OBJS}
 	${RM} -f $@
@@ -551,10 +560,12 @@ run_flex-v7: verge sorry.tm.ca.h
 #########################################################
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 
 
 ####################################
@@ -658,7 +669,8 @@ rebuild_jnum_test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -672,7 +684,8 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -687,7 +700,8 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -710,7 +724,8 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -745,7 +760,8 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -849,7 +865,8 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${Q} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
@@ -862,7 +879,8 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${Q} echo
 	${Q} ${RM} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc test_jparse; do \
@@ -879,7 +897,8 @@ legacy_clean: test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${V} echo
 	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
@@ -889,7 +908,8 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${V} echo
 	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
@@ -915,7 +935,8 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
 	${RM} -f jsemcgen.out.*
@@ -927,7 +948,8 @@ install: all test_jparse/Makefile install_man
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
@@ -943,7 +965,8 @@ uninstall:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	# uninstall files under test_jparse:
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libjparse.a
 	${I} ${RM} -r -f ${RM_V} ${DEST_INCLUDE}
 	${RM} -r -f ${RM_V} ${DEST_DIR}/jparse
@@ -987,7 +1010,8 @@ uninstall:
 ###############
 
 depend: ${ALL_CSRC}
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL}
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+		     LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
