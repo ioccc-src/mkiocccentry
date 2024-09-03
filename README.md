@@ -1,19 +1,5 @@
 # Official IOCCC submission toolkit
 
-*NOTE*: you may wish to also read our
-[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md).
-
-
-## HOW TO HELP TEST THIS REPO
-
-**IMPORTANT NOTE**: we currently are **NOT** _yet ready for this_. We will remove this
-note once we are ready.
-
-We first want to thank each and every person who helps us further test this repo
-under different platforms.
-
-In order to help you help us, we provide the following information.
-
 
 ### Running the test suite
 
@@ -137,7 +123,7 @@ man ./soup/man/man1/txzchk.1
 **NOTE**: After doing a `make all`, this tool may be found as: `./txzchk`.
 
 
-###  `chkentry`
+### `chkentry`
 
 The official **IOCCC** `.info.json` and `.auth.json` sanity checker tool.
 Invoked by `mkiocccentry` on the `.info.json` file after it has been created and
@@ -222,7 +208,7 @@ man ./soup/man/man1/bug_report.1
 **NOTE**: this tool **MUST** be run from the mkiocccentry directory.
 
 
-###  `location`
+### `location`
 
 The official **IOCCC** tool to look up ISO 3166 codes and location names to help
 aid users in finding country codes. With the `-s` option one can search by
