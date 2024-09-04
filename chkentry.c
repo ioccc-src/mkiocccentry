@@ -198,6 +198,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", CHKENTRY_VERSION);
+	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
 	    exit(2);		/*ooo*/
 	    not_reached();
 	    break;
