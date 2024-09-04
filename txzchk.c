@@ -154,6 +154,7 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s\n", TXZCHK_VERSION);
+	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;

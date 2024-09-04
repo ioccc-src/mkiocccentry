@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.9 2024-09-04
+
+Add to `-V` option of compiled tools that use the jparse library in some form or
+another (i.e. links it in) to print out the current json parser version. The
+json parser and jparse versions were also updated (from the jparse repo).
+
+
 ## Release 1.5.8 2024-09-01
 
 Add to Makefiles the `PREFIX` variable to allow for installing to a different
@@ -23,7 +30,7 @@ Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.7 2024-09-01"`.
 Synced `jparse` subdirectory from the [jparse
 repo](https://github.com/xexyl/jparse/). There was no code change and the only
 functionality changes are that the install rule installs more header files (now
-in a subdirectory - `/usr/local/include/jparse) and an uninstall rule is added
+in a subdirectory - `/usr/local/include/jparse`) and an uninstall rule is added
 (for those who wish to deobfuscate their system :-) ).
 
 Updated the `MKIOCCCENTRY_REPO_VERSION` to `"1.5.6 2024-08-31"`.
