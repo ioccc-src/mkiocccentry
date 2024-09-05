@@ -468,8 +468,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -Z test_ioccc -d ./test_JSON -s general.json -j ../jparse/jparse ../jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -Z test_ioccc -d ./test_JSON -s general.json -j ../jparse/jparse ../jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -Z $TOPDIR -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -Z "$TOPDIR" -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
