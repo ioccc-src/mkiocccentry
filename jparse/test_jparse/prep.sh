@@ -2,8 +2,7 @@
 #
 # prep.sh - prep for a release - actions for make prep and make release
 #
-# This script was co-developed in 2022 by:
-#
+# This script was co-developed in 2022-2024 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -126,7 +125,7 @@ if [[ -n "$LOGFILE" ]]; then
     fi
 fi
 
-# Determine the name of the bug_report.sh log file
+# Determine the name of the jparse_bug_report.sh log file
 #
 # NOTE: this log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
@@ -278,11 +277,11 @@ make_action() {
 # make bug report
 #
 # usage:
-#	make_bug_report code
+#	make_jparse_bug_report code
 #
 #	code - exit code if script fails
 #
-make_bug_report() {
+make_jparse_bug_report() {
 
     # parse args
     #
@@ -295,36 +294,36 @@ make_bug_report() {
     # announce pre-action
     #
     if [[ -z "$LOGFILE" ]]; then
-	write_echo "=-=-= START: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+	write_echo "=-=-= START: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
     else
-	write_echo_n "make_action $CODE bug_report-txl -L $BUG_REPORT_LOGFILE "
+	write_echo_n "make_action $CODE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE "
     fi
 
     # perform action
     #
-    exec_command "./bug_report.sh" -t -x -l -L "$BUG_REPORT_LOGFILE"
+    exec_command "./jparse_bug_report.sh" -t -x -l -L "$BUG_REPORT_LOGFILE"
     status="$?"
 
-    # Finally we report on the exit status of the bug_report.sh
+    # Finally we report on the exit status of the jparse_bug_report.sh
     #
     if [[ $status -ne 0 ]]; then
 
-	# process a bug_report.sh failure (i.e. error or actual issue
-	# detected NOT ONLY a warning)
+	# process a jparse_bug_report.sh failure (i.e. error or actual issue
+	# detected, NOT ONLY a warning)
 	#
 	EXIT_CODE="$CODE"
 
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$MAKE bug_report-txl $EXIT_CODE: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
+	$MAKE jparse_bug_report-txl $EXIT_CODE: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	fi
 	if [[ -n $E_FLAG ]]; then
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: Warning: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo "$0: Warning: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
 		write_echo
-		write_echo "=-=-= FAIL: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+		write_echo "=-=-= FAIL: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
 		write_echo
 	    else
 		write_echo "ERROR exit code $status"
@@ -333,7 +332,7 @@ make_bug_report() {
 	else
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: Warning: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo "$0: Warning: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
 		write_echo
 		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
 		write_echo
@@ -346,7 +345,7 @@ make_bug_report() {
     else
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo
-	    write_echo "=-=-= PASS: $MAKE bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+	    write_echo "=-=-= PASS: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
 	    write_echo
 	else
 	    write_echo "OK"
@@ -365,28 +364,25 @@ fi
 make_action 10 clobber
 make_action 11 all
 make_action 12 depend
-make_action 13 clean_mkchk_sem
-make_action 14 all_sem_ref
-make_action 15 mkchk_sem
-make_action 16 all
+make_action 13 all
 if [[ -n $O_FLAG ]]; then
-    make_action 17 parser-o
+    make_action 14 parser-o
 else
-    make_action 18 parser
+    make_action 15 parser
 fi
-make_action 19 all
-make_action 20 load_json_ref
-make_action 21 use_json_ref
-make_action 22 clean_generated_obj
-make_action 23 all
-make_bug_report 24
-make_action 25 shellcheck
-make_action 26 seqcexit
-make_action 27 picky
-make_action 28 tags
-make_action 29 check_man
-make_action 30 all
-make_action 31 test
+make_action 16 all
+make_action 17 load_json_ref
+make_action 18 use_json_ref
+make_action 19 clean_generated_obj
+make_action 20 all
+make_jparse_bug_report 21
+make_action 22 shellcheck
+make_action 23 seqcexit
+make_action 24 picky
+make_action 25 tags
+make_action 26 check_man
+make_action 27 all
+make_action 28 test
 
 # If we have a logfile, count the number of Notice: messages in the logfile
 #
@@ -413,15 +409,15 @@ if [[ -e "$BUG_REPORT_LOGFILE" ]]; then
 
     # Next we summarize Notices and Warnings directly the logfile
     #
-    write_logfile "=-=-= bug_report.sh generated $NOTICE_COUNT notices in $BUG_REPORT_LOGFILE"
+    write_logfile "=-=-= jparse_bug_report.sh generated $NOTICE_COUNT notices in $BUG_REPORT_LOGFILE"
     if [[ $NOTICE_COUNT -gt 0 ]]; then
 	write_logfile
-	write_logfile "=-=-= Summary of make_bug_report notices follow:"
+	write_logfile "=-=-= Summary of make_jparse_bug_report notices follow:"
 	write_logfile
 	NOTICE_SET=$(grep -E "[[:space:]]+Notice:[[:space:]]" "$BUG_REPORT_LOGFILE")
 	write_logfile "$NOTICE_SET"
 	write_logfile
-	write_logfile "=-=-= End of of make_bug_report notice summary"
+	write_logfile "=-=-= End of of make_jparse_bug_report notice summary"
     fi
 fi
 
@@ -435,15 +431,15 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 	write_echo
 	if [[ $NOTICE_COUNT -gt 0 ]]; then
 	    if [[ $NOTICE_COUNT -eq 1 ]]; then
-		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
+		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notice."
 	    else
-		write_echo "bug_report.sh issued $NOTICE_COUNT notices."
+		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
     else
 	if [[ $NOTICE_COUNT -gt 0 ]]; then
 	    if [[ $NOTICE_COUNT -eq 1 ]]; then
-		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
+		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notice."
 	    else
 		write_echo "All tests PASSED; $NOTICE_COUNT notices issued."
 	    fi
@@ -466,14 +462,14 @@ else
 	write_echo ""
 	if [[ $NOTICE_COUNT -gt 0 ]]; then
 	    if [[ $NOTICE_COUNT -eq 1 ]]; then
-		write_echo "bug_report.sh issued $NOTICE_COUNT notice."
+		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notice."
 	    else
-		write_echo "bug_report.sh issued $NOTICE_COUNT notices."
+		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
-	if [[ -e test_ioccc/test_ioccc.log ]]; then
+	if [[ -e test_jparse/test_jparse.log ]]; then
 	    write_echo ""
-	    write_echo "See test_ioccc/test_ioccc.log for more details."
+	    write_echo "See test_jparse/test_jparse.log for more details."
 	fi
     else
 	if [[ -n "$FAILURE_SUMMARY" ]]; then
@@ -490,9 +486,9 @@ else
 	else
 	    write_echo "One or more tests failed."
 	fi
-	if [[ -e test_ioccc/test_ioccc.log ]]; then
+	if [[ -e test_jparse/test_jparse.log ]]; then
 	    write_echo ""
-	    write_echo "See test_ioccc/test_ioccc.log for more details."
+	    write_echo "See test_jparse/test_jparse.log for more details."
 	fi
     fi
 fi

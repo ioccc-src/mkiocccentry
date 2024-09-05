@@ -17,7 +17,7 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="1.0.1 2023-02-05"
+export IOCCC_TEST_VERSION="1.0.2 2024-09-05"
 
 # attempt to fetch system specific path to the tools we need
 #
@@ -211,17 +211,6 @@ elif [[ ! -x test_ioccc/mkiocccentry_test.sh ]]; then
     echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh is not executable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
-# jstr_test.sh
-if [[ ! -e jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh file not found" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-elif [[ ! -f jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not a regular file" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-elif [[ ! -x jparse/test_jparse/jstr_test.sh ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not executable" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-fi
 # jnum_chk
 if [[ ! -e jparse/test_jparse/jnum_chk ]]; then
     echo "$0: ERROR: jparse/test_jparse/jnum_chk file not found" | tee -a -- "$LOGFILE"
@@ -264,6 +253,17 @@ elif [[ ! -f jparse/test_jparse/json_teststr.txt ]]; then
     EXIT_CODE="5"
 elif [[ ! -r jparse/test_jparse/json_teststr.txt ]]; then
     echo "$0: ERROR: jparse/test_jparse/json_teststr.txt is not readable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
+# json_teststr_fail.txt: for jparse_test.sh
+if [[ ! -e jparse/test_jparse/json_teststr_fail.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr_fail.txt file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f jparse/test_jparse/json_teststr_fail.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -r jparse/test_jparse/json_teststr_fail.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr_fail.txt is not readable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
 # txzchk
@@ -428,49 +428,18 @@ else
     echo "PASSED: test_ioccc/mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
 fi
 
-# jstr_test.sh
-#
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jstr_test.sh -Z $TOPDIR -e $TOPDIR/jparse/jstrencode -d $TOPDIR/jparse/jstrdecode" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jstr_test.sh -Z "$TOPDIR" -e "$TOPDIR/jparse/jstrencode" -d "$TOPDIR/jparse/jstrdecode" | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jstr_test.sh non-zero exit code: $status"
-    EXIT_CODE="24"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
-fi
+# we do not run jstr_test.sh because make test in jparse/test_jparse will run
+# this and it has the correct paths (this is a workaround for the fact that
+# jparse/ is a subdirectory here but obviously not in the jparse repo).
 
-# jnum_chk
-#
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jnum_chk -J "${J_FLAG}" | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jnum_chk non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jnum_chk non-zero exit code: $status"
-    EXIT_CODE="25"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
-fi
+# we also do not run jnum_chk because make test in jparse/test_jparse will run
+# this and it has the correct paths (this is a workaround for the fact that
+# jparse/ is a subdirectory here but obviously not in the jparse repo).
+
+# we also do not run jparse_test.sh for jparse/test_jparse/test_JSON because
+# make test in jparse/test_jparse will run this and it has the correct paths
+# (this is a workaround for the fact that jparse/ is a subdirectory here but
+# obviously not in the jparse repo).
 
 # dyn_test
 #
@@ -494,37 +463,13 @@ else
     echo "PASSED: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
 fi
 
-# jparse_test.sh for test_jparse/test_JSON
-#
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-#make -C jparse/test_jparse test | tee -a -- "$LOGFILE"
-
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./jparse/test_jparse/test_JSON -s . -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON non-zero exit code: $status"
-    EXIT_CODE="27"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: jparse/test_jparse/jparse_test.sh for test_jparse/test_JSON" | tee -a -- "$LOGFILE"
-fi
-
 # jparse_test.sh for general.json
 #
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jparse_test.sh for general.json" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -Z $TOPDIR -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -Z "$TOPDIR" -d ./test_ioccc/test_JSON -s general.json -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

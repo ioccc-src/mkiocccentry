@@ -480,7 +480,7 @@ invalid JSON files **DO** pass as valid then it is an error.
 We have used our own files (with some Easter eggs included due to a shared
 interest between Landon and Cody :-) ) as well as from the
 [JSONTestSuite](https://github.com/nst/JSONTestSuite) repo (with **MUCH
-GRATITUDE** to the maintainers: **THANK YOU**!) and all is good. If for some
+GRATITUDE** to the maintainers: **THANK YOU!**) and all is good. If for some
 reason the parser were to be modified, in error or otherwise, and the test fails
 then we know there is a problem. As the GitHub repo has workflows to make sure
 that this does not happen it should never be added to the repo (unless of course
