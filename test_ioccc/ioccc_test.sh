@@ -453,7 +453,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: dyn_array/dyn_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     dyn_array/dyn_test non-zero exit code: $status"
-    EXIT_CODE="26"
+    EXIT_CODE="24"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
@@ -475,7 +475,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jparse/test_jparse/jparse_test.sh for general.json non-zero exit code: $status"
-    EXIT_CODE="28"
+    EXIT_CODE="25"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
@@ -508,7 +508,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/txzchk_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/txzchk_test.sh non-zero exit code: $status"
-    EXIT_CODE="31"
+    EXIT_CODE="26"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
@@ -530,7 +530,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/chkentry_test.sh non-zero exit code: $status"
-    EXIT_CODE="32"
+    EXIT_CODE="27"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
