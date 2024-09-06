@@ -58,9 +58,15 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-       
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
+
+    # we pre-install from the dbg repo so that the Autobuild below will work
+    #
+    - name: clone dbg
+      run: git clone https://github.com/lcn2/dbg
+    - name: install dbg
+      run: cd dbg && sudo make clobber all install
 
     # Autobuild attempts to build any compiled language.
     # If this step fails, then you should remove it and run the build manually (see below)
