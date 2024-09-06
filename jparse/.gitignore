@@ -3,6 +3,7 @@
 *~
 .*.sw[a-zA-Z0-9]*
 .sw[a-zA-Z0-9]*
+.build.log.*
 .DS_Store
 /bug-report*
 /.jsemcgen.*.out

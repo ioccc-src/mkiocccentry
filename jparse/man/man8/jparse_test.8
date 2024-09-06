@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_test.sh 8 "14 June 2023" "jparse_test.sh" "jparse tools"
+.TH jparse_test.sh 8 "04 September 2024" "jparse_test.sh" "jparse tools"
 .SH NAME
 .B jparse_test.sh
 \- test jparse on one or more files with one or more one\-line JSON blobs
@@ -30,8 +30,10 @@
 .IR json_tree \|]
 .RB [\| \-s
 .IR subdir \|]
+.RB [\| \-Z
+.IR topdir \|]
 .RB [\| \-k \|]
-.RB [\| \-L \|]
+.RB [\| \-f \|]
 .RI [\| file
 .IR ... \|]
 .SH DESCRIPTION
@@ -41,25 +43,29 @@ The file name
 .I \-
 means read from stdin.
 At least one file is required.
-It also uses
+If the
+.I \-d
+option is used it also uses
 .BR find (1)
 to look under the JSON tree for good and bad files (two kinds, see below) that must pass or fail respectively.
 The normal files that must pass are in the subdirectory called
 .I good
 and the normal files that must fail are in the subdirectory called
 .IR bad .
-However, if
-.B \-L
-is specified, then there is another kind of file that must fail, located in the subdirectory called
-.IR bad_loc .
-These files have errors in syntax and the purpose is to make sure that error location reporting is valid.
-See the subsection
-.B Error locations
-under
-.B NOTES
-for details on this and what one
-.B MUST
-do whenever a file with a syntax error with a location is added to the test suite.
+.PP
+Another subdirectory must also exist under which are bad files that have corresponding error files.
+These error files have the location of failure and specific error messages that must match the output of
+.BR jparse (1)
+and if they do not it is an error.
+The purpose here is to make sure that error location reporting is valid.
+.PP
+If the
+.I \-f
+option is used then the strings in the file specified must be invalid JSON, and if any are not, it will fail.
+It is on the user to make sure that they use the right file in order to get valid results, but having this option allows one to verify that the input is either valid or invalid, depending on what is needed.
+If
+.I \-f
+is not given then the script will not run a fail test on any file.
 .PP
 The script keeps a log of all the tests in
 .I jparse_test.log
@@ -113,6 +119,16 @@ directories.
 To not specify a subdirectory specify
 .I .
 (dot) as the directory.
+.TP
+.BI \-Z\  topdir
+Set the top directory (where the jparse binary and the test_jparse subdirectory reside) in order for the tests to work right, in specific situations.
+If not specified, the script tries to determine the top level directory by first checking the current working directory for the file
+.B jparse.c
+and if this fails by checking for the file
+.B ../jparse.c
+and finally if that fails by checking for the file
+.BR ../../jparse.c .
+This allows the jparse test suite to properly run in the rare case where one has a copy of the jparse repo in a subdirectory of their project.
 .TP
 .BI \-k
 Keep temporary stderr files in the directory for investigation.
@@ -193,7 +209,7 @@ Assuming you're at the top level directory:
 .sp
 .RS
 .ft B
-cd jparse/test_jparse
+cd test_jparse
 .ft R
 .RE
 .PP
@@ -221,7 +237,7 @@ make test
 .RE
 .PP
 After that go back to the
-.I jparse/test_jparse
+.I test_jparse
 subdirectory and run
 .sp
 .RS
@@ -235,18 +251,46 @@ Assuming everything is OK you can then add the JSON files and the error files li
 .sp
 .RS
 .ft B
-git add ./jparse/test_jparse/test_JSON/bad_loc/*.json
+git add ./test_jparse/test_JSON/bad_loc/*.json
 .br
-git add ./jparse/test_jparse/test_JSON/bad_loc/*.err
+git add ./test_jparse/test_JSON/bad_loc/*.err
 .ft R
 .RE
 .PP
 Finally commit these files and make a pull request to have them added to the repo.
 .SH BUGS
+.PP
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+.IR \<https://github.com/xexyl/jparse/issues\> .
+.PP
+If one is in the test suite subdirectory then one must
+.B STILL
+specify the subdirectory name in paths under that directory and no directory for the 
+.B jparse
+binary itself.
+On the other hand, if the directory structure is not correct it might be that the script fails.
+In other words, the test suite is meant to be run from the jparse (or a clone of the jparse) repo itself.
+.SH EXAMPLES
+.PP
+Run test suite from top level (repo root) directory:
+.sp
+.RS
+.ft B
+ make test
+.ft R
+.RE
+.PP
+Run the test script from the top level (repo root) directory manually, without testing the files under the
+.B test_JSON
+subdirectory:
+.sp
+.RS
+.ft B
+ ./test_jparse/jparse_test.sh
+.ft R
+.RE
 .SH SEE ALSO
 .BR jparse (1),
 .BR jparse (3)

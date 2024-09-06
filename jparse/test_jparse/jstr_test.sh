@@ -19,11 +19,11 @@
 
 # setup
 #
-export JSTRENCODE="./jparse/jstrencode"
-export JSTRDECODE="./jparse/jstrdecode"
-export TEST_FILE="./jparse/test_jparse/jstr_test.out"
-export TEST_FILE2="./jparse/test_jparse/jstr_test2.out"
-export JSTR_TEST_VERSION="1.0.1 2024-03-02"
+export JSTRENCODE="./jstrencode"
+export JSTRDECODE="./jstrdecode"
+export TEST_FILE="./test_jparse/jstr_test.out"
+export TEST_FILE2="./test_jparse/jstr_test2.out"
+export JSTR_TEST_VERSION="1.0.2 2024-09-04"
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -102,12 +102,23 @@ if [[ -n $TOPDIR ]]; then
 	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
 	exit 3
     fi
-elif [[ -f mkiocccentry.c ]]; then
+elif [[ -f jparse.c ]]; then
     TOPDIR="$PWD"
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: assume TOPDIR is .: $TOPDIR" 1>&2
     fi
-elif [[ -f ../mkiocccentry.c ]]; then
+elif [[ -f ../jparse.c ]]; then
+    cd ..
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: cd .. exit code: $status" 1>&2
+	exit 3
+    fi
+    TOPDIR="$PWD"
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" 1>&2
+    fi
+elif [[ -f ../../jparse.c ]]; then
     cd ..
     status="$?"
     if [[ $status -ne 0 ]]; then
@@ -201,9 +212,7 @@ fi
 # test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #3"
-export SRC_SET="$0 dbg/dbg.c dbg/dbg.h test_ioccc/fnamchk.c iocccsize.c"
-SRC_SET="$SRC_SET chkentry.c ./jparse/json_parse.c ./jparse/json_parse.h ./jparse/jstrdecode.c ./jparse/jstrencode.c"
-SRC_SET="$SRC_SET soup/limit_ioccc.h mkiocccentry.c txzchk.c jparse/util.c jparse/util.h"
+export SRC_SET="jparse.c json_parse.c json_parse.h jstrdecode.c jstrencode.c util.h util.c"
 echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # We cannot double-quote $SRC_SET because doing so would make the shell try
 # catting the list of files as a single file name which obviously would not work

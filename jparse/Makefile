@@ -32,6 +32,7 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
+MV= mv
 PICKY= picky
 RANLIB= ranlib
 RM= rm
@@ -266,7 +267,7 @@ OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
-# rule used by prep.sh and make clean via make clean_generated_obj
+# built object files created by make parser
 #
 BUILT_OBJS= jparse.o jparse.tab.o
 
@@ -300,6 +301,7 @@ BISON_DIRS= \
 	-B /opt/local/bin \
 	-B /usr/local/opt \
 	-B /usr/local/bin \
+	-B /usr/bin \
 	-B .
 
 # Additional flags to pass to bison
@@ -330,6 +332,7 @@ FLEX_DIRS= \
 	-F /opt/local/bin \
 	-F /usr/local/opt \
 	-F /usr/local/bin \
+	-F /usr/bin \
 	-F .
 
 # flags to pass to flex
@@ -385,7 +388,7 @@ MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
 MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
-# libraries to make by all, what to install, and removed by clobber
+# libraries to make by all, what to install, and remove by clobber
 #
 LIBA_TARGETS= libjparse.a
 
@@ -409,6 +412,11 @@ ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
 TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
+
+# logs for testing
+#
+TMP_BUILD_LOG= ".build.log.$$$$"
+BUILD_LOG= build.log
 
 
 ############################################################
@@ -631,6 +639,118 @@ parser: jparse.y jparse.l
 parser-o: jparse.y jparse.l
 	${E} ${MAKE} parser RUN_O_FLAG='-o' C_SPECIAL=${C_SPECIAL}
 
+# make prep
+#
+# Things to do before a release, forming a pull request and/or updating the
+# GitHub repo.
+#
+# This runs through all of the prep steps.  If some step failed along the way,
+# exit non-zero at the end.
+#
+# NOTE: This rule is useful if for example you're not working on the parser and
+# you're on a system without the proper versions of flex and/or bison but you
+# still want to work on the repo. Another example use is if you don't have
+# shellcheck and/or picky and you want to work on the repo.
+#
+# The point is: if you're working on this repo and make build fails, try this
+# rule instead.
+#
+prep: test_jparse/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_jparse/prep.sh -m${MAKE} -l "${TMP_BUILD_LOG}"; \
+	    EXIT_CODE="$$?"; \
+	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
+	    else \
+	        echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
+	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`";
+
+# a slower version of prep that does not write to a log file so one can see the
+# full details.
+#
+slow_prep: test_jparse/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_jparse/prep.sh -m${MAKE}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
+	    else \
+	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
+	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`";
+
+
+# make build release pull
+#
+# Things to do before a release, forming a pull request and/or updating the
+# GitHub repo.
+#
+# This runs through all of the prep steps, exiting on the first failure.
+#
+# NOTE: The reference copies of the JSON parser C code will NOT be used
+# so if bison and/or flex is not found or too old THIS RULE WILL FAIL!
+#
+# NOTE: Please try this rule BEFORE make prep.
+#
+build: release
+pull: release
+release: test_jparse/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_jparse/prep.sh -m${MAKE} -e -o -l "${TMP_BUILD_LOG}"; \
+	    EXIT_CODE="$$?"; \
+	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
+	    else \
+	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
+	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`";
+
+# a slower version of release that does not write to a log file so one can see the
+# full details.
+#
+slow_release: test_jparse/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ./test_jparse/prep.sh -m${MAKE} -e -o; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo; \
+	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
+	    fi; \
+	    echo; \
+	    echo "make $@: see ${BUILD_LOG} for details"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		exit "$$EXIT_CODE"; \
+	    else \
+	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
+	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`";
+
+
 # load reference code from the previous successful make parser
 #
 load_json_ref: jparse.tab.c jparse.tab.h jparse.c jparse.lex.h
@@ -667,12 +787,12 @@ use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 #
 rebuild_jnum_test:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 bison: jparse.tab.c jparse.tab.h
 	@:
@@ -680,14 +800,34 @@ bison: jparse.tab.c jparse.tab.h
 flex: jparse.c jparse.lex.h
 	@:
 
+# rebuild jparse error files for testing
+#
+# IMPORTANT: DO NOT run this rule unless you KNOW that the output produced by
+#	     jparse on each file is CORRECT!
+#
+rebuild_jparse_err_files: jparse
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo
+	${RM} -f test_jparse/test_JSON/bad_loc/*.err
+	-@for i in test_jparse/test_JSON/./bad_loc/*.json; do \
+	    ./jparse -- "$$i" 2> "$$i.err" ;  \
+	done
+	${S} echo
+	${S} echo "Make sure to run make test from the top level directory before doing a"
+	${S} echo "git add on all the *.json and *.json.err files in test_jparse/test_JSON/bad_loc!"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+
+
 test:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`";
 
 # rule used by prep.sh and make clean
 #
@@ -698,7 +838,7 @@ clean_generated_obj:
 #
 seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -718,11 +858,11 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -752,13 +892,13 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -782,13 +922,13 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	-${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
 	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
@@ -804,7 +944,7 @@ check_man: ${ALL_MAN_TARGETS}
 	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 
 
@@ -822,7 +962,7 @@ install_man: ${ALL_MAN_TARGETS}
 #
 tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -846,13 +986,13 @@ tags:
 	${Q} echo
 	${E} ${MAKE} all_tags C_SPECIAL=${C_SPECIAL}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -871,13 +1011,13 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
 all_tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -891,29 +1031,26 @@ all_tags:
 	done
 	${E} ${SORT} tags -o tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 legacy_clean: test_jparse/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${V} echo
-	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 legacy_clobber: legacy_clean test_jparse/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${V} echo
-	${S} echo "${OUR_NAME}: nothing to do"
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 
 ###################################
@@ -923,17 +1060,17 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 configure:
 	@echo nothing to $@
 
-clean:
+clean: clean_generated_obj
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 clobber: legacy_clobber clean
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -942,11 +1079,11 @@ clobber: legacy_clobber clean
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 install: all test_jparse/Makefile install_man
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse all $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
@@ -957,12 +1094,21 @@ install: all test_jparse/Makefile install_man
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # uninstall: we provide this in case someone wants to deobfuscate their system. :-)
-uninstall:
+legacy_uninstall:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo
+	${RM} -f ${RM_V} ${DEST_INCLUDE}/jparse.h ${DEST_LIB}/jparse.a
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+
+# uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+uninstall: legacy_uninstall
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	# uninstall files under test_jparse:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
@@ -1002,7 +1148,7 @@ uninstall:
 	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_flex.sh.8
 	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemcgen.sh.8
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 
 ###############
@@ -1013,7 +1159,7 @@ depend: ${ALL_CSRC}
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
@@ -1051,7 +1197,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jparse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \

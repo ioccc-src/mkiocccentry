@@ -1,5 +1,51 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.10 2024-09-05
+
+Synced `jparse` subdirectory from the [jparse
+repo](https://github.com/xexyl/jparse/) with some useful updates and fixes. See
+the git log of that repo for more detailed information. Changes that these
+updates required here (and some that are in the jparse subdirectory):
+
+- The `test_ioccc/ioccc_test.sh` script no longer runs the `jstr_test.sh`,
+`jnum_chk` tests and it does not run `jparse_test.sh` except
+on the `test_ioccc/test_JSON` directory as the `jparse/Makefile` runs the
+appropriate tests in `test_jparse/` (in this repo under `jparse/test_jparse`) -
+obviously the jparse repo knows nothing about `test_ioccc/test_JSON` so it has
+to be done this way. It's likely that with the `-Z topdir` option (that was
+recently added to `jparse_test.sh`) or some other workaround the script could
+run from `test_ioccc/ioccc_test.sh` but it is redundant and not useful so it no
+longer does.
+- Due to `jparse_test.sh` path updates (one of the changes is to fix it to work
+on its own but this required some changes in test error files) the error files
+under `jparse/test_jparse/test_JSON/bad_loc` have been updated here (this is
+another reason that we cannot as easily run `jparse_test.sh` from `ioccc_test/`
+without the `-Z topdir` hack or some other workaround).
+
+A useful update (besides the addition of the `-Z topdir` hack) to
+`jparse_test.sh` that was synced here is the new `-f` option for the files that
+hold JSON blobs, one per line: it inverts the check, saying that the JSON blobs
+must be invalid. This required a new file here,
+`jparse/test_jparse/json_teststr_fail.txt`. As `jparse_test.sh` always runs on
+at least `json_teststr.txt` (if no files specified) it might be good to not have
+the option and always run a fail test on the new file but this can be worried
+about another time. As the `jparse/test_jparse/Makefile` runs it with this
+option it doesn't matter much anyway.
+
+The `jparse/test_jparse/jparse_test.sh` version is now `1.0.5 2024-09-04` (fixed
+from the <del>more natural</del> :-) international way `1.0.5 04-09-2024` that
+was added by habit, to match the format of the other versions); the old version
+was `1.0.3 2023-08-01`.
+
+`make release` should be fine now, after the updates to `ioccc_test.sh`. The
+version of that script is now `"1.0.2 2024-09-05"`.
+
+Repo release version is now `1.5.10 2024-09-05` (a recent update did not update
+the version string so it jumped more than one). Except for some last minute
+fixes that might be required it might be the last release until after IOCCC28
+(let's all hope it is!).
+
+
 ## Release 1.5.9 2024-09-04
 
 Add to `-V` option of compiled tools that use the jparse library in some form or
