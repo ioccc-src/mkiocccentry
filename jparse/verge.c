@@ -383,11 +383,11 @@ allocate_vers(char *str, intmax_t **pvers)
 	    return 0;
 	}
     }
-    dbg(DBG_MED, "trimmed version string is in valid format: <%s>", wstr);
+    dbg(DBG_MED, "trimmed version string is valid format: <%s>", wstr);
     dbg(DBG_HIGH, "trimmed version string has %ju '.'s in it: <%s>", (uintmax_t)dot_count, wstr);
 
     /*
-     * we now know the version string is in valid format: ([0-9]+\.)*[0-9]+
+     * we now know the version string is valid format: ([0-9]+\.)*[0-9]+
      *
      * Allocate the array of dot_count+1 versions.
      */
