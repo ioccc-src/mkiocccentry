@@ -54,6 +54,12 @@
 #include "json_sem.h"
 
 /*
+ * official jparse repo release
+ */
+#define JPARSE_REPO_VERSION "1.0.1 2024-09-06"		/* format: major.minor YYYY-MM-DD */
+
+
+/*
  * official jparse version
  */
 #define JPARSE_VERSION "1.1.5 2024-09-04"		/* format: major.minor YYYY-MM-DD */

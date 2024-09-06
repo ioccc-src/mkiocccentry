@@ -1,5 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.10 2024-09-06
+
+Synced `jparse` subdirectory from the [jparse
+repo](https://github.com/xexyl/jparse/).
+
+Add `-L` option to `jparse_test.sh` to disable the error location tests. This is
+not usually needed but it can be useful in some cases.
+
+`jparse_test.sh` now will, in the case that no file is specified on the command
+line, try and read from the default good JSON strings file and the default bad
+JSON strings file, in order to verify that things are working well there, too.
+
+Unless some problem occurs this should be the final change for `jparse` until
+after the IOCCC28.
+
+
 ## Release 1.5.10 2024-09-05
 
 Synced `jparse` subdirectory from the [jparse

@@ -2,28 +2,55 @@
 #
 # jparse_test.sh - test JSON parser on valid and invalid JSON file(s)
 #
-# Run jparse on simple one-line JSON files or on whole JSON documents to test the
-# JSON parser.
+# Run jparse on simple JSON documents, one per line, in files (including stdin
+# if '-') and on whole JSON documents, to test the JSON parser.
 #
-# When used with "-d json_tree -s subdir", two directories are expected:
+# When used with "-d json_tree -s subdir", three directories are expected:
 #
 #	json_tree/tree/subdir/good
 #	json_tree/tree/subdir/bad
 #	json_tree/tree/subdir/bad_loc
+#
+# As the script looks for the file jparse.c, it is possible that one might have
+# to specify this directory. In other words, something like:
+#
+#	-d test_jparse/test_JSON
+#
+# and NOT:
+#
+#	-d test_JSON
+#
+# The use of -Z topdir can change the topdir but this can cause problems in
+# paths. This can be fixed with something like:
+#
+#	-Z . -j ../jparse -d test_JSON/ json_teststr.txt
+#
+#
+# but the bad_loc .err files will cause a problem. If you use the -L option it
+# will skip the bad_loc tests so you could then get away with doing that at the
+# expense of not testing the error reporting.
+#
+# All files under json_tree/tree/subdir/good must be valid JSON.  If any file under
+# that directory tests as an invalid JSON file, this script will exit non-zero.
 #
 # All files under json_tree/tree/subdir/bad must be invalid JSON.  If any file under
 # that directory tests as a valid JSON file, this script will exit non-zero.
 #
 # All files under json_tree/tree/subdir/bad_loc must be invalid JSON but the
 # error reported by jparse must match the file's corresponding .err file to make
-# sure error reporting is valid.
+# sure error reporting is valid. The limitation of this is that the error
+# message will depend on the directory the script is in relative to the files
+# but running this from the top level directory or this directory, test_jparse,
+# should work, and as long as the top level directory can be found (otherwise -Z
+# topdir must be used) it should be fine.
 #
-# All files under json_tree/tree/subdir/good must be valid JSON.  If any file under
-# that directory tests as an invalid JSON file, this script will exit non-zero.
-#
-# Without "-d json_tree -s subdir" a list of files in the command line are
+# Without "-d json_tree -s subdir" a list of files on the command line are
 # tested to see if they are valid JSON files.  With no arguments, or - the
 # contents of stdin is tested.
+#
+# If -f is used then additional files should have invalid JSON; if any line is
+# not invalid it is an error. Whether or not -f is used, as long as the default
+# error file is a regular readable file.
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
@@ -43,15 +70,16 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.0.5 2024-09-04"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="1.0.6 2024-09-06"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
+export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
 export JPARSE="./jparse"
 export PRINT_TEST="./test_jparse/print_test"
 export JSON_TREE="./test_jparse/test_JSON"
 export PASS_FAIL="pass"
 export SUBDIR="."
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse]
-		[-p print_test] [-d json_tree] [-s subdir] [-Z topdir] [-k] [-f] [file ..]
+		[-p print_test] [-d json_tree] [-s subdir] [-Z topdir] [-k] [-f] [-L] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -69,7 +97,8 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -s subdir		subdirectory under json_tree to find the good and bad subdirectories (def: $SUBDIR)
     -Z topdir		set path to top directory
     -k			keep temporary files on exit (def: remove temporary files before exiting)
-    -f			files specified must fail check, not pass (def: must $PASS_FAIL)
+    -f			extra files specified must fail check, not pass (def: must $PASS_FAIL)
+    -L			skip the error location reporting (def: do not skip)
 
     [file ...]		read JSON documents, one per line, from these files, - means stdin (def: $CHK_TEST_FILE)
 			NOTE: to use stdin, end the command line with: -- -.
@@ -100,11 +129,12 @@ export PRINT_TEST_FLAG_USED=""
 export PRINT_TEST_FAILURE=""
 export K_FLAG=""
 export D_FLAG=""
+export L_FLAG=""
 export TOPDIR=
 
 # parse args
 #
-while getopts :hVv:D:J:qj:p:d:s:Z:kf flag; do
+while getopts :hVv:D:J:qj:p:d:s:Z:kfL flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -136,6 +166,8 @@ while getopts :hVv:D:J:qj:p:d:s:Z:kf flag; do
         ;;
     f)	PASS_FAIL="fail"
 	;;
+    L)  L_FLAG="-L"
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -155,6 +187,20 @@ if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[1]: -D: $DBG_LEVEL" 1>&2
     echo "$0: debug[1]: -J: $JSON_DBG_LEVEL" 1>&2
     echo "$0: debug[1]: -s: $SUBDIR" 1>&2
+    if [[ -n "$TOPDIR" ]]; then
+	echo "$0: debug[1]: -Z: $TOPDIR" 1>&2
+    fi
+    if [[ -n "$K_FLAG" ]]; then
+	echo "$0: debug[1]: -k: true" 1>&2
+    else
+	echo "$0: debug[1]: -k: false" 1>&2
+    fi
+    echo "$0: debug[1]: -f: $PASS_FAIL" 1>&2
+    if [[ -n "$L_FLAG" ]]; then
+	echo "$0: debug[1]: -L: true" 1>&2
+    else
+	echo "$0: debug[1]: -L: false" 1>&2
+    fi
     if [[ -z $Q_FLAG ]]; then
 	echo "$0: debug[1]: -q: false" 1>&2
     else
@@ -169,6 +215,9 @@ fi
 # check args
 #
 shift $(( OPTIND - 1 ));
+# get number of args left
+export ARGC="$#"
+# good, bad and bad_loc tree paths relative to -d and -s options
 export JSON_GOOD_TREE="$JSON_TREE/$SUBDIR/good"
 export JSON_BAD_TREE="$JSON_TREE/$SUBDIR/bad"
 export JSON_BAD_LOC_TREE="$JSON_TREE/$SUBDIR/bad_loc"
@@ -307,19 +356,21 @@ if [[ -n "$D_FLAG" ]]; then
 	exit 6
     fi
 
-    # bad location tree
+    # if -L not used we need the bad location tree
     #
-    if [[ ! -e $JSON_BAD_LOC_TREE ]]; then
-	echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_LOC_TREE" 1>&2
-	exit 6
-    fi
-    if [[ ! -d $JSON_BAD_LOC_TREE ]]; then
-	echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_LOC_TREE" 1>&2
-	exit 6
-    fi
-    if [[ ! -r $JSON_BAD_LOC_TREE ]]; then
-	echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_LOC_TREE" 1>&2
-	exit 6
+    if [[ -z "$L_FLAG" ]]; then
+	if [[ ! -e $JSON_BAD_LOC_TREE ]]; then
+	    echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_LOC_TREE" 1>&2
+	    exit 6
+	fi
+	if [[ ! -d $JSON_BAD_LOC_TREE ]]; then
+	    echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_LOC_TREE" 1>&2
+	    exit 6
+	fi
+	if [[ ! -r $JSON_BAD_LOC_TREE ]]; then
+	    echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_LOC_TREE" 1>&2
+	    exit 6
+	fi
     fi
 fi
 
@@ -439,6 +490,8 @@ run_location_err_test()
 
 	echo | tee -a -- "${LOGFILE}" 1>&2
 	EXIT_CODE=50
+    elif [[ "$V_FLAG" -ge 1 ]]; then
+	echo "$0: debug[1]: fail test OK, $JPARSE -- $jparse_test_file matches error file" | tee -a -- "$LOGFILE"
     fi
 
     # return
@@ -685,11 +738,9 @@ run_string_test()
 		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    fi
 	else
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
-		fi
+	    echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
 	    STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
 	    STRING: $json_doc_string"
@@ -697,21 +748,17 @@ run_string_test()
 	fi
     else
 	if [[ $pass_fail = pass ]]; then
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
-		fi
+	    echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
 	    STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
 	    STRING: $json_doc_string"
 	    EXIT_CODE=1
 	else
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
-		fi
+	    echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
 	    EXIT_CODE=0
 	fi
@@ -771,32 +818,44 @@ if [[ $# -gt 0 ]]; then
 	    done < "$CHK_TEST_FILE"
 	fi
     done
-# case: check the default file, unless -f
-elif [[ -z "$F_FLAG" && -n "$CHK_TEST_FILE" ]]; then
-	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
-	fi
+# case: no extra file specified, try reading from default files, if they exist
+else
+    if [[ $V_FLAG -ge 1 && "$CHK_TEST_FILE" != "-" ]]; then
+	echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
+    fi
 
-	# firewall - check test file
-	#
-	if [[ ! -e $CHK_TEST_FILE ]]; then
-	    echo "$0: ERROR: test file not found: $CHK_TEST_FILE"
-	    exit 7
-	fi
-	if [[ ! -f $CHK_TEST_FILE ]]; then
-	    echo "$0: ERROR: test file not a regular file: $CHK_TEST_FILE"
-	    exit 7
-	fi
-	if [[ ! -r $CHK_TEST_FILE ]]; then
-	    echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
-	    exit 7
-	fi
-
+    # firewall - check valid JSON strings test file
+    #
+    if [[ ! -e $CHK_TEST_FILE ]]; then
+	echo "$0: Warning: test file not found: $CHK_TEST_FILE"
+    elif [[ ! -f $CHK_TEST_FILE ]]; then
+	echo "$0: Warning: test file not a regular file: $CHK_TEST_FILE"
+    elif [[ ! -r $CHK_TEST_FILE ]]; then
+	echo "$0: Warning: test file not readable: $CHK_TEST_FILE"
+    else
 	# process all lines in test file
 	#
 	while read -r JSON_DOC; do
 	    run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC" "$PASS_FAIL"
 	done < "$CHK_TEST_FILE"
+    fi
+
+    # now do the same for the invalid JSON strings file, if it exists
+    if [[ ! -e $CHK_INVALID_TEST_FILE ]]; then
+	echo "$0: warning: invalid JSON strings test file does not exist: $CHK_INVALID_TEST_FILE" 1>&2
+    elif [[ ! -f $CHK_INVALID_TEST_FILE ]]; then
+	echo "$0: warning: invalid JSON strings test file does not a regular file: $CHK_INVALID_TEST_FILE" 1>&2
+    elif [[ ! -r $CHK_INVALID_TEST_FILE ]]; then
+	echo "$0: warning: invalid JSON strings test file does not a readable file: $CHK_INVALID_TEST_FILE" 1>&2
+    else
+	# process all lines in invalid JSON strings test file
+	#
+	if [[ -n "$CHK_INVALID_TEST_FILE" ]]; then
+	    while read -r JSON_DOC; do
+		run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC" fail
+	    done < "$CHK_INVALID_TEST_FILE"
+	fi
+    fi
 fi
 
 # if -d used run tests in directories
@@ -821,10 +880,12 @@ if [[ -n "$D_FLAG" ]]; then
 	run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
     done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
-    # run tests that must fail with correct error locations
-    while read -r file; do
-	run_location_err_test "$file"
-    done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
+    # run tests that must fail with correct error locations, if -L not used
+    if [[ -z "$L_FLAG" ]]; then
+	while read -r file; do
+	    run_location_err_test "$file"
+	done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
+    fi
 fi
 
 # run print_test tool if -p used
