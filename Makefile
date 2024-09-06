@@ -664,6 +664,7 @@ slow_prep: test_ioccc/prep.sh
 build: release
 pull: release
 release: test_ioccc/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh -m${MAKE} -e -o -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
@@ -679,11 +680,13 @@ release: test_ioccc/prep.sh
 	    else \
 	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 
 # a slower version of release that does not write to a log file so one can see the
 # full details.
 #
 slow_release: test_ioccc/prep.sh
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh -m${MAKE} -e -o; \
 	    EXIT_CODE="$$?"; \
@@ -698,6 +701,7 @@ slow_release: test_ioccc/prep.sh
 	    else \
 	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
+	    ${S} echo "${OUR_NAME}: make $@ ending at: `date`"; \
 
 
 # force test_ioccc/txzchk_test.sh results into test suite *.err files
@@ -780,7 +784,7 @@ rebuild_jparse_err_files: jparse/test_jparse/Makefile
 seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -802,12 +806,12 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -841,14 +845,14 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -876,14 +880,14 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # inspect and verify man pages
 #
 check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -892,14 +896,14 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # build a user convenience man directory
 #
 build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ starting"
+	${V} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${V} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg install_man \
 		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
@@ -918,14 +922,14 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
 		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${V} echo
-	${V} echo "${OUR_NAME}: make $@ ending"
+	${V} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -949,13 +953,13 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} echo
 	${E} ${MAKE} all_tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -971,13 +975,13 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${E} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
 all_tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -999,7 +1003,7 @@ all_tags:
 	done
 	${E} ${SORT} tags -o tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # perform all of the mkiocccentry repo required tests
 #
@@ -1044,7 +1048,7 @@ mkchk_sem: soup/Makefile
 legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -1054,14 +1058,14 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -1073,7 +1077,7 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 
 ########################################################################
@@ -1132,7 +1136,7 @@ dbg.help:
 
 dbg.setup:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	-@if [[ -d dbg.clone ]]; then \
 	    ${MAKE} dbg.update_clone; \
@@ -1140,11 +1144,11 @@ dbg.setup:
 	    ${MAKE} dbg.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if [[ -d dbg.clone ]]; then \
 	    echo "ERROR: dbg.clone exists"; \
@@ -1157,53 +1161,53 @@ dbg.clone:
 	    ${GIT} clone git@github.com:lcn2/dbg.git dbg.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.clone_status: dbg.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${GIT} status dbg.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.update_clone: dbg.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} cd dbg.clone && ${GIT} fetch
 	${E} cd dbg.clone && ${GIT} fetch --prune --tags
 	${E} cd dbg.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
 	${E} ${MAKE} dbg.clone_status
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.recreate_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RM} -rf dbg.clone
 	${E} ${MAKE} dbg.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.update_from_clone: dbg.clone/ dbg/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg.clone/ dbg
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DINTERNAL_INCLUDE
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.update_into_clone: dbg/ dbg.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dbg/ dbg.clone
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dbg.diff_dbg_clone: dbg.clone/ dbg/ .exclude
 	-${E} ${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
@@ -1235,7 +1239,7 @@ dyn_array.help:
 
 dyn_array.setup:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	-@if [[ -d dyn_array.clone ]]; then \
 	    ${MAKE} dyn_array.update_clone; \
@@ -1243,11 +1247,11 @@ dyn_array.setup:
 	    ${MAKE} dyn_array.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if [[ -d dyn_array.clone ]]; then \
 	    echo "ERROR: dyn_array.clone exists"; \
@@ -1260,53 +1264,53 @@ dyn_array.clone:
 	    ${GIT} clone git@github.com:lcn2/dyn_array.git dyn_array.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.clone_status: dyn_array.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${GIT} status dyn_array.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.update_clone: dyn_array.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} cd dyn_array.clone && ${GIT} fetch
 	${E} cd dyn_array.clone && ${GIT} fetch --prune --tags
 	${E} cd dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
 	${E} ${MAKE} dyn_array.clone_status
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.recreate_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RM} -rf dyn_array.clone
 	${E} ${MAKE} dyn_array.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array.clone/ dyn_array
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DINTERNAL_INCLUDE
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.update_into_clone: dyn_array/ dyn_array.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v dyn_array/ dyn_array.clone
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array.clone depend C_SPECIAL=-UINTERNAL_INCLUDE
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 dyn_array.diff_dyn_array_clone: dyn_array.clone/ dyn_array/ .exclude
 	-${E} ${DIFF} -u -r --exclude-from=.exclude dyn_array.clone dyn_array
@@ -1338,7 +1342,7 @@ jparse.help:
 
 jparse.setup:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	-@if [[ -d jparse.clone ]]; then \
 	    ${MAKE} jparse.update_clone; \
@@ -1346,11 +1350,11 @@ jparse.setup:
 	    ${MAKE} jparse.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${Q} if [[ -d jparse.clone ]]; then \
 	    echo "ERROR: jparse.clone exists"; \
@@ -1363,55 +1367,55 @@ jparse.clone:
 	    ${GIT} clone git@github.com:xexyl/jparse.git jparse.clone; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.clone_status: jparse.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${GIT} status jparse.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.update_clone: jparse.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} cd jparse.clone && ${GIT} fetch
 	${E} cd jparse.clone && ${GIT} fetch --prune --tags
 	${E} cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
 	${E} ${MAKE} jparse.clone_status
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.recreate_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RM} -rf jparse.clone
 	${E} ${MAKE} jparse.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse.clone/ jparse
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.update_into_clone: jparse/ jparse.clone/
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git -C --delete -v jparse/ jparse.clone
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse.clone depend C_SPECIAL=-UINTERNAL_INCLUDE \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 jparse.diff_jparse_clone: jparse.clone/ jparse/ .exclude
 	-${E} ${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
@@ -1443,77 +1447,77 @@ all.help:
 
 all.setup:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.setup
 	${E} ${MAKE} dyn_array.setup
 	${E} ${MAKE} jparse.setup
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.clone
 	${E} ${MAKE} dyn_array.clone
 	${E} ${MAKE} jparse.clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.clone_status:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.clone_status
 	${E} ${MAKE} dyn_array.clone_status
 	${E} ${MAKE} jparse.clone_status
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.update_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.update_clone
 	${E} ${MAKE} dyn_array.update_clone
 	${E} ${MAKE} jparse.update_clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.recreate_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.recreate_clone
 	${E} ${MAKE} dyn_array.recreate_clone
 	${E} ${MAKE} jparse.recreate_clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.update_from_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.update_from_clone
 	${E} ${MAKE} dyn_array.update_from_clone
 	${E} ${MAKE} jparse.update_from_clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.update_into_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.update_into_clone
 	${E} ${MAKE} dyn_array.update_into_clone
 	${E} ${MAKE} jparse.update_into_clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.diff_dir_clone:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.diff_dbg_clone
 	${E} echo
@@ -1521,11 +1525,11 @@ all.diff_dir_clone:
 	${E} echo
 	${E} ${MAKE} jparse.diff_jparse_clone
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.diff_clone_dir:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.diff_clone_dbg
 	${E} echo
@@ -1533,11 +1537,11 @@ all.diff_clone_dir:
 	${E} echo
 	${E} ${MAKE} jparse.diff_clone_jparse
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 all.diff_summary:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} dbg.diff_summary
 	${E} echo
@@ -1545,7 +1549,7 @@ all.diff_summary:
 	${E} echo
 	${E} ${MAKE} jparse.diff_summary
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 
 ###################################
@@ -1558,7 +1562,7 @@ configure:
 clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -1570,12 +1574,12 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
@@ -1596,7 +1600,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log ${BUILD_LOG}
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # NOTE: We do NOT install dbg nor do we install dyn_array, nor jparse.
 #       This repo do not use installed dbg, nor dyn_array, nor jparse code.
@@ -1604,7 +1608,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
         soup/Makefile test_ioccc/Makefile
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
@@ -1612,7 +1616,7 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 # uninstall - uninstall all files installed and directories created via this repo
 #
@@ -1669,7 +1673,7 @@ uninstall:
 
 depend: ${ALL_CSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
@@ -1717,7 +1721,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h dyn_array/dyn_array.h \

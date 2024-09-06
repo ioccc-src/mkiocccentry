@@ -21,6 +21,8 @@ on its own but this required some changes in test error files) the error files
 under `jparse/test_jparse/test_JSON/bad_loc` have been updated here (this is
 another reason that we cannot as easily run `jparse_test.sh` from `ioccc_test/`
 without the `-Z topdir` hack or some other workaround).
+- The `bad_loc` error files are now always tested as if there is not a matching
+error in the file it indicates a problem with the parser.
 
 A useful update (besides the addition of the `-Z topdir` hack) to
 `jparse_test.sh` that was synced here is the new `-f` option for the files that
@@ -39,6 +41,10 @@ was `1.0.3 2023-08-01`.
 
 `make release` should be fine now, after the updates to `ioccc_test.sh`. The
 version of that script is now `"1.0.2 2024-09-05"`.
+
+In the Makefile rules that have echo lines that end with `starting"` and those
+that end with `ending"` it now shows the timestamp (except or the `dyn_array`
+and `dbg` Makefiles as those are from other repos also).
 
 Repo release version is now `1.5.10 2024-09-05` (a recent update did not update
 the version string so it jumped more than one). Except for some last minute
