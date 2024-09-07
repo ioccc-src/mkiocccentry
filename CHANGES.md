@@ -22,6 +22,13 @@ Updated `jparse(1)` version to 1.1.6 2024-09-07.
 
 Removed timestamps from `beginning`/`ending` messages in Makefiles.
 
+Fix clone rules in Makefile to exclude the `.github` subdirectory of outside
+repos.
+
+Updated `.exclude` to include (not that that makes sense :-) ) the glob
+`._.DS_Store` which sometimes shows up in macOS (it is different from
+`.DS_Store`).
+
 
 ## Release 1.5.10 2024-09-06
 

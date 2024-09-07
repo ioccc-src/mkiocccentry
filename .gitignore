@@ -10,8 +10,12 @@ build.log
 /chkentry
 *.dSYM/
 /dbg.clone/
+/dbg/dbg_test
+/dbg/dbg_example
+/dbg/.github
 /dyn_array.clone/
 /dyn_array/dyn_test
+/dyn_array/.github
 /iocccsize
 /jparse.clone/
 /jparse.clone.lcn2/

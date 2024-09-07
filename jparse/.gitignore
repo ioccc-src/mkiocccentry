@@ -6,6 +6,7 @@
 .build.log.*
 build.log
 .DS_Store
+._.DS_Store
 /bug-report*
 /.jsemcgen.*.out
 /.local.dir.tags
