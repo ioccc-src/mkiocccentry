@@ -5,9 +5,8 @@ not constitute a "JSON specification".  For that see [so-called JSON
 spec](#so-called-json-spec).
 
 We define these **JSON terms** to assist you in understanding the JSON related
-code, code comments, data structures and documentation found in this GitHub repo
-particularly under the [jparse
-directory](https://github.com/ioccc-src/mkiocccentry/tree/master/jparse).
+code, code comments, data structures and documentation found in this GitHub
+repo.
 
 
 ## JSON document

@@ -1,5 +1,22 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.2 2024-09-07
+
+Improve error messages if invalid JSON in the following ways:
+
+- If verbosity level is > 0, then it will show the invalid token and hex value
+of that token (along with the line and column).
+- If verbosity is not specified, then it will just show the syntax error (the
+bad token with the line and column) and then the warning that the JSON tree is
+NULL (just like if verbosity specified) and then the error message (from
+`jparse(1)` itself).
+
+The error files in the `bad_loc` have been updated as now the error output has
+changed.
+
+Updated `jparse(1)` version to 1.1.6 2024-09-07.
+
+
 ## Release 1.0.1 2024-09-06
 
 Add option `-L` to `jparse_test.sh` to skip error location tests. This is useful
@@ -12,6 +29,13 @@ on the command line.
 Updated man page `jparse_test.8`.
 
 The new version of `jparse_test.sh` is `1.0.6 2024-09-06`.
+
+Removed where necessary some references to the [IOCCC](https://www.ioccc.org)
+and the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry), changing
+some to [this repo](https://github.com/xexyl/jparse).
+
+Don't report 'valid JSON' in `jparse` unless verbosity level > 0. It is still an
+error if the JSON is invalid.
 
 
 ## Release 1.0.0 2024-09-06

@@ -1,4 +1,3 @@
-Warning: jparse_lex: at line 1 column 2: invalid token: 0x22 = <">
 syntax error in file test_jparse/test_JSON/./bad_loc/open-brace-unbalanced-quotes-comma.json at line 1 column 2: <">
 Warning: ./jparse: JSON parse tree is NULL
 ERROR[1]: ./jparse: invalid JSON

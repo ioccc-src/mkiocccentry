@@ -66,8 +66,6 @@ static const char * const usage_msg =
     "\n"
     "\tNOTE: The -S mode is for informational purposes only, and may fail\n"
     "\t      on your system due to hardware and/or other system differences.\n"
-    "\t      The IOCCC mkiocccentry repo does not need -S to pass in order\n"
-    "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
     "\n"
     "Exit codes:\n"
     "    0\t\tall is OK\n"
