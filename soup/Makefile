@@ -540,11 +540,11 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 
 test:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
@@ -631,7 +631,7 @@ reset_min_timestamp: reset_tstamp.sh
 #
 seqcexit: ${ALL_CSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
@@ -647,11 +647,11 @@ seqcexit: ${ALL_CSRC}
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
@@ -679,13 +679,13 @@ picky: ${ALL_SRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
@@ -707,13 +707,13 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	-${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
 	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
@@ -729,7 +729,7 @@ check_man: ${ALL_MAN_TARGETS}
 	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 # install man pages
@@ -744,7 +744,7 @@ install_man: ${ALL_MAN_TARGETS}
 #
 tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -768,13 +768,13 @@ tags:
 	${Q} echo
 	${E} ${MAKE} all_tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
@@ -790,13 +790,13 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
 all_tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc ../jparse ../jparse/test_jparse; do \
@@ -807,7 +807,7 @@ all_tags:
 	done
 	${E} ${SORT} tags -o tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clean_mkchk_sem:
 	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
@@ -815,19 +815,19 @@ clean_mkchk_sem:
 
 legacy_clean:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
@@ -839,16 +839,16 @@ configure:
 
 clean:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${ALL_OBJS}
 	${RM} -f .jsemcgen.out.*
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f .soup
 	${RM} -f tags ${LOCAL_DIR_TAGS}
@@ -856,22 +856,22 @@ clobber: legacy_clobber clean
 	${RM} -f ${TARGETS}
 	${RM} -rf ref
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 install: all install_man
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 uninstall:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -r -f ${RM_V} ${DEST_LIB}/soup.a
 	${RM} -r -f ${RM_V} ${DEST_DIR}/vermod.sh
@@ -891,7 +891,7 @@ uninstall:
 	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_usage.8
 	${RM} -r -f ${RM_V} ${MAN8_DIR}/vermod.8
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ###############
 # make depend #
@@ -899,7 +899,7 @@ uninstall:
 
 depend: ${ALL_CSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
@@ -939,7 +939,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chk_sem_auth.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \

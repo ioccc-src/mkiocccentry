@@ -1,5 +1,28 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.11 2024-09-07
+
+Synced `jparse` subdirectory from the [jparse
+repo](https://github.com/xexyl/jparse/).
+
+It was decided that error messages in `jparse(1)` could be improved. This was
+done in the following ways:
+
+- If verbosity level is > 0, then it will show the invalid token and hex value
+of that token (along with the line and column).
+- If verbosity is not specified, then it will just show the syntax error (the
+bad token with the line and column) and then the warning that the JSON tree is
+NULL (just like if verbosity specified) and then the error message (from
+`jparse(1)` itself).
+
+The error files in the `bad_loc` have been updated as now the error output has
+changed.
+
+Updated `jparse(1)` version to 1.1.6 2024-09-07.
+
+Removed timestamps from `beginning`/`ending` messages in Makefiles.
+
+
 ## Release 1.5.10 2024-09-06
 
 Synced `jparse` subdirectory from the [jparse
