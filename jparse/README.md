@@ -39,7 +39,7 @@ need to download, compile and install the [dbg
 repo](https://github.com/lcn2/dbg) and the [dyn_array
 repo](https://github.com/lcn2/dyn_array).
 
-To do clone, make and install these dependencies:
+To clone, make and install these dependencies:
 
 ```sh
 git clone https://github.com/lcn2/dbg
