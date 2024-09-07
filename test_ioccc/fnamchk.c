@@ -213,7 +213,7 @@ main(int argc, char *argv[])
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	/* if it starts as "test-" and -u was specified it's an error */
 	if (uuid_mode) {
-	    err(13, __func__, "-u specified and submit starts as a test mode filename");
+	    err(13, __func__, "-u specified and filename starts as a test mode filename");
 	    not_reached();
 	}
 
@@ -228,19 +228,19 @@ main(int argc, char *argv[])
 	}
 	ret = sscanf(uuid, "test-%d%c", &submit_slot, &guard);
 	if (ret != 1) {
-	    err(14, __func__, "submit_slotber not found after \"test-\": %s", filepath);
+	    err(14, __func__, "submit_slot not found after \"test-\": %s", filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "submit ID is test: %s", uuid);
 	if (submit_slot < 0) {
-	    err(15, __func__, "submit_slotber %d is < 0: %s", submit_slot, filepath);
+	    err(15, __func__, "submit_slot %d is < 0: %s", submit_slot, filepath);
 	    not_reached();
 	}
 	if (submit_slot > MAX_SUBMIT_SLOT) {
-	    err(16, __func__, "submit_slotber %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
+	    err(16, __func__, "submit_slot %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "submit_slotber %d is valid: %s", submit_slot, filepath);
+	dbg(DBG_LOW, "submit_slot %d is valid: %s", submit_slot, filepath);
 
     /*
      * parse a UUID-submit_slot IOCCC contest ID
@@ -251,7 +251,7 @@ main(int argc, char *argv[])
 	 * "submit.test-") then it's an error.
 	 */
 	if (test_mode) {
-	    err(17, __func__, "-t specified and submit does not start with \"submit.test-\"");
+	    err(17, __func__, "-t specified and filename does not start with \"submit.test-\"");
 	    not_reached();
 	}
 
@@ -267,7 +267,7 @@ main(int argc, char *argv[])
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant,
 		&d, &e, &f, &submit_slot, &guard);
 	if (ret != 9) {
-	    err(18, __func__, "UUID-submit_slotber not found after \"submit-\": %s", filepath);
+	    err(18, __func__, "UUID-submit_slot not found after \"submit-\": %s", filepath);
 	    not_reached();
 	}
 	if (version != UUID_VERSION) {
@@ -280,11 +280,11 @@ main(int argc, char *argv[])
 	}
 	dbg(DBG_LOW, "submit ID is a valid UUID: %s", uuid);
 	if (submit_slot < 0) {
-	    err(21, __func__, "submit_slotber %d is < 0: %s", submit_slot, filepath);
+	    err(21, __func__, "submit_slot %d is < 0: %s", submit_slot, filepath);
 	    not_reached();
 	}
 	if (submit_slot > MAX_SUBMIT_SLOT) {
-	    err(22, __func__, "submit_slotber %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
+	    err(22, __func__, "submit_slot %d is > %d: %s", submit_slot, MAX_SUBMIT_SLOT, filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "submit number is valid: %d", submit_slot);
@@ -300,7 +300,7 @@ main(int argc, char *argv[])
     }
     ret = sscanf(timestamp_str, "%jd%c", &timestamp, &guard);
     if (ret != 1) {
-	err(24, __func__, "timestamp not found after \"submit_slotber.\": %s is not a timestamp: %s", timestamp_str, filepath);
+	err(24, __func__, "timestamp not found after \"submit_slot.\": %s is not a timestamp: %s", timestamp_str, filepath);
 	not_reached();
     }
     if (timestamp < MIN_TIMESTAMP) {
