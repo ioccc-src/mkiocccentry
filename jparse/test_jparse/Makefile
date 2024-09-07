@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 #
-# test_jparse - mkiocccentry jparse test tools
+# test_jparse - jparse test tools
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
@@ -407,16 +407,16 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
 
 rebuild_jparse_err_files:
 	${S} echo
-	${S} echo "${OUT_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUT_NAME}: make $@ starting"
 	${S} echo
 	${Q} cd .. ; \
 	    ${MAKE} $@
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 test:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if [[ ! -x ./jparse_test.sh ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./jparse_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
@@ -471,13 +471,13 @@ test:
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
@@ -493,11 +493,11 @@ seqcexit: ${ALL_CSRC}
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
@@ -525,13 +525,13 @@ picky: ${ALL_SRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
@@ -553,23 +553,23 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # inspect and verify man pages
 #
 check_man:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # vi/vim tags
 #
 tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} for dir in ../../dbg ../../dyn_alloc ..; do \
 	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
@@ -582,24 +582,24 @@ tags:
 	${Q} echo
 	${E} ${MAKE} all_tags C_SPECIAL=${C_SPECIAL}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
 all_tags:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} -f tags
 	${Q} for dir in . .. ../../dbg ../../dyn_alloc; do \
@@ -610,23 +610,23 @@ all_tags:
 	done
 	${E} ${SORT} tags -o tags
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clean:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 legacy_clobber: legacy_clean
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 
 ###################################
@@ -638,41 +638,41 @@ configure:
 
 clean:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 install: all
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 # uninstall: we provide this in case someone wants to deobfuscate their system. :-)
 uninstall:
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_chk
 	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_gen
 	${RM} -r -f ${RM_V} ${DEST_DIR}/pr_jparse_test
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ###############
 # make depend #
@@ -680,7 +680,7 @@ uninstall:
 
 depend: ${ALL_CSRC}
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ starting at: `date`"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
@@ -719,7 +719,7 @@ depend: ${ALL_CSRC}
 	    fi; \
 	fi
 	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending at: `date`"
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \

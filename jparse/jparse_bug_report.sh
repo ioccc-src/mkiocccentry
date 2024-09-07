@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# bug_report.sh - produce a file suitable for filing a bug report
+# jparse_bug_report.sh - produce a file suitable for filing a bug report
 #
-# Collect system information to help user report bugs and issues
-# using the mkiocccentry tools.
+# Collect system information to help users report bugs and issues
+# using the jparse tools.
 #
 # When you run this script without any arguments:
 #
@@ -24,7 +24,8 @@
 #
 # Please upload the bug-report.YYYYMMDD.HHMMSS.txt file as part of your report.
 #
-# This script was written in 2022 for the mkiocccentry repo by:
+# This script was written in 2022 for the mkiocccentry repo
+# (https://github.com/ioccc-src/mkiocccentry) by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -43,7 +44,7 @@
 #
 # Maintain this list towards the top of file, in sorted order.
 #
-# Do NOT put this tool (bug_report.sh) in the list, it will
+# Do NOT put this tool (jparse_bug_report.sh) in the list, it will
 # cause an infinite loop.
 #
 export TOOLS="
@@ -105,7 +106,7 @@ Exit codes:
      4	    error in function call
  >= 10	    at least one check failed
 
-bug_report.sh version: $BUG_REPORT_VERSION"
+jparse_bug_report.sh version: $BUG_REPORT_VERSION"
 
 # Determine the name of the log file
 #
@@ -1025,7 +1026,7 @@ run_check()
     # Once upon a time there was a bug in this script in this function.
     # PIPESTATUS was needed to fix a bug introduced in commit
     # 8343c4b8cb97e52df64fe8973e68f0d83c6090e1 in the mkiocccentry repo (where
-    # this script was originally developed)  where the exit status of each
+    # this script was originally developed) where the exit status of each
     # command was not checked properly which meant that even if a test failed it
     # would not be reported as an issue which rather defeated the purpose of
     # this script.

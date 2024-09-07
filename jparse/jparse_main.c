@@ -176,7 +176,10 @@ main(int argc, char **argv)
 	not_reached();
     }
 
-    msg("valid JSON");
+    if (verbosity_level > 0) {
+	msg("valid JSON");
+    }
+
     exit(0); /*ooo*/
 }
 
