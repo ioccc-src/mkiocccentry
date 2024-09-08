@@ -1404,6 +1404,8 @@ jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v jparse.clone/ jparse
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg libdbg.a
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array libdyn_array.a
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo

@@ -1,8 +1,8 @@
 /*
  * dbg_example.c - trivial demo
  *
- * This is just a trivial demo for the dbg API.  See the main function in dbg.c
- * for a more complete example.
+ * This is just a trivial demo for the dbg API.  See the main() function in
+ * dbg.c for a more complete example.
  *
  * Written in 2022 by:
  *
