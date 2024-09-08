@@ -70,7 +70,7 @@ V= @:
 #S= @:
 S= @
 
-# action commands that are NOT echo
+# action commands that are NOT echoed
 
 # Q= @					do not echo internal Makefile actions (quiet mode)
 # Q=					echo internal Makefile actions (debug / verbose mode)
@@ -126,8 +126,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 # Additional controls
 #
@@ -552,7 +552,7 @@ verge: verge.o util.o
 	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 libjparse.a: ${LIB_OBJS}
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 
@@ -615,21 +615,21 @@ man/man8/jparse_test.8:
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse.y jparse.l
-	${RM} -f jparse.tab.c jparse.tab.h
+	${Q} ${RM} ${RM_V} -f jparse.tab.c jparse.tab.h
 	@# make jparse.tab.c implies make jparse.tab.h too
 	${E} ${MAKE} jparse.tab.c C_SPECIAL=${C_SPECIAL}
 	${E} ${MAKE} jparse.tab.o C_SPECIAL=${C_SPECIAL}
-	${RM} -f jparse.c jparse.lex.h
+	${Q} ${RM} ${RM_V} -f jparse.c jparse.lex.h
 	@# make jparse.c implies make jparse.lex.h too
 	${E} ${MAKE} jparse.c C_SPECIAL=${C_SPECIAL}
 	${E} ${MAKE} jparse.o C_SPECIAL=${C_SPECIAL}
-	${RM} -f jparse.tab.ref.c
+	${Q} ${RM} ${RM_V} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
-	${RM} -f jparse.tab.ref.h
+	${Q} ${RM} ${RM_V} -f jparse.tab.ref.h
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
-	${RM} -f jparse.ref.c
+	${Q} ${RM} ${RM_V} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
-	${RM} -f -v jparse.lex.ref.h
+	${Q} ${RM} ${RM_V} -f -v jparse.lex.ref.h
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
 
 # make parser-o: Force the rebuild of the JSON parser.
@@ -657,7 +657,7 @@ parser-o: jparse.y jparse.l
 #
 prep: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
 	${Q} ./test_jparse/prep.sh -m${MAKE} -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
@@ -679,7 +679,7 @@ prep: test_jparse/prep.sh
 #
 slow_prep: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
 	${Q} ./test_jparse/prep.sh -m${MAKE}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
@@ -712,7 +712,7 @@ build: release
 pull: release
 release: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
 	${Q} ./test_jparse/prep.sh -m${MAKE} -e -o -l "${TMP_BUILD_LOG}"; \
 	    EXIT_CODE="$$?"; \
 	    ${MV} -f ${TMP_BUILD_LOG} ${BUILD_LOG}; \
@@ -734,7 +734,7 @@ release: test_jparse/prep.sh
 #
 slow_release: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} ${RM} -f ${TMP_BUILD_LOG}
+	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
 	${Q} ./test_jparse/prep.sh -m${MAKE} -e -o; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
@@ -754,13 +754,13 @@ slow_release: test_jparse/prep.sh
 # load reference code from the previous successful make parser
 #
 load_json_ref: jparse.tab.c jparse.tab.h jparse.c jparse.lex.h
-	${RM} -f jparse.tab.ref.c
+	${Q} ${RM} ${RM_V} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
-	${RM} -f jparse.tab.ref.h
+	${Q} ${RM} ${RM_V} -f jparse.tab.ref.h
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
-	${RM} -f jparse.ref.c
+	${Q} ${RM} ${RM_V} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
-	${RM} -f jparse.lex.ref.h
+	${Q} ${RM} ${RM_V} -f jparse.lex.ref.h
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
 
 # restore reference code that was produced by previous successful make parser
@@ -768,13 +768,13 @@ load_json_ref: jparse.tab.c jparse.tab.h jparse.c jparse.lex.h
 # This rule forces the use of reference copies of JSON parser C code.
 #
 use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
-	${RM} -f jparse.tab.c
+	${Q} ${RM} ${RM_V} -f jparse.tab.c
 	${CP} -f -v jparse.tab.ref.c jparse.tab.c
-	${RM} -f jparse.tab.h
+	${Q} ${RM} ${RM_V} -f jparse.tab.h
 	${CP} -f -v jparse.tab.ref.h jparse.tab.h
-	${RM} -f jparse.c
+	${Q} ${RM} ${RM_V} -f jparse.c
 	${CP} -f -v jparse.ref.c jparse.c
-	${RM} -f jparse.lex.h
+	${Q} ${RM} ${RM_V} -f jparse.lex.h
 	${CP} -f -v jparse.lex.ref.h jparse.lex.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
@@ -809,7 +809,7 @@ rebuild_jparse_err_files: jparse
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f test_jparse/test_JSON/bad_loc/*.err
+	${Q} ${RM} ${RM_V} -f test_jparse/test_JSON/bad_loc/*.err
 	-@for i in test_jparse/test_JSON/./bad_loc/*.json; do \
 	    ./jparse -- "$$i" 2> "$$i.err" ;  \
 	done
@@ -832,7 +832,7 @@ test:
 # rule used by prep.sh and make clean
 #
 clean_generated_obj:
-	${RM} -f ${BUILT_OBJS}
+	${Q} ${RM} ${RM_V} -f ${BUILT_OBJS}
 
 # sequence exit codes
 #
@@ -1008,7 +1008,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${Q} echo
-	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1022,7 +1022,7 @@ all_tags:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${Q} echo
-	${Q} ${RM} -f tags
+	${Q} ${RM} ${RM_V} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc test_jparse; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -1047,6 +1047,7 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
+	${Q} ${RM} ${RM_V} -f jparse.a
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${V} echo
@@ -1064,7 +1065,7 @@ clean: clean_generated_obj
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1074,11 +1075,12 @@ clobber: legacy_clobber clean
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
-	${RM} -f ${TARGETS}
-	${RM} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
-	${RM} -f jsemcgen.out.*
-	${RM} -f ${BUILD_LOG}
-	${RM} -f tags ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${TARGETS}
+	${Q} ${RM} ${RM_V} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
+	${Q} ${RM} ${RM_V} -f jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f ${BUILD_LOG} jparse_test.log
+	${Q} ${RM} ${RM_V} -f Makefile.orig
+	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1102,7 +1104,7 @@ legacy_uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${RM_V} ${DEST_INCLUDE}/jparse.h ${DEST_LIB}/jparse.a
+	${Q} ${RM} ${RM_V} -f ${DEST_INCLUDE}/jparse.h ${DEST_LIB}/jparse.a
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1114,40 +1116,40 @@ uninstall: legacy_uninstall
 	# uninstall files under test_jparse:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
-	${I} ${RM} -r -f ${RM_V} ${DEST_LIB}/libjparse.a
-	${I} ${RM} -r -f ${RM_V} ${DEST_INCLUDE}
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jparse
-	${RM} -r -f ${RM_V} ${DEST_DIR}/verge
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jsemtblgen
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jstrdecode
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jstrencode
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jsemcgen.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/run_bison.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/run_flex.sh
-	${RM} -f -v ${RM_V} ${MAN1_DIR}/jparse_bug_report.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/jparse.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/jstrdecode.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/jstrencode.1
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/jparse.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_dbg.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_dbg_allowed.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_err_allowed.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/json_warn_allowed.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json_file.3
-	${RM} -r -f ${RM_V} ${MAN3_DIR}/parse_json_stream.3
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jnum_chk.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jnum_gen.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jparse_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemcgen.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemtblgen.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jstr_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/verge.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_bison.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_bison.sh.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_flex.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_flex.sh.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/jsemcgen.sh.8
+	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/libjparse.a
+	${Q} ${RM} ${RM_V} -r -f ${DEST_INCLUDE}
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jparse
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/verge
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jsemtblgen
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jstrdecode
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jstrencode
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jsemcgen.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_bison.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_flex.sh
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jparse_bug_report.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jparse.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrdecode.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrencode.1
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/jparse.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg_allowed.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_err_allowed.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_warn_allowed.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json_file.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json_stream.3
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jnum_chk.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jnum_gen.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jparse_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jsemcgen.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jsemtblgen.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jstr_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/verge.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_bison.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_bison.sh.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_flex.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_flex.sh.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/jsemcgen.sh.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1190,7 +1192,7 @@ depend: ${ALL_CSRC}
 	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
-		${RM} -f Makefile.orig; \
+		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \
