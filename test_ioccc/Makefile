@@ -135,8 +135,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 # Additional controls
 #
@@ -600,7 +600,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${S} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -611,7 +611,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f tags
+	${Q} ${RM} ${RM_V} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc ../jparse ../jparse/test_jparse ../soup; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -651,7 +651,7 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${OTHER_OBJS}
+	${Q} ${RM} ${RM_V} -f ${OTHER_OBJS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -659,10 +659,10 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${TARGETS}
-	${RM} -f test_ioccc.log chkentry_test.log txzchk_test.log
-	${RM} -f tags ${LOCAL_DIR_TAGS}
-	${RM} -rf test_iocccsize test_src test_work
+	${Q} ${RM} ${RM_V} -f ${TARGETS}
+	${Q} ${RM} ${RM_V} -f test_ioccc.log chkentry_test.log txzchk_test.log
+	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -rf test_iocccsize test_src test_work
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -679,20 +679,20 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -r -f ${RM_V} ${DEST_DIR}/utf8_test
-	${RM} -r -f ${RM_V} ${DEST_DIR}/fnamchk
-	${RM} -r -f ${RM_V} ${DEST_DIR}/prep.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/hostchk.sh
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/fnamchk.1
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/chkentry_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/ioccc_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/iocccsize_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/mkiocccentry_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/txzchk_test.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/hostchk.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/ioccc_test.sh.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/prep.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/utf8_test.8
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/utf8_test
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/fnamchk
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/prep.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/hostchk.sh
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/fnamchk.1
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/mkiocccentry_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/utf8_test.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -738,7 +738,7 @@ depend: ${ALL_CSRC}
 	             -e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
-		${RM} -f Makefile.orig; \
+		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \

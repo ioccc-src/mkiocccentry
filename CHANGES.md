@@ -2,6 +2,16 @@
 
 ## Release 1.5.12 2024-09-08
 
+In `test_ioccc/`, `soup` and the top level Makefiles the `${RM}` variable now
+uses the `${Q}` control variable.
+
+Other than `dbg` and `dyn_array` Makefiles (as those changes have to be
+committed over there and then synced) the `RM_V` variable is now empty by
+default as it used to be that the `${RM}` did not use `-v`.
+
+Remove from `${RM}` the `-r` option where it is not needed i.e. when a directory
+is not being removed.
+
 Sync `dbg` and `dyn_array` subdirectories from the [dbg
 repo](https://github.com/lcn2/dbg) and
 [dyn_array](https://github.com/lcn2/dyn_array), with fixes to the Makefiles.
