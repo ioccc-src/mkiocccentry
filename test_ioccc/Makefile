@@ -626,7 +626,7 @@ legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -647,11 +647,11 @@ legacy_clobber: legacy_clean
 configure:
 	@echo nothing to $@
 
-clean:
+clean: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${OTHER_OBJS}
+	${E} ${RM} ${RM_V} -f ${OTHER_OBJS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -659,10 +659,11 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f test_ioccc.log chkentry_test.log txzchk_test.log
-	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -rf test_iocccsize test_src test_work
+	${E} ${RM} ${RM_V} -f ${TARGETS}
+	${E} ${RM} ${RM_V} -f test_ioccc.log chkentry_test.log txzchk_test.log
+	${E} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -rf test_iocccsize test_src test_work
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -679,20 +680,20 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/utf8_test
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/fnamchk
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/prep.sh
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/hostchk.sh
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/fnamchk.1
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/mkiocccentry_test.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/utf8_test.8
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/utf8_test
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/fnamchk
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/prep.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/hostchk.sh
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/fnamchk.1
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/mkiocccentry_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/utf8_test.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

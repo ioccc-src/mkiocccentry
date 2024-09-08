@@ -543,7 +543,7 @@ shellcheck:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -616,7 +616,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -627,7 +627,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f tags
+	${E} ${RM} ${RM_V} -f tags
 	${E} ${CP} -f -v ${LOCAL_DIR_TAGS} tags
 	${E} ${SORT} tags -o tags
 	${S} echo
@@ -637,7 +637,7 @@ legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -645,7 +645,7 @@ legacy_clobber: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f dbg.a
+	${E} ${RM} ${RM_V} -f dbg.a
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -657,12 +657,12 @@ legacy_clobber: legacy_clean
 configure:
 	${V} echo nothing to $@
 
-clean:
+clean: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
-	${Q} ${RM} ${RM_V} -f dbg_test.out
+	${E} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${E} ${RM} ${RM_V} -f dbg_test.out
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -670,9 +670,9 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f ${TARGETS}
+	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -682,7 +682,7 @@ install: all install_man
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
-	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
+	${I} ${RM} ${RM_V} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${LN} -s ${LIBA_TARGETS} ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
@@ -695,62 +695,62 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/libdbg.a
-	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/dbg.a
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_example
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_test
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/dbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/err.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/msg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/warn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/werr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/printf_usage.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/warn_or_err.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/errp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fdbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/ferr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/ferrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fmsg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fprintf_usage.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarn_or_err.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fwerr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/fwerrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/sndbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/snmsg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/snwarn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/snwarnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/snwerr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/snwerrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vdbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/verr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/verrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfdbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vferr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vferrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfmsg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfprintf_usage.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarn_or_err.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwerr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwerrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vmsg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vprintf_usage.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsndbg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnmsg.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwarn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwarnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwerr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwerrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarn.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarn_or_err.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vwerr.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/vwerrp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/warnp.3
-	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/werrp.3
+	${E} ${RM} ${RM_V} -f ${DEST_LIB}/libdbg.a
+	${E} ${RM} ${RM_V} -f ${DEST_LIB}/dbg.a
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_example
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_test
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/dbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/err.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/msg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/warn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/werr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/printf_usage.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/warn_or_err.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/errp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fdbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/ferr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/ferrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fmsg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fprintf_usage.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarn_or_err.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fwarnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fwerr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/fwerrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/sndbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/snmsg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/snwarn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/snwarnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/snwerr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/snwerrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vdbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/verr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/verrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfdbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vferr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vferrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfmsg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfprintf_usage.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarn_or_err.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwarnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwerr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vfwerrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vmsg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vprintf_usage.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsndbg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnmsg.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwarn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwarnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwerr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vsnwerrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarn.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarn_or_err.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vwarnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vwerr.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/vwerrp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/warnp.3
+	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/werrp.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

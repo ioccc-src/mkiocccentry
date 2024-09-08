@@ -591,7 +591,7 @@ legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -599,7 +599,7 @@ legacy_clobber: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f dyn_array.a
+	${E} ${RM} ${RM_V} -f dyn_array.a
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -611,11 +611,11 @@ legacy_clobber: legacy_clean
 configure:
 	@echo nothing to $@
 
-clean:
+clean: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${E} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -623,10 +623,10 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f ${EXTERN_CLOBBER}
-	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f ${TARGETS}
+	${E} ${RM} ${RM_V} -f ${EXTERN_CLOBBER}
+	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -649,23 +649,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
-	${Q} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
-	${Q} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
-	${Q} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
+	${E} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
+	${E} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
+	${E} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
