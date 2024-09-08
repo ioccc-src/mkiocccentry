@@ -70,7 +70,7 @@ V= @:
 #S= @:
 S= @
 
-# action commands that are NOT echo
+# action commands that are NOT echoed
 
 # Q= @					do not echo internal Makefile actions (quiet mode)
 # Q=					echo internal Makefile actions (debug / verbose mode)
@@ -125,8 +125,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 
 
@@ -401,7 +401,7 @@ test_JSON/auth.json/good/auth.reference.json:
 #	   jnum_chk(8) tool to check against bogus test results!
 #
 rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
-	${RM} -f jnum_test.c
+	${Q} ${RM} ${RM_V} -f jnum_test.c
 	${CP} -f -v jnum_header.c jnum_test.c
 	./jnum_gen jnum.testset >> jnum_test.c
 
@@ -590,7 +590,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -601,7 +601,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f tags
+	${Q} ${RM} ${RM_V} -f tags
 	${Q} for dir in . .. ../../dbg ../../dyn_alloc; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -640,7 +640,7 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -648,9 +648,9 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${TARGETS}
-	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	${RM} -f tags ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${TARGETS}
+	${Q} ${RM} ${RM_V} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -668,9 +668,9 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_chk
-	${RM} -r -f ${RM_V} ${DEST_DIR}/jnum_gen
-	${RM} -r -f ${RM_V} ${DEST_DIR}/pr_jparse_test
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jnum_chk
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jnum_gen
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -711,7 +711,7 @@ depend: ${ALL_CSRC}
 	      ${SED} -e 's;../../jparse/;../;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
-		${RM} -f Makefile.orig; \
+		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \

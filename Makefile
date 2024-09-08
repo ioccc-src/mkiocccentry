@@ -151,8 +151,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 # Additional controls
 #
@@ -972,7 +972,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${E} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -990,7 +990,7 @@ all_tags:
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} echo
-	${E} ${RM} -f tags
+	${Q} ${RM} -f tags
 	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -1017,7 +1017,7 @@ test:
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
-	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
+	${Q} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
@@ -1186,7 +1186,7 @@ dbg.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} -rf dbg.clone
+	${Q} ${RM} -rf dbg.clone
 	${E} ${MAKE} dbg.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1197,6 +1197,7 @@ dbg.update_from_clone: dbg.clone/ dbg/
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v dbg.clone/ dbg
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DINTERNAL_INCLUDE
+	${Q} ${RM} -f dbg/Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1289,7 +1290,7 @@ dyn_array.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} -rf dyn_array.clone
+	${Q} ${RM} -rf dyn_array.clone
 	${E} ${MAKE} dyn_array.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1300,6 +1301,7 @@ dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v dyn_array.clone/ dyn_array
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DINTERNAL_INCLUDE
+	${Q} ${RM} -f dyn_array/Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1392,7 +1394,7 @@ jparse.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} -rf jparse.clone
+	${Q} ${RM} -rf jparse.clone
 	${E} ${MAKE} jparse.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

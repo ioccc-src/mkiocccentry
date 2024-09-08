@@ -140,8 +140,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 # Additional controls
 #
@@ -425,45 +425,45 @@ utf8_posix_map.o: utf8_posix_map.c
 	${CC} ${CFLAGS} utf8_posix_map.c -c
 
 soup.a: ${LIB_OBJS}
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 	${MAKE} limit_ioccc.sh
 
 chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
-	${RM} -f .jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 chk.info.head.c chk.info.ptch.c chk.info.tail.c:
 	@:
 
 chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
-	${RM} -f .jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
 	    chk.auth.ptch.c chk.auth.tail.c $@
-	${RM} -f .jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
-	${RM} -f .jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 kitchen soup_kitchen: kitchen.sh
 	-@./kitchen.sh
@@ -490,7 +490,7 @@ kitchen soup_kitchen: kitchen.sh
 ####################################
 
 limit_ioccc.sh:
-	${Q} ${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	${Q} echo '#!/usr/bin/env bash' > $@
 	${Q} echo '#' >> $@
 	${Q} echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
@@ -787,7 +787,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -798,7 +798,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f tags
+	${Q} ${RM} ${RM_V} -f tags
 	${Q} for dir in . ../dbg ../dyn_alloc ../jparse ../jparse/test_jparse; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -810,8 +810,8 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 clean_mkchk_sem:
-	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
-	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
+	${Q} ${RM} ${RM_V} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
+	${Q} ${RM} ${RM_V} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
 
 legacy_clean:
 	${S} echo
@@ -841,8 +841,8 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${ALL_OBJS}
-	${RM} -f .jsemcgen.out.*
+	${Q} ${RM} ${RM_V} -f ${ALL_OBJS}
+	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -850,11 +850,11 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f .soup
-	${RM} -f tags ${LOCAL_DIR_TAGS}
-	${RM} -f .all_ref.*
-	${RM} -f ${TARGETS}
-	${RM} -rf ref
+	${Q} ${RM} ${RM_V} -f .soup
+	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f .all_ref.*
+	${Q} ${RM} ${RM_V} -f ${TARGETS}
+	${Q} ${RM} ${RM_V} -rf ref
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -873,23 +873,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -r -f ${RM_V} ${DEST_LIB}/soup.a
-	${RM} -r -f ${RM_V} ${DEST_DIR}/vermod.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/reset_tstamp.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/all_sem_ref.sh
-	${RM} -r -f ${RM_V} ${DEST_DIR}/location
-	${RM} -r -f ${RM_V} ${DEST_DIR}/run_usage.sh
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/bug_report.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/bug_report.sh.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/chkentry.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/iocccsize.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/mkiocccentry.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/txzchk.1
-	${RM} -r -f ${RM_V} ${MAN1_DIR}/location.1
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/all_sem_ref.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/reset_tstamp.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/run_usage.8
-	${RM} -r -f ${RM_V} ${MAN8_DIR}/vermod.8
+	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/soup.a
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/vermod.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/reset_tstamp.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/all_sem_ref.sh
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/location
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_usage.sh
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.sh.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/chkentry.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/iocccsize.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/mkiocccentry.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/txzchk.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/all_sem_ref.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_usage.8
+	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/vermod.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -931,7 +931,7 @@ depend: ${ALL_CSRC}
 	             -e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' | \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
-		${RM} -f Makefile.orig; \
+		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \

@@ -599,7 +599,7 @@ legacy_clobber: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${E} ${RM} -f dyn_array.a
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
