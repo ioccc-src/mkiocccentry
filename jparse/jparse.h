@@ -56,7 +56,7 @@
 /*
  * official jparse repo release
  */
-#define JPARSE_REPO_VERSION "1.0.2 2024-09-07"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "1.0.3 2024-09-08"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

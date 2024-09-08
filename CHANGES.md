@@ -1,5 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.12 2024-09-08
+
+Sync `dbg` and `dyn_array` subdirectories from the [dbg
+repo](https://github.com/lcn2/dbg) and
+[dyn_array](https://github.com/lcn2/dyn_array), with fixes to the Makefiles.
+
+Sync `jparse` subdirectory from [jparse repo](https://github.com/xexyl/jparse/)
+with some fixes. The changes in particular include:
+
+- Fix `make clobber` to remove `jparse_test.log` and `Makefile.orig`.
+
+- Fix `make legacy_clobber` to remove `jparse.a`.
+
+- Fix `${RM}` in Makefiles to use `${Q}` variable (not in `make depend` as it is
+used in an earlier command in the multiple line commands), in some cases changed
+from the wrong variable, and `${RM_V}` (where this was not done).
+
+- Do not use `-r` in rm in Makefiles unless removing a directory, for safety.
+
+- Do not by default use `-v` for `rm` in Makefiles, to match what was previously
+done here.
+
 ## Release 1.5.11 2024-09-07
 
 Synced `jparse` subdirectory from the [jparse
