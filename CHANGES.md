@@ -7,8 +7,10 @@ parentheses the word (though all caps) `ESZETT` was added to the `SHARP S`
 (another term for it). This was done to make it easier to find for those of us
 used to the German term.
 
-Updated the repo release version to account for this change.
+Moved paths used by IOCCC tools out of jparse/util.h and into soup/soup.h, the
+obvious location.
 
+Updated the repo release version to account for this change.
 
 ## Release 1.5.12 2024-09-08
 
