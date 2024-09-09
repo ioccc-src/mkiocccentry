@@ -329,7 +329,7 @@ struct utf8_posix_map hmap[] =
     { "\xc3\x9c", "u" , -1, -1},	/*  U+00DC - Ü - LATIN CAPITAL LETTER U WITH DIAERESIS */
     { "\xc3\x9d", "y" , -1, -1},	/*  U+00DD - Ý - LATIN CAPITAL LETTER Y WITH ACUTE */
     { "\xc3\x9e", "p" , -1, -1},	/*  U+00DE - Þ - LATIN CAPITAL LETTER THORN */
-    { "\xc3\x9f", "s" , -1, -1},	/*  U+00DF - ß - LATIN SMALL LETTER SHARP S */
+    { "\xc3\x9f", "ss", -1, -1},	/*  U+00DF - ß - LATIN SMALL LETTER SHARP S (ESZETT) */
     { "\xc3\xa0", "a" , -1, -1},	/*  U+00E0 - à - LATIN SMALL LETTER A WITH GRAVE */
     { "\xc3\xa1", "a" , -1, -1},	/*  U+00E1 - á - LATIN SMALL LETTER A WITH ACUTE */
     { "\xc3\xa2", "a" , -1, -1},	/*  U+00E2 - â - LATIN SMALL LETTER A WITH CIRCUMFLEX */

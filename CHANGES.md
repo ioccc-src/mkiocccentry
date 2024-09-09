@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.13 2024-09-09
+
+Fix Eszett (`ß`), labelled `sharp S` (another term for it) in
+`soup/utf8_posix_map.c` to be `ss`, not `s`. In parentheses the name `ESZETT` is
+in the comments to help identify it more easily. This issue was discovered due
+to a comment in a bug report in the [jparse
+repo](https://github.com/xexyl/jparse/).
+
+
 ## Release 1.5.12 2024-09-08
 
 In `test_ioccc/`, `soup` and the top level Makefiles the `${RM}` variable now
