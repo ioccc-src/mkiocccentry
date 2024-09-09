@@ -436,7 +436,7 @@ chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
-	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
+	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 chk.info.head.c chk.info.ptch.c chk.info.tail.c:
 	@:
@@ -447,7 +447,7 @@ chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
-	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
+	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
@@ -810,14 +810,20 @@ all_tags:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 clean_mkchk_sem:
-	${Q} ${RM} ${RM_V} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
-	${Q} ${RM} ${RM_V} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} ${RM_V} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
+	${E} ${RM} ${RM_V} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
 
 legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -837,12 +843,12 @@ legacy_clobber: legacy_clean
 configure:
 	@echo "nothing to $@. Try making soup instead."
 
-clean:
+clean: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${ALL_OBJS}
-	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
+	${E} ${RM} ${RM_V} -f ${ALL_OBJS}
+	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -850,11 +856,12 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f .soup
-	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -f .all_ref.*
-	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -rf ref
+	${E} ${RM} ${RM_V} -f .soup
+	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f .all_ref.*
+	${E} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f ${TARGETS}
+	${E} ${RM} ${RM_V} -rf ref
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -873,23 +880,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/soup.a
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/vermod.sh
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/reset_tstamp.sh
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/all_sem_ref.sh
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/location
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_usage.sh
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.sh.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/chkentry.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/iocccsize.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/mkiocccentry.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/txzchk.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/all_sem_ref.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/run_usage.8
-	${Q} ${RM} ${RM_V} -f ${MAN8_DIR}/vermod.8
+	${E} ${RM} ${RM_V} -f ${DEST_LIB}/soup.a
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/vermod.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/reset_tstamp.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/all_sem_ref.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/location
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/run_usage.sh
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.sh.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/chkentry.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/iocccsize.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/mkiocccentry.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/txzchk.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/all_sem_ref.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/run_usage.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/vermod.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

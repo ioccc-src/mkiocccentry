@@ -1017,7 +1017,7 @@ test:
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
-	${Q} ${RM} -f jparse/test_jparse/pr_jparse_test
+	${E} ${RM} -f jparse/test_jparse/pr_jparse_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
@@ -1186,7 +1186,7 @@ dbg.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -rf dbg.clone
+	${E} ${RM} -rf dbg.clone
 	${E} ${MAKE} dbg.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1197,7 +1197,7 @@ dbg.update_from_clone: dbg.clone/ dbg/
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v dbg.clone/ dbg
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg depend C_SPECIAL=-DINTERNAL_INCLUDE
-	${Q} ${RM} -f dbg/Makefile.orig
+	${E} ${RM} -f dbg/Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1290,7 +1290,7 @@ dyn_array.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -rf dyn_array.clone
+	${E} ${RM} -rf dyn_array.clone
 	${E} ${MAKE} dyn_array.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1301,7 +1301,7 @@ dyn_array.update_from_clone: dyn_array.clone/ dyn_array/
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v dyn_array.clone/ dyn_array
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array depend C_SPECIAL=-DINTERNAL_INCLUDE
-	${Q} ${RM} -f dyn_array/Makefile.orig
+	${E} ${RM} -f dyn_array/Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1394,7 +1394,7 @@ jparse.recreate_clone:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -rf jparse.clone
+	${E} ${RM} -rf jparse.clone
 	${E} ${MAKE} jparse.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1404,6 +1404,8 @@ jparse.update_from_clone: jparse.clone/ jparse/
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v jparse.clone/ jparse
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg libdbg.a
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array libdyn_array.a
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse depend C_SPECIAL=-DINTERNAL_INCLUDE \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${S} echo
@@ -1678,10 +1680,10 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \

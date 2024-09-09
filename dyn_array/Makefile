@@ -136,8 +136,8 @@ PREFIX= /usr/local
 # RM_V=					rm w/o -v flag (quiet mode)
 # RM_V= -v				rm with -v (debug / verbose mode)
 #
-#RM_V=
-RM_V= -v
+#RM_V= -v
+RM_V=
 
 
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
@@ -376,7 +376,7 @@ dyn_array.o: dyn_array.c dyn_array.h
 	${CC} ${CFLAGS} dyn_array.c -c
 
 libdyn_array.a: ${LIB_OBJS}
-	${RM} -f $@
+	${Q} ${RM} ${RM_V} -f $@
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 
@@ -565,7 +565,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	fi
-	${Q} ${RM} -f ${LOCAL_DIR_TAGS}
+	${Q} ${RM} ${RM_V} -f ${LOCAL_DIR_TAGS}
 	-${E} ${CTAGS} -w -f ${LOCAL_DIR_TAGS} ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -576,7 +576,7 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} ${RM} -f tags
+	${Q} ${RM} ${RM_V} -f tags
 	${Q} for dir in .; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
@@ -591,7 +591,7 @@ legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${V} echo "${OUR_NAME}: nothing to do"
+	${S} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -599,7 +599,7 @@ legacy_clobber: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} -f dyn_array.a
+	${E} ${RM} ${RM_V} -f dyn_array.a
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -611,11 +611,11 @@ legacy_clobber: legacy_clean
 configure:
 	@echo nothing to $@
 
-clean:
+clean: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${E} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -623,9 +623,10 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${RM} -f ${TARGETS}
-	${RM} -f ${EXTERN_CLOBBER}
-	${RM} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f ${TARGETS}
+	${E} ${RM} ${RM_V} -f ${EXTERN_CLOBBER}
+	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
+	${E} ${RM} ${RM_V} -f Makefile.orig
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -635,7 +636,7 @@ install: all install_man
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
-	${I} ${RM} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
+	${Q} ${RM} ${RM_V} -f ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${LN} -s ${LIBA_TARGETS} ${DEST_LIB}/`echo ${LIBA_TARGETS} | ${SED} -e 's/^lib//'`
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
@@ -648,23 +649,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${I} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
-	${I} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
-	${I} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
-	${I} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
+	${E} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
+	${E} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
+	${E} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_free.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_seek.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_value.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_append_set.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_concat_array.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_avail.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_clear.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_tell.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_beyond.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -693,7 +694,7 @@ depend: ${ALL_CSRC}
 		${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
 		${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
-		${RM} -f Makefile.orig; \
+		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \
