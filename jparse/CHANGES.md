@@ -1,5 +1,21 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.4 2024-09-09
+
+Bug fix and improve `jstrdecode`.
+
+As per issue #12 the tool added stray `"`s with the `-Q` option and it did not
+add a leading `"` to the output. This has been fixed.
+
+As per issue #12 another option was added, `-e` (for escaped quotes), which
+surrounds each decoded arg with escaped quotes. The use of `-Q` and `-e`
+together means that the entire output will be surrounded by `"`s and each
+decoded arg will be surrounded by escaped quotes (i.e. `\"`).
+
+Remove the IOCCC tools' paths from util.h. These have been moved to another file
+in that repo.
+
+
 ## Release 1.0.3 2024-09-08
 
 Fix `make clobber` to remove `jparse_test.log` and `Makefile.orig`.
