@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.14 2024-09-11
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). This
+includes a number of fixes and improvements to various tools and the Makefiles
+(including some that will likely be implemented in the Makefiles here).
+
+
 ## Release 1.5.13 2024-09-09
 
 Fix Eszett (`ß`) in `soup/utf8_posix_map.c` to map to `ss`, not just one `s`. In

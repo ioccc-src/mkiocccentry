@@ -96,9 +96,9 @@ I=
 # else -v 1
 #
 ifeq ($(strip ${Q}),@)
-Q_V_OPTION="0"
+VERBOSITY="0"
 else
-Q_V_OPTION="1"
+VERBOSITY="1"
 endif
 
 # installing variables
@@ -140,7 +140,7 @@ MAKE_CD_Q= --no-print-directory
 
 # Disable parallel Makefile execution
 #
-# We do not support parallel make.  We have found most
+# We do NOT support parallel make.  We have found most
 # parallel make systems do not get the rule dependency order
 # correct, resulting in a failed attempt to compile.
 #
@@ -445,8 +445,10 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 		     LD_DIR2="${LD_DIR2}"
 
 bug_report: jparse_bug_report.sh
-	-${Q} ./jparse_bug_report.sh -v 1
+	-${Q} ./jparse_bug_report.sh -v ${VERBOSITY}
 
+# NOTE: don't use -v ${VERBOSITY} here!
+#
 bug_report-tx: jparse_bug_report.sh
 	${S} echo "${OUR_NAME}: make $@: starting test of jparse_bug_report.sh -t -x"
 	${S} echo
@@ -454,6 +456,7 @@ bug_report-tx: jparse_bug_report.sh
 	${S} echo
 	${S} echo "${OUR_NAME}: ending test of jparse_bug_report.sh -t -x"
 
+# NOTE: don't use -v ${VERBOSITY} here!
 bug_report-txl: jparse_bug_report.sh
 	${S} echo "${OUR_NAME}: make $@: starting test of jparse_bug_report.sh -t -x -l"
 	${Q} ./jparse_bug_report.sh -t -x -l
@@ -527,7 +530,7 @@ json_sem.o: json_sem.c
 #
 jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh verge jparse.tab.ref.c jparse.tab.ref.h
 	${Q} ./run_bison.sh -g ./verge -s sorry.tm.ca.h -b ${BISON_BASENAME} ${BISON_DIRS} \
-	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${BISON_FLAGS}
+	    -p jparse -v ${VERBOSITY} ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
 # How to create jparse.c and jparse.lex.h
 #
@@ -540,7 +543,7 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh verge jp
 jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh \
 	verge jparse.ref.c jparse.lex.ref.h
 	${Q} ./run_flex.sh -g ./verge -s sorry.tm.ca.h -f ${FLEX_BASENAME} ${FLEX_DIRS} \
-	    -p jparse -v ${Q_V_OPTION} ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
+	    -p jparse -v ${VERBOSITY} ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
 util.o: util.c util.h
 	${CC} ${CFLAGS} util.c -c
@@ -556,11 +559,15 @@ libjparse.a: ${LIB_OBJS}
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 
-run_bison-v7: verge sorry.tm.ca.h
+# NOTE: we specifically have -v 7 so we do NOT use -v ${VERBOSITY}!
+#
+run_bison-v7 bison-v7: verge sorry.tm.ca.h
 	./run_bison.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -D .
 
 
-run_flex-v7: verge sorry.tm.ca.h
+# NOTE: we specifically have -v 7 so we do NOT use -v ${VERBOSITY}!
+#
+run_flex-v7 flex-v7: verge sorry.tm.ca.h
 	./run_flex.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -D .
 
 #########################################################
@@ -655,6 +662,8 @@ parser-o: jparse.y jparse.l
 # The point is: if you're working on this repo and make build fails, try this
 # rule instead.
 #
+# NOTE: do NOT use -v ${VERBOSITY} level here!
+#
 prep: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
@@ -680,7 +689,7 @@ prep: test_jparse/prep.sh
 slow_prep: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
-	${Q} ./test_jparse/prep.sh -m${MAKE}; \
+	${Q} ./test_jparse/prep.sh -m${MAKE} -v ${VERBOSITY}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
@@ -707,6 +716,7 @@ slow_prep: test_jparse/prep.sh
 # so if bison and/or flex is not found or too old THIS RULE WILL FAIL!
 #
 # NOTE: Please try this rule BEFORE make prep.
+# NOTE: do NOT use -v ${VERBOSITY} level here!
 #
 build: release
 pull: release
@@ -729,13 +739,13 @@ release: test_jparse/prep.sh
 	    fi
 	    ${S} echo "${OUR_NAME}: make $@ ending";
 
-# a slower version of release that does not write to a log file so one can see the
-# full details.
+# a slower version of release that also writes to stdout so one can see the
+# full details as it runs.
 #
 slow_release: test_jparse/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} ${RM} ${RM_V} -f ${TMP_BUILD_LOG}
-	${Q} ./test_jparse/prep.sh -m${MAKE} -e -o; \
+	${Q} ./test_jparse/prep.sh -m${MAKE} -v ${VERBOSITY} -e -o; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo; \
@@ -749,7 +759,6 @@ slow_release: test_jparse/prep.sh
 	         echo "All Done!!! All Done!!! -- Jessica Noll, Age 2"; \
 	    fi
 	    ${S} echo "${OUR_NAME}: make $@ ending";
-
 
 # load reference code from the previous successful make parser
 #
@@ -790,7 +799,7 @@ rebuild_jnum_test:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
-		     LD_DIR2="${LD_DIR2}"
+		     LD_DIR2="${LD_DIR2}" -v ${VERBOSITY}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -811,7 +820,7 @@ rebuild_jparse_err_files: jparse
 	${S} echo
 	${Q} ${RM} ${RM_V} -f test_jparse/test_JSON/bad_loc/*.err
 	-@for i in test_jparse/test_JSON/./bad_loc/*.json; do \
-	    ./jparse -- "$$i" 2> "$$i.err" ;  \
+	    ./jparse -v ${VERBOSITY} -- "$$i" 2> "$$i.err" ;  \
 	done
 	${S} echo
 	${S} echo "Make sure to run make test from the top level directory before doing a"
@@ -824,7 +833,7 @@ test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ C_SPECIAL=${C_SPECIAL} \
+	${E} ${MAKE} ${MAKE_CD_Q} -C test_jparse $@ VERBOSITY=${VERBOSITY} C_SPECIAL=${C_SPECIAL} \
 		     LD_DIR2="${LD_DIR2}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending";
@@ -835,6 +844,8 @@ clean_generated_obj:
 	${Q} ${RM} ${RM_V} -f ${BUILT_OBJS}
 
 # sequence exit codes
+#
+# NOTE: do not USE -v ${VERBOSITY} here!
 #
 seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
@@ -860,6 +871,9 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: the -v in the picky command is NOT verbosity so do NOT
+# use -v ${VERBOSITY} here!
+#
 picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -896,6 +910,8 @@ picky: ${ALL_SRC} test_jparse/Makefile
 
 # inspect and verify shell scripts
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -926,6 +942,8 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 
 # inspect and verify man pages
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 check_man: ${ALL_MAN_TARGETS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -950,6 +968,8 @@ check_man: ${ALL_MAN_TARGETS}
 
 # install man pages
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 install_man: ${ALL_MAN_TARGETS}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN1_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
@@ -959,6 +979,8 @@ install_man: ${ALL_MAN_TARGETS}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
 
 # vi/vim tags
+#
+# NOTE: do NOT use -v ${VERBOSITY} here!
 #
 tags:
 	${S} echo
@@ -990,6 +1012,8 @@ tags:
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1015,6 +1039,8 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1023,7 +1049,7 @@ all_tags:
 		     LD_DIR2="${LD_DIR2}"
 	${Q} echo
 	${Q} ${RM} ${RM_V} -f tags
-	${Q} for dir in . ../dbg ../dyn_alloc test_jparse; do \
+	${Q} for dir in . test_jparse; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
 		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
@@ -1033,6 +1059,8 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 legacy_clean: test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1043,6 +1071,8 @@ legacy_clean: test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 legacy_clobber: legacy_clean test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1061,6 +1091,8 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 configure:
 	@echo nothing to $@
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 clean: clean_generated_obj
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1069,6 +1101,8 @@ clean: clean_generated_obj
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1084,6 +1118,8 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 install: all test_jparse/Makefile install_man
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1100,6 +1136,9 @@ install: all test_jparse/Makefile install_man
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+#
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 legacy_uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1109,6 +1148,9 @@ legacy_uninstall:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+#
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 uninstall: legacy_uninstall
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -1190,7 +1232,7 @@ depend: ${ALL_CSRC}
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
 	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
-	      ${INDEPEND} >> Makefile; \
+	      ${INDEPEND} -v ${VERBOSITY} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
