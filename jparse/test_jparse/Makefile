@@ -96,9 +96,9 @@ I=
 # else -v 1
 #
 ifeq ($(strip ${Q}),@)
-Q_V_OPTION="0"
+VERBOSITY="0"
 else
-Q_V_OPTION="1"
+VERBOSITY="1"
 endif
 
 # installing variables
@@ -129,9 +129,6 @@ PREFIX= /usr/local
 RM_V=
 
 
-
-
-
 # MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
 # MAKE_CD_Q=				silence make cd messages (quiet mode)
 #
@@ -140,7 +137,7 @@ MAKE_CD_Q= --no-print-directory
 
 # Disable parallel Makefile execution
 #
-# We do not support parallel make.  We have found most
+# We do NOT support parallel make.  We have found most
 # parallel make systems do not get the rule dependency order
 # correct, resulting in a failed attempt to compile.
 #
@@ -403,7 +400,7 @@ test_JSON/auth.json/good/auth.reference.json:
 rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
 	${Q} ${RM} ${RM_V} -f jnum_test.c
 	${CP} -f -v jnum_header.c jnum_test.c
-	./jnum_gen jnum.testset >> jnum_test.c
+	./jnum_gen -v ${VERBOSITY} jnum.testset >> jnum_test.c
 
 rebuild_jparse_err_files:
 	${S} echo
@@ -430,8 +427,8 @@ test:
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt"; \
-	    ./jparse_test.sh -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt; \
+	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt"; \
+	    ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
@@ -440,8 +437,8 @@ test:
 		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
 	    fi; \
 	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -f -j ./jparse test_jparse/json_teststr_fail.txt"; \
-	    ./jparse_test.sh -f -j ./jparse test_jparse/json_teststr_fail.txt >/dev/null 2>&1; \
+	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -v ${VERBOSITY} -f -j ./jparse test_jparse/json_teststr_fail.txt"; \
+	    ./jparse_test.sh -v ${VERBOSITY} -f -j ./jparse test_jparse/json_teststr_fail.txt >/dev/null 2>&1; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
@@ -450,8 +447,8 @@ test:
 		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
 	    fi; \
 	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jstr_test.sh"; \
-	    ./jstr_test.sh 2>&1; \
+	    echo "${OUR_NAME}: RUNNING: ./jstr_test.sh -v ${VERBOSITY}"; \
+	    ./jstr_test.sh -v ${VERBOSITY} 2>&1; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: jstr_test.sh failed, error code: $$EXIT_CODE"; \
@@ -460,8 +457,8 @@ test:
 		echo ${OUR_NAME}: "PASSED: jstr_test.sh"; \
 	    fi; \
 	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jnum_chk"; \
-	    ./jnum_chk 2>&1; \
+	    echo "${OUR_NAME}: RUNNING: ./jnum_chk -v ${VERBOSITY}"; \
+	    ./jnum_chk -v ${VERBOSITY} 2>&1; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: jnum_chk failed, error code: $$EXIT_CODE"; \
@@ -474,6 +471,8 @@ test:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # sequence exit codes
+#
+# NOTE: do NOT use -v ${VERBOSITY} here!
 #
 seqcexit: ${ALL_CSRC}
 	${S} echo
@@ -495,6 +494,10 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+
+# NOTE: the -v in the picky command is NOT verbosity so do NOT
+# use -v ${VERBOSITY} here!
+#
 picky: ${ALL_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -529,6 +532,8 @@ picky: ${ALL_SRC}
 
 # inspect and verify shell scripts
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 shellcheck: ${SH_FILES} .shellcheckrc
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -557,6 +562,8 @@ shellcheck: ${SH_FILES} .shellcheckrc
 
 # inspect and verify man pages
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 check_man:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -567,11 +574,13 @@ check_man:
 
 # vi/vim tags
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} for dir in ../../dbg ../../dyn_alloc ..; do \
+	${Q} for dir in .. .; do \
 	    if [[ -f $$dir/Makefile && ! -f $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo ${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
 		${MAKE} ${MAKE_CD_Q} -C $$dir local_dir_tags C_SPECIAL=${C_SPECIAL}; \
@@ -586,6 +595,8 @@ tags:
 
 # use the ${CTAGS} tool to form ${LOCAL_DIR_TAGS} of the source in this directory
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -597,12 +608,14 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 
 # for a tags file from all ${LOCAL_DIR_TAGS} in all of the other directories
 #
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f tags
-	${Q} for dir in . .. ../../dbg ../../dyn_alloc; do \
+	${Q} for dir in . ..; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
 		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
@@ -612,6 +625,8 @@ all_tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -620,6 +635,8 @@ legacy_clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 legacy_clobber: legacy_clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -636,6 +653,8 @@ legacy_clobber: legacy_clean
 configure:
 	@echo nothing to $@
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -644,6 +663,8 @@ clean:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -654,6 +675,8 @@ clobber: legacy_clobber clean
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 install: all
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -664,6 +687,9 @@ install: all
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # uninstall: we provide this in case someone wants to deobfuscate their system. :-)
+#
+# NOTE: do NOT use -v ${VERBOSITY} here!
+#
 uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -709,7 +735,7 @@ depend: ${ALL_CSRC}
 	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
 	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
 	      ${SED} -e 's;../../jparse/;../;g' | \
-	      ${INDEPEND} >> Makefile; \
+	      ${INDEPEND} -v ${VERBOSITY} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} ${RM_V} -f Makefile.orig; \
 	    else \
@@ -723,16 +749,16 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../json_parse.h ../json_util.h ../util.h \
-    jnum_chk.c jnum_chk.h
+    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
+    ../json_sem.h ../json_util.h ../util.h jnum_chk.c jnum_chk.h
 jnum_gen.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../json_parse.h ../json_util.h ../util.h \
-    jnum_gen.c jnum_gen.h
+    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
+    ../json_sem.h ../json_util.h ../util.h jnum_gen.c jnum_gen.h
 jnum_header.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../json_parse.h ../json_util.h ../util.h \
-    jnum_chk.h jnum_header.c
+    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
+    ../json_sem.h ../json_util.h ../util.h jnum_chk.h jnum_header.c
 jnum_test.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../json_parse.h ../json_util.h ../util.h \
-    jnum_chk.h jnum_test.c
+    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
+    ../json_sem.h ../json_util.h ../util.h jnum_chk.h jnum_test.c
 pr_jparse_test.o: ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
     ../util.h pr_jparse_test.c

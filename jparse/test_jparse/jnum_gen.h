@@ -47,6 +47,12 @@
 #include "../json_util.h"
 
 /*
+ * jparse - JSON parser
+ */
+#include "../jparse.h"
+
+
+/*
  * dyn_array - dynamic array facility
  */
 #if defined(INTERNAL_INCLUDE)

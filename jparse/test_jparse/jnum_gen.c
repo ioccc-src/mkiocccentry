@@ -70,7 +70,8 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "jnum_gen version: %s";
+    "jnum_gen version: %s\n"
+    "JSON parser version: %s";
 
 /*
  * globals
@@ -127,7 +128,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", JNUM_GEN_VERSION);
+	    print("jnum_gen version %s\nJSON parser version %s\n", JNUM_GEN_VERSION, JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -794,7 +795,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_GEN_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_GEN_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -1,16 +1,30 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.5 2024-09-11
+
+Fixes in `#include` paths in `test_jparse`, run `make depend`, add JSON parser
+version string to `jnum_gen` and `jnum_chk`.
+
+Rename Makefile variable `Q_V_OPTION` to `VERBOSITY` and add it to many rules so
+one can more easily do something like:
+
+```sh
+make VERBOSITY=3 test
+```
+
+or so. Not all rules have the `-v ${VERBOSITY}` as not all rules should have it.
+In many cases where this is true there is a comment in the Makefiles.
+
+The GitHub workflow has been updated to use `VERBOSITY=3` for more details in
+the case that there is a failure.
+
+Add to `-V` and `-h` options of `jparse` (the tool) and `jsemtblgen` the JSON
+parser version (this was already done in the tools in `test_jparse/` and will be
+done with `jstrencode` and `jstrdecode` along with some bug fixes when those
+have been properly addressed).
+
+
 ## Release 1.0.4 2024-09-09
-
-Bug fix and improve `jstrdecode`.
-
-As per issue #12 the tool added stray `"`s with the `-Q` option and it did not
-add a leading `"` to the output. This has been fixed.
-
-As per issue #12 another option was added, `-e` (for escaped quotes), which
-surrounds each decoded arg with escaped quotes. The use of `-Q` and `-e`
-together means that the entire output will be surrounded by `"`s and each
-decoded arg will be surrounded by escaped quotes (i.e. `\"`).
 
 Remove the IOCCC tools' paths from util.h. These have been moved to another file
 in that repo.
