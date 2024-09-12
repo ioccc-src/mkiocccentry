@@ -42,7 +42,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "1.0.2 2024-09-12"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -70,7 +70,8 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "jstrencode version: %s";
+    "jstrencode version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -78,41 +79,127 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
+/*
+ * encoded string list
+ */
+static struct jstring *json_encoded_strings = NULL;
 
 /*
- * jstrencode_stream - encode an open file stream onto another open file stream
+ * add_encoded_string	- allocate and add a JSON encoded string to the json_encoded_strings list
+ *
+ * given:
+ *	string	    - string to add (char *)
+ *	bufsiz	    - buffer size
+ *
+ * returns:
+ *	pointer to a newly allocated struct jstring *, added to the
+ *	json_encoded_strings list or NULL if allocation failed
+ *
+ * NOTE: it is ASSUMED that the string is allocated so one should NOT pass a
+ * char * that is not allocated on the stack.
+ */
+static struct jstring *
+add_encoded_string(char *string, size_t bufsiz)
+{
+    struct jstring *jstr = NULL; /* for jstring list */
+    struct jstring *jstr_next = NULL; /* to get last in list */
+
+    /*
+     * firewall
+     */
+    if (string == NULL) {
+	err(10, __func__, "string is NULL");
+	not_reached();
+    }
+
+    jstr = alloc_jstr(string, bufsiz);
+    if (jstr == NULL) {
+	warn(__func__, "failed to allocate struct jstring * for list");
+
+	if (string != NULL) {
+	    free(string);
+	    string = NULL;
+	}
+
+	return NULL;
+    }
+
+    /*
+     * add allocated jstring struct to list
+     */
+
+    /*
+     * find end of list
+     */
+    for (jstr_next = json_encoded_strings; jstr_next != NULL && jstr_next->next != NULL; jstr_next = jstr_next->next)
+	;;
+
+    /*
+     * add to end of list
+     */
+    if (jstr_next == NULL){
+	json_encoded_strings = jstr;
+    } else {
+	jstr_next->next = jstr;
+    }
+
+    return jstr;
+}
+
+/*
+ * free_json_encoded_strings	    - free json_encoded_strings list
+ *
+ * This function takes no args and returns void.
+ *
+ * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
+ * the stack due to how the decoding/encoding works.
+ */
+static void
+free_json_encoded_strings(void)
+{
+    struct jstring *jstr = NULL;    /* current in list */
+    struct jstring *jstr_next = NULL;	/* next in list */
+
+    for (jstr = json_encoded_strings; jstr != NULL; jstr = jstr_next) {
+	jstr_next = jstr->next;		/* get next in list before we free the current */
+
+	/* free current json encoded string */
+	free_jstring(jstr);
+	jstr = NULL;
+    }
+}
+
+
+/*
+ * jstrencode_stream - encode an open file stream into a char *
  *
  * given:
  *	in_stream	open file stream to encode
- *	out_stream	open file stream to write encoded data
- *	skip_quote	true ==> ignore any double quotes if they are both
- *				 at the start and end of the memory block
+ *	skip_quote	ignore any double quotes if they are both
+ *                      at the start and end of the memory block
  *			false ==> process all bytes in the block
- *
  * returns:
- *	true ==> encoding was successful,
- *	false ==> error in encoding, or NULL stream, or read error
+ *	allocated struct jstring * ==> encoding was successful,
+ *	NULL ==> error in encoding, or NULL stream, or read error
+ *
+ * NOTE: this function adds the allocated struct jstring * to the list of
+ * encoded JSON strings.
  */
-static bool
-jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
+static struct jstring *
+jstrencode_stream(FILE *in_stream, bool skip_quote)
 {
     char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
     char *buf = NULL;		/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
-    size_t outputlen;		/* length of write of encode buffer */
-    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
+    struct jstring *jstr = NULL; /* for jstring list */
 
     /*
      * firewall
      */
     if (in_stream == NULL) {
 	warn(__func__, "in_stream is NULL");
-	return false;
-    }
-    if (out_stream == NULL) {
-	warn(__func__, "out_stream is NULL");
-	return false;
+	return NULL;
     }
 
     /*
@@ -122,7 +209,7 @@ jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
     input = read_all(in_stream, &inputlen);
     if (input == NULL) {
 	warn(__func__, "error while reading data from input stream");
-	return false;
+	return NULL;
     }
     dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
 
@@ -131,30 +218,14 @@ jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
      */
     buf = json_encode(input, inputlen, &bufsiz, skip_quote);
     if (buf == NULL) {
-	warn(__func__, "error while encoding buffer");
-	success = false;
-
-    /*
-     * print encode buffer on output stream
-     */
-    } else {
-	dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
-	errno = 0;		/* pre-clear errno for warnp() */
-	outputlen = fwrite(buf, 1, bufsiz, out_stream);
-	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: fwrite of %ju bytes of data: returned: %ju",
-			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
-	    success = false;
+	/* free input */
+	if (input != NULL) {
+	    free(input);
+	    input = NULL;
 	}
-	dbg(DBG_MED, "fwrite write length: %ju", (uintmax_t)outputlen);
-    }
 
-    /*
-     * free buffer
-     */
-    if (buf != NULL) {
-	free(buf);
-	buf = NULL;
+	warn(__func__, "error while encoding buffer");
+	return NULL;
     }
 
     /*
@@ -165,15 +236,21 @@ jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
 	input = NULL;
     }
 
+    jstr = add_encoded_string(buf, bufsiz);
+    if (jstr == NULL) {
+	warn(__func__, "failed to allocate jstring of size %ju", bufsiz);
+	return NULL;
+    }
+
     /*
-     * return encoding status
+     * return struct added to list
      */
-    return success;
+    return jstr;
 }
 
 
 int
-main(int argc, char *argv[])
+main(int argc, char **argv)
 {
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
@@ -188,6 +265,7 @@ main(int argc, char *argv[])
     bool skip_quote = false;	/* true ==> skip enclosing quotes */
     int ret;			/* libc return code */
     int i;
+    struct jstring *jstr = NULL;    /* to iterate through list */
 
 
     /*
@@ -214,7 +292,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("%s\n", JSTRENCODE_VERSION);
+	    print("jstrencode version %s\nJSON parser version %s\n", JSTRENCODE_VERSION, JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -244,6 +322,7 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
 
+
     /*
      * case: process arguments on command line
      */
@@ -260,7 +339,19 @@ main(int argc, char *argv[])
 	    input = argv[i];
 	    if (!strcmp(input, "-")) {
 		/* encode stdin */
-		success = jstrencode_stream(stdin, stdout, skip_quote);
+		dbg(DBG_LOW, "encoding from stdin");
+
+		/*
+		 * NOTE: the function jstrencode_stream() adds the allocated
+		 * struct jstring * to the list of encoded JSON strings
+		 */
+		jstr = jstrencode_stream(stdin, skip_quote);
+		if (!jstr) {
+		    warn(__func__, "failed to encode string from stdin");
+		    success = false;
+		} else {
+		    dbg(DBG_LOW, "encoded buf size: %ju", (uintmax_t)jstr->bufsiz);
+		}
 	    } else {
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
@@ -275,29 +366,20 @@ main(int argc, char *argv[])
 		    success = false;
 
 		/*
-		 * print encoded buffer
+		 * append encoded buffer to encoded JSON strings list
 		 */
 		} else {
-		    dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    outputlen = fwrite(buf, 1, bufsiz, stdout);
-		    if (outputlen != bufsiz) {
-			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
-					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
+		    dbg(DBG_MED, "encode length: %ju", bufsiz);
+		    jstr = add_encoded_string(buf, bufsiz);
+		    if (jstr == NULL) {
+			warn(__func__, "error adding encoded string to list");
 			success = false;
+		    } else {
+			dbg(DBG_MED, "added string of size %ju to encoded strings list", bufsiz);
 		    }
-		}
-
-		/*
-		 * free buffer
-		 */
-		if (buf == NULL) {
-		    free(buf);
-		    buf = NULL;
 		}
 	    }
 	}
-
     /*
      * case: process data on stdin
      */
@@ -305,8 +387,37 @@ main(int argc, char *argv[])
 	/*
 	 * read all of stdin
 	 */
-	success = jstrencode_stream(stdin, stdout, skip_quote);
+	dbg(DBG_LOW, "encoding from stdin");
+	/*
+	 * NOTE: jstrencode_stream() adds the allocated struct jstring * to the
+	 * encoded JSON strings list
+	 */
+	jstr = jstrencode_stream(stdin, skip_quote);
+	if (jstr != NULL) {
+	    dbg(DBG_MED, "encode length: %ju", jstr->bufsiz);
+	} else {
+		warn(__func__, "error while encoding processing stdin");
+		success = false;
+	    }
+	}
+
+    /*
+     * now write each processed arg to stdout
+     */
+    for (jstr = json_encoded_strings; jstr != NULL; jstr = jstr->next) {
+	if (jstr->jstr != NULL) {
+	    buf = jstr->jstr;
+	    bufsiz = (uintmax_t)jstr->bufsiz;
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    outputlen = fwrite(buf, 1, bufsiz, stdout);
+	    if (outputlen != bufsiz) {
+		warnp(__func__, "error: wrote %ju bytes out of expected %ju bytes",
+			    (uintmax_t)outputlen, (uintmax_t)bufsiz);
+		success = false;
+	    }
+	}
     }
+
 
     /*
      * unless -n, output newline
@@ -319,6 +430,9 @@ main(int argc, char *argv[])
 	    success = false;
 	}
     }
+
+    /* we have to free the list */
+    free_json_encoded_strings();
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
@@ -367,7 +481,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

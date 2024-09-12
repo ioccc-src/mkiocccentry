@@ -42,7 +42,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "1.0.2 2024-09-12"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -50,7 +50,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -59,6 +59,7 @@ static const char * const usage_msg =
     "\t-t\t\tperform jencchk test on code JSON decode/encode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-Q\t\tenclose output in quotes (def: do not)\n"
+    "\t-e\t\tenclose each decoded string with escaped quotes (def: do not)\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
@@ -70,7 +71,8 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "jstrdecode version: %s";
+    "jstrdecode version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -78,40 +80,125 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
+/*
+ * decoded string list
+ */
+static struct jstring *json_decoded_strings = NULL;
 
 /*
- * jstrdecode_stream - decode an open file stream onto another open file stream
+ * add_decoded_string	- allocate and add a JSON decoded string to the json_decoded_strings list
+ *
+ * given:
+ *	string	    - string to add (char *)
+ *	bufsiz	    - buffer size
+ *
+ * returns:
+ *	pointer to a newly allocated struct jstring *, added to the
+ *	json_decoded_strings list or NULL if allocation failed
+ *
+ * NOTE: it is ASSUMED that the string is allocated so one should NOT pass a
+ * char * that is not allocated on the stack.
+ */
+static struct jstring *
+add_decoded_string(char *string, size_t bufsiz)
+{
+    struct jstring *jstr = NULL; /* for jstring list */
+    struct jstring *jstr_next = NULL; /* to get last in list */
+
+    /*
+     * firewall
+     */
+    if (string == NULL) {
+	err(10, __func__, "string is NULL");
+	not_reached();
+    }
+
+    jstr = alloc_jstr(string, bufsiz);
+    if (jstr == NULL) {
+	warn(__func__, "failed to allocate struct jstring * for list");
+
+	if (string != NULL) {
+	    free(string);
+	    string = NULL;
+	}
+
+	return NULL;
+    }
+
+    /*
+     * add allocated jstring struct to list
+     */
+
+    /*
+     * find end of list
+     */
+    for (jstr_next = json_decoded_strings; jstr_next != NULL && jstr_next->next != NULL; jstr_next = jstr_next->next)
+	;;
+
+    /*
+     * add to end of list
+     */
+    if (jstr_next == NULL){
+	json_decoded_strings = jstr;
+    } else {
+	jstr_next->next = jstr;
+    }
+
+    return jstr;
+}
+
+/*
+ * free_json_decoded_strings	    - free json_decoded_strings list
+ *
+ * This function takes no args and returns void.
+ *
+ * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
+ * the stack due to how the decoding/encoding works.
+ */
+static void
+free_json_decoded_strings(void)
+{
+    struct jstring *jstr = NULL;    /* current in list */
+    struct jstring *jstr_next = NULL;	/* next in list */
+
+    for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr_next) {
+	jstr_next = jstr->next;		/* get next in list before we free the current */
+
+	/* free current json decoded string */
+	free_jstring(jstr);
+	jstr = NULL;
+    }
+}
+
+
+/*
+ * jstrdecode_stream - decode an open file stream into a char *
  *
  * given:
  *	in_stream	open file stream to decode
- *	out_stream	open file stream to write encoded data
- *	write_quote	true ==> output enclosing quotes
  *
  * returns:
- *	true ==> encoding was successful,
- *	false ==> error in encoding, or NULL stream, or read error
+ *	allocated struct jstring * ==> decoding was successful,
+ *	NULL ==> error in decoding, or NULL stream, or read error
+ *
+ * NOTE: this function adds the allocated struct jstring * to the list of
+ * decoded JSON strings.
  */
-static bool
-jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
+static struct jstring*
+jstrdecode_stream(FILE *in_stream)
 {
     char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
-    size_t outputlen;		/* length of write of decode buffer */
     size_t bufsiz;		/* length of the buffer */
     char *buf = NULL;		/* decode buffer */
-    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
-    int ret = 0;		/* libc function return code */
+    struct jstring *jstr = NULL;    /* decoded string added to list */
 
     /*
      * firewall
      */
     if (in_stream == NULL) {
 	warn(__func__, "in_stream is NULL");
-	return false;
-    }
-    if (out_stream == NULL) {
-	warn(__func__, "out_stream is NULL");
-	return false;
+	return NULL;
     }
 
     /*
@@ -121,7 +208,7 @@ jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
     input = read_all(in_stream, &inputlen);
     if (input == NULL) {
 	warn(__func__, "error while reading data from input stream");
-	return false;
+	return NULL;
     }
     dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
 
@@ -130,58 +217,14 @@ jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
      */
     buf = json_decode(input, inputlen, &bufsiz, NULL);
     if (buf == NULL) {
-	warn(__func__, "error while encoding stdin buffer");
-	success = false;
-
-    /*
-     * print decode buffer
-     */
-    } else {
-
-	/*
-	 * write starting quote if requested
-	 */
-	if (write_quote == true) {
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fputc('"', out_stream);
-	    if (ret != '"') {
-		warnp(__func__, "fputc of starting quote returned error");
-		success = false;
-	    }
+	/* free input */
+	if (input != NULL) {
+	    free(input);
+	    input = NULL;
 	}
 
-	/*
-	 * write decoded data
-	 */
-	dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
-	errno = 0;		/* pre-clear errno for warnp() */
-	outputlen = fwrite(buf, 1, bufsiz, out_stream);
-	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: write of %ju bytes of data: returned: %ju",
-			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
-	    success = false;
-	}
-	dbg(DBG_MED, "fwrite length: %ju", (uintmax_t)outputlen);
-
-	/*
-	 * write ending quote if requested
-	 */
-	if (write_quote == true) {
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fputc('"', out_stream);
-	    if (ret != '"') {
-		warnp(__func__, "fputc of ending quote returned error");
-		success = false;
-	    }
-	}
-    }
-
-    /*
-     * free buffer
-     */
-    if (buf != NULL) {
-	free(buf);
-	buf = NULL;
+	warn(__func__, "error while decoding stdin buffer");
+	return NULL;
     }
 
     /*
@@ -192,16 +235,22 @@ jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
 	input = NULL;
     }
 
+    jstr = add_decoded_string(buf, bufsiz);
+    if (jstr == NULL) {
+	warn(__func__, "failed to allocate jstring of size %ju", bufsiz);
+	return NULL;
+    }
 
     /*
-     * return encoding status
+     * return struct added to list
      */
-    return success;
+    return jstr;
+
 }
 
 
 int
-main(int argc, char *argv[])
+main(int argc, char **argv)
 {
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
@@ -214,15 +263,17 @@ main(int argc, char *argv[])
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
     bool write_quote = false;	/* true ==> output enclosing quotes */
+    bool esc_quotes = false;	/* true ==> escape quotes */
     int ret;			/* libc return code */
     int i;
+    struct jstring *jstr = NULL;    /* decoded string */
 
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnQ")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnQe")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -242,7 +293,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("%s\n", JSTRDECODE_VERSION);
+	    print("jstrdecode version %s\nJSON parser version %s\n", JSTRDECODE_VERSION, JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -258,6 +309,9 @@ main(int argc, char *argv[])
 	    break;
 	case 'Q':
 	    write_quote = true;
+	    break;
+	case 'e':
+	    esc_quotes = true;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -276,7 +330,6 @@ main(int argc, char *argv[])
      * case: process arguments on command line
      */
     if (argc - optind > 0) {
-
 	/*
 	 * process each argument in order
 	 */
@@ -286,9 +339,21 @@ main(int argc, char *argv[])
 	     * obtain argument string
 	     */
 	    input = argv[i];
+
 	    if (!strcmp(input, "-")) {
-		/* decode stdin */
-		success = jstrdecode_stream(stdin, stdout, write_quote);
+		/*
+		 * decode stdin
+		 *
+		 * NOTE: the function jstrdecode_stream() adds the allocated
+		 * struct jstring * to the list of decoded JSON strings
+		 */
+		jstr = jstrdecode_stream(stdin);
+		if (jstr != NULL) {
+		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
+		} else {
+		    warn(__func__, "failed to decode string from stdin");
+		    success = false;
+		}
 	    } else {
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
@@ -299,53 +364,21 @@ main(int argc, char *argv[])
 		 */
 		buf = json_decode_str(input, &bufsiz);
 		if (buf == NULL) {
-		    warn(__func__, "error while encoding processing arg: %d", i-optind);
+		    warn(__func__, "error while decoding processing arg: %d", i-optind);
 		    success = false;
 
 		/*
-		 * write starting quote if requested
-		 */
-		if (write_quote == true) {
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fputc('"', stdout);
-		    if (ret != '"') {
-			warnp(__func__, "fputc for starting quote returned error");
-			success = false;
-		    }
-		}
-
-		/*
-		 * print decoded buffer
+		 * append decoded buffer to decoded JSON strings list
 		 */
 		} else {
-		    dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    outputlen = fwrite(buf, 1, bufsiz, stdout);
-		    if (outputlen != bufsiz) {
-			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
-					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
+		    dbg(DBG_MED, "decode length: %ju", bufsiz);
+		    jstr = add_decoded_string(buf, bufsiz);
+		    if (jstr == NULL) {
+			warn(__func__, "error adding decoded string to list");
 			success = false;
+		    } else {
+			dbg(DBG_MED, "added string of size %ju to decoded strings list", bufsiz);
 		    }
-		}
-
-		/*
-		 * write ending quote if requested
-		 */
-		if (write_quote == true) {
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fputc('"', stdout);
-		    if (ret != '"') {
-			warnp(__func__, "fputc for ending quote returned error");
-			success = false;
-		    }
-		}
-
-		/*
-		 * free buffer
-		 */
-		if (buf == NULL) {
-		    free(buf);
-		    buf = NULL;
 		}
 	    }
 	}
@@ -354,7 +387,73 @@ main(int argc, char *argv[])
      * case: process data on stdin
      */
     } else {
-	success = jstrdecode_stream(stdin, stdout, write_quote);
+	/*
+	 * NOTE: the function jstrdecode_stream() adds the allocated
+	 * struct jstring * to the list of decoded JSON strings
+	 */
+	jstr = jstrdecode_stream(stdin);
+
+	if (jstr != NULL) {
+	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
+	} else {
+		warn(__func__, "error while decoding processing stdin");
+		success = false;
+	    }
+	}
+
+    /*
+     * write starting quote if requested
+     */
+    if (write_quote) {
+	errno = 0;		/* pre-clear errno for warnp() */
+	ret = fputc('"', stdout);
+	if (ret != '"') {
+	    warnp(__func__, "fputc for starting quote returned error");
+	    success = false;
+	}
+    }
+
+    /*
+     * now write each processed arg to stdout
+     */
+    for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr->next) {
+	dbg(DBG_MED, "processing decoded JSON string of size: %ju", jstr->bufsiz);
+	/*
+	 * write starting escaped quote if requested
+	 */
+	if (esc_quotes) {
+	    fprint(stdout, "%s", "\\\"");
+	}
+	buf = jstr->jstr;
+	bufsiz = (uintmax_t)jstr->bufsiz;
+	dbg(DBG_MED, "bufsiz: %ju", bufsiz);
+	errno = 0;		/* pre-clear errno for warnp() */
+	outputlen = fwrite(buf, 1, bufsiz, stdout);
+	if (outputlen != bufsiz) {
+	    warnp(__func__, "error: wrote %ju bytes out of expected %jd bytes",
+			    (uintmax_t)outputlen, (uintmax_t)bufsiz);
+	    success = false;
+	}
+
+	/*
+	 * write ending escaped quote if requested
+	 */
+	if (esc_quotes) {
+	    fprint(stdout, "%s", "\\\"");
+	}
+    }
+
+
+    /*
+     * write ending quote if requested
+     */
+    if (write_quote) {
+	errno = 0;		/* pre-clear errno for warnp() */
+	ret = fputc('"', stdout);
+	if (ret != '"') {
+	    warnp(__func__, "fputc for ending quote returned error");
+	    success = false;
+	}
     }
 
     /*
@@ -368,6 +467,9 @@ main(int argc, char *argv[])
 	    success = false;
 	}
     }
+
+    /* we have to free the list */
+    free_json_decoded_strings();
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
@@ -417,7 +519,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

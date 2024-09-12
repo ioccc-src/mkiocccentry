@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "05 February 2023" "jstrencode" "jparse tools"
+.TH jstrencode 1 "12 September 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -78,6 +78,10 @@ command line error
 >= 10
 internal error
 .SH BUGS
+.PP
+A known problem with macOS Terminal is that one has to hit ctrl\-d twice in order for it to properly send
+.B EOF
+but this occurs in other applications as well so we note this issue here.
 .PP
 If you have an issue with the tool you can report it at
 .br
