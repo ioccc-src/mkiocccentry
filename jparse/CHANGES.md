@@ -1,5 +1,11 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.7 2024-09-13
+
+Extend `jstr_test.sh` to test that the `jstrdecode(1)` options `-Q` and `-e`
+work, each by themselves and together.
+
+
 ## Release 1.0.6 2024-09-12
 
 Enhancements and bug fixes in `jstrdecode(1)` and `jstrencode(1)`. In
