@@ -1,6 +1,6 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 1.5.15 2024-09-12
+## Release 1.5.16 2024-09-13
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/).
 
@@ -14,6 +14,11 @@ Add to `jstr_test.sh` tests for `jstrdecode(1)` options `-Q` and `-e` (both
 separately and together).
 
 Clarified comment in `jparse.l` and rebuilt backup `jparse.c` (`jparse.ref.c`).
+
+Add an extra sanity check to `jencchk()`: the macro `JSON_BYTE_VALUES` must
+equal 256. Previously we did check that the table length of `jenc` is
+`JSON_BYTE_VALUES` with the assumption that this was 256 but now we make sure
+that it is 256, before we check the table length.
 
 
 ## Release 1.5.14 2024-09-11
