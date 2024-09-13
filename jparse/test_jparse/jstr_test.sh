@@ -274,7 +274,7 @@ echo "$0: about to run test #4" 1>&2
 echo "$JSTRDECODE -Q -n foo bar"
 RESULT="$($JSTRDECODE -Q -n foo bar)"
 if [[ "$RESULT" = '"foobar"' ]]; then
-    echo "$0: debug[1]: test #4 passed" 1>&2
+    echo "$0: test #4 passed" 1>&2
 else
     echo "$0: test #4 failed" 1>&2
     EXIT_CODE=8
@@ -284,7 +284,7 @@ echo "$0: about to run test #5" 1>&2
 echo "$JSTRDECODE -Q -e -n foo bar"
 RESULT="$($JSTRDECODE -Q -e -n foo bar)"
 if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
-    echo "$0: debug[1]: test #5 passed" 1>&2
+    echo "$0: test #5 passed" 1>&2
 else
     echo "$0: test #5 failed" 1>&2
     EXIT_CODE=9
@@ -294,7 +294,7 @@ echo "$0: about to run test #6" 1>&2
 echo "$JSTRDECODE -e -n foo bar"
 RESULT="$($JSTRDECODE -e -n foo bar)"
 if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
-    echo "$0: debug[1]: test #6 passed" 1>&2
+    echo "$0: test #6 passed" 1>&2
 else
     echo "$0: test #6 failed" 1>&2
     EXIT_CODE=9

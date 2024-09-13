@@ -50,7 +50,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison]
 			NOTE: This is ignored if the final arg is NOT bison.
     -D dir	    look for prefix file in this directory
     --		    end of $0 flags
-    bison_flags    optional flags to give to bison before the prefix.y argument
+    bison_flags	    optional flags to give to bison before the prefix.y argument
 
 Exit codes:
      0   bison output files formed or backup files used instead

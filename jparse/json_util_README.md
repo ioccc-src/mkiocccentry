@@ -27,7 +27,7 @@ document](./json_README.md#json-document).
 There does exist multiple [JSON](./json_README.md) [APIs (Application Program
 Interfaces)](https://en.wikipedia.org/wiki/API) for various programming
 languages such as: JavaScript, C, Java, Python, Perl, Go, Rust, PHP, etc.  This
-[mkiocccentry repo](https://https://github.com/ioccc-src/mkiocccentry) contains
+[jparse repo](https://github.com/xexyl/jparse/) is
 a rich JSON parser API C programs can use, as well as a semantic JSON check
 interface for C.  However all those APIs require the user to "program" in a
 specific language in order to do something as simple as obtain a selective [JSON
