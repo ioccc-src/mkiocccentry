@@ -58,7 +58,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform jencchk test on code JSON decode/encode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
-    "\t-Q\t\tenclose output in quotes (def: do not)\n"
+    "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped quotes (def: do not)\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
