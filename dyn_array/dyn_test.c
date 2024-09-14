@@ -123,6 +123,7 @@ void warnp(char const *name, char const *fmt, ...);
 void errp(int exitcode, char const *name, char const *fmt, ...);
 void fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...);
 int parse_verbosity(char const *optarg);
+void check_invalid_option(char const *prog, int ch, int opt);
 #endif
 
 
@@ -161,17 +162,10 @@ main(int argc, char *argv[])
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case ':':
-	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
-	    (void) usage(3, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	case '?':
-	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
-	    (void) usage(3, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	default:
+	case ':':   /* option requires an argument */
+	case '?':   /* illegal option */
+	default:    /* anything else but should not actually happen */
+	    check_invalid_option(program, i, optopt);
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
 	    break;
@@ -186,6 +180,7 @@ main(int argc, char *argv[])
      * create dynamic array
      */
     array = dyn_array_create(sizeof(double), CHUNK, CHUNK, true);
+    dbg(DBG_MED, "created array of size %ju", (uintmax_t)CHUNK);
 
     /*
      * load a million doubles
@@ -209,15 +204,18 @@ main(int argc, char *argv[])
     /*
      * verify size
      */
+    dbg(DBG_HIGH, "determining size of array");
     len = dyn_array_tell(array);
     if (len != 1000000) {
 	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)1000000);
 	error = true;
     }
+    dbg(DBG_VHIGH, "array size is %ju", (uintmax_t)len);
 
     /*
      * concatenate the array onto itself
      */
+    dbg(DBG_MED, "concatenating array on to itself");
     if (dyn_array_concat_array(array, array)) {
 	dbg(DBG_LOW, "moved data after concatenation");
     }
@@ -225,15 +223,18 @@ main(int argc, char *argv[])
     /*
      * verify new size
      */
+    dbg(DBG_HIGH, "determining new size of array");
     len = dyn_array_tell(array);
     if (len != 2000000) {
 	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)2000000);
 	error = true;
     }
+    dbg(DBG_VHIGH, "new size of array is %ju", (uintmax_t)len);
 
     /*
      * verify values again
      */
+    dbg(DBG_HIGH, "verifying values again");
     for (i = 0; i < 1000000; ++i) {
 	if ((intmax_t)i != (intmax_t)dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
@@ -1328,5 +1329,56 @@ parse_verbosity(char const *optarg)
 	return DBG_INVALID;
     }
     return verbosity;
+}
+
+
+/*
+ * check_invalid_option - check option error in getopt()
+ *
+ * given:
+ *
+ *	prog	    - program name
+ *	ch	    - value returned by getopt()
+ *	opt	    - program's optopt (option triggering the error)
+ *
+ * NOTE:    if prog is NULL we warn and then set to ((NULL prog)).
+ * NOTE:    this function should only be called if getopt() returns a ':' or a
+ *	    '?' but if anything else is passed to this function we do nothing.
+ * NOTE:    this function does NOT take an exit code because it is the caller's
+ *	    responsibility to do this. This is because they must call usage()
+ *	    which is specific to each tool.
+ */
+void
+check_invalid_option(char const *prog, int ch, int opt)
+{
+    /*
+     * firewall
+     */
+    if (ch != ':' && ch != '?') {
+	return; /* do nothing */
+    }
+    if (prog == NULL) {
+	warn(__func__, "prog is NULL, forcing it to be: ((NULL prog))");
+	prog = "((NULL prog))";
+    }
+
+    /*
+     * report to stderr, based on the value returned by getopt
+     */
+    switch (ch) {
+	case ':':
+	    fprintf(stderr, "%s: requires an argument -- %c\n\n", prog, opt);
+	    (void) usage(3, prog, ""); /*ooo*/
+	    break;
+	case '?':
+	    fprintf(stderr, "%s: illegal option -- %c\n\n", prog, opt);
+	    (void) usage(3, prog, ""); /*ooo*/
+	    break;
+	default: /* should never be reached but we include it anyway */
+	    fprintf(stderr, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, ch);
+	    (void) usage(3, prog, ""); /*ooo*/
+	    break;
+    }
+    return;
 }
 #endif /* !defined(DBG_USE) */

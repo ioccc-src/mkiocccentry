@@ -96,9 +96,9 @@ E=
 # else -v 1
 #
 ifeq ($(strip ${Q}),@)
-Q_V_OPTION="0"
+VERBOSITY="0"
 else
-Q_V_OPTION="1"
+VERBOSITY="1"
 endif
 
 # I= @					do not echo install commands (quiet mode)
@@ -467,8 +467,8 @@ test:
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"; \
-	    ./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \
+	    echo "./dbg_test ${VERBOSITY} -e 2 foo bar baz >dbg_test.out 2>&1"; \
+	    ./dbg_test -v ${VERBOSITY} -e 2 foo bar baz >dbg_test.out 2>&1; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 5 ]]; then \
 		echo "${OUR_NAME}: exit status of dbg_test: $$EXIT_CODE != 5"; \

@@ -106,9 +106,9 @@ I=
 # else -v 1
 #
 ifeq ($(strip ${Q}),@)
-Q_V_OPTION="0"
+VERBOSITY="0"
 else
-Q_V_OPTION="1"
+VERBOSITY="1"
 endif
 
 # installing variables
@@ -426,8 +426,8 @@ test:
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo ./dyn_test; \
-	    ./dyn_test; \
+	    echo ./dyn_test -v ${VERBOSITY}; \
+	    ./dyn_test -v ${VERBOSITY}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: dyn_test failed, error code: $$EXIT_CODE"; \
@@ -440,6 +440,8 @@ test:
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # sequence exit codes
+#
+# NOTE: do NOT use -v ${VERBOSITY}!
 #
 seqcexit: ${ALL_CSRC}
 	${S} echo
@@ -461,6 +463,8 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
+# NOTE: do NOT use -v ${VERBOSITY}!
+#
 picky: ${ALL_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
