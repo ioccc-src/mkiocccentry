@@ -211,9 +211,11 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
-       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h
+       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
+       jstr_util.h
+
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC= jparse.ref.c jparse.tab.ref.c
@@ -494,16 +496,20 @@ jparse.o: jparse.c jparse.h
 jparse: jparse_main.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
+
+jstr_util.o: jstr_util.c jstr_util.h
+	${CC} ${CFLAGS} jstr_util.c -c
+
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o libjparse.a
+jstrencode: jstrencode.o libjparse.a jstr_util.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o libjparse.a
+jstrdecode: jstrdecode.o libjparse.a jstr_util.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
@@ -1269,10 +1275,15 @@ json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     json_parse.h json_sem.c json_sem.h json_util.h util.h
 json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h json_parse.h json_util.c json_util.h util.h
+jstr_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
+    json_util.h jstr_util.c jstr_util.h util.h
 jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h jstrdecode.c jstrdecode.h util.h
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
+    json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h
 jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h jstrencode.c jstrencode.h util.h
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
+    json_util.h jstr_util.h jstrencode.c jstrencode.h util.h
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \

@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to JSON decode JSON encoded strings
+ * jstr_util - tool to JSON decode JSON encoded strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -18,8 +18,8 @@
  */
 
 
-#if !defined(INCLUDE_JSTRDECODE_H)
-#    define  INCLUDE_JSTRDECODE_H
+#if !defined(INCLUDE_JSTR_UTIL_H)
+#    define  INCLUDE_JSTR_UTIL_H
 
 
 /*
@@ -40,7 +40,6 @@
 #include <dyn_array.h>
 #endif
 
-
 /*
  * util - common utility functions for the JSON parser
  */
@@ -52,28 +51,28 @@
 #include "json_parse.h"
 
 /*
- * jstr_util - jstrencode/jstrdecode utilities
- */
-#include "jstr_util.h"
-
-/*
  * jparse - JSON parser
  */
 #include "jparse.h"
 
-
+/*
+ * struct for jstr utilities
+ */
+struct jstring
+{
+    char *jstr;
+    size_t bufsiz;
+    struct jstring *next;   /* next in list */
+};
 
 /*
  * globals
  */
 
-
 /*
  * function prototypes
  */
-static struct jstring *jstrdecode_stream(FILE *in_stream);
-static struct jstring *add_decoded_string(char *string, size_t bufsiz);
-static void free_json_decoded_strings(void);
+extern struct jstring *alloc_jstr(char *string, size_t bufsiz);
+extern void free_jstring(struct jstring *jstr);
 
-
-#endif /* INCLUDE_JSTRDECODE_H */
+#endif /* INCLUDE_JSTR_UTIL_H */

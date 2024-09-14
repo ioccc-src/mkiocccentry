@@ -1,5 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.16 2024-09-13
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/).
+
+This makes some important fixes to the tools `jstrdecode(1)` and `jstrencode(1)`
+where in `jstrdecode(1)` the `-Q` option did not work and for both the printing
+of everything should happen after everything is parsed (especially for the `-Q`
+option but not strictly for that reason). The `pr_jparse_test` tool had a bug
+fix as well where the `-h` option did not work.
+
+Add to `jstr_test.sh` tests for `jstrdecode(1)` options `-Q` and `-e` (both
+separately and together).
+
+Clarified comment in `jparse.l` and rebuilt backup `jparse.c` (`jparse.ref.c`).
+
+Add an extra sanity check to `jencchk()`: the macro `JSON_BYTE_VALUES` must
+equal 256. Previously we did check that the table length of `jenc` is
+`JSON_BYTE_VALUES` with the assumption that this was 256 but now we make sure
+that it is 256, before we check the table length.
+
+
 ## Release 1.5.14 2024-09-11
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). This

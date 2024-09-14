@@ -760,5 +760,6 @@ jnum_header.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
 jnum_test.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
     ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
     ../json_sem.h ../json_util.h ../util.h jnum_chk.h jnum_test.c
-pr_jparse_test.o: ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
-    ../util.h pr_jparse_test.c
+pr_jparse_test.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
+    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
+    ../json_sem.h ../json_util.h ../util.h pr_jparse_test.c

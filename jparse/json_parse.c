@@ -391,10 +391,18 @@ jencchk(void)
     }
 
     /*
+     * assert: JSON_BYTE_VALUES must be 256
+     */
+    if (JSON_BYTE_VALUES != 256) {
+	err(101, __func__, "JSON_BYTE_VALUES: %d != 256", JSON_BYTE_VALUES);
+	not_reached();
+    }
+
+    /*
      * assert: table must be of size 256
      */
     if (TBLLEN(jenc) != JSON_BYTE_VALUES) {
-	err(101, __func__, "jenc table length is %ju instead of %d",
+	err(102, __func__, "jenc table length is %ju instead of %d",
 			   (uintmax_t)TBLLEN(jenc), JSON_BYTE_VALUES);
 	not_reached();
     }
@@ -404,7 +412,7 @@ jencchk(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (jenc[i].byte != i) {
-	    err(102, __func__, "jenc[0x%02x].byte: %d != %d", i, jenc[i].byte, i);
+	    err(103, __func__, "jenc[0x%02x].byte: %d != %d", i, jenc[i].byte, i);
 	    not_reached();
 	}
     }
@@ -414,7 +422,7 @@ jencchk(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (jenc[i].enc == NULL) {
-	    err(103, __func__, "jenc[0x%02x].enc == NULL", i);
+	    err(104, __func__, "jenc[0x%02x].enc == NULL", i);
 	    not_reached();
 	}
     }
@@ -424,7 +432,7 @@ jencchk(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (strlen(jenc[i].enc) != jenc[i].len) {
-	    err(104, __func__, "jenc[0x%02x].enc length: %ju != jenc[0x%02x].len: %ju",
+	    err(105, __func__, "jenc[0x%02x].enc length: %ju != jenc[0x%02x].len: %ju",
 			       i, (uintmax_t)strlen(jenc[i].enc),
 			       i, (uintmax_t)jenc[i].len);
 	    not_reached();
@@ -436,18 +444,18 @@ jencchk(void)
      */
     for (i=0x00; i <= 0x07; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(105, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	    err(106, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			       i, (uintmax_t)strlen(jenc[i].enc),
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(106, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
+	    err(107, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(107, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
+	    err(108, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}
     }
@@ -458,13 +466,13 @@ jencchk(void)
     indx = 0x08;
     encstr = "\\b";
     if (jenc[indx].len != LITLEN("\\b")) {
-	err(108, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(109, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(109, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(110, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -474,13 +482,13 @@ jencchk(void)
     indx = 0x09;
     encstr = "\\t";
     if (jenc[indx].len != LITLEN("\\b")) {
-	err(110, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(111, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(111, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(112, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -490,13 +498,13 @@ jencchk(void)
     indx = 0x0a;
     encstr = "\\n";
     if (jenc[indx].len != strlen(encstr)) {
-	err(112, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(113, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(113, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(114, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -506,13 +514,13 @@ jencchk(void)
     indx = 0x0b;
     encstr = "\\u000b";
     if (jenc[indx].len != strlen(encstr)) {
-	err(114, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(115, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(115, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(116, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -522,13 +530,13 @@ jencchk(void)
     indx = 0x0c;
     encstr = "\\f";
     if (jenc[indx].len != strlen(encstr)) {
-	err(116, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(117, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(117, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(118, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -538,13 +546,13 @@ jencchk(void)
     indx = 0x0d;
     encstr = "\\r";
     if (jenc[indx].len != strlen(encstr)) {
-	err(118, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(119, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(119, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(120, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -553,18 +561,18 @@ jencchk(void)
      */
     for (i=0x0e; i <= 0x1f; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(120, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	    err(121, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			       i, (uintmax_t)strlen(jenc[i].enc),
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(121, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
+	    err(122, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(122, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
+	    err(123, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}
     }
@@ -574,12 +582,12 @@ jencchk(void)
      */
     for (i=0x20; i <= 0x21; ++i) {
 	if (jenc[i].len != 1) {
-	    err(123, __func__, "jenc[0x%02x].enc length: %ju != %d",
+	    err(124, __func__, "jenc[0x%02x].enc length: %ju != %d",
 			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
-	    err(124, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
+	    err(125, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -590,13 +598,13 @@ jencchk(void)
     indx = 0x22;
     encstr = "\\\"";
     if (jenc[indx].len != strlen(encstr)) {
-	err(125, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(126, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(126, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(128, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -605,12 +613,12 @@ jencchk(void)
      */
     for (i=0x23; i <= 0x5b; ++i) {
 	if (jenc[i].len != 1) {
-	    err(128, __func__, "jenc[0x%02x].enc length: %ju != %d",
+	    err(129, __func__, "jenc[0x%02x].enc length: %ju != %d",
 			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
-	    err(129, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
+	    err(130, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -621,13 +629,13 @@ jencchk(void)
     indx = 0x5c;
     encstr = "\\\\";
     if (jenc[indx].len != strlen(encstr)) {
-	err(130, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	err(131, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			   indx, (uintmax_t)strlen(jenc[indx].enc),
 			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
-	err(131, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
+	err(132, __func__, "jenc[0x%02x].enc: <%s> != <%s>", indx, jenc[indx].enc, encstr);
 	not_reached();
     }
 
@@ -636,12 +644,12 @@ jencchk(void)
      */
     for (i=0x5d; i <= 0x7e; ++i) {
 	if (jenc[i].len != 1) {
-	    err(132, __func__, "jenc[0x%02x].enc length: %ju != %d",
+	    err(133, __func__, "jenc[0x%02x].enc length: %ju != %d",
 			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
-	    err(133, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
+	    err(134, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -651,18 +659,18 @@ jencchk(void)
      */
     for (i=0x7f; i <= 0x7f; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(134, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+	    err(135, __func__, "jenc[0x%02x].enc length: %ju != %ju",
 			       i, (uintmax_t)strlen(jenc[i].enc),
 			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(135, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
+	    err(136, __func__, "jenc[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, jenc[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(136, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
+	    err(137, __func__, "jenc[0x%02x].enc: <%s> != <\\u%04x> form", i, jenc[i].enc, i);
 	    not_reached();
 	}
     }
@@ -672,17 +680,17 @@ jencchk(void)
      */
     for (i=0x80; i <= 0xff; ++i) {
 	if (jenc[i].len != 1) {
-	    err(137, __func__, "jenc[0x%02x].enc length: %ju != %d",
+	    err(138, __func__, "jenc[0x%02x].enc length: %ju != %d",
 			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((uint8_t)(jenc[i].enc[0]) != i) {
-	    err(138, __func__, "jenc[0x%02x].enc[0]: 0x%02x is not 0x%02jx",
+	    err(139, __func__, "jenc[0x%02x].enc[0]: 0x%02x is not 0x%02jx",
 			       i, (uint8_t)(jenc[i].enc[0]) & 0xff, (uintmax_t)i);
 	    not_reached();
 	}
 	if ((uint8_t)(jenc[i].enc[1]) != 0) {
-	    err(139, __func__, "jenc[0x%02x].enc[1]: 0x%02x is not 0",
+	    err(140, __func__, "jenc[0x%02x].enc[1]: 0x%02x is not 0",
 			       i, (uint8_t)(jenc[i].enc[1]) & 0xff);
 	    not_reached();
 	}
@@ -695,16 +703,16 @@ jencchk(void)
     memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final '\0' */
     mstr = json_encode(str, 1,  &mlen, false);
     if (mstr == NULL) {
-	err(140, __func__, "json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
+	err(141, __func__, "json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
 	not_reached();
     }
     if (mlen != jenc[0].len) {
-	err(141, __func__, "json_encode(0x00, 1, *mlen: %ju != %ju)",
+	err(142, __func__, "json_encode(0x00, 1, *mlen: %ju != %ju)",
 			   (uintmax_t)mlen, (uintmax_t)(jenc[0].len));
 	not_reached();
     }
     if (strcmp(jenc[0].enc, mstr) != 0) {
-	err(142, __func__, "json_encode(0x00, 1, *mlen: %ju) != <%s>",
+	err(143, __func__, "json_encode(0x00, 1, *mlen: %ju) != <%s>",
 			   (uintmax_t)mlen, jenc[0].enc);
 	not_reached();
     }
@@ -729,17 +737,17 @@ jencchk(void)
 	mstr = json_encode_str(str, &mlen, false);
 	/* check encoding result */
 	if (mstr == NULL) {
-	    err(143, __func__, "json_encode_str(0x%02x, *mlen: %ju) == NULL",
+	    err(144, __func__, "json_encode_str(0x%02x, *mlen: %ju) == NULL",
 			       i, (uintmax_t)mlen);
 	    not_reached();
 	}
 	if (mlen != jenc[i].len) {
-	    err(144, __func__, "json_encode_str(0x%02x, *mlen %ju != %ju)",
+	    err(145, __func__, "json_encode_str(0x%02x, *mlen %ju != %ju)",
 			       i, (uintmax_t)mlen, (uintmax_t)jenc[i].len);
 	    not_reached();
 	}
 	if (strcmp(jenc[i].enc, mstr) != 0) {
-	    err(145, __func__, "json_encode_str(0x%02x, *mlen: %ju) != <%s>", i,
+	    err(146, __func__, "json_encode_str(0x%02x, *mlen: %ju) != <%s>", i,
 			       (uintmax_t)mlen, jenc[i].enc);
 	    not_reached();
 	}
@@ -752,17 +760,17 @@ jencchk(void)
 	/* test json_decode_str() */
 	mstr2 = json_decode_str(mstr, &mlen2);
 	if (mstr2 == NULL) {
-	    err(146, __func__, "json_decode_str(<%s>, *mlen2: %ju, true) == NULL",
+	    err(147, __func__, "json_decode_str(<%s>, *mlen2: %ju, true) == NULL",
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
 	if (mlen2 != 1) {
-	    err(147, __func__, "json_decode_str(<%s>, *mlen2 %ju != 1, true)",
+	    err(148, __func__, "json_decode_str(<%s>, *mlen2 %ju != 1, true)",
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(148, __func__, "json_decode_str(<%s>, *mlen2: %ju, true): 0x%02x != 0x%02x",
+	    err(149, __func__, "json_decode_str(<%s>, *mlen2: %ju, true): 0x%02x != 0x%02x",
 			       mstr, (uintmax_t)mlen2, (uint8_t)(mstr2[0]) & 0xff, i);
 	    not_reached();
 	}
@@ -1252,7 +1260,7 @@ parse_json_string(char const *string, size_t len)
      * firewall
      */
     if (string == NULL) {
-	err(149, __func__, "passed NULL string");
+	err(150, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -1267,15 +1275,15 @@ parse_json_string(char const *string, size_t len)
     str = json_conv_string(string, len, true);
     /* paranoia - these tests should never result in an error */
     if (str == NULL) {
-        err(150, __func__, "converting JSON string returned NULL: <%s>", string);
+        err(151, __func__, "converting JSON string returned NULL: <%s>", string);
         not_reached();
     } else if (str->type != JTYPE_STRING) {
-        err(151, __func__, "expected JTYPE_STRING, found type: %s", json_item_type_name(str));
+        err(152, __func__, "expected JTYPE_STRING, found type: %s", json_item_type_name(str));
         not_reached();
     }
     item = &(str->item.string);
     if (!VALID_JSON_NODE(item)) {
-	err(152, __func__, "couldn't decode string: <%s>", string);
+	err(153, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     }
     return str;
@@ -1304,17 +1312,17 @@ parse_json_bool(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(153, __func__, "passed NULL string");
+	err(154, __func__, "passed NULL string");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(154, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(155, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(155, __func__, "expected JTYPE_BOOL, found type: %s", json_item_type_name(boolean));
+        err(156, __func__, "expected JTYPE_BOOL, found type: %s", json_item_type_name(boolean));
         not_reached();
     }
     item = &(boolean->item.boolean);
@@ -1329,18 +1337,18 @@ parse_json_bool(char const *string)
 	 * If it's not we abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
-	err(156, __func__, "called on non-boolean string: <%s>", string);
+	err(157, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else if (item->as_str == NULL) {
 	/* extra sanity check - make sure the allocated string != NULL */
-	err(157, __func__, "boolean->as_str == NULL");
+	err(158, __func__, "boolean->as_str == NULL");
 	not_reached();
     } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
 	/*
 	 * extra sanity check - make sure the allocated string is "true"
 	 * or "false"
 	 */
-	err(158, __func__, "boolean->as_str neither \"true\" nor \"false\"");
+	err(159, __func__, "boolean->as_str neither \"true\" nor \"false\"");
 	not_reached();
     } else {
 	/*
@@ -1349,16 +1357,16 @@ parse_json_bool(char const *string)
 	 */
 	char const *str = booltostr(item->value);
 	if (str == NULL) {
-	    err(159, __func__, "could not convert boolean->value back to a string");
+	    err(160, __func__, "could not convert boolean->value back to a string");
 	    not_reached();
 	} else if (strcmp(str, item->as_str)) {
-	    err(160, __func__, "boolean->as_str != item->value as a string");
+	    err(161, __func__, "boolean->as_str != item->value as a string");
 	    not_reached();
 	} else if (strtobool(item->as_str) != item->value) {
-	    err(161, __func__, "mismatch between boolean string and converted value");
+	    err(162, __func__, "mismatch between boolean string and converted value");
 	    not_reached();
 	} else if (strtobool(str) != item->value) {
-	    err(162, __func__, "mismatch between converted string value and converted value");
+	    err(163, __func__, "mismatch between converted string value and converted value");
 	    not_reached();
 	}
     }
@@ -1389,7 +1397,7 @@ parse_json_null(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(163, __func__, "passed NULL string");
+	err(164, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -1399,16 +1407,16 @@ parse_json_null(char const *string)
     null = json_conv_null_str(string, NULL);
     if (null == NULL) {
 	/* ironically null is NULL and it actually should not be :-) */
-	err(164, __func__, "null is NULL");
+	err(165, __func__, "null is NULL");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(165, __func__, "expected JTYPE_NULL, found type: %s", json_item_type_name(null));
+        err(166, __func__, "expected JTYPE_NULL, found type: %s", json_item_type_name(null));
         not_reached();
     }
     item = &(null->item.null);
     if (!VALID_JSON_NODE(item)) {
 	/* why is it an error if we can't convert nothing ? :-) */
-	err(166,__func__, "couldn't convert null: <%s>", string);
+	err(167,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
     }
 
@@ -1438,7 +1446,7 @@ parse_json_number(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(167, __func__, "passed NULL string");
+	err(168, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -1448,15 +1456,15 @@ parse_json_number(char const *string)
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(168, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(169, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(169, __func__, "expected JTYPE_NUMBER, found type: %s", json_item_type_name(number));
+        err(170, __func__, "expected JTYPE_NUMBER, found type: %s", json_item_type_name(number));
         not_reached();
     }
     item = &(number->item.number);
     if (!VALID_JSON_NODE(item)) {
-	err(170, __func__, "couldn't convert number string: <%s>", string);
+	err(171, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     }
     return number;
@@ -1489,11 +1497,11 @@ parse_json_array(struct json *elements)
      * firewall
      */
     if (elements == NULL) {
-	err(171, __func__, "passed NULL elements value");
+	err(172, __func__, "passed NULL elements value");
 	not_reached();
     }
     if (elements->type != JTYPE_ELEMENTS) {
-	err(172, __func__, "expected type JTYPE_ELEMENTS: found: %s (%d)",
+	err(173, __func__, "expected type JTYPE_ELEMENTS: found: %s (%d)",
 			   json_item_type_name(elements), elements->type);
 	not_reached();
     }
@@ -1507,7 +1515,7 @@ parse_json_array(struct json *elements)
     /* paranoia - these tests should never result in an error */
     item = &(elements->item.array);
     if (!VALID_JSON_NODE(item)) {
-	err(173, __func__, "couldn't convert array");
+	err(174, __func__, "couldn't convert array");
 	not_reached();
     }
     return elements;
@@ -1537,14 +1545,14 @@ parse_json_member(struct json *name, struct json *value)
      * firewall
      */
     if (name == NULL) {
-	err(174, __func__, "passed NULL name value");
+	err(175, __func__, "passed NULL name value");
 	not_reached();
     } else if (value == NULL) {
-	err(175, __func__, "passed NULL value");
+	err(176, __func__, "passed NULL value");
 	not_reached();
     }
     if (name->type != JTYPE_STRING) {
-	err(176, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_item_type_name(name), name->type);
+	err(177, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_item_type_name(name), name->type);
 	not_reached();
     }
 
@@ -1554,15 +1562,15 @@ parse_json_member(struct json *name, struct json *value)
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(177, __func__, "converting JSON member returned NULL");
+	err(178, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(178, __func__, "expected JTYPE_MEMBER, found type: %s", json_item_type_name(member));
+        err(179, __func__, "expected JTYPE_MEMBER, found type: %s", json_item_type_name(member));
         not_reached();
     }
     item = &(member->item.member);
     if (!VALID_JSON_NODE(item)) {
-	err(179, __func__, "couldn't convert member");
+	err(180, __func__, "couldn't convert member");
 	not_reached();
     }
     return member;
@@ -1611,7 +1619,7 @@ json_alloc(enum item_type type)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(180, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(181, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2439,7 +2447,7 @@ json_conv_number(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NUMBER);
     if (ret == NULL) {
-	errp(181, __func__, "json_alloc(JTYPE_NUMBER) returned NULL");
+	errp(182, __func__, "json_alloc(JTYPE_NUMBER) returned NULL");
 	not_reached();
     }
 
@@ -2509,7 +2517,7 @@ json_conv_number(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(182, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(183, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2676,7 +2684,7 @@ json_conv_number_str(char const *str, size_t *retlen)
      */
     ret = json_conv_number(str, len);
     if (ret == NULL) {
-	err(183, __func__, "json_conv_number() returned NULL");
+	err(184, __func__, "json_conv_number() returned NULL");
 	not_reached();
     }
 
@@ -2729,7 +2737,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      */
     ret = json_alloc(JTYPE_STRING);
     if (ret == NULL) {
-	errp(184, __func__, "json_alloc(JTYPE_STRING) returned NULL");
+	errp(185, __func__, "json_alloc(JTYPE_STRING) returned NULL");
 	not_reached();
     }
 
@@ -2793,7 +2801,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(185, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(186, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2878,7 +2886,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(186, __func__, "json_conv_string() returned NULL");
+	err(187, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -2925,7 +2933,7 @@ json_conv_bool(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_BOOL);
     if (ret == NULL) {
-	errp(187, __func__, "json_alloc(JTYPE_BOOL) returned NULL");
+	errp(188, __func__, "json_alloc(JTYPE_BOOL) returned NULL");
 	not_reached();
     }
 
@@ -2960,7 +2968,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(188, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(189, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3034,7 +3042,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(189, __func__, "json_conv_bool(%s, %jd) returned NULL", str, (uintmax_t)len);
+	err(190, __func__, "json_conv_bool(%s, %jd) returned NULL", str, (uintmax_t)len);
 	not_reached();
     }
 
@@ -3080,7 +3088,7 @@ json_conv_null(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NULL);
     if (ret == NULL) {
-	errp(190, __func__, "json_alloc(JTYPE_NULL) returned NULL");
+	errp(191, __func__, "json_alloc(JTYPE_NULL) returned NULL");
 	not_reached();
     }
 
@@ -3115,7 +3123,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(191, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(192, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3185,7 +3193,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(192, __func__, "json_conv_null() returned NULL");
+	err(193, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -3245,7 +3253,7 @@ json_conv_member(struct json *name, struct json *value)
      */
     ret = json_alloc(JTYPE_MEMBER);
     if (ret == NULL) {
-	errp(193, __func__, "json_alloc(JTYPE_MEMBER) returned NULL");
+	errp(194, __func__, "json_alloc(JTYPE_MEMBER) returned NULL");
 	not_reached();
     }
 
@@ -3318,13 +3326,13 @@ json_conv_member(struct json *name, struct json *value)
     item->name_as_str = item2->as_str;
     /* paranoia */
     if (item->name_as_str == NULL) {
-	err(194, __func__, "item->name_as_str is NULL");
+	err(195, __func__, "item->name_as_str is NULL");
 	not_reached();
     }
     item->name_str = item2->str;
     /* paranoia */
     if (item->name_str == NULL) {
-	err(195, __func__, "item->name_str is NULL");
+	err(196, __func__, "item->name_str is NULL");
 	not_reached();
     }
     item->name_as_str_len = item2->as_str_len;
@@ -3366,7 +3374,7 @@ json_create_object(void)
      */
     ret = json_alloc(JTYPE_OBJECT);
     if (ret == NULL) {
-	errp(196, __func__, "json_alloc(JTYPE_OBJECT) returned NULL");
+	errp(197, __func__, "json_alloc(JTYPE_OBJECT) returned NULL");
 	not_reached();
     }
 
@@ -3385,7 +3393,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(197, __func__, "dyn_array_create() returned NULL");
+	errp(198, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3439,20 +3447,20 @@ json_object_add_member(struct json *node, struct json *member)
      * firewall
      */
     if (node == NULL) {
-	err(198, __func__, "node is NULL");
+	err(199, __func__, "node is NULL");
 	not_reached();
     }
     if (member == NULL) {
-	err(199, __func__, "member is NULL");
+	err(200, __func__, "member is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_OBJECT) {
-	err(200, __func__, "object node type expected to be JTYPE_OBJECT: %d found type: %d",
+	err(201, __func__, "object node type expected to be JTYPE_OBJECT: %d found type: %d",
 		           JTYPE_OBJECT, node->type);
 	not_reached();
     }
     if (member->type != JTYPE_MEMBER) {
-	err(201, __func__, "object member type expected to be JTYPE_MEMBER: %d found type: %d",
+	err(202, __func__, "object member type expected to be JTYPE_MEMBER: %d found type: %d",
 		           JTYPE_MEMBER, node->type);
 	not_reached();
     }
@@ -3462,7 +3470,7 @@ json_object_add_member(struct json *node, struct json *member)
      */
     item = &(node->item.object);
     if (item->s == NULL) {
-	err(202, __func__, "item->s is NULL");
+	err(203, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -3519,7 +3527,7 @@ json_create_elements(void)
      */
     ret = json_alloc(JTYPE_ELEMENTS);
     if (ret == NULL) {
-	errp(203, __func__, "json_alloc(JTYPE_ELEMENTS) returned NULL");
+	errp(204, __func__, "json_alloc(JTYPE_ELEMENTS) returned NULL");
 	not_reached();
     }
 
@@ -3538,7 +3546,7 @@ json_create_elements(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(204, __func__, "dyn_array_create() returned NULL");
+	errp(205, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3590,15 +3598,15 @@ json_elements_add_value(struct json *node, struct json *value)
      * firewall
      */
     if (node == NULL) {
-	err(205, __func__, "node is NULL");
+	err(206, __func__, "node is NULL");
 	not_reached();
     }
     if (value == NULL) {
-	err(206, __func__, "value is NULL");
+	err(207, __func__, "value is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_ELEMENTS) {
-	err(207, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
+	err(208, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
 			   JTYPE_ELEMENTS, node->type);
 	not_reached();
     }
@@ -3614,11 +3622,11 @@ json_elements_add_value(struct json *node, struct json *value)
 	json_dbg(JSON_DBG_VHIGH, __func__, "JSON item type: %s", json_item_type_name(value));
 	break;
     case JTYPE_ELEMENTS:
-	err(208, __func__, "JSON type %s (type: %d) is invalid here",
+	err(209, __func__, "JSON type %s (type: %d) is invalid here",
 		json_item_type_name(node), JTYPE_ELEMENTS);
 	not_reached();
     default:
-	err(209, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
+	err(210, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
 			   value->type);
 	not_reached();
     }
@@ -3628,7 +3636,7 @@ json_elements_add_value(struct json *node, struct json *value)
      */
     item = &(node->item.elements);
     if (item->s == NULL) {
-	err(210, __func__, "item->s is NULL");
+	err(211, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -3684,7 +3692,7 @@ json_create_array(void)
      */
     ret = json_alloc(JTYPE_ARRAY);
     if (ret == NULL) {
-	errp(211, __func__, "json_alloc(JTYPE_ARRAY) returned NULL");
+	errp(212, __func__, "json_alloc(JTYPE_ARRAY) returned NULL");
 	not_reached();
     }
 
@@ -3703,7 +3711,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(212, __func__, "dyn_array_create() returned NULL");
+	errp(213, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 

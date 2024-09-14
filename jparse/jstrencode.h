@@ -32,6 +32,16 @@
 #endif
 
 /*
+ * dyn_array - dynamic array facility
+ */
+#if defined(INTERNAL_INCLUDE)
+#include "../dyn_array/dyn_array.h"
+#else
+#include <dyn_array.h>
+#endif
+
+
+/*
  * util - common utility functions for the JSON parser
  */
 #include "util.h"
@@ -41,7 +51,15 @@
  */
 #include "json_parse.h"
 
+/*
+ * jstr_util - jstrencode/jstrdecode utilities
+ */
+#include "jstr_util.h"
 
+/*
+ * jparse - JSON parser
+ */
+#include "jparse.h"
 
 /*
  * globals
@@ -51,7 +69,9 @@
 /*
  * forward declarations
  */
-static bool jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote);
+static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_quote);
+static struct jstring *add_encoded_string(char *string, size_t bufsiz);
+static void free_json_encoded_strings(void);
 
 
 #endif /* INCLUDE_JSTRENCODE_H */

@@ -825,8 +825,8 @@ static YY_BUFFER_STATE bs;
  * then column 2, but the extra defence in the way it is done does not hurt
  * anything so we have left it as is. Thus if the token is not a newline and not
  * a tab we check if first_column is 0 or if last_column is 0 and if either one
- * is we explicitly set the respective variable to 1. Otherwise we increment the
- * first_column and last_column.
+ * is 0, we explicitly set the respective variable to 1. Otherwise we increment
+ * the first_column and last_column.
  */
 #define YY_USER_ACTION \
 			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \

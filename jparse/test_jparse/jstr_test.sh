@@ -23,7 +23,7 @@ export JSTRENCODE="./jstrencode"
 export JSTRDECODE="./jstrdecode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
-export JSTR_TEST_VERSION="1.0.2 2024-09-04"
+export JSTR_TEST_VERSION="1.0.3 2024-09-13" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -51,7 +51,7 @@ jstr_test.sh version: $JSTR_TEST_VERSION"
 
 # parse args
 #
-export V_FLAG="0"
+export V_FLAG=0
 while getopts :hVv:e:d:Z: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
@@ -168,11 +168,11 @@ trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
 
 # run the basic encoding test
 #
-echo "$0: about to run test #0"
+echo "$0: about to run test #0" 1>&2
 "$JSTRENCODE" -v "$V_FLAG" -t
 status="$?"
 if [[ $status -eq 0 ]]; then
-    echo "$0: test #0 passed"
+    echo "$0: test #0 passed" 1>&2
 else
     echo "$0: test #0 failed" 1>&2
     EXIT_CODE=4
@@ -189,7 +189,7 @@ echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TES
 # shellcheck disable=SC2094
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
-    echo "$0: test #1 passed"
+    echo "$0: test #1 passed" 1>&2
 else
     echo "$0: test #1 failed" 1>&2
     EXIT_CODE=5
@@ -211,7 +211,7 @@ fi
 
 # test some text holes in the encoding and decoding pipe
 #
-echo "$0: about to run test #3"
+echo "$0: about to run test #3" 1>&2
 export SRC_SET="jparse.c json_parse.c json_parse.h jstrdecode.c jstrencode.c util.h util.c"
 echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # We cannot double-quote $SRC_SET because doing so would make the shell try
@@ -263,12 +263,44 @@ if [[ -z "$ERROR" ]]; then
 	echo "$0: test #3 failed" 1>&2
 	EXIT_CODE=7
     elif cmp -s "$TEST_FILE2" "$TEST_FILE"; then
-	echo "$0: test #3 passed"
+	echo "$0: test #3 passed" 1>&2
     else
 	echo "$0: test #3 failed" 1>&2
 	EXIT_CODE=7
     fi
 fi
+
+echo "$0: about to run test #4" 1>&2
+echo "$JSTRDECODE -Q -n foo bar"
+RESULT="$($JSTRDECODE -Q -n foo bar)"
+if [[ "$RESULT" = '"foobar"' ]]; then
+    echo "$0: test #4 passed" 1>&2
+else
+    echo "$0: test #4 failed" 1>&2
+    EXIT_CODE=8
+fi
+
+echo "$0: about to run test #5" 1>&2
+echo "$JSTRDECODE -Q -e -n foo bar"
+RESULT="$($JSTRDECODE -Q -e -n foo bar)"
+if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
+    echo "$0: test #5 passed" 1>&2
+else
+    echo "$0: test #5 failed" 1>&2
+    EXIT_CODE=9
+fi
+
+echo "$0: about to run test #6" 1>&2
+echo "$JSTRDECODE -e -n foo bar"
+RESULT="$($JSTRDECODE -e -n foo bar)"
+if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
+    echo "$0: test #6 passed" 1>&2
+else
+    echo "$0: test #6 failed" 1>&2
+    EXIT_CODE=9
+fi
+
+
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #

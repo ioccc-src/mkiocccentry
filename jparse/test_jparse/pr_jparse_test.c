@@ -12,29 +12,18 @@
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
- * Copyright (c) 2023 by Landon Curt Noll.  All Rights Reserved.
+ * This JSON parser was co-developed in 2022 by:
  *
- * Permission to use, copy, modify, and distribute this software and
- * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright, this permission notice and text
- * this comment, and the disclaimer below appear in all of the following:
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- *       supporting documentation
- *       source copies
- *       source works derived from this source
- *       binaries derived from this source or from derived source
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * Share and enjoy! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 /* special comments for the seqcexit tool */
@@ -47,12 +36,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "../util.h"
+#include "../jparse.h"
 
 
 /*
  * official pr_jparse_test version
  */
-#define PR_JPARSE_TEST_VERSION "1.0.2 2023-08-01"	/* format: major.minor YYYY-MM-DD */
+#define PR_JPARSE_TEST_VERSION "1.0.3 2024-09-12"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -79,7 +69,8 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "pr_jparse_test version: %s";
+    "pr_jparse_test version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -112,6 +103,29 @@ main(int argc, char *argv[])
     int i;
 
     /*
+     * open a write stream to /dev/null
+     */
+    errno = 0;			/* pre-clear errno */
+    devnull = fopen("/dev/null", "w");
+    if (devnull == NULL) {
+	errp(10, __func__, "FATAL: cannot open /dev/null for writing");
+	not_reached();
+    }
+
+    /*
+     * firewall - paranoia
+     */
+    if (stdout == NULL) {
+	err(11, __func__, "stdout is NULL");
+	not_reached();
+    }
+    if (stderr == NULL) {
+	err(12, __func__, "stderr is NULL");
+	not_reached();
+    }
+
+
+    /*
      * parse args
      */
     program = argv[0];
@@ -132,7 +146,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", PR_JPARSE_TEST_VERSION);
+	    print("pr_jparse_test version %s\nJSON parser version %s\n", PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -148,29 +162,6 @@ main(int argc, char *argv[])
     arg_count = argc - optind;
     if (arg_count != REQUIRED_ARGS) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
-	not_reached();
-    }
-
-    /*
-     * open a write stream to /dev/null
-     */
-    fdbg(stderr, DBG_LOW, "in %s: about to open /dev/null for writing", __func__);
-    errno = 0;			/* pre-clear errno */
-    devnull = fopen("/dev/null", "w");
-    if (devnull == NULL) {
-	errp(10, __func__, "FATAL: cannot open /dev/null for writing");
-	not_reached();
-    }
-
-    /*
-     * firewall - paranoia
-     */
-    if (stdout == NULL) {
-	err(11, __func__, "stdout is NULL");
-	not_reached();
-    }
-    if (stderr == NULL) {
-	err(12, __func__, "stderr is NULL");
 	not_reached();
     }
 
@@ -217,8 +208,10 @@ main(int argc, char *argv[])
      * exit depending on error count
      */
     if (notatty_test_cnt > 0 || vprint_test_cnt > 0 || pr_jparse_test_cnt > 0) {
+	fdbg(stderr, DBG_LOW, "One or more tests FAILED");
 	exit(1); /*ooo*/
     }
+    fdbg(stderr, DBG_LOW, "All tests PASSED");
     exit(0); /*ooo*/
 }
 
@@ -1060,7 +1053,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
