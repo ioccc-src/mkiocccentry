@@ -69,6 +69,8 @@
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
 #define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
+/* WARNING: the below enums, macros and structs are VERY subject to change, if they are not deleted */
+
 /* comparison enum - for json tools that might wish to compare JSON related values */
 enum JSON_UTIL_CMP_OP
 {
@@ -98,7 +100,7 @@ enum JSON_UTIL_CMP_OP
 
 /* structures */
 
-/* structures this may be useful for json tools that need to compare JSON related values */
+/* structures: this may be useful for json tools that need to compare JSON related values */
 
 struct json_util_number_range
 {
@@ -119,6 +121,8 @@ struct json_util_number
     /* for number ranges */
     struct json_util_number_range range;	/* for ranges */
 };
+
+/* End WARNING from above */
 
 
 /*
@@ -160,7 +164,9 @@ extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned i
 			   void (*vcallback)(struct json *, unsigned int, va_list), ...);
 extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
+extern bool is_utf8(const char *str);
 
+/* WARNING: the below functions are VERY subject to change, if they are not deleted */
 bool json_util_parse_number_range(const char *option, char *optarg, bool allow_negative, struct json_util_number *number);
 bool json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_util_number *range);
 void json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab);
@@ -176,6 +182,7 @@ bool json_util_match_num(uintmax_t types);
 bool json_util_match_string(uintmax_t types);
 bool json_util_match_null(uintmax_t types);
 bool json_util_match_simple(uintmax_t types);
+/* End WARNING */
 
 
 #endif /* INCLUDE_JSON_UTIL_H */

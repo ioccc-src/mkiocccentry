@@ -528,7 +528,7 @@ check_man: ${ALL_MAN_TARGETS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	-${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
+	${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
 	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
 	    echo 'The ${CHECKNR} command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
@@ -540,6 +540,11 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
