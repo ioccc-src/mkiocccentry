@@ -1,5 +1,32 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.9 2024-09-15
+
+Add helper function `is_utf8()` to determine if a `char *` is a UTF-8 encoded
+string. This code, modified somewhat (including a typo fix and allowing all
+ASCII chars, including control chars, which are allowed), comes from
+<https://stackoverflow.com/a/1031773/9205647>, and we thank the answerer very
+much! This function, we believe, will be of use, in our fixing of a JSON
+decoding bug that is known and being resolved (or is being discussed to be
+resolved), hopefully sooner than later and better soon. Nonetheless this
+function is not yet used so we may discover it is not of use or there is a
+problem that has to be resolved.
+
+Added a warning comment in `json_util.c` to functions (and their respective
+structs, enums and macros in `json_util.h`) that are subject to change: they
+were being used for tools that were in the works (before this was its own repo)
+but were not completed due to illness and then, when well again, other
+priorities taking over (and they themselves have been removed until the 'right
+time').
+
+Fixed `check_man` make rule so that it would fail if `checknr` exits non-zero.
+This helped uncover a problem (though not in display) in` jparse.1`.
+
+Added helper script `test_jparse/is_available.sh` which exits 0 if the arg can
+be found via `type -P`, else 1. This will be used in prep.sh, in a future
+update, to help prevent superfluous bug reports.
+
+
 ## Release 1.0.8 2024-09-14
 
 Rename option `-e` in `jstrdecode(1)` to `-m` with the alias `-e`. Add missing

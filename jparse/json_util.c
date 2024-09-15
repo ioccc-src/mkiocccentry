@@ -2385,6 +2385,119 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, b
 }
 
 /*
+ * is_utf8 	- determine if a string is UTF-8 encoded
+ *
+ *  given:
+ *	str	- a char * that is the string to check
+ *
+ * returns:
+ *	true ==> string is valid UTF-8,
+ *	false ==> string is NOT valid UTF-8.
+ *
+ * NOTE: this code is a modified version of code from this SO answer:
+ * https://stackoverflow.com/a/1031773/9205647. Our modifications include: using
+ * true/false instead of 1/0; the removal of //-style comments from the
+ * function, instead placing it below as a single collective; formatting in the
+ * if/while; braces as well as the '*' in the pointers; a typo fix of 0x7E to
+ * 0x7F (and changing that check to be just <= 0x7F as described below); and
+ * possibly other things. Nonetheless we thank the answerer very much!
+ *
+ * NOTE: the regexp comes from
+ * https://www.w3.org/International/questions/qa-forms-utf-8.
+ *
+ * NOTE: according to https://www.fileformat.info/info/unicode/utf8.htm we do
+ * NOT need to include a length to check for the NUL byte as no UTF-8 byte will
+ * be encoded to a NUL byte: it just works.
+ *
+ * NOTE: if str == NULL or empty then we return false, with a warning.
+ *
+ * NOTE: here are details on the checks of the bytes in the function:
+ *
+ *	-   ptr[0] <= 0x7F to allow ASCII characters, including control chars
+ *
+ *	-   0xC2 <= ptr[0] && ptr[0] <= 0xDF) && (0x80 <= ptr[1] && ptr[1] <= 0xBF)
+ *	    for non-overlong 2 bytes.
+ *
+ *	-   ptr[0] == 0xE0 && (0xA0 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] &&
+ *	    ptr[2] <= 0xBF)
+ *	    to exclude overlongs.
+ *
+ *	-   ((0xE1 <= ptr[0] && ptr[0] <= 0xEC) || ptr[0] == 0xEE || ptr[0] == 0xEF) &&
+ *	    (0x80 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)
+ *	    for straight 3-bytes.
+ *
+ *	-   ptr[0] == 0xED && (0x80 <= ptr[1] && ptr[1] <= 0x9F) && (0x80 <= ptr[2] &&
+ *	    ptr[2] <= 0xBF)
+ *	    excludes surrogates.
+ *
+ *	-   ptr[0] == 0xF0 && (0x90 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <=
+ *	    ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)
+ *	    are planes 1 - 3.
+ *
+ *	-   (0xF1 <= ptr[0] && ptr[0] <= 0xF3) && (0x80 <= ptr[1] && ptr[1] <= 0xBF)
+ *	    && (0x80 <= ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)
+ *	    are planes 4-15.
+ *
+ *	-   ptr[0] == 0xF4 && (0x80 <= ptr[1] && ptr[1] <= 0x8F) && (0x80 <= ptr[2] &&
+ *	    ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF) is
+ *	    plane 16.
+ */
+bool
+is_utf8(const char *str)
+{
+    const unsigned char *ptr = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') {
+	warn(__func__, "str is empty");
+	return false;
+    }
+
+    ptr = (const unsigned char *)str;
+
+    while (*ptr)
+    {
+        if (ptr[0] <= 0x7F) {
+            ptr += 1;
+            continue;
+        }
+
+        if (((0xC2 <= ptr[0] && ptr[0] <= 0xDF) && (0x80 <= ptr[1] && ptr[1] <= 0xBF))) {
+            ptr += 2;
+            continue;
+        }
+
+        if ((ptr[0] == 0xE0 && (0xA0 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)) ||
+		(((0xE1 <= ptr[0] && ptr[0] <= 0xEC) || ptr[0] == 0xEE || ptr[0] == 0xEF) && (0x80 <= ptr[1] &&
+		ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)) || (ptr[0] == 0xED && (0x80 <= ptr[1] &&
+		ptr[1] <= 0x9F) && (0x80 <= ptr[2] && ptr[2] <= 0xBF))) {
+
+	    ptr += 3;
+            continue;
+        }
+
+        if ((ptr[0] == 0xF0 && (0x90 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) &&
+		(0x80 <= ptr[3] && ptr[3] <= 0xBF)) || ((0xF1 <= ptr[0] && ptr[0] <= 0xF3) && (0x80 <= ptr[1] &&
+		ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)) ||
+		(ptr[0] == 0xF4 && (0x80 <= ptr[1] && ptr[1] <= 0x8F) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) &&
+                (0x80 <= ptr[3] && ptr[3] <= 0xBF))) {
+
+            ptr += 4;
+            continue;
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+/*
  * json_util_parse_number_range	- parse a number ranges
  *
  * This may be useful for json tools that need to compare JSON related values.
@@ -2413,6 +2526,8 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, b
  * for more details.
  *
  * NOTE: this function does not return on syntax error or NULL number.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_parse_number_range(const char *option, char *optarg, bool allow_negative, struct json_util_number *number)
@@ -2525,6 +2640,8 @@ json_util_parse_number_range(const char *option, char *optarg, bool allow_negati
  * Returns true if the number is in range.
  *
  * NOTE: if range is NULL it will return false.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_util_number *range)
@@ -2599,6 +2716,8 @@ json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_u
  * NOTE: syntax errors are an error just like it was when it was in main().
  *
  * NOTE: this function does not return on NULL pointers.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 void
 json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool *print_level_tab)
@@ -2659,6 +2778,8 @@ json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool 
  *
  * NOTE: if optarg is NULL (which should never happen) or empty it returns the
  * default, JSON_UTIL_MATCH_TYPE_SIMPLE (as if '-t simple').
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 uintmax_t
 json_util_parse_match_types(char *optarg)
@@ -2719,6 +2840,8 @@ json_util_parse_match_types(char *optarg)
  *	types	- types set
  *
  * Returns true if types == 0.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_none(uintmax_t types)
@@ -2745,6 +2868,8 @@ json_util_match_none(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_int(uintmax_t types)
@@ -2770,6 +2895,8 @@ json_util_match_int(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_float(uintmax_t types)
@@ -2795,6 +2922,8 @@ json_util_match_float(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_exp(uintmax_t types)
@@ -2820,6 +2949,8 @@ json_util_match_exp(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_num(uintmax_t types)
@@ -2846,6 +2977,8 @@ json_util_match_num(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_bool(uintmax_t types)
@@ -2871,6 +3004,8 @@ json_util_match_bool(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_string(uintmax_t types)
@@ -2896,6 +3031,8 @@ json_util_match_string(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_null(uintmax_t types)
@@ -2923,11 +3060,11 @@ json_util_match_null(uintmax_t types)
  *	if ((test && !expected) || (expected && !test))
  *
  * but this seems like needless complications.
+ *
+ * WARNING: this function is VERY subject to change, if it is not deleted!
  */
 bool
 json_util_match_simple(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_SIMPLE) != 0;
 }
-
-
