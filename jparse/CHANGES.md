@@ -1,5 +1,12 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.8 2024-09-14
+
+Rename option `-e` in `jstrdecode(1)` to `-m` with the alias `-e`. Add missing
+`dbg()` call in `jstrdecode(1)` for `-m`/`-e` option. Updated version to `"1.0.3
+2024-09-14"`.
+
+
 ## Release 1.0.7 2024-09-13
 
 Extend `jstr_test.sh` to test that the `jstrdecode(1)` options `-Q` and `-e`

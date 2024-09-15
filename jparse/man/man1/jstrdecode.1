@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "13 September 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "14 September 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
 \- decode JSON encoded strings
@@ -23,6 +23,7 @@
 .RB [\| \-t \|]
 .RB [\| \-n \|]
 .RB [\| \-Q \|]
+.RB [\| \-m \|]
 .RB [\| \-e \|]
 .RI [\| string
 .IR ... \|]
@@ -38,12 +39,16 @@ If given the
 .B \-Q
 option it will enclose the output in quotes.
 If given the
-.B \-e
-option it will surround each decoded arg with escape (backslash) quotes.
+.B \-m
+(aliased as
+.BR \-e )
+option it will surround each decoded arg with escaped (backslash) quotes.
 The use of
 .B \-Q
 and
-.B \-e
+.B \-m
+(or its alias
+.BR \-e )
 together will surround the entire output with unescaped quotes and each decoded arg's output will be surrounded with escaped (backslashed) quotes.
 .SH OPTIONS
 .TP
@@ -70,8 +75,12 @@ Do not output a newline after the decode function.
 .B \-Q
 Enclose output in double quotes.
 .TP
-.B \-e
+.B \-m
 Surround each decoded arg with escaped quotes.
+.TP
+.B \-e
+Alias for
+.BR \-m .
 .SH EXIT STATUS
 .TP
 0
@@ -93,9 +102,11 @@ command line error
 internal error
 .SH BUGS
 .PP
-A known problem with macOS Terminal is that one has to hit ctrl\-d twice in order for it to properly send
+A known problem, at least with some terminal applications, is that one has to hit ctrl\-d (or whatever one has
 .B EOF
-but this occurs in other applications as well so we note this issue here.
+configured as) twice in order for it to properly send
+.B EOF
+(this occurs in other applications as well so it seems to be a terminal problem).
 .PP
 If you have an issue with the tool you can report it at
 .br
