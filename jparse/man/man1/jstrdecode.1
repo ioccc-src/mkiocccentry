@@ -23,7 +23,6 @@
 .RB [\| \-t \|]
 .RB [\| \-n \|]
 .RB [\| \-Q \|]
-.RB [\| \-m \|]
 .RB [\| \-e \|]
 .RI [\| string
 .IR ... \|]
@@ -46,41 +45,35 @@ option it will surround each decoded arg with escaped (backslash) quotes.
 The use of
 .B \-Q
 and
-.B \-m
-(or its alias
-.BR \-e )
+.B \-e
 together will surround the entire output with unescaped quotes and each decoded arg's output will be surrounded with escaped (backslashed) quotes.
 .SH OPTIONS
 .TP
 .B \-h
-Show help and exit.
+Show help and exit
 .TP
 .BI \-v\  level
 Set verbosity level to
 .IR level
-(def: 0).
+(def: 0)
 .TP
 .B \-q
-Suppresses some of the output (def: not quiet).
+Suppresses some of the output (def: not quiet)
 .TP
 .B \-V
-Show version and exit.
+Show version and exit
 .TP
 .B \-t
-Run tests on the JSON decode/encode functions.
+Run tests on the JSON decode/encode functions
 .TP
 .B \-n
-Do not output a newline after the decode function.
+Do not output a newline after the decode function
 .TP
 .B \-Q
-Enclose output in double quotes.
-.TP
-.B \-m
-Surround each decoded arg with escaped quotes.
+Enclose output in double quotes
 .TP
 .B \-e
-Alias for
-.BR \-m .
+Surround each decoded arg with escaped double quotes
 .SH EXIT STATUS
 .TP
 0

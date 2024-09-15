@@ -62,18 +62,9 @@
 #include "jparse.h"
 
 
-
 /*
  * globals
  */
-
-
-/*
- * function prototypes
- */
-static struct jstring *jstrdecode_stream(FILE *in_stream);
-static struct jstring *add_decoded_string(char *string, size_t bufsiz);
-static void free_json_decoded_strings(void);
 
 
 #endif /* INCLUDE_JSTRDECODE_H */

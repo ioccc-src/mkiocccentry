@@ -42,7 +42,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "1.0.3 2024-09-14"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "1.0.4 2024-09-14"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -50,7 +50,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-m] [-e] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -59,8 +59,7 @@ static const char * const usage_msg =
     "\t-t\t\tperform jencchk test on code JSON decode/encode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
-    "\t-m\t\tenclose each decoded string with escaped quotes (def: do not)\n"
-    "\t-e\t\talias for -m\n"
+    "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
@@ -80,11 +79,15 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
+static struct jstring *jstrdecode_stream(FILE *in_stream);
+static struct jstring *add_decoded_string(char *string, size_t bufsiz);
+static void free_json_decoded_strings(void);
 
 /*
  * decoded string list
  */
 static struct jstring *json_decoded_strings = NULL;
+
 
 /*
  * add_decoded_string	- allocate and add a JSON decoded string to the json_decoded_strings list
@@ -147,6 +150,7 @@ add_decoded_string(char *string, size_t bufsiz)
 
     return jstr;
 }
+
 
 /*
  * free_json_decoded_strings	    - free json_decoded_strings list
@@ -274,7 +278,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnQme")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnQe")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -311,7 +315,6 @@ main(int argc, char **argv)
 	case 'Q':
 	    write_quote = true;
 	    break;
-	case 'm':
 	case 'e':
 	    esc_quotes = true;
 	    break;
@@ -344,6 +347,7 @@ main(int argc, char **argv)
 	    input = argv[i];
 
 	    if (!strcmp(input, "-")) {
+
 		/*
 		 * decode stdin
 		 *
@@ -357,13 +361,18 @@ main(int argc, char **argv)
 		    warn(__func__, "failed to decode string from stdin");
 		    success = false;
 		}
+
 	    } else {
+
+		/*
+		 * obtain arg
+		 */
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
 		/*
-		 * decode
+		 * decode arg
 		 */
 		buf = json_decode_str(input, &bufsiz);
 		if (buf == NULL) {
@@ -390,6 +399,7 @@ main(int argc, char **argv)
      * case: process data on stdin
      */
     } else {
+
 	/*
 	 * NOTE: the function jstrdecode_stream() adds the allocated
 	 * struct jstring * to the list of decoded JSON strings

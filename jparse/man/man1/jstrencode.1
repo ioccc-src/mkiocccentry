@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "13 September 2024" "jstrencode" "jparse tools"
+.TH jstrencode 1 "14 September 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -27,7 +27,7 @@
 .IR ... \|]
 .SH DESCRIPTION
 .B jstrencode
-encodes JSON encoded strings given on the command line.
+Concatenate the string arguments and encode the result as if it were a JSON string.
 If given the
 .B \-t
 option it performs a test on the JSON encode and encode functions.
@@ -42,22 +42,25 @@ Show help and exit.
 .BI \-v\  level
 Set verbosity level to
 .I level
-(def: 0).
+(def: 0)
 .TP
 .B \-q
-Suppresses some of the output (def: not quiet).
+Suppresses some of the output (def: not quiet)
 .TP
 .B \-V
 Show version and exit.
 .TP
 .B \-t
-Run tests on the JSON encode/encode functions.
+Run tests on the JSON encode/encode functions
 .TP
 .B \-n
-Do not output a newline after the encode function.
+Do not output a newline after the encode function
 .TP
 .B \-Q
-Do not encode enclosing double quotes (def: encode all bytes),
+Do not encode double quotes that enclose the concatenation of args (def: do encode)
+.TP
+.B \-e
+Do not encode double quotes that enclose each arg (def: do encode)
 .SH EXIT STATUS
 .TP
 0

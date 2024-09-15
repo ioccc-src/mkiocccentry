@@ -42,7 +42,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "1.0.2 2024-09-12"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "1.1 2024-09-14"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -50,7 +50,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -58,9 +58,10 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
-    "\t-Q\t\tdo not encode enclosing double quotes (def: encode all bytes)\n"
+    "\t-Q\t\tdo not encode double quotes that enclose the concatenation of args (def: do encode)\n"
+    "\t-e\t\tdo not encode double quotes that enclose each arg (def: do encode)\n"
     "\n"
-    "\t[string ...]\tencode strings on command line (def: read stdin)\n"
+    "\t[string ...]\tencode the concatenation of string args (def: encode stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "Exit codes:\n"
@@ -78,11 +79,15 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
+static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool skip_first, bool skip_last);
+static struct jstring *add_encoded_string(char *string, size_t bufsiz);
+static void free_json_encoded_strings(void);
 
 /*
  * encoded string list
  */
 static struct jstring *json_encoded_strings = NULL;
+
 
 /*
  * add_encoded_string	- allocate and add a JSON encoded string to the json_encoded_strings list
@@ -112,6 +117,10 @@ add_encoded_string(char *string, size_t bufsiz)
 	not_reached();
     }
 
+
+    /*
+     * allocate a struct jstring * for list
+     */
     jstr = alloc_jstr(string, bufsiz);
     if (jstr == NULL) {
 	warn(__func__, "failed to allocate struct jstring * for list");
@@ -175,9 +184,13 @@ free_json_encoded_strings(void)
  *
  * given:
  *	in_stream	open file stream to encode
- *	skip_quote	ignore any double quotes if they are both
- *                      at the start and end of the memory block
- *			false ==> process all bytes in the block
+ *	skip_enclosing	ignore enclosing double quotes,
+ *			    false ==> process all bytes in the block
+ *	skip_first	skip any leading double quote
+ *			    false ==> do not skip
+ *	skip_last	skip any final double quote
+ *			    false ==> do not skip
+ *
  * returns:
  *	allocated struct jstring * ==> encoding was successful,
  *	NULL ==> error in encoding, or NULL stream, or read error
@@ -186,9 +199,10 @@ free_json_encoded_strings(void)
  * encoded JSON strings.
  */
 static struct jstring *
-jstrencode_stream(FILE *in_stream, bool skip_quote)
+jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool skip_first, bool skip_last)
 {
-    char *input = NULL;		/* argument to process */
+    char *orig_input = NULL;	/* argument to process */
+    char *input = NULL;		/* possibly updated orig_input */
     size_t inputlen;		/* length of input buffer */
     char *buf = NULL;		/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
@@ -205,18 +219,42 @@ jstrencode_stream(FILE *in_stream, bool skip_quote)
     /*
      * read all of the input stream
      */
-    dbg(DBG_LOW, "about to encode all data on input stream");
-    input = read_all(in_stream, &inputlen);
-    if (input == NULL) {
+    dbg(DBG_LOW, "about to encode data on input stream");
+    orig_input = read_all(in_stream, &inputlen);
+    if (orig_input == NULL) {
 	warn(__func__, "error while reading data from input stream");
 	return NULL;
     }
     dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
+    input = orig_input;
+    dbg(DBG_HIGH, "stream data is: <%s>", input);
+
+    /*
+     * skip, if needed, a leading double quote
+     */
+    if (skip_first == true && inputlen > 0 && input[0] == '"') {
+	dbg(DBG_HIGH, "skipping leading double quote from stream");
+	++input;
+	--inputlen;
+	dbg(DBG_VHIGH, "stream read length is now: %ju", (uintmax_t)inputlen);
+	dbg(DBG_VHIGH, "stream data is now: <%s>", input);
+    }
+
+    /*
+     * skip, if needed, a trailing double quote
+     */
+    if (skip_last == true && inputlen > 0 && input[inputlen-1] == '"') {
+	dbg(DBG_HIGH, "skipping trailing double quote from stream");
+	input[inputlen-1] = '\0';
+	--inputlen;
+	dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
+    }
 
     /*
      * encode data read from input stream
      */
-    buf = json_encode(input, inputlen, &bufsiz, skip_quote);
+    buf = json_encode(input, inputlen, &bufsiz, skip_enclosing);
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {
@@ -231,9 +269,10 @@ jstrencode_stream(FILE *in_stream, bool skip_quote)
     /*
      * free input
      */
-    if (input != NULL) {
-	free(input);
-	input = NULL;
+    if (orig_input != NULL) {
+	free(orig_input);
+	orig_input = NULL;
+	input = NULL; /* paranoia */
     }
 
     jstr = add_encoded_string(buf, bufsiz);
@@ -262,7 +301,8 @@ main(int argc, char **argv)
     size_t outputlen;		/* length of write of encode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON encode */
-    bool skip_quote = false;	/* true ==> skip enclosing quotes */
+    bool skip_concat_quotes = false;	/* true ==> skip enclosing quotes around the arg concatenation */
+    bool skip_each = false;	/* true ==> skip enclosing quotes around each arg */
     int ret;			/* libc return code */
     int i;
     struct jstring *jstr = NULL;    /* to iterate through list */
@@ -272,7 +312,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnQ")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnQe")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -307,7 +347,10 @@ main(int argc, char **argv)
 	    nloutput = false;
 	    break;
 	case 'Q':
-	    skip_quote = true;
+	    skip_concat_quotes = true;
+	    break;
+	case 'e':
+	    skip_each = true;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -318,7 +361,8 @@ main(int argc, char **argv)
 	    break;
 	}
     }
-    dbg(DBG_LOW, "skip quotes: %s", booltostr(skip_quote));
+    dbg(DBG_LOW, "-Q: skip double quotes that enclose the arg concatenation: %s", booltostr(skip_concat_quotes));
+    dbg(DBG_LOW, "-e: skip double quotes that enclose each arg: %s", booltostr(skip_each));
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
 
@@ -338,29 +382,61 @@ main(int argc, char **argv)
 	     */
 	    input = argv[i];
 	    if (!strcmp(input, "-")) {
-		/* encode stdin */
+
+		/*
+		 * encode stdin
+		 */
 		dbg(DBG_LOW, "encoding from stdin");
 
 		/*
 		 * NOTE: the function jstrencode_stream() adds the allocated
 		 * struct jstring * to the list of encoded JSON strings
 		 */
-		jstr = jstrencode_stream(stdin, skip_quote);
+		jstr = jstrencode_stream(stdin, skip_each,
+					 (skip_concat_quotes && i == optind),
+					 (skip_concat_quotes && i == argc-1));
 		if (!jstr) {
 		    warn(__func__, "failed to encode string from stdin");
 		    success = false;
 		} else {
 		    dbg(DBG_LOW, "encoded buf size: %ju", (uintmax_t)jstr->bufsiz);
 		}
+
 	    } else {
+
+		/*
+		 * obtain arg
+		 */
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
 		/*
-		 * encode
+		 * skip, if needed, a leading double quote if -Q and this is the 1st arg
 		 */
-		buf = json_encode_str(input, &bufsiz, skip_quote);
+		if (skip_concat_quotes && i == optind && inputlen > 0 && input[0] == '"') {
+		    dbg(DBG_HIGH, "skipping leading double quote from arg[%d]", i-optind);
+		    ++input;
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		}
+
+		/*
+		 * slip, if needed, a trailing double quote if -Q and this is the last arg
+		 */
+		if (skip_concat_quotes && i == argc-1 && inputlen > 0 && input[inputlen-1] == '"') {
+		    dbg(DBG_HIGH, "skipping trailing double quote from arg[%d]", i-optind);
+		    input[inputlen-1] = '\0';
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "length changed to: %ju", (uintmax_t)inputlen);
+		}
+
+		/*
+		 * encode arg
+		 */
+		buf = json_encode_str(input, &bufsiz, skip_each);
 		if (buf == NULL) {
 		    warn(__func__, "error while encoding processing arg: %d", i-optind);
 		    success = false;
@@ -380,10 +456,12 @@ main(int argc, char **argv)
 		}
 	    }
 	}
+
     /*
      * case: process data on stdin
      */
     } else {
+
 	/*
 	 * read all of stdin
 	 */
@@ -392,14 +470,14 @@ main(int argc, char **argv)
 	 * NOTE: jstrencode_stream() adds the allocated struct jstring * to the
 	 * encoded JSON strings list
 	 */
-	jstr = jstrencode_stream(stdin, skip_quote);
+	jstr = jstrencode_stream(stdin, skip_concat_quotes, skip_each, skip_each);
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "encode length: %ju", jstr->bufsiz);
 	} else {
-		warn(__func__, "error while encoding processing stdin");
-		success = false;
-	    }
+	    warn(__func__, "error while encoding processing stdin");
+	    success = false;
 	}
+    }
 
     /*
      * now write each processed arg to stdout

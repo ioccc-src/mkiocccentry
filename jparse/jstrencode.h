@@ -66,12 +66,4 @@
  */
 
 
-/*
- * forward declarations
- */
-static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_quote);
-static struct jstring *add_encoded_string(char *string, size_t bufsiz);
-static void free_json_encoded_strings(void);
-
-
 #endif /* INCLUDE_JSTRENCODE_H */
