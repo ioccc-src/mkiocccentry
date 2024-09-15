@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.17 2024-09-15
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). Added
+function to check a string for UTF-8. Fixed make `check_man`.
+
+Added script `soup/is_available.sh`: it takes a single arg and if it can find a
+program by that name (as in by `type -P`) it will return 0; otherwise it returns
+1.
+
 ## Release 1.5.16 2024-09-13
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/).
