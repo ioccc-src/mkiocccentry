@@ -42,7 +42,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "1.1 2024-09-14"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "1.1.1 2024-09-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -59,7 +59,7 @@ static const char * const usage_msg =
     "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
     "\t-Q\t\tdo not encode double quotes that enclose the concatenation of args (def: do encode)\n"
-    "\t-e\t\tdo not encode double quotes that enclose each arg (def: do encode)\n"
+    "\t-e\t\tdo not output double quotes that enclose each arg (def: do not remove)\n"
     "\n"
     "\t[string ...]\tencode the concatenation of string args (def: encode stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
@@ -79,7 +79,7 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool skip_first, bool skip_last);
+static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last);
 static struct jstring *add_encoded_string(char *string, size_t bufsiz);
 static void free_json_encoded_strings(void);
 
@@ -184,12 +184,12 @@ free_json_encoded_strings(void)
  *
  * given:
  *	in_stream	open file stream to encode
- *	skip_enclosing	ignore enclosing double quotes,
+ *	skip_enclosing	skip enclosing double quotes,
  *			    false ==> process all bytes in the block
- *	skip_first	skip any leading double quote
- *			    false ==> do not skip
- *	skip_last	skip any final double quote
- *			    false ==> do not skip
+ *	ignore_first	remove any leading double quote
+ *			    false ==> do not remove
+ *	remove_last	remove any final double quote
+ *			    false ==> do not remove
  *
  * returns:
  *	allocated struct jstring * ==> encoding was successful,
@@ -199,7 +199,7 @@ free_json_encoded_strings(void)
  * encoded JSON strings.
  */
 static struct jstring *
-jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool skip_first, bool skip_last)
+jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last)
 {
     char *orig_input = NULL;	/* argument to process */
     char *input = NULL;		/* possibly updated orig_input */
@@ -230,25 +230,55 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool skip_first, bool sk
     dbg(DBG_HIGH, "stream data is: <%s>", input);
 
     /*
-     * skip, if needed, a leading double quote
+     * case: we need to remove BOTH a leading and a trailing double quote
      */
-    if (skip_first == true && inputlen > 0 && input[0] == '"') {
-	dbg(DBG_HIGH, "skipping leading double quote from stream");
-	++input;
-	--inputlen;
-	dbg(DBG_VHIGH, "stream read length is now: %ju", (uintmax_t)inputlen);
-	dbg(DBG_VHIGH, "stream data is now: <%s>", input);
-    }
+    if (ignore_first == true && remove_last == true && inputlen > 1 &&
+	input[0] == '"' && input[inputlen-1] == '"') {
 
-    /*
-     * skip, if needed, a trailing double quote
-     */
-    if (skip_last == true && inputlen > 0 && input[inputlen-1] == '"') {
-	dbg(DBG_HIGH, "skipping trailing double quote from stream");
+	/*
+	 * remove both the leading and a trailing double quotes
+	 */
+	dbg(DBG_HIGH, "removing leading and trailing double quotes from stream");
 	input[inputlen-1] = '\0';
+	--inputlen;
+	++input;
 	--inputlen;
 	dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
 	dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
+
+    /*
+     * case: we might need to remove either the leading or trailing double quotes, but not both
+     */
+    } else {
+
+	/*
+	 * remove, if needed, a leading double quote
+	 */
+	if (ignore_first == true && inputlen > 0 && input[0] == '"') {
+
+	    /*
+	     * remove leading double quote
+	     */
+	    dbg(DBG_HIGH, "removing leading double quote from stream");
+	    ++input;
+	    --inputlen;
+	    dbg(DBG_VHIGH, "stream read length is now: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream data is now: <%s>", input);
+
+	/*
+	 * remove, if needed, a trailing double quote
+	 */
+	} else if (remove_last == true && inputlen > 0 && input[inputlen-1] == '"') {
+
+	    /*
+	     * remove trailing double quote
+	     */
+	    dbg(DBG_HIGH, "removing trailing double quote from stream");
+	    input[inputlen-1] = '\0';
+	    --inputlen;
+	    dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
+	}
     }
 
     /*
@@ -410,12 +440,40 @@ main(int argc, char **argv)
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
+	    }
+
+	    /*
+	     * case: we need to remove BOTH a leading and a trailing double quote
+	     */
+	    if (skip_concat_quotes == true && i == optind && i == argc-1 && inputlen > 1) {
 
 		/*
-		 * skip, if needed, a leading double quote if -Q and this is the 1st arg
+		 * remove both the leading and a trailing double quotes
 		 */
-		if (skip_concat_quotes && i == optind && inputlen > 0 && input[0] == '"') {
-		    dbg(DBG_HIGH, "skipping leading double quote from arg[%d]", i-optind);
+		if (input[0] == '"' && input[inputlen-1] == '"') {
+		    dbg(DBG_HIGH, "removing leading and trailing double quotes from arg[%d]", i-optind);
+		    input[inputlen-1] = '\0';
+		    --inputlen;
+		    ++input;
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		}
+
+	    /*
+	     * case: we might need to remove either the leading or trailing double quotes, but not both
+	     */
+	    } else {
+
+		/*
+		 * remove, if needed, a leading double quote
+		 */
+		if (skip_concat_quotes == true && i == optind && inputlen > 0 && input[0] == '"') {
+
+		    /*
+		     * remove leading double quote
+		     */
+		    dbg(DBG_HIGH, "removing leading double quote from arg[%d]", i-optind);
 		    ++input;
 		    --inputlen;
 		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
@@ -423,36 +481,40 @@ main(int argc, char **argv)
 		}
 
 		/*
-		 * slip, if needed, a trailing double quote if -Q and this is the last arg
+		 * remove, if needed, a trailing double quote
 		 */
-		if (skip_concat_quotes && i == argc-1 && inputlen > 0 && input[inputlen-1] == '"') {
-		    dbg(DBG_HIGH, "skipping trailing double quote from arg[%d]", i-optind);
+		if (skip_concat_quotes == true && i == argc-1 && inputlen > 0 && input[inputlen-1] == '"') {
+
+		    /*
+		     * remove trailing double quote
+		     */
+		    dbg(DBG_HIGH, "removing trailing double quote from arg[%d]", i-optind);
 		    input[inputlen-1] = '\0';
 		    --inputlen;
 		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "length changed to: %ju", (uintmax_t)inputlen);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
 		}
+	    }
 
-		/*
-		 * encode arg
-		 */
-		buf = json_encode_str(input, &bufsiz, skip_each);
-		if (buf == NULL) {
-		    warn(__func__, "error while encoding processing arg: %d", i-optind);
+	    /*
+	     * encode arg
+	     */
+	    buf = json_encode_str(input, &bufsiz, skip_each);
+	    if (buf == NULL) {
+		warn(__func__, "error while encoding processing arg: %d", i-optind);
+		success = false;
+
+	    /*
+	     * append encoded buffer to encoded JSON strings list
+	     */
+	    } else {
+		dbg(DBG_MED, "encode length: %ju", bufsiz);
+		jstr = add_encoded_string(buf, bufsiz);
+		if (jstr == NULL) {
+		    warn(__func__, "error adding encoded string to list");
 		    success = false;
-
-		/*
-		 * append encoded buffer to encoded JSON strings list
-		 */
 		} else {
-		    dbg(DBG_MED, "encode length: %ju", bufsiz);
-		    jstr = add_encoded_string(buf, bufsiz);
-		    if (jstr == NULL) {
-			warn(__func__, "error adding encoded string to list");
-			success = false;
-		    } else {
-			dbg(DBG_MED, "added string of size %ju to encoded strings list", bufsiz);
-		    }
+		    dbg(DBG_MED, "added string of size %ju to encoded strings list", bufsiz);
 		}
 	    }
 	}
