@@ -75,7 +75,7 @@ static const char * const usage_msg =
     "    4\t\tcommand line error\n"
     "    >=10\tinternal error\n"
     "\n"
-    "jnum_chk version: %s\n"
+    "%s version: %s\n"
     "JSON parser version: %s";
 
 
@@ -131,7 +131,8 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("jnum_chk version %s\nJSON parser version %s\n", JNUM_CHK_VERSION, JSON_PARSER_VERSION);
+	    print("%s version: %s\n", JNUM_CHK_BASENAME, JNUM_CHK_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -790,7 +791,8 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION, JSON_PARSER_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_BASENAME, JNUM_CHK_VERSION,
+	    JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

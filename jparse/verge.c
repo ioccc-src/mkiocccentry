@@ -35,6 +35,7 @@
 #include "verge.h"
 
 
+
 /*
  * definitions
  */
@@ -68,7 +69,8 @@ static const char * const usage_msg =
     "     4   first or second version string is an invalid version\n"
     "  >=10   internal error\n"
     "\n"
-    "verge version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -112,7 +114,8 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", VERGE_VERSION);
+	    print("%s version: %s\n", VERGE_BASENAME, VERGE_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -461,7 +464,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, VERGE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, VERGE_BASENAME, VERGE_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

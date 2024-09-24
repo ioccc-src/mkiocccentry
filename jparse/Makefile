@@ -214,7 +214,7 @@ C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
        jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
-       jstr_util.h
+       jstr_util.h version.h
 
 # source files that do not conform to strict picky standards
 #
@@ -405,7 +405,8 @@ PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 # include files NOT to removed by clobber
 #
 H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
-	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h
+	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
+	       version.h
 
 # what to make by all but NOT to removed by clobber
 #
@@ -487,10 +488,10 @@ json_util.o: json_util.c json_util.h
 jparse.tab.o: jparse.tab.c
 	${CC} ${CFLAGS} jparse.tab.c -c
 
-jparse_main.o: jparse_main.c
+jparse_main.o: jparse_main.c version.h
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse.o: jparse.c jparse.h
+jparse.o: jparse.c jparse.h version.h
 	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o libjparse.a
@@ -500,7 +501,7 @@ jparse: jparse_main.o libjparse.a
 jstr_util.o: jstr_util.c jstr_util.h
 	${CC} ${CFLAGS} jstr_util.c -c
 
-jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h
+jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h version.h
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o libjparse.a jstr_util.o
@@ -509,7 +510,7 @@ jstrencode: jstrencode.o libjparse.a jstr_util.o
 json_utf8.o: json_utf8.c json_utf8.h
 	${CC} ${CFLAGS} json_utf8.c -c
 
-jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h
+jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h version.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o libjparse.a jstr_util.o
@@ -518,7 +519,7 @@ jstrdecode: jstrdecode.o libjparse.a jstr_util.o
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
 
-jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h
+jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h version.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o libjparse.a
@@ -537,7 +538,7 @@ json_sem.o: json_sem.c
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
-jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh verge jparse.tab.ref.c jparse.tab.ref.h
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh verge jparse.tab.ref.c jparse.tab.ref.h version.h
 	${Q} ./run_bison.sh -g ./verge -s sorry.tm.ca.h -b ${BISON_BASENAME} ${BISON_DIRS} \
 	    -p jparse -v ${VERBOSITY} ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
@@ -557,7 +558,7 @@ jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex
 util.o: util.c util.h
 	${CC} ${CFLAGS} util.c -c
 
-verge.o: verge.c verge.h
+verge.o: verge.c verge.h version.h
 	${CC} ${CFLAGS} verge.c -c
 
 verge: verge.o util.o
@@ -1267,16 +1268,20 @@ jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.tab.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.c \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
+    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
+    version.h
 jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.h \
-    jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h json_util.h util.h
+    jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h json_util.h util.h \
+    version.h
 jparse_main.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h jparse_main.c \
-    jparse_main.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
+    jparse_main.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
+    version.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h jsemtblgen.c \
-    jsemtblgen.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
+    jsemtblgen.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
+    version.h
 json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h json_parse.c json_parse.h json_utf8.h \
     json_util.h util.h
@@ -1290,11 +1295,13 @@ jstr_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     json_utf8.h json_util.h jstr_util.c jstr_util.h util.h
 jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h
+    json_utf8.h json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h \
+    version.h
 jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h jstr_util.h jstrencode.c jstrencode.h util.h
+    json_utf8.h json_util.h jstr_util.h jstrencode.c jstrencode.h util.h \
+    version.h
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    util.h verge.c verge.h
+    util.h verge.c verge.h version.h

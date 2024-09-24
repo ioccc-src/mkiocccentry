@@ -51,6 +51,19 @@
  */
 #include "../jparse.h"
 
+/*
+ * version - JSON parser API and tool version
+ */
+#include "../version.h"
+
+
+
+
+/*
+ * jnum_chk tool basename
+ */
+#define JNUM_CHK_BASENAME "jnum_chk"
+
 
 /*
  * globals

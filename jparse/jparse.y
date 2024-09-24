@@ -58,6 +58,12 @@
 #include "jparse.h"
 
 /*
+ * version - JSON parser API and tool version
+ */
+#include "version.h"
+
+
+/*
  * for the re-entrant scanner.
  *
  * NOTE that we cannot include this in jparse.h so we do it here instead.

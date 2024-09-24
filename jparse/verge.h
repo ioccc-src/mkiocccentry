@@ -35,6 +35,16 @@
  * util - common utility functions for the JSON parser
  */
 #include "util.h"
+/*
+ * version - JSON parser API and tool version
+ */
+#include "version.h"
+
+
+/*
+ * verge tool basename
+ */
+#define VERGE_BASENAME "verge"
 
 
 

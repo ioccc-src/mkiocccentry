@@ -72,7 +72,7 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "jstrencode version: %s\n"
+    "%s version: %s\n"
     "JSON parser version: %s";
 
 
@@ -370,7 +370,8 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("jstrencode version %s\nJSON parser version %s\n", JSTRENCODE_VERSION, JSON_PARSER_VERSION);
+	    print("%s version: %s\n", JSTRENCODE_BASENAME, JSTRENCODE_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -632,7 +633,7 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_VERSION, JSON_PARSER_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_BASENAME, JSTRENCODE_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

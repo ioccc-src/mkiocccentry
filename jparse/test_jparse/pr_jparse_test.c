@@ -38,6 +38,12 @@
 #include "../util.h"
 #include "../jparse.h"
 
+/*
+ * pr_jparse_test - test print function call
+ */
+#include "pr_jparse_test.h"
+
+
 
 /*
  * official pr_jparse_test version
@@ -69,7 +75,7 @@ static const char * const usage_msg =
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
-    "pr_jparse_test version: %s\n"
+    "%s version: %s\n"
     "JSON parser version: %s";
 
 
@@ -146,7 +152,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("pr_jparse_test version %s\nJSON parser version %s\n", PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
+	    print("pr_jparse_test version %s\nJSON parser version: %s\n", PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -1053,7 +1059,8 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_BASENAME,
+	    PR_JPARSE_TEST_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

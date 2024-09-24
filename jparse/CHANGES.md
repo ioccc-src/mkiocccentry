@@ -27,6 +27,22 @@ Fix build of libjparse.a - add `json_utf8.o`.
 
 Remove `#line ..` from `json_utf8.h`.
 
+Added `version.h` which has the versions for the repo release, the jparse JSON
+parser and the jparse tool. The other tools have their respective version in
+their source code file. This file was added primarily so that `verge` could
+refer to the JSON parser version. In order to get this to work, the `jparse.y`
+file now has `#include "version.h"`. This means the backup parser source code
+has been rebuilt with `make parser-o`.
+
+The tools now have a `FOO_BASENAME` in their header file which is used in both
+the usage string and the version option.
+
+The file `test_jparse/pr_jparse_test.h` has been added for that tool.
+
+The Makefiles have been updated including new dependencies.
+
+
+
 ## Release 1.0.13 2024-09-23
 
 Rename `jenc` to `byte2asciistr` in `json_parse.c` to avoid confusion about its
@@ -178,7 +194,7 @@ bytes which causes problems for the dynamic array facility, and because for some
 options like `jstrdecode -Q` we have to wait until after everything is
 processed, particularly due to reading from stdin.
 
-The tool `pr_jparse_test` now shows the JSON parser version with `-V` and `-h`
+The tool `pr_jparse_test` now shows the JSON parser version: with `-V` and `-h`
 and `-h` now works (the function checks for `devnull` which is now opened before
 parsing args).
 

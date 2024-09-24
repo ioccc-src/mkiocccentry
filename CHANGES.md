@@ -93,6 +93,23 @@ author.  But in the meantime we still have to resolve the UTF-8 decoding bugs.
 actually be incorrect. A copy of this function has been made in the case it
 actually does prove useful, unlikely as that seems.
 
+- Added `version.h` which has the versions for the repo release, the jparse JSON
+parser and the jparse tool. The other tools have their respective version in
+their source code file. This file was added primarily so that `verge` could
+refer to the JSON parser version. In order to get this to work, the `jparse.y`
+file now has `#include "version.h"`. This means the backup parser source code
+has been rebuilt with `make parser-o`.
+
+- The tools now have a `FOO_BASENAME` in their header file which is used in both
+the usage string and the version option.
+
+- The file `test_jparse/pr_jparse_test.h` has been added for that tool.
+
+- The Makefiles have been updated including new dependencies.
+
+The `FOO_BASENAME` will be done for the tools in this repo too. It was done this
+way to make sure that the version strings match the tool without having to type
+the string literally more than once.
 
 ## Release 1.5.17 2024-09-15
 

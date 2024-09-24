@@ -301,7 +301,8 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("jsemtblgen version %s\nJSON parser version %s", JSEMTBLGEN_VERSION, JSON_PARSER_VERSION);
+	    print("%s version: %s\n", JSEMTBLGEN_BASENAME, JSEMTBLGEN_VERSION);
+	    print("JSON parser version: %s", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;

@@ -53,16 +53,6 @@
  */
 #include "json_sem.h"
 
-/*
- * official jparse repo release
- */
-#define JPARSE_REPO_VERSION "1.0.13 2024-09-24"		/* format: major.minor YYYY-MM-DD */
-
-
-/*
- * official jparse version
- */
-#define JPARSE_VERSION "1.1.6 2024-09-07"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * definitions
@@ -83,11 +73,6 @@
 #define YY_JPARSE_TAB_H_INCLUDED
 #include "jparse.tab.h"
 #endif
-
-/*
- * official JSON parser version
- */
-#define JSON_PARSER_VERSION "1.1.6 2024-09-24"		/* library version format: major.minor YYYY-MM-DD */
 
 
 /*
