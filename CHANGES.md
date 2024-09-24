@@ -85,6 +85,10 @@ author.  But in the meantime we still have to resolve the UTF-8 decoding bugs.
 
 - Add call to `setlocale()` in `jstrencode.c` and `jstrdecode.c`.
 
+- Fix build of libjparse.a - add `json_utf8.o`.
+
+- Remove `#line ..` from `json_utf8.h`.
+
 - Removed helper function `is_utf8()` as it appears to be not useful and might
 actually be incorrect. A copy of this function has been made in the case it
 actually does prove useful, unlikely as that seems.

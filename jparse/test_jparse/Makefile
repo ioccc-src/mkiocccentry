@@ -349,13 +349,13 @@ jnum_test.o: jnum_test.c
 jnum_chk.o: jnum_chk.c jnum_chk.h ../json_utf8.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o jnum_test.o ../json_utf8.o ../libjparse.a
+jnum_chk: jnum_chk.o jnum_test.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
 jnum_gen.o: jnum_gen.c jnum_gen.h ../json_utf8.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../json_utf8.o ../libjparse.a
+jnum_gen: jnum_gen.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c

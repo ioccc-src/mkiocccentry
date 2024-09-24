@@ -23,6 +23,9 @@ Updated `JPARSE_REPO_VERSION` to `"1.0.13 2024-09-24"`.
 
 Added `MIN` and `MAX` macros to `util.h`.
 
+Fix build of libjparse.a - add `json_utf8.o`.
+
+Remove `#line ..` from `json_utf8.h`.
 
 ## Release 1.0.13 2024-09-23
 
