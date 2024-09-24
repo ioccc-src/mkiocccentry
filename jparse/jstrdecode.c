@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <locale.h>
 
 /*
  * jstrdecode - tool to JSON decode JSON encoded strings
@@ -42,7 +43,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "1.0.4 2024-09-14"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "1.0.5 2024-09-19"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -56,7 +57,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-t\t\tperform jencchk test on code JSON decode/encode functions\n"
+    "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
@@ -273,6 +274,13 @@ main(int argc, char **argv)
     int i;
     struct jstring *jstr = NULL;    /* decoded string */
 
+    /*
+     * set locale
+     */
+    if (setlocale(LC_ALL, "") == NULL) {
+	err(11, __func__, "failed to set locale");
+	not_reached();
+    }
 
     /*
      * parse args
@@ -302,10 +310,13 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 't':		/* -t - validate the contents of the jenc[] table */
-	    print("%s: Beginning jencchk test on code JSON decode/decode functions ...\n", program);
+	case 't':		/* -t - validate the contents of the byte2asciistr[] table */
+	    print("%s: Beginning jencchk test of the byte2asciistr table...\n", program);
 	    jencchk();
-	    print("%s: ... passed JSON decode/decode test\n", program);
+	    print("%s: ... passed byte2asciistr table test\n", program);
+	    print("%s: Beginning tests of JSON decode/encode functionality ...\n", program);
+	    print("%s: XXX - JSON encode/decode tests not yet written - XXX\n", program);
+	    print("%s: ... passed JSON encode/decode tests\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;

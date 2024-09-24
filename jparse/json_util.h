@@ -164,7 +164,6 @@ extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned i
 			   void (*vcallback)(struct json *, unsigned int, va_list), ...);
 extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,
 			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
-extern bool is_utf8(const char *str);
 
 /* WARNING: the below functions are VERY subject to change, if they are not deleted */
 bool json_util_parse_number_range(const char *option, char *optarg, bool allow_negative, struct json_util_number *number);

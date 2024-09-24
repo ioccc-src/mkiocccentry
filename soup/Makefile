@@ -955,41 +955,47 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chk_sem_auth.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_util.h \
-    ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
 chk_sem_info.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_util.h \
-    ../jparse/util.h chk_sem_info.c chk_sem_info.h
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h chk_sem_info.c chk_sem_info.h
 chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.h chk_sem_info.h \
-    chk_validate.c chk_validate.h entry_time.h entry_util.h location.h
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
+    entry_time.h entry_util.h location.h
 entry_time.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h entry_time.c entry_time.h \
-    limit_ioccc.h version.h
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.c entry_time.h limit_ioccc.h version.h
 entry_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h entry_time.h entry_util.c \
-    entry_util.h limit_ioccc.h location.h version.h
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.h entry_util.c entry_util.h limit_ioccc.h location.h \
+    version.h
 foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
 location_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h location.h location_main.c
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h location.h \
+    location_main.c
 location_tbl.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h location.h location_tbl.c
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h location.h \
+    location_tbl.c
 location_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h location.h location_util.c
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h location.h \
+    location_util.c
 rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.h chk_sem_info.h \
-    chk_validate.h entry_time.h entry_util.h limit_ioccc.h location.h \
-    sanity.c sanity.h soup.h utf8_posix_map.h version.h
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.h chk_sem_info.h chk_validate.h entry_time.h entry_util.h \
+    limit_ioccc.h location.h sanity.c sanity.h soup.h utf8_posix_map.h \
+    version.h
 utf8_posix_map.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h limit_ioccc.h utf8_posix_map.c \
-    utf8_posix_map.h version.h
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h utf8_posix_map.c utf8_posix_map.h version.h

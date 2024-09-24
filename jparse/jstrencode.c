@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <locale.h>
 
 /*
  * jstrencode - tool to encode a string for JSON
@@ -42,7 +43,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "1.1.1 2024-09-15"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "1.1.2 2024-09-19"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message
@@ -56,7 +57,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
+    "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
     "\t-Q\t\tdo not encode double quotes that enclose the concatenation of args (def: do encode)\n"
     "\t-e\t\tdo not output double quotes that enclose each arg (def: do not remove)\n"
@@ -203,7 +204,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 {
     char *orig_input = NULL;	/* argument to process */
     char *input = NULL;		/* possibly updated orig_input */
-    size_t inputlen;		/* length of input buffer */
+    size_t inputlen = 0;	/* length of input buffer */
     char *buf = NULL;		/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     struct jstring *jstr = NULL; /* for jstring list */
@@ -325,7 +326,7 @@ main(int argc, char **argv)
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     char *input;		/* argument to process */
-    size_t inputlen;		/* length of input buffer */
+    size_t inputlen = 0;	/* length of input buffer */
     char *buf;			/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of encode buffer */
@@ -337,6 +338,13 @@ main(int argc, char **argv)
     int i;
     struct jstring *jstr = NULL;    /* to iterate through list */
 
+    /*
+     * set locale
+     */
+    if (setlocale(LC_ALL, "") == NULL) {
+	err(11, __func__, "failed to set locale");
+	not_reached();
+    }
 
     /*
      * parse args
@@ -366,10 +374,13 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 't':		/* -t - validate the contents of the jenc[] table */
-	    print("%s: Beginning jencchk test on code JSON encode/decode functions ...\n", program);
+	case 't':		/* -t - validate the contents of the byte2asciistr[] table */
+	    print("%s: Beginning jencchk test of the byte2asciistr table...\n", program);
 	    jencchk();
-	    print("%s: ... passed JSON encode/decode test\n", program);
+	    print("%s: ... passed byte2asciistr table test\n", program);
+	    print("%s: Beginning tests of JSON decode/encode functionality ...\n", program);
+	    print("%s: XXX - JSON encode/decode tests not yet written - XXX\n", program);
+	    print("%s: ... passed JSON encode/decode tests\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;

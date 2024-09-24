@@ -1,5 +1,77 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.13 2024-09-23
+
+Rename `jenc` to `byte2asciistr` in `json_parse.c` to avoid confusion about its
+purpose.
+
+Expand the output of `jstrencode -t` and `jstrdecode -t` to express that the
+encode/decode tests have not yet been written. This depends on bug #13 being
+resolved first.
+
+Changed optimisation flags in the Makefiles to not specify `-g3` as debug
+symbols are almost useless when optimising and we have `-O3` in use. During
+debugging one can always use:
+
+```sh
+make C_OPT="-g3" clobber all
+```
+
+to compile in debug symbols or have a file in the respective directories (those
+needed) called `makefile.local` with the line:
+
+```makefile
+C_OPT= -g3
+```
+
+which is used for development purposes but should not normally be done.
+
+Fix potential use without initialisation of `inputlen` in `jstrencode.c`.
+
+Add function `decode_json_string()` to help simplify the `json_decode()`
+function as it's quite long. This new function takes the length and calculated
+decoded size as well as the pointers (the block of memory, the return length and
+the `has_nul` as well) and then allocates the `char *` and does what was the
+second half of the `json_decode()` function. As `json_encode()` is much simpler
+it seems like at this time that something like this is not needed. This new
+function is not static but it is entirely unclear if that is necessary.
+
+Add to `struct json_string` the `bool unicode`. Currently unused (just
+initialised to false) the purpose will be to indicate whether or not the string
+has any invalid unicode symbols found during decoding.
+
+
+## Release 1.0.11 2024-09-20
+
+Add (as `json_utf8.h` and `json_utf8.c`) the files `unicode.h` and `unicode.c`
+from the C unicode library [unicode-c
+repo](https://github.com/benkasminbullock/unicode-c), slightly modified to fit
+our needs. More modification can be done once the bug in `json_parse.c`'s
+`json_decode()` function is modified to use what appears to be the function
+`ucs2_to_utf8()`. It is not clear at this point but it might be possible to
+greatly reduce these new files in code to just the bare minimum of what we
+require but right now it is all included, even the repeat macros in the C file
+(when `HEADER` is defined which it is not). The test code was removed from these
+files as that was part of its test suite that we do not need. A link back to the
+repo has been added, along with the author and the same header comments in the
+files. If it turns out we can just use the UTF-8 decoding algorithm by itself we
+might reduce the code to just that, making sure to credit (and link back) the
+author.  But in the meantime we still have to resolve the UTF-8 decoding bugs.
+
+The Makefiles now compile and link in `json_utf8.c`.
+
+Run `make seqcexit`.
+
+
+## Release 1.0.10 2024-09-19
+
+Add call to `setlocale()` in `jstrencode.c` and `jstrdecode.c`.
+
+Removed helper function `is_utf8()` as it appears to be not useful and might
+actually be incorrect. A copy of this function has been made in the case it
+actually does prove useful, unlikely as that seems.
+
+
 ## Release 1.0.9 2024-09-15
 
 Add helper function `is_utf8()` to determine if a `char *` is a UTF-8 encoded

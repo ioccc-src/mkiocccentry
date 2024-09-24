@@ -362,9 +362,13 @@ json_putc(uint8_t const c, FILE *stream)
 
     /*
      * write JSON encoding to stream
+     *
+     * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
+     * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
+     * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
      */
     errno = 0;	    /* pre-clear errno for warnp */
-    ret = fprintf(stream, "%s", jenc[c].enc);
+    ret = fprintf(stream, "%s", byte2asciistr[c].enc);
     if (chk_stdio_printf_err(stream, ret)) {
 	warnp(__func__, "fprintf #1 error");
 	return false;
@@ -2382,119 +2386,6 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, b
 	break;
     }
     return;
-}
-
-/*
- * is_utf8 	- determine if a string is UTF-8 encoded
- *
- *  given:
- *	str	- a char * that is the string to check
- *
- * returns:
- *	true ==> string is valid UTF-8,
- *	false ==> string is NOT valid UTF-8.
- *
- * NOTE: this code is a modified version of code from this SO answer:
- * https://stackoverflow.com/a/1031773/9205647. Our modifications include: using
- * true/false instead of 1/0; the removal of //-style comments from the
- * function, instead placing it below as a single collective; formatting in the
- * if/while; braces as well as the '*' in the pointers; a typo fix of 0x7E to
- * 0x7F (and changing that check to be just <= 0x7F as described below); and
- * possibly other things. Nonetheless we thank the answerer very much!
- *
- * NOTE: the regexp comes from
- * https://www.w3.org/International/questions/qa-forms-utf-8.
- *
- * NOTE: according to https://www.fileformat.info/info/unicode/utf8.htm we do
- * NOT need to include a length to check for the NUL byte as no UTF-8 byte will
- * be encoded to a NUL byte: it just works.
- *
- * NOTE: if str == NULL or empty then we return false, with a warning.
- *
- * NOTE: here are details on the checks of the bytes in the function:
- *
- *	-   ptr[0] <= 0x7F to allow ASCII characters, including control chars
- *
- *	-   0xC2 <= ptr[0] && ptr[0] <= 0xDF) && (0x80 <= ptr[1] && ptr[1] <= 0xBF)
- *	    for non-overlong 2 bytes.
- *
- *	-   ptr[0] == 0xE0 && (0xA0 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] &&
- *	    ptr[2] <= 0xBF)
- *	    to exclude overlongs.
- *
- *	-   ((0xE1 <= ptr[0] && ptr[0] <= 0xEC) || ptr[0] == 0xEE || ptr[0] == 0xEF) &&
- *	    (0x80 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)
- *	    for straight 3-bytes.
- *
- *	-   ptr[0] == 0xED && (0x80 <= ptr[1] && ptr[1] <= 0x9F) && (0x80 <= ptr[2] &&
- *	    ptr[2] <= 0xBF)
- *	    excludes surrogates.
- *
- *	-   ptr[0] == 0xF0 && (0x90 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <=
- *	    ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)
- *	    are planes 1 - 3.
- *
- *	-   (0xF1 <= ptr[0] && ptr[0] <= 0xF3) && (0x80 <= ptr[1] && ptr[1] <= 0xBF)
- *	    && (0x80 <= ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)
- *	    are planes 4-15.
- *
- *	-   ptr[0] == 0xF4 && (0x80 <= ptr[1] && ptr[1] <= 0x8F) && (0x80 <= ptr[2] &&
- *	    ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF) is
- *	    plane 16.
- */
-bool
-is_utf8(const char *str)
-{
-    const unsigned char *ptr = NULL;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    } else if (*str == '\0') {
-	warn(__func__, "str is empty");
-	return false;
-    }
-
-    ptr = (const unsigned char *)str;
-
-    while (*ptr)
-    {
-        if (ptr[0] <= 0x7F) {
-            ptr += 1;
-            continue;
-        }
-
-        if (((0xC2 <= ptr[0] && ptr[0] <= 0xDF) && (0x80 <= ptr[1] && ptr[1] <= 0xBF))) {
-            ptr += 2;
-            continue;
-        }
-
-        if ((ptr[0] == 0xE0 && (0xA0 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)) ||
-		(((0xE1 <= ptr[0] && ptr[0] <= 0xEC) || ptr[0] == 0xEE || ptr[0] == 0xEF) && (0x80 <= ptr[1] &&
-		ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF)) || (ptr[0] == 0xED && (0x80 <= ptr[1] &&
-		ptr[1] <= 0x9F) && (0x80 <= ptr[2] && ptr[2] <= 0xBF))) {
-
-	    ptr += 3;
-            continue;
-        }
-
-        if ((ptr[0] == 0xF0 && (0x90 <= ptr[1] && ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) &&
-		(0x80 <= ptr[3] && ptr[3] <= 0xBF)) || ((0xF1 <= ptr[0] && ptr[0] <= 0xF3) && (0x80 <= ptr[1] &&
-		ptr[1] <= 0xBF) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) && (0x80 <= ptr[3] && ptr[3] <= 0xBF)) ||
-		(ptr[0] == 0xF4 && (0x80 <= ptr[1] && ptr[1] <= 0x8F) && (0x80 <= ptr[2] && ptr[2] <= 0xBF) &&
-                (0x80 <= ptr[3] && ptr[3] <= 0xBF))) {
-
-            ptr += 4;
-            continue;
-        }
-
-        return false;
-    }
-
-    return true;
 }
 
 /*

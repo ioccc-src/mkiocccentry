@@ -25,6 +25,10 @@
  */
 #include "util.h"
 
+/*
+ * json_utf8.h - JSON UTF-8 decoder
+ */
+#include "json_utf8.h"
 
 /*
  * definitions
@@ -42,11 +46,15 @@
 
 
 /*
- * JSON encoding of an octet in a JSON string
+ * byte2asciistr - a trivial way to map an 8-bit byte into string of ASCII characters
  *
  * NOTE: this table assumes we process on a byte basis.
+ *
+ * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
+ * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
+ * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
  */
-struct encode
+struct byte2asciistr
 {
     const u_int8_t byte;    /* 8 bit character to encode */
     const size_t len;	    /* length of encoding */
@@ -220,6 +228,7 @@ struct json_string
 {
     bool parsed;		/* true ==> able to parse correctly */
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
+    bool unicode;               /* true ==> no invalid Unicode symbols found during decoding (currently unused) */
 
     char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
     char *str;			/* allocated decoded JSON string, NUL terminated */
@@ -462,10 +471,18 @@ struct json
 
 /*
  * external data structures
- *
- * NOTE: this table assumes we process on an 8-bit byte basis.
  */
-extern struct encode jenc[];
+
+/*
+ * byte2asciistr - a trivial way to map an 8-bit byte into string of ASCII characters
+ *
+ * NOTE: This table assumes we process on an 8-bit byte basis.
+ *
+ * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
+ * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
+ * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
+ */
+extern struct byte2asciistr byte2asciistr[];
 
 
 /*
@@ -474,6 +491,7 @@ extern struct encode jenc[];
 extern char *json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
 extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
 extern void jencchk(void);
+extern char * decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul);
 extern char *json_decode_str(char const *str, size_t *retlen);
 extern struct json *parse_json_string(char const *string, size_t len);

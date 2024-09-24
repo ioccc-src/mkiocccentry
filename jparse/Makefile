@@ -171,12 +171,12 @@ C_STD= -std=gnu17
 
 # optimization and debug level
 #
-C_OPT= -O3 -g3
+C_OPT= -O3
 #C_OPT= -O0 -g
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unused-but-set-variable -Wno-char-subscripts
+WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unused-but-set-variable -Wno-char-subscripts -Wno-sign-compare
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
 # special compiler flags
@@ -263,7 +263,7 @@ LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o json_utf8.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -490,35 +490,38 @@ jparse.tab.o: jparse.tab.c
 jparse_main.o: jparse_main.c
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse.o: jparse.c jparse.h
+jparse.o: jparse.c jparse.h json_utf8.o
 	${CC} ${CFLAGS} jparse.c -c
 
-jparse: jparse_main.o libjparse.a
+jparse: jparse_main.o libjparse.a json_utf8.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 
 jstr_util.o: jstr_util.c jstr_util.h
 	${CC} ${CFLAGS} jstr_util.c -c
 
-jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
+jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o libjparse.a jstr_util.o
+jstrencode: jstrencode.o libjparse.a jstr_util.o json_utf8.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
-jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
+json_utf8.o: json_utf8.c json_utf8.h
+	${CC} ${CFLAGS} json_utf8.c -c
+
+jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o libjparse.a jstr_util.o
+jstrdecode: jstrdecode.o libjparse.a jstr_util.o json_utf8.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
 
-jsemtblgen.o: jsemtblgen.c jparse.tab.h
+jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o libjparse.a
+jsemtblgen: jsemtblgen.o libjparse.a json_utf8.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
@@ -1257,38 +1260,40 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jparse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    jparse.c jparse.h jparse.tab.h json_parse.h json_sem.h json_util.h \
-    util.h
+    jparse.c jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.ref.c jparse.tab.h \
-    json_parse.h json_sem.h json_util.h util.h
+    json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.tab.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.c \
-    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.h \
-    jparse.tab.ref.c json_parse.h json_sem.h json_util.h util.h
+    jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse_main.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h jparse_main.c \
-    jparse_main.h json_parse.h json_sem.h json_util.h util.h
+    jparse_main.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h jsemtblgen.c \
-    jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
+    jsemtblgen.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.c json_parse.h json_util.h util.h
+    ../dyn_array/dyn_array.h json_parse.c json_parse.h json_utf8.h \
+    json_util.h util.h
 json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    json_parse.h json_sem.c json_sem.h json_util.h util.h
+    json_parse.h json_sem.c json_sem.h json_utf8.h json_util.h util.h
 json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h json_util.c json_util.h util.h
+    ../dyn_array/dyn_array.h json_parse.h json_utf8.h json_util.c \
+    json_util.h util.h
 jstr_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_util.h jstr_util.c jstr_util.h util.h
+    json_utf8.h json_util.h jstr_util.c jstr_util.h util.h
 jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h
+    json_utf8.h json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h
 jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_util.h jstr_util.h jstrencode.c jstrencode.h util.h
+    json_utf8.h json_util.h jstr_util.h jstrencode.c jstrencode.h util.h
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \

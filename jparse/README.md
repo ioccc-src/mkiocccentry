@@ -182,7 +182,7 @@ jparse .info.json
 
 ## `jstrencode`
 
-This tool can converts data into JSON encoded strings according to the so-called
+This tool converts data into JSON encoded strings according to the so-called
 [JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
 
 
