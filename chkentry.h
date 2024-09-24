@@ -36,6 +36,12 @@
 #include "jparse/jparse.h"
 
 /*
+ * jparse/version - JSON parser API and tool version
+ */
+#include "jparse/version.h"
+
+
+/*
  * soup - some delicious IOCCC soup recipes :-)
  */
 #include "soup/soup.h"
@@ -45,7 +51,10 @@
  */
 #include "soup/foo.h"
 
-
+/*
+ * macros
+ */
+#define CHKENTRY_BASENAME "chkentry"
 
 /*
  * externals

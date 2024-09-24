@@ -62,9 +62,10 @@
 
 
 /*
- * jparse - the parser
+ * jparse/version - JSON parser API and tool version
  */
-#include "jparse/jparse.h"
+#include "jparse/version.h"
+
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
