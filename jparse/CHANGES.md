@@ -1,5 +1,27 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.14 2024-09-24
+
+Implement boolean `unicode` of `struct json_string` in the decoding functions.
+If `json_conv_string()` finds that calling `json_decode()` which calls
+`decode_json_string()` causes the bool `unicode` to be false it sets the
+`converted` boolean to `false`. This will then flag an error in parsing if there
+is an invalid Unicode symbol. This does not mean that decoding all symbols work:
+it simply means that we detect if there are invalid Unicode symbols. The check
+is done on the original string but if it turns out it has to be done on the
+decoded string that can be done easily.
+
+The `json_decode()` had a bug fix: it allocated memory for the return string
+when `decode_json_string()` does that and this caused a memory leak.
+
+If `decode_json_string()` (which is now a static function in `json_parse.c`)
+detects an error, the allocated memory is freed before returning `NULL`.
+
+Updated `JSON_PARSER_VERSION` to `"1.1.6 2024-09-24"`.
+
+Updated `JPARSE_REPO_VERSION` to `"1.0.13 2024-09-24"`.
+
+
 ## Release 1.0.13 2024-09-23
 
 Rename `jenc` to `byte2asciistr` in `json_parse.c` to avoid confusion about its

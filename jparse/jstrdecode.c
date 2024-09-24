@@ -221,7 +221,7 @@ jstrdecode_stream(FILE *in_stream)
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz, NULL);
+    buf = json_decode(input, inputlen, &bufsiz, NULL, NULL);
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {

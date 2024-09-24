@@ -95,6 +95,15 @@ typedef unsigned char bool;
 #define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
 #endif /* SSIZE_MIN */
 
+/*
+ * MAX and MIN macros
+ */
+#if !defined(MAX)
+#define MAX(a,b) ((a)>(b)?(a):(b))
+#endif /* MAX */
+#if !defined(MIN)
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#endif /* MIN */
 
 /*
  * definitions

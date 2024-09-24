@@ -56,7 +56,7 @@
 /*
  * official jparse repo release
  */
-#define JPARSE_REPO_VERSION "1.0.12 2024-09-23"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "1.0.13 2024-09-24"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -87,7 +87,7 @@
 /*
  * official JSON parser version
  */
-#define JSON_PARSER_VERSION "1.1.5 2024-09-04"		/* library version format: major.minor YYYY-MM-DD */
+#define JSON_PARSER_VERSION "1.1.6 2024-09-24"		/* library version format: major.minor YYYY-MM-DD */
 
 
 /*
