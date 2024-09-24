@@ -1,5 +1,116 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.18 2024-09-24
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The
+following was added to the jparse CHANGES.md file:
+
+- Implement boolean `unicode` of `struct json_string` in the decoding functions.
+If `json_conv_string()` finds that calling `json_decode()` which calls
+`decode_json_string()` causes the bool `unicode` to be false it sets the
+`converted` boolean to `false`. This will then flag an error in parsing if there
+is an invalid Unicode symbol. This does not mean that decoding all symbols work:
+it simply means that we detect if there are invalid Unicode symbols. The check
+is done on the original string but if it turns out it has to be done on the
+decoded string that can be done easily.
+
+- The `json_decode()` had a bug fix: it allocated memory for the return string
+when `decode_json_string()` does that and this caused a memory leak.
+
+- If `decode_json_string()` (which is now a static function in `json_parse.c`)
+detects an error, the allocated memory is freed before returning `NULL`.
+
+- Updated `JSON_PARSER_VERSION` to `"1.1.6 2024-09-24"`.
+
+- Updated `JPARSE_REPO_VERSION` to `"1.0.13 2024-09-24"`.
+
+- Added `MIN` and `MAX` macros to `util.h`.
+
+- Rename `jenc` to `byte2asciistr` in `json_parse.c` to avoid confusion about its
+purpose.
+
+- Expand the output of `jstrencode -t` and `jstrdecode -t` to express that the
+encode/decode tests have not yet been written. This depends on bug #13 being
+resolved first.
+
+- Changed optimisation flags in the Makefiles to not specify `-g3` as debug
+symbols are almost useless when optimising and we have `-O3` in use. During
+debugging one can always use:
+
+```sh
+make C_OPT="-g3" clobber all
+```
+
+to compile in debug symbols or have a file in the respective directories (those
+needed) called `makefile.local` with the line:
+
+```makefile
+C_OPT= -g3
+```
+
+which is used for development purposes but should not normally be done.
+
+- Fix potential use without initialisation of `inputlen` in `jstrencode.c`.
+
+- Add function `decode_json_string()` to help simplify the `json_decode()`
+function as it's quite long. This new function takes the length and calculated
+decoded size as well as the pointers (the block of memory, the return length and
+the `has_nul` as well) and then allocates the `char *` and does what was the
+second half of the `json_decode()` function. As `json_encode()` is much simpler
+it seems like at this time that something like this is not needed. This new
+function is not static but it is entirely unclear if that is necessary.
+
+- Add to `struct json_string` the `bool unicode`. Currently unused (just
+initialised to false) the purpose will be to indicate whether or not the string
+has any invalid unicode symbols found during decoding.
+
+- Add (as `json_utf8.h` and `json_utf8.c`) the files `unicode.h` and `unicode.c`
+from the C unicode library [unicode-c
+repo](https://github.com/benkasminbullock/unicode-c), slightly modified to fit
+our needs. More modification can be done once the bug in `json_parse.c`'s
+`json_decode()` function is modified to use what appears to be the function
+`ucs2_to_utf8()`. It is not clear at this point but it might be possible to
+greatly reduce these new files in code to just the bare minimum of what we
+require but right now it is all included, even the repeat macros in the C file
+(when `HEADER` is defined which it is not). The test code was removed from these
+files as that was part of its test suite that we do not need. A link back to the
+repo has been added, along with the author and the same header comments in the
+files. If it turns out we can just use the UTF-8 decoding algorithm by itself we
+might reduce the code to just that, making sure to credit (and link back) the
+author.  But in the meantime we still have to resolve the UTF-8 decoding bugs.
+
+- The Makefiles now compile and link in `json_utf8.c`.
+
+- Run `make seqcexit`.
+
+- Add call to `setlocale()` in `jstrencode.c` and `jstrdecode.c`.
+
+- Fix build of libjparse.a - add `json_utf8.o`.
+
+- Remove `#line ..` from `json_utf8.h`.
+
+- Removed helper function `is_utf8()` as it appears to be not useful and might
+actually be incorrect. A copy of this function has been made in the case it
+actually does prove useful, unlikely as that seems.
+
+- Added `version.h` which has the versions for the repo release, the jparse JSON
+parser and the jparse tool. The other tools have their respective version in
+their source code file. This file was added primarily so that `verge` could
+refer to the JSON parser version. In order to get this to work, the `jparse.y`
+file now has `#include "version.h"`. This means the backup parser source code
+has been rebuilt with `make parser-o`.
+
+- The tools now have a `FOO_BASENAME` in their header file which is used in both
+the usage string and the version option.
+
+- The file `test_jparse/pr_jparse_test.h` has been added for that tool.
+
+- The Makefiles have been updated including new dependencies.
+
+The `FOO_BASENAME` will be done for the tools in this repo too. It was done this
+way to make sure that the version strings match the tool without having to type
+the string literally more than once.
+
 ## Release 1.5.17 2024-09-15
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). Added

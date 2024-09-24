@@ -62,6 +62,12 @@
 #include "jparse.h"
 
 /*
+ * version - JSON parser API and tool version
+ */
+#include "version.h"
+
+
+/*
  * json_sem - JSON semantics support
  */
 #include "json_sem.h"
@@ -70,6 +76,11 @@
  * official jsemtblgen version
  */
 #define JSEMTBLGEN_VERSION "1.0.1 2024-03-02"		/* format: major.minor YYYY-MM-DD */
+
+/*
+ * jsemtblgen tool basename
+ */
+#define JSEMTBLGEN_BASENAME "jsemtblgen"
 
 
 /*

@@ -42,4 +42,16 @@
 #include "jparse.h"
 
 
+/*
+ * version - JSON parser API and tool version
+ */
+#include "version.h"
+
+/*
+ * jparse tool basename
+ */
+#define JPARSE_BASENAME "jparse"
+
+
+
 #endif /* INCLUDE_JPARSE_MAIN_H */

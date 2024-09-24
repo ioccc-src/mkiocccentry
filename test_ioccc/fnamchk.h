@@ -41,9 +41,9 @@
 #include "../dbg/dbg.h"
 
 /*
- * jparse - the parser
+ * jparse/version - JSON parser API and tool version
  */
-#include "../jparse/jparse.h"
+#include "../jparse/version.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations

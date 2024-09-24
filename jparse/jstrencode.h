@@ -62,6 +62,18 @@
 #include "jparse.h"
 
 /*
+ * version - JSON parser API and tool version
+ */
+#include "version.h"
+
+
+/*
+ * jstrencode tool basename
+ */
+#define JSTRENCODE_BASENAME "jstrencode"
+
+
+/*
  * globals
  */
 

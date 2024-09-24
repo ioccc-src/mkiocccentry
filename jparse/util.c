@@ -175,6 +175,7 @@ base_name(char const *path)
  * returns:
  *      true ==> path exists,
  *      false ==> path does not exist
+ *
  * This function does not return on NULL pointer.
  */
 bool

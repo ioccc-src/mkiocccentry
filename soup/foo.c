@@ -10,9 +10,9 @@
  *
  * after some discussion with Landon Curt Noll about the need (yes: need) for
  * it. Cody is quite okay if after looking at this file you think he's a bit
- * crazy and in fact he quite welcomes it and even relishes the idea! :-)
+ * bonkers and in fact he quite welcomes it and even relishes the idea! :-)
  *
- * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
+ * "Because Cody enjoys being a bit bonkers and he is rather proud of it too!" :-)
  *
  * This tool and the JSON parser were co-developed in 2022-2024 by:
  *
