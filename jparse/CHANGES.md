@@ -21,6 +21,8 @@ Updated `JSON_PARSER_VERSION` to `"1.1.6 2024-09-24"`.
 
 Updated `JPARSE_REPO_VERSION` to `"1.0.13 2024-09-24"`.
 
+Added `MIN` and `MAX` macros to `util.h`.
+
 
 ## Release 1.0.13 2024-09-23
 

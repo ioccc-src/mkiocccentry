@@ -24,6 +24,8 @@ detects an error, the allocated memory is freed before returning `NULL`.
 
 - Updated `JPARSE_REPO_VERSION` to `"1.0.13 2024-09-24"`.
 
+- Added `MIN` and `MAX` macros to `util.h`.
+
 - Rename `jenc` to `byte2asciistr` in `json_parse.c` to avoid confusion about its
 purpose.
 
