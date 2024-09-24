@@ -17,8 +17,8 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
-#if !defined(INCLUDE_VERSION_H)
-#    define  INCLUDE_VERSION_H
+#if !defined(INCLUDE_JPARSE_VERSION_H)
+#    define  INCLUDE_JPARSE_VERSION_H
 
 /*
  * official jparse repo release
@@ -38,4 +38,4 @@
 #define JSON_PARSER_VERSION "1.1.6 2024-09-24"		/* library version format: major.minor YYYY-MM-DD */
 
 
-#endif /* INCLUDE_VERSION_H */
+#endif /* INCLUDE_JPARSE_VERSION_H */
