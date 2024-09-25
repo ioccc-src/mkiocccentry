@@ -67,13 +67,22 @@
 
 
 /*
+ * macros
+ */
+
+/*
+ * txzchk tool basename
+ */
+#define TXZCHK_BASENAME "txzchk"
+
+/*
  * utility macros
  *
  * These will work for our purposes but the singular or plural one is in truth
  * much more complicated than what we're making it seem like.
  */
-#define has_does_not_have(b) ((b)?"has":"does not have")
-#define singular_or_plural(x) ((x)==1?"":"s")
+#define HAS_DOES_NOT_HAVE(b) ((b)?"has":"does not have")
+#define SINGULAR_OR_PLURAL(x) ((x)==1?"":"s")
 
 
 /*

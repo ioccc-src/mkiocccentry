@@ -763,5 +763,5 @@ fnamchk.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
 utf8_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../soup/limit_ioccc.h ../soup/utf8_posix_map.h ../soup/version.h \
-    utf8_test.c
+    ../jparse/version.h ../soup/limit_ioccc.h ../soup/utf8_posix_map.h \
+    ../soup/version.h utf8_test.c

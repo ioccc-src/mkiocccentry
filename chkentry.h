@@ -54,6 +54,10 @@
 /*
  * macros
  */
+
+/*
+ * chkentry tool basename
+ */
 #define CHKENTRY_BASENAME "chkentry"
 
 /*

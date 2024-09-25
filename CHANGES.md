@@ -1,5 +1,20 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.19 2024-09-24
+
+Add `FOO_BASENAME` to all tools in this repo. This is used in both `-V` option
+and `-h` option.
+
+The `-V` and `-h` option of all tools now show the JSON parser version. This is
+because it is helpful to know what parser version is linked in, especially for
+any bug reports. This should not normally be a problem as the copies in this
+repo are linked in but in case there is a problem it is now done (for some the
+parser is actually used so it's even more important).
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The changes
+consist of the `FOO_BASENAME` changes described above for the tools in this
+repo. This needs to be done for the dbg repo and the dyn_array repo.
+
 ## Release 1.5.18 2024-09-24
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The

@@ -55,6 +55,10 @@
  */
 #include "../soup/utf8_posix_map.h"
 
+/*
+ * fnamchk tool basename
+ */
+#define FNAMCHK_BASENAME "fnamchk"
 
 /*
  * globals

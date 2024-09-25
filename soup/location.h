@@ -43,16 +43,32 @@
 
 #include <ctype.h>
 
+
 /*
- * jparse - the parser
+ * jparse - the JSON parser
  */
 #include "../jparse/jparse.h"
+
+
+/*
+ * jparse/version - the JSON parser version
+ */
+#include "../jparse/version.h"
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "../dbg/dbg.h"
 
+
+/*
+ * macros
+ */
+
+/*
+ * location tool basename
+ */
+#define LOCATION_BASENAME "location"
 
 /*
  * location/country codes

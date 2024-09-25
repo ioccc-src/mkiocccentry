@@ -112,7 +112,8 @@ static const char * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error has occurred or unknown tar listing format has been encountered\n"
     "\n"
-    "txzchk version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -153,8 +154,8 @@ main(int argc, char **argv)
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("%s\n", TXZCHK_VERSION);
-	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
+	    print("%s version: %s\n", TXZCHK_BASENAME, TXZCHK_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -305,30 +306,30 @@ show_tarball_info(char const *tarball_path)
 	para("", "The following information about the tarball was collected:", NULL);
 
 
-	dbg(DBG_MED, "%s %s a .info.json", tarball_path, has_does_not_have(tarball.has_info_json));
-	dbg(DBG_HIGH, "%s %s an empty .info.json", tarball_path, has_does_not_have(tarball.empty_info_json));
+	dbg(DBG_MED, "%s %s a .info.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_info_json));
+	dbg(DBG_HIGH, "%s %s an empty .info.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_info_json));
 	dbg(DBG_HIGH, "%s .info.json size is %jd", tarball_path, (intmax_t)tarball.info_json_size);
-	dbg(DBG_MED, "%s %s a .auth.json", tarball_path, has_does_not_have(tarball.has_auth_json));
-	dbg(DBG_HIGH, "%s %s an empty .auth.json", tarball_path, has_does_not_have(tarball.empty_auth_json));
+	dbg(DBG_MED, "%s %s a .auth.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_auth_json));
+	dbg(DBG_HIGH, "%s %s an empty .auth.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_auth_json));
 	dbg(DBG_HIGH, "%s .auth.json size is %jd", tarball_path, (intmax_t)tarball.auth_json_size);
-	dbg(DBG_MED, "%s %s a prog.c", tarball_path, has_does_not_have(tarball.has_prog_c));
-	dbg(DBG_HIGH, "%s %s an empty prog.c", tarball_path, has_does_not_have(tarball.empty_prog_c));
+	dbg(DBG_MED, "%s %s a prog.c", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_prog_c));
+	dbg(DBG_HIGH, "%s %s an empty prog.c", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_prog_c));
 	dbg(DBG_HIGH, "%s prog.c size is %jd", tarball_path, (intmax_t)tarball.prog_c_size);
-	dbg(DBG_MED, "%s %s a remarks.md", tarball_path, has_does_not_have(tarball.has_remarks_md));
-	dbg(DBG_HIGH, "%s %s an empty remarks.md", tarball_path, has_does_not_have(tarball.empty_remarks_md));
+	dbg(DBG_MED, "%s %s a remarks.md", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_remarks_md));
+	dbg(DBG_HIGH, "%s %s an empty remarks.md", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_remarks_md));
 	dbg(DBG_HIGH, "%s remarks.md size is %jd", tarball_path, (intmax_t)tarball.remarks_md_size);
-	dbg(DBG_MED, "%s %s a Makefile", tarball_path, has_does_not_have(tarball.has_Makefile));
-	dbg(DBG_HIGH, "%s %s an empty Makefile", tarball_path, has_does_not_have(tarball.empty_Makefile));
+	dbg(DBG_MED, "%s %s a Makefile", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_Makefile));
+	dbg(DBG_HIGH, "%s %s an empty Makefile", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_Makefile));
 	dbg(DBG_HIGH, "%s Makefile size is %jd", tarball_path, (intmax_t)tarball.Makefile_size);
 	dbg(DBG_MED, "%s tarball size is %jd according to stat(2)", tarball_path, (intmax_t)tarball.size);
 	dbg(DBG_MED, "%s total file size is %jd", tarball_path, (intmax_t)tarball.files_size);
 	dbg(DBG_HIGH, "%s shrunk in files size %ju time%s", tarball_path, tarball.files_size_shrunk,
-		singular_or_plural(tarball.files_size_shrunk));
+		SINGULAR_OR_PLURAL(tarball.files_size_shrunk));
 	dbg(DBG_HIGH, "%s went below 0 in all files size %ju time%s", tarball_path, tarball.negative_files_size,
-		singular_or_plural(tarball.negative_files_size));
+		SINGULAR_OR_PLURAL(tarball.negative_files_size));
 	dbg(DBG_HIGH, "%s went above max files size %ju %ju time%s", tarball_path,
 		(uintmax_t)MAX_SUM_FILELEN, (uintmax_t)tarball.files_size_too_big,
-		singular_or_plural(tarball.files_size_too_big));
+		SINGULAR_OR_PLURAL(tarball.files_size_too_big));
 	dbg(DBG_MED, "%s has %ju file%s", tarball_path, tarball.total_files-tarball.abnormal_files,
 		tarball.total_files-tarball.abnormal_files == 1?"":"s");
 
@@ -340,17 +341,17 @@ show_tarball_info(char const *tarball_path)
 	}
 
 	dbg(DBG_MED, "%s has %ju invalid dot file%s", tarball_path, tarball.invalid_dot_files,
-		singular_or_plural(tarball.invalid_dot_files));
-	dbg(DBG_MED, "%s has %ju file%s named '.'", tarball_path, tarball.named_dot, singular_or_plural(tarball.named_dot));
+		SINGULAR_OR_PLURAL(tarball.invalid_dot_files));
+	dbg(DBG_MED, "%s has %ju file%s named '.'", tarball_path, tarball.named_dot, SINGULAR_OR_PLURAL(tarball.named_dot));
 	dbg(DBG_MED, "%s has %ju file%s with at least one unsafe char", tarball_path, tarball.unsafe_chars,
-		singular_or_plural(tarball.unsafe_chars));
+		SINGULAR_OR_PLURAL(tarball.unsafe_chars));
 	if (tarball.invalid_filenames) {
 	    dbg(DBG_MED, "%s has %ju invalidly named file%s", tarball_path, tarball.invalid_filenames,
-		    singular_or_plural(tarball.invalid_filenames));
+		    SINGULAR_OR_PLURAL(tarball.invalid_filenames));
 	}
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
-		    singular_or_plural(tarball.total_feathers));
+		    SINGULAR_OR_PLURAL(tarball.total_feathers));
 	} else {
 	    dbg(DBG_VHIGH, "%s has 0 feathers stuck in tarball :-)", tarball_path);
 	}
@@ -386,7 +387,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     if (prog == NULL) {
-	prog = "txzchk";
+	prog = TXZCHK_BASENAME;
 	warn("txzchk", "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
@@ -397,7 +398,8 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0, TXZCHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0,
+	    TXZCHK_BASENAME, TXZCHK_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -780,7 +780,7 @@ usage(int exitcode, char const *prog, char const *str)
      * firewall
      */
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = JNUM_CHK_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {

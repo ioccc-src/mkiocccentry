@@ -1045,7 +1045,7 @@ usage(int exitcode, char const *prog, char const *str)
      * firewall
      */
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = PR_JPARSE_TEST_BASENAME;
 	fwarn(stderr, __func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {

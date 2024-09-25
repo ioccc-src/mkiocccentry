@@ -60,14 +60,21 @@
 #include "../soup/utf8_posix_map.h"
 
 /*
- * jparse - the parser
+ * jparse - the JSON parser
  */
 #include "../jparse/jparse.h"
+
+/*
+ * jparse/version - the JSON parser version
+ */
+#include "../jparse/version.h"
+
 
 /*
  * definitions
  */
 #define UTF8_TEST_VERSION "1.3 2023-02-04"
+#define UTF8_TEST_BASENAME "utf8_test"
 
 
 /*
@@ -98,7 +105,8 @@ static char const * const usage_msg =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "utf8_test version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 /*
  * functions
@@ -135,7 +143,8 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':	/* -V - print version and exit */
-            print("%s\n", UTF8_TEST_VERSION);
+            print("%s version: %s\n", UTF8_TEST_BASENAME, UTF8_TEST_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
             exit(2); /*ooo*/
             not_reached();
             break;
@@ -222,7 +231,7 @@ usage(int exitcode, char const *prog, char const *str)
      * firewall
      */
     if (prog == NULL) {
-	prog = "utf8_test";
+	prog = UTF8_TEST_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {
@@ -237,7 +246,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, UTF8_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, UTF8_TEST_BASENAME, UTF8_TEST_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -163,7 +163,8 @@ static const char * const usage_msg4 =
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"
-    "mkiocccentry version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 /*
  * globals
@@ -260,8 +261,8 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("%s\n", MKIOCCCENTRY_VERSION);
-	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
+	    print("%s version: %s\n", MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -883,7 +884,7 @@ usage(int exitcode, char const *prog, char const *str)
 	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = MKIOCCCENTRY_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
@@ -899,7 +900,7 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
-    fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
