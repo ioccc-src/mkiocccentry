@@ -78,7 +78,8 @@ static const char * const usage_msg =
     "     4\t\t\"submit.test-\" separated token length != %ju\n"
     "     5\t\t\"submit.UUID-\" token length != %ju\n"
     "     >=10\tinternal error\n"
-    "fnamchk version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -138,8 +139,8 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
-	    print("%s\n", FNAMCHK_VERSION);
-	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
+	    print("%s version: %s\n", FNAMCHK_BASENAME, FNAMCHK_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -393,7 +394,7 @@ usage(int exitcode, char const *prog, char const *str)
 	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = FNAMCHK_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 
@@ -405,7 +406,8 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS),
-	    (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_VERSION);
+	    (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_BASENAME, FNAMCHK_VERSION,
+	    JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

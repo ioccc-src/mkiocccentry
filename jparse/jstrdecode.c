@@ -533,7 +533,7 @@ usage(int exitcode, char const *prog, char const *str)
 	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = JSTRDECODE_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
 

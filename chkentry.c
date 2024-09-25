@@ -35,11 +35,6 @@
  */
 #include "chkentry.h"
 
-/*
- * version - official IOCCC toolkit versions
- */
-#include "soup/version.h"
-
 
 /*
  * definitions
@@ -77,7 +72,8 @@ static const char * const usage_msg =
     "    4\t\tfile(s) not valid JSON; no semantic checks were performed\n"
     "    >=10\tinternal error\n"
     "\n"
-    "chkentry version: %s";
+    "%s version: %s\n"
+    "JSON parser version: %s";
 
 
 /*
@@ -108,7 +104,7 @@ usage(int exitcode, char const *prog, char const *str)
      * firewall
      */
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = CHKENTRY_BASENAME;
 	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
     }
     if (str == NULL) {
@@ -122,7 +118,8 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT,
+	    CHKENTRY_BASENAME, CHKENTRY_VERSION, JSON_PARSER_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -197,8 +194,8 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", CHKENTRY_VERSION);
-	    print("JSON parser version %s\n", JSON_PARSER_VERSION);
+	    print("%s version: %s\n", CHKENTRY_BASENAME, CHKENTRY_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    exit(2);		/*ooo*/
 	    not_reached();
 	    break;

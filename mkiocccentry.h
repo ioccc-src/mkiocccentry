@@ -107,6 +107,11 @@
  */
 #include "soup/entry_util.h"
 
+/*
+ * mkiocccentry tool basename
+ */
+#define MKIOCCCENTRY_BASENAME "mkiocccentry"
+
 
 /*
  * definitions

@@ -90,8 +90,13 @@ static const char * const usage_msg =
     "    3\tcommand line error\n"
     "    >=4\tinternal error\n"
     "\n"
-    "location version: %s\n";
+    "%s version: %s\n"
+    "JSON parser version: %s\n";
 
+/*
+ * forward declarations
+ */
+static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
 int
@@ -119,7 +124,7 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, ":hv:Vcnsa")) != -1) {
         switch (i) {
         case 'h':
-	    fprintf_usage(2, stderr, usage_msg, program, DBG_DEFAULT, LOCATION_VERSION); /*ooo*/
+	    usage(2, program, ""); /*ooo*/
 	    not_reached();
             break;
         case 'v':
@@ -128,13 +133,13 @@ main(int argc, char **argv)
              */
 	    verbosity_level = parse_verbosity(optarg);
 	    if (verbosity_level < 0) {
-		warn(program, "invalid -v optarg");
-		fprintf_usage(3, stderr, usage_msg, program, DBG_DEFAULT, LOCATION_VERSION); /*ooo*/
+		usage(3, program, "invalid -v verbosity"); /*ooo*/
 		not_reached();
 	    }
             break;
         case 'V':               /* -V - print version and exit */
-            (void) printf("%s\n", LOCATION_VERSION);
+            print("%s version: %s\n", LOCATION_BASENAME, LOCATION_VERSION);
+	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
             exit(2); /*ooo*/
             not_reached();
             break;
@@ -153,7 +158,8 @@ main(int argc, char **argv)
         case ':':   /* option requires an argument */
         case '?':   /* illegal option */
         default:    /* anything else but should not actually happen */
-	    fprintf_usage(3, stderr, usage_msg, program, DBG_DEFAULT, LOCATION_VERSION); /*ooo*/
+	    check_invalid_option(program, i, optopt);
+	    usage(3, program, ""); /*ooo*/
             not_reached();
             break;
         }
@@ -300,4 +306,48 @@ main(int argc, char **argv)
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
      */
     exit(found?0:1); /*ooo*/
+}
+
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(2, program, "wrong number of arguments");
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	prog		our program name
+ *	str		top level usage message
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *prog, char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn("location", "\nin usage(): str was NULL, forcing it to be: %s\n", str);
+    }
+
+    if (prog == NULL) {
+	prog = LOCATION_BASENAME;
+	warn("location", "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, LOCATION_BASENAME, LOCATION_VERSION, JSON_PARSER_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
 }

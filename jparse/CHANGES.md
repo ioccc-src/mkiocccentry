@@ -1,5 +1,11 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.15 2024-09-25
+
+Use `FOO_BASENAME` when `prog == NULL` in `usage()` functions of the tools
+written in C.
+
+
 ## Release 1.0.14 2024-09-24
 
 Implement boolean `unicode` of `struct json_string` in the decoding functions.
