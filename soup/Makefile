@@ -412,7 +412,7 @@ location_util.o: location_util.c
 location_main.o: location_main.c
 	${CC} ${CFLAGS} location_main.c -c
 
-location: location_main.o location_tbl.o location_util.o ../dbg/libdbg.a ../dyn_array/libdyn_array.a ../jparse/libjparse.a
+location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 foo.o: foo.c
