@@ -7,7 +7,7 @@
 #
 # When you run this script without any arguments:
 #
-#	./bug-report.sh
+#	./jparse_bug-report.sh
 #
 # After printing logs of stuff on the terminal, a file of the form:
 #
@@ -20,7 +20,7 @@
 # be uploaded as part of your bug report.  Report / create a GitHub issue
 # by going to:
 #
-#	https://github.com/xexyl/issues
+#	https://github.com/xexyl/jparse/issues
 #
 # Please upload the bug-report.YYYYMMDD.HHMMSS.txt file as part of your report.
 #
@@ -124,36 +124,38 @@ while getopts :hVv:D:txlL:m:M: flag; do
 		exit 2
 		;;
     V)	echo "$BUG_REPORT_VERSION" 1>&2
-		exit 2
-		;;
+	exit 2
+	;;
     v)	V_FLAG="$OPTARG";
-		;;
+	;;
     D)  DBG_LEVEL="$OPTARG";
-		;;
+	;;
     t)  T_FLAG="-t"
-		;;
+	;;
     x)	X_FLAG="-x"
-		;;
+	;;
     l)	L_FLAG="-l"
-		;;
+	;;
     L)	LOGFILE="$OPTARG"
-		;;
-	m)	MAKE="$OPTARG"
-		;;
+	;;
+    m)	MAKE="$OPTARG"
+	;;
     M)  MAKE_FLAGS="$OPTARG"
-		;;
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-		echo 1>&2
-		echo "$USAGE" 1>&2
-		exit 3
-		;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    # BTW: did you ever notice that for this type of command line error, an
+    # option requiring an arg but was not given an arg, makes a smiley face? :-)
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-		echo 1>&2
-		echo "$USAGE" 1>&2
-		exit 3
-		;;
-	*)
-		;;
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *)
+	;;
 	esac
 done
 
@@ -1694,7 +1696,7 @@ if [[ "$EXIT_CODE" -ne 0 ]]; then
     write_echo ""
     write_echo "Please file an issue on the GitHub issues page:"
     write_echo ""
-    write_echo "	https://github.com/xexyl/issues"
+    write_echo "	https://github.com/xexyl/jparse/issues"
     write_echo ""
     write_echo "making sure to attach $LOGFILE with your report."
     X_FLAG=""
@@ -1705,7 +1707,7 @@ elif [[ -z "$X_FLAG" ]]; then
     write_echo "If you feel everything is in order you may safely delete that file."
     write_echo "Otherwise you may report the issue at the GitHub issue page:"
     write_echo ""
-    write_echo "	https://github.com/xexyl/issues"
+    write_echo "	https://github.com/xexyl/jparse/issues"
     write_echo ""
     write_echo "making sure to attach $LOGFILE with your report."
 fi
@@ -1723,7 +1725,7 @@ else
     rm -f "$LOGFILE"
 fi
 
-# final cleanup
+# final clean up
 #
 rm -f lex.yy.c lex.jparse_.c
 

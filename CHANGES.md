@@ -13,7 +13,8 @@ parser is actually used so it's even more important).
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The changes
 consist of the `FOO_BASENAME` changes described above for the tools in this
-repo. This needs to be done for the dbg repo and the dyn_array repo.
+repo, plus a broken link in `jparse_bug_report.sh`. This needs to be done for
+the dbg repo and the dyn_array repo.
 
 Fix comment about `CUNKNOWN` in Makefile.example.
 
