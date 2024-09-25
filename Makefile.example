@@ -35,7 +35,7 @@ RM= rm
 #
 CSILENCE=
 
-# Attempt to silence unknown warnings
+# Attempt to silence unknown warning option
 #
 # If you add -Wno-stuff to CSILENCE, then please change CUNKNOWN to read:
 #

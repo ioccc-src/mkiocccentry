@@ -15,6 +15,9 @@ Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The changes
 consist of the `FOO_BASENAME` changes described above for the tools in this
 repo. This needs to be done for the dbg repo and the dyn_array repo.
 
+Fix comment about `CUNKNOWN` in Makefile.example.
+
+
 ## Release 1.5.18 2024-09-24
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). The
