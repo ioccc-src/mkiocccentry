@@ -68,6 +68,16 @@ If all is well, you will find the `mkiocccentry` executable in your
 local directory.  If something went wrong, see
 <a href="#reporting-bugs">how do I report bugs or other issues?</a>
 
+**NOTE**: the toolkit uses an import of the [dbg
+repo](https://github.com/lcn2/dbg), the [dyn_array
+repo](https://github.com/lcn2/dyn_array) and the [jparse
+repo](https://github.com/xexyl/jparse). Although you may download, compile and
+install those, this is **NOT** a requirement and they may in fact at some points
+be different from the respective copies. The Makefiles here will link in the
+libraries that are compiled here, and not any external libraries. Thus although
+these libraries are needed for the tools, you do not need to install them in
+your system.
+
 
 <div id="install"></div>
 <div id="installing"></div>
