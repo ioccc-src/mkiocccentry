@@ -5,6 +5,9 @@
 Use `FOO_BASENAME` when `prog == NULL` in `usage()` functions of the tools
 written in C.
 
+Fix broken link in `jparse_bug_report.sh` and fix some formatting issues there
+as well.
+
 
 ## Release 1.0.14 2024-09-24
 
