@@ -1,6 +1,6 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 1.5.19 2024-09-24
+## Release 1.5.19 2024-09-27
 
 Add `FOO_BASENAME` to all tools in this repo. This is used in both `-V` option
 and `-h` option.
@@ -17,6 +17,11 @@ repo, plus a broken link in `jparse_bug_report.sh`. This needs to be done for
 the dbg repo and the dyn_array repo.
 
 Fix comment about `CUNKNOWN` in Makefile.example.
+
+The `ENTRY_VERSION` has been changed from "1.1 2024-02-11" to "1.2 2024-09-25".
+Both "_title_" and "_abstract_" we added to the `.entry.json` file format.
+
+The `entry_JSON_format_version` was changed from "1.1 2024-02-11" to "1.2 2024-09-25".
 
 
 ## Release 1.5.18 2024-09-24
