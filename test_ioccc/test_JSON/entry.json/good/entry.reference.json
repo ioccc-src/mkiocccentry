@@ -4,6 +4,8 @@
     "award" : "IOCCC Judge",
     "year" : 2024,
     "dir" : "noll",
+    "title" : "2024.noll",
+    "abstract" : "reference .entry.json file",
     "entry_id" : "2024_noll",
     "author_set" : [
 	{ "author_handle" : "Landon_Curt_Noll" }
