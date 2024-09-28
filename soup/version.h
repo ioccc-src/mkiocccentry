@@ -111,7 +111,7 @@
 /*
  * Version of info for JSON the .entry.json files.
  */
-#define ENTRY_VERSION "1.1 2024-02-11"		/* format: major.minor YYYY-MM-DD */
+#define ENTRY_VERSION "1.2 2024-09-25"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the author_handle.json files.

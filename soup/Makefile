@@ -964,7 +964,7 @@ chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h chk_sem_auth.h chk_sem_info.h chk_validate.c \
-    chk_validate.h entry_time.h entry_util.h location.h version.h
+    chk_validate.h entry_time.h entry_util.h location.h
 entry_time.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
