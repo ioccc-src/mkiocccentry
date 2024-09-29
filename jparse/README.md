@@ -1,5 +1,4 @@
-# jparse - JSON parser written in C
-
+# jparse - JSON parser and tools written in C
 
 `jparse` is a JSON parser (a stand-alone tool and a library) written in C with
 the help of `flex(1)` and `bison(1)`. The library, and the additional tools,
@@ -18,7 +17,7 @@ Contest](https://www.ioccc.org)), originally in the [mkiocccentry
 repo](https://github.com/ioccc-src/mkiocccentry), but we provide it here so that
 anyone may use it.
 
-As a stand-alone tool it is less useful, except for validating json
+As a stand-alone tool, `jparse` itself is less useful, except for validating JSON
 documents/strings, and to see how it works. The library is much more useful
 because you can integrate it into your own applications and work with the parsed
 tree(s). More details (beyond the man page) on the library will be documented at
@@ -107,7 +106,7 @@ Of course, you can specify a different `PREFIX` than `/usr` if you wish.
 # Uninstalling
 
 If you wish to deobfuscate your system a bit :-), you can uninstall the programs,
-library and header files by running:
+library and header files by running as root or by sudo:
 
 ```sh
 make uninstall
@@ -190,7 +189,7 @@ This tool converts data into JSON encoded strings according to the so-called
 
 
 ```sh
-jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [string ...]
+jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]
 ```
 
 The `-v` option increases the overall verbosity level. Unlike the `jparse`
@@ -265,7 +264,7 @@ This tool converts JSON encoded strings to their original data according to the 
 
 
 ```sh
-jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [string ...]
+jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]
 ```
 
 
