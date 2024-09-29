@@ -17,6 +17,170 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
+#include <string.h>
+#include <stdint.h>
+#include "json_utf8.h"
+
+/*
+ * NOTE: until the bug documented at https://github.com/xexyl/jparse/issues/13
+ * is resolved fully, we have code here that comes from a number of locations.
+ * Once the bug is resolved this file will be cleaned up. There are two
+ * different locations at this time (29 Sep 2024).
+ */
+
+/*
+ * The below comes from
+ * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
+ * with pointer checks added to the functions.
+ */
+
+/*
+ * UTF8 valid ranges.
+ *
+ * The UTF-8 encoding spreads the bits of a 32bit word over several
+ * bytes. This table gives the ranges that can be held and how they'd
+ * be represented.
+ *
+ * 0x00000000 0x0000007F: 0xxxxxxx
+ * 0x00000000 0x000007FF: 110xxxxx 10xxxxxx
+ * 0x00000000 0x0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+ * 0x00000000 0x001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 0x00000000 0x03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 0x00000000 0x7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+ *
+ * There is an additional requirement on UTF-8, in that only the
+ * shortest representation of a 32bit value is to be used.  A decoder
+ * must not decode sequences that do not satisfy this requirement.
+ * Thus the allowed ranges have a lower bound.
+ *
+ * 0x00000000 0x0000007F: 0xxxxxxx
+ * 0x00000080 0x000007FF: 110xxxxx 10xxxxxx
+ * 0x00000800 0x0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+ * 0x00010000 0x001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 0x00200000 0x03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 0x04000000 0x7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+ *
+ * Actual unicode characters are limited to the range 0x0 - 0x10FFFF,
+ * 17 planes of 65536 values.  This limits the sequences actually seen
+ * even more, to just the following.
+ *
+ *          0 -     0x7f: 0                     0x7f
+ *       0x80 -    0x7ff: 0xc2 0x80             0xdf 0xbf
+ *      0x800 -   0xffff: 0xe0 0xa0 0x80        0xef 0xbf 0xbf
+ *    0x10000 - 0x10ffff: 0xf0 0x90 0x80 0x80   0xf4 0x8f 0xbf 0xbf
+ *
+ * Even within those ranges not all values are allowed: the surrogates
+ * 0xd800 - 0xdfff should never be seen.
+ *
+ * Note that the longest sequence seen with valid usage is 4 bytes,
+ * the same a single UTF-32 character.  This makes the UTF-8
+ * representation of Unicode strictly smaller than UTF-32.
+ *
+ * The shortest sequence requirement was introduced by:
+ *    Corrigendum #1: UTF-8 Shortest Form
+ * It can be found here:
+ *    http://www.unicode.org/versions/corrigendum1.html
+ *
+ */
+int
+utf8encode(char *str, unsigned int val)
+{
+    int len;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(10, __func__, "str is NULL");
+	not_reached();
+    }
+
+    if (val < 0x80) {
+	str[0] = val;
+	len = 1;
+    } else if (val < 0x800) {
+	str[1] = val & UTF8_V_MASK;
+	str[1] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[0] = val;
+	str[0] |= UTF8_2_BITS;
+	len = 2;
+    } else if (val < 0x10000) {
+	str[2] = val & UTF8_V_MASK;
+	str[2] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[1] = val & UTF8_V_MASK;
+	str[1] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[0] = val;
+	str[0] |= UTF8_3_BITS;
+	len = 3;
+    } else if (val < 0x110000) {
+	str[3] = val & UTF8_V_MASK;
+	str[3] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[2] = val & UTF8_V_MASK;
+	str[2] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[1] = val & UTF8_V_MASK;
+	str[1] |= UTF8_N_BITS;
+	val >>= UTF8_V_SHIFT;
+	str[0] = val;
+	str[0] |= UTF8_4_BITS;
+	len = 4;
+    } else {
+	err(11, __func__, "%#x: illegal val\n", val);
+	not_reached();
+    }
+    return len;
+}
+
+unsigned int
+utf8decode(const char *str)
+{
+    const unsigned char *s = NULL;
+    unsigned int unichar = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(12, __func__, "str is NULL");
+	not_reached();
+    }
+
+    s = (const unsigned char *)str;
+
+    if (*s < 0x80) {
+	unichar = *s;
+    } else if (*s < UTF8_3_BITS) {
+	unichar = *s++ & 0x1F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s & 0x3F;
+    } else if (*s < UTF8_4_BITS) {
+	unichar = *s++ & 0x0F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s++ & 0x3F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s & 0x3F;
+    } else {
+	unichar = *s++ & 0x0F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s++ & 0x3F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s++ & 0x3F;
+	unichar <<= UTF8_V_SHIFT;
+	unichar |= *s & 0x3F;
+    }
+    return unichar;
+}
+
+/*
+ * The above comes from
+ * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
+ * with pointer checks added to the functions.
+ */
+
 /*
  * The below table and code is from
  * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
@@ -40,9 +204,6 @@
   https://github.com/benkasminbullock/unicode-c
 */
 
-#include <string.h>
-#include <stdint.h>
-#include "json_utf8.h"
 
 #ifdef HEADER
 
@@ -1051,3 +1212,5 @@ unicode_code_to_error (int32_t code)
 	return "Unknown/invalid error code";
     }
 }
+
+

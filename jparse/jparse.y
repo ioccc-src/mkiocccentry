@@ -1,5 +1,5 @@
 /*
- * JSON parser - bison grammar
+ * JSON parser - JSON parser in bison grammar form
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *

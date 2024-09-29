@@ -1,0 +1,81 @@
+{
+    "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+    "timestamp" : "Sun 29 Sep 2024 18:00:35 UTC",
+    "name" : "jparse",
+    "description" : "JSON parser API and tools written in C",
+    "repo" : "https://github.com/xexyl/jparse",
+    "jparse" : [
+        {
+            "file" : "jparse.l",
+            "description" : "JSON scanner in flex grammar form",
+            "generator" : [
+                {
+                    "name": "flex",
+                    "minimum_version" : "2.6.4",
+                    "output_files" : [
+                        {
+                            "source" : "jparse.c",
+                            "header" : "jparse.lex.h"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "file" : "jparse.y",
+            "description" : "JSON parser in bison grammar form",
+            "generator": [
+                {
+                    "name" : "bison",
+                    "minimum_version" : "3.8.2",
+                    "output_files" : [
+                        {
+                            "source" : "jparse.tab.c",
+                            "header" : "jparse.tab.h"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tools" : [
+        {
+            "name" : "jparse",
+            "description" : "JSON parser stand-alone tool"
+        },
+        {
+            "name" : "jstrencode",
+            "description" : "tool to encode a string for JSON"
+        },
+        {
+            "name" : "jstrdecode",
+            "description" : "tool to decode JSON encoded strings"
+        },
+        {
+            "name" : "verge",
+            "description" : "tool to determine if first version is greater or equal to the second version"
+        },
+        {
+            "name" : "jnum_chk",
+            "description" : "tool to check JSON number string conversions"
+        },
+        {
+            "name" : "jnum_gen",
+            "description" : "tool to generate JSON number string conversion test data"
+        },
+        {
+            "name" : "jsemtblgen",
+            "description" : "tool to generate JSON semantics table"
+        }
+    ],
+    "authors" : [
+        {
+            "name" : "Cody Boone Ferguson",
+            "url" : "https://xexyl.net"
+        },
+        {
+            "name" : "Landon Curt Noll",
+            "url" : "http://www.isthe.com"
+        }
+    ]
+}

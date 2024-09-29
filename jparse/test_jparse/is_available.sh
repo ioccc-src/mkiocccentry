@@ -30,7 +30,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-w] tool
 
     -w		    if tool is a sane executable file, print path to the tool (def: be silent)
 
-    tool	    tool to check if it is a executable file
+    tool	    tool to check if it is an executable file
 
     NOTE: If tool is one of: shellcheck picky independ seqcexit
 	  then a sanity check using known good data and args will also be performed
