@@ -842,11 +842,11 @@ else
 
     # now do the same for the invalid JSON strings file, if it exists
     if [[ ! -e $CHK_INVALID_TEST_FILE ]]; then
-	echo "$0: warning: invalid JSON strings test file does not exist: $CHK_INVALID_TEST_FILE" 1>&2
+	echo "$0: Warning: invalid JSON strings test file does not exist: $CHK_INVALID_TEST_FILE" 1>&2
     elif [[ ! -f $CHK_INVALID_TEST_FILE ]]; then
-	echo "$0: warning: invalid JSON strings test file does not a regular file: $CHK_INVALID_TEST_FILE" 1>&2
+	echo "$0: Warning: invalid JSON strings test file does not a regular file: $CHK_INVALID_TEST_FILE" 1>&2
     elif [[ ! -r $CHK_INVALID_TEST_FILE ]]; then
-	echo "$0: warning: invalid JSON strings test file does not a readable file: $CHK_INVALID_TEST_FILE" 1>&2
+	echo "$0: Warning: invalid JSON strings test file does not a readable file: $CHK_INVALID_TEST_FILE" 1>&2
     else
 	# process all lines in invalid JSON strings test file
 	#
