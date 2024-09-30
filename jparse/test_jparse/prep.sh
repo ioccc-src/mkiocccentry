@@ -18,8 +18,9 @@
 # setup
 #
 export FAILURE_SUMMARY=
+export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0.2 2024-07-03"
+export PREP_VERSION="1.0.3 2024-09-30"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -220,6 +221,94 @@ make_action() {
 	write_echo "$MAKE" -f "$MAKEFILE" "$RULE"
     else
 	write_echo_n "make_action $CODE $RULE "
+    fi
+
+    # if certain rules check for necessary tools and if they do not exist or
+    # they fail, skip the rule.
+    if [[ "$RULE" = shellcheck ]]; then
+	if ! ./test_jparse/is_available.sh shellcheck; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the shellcheck tool cannot be found or is unreliable on your system.
+	We cannot use the shellcheck tool.
+	Please consider installing or updating shellcheck tool from:
+
+	    https://github.com/koalaman/shellcheck.net
+
+	or if needed, filing a bug report with those who publish shellcheck.
+
+	Please do NOT file a bug report with us as we do not maintain shellcheck."
+
+	    return
+	fi
+    elif [[ "$RULE" = picky ]]; then
+	if ! ./test_jparse/is_available.sh picky; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the picky tool cannot be found or is unreliable on your system.
+	We cannot use the picky tool.
+	Please consider installing or updating picky tool from:
+
+	    https://github.com/lcn2/picky.git
+
+	Please do NOT file a bug report with us as we do not maintain picky."
+
+	    return
+	fi
+    elif [[ "$RULE" = depend ]]; then
+	if ! ./test_jparse/is_available.sh independ; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the independ tool cannot be found or is unreliable on your system.
+	We cannot use the independ tool.
+	Please consider installing or updating independ tool from:
+
+	    https://github.com/lcn2/independ.git
+
+	Please do NOT file a bug report with us as we do not maintain independ."
+
+
+	    return
+	fi
+    elif [[ "$RULE" = seqcexit ]]; then
+	if ! ./test_jparse/is_available.sh seqcexit; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the seqcexit tool cannot be found or is unreliable on your system.
+	We cannot use the seqcexit tool.
+	Please consider installing or updating seqcexit tool from:
+
+	    https://github.com/lcn2/seqcexit.git
+
+	Please do NOT file a bug report with us as we do not maintain seqcexit."
+
+
+	    return
+	fi
     fi
 
     # perform action
@@ -436,6 +525,10 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
+	if [[ -n "$SKIPPED_SUMMARY" ]]; then
+	    write_echo "One or more tests were skipped:"
+	    write_echo "$SKIPPED_SUMMARY"
+	fi
     else
 	if [[ $NOTICE_COUNT -gt 0 ]]; then
 	    if [[ $NOTICE_COUNT -eq 1 ]]; then
@@ -443,7 +536,12 @@ if [[ $EXIT_CODE -eq 0 ]]; then
 	    else
 		write_echo "All tests PASSED; $NOTICE_COUNT notices issued."
 	    fi
-	else
+	fi
+	if [[ -n "$SKIPPED_SUMMARY" ]]; then
+	    write_echo "One or more tests were skipped:"
+	    write_echo "$SKIPPED_SUMMARY"
+	fi
+	if [[ $NOTICE_COUNT -eq 0 && -z "$SKIPPED_SUMMARY" ]]; then
 	    write_echo "All tests PASSED."
 	fi
     fi

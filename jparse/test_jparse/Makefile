@@ -34,6 +34,7 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
+IS_AVAILABLE= ./is_available.sh
 PICKY= picky
 RM= rm
 SED= sed
@@ -477,8 +478,8 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
-	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${SEQCEXIT} >/dev/null 2>&1; then \
+	    echo 'The ${SEQCEXIT} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${SEQCEXIT}:'; 1>&2; \
@@ -501,8 +502,8 @@ picky: ${ALL_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${PICKY} >/dev/null 2>&1; then \
+	    echo 'The ${PICKY} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
 	    echo 1>&2; \
 	    echo 'See the following GitHub repo for ${PICKY}:'; 1>&2; \
@@ -537,8 +538,8 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${SHELLCHECK} >/dev/null 2>&1; then \
-	    echo 'The ${SHELLCHECK} command could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${SHELLCHECK} >/dev/null 2>&1; then \
+	    echo 'The ${SHELLCHECK} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${SHELLCHECK}:'; 1>&2; \
@@ -706,22 +707,22 @@ uninstall:
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
-	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${INDEPEND} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${INDEPEND}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/independ'; 1>&2; \
-	elif ! type -P ${SED} >/dev/null 2>&1; then \
+	elif ! ${IS_AVAILABLE} ${SED} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${SED} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${SED} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
-	elif ! type -P ${GREP} >/dev/null 2>&1; then \
+	elif ! ${IS_AVAILABLE} ${GREP} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${GREP} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${GREP} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
-	elif ! type -P ${CMP} >/dev/null 2>&1; then \
+	elif ! ${IS_AVAILABLE} ${CMP} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${CMP} command could not be found.' 1>&2; \
 	    echo '${OUR_NAME}: The ${CMP} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
