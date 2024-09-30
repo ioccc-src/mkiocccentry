@@ -21,7 +21,7 @@
 export FAILURE_SUMMARY=
 export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0.2 2024-07-03"
+export PREP_VERSION="1.0.3 2024-09-30"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -236,11 +236,11 @@ make_action() {
 		write_echo "SKIPPED"
 	    fi
 	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
-	make_action $EXIT_CODE: the shellcheck tool cannot be found or is unreliable on your system.
+	make_action $CODE $RULE: the shellcheck tool cannot be found or is unreliable on your system.
 	We cannot use the shellcheck tool.
 	Please consider installing or updating shellcheck tool from:
 
-        https://github.com/koalaman/shellcheck.net
+	    https://github.com/koalaman/shellcheck.net
 
 	or if needed, filing a bug report with those who publish shellcheck.
 
@@ -258,11 +258,11 @@ make_action() {
 		write_echo "SKIPPED"
 	    fi
 	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
-	make_action $EXIT_CODE: the picky tool cannot be found or is unreliable on your system.
+	make_action $CODE $RULE: the picky tool cannot be found or is unreliable on your system.
 	We cannot use the picky tool.
 	Please consider installing or updating picky tool from:
 
-        https://github.com/lcn2/picky.git
+	    https://github.com/lcn2/picky.git
 
 	Please do NOT file a bug report with us as the IOCCC does not maintain picky."
 
@@ -278,11 +278,11 @@ make_action() {
 		write_echo "SKIPPED"
 	    fi
 	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
-	make_action $EXIT_CODE: the independ tool cannot be found or is unreliable on your system.
+	make_action $CODE $RULE: the independ tool cannot be found or is unreliable on your system.
 	We cannot use the independ tool.
 	Please consider installing or updating independ tool from:
 
-        https://github.com/lcn2/independ.git
+	    https://github.com/lcn2/independ.git
 
 	Please do NOT file a bug report with us as the IOCCC does not maintain independ."
 
@@ -299,11 +299,11 @@ make_action() {
 		write_echo "SKIPPED"
 	    fi
 	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
-	make_action $EXIT_CODE: the seqcexit tool cannot be found or is unreliable on your system.
+	make_action $CODE $RULE: the seqcexit tool cannot be found or is unreliable on your system.
 	We cannot use the seqcexit tool.
 	Please consider installing or updating seqcexit tool from:
 
-        https://github.com/lcn2/seqcexit.git
+	    https://github.com/lcn2/seqcexit.git
 
 	Please do NOT file a bug report with us as the IOCCC does not maintain seqcexit."
 

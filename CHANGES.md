@@ -1,5 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.21 2024-09-30
+
+Bug fix `prep.sh` wrt skipped messages, and indent URL of each tool.
+
+Make use of `is_available.sh` in the Makefiles.
+
+Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/) with the
+above changes to do with the jparse repo.
+
+
+## Release 1.5.20 2024-09-29
+
+Sync `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
+includes a new JSON file with some details about it as well as some fixes in the
+README.md file (newer synopsis of some tools) as well as a couple functions
+added.
+
 ## Release 1.5.19 2024-09-27
 
 Add `FOO_BASENAME` to all tools in this repo. This is used in both `-V` option

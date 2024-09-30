@@ -1,5 +1,11 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.17 2024-09-30
+
+Make use of `test_jparse/is_available.sh` in the Makefiles and in
+`test_jparse/prep.sh` script.
+
+
 ## Release 1.0.16 2024-09-29
 
 Add a couple functions to `json_utf8.c` for UTF-8 encoding/decoding. These
