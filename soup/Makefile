@@ -717,14 +717,13 @@ check_man: ${ALL_MAN_TARGETS}
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} if ! ${IS_AVAILABLE} ${CHECKNR} >/dev/null 2>&1; then \
-	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
+	    echo 'The ${CHECKNR} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${CHECKNR} command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${CHECKNR}:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/checknr' 1>&2; \
 	    echo ''; 1>&2; \
-	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
@@ -965,7 +964,7 @@ chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h chk_sem_auth.h chk_sem_info.h chk_validate.c \
-    chk_validate.h entry_time.h entry_util.h location.h
+    chk_validate.h entry_time.h entry_util.h location.h version.h
 entry_time.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \

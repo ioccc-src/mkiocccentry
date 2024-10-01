@@ -32,7 +32,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-w] tool
 
     tool	    tool to check if it is an executable file
 
-    NOTE: If tool is one of: shellcheck picky independ seqcexit
+    NOTE: If tool is one of: shellcheck picky independ seqcexit checknr
 	  then a sanity check using known good data and args will also be performed
 
 Exit codes:
@@ -407,6 +407,54 @@ EOF
 	echo "$0: debug[3]: tool passed the trivial test: $TOOL" 1>&2
     fi
     ;;
+
+checknr)
+
+    # form a trivial man page with an error
+    #
+    export TMP_MAN_PAGE=".tmp.$NAME.MAN_PAGE.$$.1"
+    trap 'rm -f $TMP_MAN_PAGE; exit' 0 1 2 3 15
+    rm -f "$TMP_MAN_PAGE"
+    if [[ -e $TMP_MAN_PAGE ]]; then
+	echo "$0: ERROR: cannot remove temporary erroneous man page: $TMP_MAN_PAGE" 1>&2
+	exit 21
+    fi
+    cat > "$TMP_MAN_PAGE" << EOF
+
+.TH foo 1 "11 July 2024" "foo" "foo"
+.SH NAME
+.B foo
+\- foo bar baz
+.SH SYNOPSIS
+\\fB
+EOF
+    if [[ ! -e $TMP_MAN_PAGE ]]; then
+	echo "$0: ERROR: cannot create temporary erroneous man page: $TMP_MAN_PAGE" 1>&2
+	exit 22
+    fi
+
+    # try checknr on the trivial (erroneous) man page
+    #
+    if [[ "$V_FLAG" -ge 3 ]]; then
+	echo "$0: debug[3]: about to run: $TOOL -- $TMP_MAN_PAGE" 1>&2
+    fi
+    TOOL_OUTPUT=$("$TOOL" -c.BR.SS.BI.IR.RB.RI -- "$TMP_MAN_PAGE" 2>&1)
+    status="$?"
+    export TOOL_OUTPUT
+    if [[ $status -eq 0 ]]; then
+	if [[ "$V_FLAG" -ge 1 ]]; then
+	    echo "$0: debug[1]: tool failed the trivial test: $TOOL" 1>&2
+	fi
+	if [[ "$V_FLAG" -ge 3 ]]; then
+	    echo "$0: debug[3]: $TOOL -c.BR.SS.BI.IR.RB.RI -- $TMP_MAN_PAGE failed," \
+		 "exit code expected to be non-zero, is: $status" 1>&2
+	fi
+	exit 1
+    elif [[ "$V_FLAG" -ge 3 ]]; then
+	echo "$0: debug[3]: tool passed the trivial test: $TOOL exited $status" 1>&2
+    fi
+    ;;
+
 
 # case: not a special tool, testing as an executable file is good enough (we hope)
 #

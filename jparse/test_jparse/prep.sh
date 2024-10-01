@@ -309,6 +309,27 @@ make_action() {
 
 	    return
 	fi
+    elif [[ "$RULE" = check_man ]]; then
+	if ! ./test_jparse/is_available.sh checknr; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the checknr tool cannot be found or is unreliable on your system.
+	We cannot use the checknr tool.
+	Please consider installing or updating checknr tool from:
+
+	    https://github.com/lcn2/checknr.git
+
+	Please do NOT file a bug report with us as we do not maintain picky."
+
+	    return
+	fi
+
     fi
 
     # perform action

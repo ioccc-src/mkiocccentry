@@ -1,5 +1,19 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.18 2024-10-01
+
+Improve `test_jparse/is_available.sh`: it now will do a trivial test on
+`checknr`. This check is unlike the others in that if the tool returns 0 then it
+is an error. This is because it checks that an erroneous man page is declared
+invalid. The original version always returned 0 which meant that it was not as
+easy to determine if it was in error (in the test suites - one had to run it
+manually and look at the output). Thus to verify that it's reliable we check for
+a non-zero status on a man page with an error in it.
+
+The `prep.sh` script now skips the `check_man` rule if `checknr` cannot be found
+or is unreliable.
+
+
 ## Release 1.0.17 2024-09-30
 
 Make use of `test_jparse/is_available.sh` in the Makefiles and in

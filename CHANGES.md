@@ -1,5 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.5.22 2024-10-01
+
+Improve `soup/is_available.sh` to now verify that `checknr(1)` is reliable and
+if it is unreliable or cannot be found, the step is skipped in `prep.sh`. The
+original version of `checknr(1)` always returned 0 even with an error so this
+check in `is_available.sh` expects a non-zero value, not 0, in order to verify
+it works okay, as in order to make sure that it works right we construct a
+temporary erroneous man page.
+
+The `prep.sh` here now skips `check_man` rule if `checknr` cannot be found or is
+unreliable.
+
+The Makefiles (except for `dbg` and `dyn_array` as these repos do not yet have
+the script or the changes) have been updated to better explain the problem if
+`is_available.sh` reports non-zero.
+
+Sync `jparse` from [jparse repo](https://github.com/xexyl/jparse/) with the
+above changes (`jparse` is where it originated).
+
+
 ## Release 1.5.21 2024-09-30
 
 Bug fix `prep.sh` wrt skipped messages, and indent URL of each tool.
