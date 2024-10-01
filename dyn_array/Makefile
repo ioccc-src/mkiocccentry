@@ -43,6 +43,7 @@ CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
+IS_AVAILABLE= ./is_available.sh
 LN= ln
 PICKY= picky
 RANLIB= ranlib
@@ -447,8 +448,8 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${SEQCEXIT} >/dev/null 2>&1; then \
-	    echo 'The ${SEQCEXIT} tool could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${SEQCEXIT} >/dev/null 2>&1; then \
+	    echo 'The ${SEQCEXIT} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${SEQCEXIT}:'; 1>&2; \
@@ -469,8 +470,8 @@ picky: ${ALL_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo 'The ${PICKY} tool could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${PICKY} >/dev/null 2>&1; then \
+	    echo 'The ${PICKY} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
 	    echo 1>&2; \
 	    echo 'See the following GitHub repo for ${PICKY}:'; 1>&2; \
@@ -506,8 +507,8 @@ check_man: ${ALL_MAN_TARGETS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${CHECKNR} >/dev/null 2>&1; then \
-	    echo 'The ${CHECKNR} command could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${CHECKNR} >/dev/null 2>&1; then \
+	    echo 'The ${CHECKNR} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${CHECKNR} command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${CHECKNR}:'; 1>&2; \
@@ -539,7 +540,7 @@ tags:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
+	${Q} if ! ${IS_AVAILABLE} ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
 	    echo 'The ${CTAGS} command is required to run the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -563,7 +564,7 @@ local_dir_tags: ${ALL_CSRC} ${ALL_HSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} if ! type -P ${CTAGS} >/dev/null 2>&1; then \
+	${Q} if ! ${IS_AVAILABLE} ${CTAGS} >/dev/null 2>&1; then \
 	    echo 'The ${CTAGS} command could not be found.' 1>&2; \
 	    echo 'The ${CTAGS} command is required to run the $@ rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -686,8 +687,8 @@ uninstall:
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} if ! type -P ${INDEPEND} >/dev/null 2>&1; then \
-	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found.' 1>&2; \
+	${Q} if ! ${IS_AVAILABLE} ${INDEPEND} >/dev/null 2>&1; then \
+	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for ${INDEPEND}:'; 1>&2; \
