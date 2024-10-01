@@ -17,16 +17,26 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
-/* Section 1: Declarations and option settings */
+/* Section 0: Declarations and option settings */
 /*
- * noyywrap prevents needing to link in the flex(1) library which means those
- * without flex can compile the code. Even if everyone had flex(1) though under
+ * %option noyywrap prevents needing to link in the flex(1) library (flex(3)) which means those
+ * without flex can compile the code. Even if everyone had flex(1), though, under
  * macOS you have to pass -ll to the compiler to link in the flex library
  * whereas in other systems you have to use -lfl which would cause a lot of
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
 %option noyywrap
+/*
+ * we also need a few other options set:
+ *
+ * %option nodefault nounput noinput
+ * %option yylineno 8bit
+ * %option bison-bridge bison-locations reentrant
+ * %option prefix="jparse_"
+ * %option header-file="jparse.lex.h"
+ * %option extra-type="struct json_extra *"
+ */
 %option nodefault nounput noinput
 %option yylineno 8bit
 %option bison-bridge bison-locations reentrant
@@ -98,13 +108,13 @@ static YY_BUFFER_STATE bs;
 %}
 
 /*
- * Section 2: Patterns (regular expressions) and actions.
+ * Section 1: Patterns (regular expressions) and actions.
  */
 
 JSON_WS			[ \t\r]+
 JSON_NL			\n+
 /*
- * NOTE: On the subject of JSON_STRING one might ask the question about the
+ * NOTE: on the subject of JSON_STRING one might ask the question about the
  * tighter restrictions on JSON strings and why we don't even consider them.
  * This is a good question but the answer is simple: the JSON string conversion
  * routines actually do these checks. This simplifies the lexer regex and so we
@@ -140,9 +150,9 @@ JSON_COMMA		","
 			    /*
 			     * Whitespace excluding newlines
 			     *
-			     * NOTE: We have to include this action as otherwise
-			     * the action '.' will return an invalid token to
-			     * the parser.
+			     * NOTE: we have to include this action (JSON_WS) as
+			     * otherwise the action '.' will return an invalid
+			     * token to the parser.
 			     *
 			     * We don't need the below message but for debugging
 			     * purposes we print how many whitespaces are
@@ -153,7 +163,7 @@ JSON_COMMA		","
 			}
 
 {JSON_NL}		{
-			    yycolumn = 1;
+			    yycolumn = 1; /* on newline we need to reset the column for error location tracking */
 			}
 
 {JSON_STRING}		{
@@ -243,7 +253,7 @@ JSON_COMMA		","
 
 %%
 
-/* Section 3: Code that's copied to the generated scanner */
+/* Section 2: Code that's copied to the generated scanner */
 
 
 /*
@@ -289,7 +299,7 @@ JSON_COMMA		","
  * those characters to used outside elements of JSON syntax:
  *
  * We scan data for bytes in the class: [\x00-\x08\x0e-\x1f].  When such
- * bytes are detected, we increment the external variable, we will indicate to
+ * bytes are detected, we increment the external variable and we will indicate to
  * the caller that the JSON is invalid by returning true.
  *
  * We also keep track of newlines.  Not to exclude them, but to make it easy
@@ -312,9 +322,9 @@ JSON_COMMA		","
  *	nul_bytes   - pointer to set the number of NUL bytes found in
  *
  * return:
- *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f]
+ *	true ==> data == NULL OR len <= 0 OR one or more [\x00-\x08\x0e-\x1f]
  *		 bytes are found OR low_bytes == NULL OR nul_bytes == NULL
- *	false ==> data != NULL AND len > 0  AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
+ *	false ==> data != NULL AND len > 0 AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
  */
 static bool
 low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes)
@@ -464,23 +474,23 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
 /*
  * parse_json - parse a JSON document of a given length
  *
- * Given a pointer to char and a length, use the parser to determine if the json
+ * Given a pointer to char and a length, use the parser to determine if the JSON
  * is valid or not.
  *
  * given:
  *
- *	ptr	    - pointer to start of json blob
- *	len	    - length of the json blob
+ *	ptr	    - pointer to start of JSON blob
+ *	len	    - length of the JSON blob
  *	filename    - filename or NULL for stdin
- *	is_valid    - non-NULL printer to boolean to set depending on json validity
+ *	is_valid    - non-NULL pointer to boolean to set depending on JSON validity
  *
  * return:
  *	pointer to a JSON parse tree
  *
- * NOTE: The reason this is in the scanner and not the parser is because
+ * NOTE: the reason this is in the scanner and not the parser is because
  * YY_BUFFER_STATE is part of the scanner and not the parser.
  *
- * NOTE: This function only warns on error. This is so that an entire report of
+ * NOTE: this function only warns on error. This is so that an entire report of
  * all the problems can be given at the end if the verbosity level is high
  * enough (or otherwise if this information is requested).
  */
@@ -639,11 +649,11 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
  * If stream is NULL or stream is not open, or if read_all() fails,
  * then this function warns and sets *is_valid to false.
  *
- * NOTE: The reason this is in the scanner and not the parser is because
+ * NOTE: the reason this is in the scanner and not the parser is because
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
  *	 for the parse_json_block() function.
  *
- * NOTE: This function only warns on error. It does this via the called function
+ * NOTE: this function only warns on error. It does this via the called function
  *	 parse_json(). This is done so that an entire report of all the problems can
  *	 be given at the end if the verbosity level is high enough (or otherwise if
  *	 this information is requested).

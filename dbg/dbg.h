@@ -43,6 +43,11 @@
  */
 #define DBG_VERSION "3.0 2023-08-05"		/* format: major.minor YYYY-MM-DD */
 
+/*
+ * dbg basename
+ */
+#define DBG_BASENAME "dbg"
+
 
 /*
  * standard truth :-)

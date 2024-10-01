@@ -50,6 +50,12 @@
  */
 #include "dyn_array.h"
 
+/*
+ * dyn_test tool basename
+ */
+#define DYN_TEST_BASENAME "dyn_test"
+
+
 
 
 #endif		/* INCLUDE_DYN_TEST_H */

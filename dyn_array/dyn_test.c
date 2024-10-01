@@ -69,8 +69,8 @@ static const char * const usage_msg =
     "    3\tcommand line error\n"
     " >=10\tinternal error\n"
     "\n"
-    "dyn_array library version: %s\n"
-    "dyn_test version: %s";
+    "%s version: %s\n"
+    "dyn_array library version: %s\n";
 
 
 /*
@@ -158,7 +158,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    (void) printf("%s\n", DYN_TEST_VERSION);
+	    (void) printf("%s version: %s\n", DYN_TEST_BASENAME, DYN_TEST_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -302,7 +302,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, dyn_array_version, DYN_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_TEST_BASENAME, DYN_TEST_VERSION, dyn_array_version);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -18,39 +18,62 @@
  */
 
 
-/* Section 1: Declarations */
+/* Section 0: Declarations */
 /*
- * We enable lookahead correction parser for improved errors
+ * We enable lookahead correction parser for improved errors:
+ *
+ *	%define parse.lac full
  */
 %define parse.lac full
 
-/* we want a re-entrant parser */
+/*
+ * we want a re-entrant parser:
+ *
+ *	%define api.pure full
+ */
 %define api.pure full
 
 
-/* we need locations for better error reporting */
+/*
+ * we need locations for better error reporting:
+ *
+ *	%locations
+ */
 %locations
 
-/* we want a prefix that's not yy */
+/*
+ * we want a prefix that's not yy
+ *
+ *	%define api.prefix {jparse_}
+ */
 %define api.prefix {jparse_}
 
 /*
  * We use our struct json (see json_parse.h for its definition) instead of bison
- * %union.
+ * %union:
+ *
+ *	%define api.value.type {struct json *}
+ *
  */
 %define api.value.type {struct json *}
 
 /*
  * we need access to the tree in parse_json() so we tell bison that jparse_parse()
- * takes a struct json **tree.
+ * takes a struct json **tree:
+ *
+ *	%parse-param { struct json **tree }
  */
 %parse-param { struct json **tree }
 
-/* this is to make the scanner re-entrant */
+/*
+ * Re-entrancy.
+ *
+ * This is to make the scanner re-entrant:
+ *
+ *	%param { yyscan_t scanner }
+ */
 %param { yyscan_t scanner }
 %{
-
-
 
 /*
  * jparse - JSON parser
@@ -66,7 +89,8 @@
 /*
  * for the re-entrant scanner.
  *
- * NOTE that we cannot include this in jparse.h so we do it here instead.
+ * NOTE that we cannot #include "jparse.lex.h" in jparse.h so we do it here
+ * instead.
  */
 #include "jparse.lex.h"
 
@@ -133,7 +157,20 @@ YY_DECL;
  *
  * For most of the terminal symbols we use string literals to identify them as
  * this makes it easier to read error messages. This feature is not POSIX Yacc
- * compatible but we've decided that the benefit outweighs this fact.
+ * compatible but we've decided that the benefit outweighs this fact. Thus we
+ * have:
+ *
+ *	%token JSON_OPEN_BRACE "{"
+ *	%token JSON_CLOSE_BRACE "}"
+ *	%token JSON_OPEN_BRACKET "["
+ *	%token JSON_CLOSE_BRACKET "]"
+ *	%token JSON_COMMA ","
+ *	%token JSON_COLON ":"
+ *	%token JSON_NULL "null"
+ *	%token JSON_TRUE "true"
+ *	%token JSON_FALSE "false"
+ *	%token JSON_STRING
+ *	%token JSON_NUMBER
  */
 %token JSON_OPEN_BRACE "{"
 %token JSON_CLOSE_BRACE "}"
@@ -165,12 +202,16 @@ YY_DECL;
  * Then as a hack (or maybe kludge) in yyerror() we refer to yytext in a
  * way that shows what the token is that caused the failure (whether it's a
  * syntax error or something else).
+ *
+ * This hack is defined like:
+ *
+ *	%token token
  */
 %token token
 
 
 /*
- * Section 2: Rules
+ * Section 1: Rules
  *
  * See https://www.json.org/json-en.html for the JSON specification. We have
  * tried to make the below grammar as close to the JSON specification as
@@ -858,7 +899,7 @@ json_number:
 %%
 
 
-/* Section 3: C code */
+/* Section 2: C code */
 
 
 /*

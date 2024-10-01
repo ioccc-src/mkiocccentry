@@ -6348,7 +6348,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - write version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", dbg_version);
+	    ret = printf("%s version: %s\n", DBG_BASENAME, dbg_version);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error writing version string: %s", dbg_version);
 	    }
