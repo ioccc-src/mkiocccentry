@@ -21,11 +21,16 @@
 #    define  INCLUDE_JPARSE_VERSION_H
 
 /*
+ * NOTE: only the repo release version, the jparse tool and the JSON parser
+ * versions are here. For the version of the other tools, see their source file.
+ */
+
+/*
  * official jparse repo release
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "1.0.16 2024-09-30"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "1.0.18 2024-10-01"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version

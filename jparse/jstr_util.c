@@ -56,7 +56,7 @@ alloc_jstr(char *string, size_t bufsiz)
     errno = 0;			    /* pre-clear errno for warnp() */
     jstr = calloc(1, sizeof *jstr);
     if (jstr == NULL) {
-	warn(__func__, "calloc() returned NULL for jstring struct");
+	warnp(__func__, "calloc() returned NULL for jstring struct");
 
 	if (string != NULL) {
 	    free(string);
