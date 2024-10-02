@@ -190,7 +190,7 @@ free_json_decoded_strings(void)
  * NOTE: this function adds the allocated struct jstring * to the list of
  * decoded JSON strings.
  */
-static struct jstring*
+static struct jstring *
 jstrdecode_stream(FILE *in_stream)
 {
     char *input = NULL;		/* argument to process */

@@ -21,8 +21,8 @@
  * files. See the Makefile for details on how this file was generated. See also
  * run_bison.sh and run_flex.sh.
  *
- * Now some might be tempted to point out this code was originally in support of the
- * International Obfuscated C Code Contest (IOCCC) and that objecting to the
+ * Now some might be tempted to point out this code was originally in support of
+ * the International Obfuscated C Code Contest (IOCCC) and that objecting to the
  * output of Bison and Flex borders on programming sanctimoniousness. At first
  * glance, this incongruence is unsustainable. In response we opine that one of
  * the fundamental undertones of the IOCCC is the promotion of good programming
@@ -43,9 +43,9 @@
  * objectionable way. :-)
  *
  * P.S. In 2022 April 04, when this comment was initially formed, none of the
- *	people working on this repo were Canadian. But some of them have
- *	several	good friends who live in, or are from Canada. Those friends
- *	say sorry in a fun and friendly way, so we honour those friends
+ *	people working on this parser/scanner were Canadian. But some of them
+ *	have several good friends who live in, or are from Canada. Those
+ *	friends say sorry in a fun and friendly way, so we honour those friends
  *	accordingly.
  */
 #line 1 "./jparse.c"
