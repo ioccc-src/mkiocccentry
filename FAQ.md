@@ -37,7 +37,7 @@ If you have not already done so, you may download the source by using `git
 clone`:
 
 
-``` <!---sh-->
+```sh
 git clone https://github.com/ioccc-src/mkiocccentry.git
 ```
 
@@ -54,13 +54,13 @@ and then extract that file.
 After downloading the repo (making sure that if you downloaded the zip file that
 you unzip it first) move into the `mkiocccentry` directory:
 
-``` <!---sh-->
+```sh
 cd mkiocccentry
 ```
 
 and compile everything from scratch:
 
-``` <!---sh-->
+```sh
 make clobber all
 ```
 
@@ -122,7 +122,7 @@ might need to put `./` before the name of a command.
 
 For example:
 
-``` <!---sh-->
+```sh
 ./mkiocccentry -h
 ```
 
@@ -157,7 +157,7 @@ options and arguments by use of the `-h` option of any tool:
 
 For instance:
 
-``` <!---sh-->
+```sh
 ./mkiocccentry -h
 ./iocccsize -h
 ./chkentry -h
@@ -173,7 +173,7 @@ directory at the top of the source directory.
 
 For example:
 
-``` <!---sh-->
+```sh
 man man/man1/mkiocccentry.1
 man man/man1/iocccsize.1
 man man/man1/chkentry.1
@@ -203,7 +203,7 @@ mkiocccentry directory** (in other words, if you have [installed](#install) the
 toolkit you **MUST** still run this from the toolkit directory):
 
 
-``` <!---sh-->
+```sh
 make bug_report
 ```
 
@@ -211,7 +211,7 @@ and then attach the bug report log (see below about the filename).
 
 You may also run the `bug_report.sh` tool directly:
 
-``` <!---sh-->
+```sh
 ./bug_report.sh -v 1
 ```
 
