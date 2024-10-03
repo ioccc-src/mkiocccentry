@@ -2,7 +2,8 @@
 .DS_Store
 ._.DS_Store
 /Makefile.local
-Makefile.orig
+*.orig
+*.rej
 /NOTES/
 /answers.txt
 *.[ao]
