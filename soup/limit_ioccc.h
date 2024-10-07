@@ -44,14 +44,26 @@
 
 #define RULE_2A_SIZE ((off_t)(4993))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
+/*
+ * IMPORTANT:
+ *
+ * The MAX_TARBALL_LEN value MUST match the MAX_TARBALL_LEN variable as defined
+ * in the IOCCC submit server code.
+ */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
 #define MAX_SUM_FILELEN ((off_t)(27651*1024))	/* maximum sum of the byte lengths of all files in the entry */
 #define MANDATORY_FILE_COUNT (5)		/* number of required files in an entry */
 /* NOTE: MAX_FILE_COUNT must be > MANDATORY_FILE_COUNT */
 #define MAX_FILE_COUNT (42)		/* maximum number of files in an entry (MANDATORY_FILE_COUNT + extra files) */
 /* NOTE: MAX_SUBMIT_SLOT must be < 10 to the MAX_SUBMIT_SLOT_CHARS power */
+/*
+ * IMPORTANT:
+ *
+ * The MAX_SUBMIT_SLOT value MUST match the MAX_SUBMIT_SLOT variable as defined
+ * in the IOCCC submit server code.
+ */
 #define MAX_SUBMIT_SLOT (9)		/* entry numbers from 0 to MAX_SUBMIT_SLOT */
-#define MAX_SUBMIT_SLOT_CHARS (1)		/* characters that represent the maximum entry number */
+#define MAX_SUBMIT_SLOT_CHARS (1)	/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)			/* maximum number of authors of an entry */
 #define MAX_AUTHORS_CHARS (1)		/* characters that represent the author number */
 #define MAX_NAME_LEN (48)		/* max author name length */
