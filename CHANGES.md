@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.5.23 2024-10-06
+
+Noted dependency of `MAX_SUBMIT_SLOT` and `MAX_TARBALL_LEN` defines
+in `soup/limit_ioccc.h` with the IOCCC submit server.
+
+
 ## Release 1.5.22 2024-10-01
 
 Improve `soup/is_available.sh` to now verify that `checknr(1)` is reliable and
