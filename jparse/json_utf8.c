@@ -19,8 +19,115 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <ctype.h>
 #include "json_utf8.h"
 
+/*
+ * count_utf8_bytes	- count bytes needed to encode/decode in str
+ *
+ * given:
+ *
+ *	str	the string to parse
+ *	bytes	pointer to the number of bytes
+ *
+ * NOTE: if either str or count is NULL we return false. Otherwise we attempt to
+ * parse the string as %4x and then, assuming we extract a value, we count the
+ * number of bytes required for the string and place it in *count. As long as
+ * this can be done we return true.
+ *
+ * NOTE: *str should point to the \u!
+ */
+bool
+count_utf8_bytes(const char *str, size_t *bytes)
+{
+    unsigned char xa = 0;    /* first hex digit */
+    unsigned char xb = 0;    /* second hex digit */
+    unsigned char xc = 0;    /* third hex digit */
+    unsigned char xd = 0;    /* fourth hex digit */
+    unsigned int x = 0;	    /* the hex value we attempt to extract */
+    size_t len = 0;	    /* the number of bytes which *bytes will be set to */
+    int scanned = 0;	    /* how many values read */
+
+
+    /*
+     * firewall
+     */
+    if (bytes == NULL) {
+	warn(__func__, "bytes is NULL");
+	return false;
+    } else {
+	*bytes = 0;
+    }
+
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+
+	if (bytes != NULL) {
+	    *bytes = 0;
+	}
+	return false;
+    }
+
+    scanned = sscanf(str, "\\u%c%c%c%c", &xa, &xb, &xc, &xd);
+    if (scanned != 4) {
+	warn(__func__, "did not find \\u followed by four HEX digits: %ju values: <%s>: %x %x %x %x", scanned, str,
+		xa, xb, xc, xd);
+	if (bytes != NULL) {
+	    *bytes = 0;
+	}
+	return false;
+    } else {
+	/*
+	 * extra sanity check
+	 */
+	if (!isxdigit(xa) || !isxdigit(xb) || !isxdigit(xc) || !isxdigit(xd)) {
+	    warn(__func__, "sscanf() found \\uxxxx but not all values are hex digits!");
+	    if (bytes != NULL) {
+		*bytes = 0;
+	    }
+	    return false;
+	}
+    }
+
+    /*
+     * now that we know that there is a \u followed by FOUR HEX digits we can
+     * try and extract it as a SINGLE HEX number
+     */
+    scanned = sscanf(str, "\\u%4x", &x);
+    if (scanned != 1) {
+	err(10, __func__, "found \\uxxxx but NOT a hex value!");
+	not_reached();
+    } else {
+	/*
+	 * now that we have a SINGLE HEX number, we need to check the number of
+	 * bytes required, setting it in *bytes.
+	 */
+
+	if (x < 0x80) {
+	    len = 1;
+	} else if (x < 0x800) {
+	    len = 2;
+	} else if (x < 0x10000) {
+	    len = 3;
+	} else if (x < 0x110000) {
+	    len = 4;
+	} else {
+	    warn(__func__, "%x: illegal value\n", x);
+
+	    if (bytes != NULL) {
+		*bytes = 0;
+	    }
+
+	    return false;
+	}
+
+	if (bytes != NULL) {
+	    *bytes = len;
+	}
+    }
+
+    return true;
+}
 /*
  * NOTE: until the bug documented at https://github.com/xexyl/jparse/issues/13
  * is resolved fully, we have code here that comes from a number of locations.

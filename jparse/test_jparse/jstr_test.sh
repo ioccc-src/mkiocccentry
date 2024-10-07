@@ -23,6 +23,7 @@ export JSTRENCODE="./jstrencode"
 export JSTRDECODE="./jstrdecode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
+export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
 export JSTR_TEST_VERSION="1.0.3 2024-09-13" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
@@ -39,12 +40,10 @@ Exit codes:
      0	 all tests OK
      2	 help or version printed
      3	 invalid command line, invalid option or option missing an argument
-     4	 test #0 failed
-     5	 test #1 failed
-     6	 test #2 failed
-     7	 test #3 failed
-     8	 missing or non-executable jstrencode
-     9	 missing or non-executable jstrdecode
+     4	 one or more tests failed
+     5	 missing or non-executable jstrencode
+     6	 missing or non-executable jstrdecode
+     7   missing or unreadable jstr_test.txt file
   >= 10	 internal error
 
 jstr_test.sh version: $JSTR_TEST_VERSION"
@@ -141,14 +140,21 @@ fi
 #
 if [[ ! -x "$JSTRENCODE" ]]; then
     echo "$0: ERROR: missing jstrencode tool: $JSTRENCODE" 1>&2
-    exit 8
+    exit 5
 fi
 if [[ ! -x "$JSTRDECODE" ]]; then
     echo "$0: ERROR: missing jstrdecode tool: $JSTRDECODE" 1>&2
-    exit 9
+    exit 6
+fi
+
+if [[ ! -r "$JSTR_TEST_TXT" ]]; then
+    echo "$0: ERROR: file jstr_test.txt missing or not regular readable file" 1>&2
+    exit 7
 fi
 
 # try removing the test files first
+#
+# NOTE: do NOT remove the jstr_test.txt file!
 #
 echo rm -f "$TEST_FILE $TEST_FILE2"
 rm -f "$TEST_FILE $TEST_FILE2"
@@ -179,7 +185,6 @@ else
 fi
 
 # test JSON encoding and decoding pipe
-#
 echo "$0: about to run test #1"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is not correct in our case:
@@ -192,8 +197,9 @@ if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed" 1>&2
 else
     echo "$0: test #1 failed" 1>&2
-    EXIT_CODE=5
+    EXIT_CODE=4
 fi
+
 echo "$0: about to run test #2"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is incorrect in our case:
@@ -201,12 +207,13 @@ echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TES
 # SC2094 (info): Make sure not to read and write the same file in the same pipeline.
 # https://www.shellcheck.net/wiki/SC2094
 # shellcheck disable=SC2094
+#
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
     echo "$0: test #2 passed"
 else
     echo "$0: test #2 failed" 1>&2
-    EXIT_CODE=6
+    EXIT_CODE=4
 fi
 
 # test some text holes in the encoding and decoding pipe
@@ -242,11 +249,13 @@ cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "
 # copy the PIPESTATUS array as the following command will destroy its contents
 STATUS=("${PIPESTATUS[@]}")
 # test each part of the pipeline
+#
+
 ERROR=
 for status in "${STATUS[@]}"; do
     if [[ "$status" -ne 0 ]]; then
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=7
+	EXIT_CODE=4
 	ERROR=1
 	break
     fi
@@ -261,12 +270,12 @@ if [[ -z "$ERROR" ]]; then
     # shellcheck disable=SC2086
     if ! cat $SRC_SET > "$TEST_FILE2"; then
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=7
+	EXIT_CODE=4
     elif cmp -s "$TEST_FILE2" "$TEST_FILE"; then
 	echo "$0: test #3 passed" 1>&2
     else
 	echo "$0: test #3 failed" 1>&2
-	EXIT_CODE=7
+	EXIT_CODE=4
     fi
 fi
 
@@ -277,7 +286,7 @@ if [[ "$RESULT" = '"foobar"' ]]; then
     echo "$0: test #4 passed" 1>&2
 else
     echo "$0: test #4 failed" 1>&2
-    EXIT_CODE=8
+    EXIT_CODE=4
 fi
 
 echo "$0: about to run test #5" 1>&2
@@ -287,7 +296,7 @@ if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
     echo "$0: test #5 passed" 1>&2
 else
     echo "$0: test #5 failed" 1>&2
-    EXIT_CODE=9
+    EXIT_CODE=4
 fi
 
 echo "$0: about to run test #6" 1>&2
@@ -297,9 +306,18 @@ if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
     echo "$0: test #6 passed" 1>&2
 else
     echo "$0: test #6 failed" 1>&2
-    EXIT_CODE=9
+    EXIT_CODE=4
 fi
 
+echo "$0: about to run test #7" 1>&2
+echo "$JSTRDECODE '\\u0153\\u00df\\u00e5\\u00e9'"
+"$JSTRDECODE" "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
+if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
+    echo "$0: test #7 passed" 1>&2
+else
+    echo "$0: test #7 failed: result: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
 
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2

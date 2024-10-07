@@ -1,84 +1,85 @@
 {
-        "event" : "A Long-expected Party",
-	"location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
-	"date" : "22 September T.A. 3001",
-	"birthdays" :
-		{
-		    "hobbit" : [
-			{
-			    "name" : "Bilbo Baggins",
-			    "age" : 111,
-			    "inheritance" : false
-			},
-			{
-			    "name": "Frodo Baggins",
-			    "age": 33,
-			    "inheritance" : true
-			}
-		    ]
-		}
-	],
+    "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+    "event" : "A Long-expected Party",
+    "location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
+    "date" : "22 September T.A. 3001",
+    "birthdays" :
+        {
+            "hobbit" : [
+            {
+                "name" : "Bilbo Baggins",
+                "age" : 111,
+                "inheritance" : false
+            },
+            {
+                "name": "Frodo Baggins",
+                "age": 33,
+                "inheritance" : true
+            }
+            ]
+        }
+    ],
         "guest_list" : [
                 {
                         "name" : "Gandalf",
                         "alias" : "Gandalf the Grey",
                         "alias" : "Mithrandir",
-			"alias" : "Tharkûn",
-			"alias" : "Olórin",
-			"alias" : "Incánus",
+            "alias" : "Tharkûn",
+            "alias" : "Olórin",
+            "alias" : "Incánus",
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
                         "guest_number":  1,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
                 {
                         "name" : "Meriadoc Brandybuck",
-			"alias" : "Merry",
+            "alias" : "Merry",
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
                         "guest_number":  2,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
                 {
                         "name" : "Peregrin Took",
-			"alias" : "Pippin",
-			"alias" : "Pip",
+            "alias" : "Pippin",
+            "alias" : "Pip",
                         "RSVP_requested" : false,
                         "attendance" : "assumed",
                         "guest_number":  3,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : 1.0,
                         "RSVP_state" : "default accepted"
                 },
-		{
+        {
                         "name" : "Sauron",
                         "alias" : "(Second) Dark Lord",
                         "alias" : "Annatar, the Lord of Gifts",
-			"alias" : "Gorthaur",
-			"alias" : "Aulendil",
-			"alias" : "Artano",
-			"alias" : "Thû",
-			"alias" : "the Necromancer",
+            "alias" : "Gorthaur",
+            "alias" : "Aulendil",
+            "alias" : "Artano",
+            "alias" : "Thû",
+            "alias" : "the Necromancer",
                         "RSVP_requested" : ,
                         "attendance" : "denied",
                         "guest_number":  -1,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : -1.0,
                         "RSVP_state" : "'What are Hobbits?'"
                 },
-		{
+        {
                         "name" : "Gollum",
                         "alias" : "Precious",
-			"alias" : "Sméagol",
-			"alias" : "Dígol",
+            "alias" : "Sméagol",
+            "alias" : "Dígol",
                         "RSVP_requested" : false,
                         "attendance" : "denied",
                         "guest_number":  -1,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : -1.0,
                         "RSVP_state" : null
                 },
@@ -88,17 +89,17 @@
                         "RSVP_requested" : true,
                         "attendance" : "pending",
                         "guest_number":  3,
-			"Gross" : false,
+            "Gross" : false,
                         "like_level" : 0.5,
                         "RSVP_state" : "pending"
                 },
                 {
                         "name": "Sackville-Baggins",
-			"alias": "Spoons thieves",
+            "alias": "Spoons thieves",
                         "RSVP_requested" : false,
                         "attendance" : "tolerated",
                         "guest_number":  144,
-			"Gross" : true,
+            "Gross" : true,
                         "like_level" : -0.1,
                         "RSVP_state" : "party crash"
                 }

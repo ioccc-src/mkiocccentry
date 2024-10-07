@@ -56,9 +56,10 @@
  */
 struct byte2asciistr
 {
-    const u_int8_t byte;    /* 8 bit character to encode */
-    const size_t len;	    /* length of encoding */
-    const char * const enc; /* JSON encoding of val */
+    const u_int8_t byte;	/* 8 bit character to encode */
+    const size_t len;		/* length of encoding */
+    const char * const enc;	/* JSON encoding of val */
+    const size_t decoded_len;   /* length of decoded byte */
 };
 
 

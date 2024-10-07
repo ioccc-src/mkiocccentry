@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstr_test.sh 8 "06 September 2024" "jstr_test.sh" "jparse tools"
+.TH jstr_test.sh 8 "04 October 2024" "jstr_test.sh" "jparse tools"
 .SH NAME
 .B jstr_test.sh
 \- JSON string encoding and decoding tests
@@ -105,24 +105,20 @@ all is well
 command line usage error
 .TQ
 4
-test #0 failed
+one or more tests failed
 .TQ
 5
-test #1 failed
-.TQ
-6
-test #2 failed
-.TQ
-7
-test #3 failed
-.TQ
-8
 missing or non\-executable
 .BR jstrencode (1)
 .TQ
-9
+6
 missing or non\-executable
 .BR jstrdecode (1)
+.TQ
+7
+missing or unreadable
+.B jstr_test.txt
+file
 .TQ
 >=10
 internal error
@@ -168,5 +164,4 @@ It can be found at
 .BR jparse (1),
 .BR jparse (3),
 .BR jstrencode (1),
-.BR jstrdecode (1),
-\<https://www.ioccc.org\>
+.BR jstrdecode (1)

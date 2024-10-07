@@ -71,100 +71,100 @@
 struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 
     /* \x00 - \x0f */
-    {0x00, 6, "\\u0000"}, {0x01, 6, "\\u0001"}, {0x02, 6, "\\u0002"}, {0x03, 6, "\\u0003"},
-    {0x04, 6, "\\u0004"}, {0x05, 6, "\\u0005"}, {0x06, 6, "\\u0006"}, {0x07, 6, "\\u0007"},
-    {0x08, 2, "\\b"}, {0x09, 2, "\\t"}, {0x0a, 2, "\\n"}, {0x0b, 6, "\\u000b"},
-    {0x0c, 2, "\\f"}, {0x0d, 2, "\\r"}, {0x0e, 6, "\\u000e"}, {0x0f, 6, "\\u000f"},
+    {0x00, 6, "\\u0000", 2}, {0x01, 6, "\\u0001", 1}, {0x02, 6, "\\u0002", 1}, {0x03, 6, "\\u0003",1},
+    {0x04, 6, "\\u0004", 1}, {0x05, 6, "\\u0005", 1}, {0x06, 6, "\\u0006", 1}, {0x07, 6, "\\u0007",1},
+    {0x08, 2, "\\b", 1}, {0x09, 2, "\\t", 1}, {0x0a, 2, "\\n", 1}, {0x0b, 6, "\\u000b", 1},
+    {0x0c, 2, "\\f", 1}, {0x0d, 2, "\\r", 1}, {0x0e, 6, "\\u000e", 1}, {0x0f, 6, "\\u000f", 1},
 
     /* \x10 - \x1f */
-    {0x10, 6, "\\u0010"}, {0x11, 6, "\\u0011"}, {0x12, 6, "\\u0012"}, {0x13, 6, "\\u0013"},
-    {0x14, 6, "\\u0014"}, {0x15, 6, "\\u0015"}, {0x16, 6, "\\u0016"}, {0x17, 6, "\\u0017"},
-    {0x18, 6, "\\u0018"}, {0x19, 6, "\\u0019"}, {0x1a, 6, "\\u001a"}, {0x1b, 6, "\\u001b"},
-    {0x1c, 6, "\\u001c"}, {0x1d, 6, "\\u001d"}, {0x1e, 6, "\\u001e"}, {0x1f, 6, "\\u001f"},
+    {0x10, 6, "\\u0010", 1}, {0x11, 6, "\\u0011", 1}, {0x12, 6, "\\u0012", 1}, {0x13, 6, "\\u0013", 1},
+    {0x14, 6, "\\u0014", 1}, {0x15, 6, "\\u0015", 1}, {0x16, 6, "\\u0016", 1}, {0x17, 6, "\\u0017", 1},
+    {0x18, 6, "\\u0018", 1}, {0x19, 6, "\\u0019", 1}, {0x1a, 6, "\\u001a", 1}, {0x1b, 6, "\\u001b", 1},
+    {0x1c, 6, "\\u001c", 1}, {0x1d, 6, "\\u001d", 1}, {0x1e, 6, "\\u001e", 1}, {0x1f, 6, "\\u001f", 1},
 
     /* \x20 - \x2f */
-    {' ', 1, " "}, {'!', 1, "!"}, {'"', 2, "\\\""}, {'#', 1, "#"},
-    {'$', 1, "$"}, {'%', 1, "%"}, {'&', 1, "&"}, {'\'', 1, "'"},
-    {'(', 1, "("}, {')', 1, ")"}, {'*', 1, "*"}, {'+', 1, "+"},
-    {',', 1, ","}, {'-', 1, "-"}, {'.', 1, "."}, {'/', 1, "/"},
+    {' ', 1, " ", 1}, {'!', 1, "!", 1}, {'"', 2, "\\\"", 1}, {'#', 1, "#", 1},
+    {'$', 1, "$", 1}, {'%', 1, "%", 1}, {'&', 1, "&", 1}, {'\'', 1, "'", 1},
+    {'(', 1, "(", 1}, {')', 1, ")", 1}, {'*', 1, "*", 1}, {'+', 1, "+", 1},
+    {',', 1, ",", 1}, {'-', 1, "-", 1}, {'.', 1, ".", 1}, {'/', 1, "/", 1},
 
     /* \x30 - \x3f */
-    {'0', 1, "0"}, {'1', 1, "1"}, {'2', 1, "2"}, {'3', 1, "3"},
-    {'4', 1, "4"}, {'5', 1, "5"}, {'6', 1, "6"}, {'7', 1, "7"},
-    {'8', 1, "8"}, {'9', 1, "9"}, {':', 1, ":"}, {';', 1, ";"},
-    {'<', 1, "<"}, {'=', 1, "="}, {'>', 1, ">"}, {'?', 1, "?"},
+    {'0', 1, "0", 1}, {'1', 1, "1", 1}, {'2', 1, "2", 1}, {'3', 1, "3", 1},
+    {'4', 1, "4", 1}, {'5', 1, "5", 1}, {'6', 1, "6", 1}, {'7', 1, "7", 1},
+    {'8', 1, "8", 1}, {'9', 1, "9", 1}, {':', 1, ":", 1}, {';', 1, ";", 1},
+    {'<', 1, "<", 1}, {'=', 1, "=", 1}, {'>', 1, ">", 1}, {'?', 1, "?", 1},
 
     /* \x40 - \x4f */
-    {'@', 1, "@"}, {'A', 1, "A"}, {'B', 1, "B"}, {'C', 1, "C"},
-    {'D', 1, "D"}, {'E', 1, "E"}, {'F', 1, "F"}, {'G', 1, "G"},
-    {'H', 1, "H"}, {'I', 1, "I"}, {'J', 1, "J"}, {'K', 1, "K"},
-    {'L', 1, "L"}, {'M', 1, "M"}, {'N', 1, "N"}, {'O', 1, "O"},
+    {'@', 1, "@", 1}, {'A', 1, "A", 1}, {'B', 1, "B", 1}, {'C', 1, "C", 1},
+    {'D', 1, "D", 1}, {'E', 1, "E", 1}, {'F', 1, "F", 1}, {'G', 1, "G", 1},
+    {'H', 1, "H", 1}, {'I', 1, "I", 1}, {'J', 1, "J", 1}, {'K', 1, "K", 1},
+    {'L', 1, "L", 1}, {'M', 1, "M", 1}, {'N', 1, "N", 1}, {'O', 1, "O", 1},
 
     /* \x50 - \x5f */
-    {'P', 1, "P"}, {'Q', 1, "Q"}, {'R', 1, "R"}, {'S', 1, "S"},
-    {'T', 1, "T"}, {'U', 1, "U"}, {'V', 1, "V"}, {'W', 1, "W"},
-    {'X', 1, "X"}, {'Y', 1, "Y"}, {'Z', 1, "Z"}, {'[', 1, "["},
-    {'\\', 2, "\\\\"}, {']', 1, "]"}, {'^', 1, "^"}, {'_', 1, "_"},
+    {'P', 1, "P", 1}, {'Q', 1, "Q", 1},    {'R', 1, "R", 1}, {'S', 1, "S", 1},
+    {'T', 1, "T", 1}, {'U', 1, "U", 1},    {'V', 1, "V", 1}, {'W', 1, "W", 1},
+    {'X', 1, "X", 1}, {'Y', 1, "Y", 1},    {'Z', 1, "Z", 1}, {'[', 1, "[", 1},
+    {'\\', 2, "\\\\", 1}, {']', 1, "]",1}, {'^', 1, "^", 1}, {'_', 1, "_", 1},
 
     /* \x60 - \x6f */
-    {'`', 1, "`"}, {'a', 1, "a"}, {'b', 1, "b"}, {'c', 1, "c"},
-    {'d', 1, "d"}, {'e', 1, "e"}, {'f', 1, "f"}, {'g', 1, "g"},
-    {'h', 1, "h"}, {'i', 1, "i"}, {'j', 1, "j"}, {'k', 1, "k"},
-    {'l', 1, "l"}, {'m', 1, "m"}, {'n', 1, "n"}, {'o', 1, "o"},
+    {'`', 1, "`", 1}, {'a', 1, "a", 1}, {'b', 1, "b", 1}, {'c', 1, "c", 1},
+    {'d', 1, "d", 1}, {'e', 1, "e", 1}, {'f', 1, "f", 1}, {'g', 1, "g", 1},
+    {'h', 1, "h", 1}, {'i', 1, "i", 1}, {'j', 1, "j", 1}, {'k', 1, "k", 1},
+    {'l', 1, "l", 1}, {'m', 1, "m", 1}, {'n', 1, "n", 1}, {'o', 1, "o", 1},
 
     /* \x70 - \x7f */
-    {'p', 1, "p"}, {'q', 1, "q"}, {'r', 1, "r"}, {'s', 1, "s"},
-    {'t', 1, "t"}, {'u', 1, "u"}, {'v', 1, "v"}, {'w', 1, "w"},
-    {'x', 1, "x"}, {'y', 1, "y"}, {'z', 1, "z"}, {'{', 1, "{"},
-    {'|', 1, "|"}, {'}', 1, "}"}, {'~', 1, "~"}, {0x7f, 6, "\\u007f"},
+    {'p', 1, "p", 1}, {'q', 1, "q", 1}, {'r', 1, "r", 1}, {'s', 1, "s", 1},
+    {'t', 1, "t", 1}, {'u', 1, "u", 1}, {'v', 1, "v", 1}, {'w', 1, "w", 1},
+    {'x', 1, "x", 1}, {'y', 1, "y", 1}, {'z', 1, "z", 1}, {'{', 1, "{", 1},
+    {'|', 1, "|", 1}, {'}', 1, "}", 1}, {'~', 1, "~", 1}, {0x7f, 6, "\\u007f", 1},
 
     /* \x80 - \x8f */
-    {0x80, 1, "\x80"}, {0x81, 1, "\x81"}, {0x82, 1, "\x82"}, {0x83, 1, "\x83"},
-    {0x84, 1, "\x84"}, {0x85, 1, "\x85"}, {0x86, 1, "\x86"}, {0x87, 1, "\x87"},
-    {0x88, 1, "\x88"}, {0x89, 1, "\x89"}, {0x8a, 1, "\x8a"}, {0x8b, 1, "\x8b"},
-    {0x8c, 1, "\x8c"}, {0x8d, 1, "\x8d"}, {0x8e, 1, "\x8e"}, {0x8f, 1, "\x8f"},
+    {0x80, 1, "\x80", 1}, {0x81, 1, "\x81", 1}, {0x82, 1, "\x82", 1}, {0x83, 1, "\x83", 1},
+    {0x84, 1, "\x84", 1}, {0x85, 1, "\x85", 1}, {0x86, 1, "\x86", 1}, {0x87, 1, "\x87", 1},
+    {0x88, 1, "\x88", 1}, {0x89, 1, "\x89", 1}, {0x8a, 1, "\x8a", 1}, {0x8b, 1, "\x8b", 1},
+    {0x8c, 1, "\x8c", 1}, {0x8d, 1, "\x8d", 1}, {0x8e, 1, "\x8e", 1}, {0x8f, 1, "\x8f", 1},
 
     /* \x90 - \x9f */
-    {0x90, 1, "\x90"}, {0x91, 1, "\x91"}, {0x92, 1, "\x92"}, {0x93, 1, "\x93"},
-    {0x94, 1, "\x94"}, {0x95, 1, "\x95"}, {0x96, 1, "\x96"}, {0x97, 1, "\x97"},
-    {0x98, 1, "\x98"}, {0x99, 1, "\x99"}, {0x9a, 1, "\x9a"}, {0x9b, 1, "\x9b"},
-    {0x9c, 1, "\x9c"}, {0x9d, 1, "\x9d"}, {0x9e, 1, "\x9e"}, {0x9f, 1, "\x9f"},
+    {0x90, 1, "\x90", 1}, {0x91, 1, "\x91", 1}, {0x92, 1, "\x92", 1}, {0x93, 1, "\x93", 1},
+    {0x94, 1, "\x94", 1}, {0x95, 1, "\x95", 1}, {0x96, 1, "\x96", 1}, {0x97, 1, "\x97", 1},
+    {0x98, 1, "\x98", 1}, {0x99, 1, "\x99", 1}, {0x9a, 1, "\x9a", 1}, {0x9b, 1, "\x9b", 1},
+    {0x9c, 1, "\x9c", 1}, {0x9d, 1, "\x9d", 1}, {0x9e, 1, "\x9e", 1}, {0x9f, 1, "\x9f", 1},
 
     /* \xa0 - \xaf */
-    {0xa0, 1, "\xa0"}, {0xa1, 1, "\xa1"}, {0xa2, 1, "\xa2"}, {0xa3, 1, "\xa3"},
-    {0xa4, 1, "\xa4"}, {0xa5, 1, "\xa5"}, {0xa6, 1, "\xa6"}, {0xa7, 1, "\xa7"},
-    {0xa8, 1, "\xa8"}, {0xa9, 1, "\xa9"}, {0xaa, 1, "\xaa"}, {0xab, 1, "\xab"},
-    {0xac, 1, "\xac"}, {0xad, 1, "\xad"}, {0xae, 1, "\xae"}, {0xaf, 1, "\xaf"},
+    {0xa0, 1, "\xa0", 1}, {0xa1, 1, "\xa1", 1}, {0xa2, 1, "\xa2", 1}, {0xa3, 1, "\xa3", 1},
+    {0xa4, 1, "\xa4", 1}, {0xa5, 1, "\xa5", 1}, {0xa6, 1, "\xa6", 1}, {0xa7, 1, "\xa7", 1},
+    {0xa8, 1, "\xa8", 1}, {0xa9, 1, "\xa9", 1}, {0xaa, 1, "\xaa", 1}, {0xab, 1, "\xab", 1},
+    {0xac, 1, "\xac", 1}, {0xad, 1, "\xad", 1}, {0xae, 1, "\xae", 1}, {0xaf, 1, "\xaf", 1},
 
     /* \xb0 - \xbf */
-    {0xb0, 1, "\xb0"}, {0xb1, 1, "\xb1"}, {0xb2, 1, "\xb2"}, {0xb3, 1, "\xb3"},
-    {0xb4, 1, "\xb4"}, {0xb5, 1, "\xb5"}, {0xb6, 1, "\xb6"}, {0xb7, 1, "\xb7"},
-    {0xb8, 1, "\xb8"}, {0xb9, 1, "\xb9"}, {0xba, 1, "\xba"}, {0xbb, 1, "\xbb"},
-    {0xbc, 1, "\xbc"}, {0xbd, 1, "\xbd"}, {0xbe, 1, "\xbe"}, {0xbf, 1, "\xbf"},
+    {0xb0, 1, "\xb0", 1}, {0xb1, 1, "\xb1", 1}, {0xb2, 1, "\xb2", 1}, {0xb3, 1, "\xb3", 1},
+    {0xb4, 1, "\xb4", 1}, {0xb5, 1, "\xb5", 1}, {0xb6, 1, "\xb6", 1}, {0xb7, 1, "\xb7", 1},
+    {0xb8, 1, "\xb8", 1}, {0xb9, 1, "\xb9", 1}, {0xba, 1, "\xba", 1}, {0xbb, 1, "\xbb", 1},
+    {0xbc, 1, "\xbc", 1}, {0xbd, 1, "\xbd", 1}, {0xbe, 1, "\xbe", 1}, {0xbf, 1, "\xbf", 1},
 
     /* \xc0 - \xcf */
-    {0xc0, 1, "\xc0"}, {0xc1, 1, "\xc1"}, {0xc2, 1, "\xc2"}, {0xc3, 1, "\xc3"},
-    {0xc4, 1, "\xc4"}, {0xc5, 1, "\xc5"}, {0xc6, 1, "\xc6"}, {0xc7, 1, "\xc7"},
-    {0xc8, 1, "\xc8"}, {0xc9, 1, "\xc9"}, {0xca, 1, "\xca"}, {0xcb, 1, "\xcb"},
-    {0xcc, 1, "\xcc"}, {0xcd, 1, "\xcd"}, {0xce, 1, "\xce"}, {0xcf, 1, "\xcf"},
+    {0xc0, 1, "\xc0", 1}, {0xc1, 1, "\xc1", 1}, {0xc2, 1, "\xc2", 1}, {0xc3, 1, "\xc3", 1},
+    {0xc4, 1, "\xc4", 1}, {0xc5, 1, "\xc5", 1}, {0xc6, 1, "\xc6", 1}, {0xc7, 1, "\xc7", 1},
+    {0xc8, 1, "\xc8", 1}, {0xc9, 1, "\xc9", 1}, {0xca, 1, "\xca", 1}, {0xcb, 1, "\xcb", 1},
+    {0xcc, 1, "\xcc", 1}, {0xcd, 1, "\xcd", 1}, {0xce, 1, "\xce", 1}, {0xcf, 1, "\xcf", 1},
 
     /* \xd0 - \xdf */
-    {0xd0, 1, "\xd0"}, {0xd1, 1, "\xd1"}, {0xd2, 1, "\xd2"}, {0xd3, 1, "\xd3"},
-    {0xd4, 1, "\xd4"}, {0xd5, 1, "\xd5"}, {0xd6, 1, "\xd6"}, {0xd7, 1, "\xd7"},
-    {0xd8, 1, "\xd8"}, {0xd9, 1, "\xd9"}, {0xda, 1, "\xda"}, {0xdb, 1, "\xdb"},
-    {0xdc, 1, "\xdc"}, {0xdd, 1, "\xdd"}, {0xde, 1, "\xde"}, {0xdf, 1, "\xdf"},
+    {0xd0, 1, "\xd0", 1}, {0xd1, 1, "\xd1", 1}, {0xd2, 1, "\xd2", 1}, {0xd3, 1, "\xd3", 1},
+    {0xd4, 1, "\xd4", 1}, {0xd5, 1, "\xd5", 1}, {0xd6, 1, "\xd6", 1}, {0xd7, 1, "\xd7", 1},
+    {0xd8, 1, "\xd8", 1}, {0xd9, 1, "\xd9", 1}, {0xda, 1, "\xda", 1}, {0xdb, 1, "\xdb", 1},
+    {0xdc, 1, "\xdc", 1}, {0xdd, 1, "\xdd", 1}, {0xde, 1, "\xde", 1}, {0xdf, 1, "\xdf", 1},
 
     /* \xe0 - \xef */
-    {0xe0, 1, "\xe0"}, {0xe1, 1, "\xe1"}, {0xe2, 1, "\xe2"}, {0xe3, 1, "\xe3"},
-    {0xe4, 1, "\xe4"}, {0xe5, 1, "\xe5"}, {0xe6, 1, "\xe6"}, {0xe7, 1, "\xe7"},
-    {0xe8, 1, "\xe8"}, {0xe9, 1, "\xe9"}, {0xea, 1, "\xea"}, {0xeb, 1, "\xeb"},
-    {0xec, 1, "\xec"}, {0xed, 1, "\xed"}, {0xee, 1, "\xee"}, {0xef, 1, "\xef"},
+    {0xe0, 1, "\xe0", 1}, {0xe1, 1, "\xe1", 1}, {0xe2, 1, "\xe2", 1}, {0xe3, 1, "\xe3", 1},
+    {0xe4, 1, "\xe4", 1}, {0xe5, 1, "\xe5", 1}, {0xe6, 1, "\xe6", 1}, {0xe7, 1, "\xe7", 1},
+    {0xe8, 1, "\xe8", 1}, {0xe9, 1, "\xe9", 1}, {0xea, 1, "\xea", 1}, {0xeb, 1, "\xeb", 1},
+    {0xec, 1, "\xec", 1}, {0xed, 1, "\xed", 1}, {0xee, 1, "\xee", 1}, {0xef, 1, "\xef", 1},
 
     /* \xf0 - \xff */
-    {0xf0, 1, "\xf0"}, {0xf1, 1, "\xf1"}, {0xf2, 1, "\xf2"}, {0xf3, 1, "\xf3"},
-    {0xf4, 1, "\xf4"}, {0xf5, 1, "\xf5"}, {0xf6, 1, "\xf6"}, {0xf7, 1, "\xf7"},
-    {0xf8, 1, "\xf8"}, {0xf9, 1, "\xf9"}, {0xfa, 1, "\xfa"}, {0xfb, 1, "\xfb"},
-    {0xfc, 1, "\xfc"}, {0xfd, 1, "\xfd"}, {0xfe, 1, "\xfe"}, {0xff, 1, "\xff"}
+    {0xf0, 1, "\xf0", 1}, {0xf1, 1, "\xf1", 1}, {0xf2, 1, "\xf2", 1}, {0xf3, 1, "\xf3", 1},
+    {0xf4, 1, "\xf4", 1}, {0xf5, 1, "\xf5", 1}, {0xf6, 1, "\xf6", 1}, {0xf7, 1, "\xf7", 1},
+    {0xf8, 1, "\xf8", 1}, {0xf9, 1, "\xf9", 1}, {0xfa, 1, "\xfa", 1}, {0xfb, 1, "\xfb", 1},
+    {0xfc, 1, "\xfc", 1}, {0xfd, 1, "\xfd", 1}, {0xfe, 1, "\xfe", 1}, {0xff, 1, "\xff", 1}
 };
 
 
@@ -173,7 +173,6 @@ static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
-
 
 /*
  * json_encode - return a JSON encoding of a block of memory
@@ -772,9 +771,9 @@ jencchk(void)
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
-	if (mlen2 != 1) {
-	    err(148, __func__, "json_decode_str(<%s>, *mlen2 %ju != 1, true)",
-			       mstr, (uintmax_t)mlen2);
+	if (mlen2 != byte2asciistr[i].decoded_len) {
+	    err(148, __func__, "json_decode_str(<%s>, *mlen2 %ju != %ju, true)",
+			       mstr, (uintmax_t)mlen2, byte2asciistr[i].decoded_len);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
@@ -795,7 +794,7 @@ jencchk(void)
     }
 
     /*
-     * all seems well win the byte2asciistr[] table
+     * all seems well with the byte2asciistr[] table
      */
     dbg(DBG_VVHIGH, "byte2asciistr[] table passes");
     return;
@@ -825,11 +824,11 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
     char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
     int xa = 0;		    /* first hex character numeric value */
-    int xb = 0;		    /* second hex character numeric value */
     char c = 0;		    /* character to decode or third hex character after \u */
-    int xc = 0;		    /* 3nd hex character numeric value */
-    int xd = 0;		    /* fourth hex character numeric value */
     size_t i;
+    int32_t bytes = 0;
+    char *utf8 = NULL;
+    int scanned = 0;
 
     /*
      * firewall
@@ -867,28 +866,29 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
      * decoded string, we already determined that the JSON encoded block of
      * memory is valid.
      */
-    for (i=0, p=ret; i < len; ++i) {
+    for (i=0, p=utf8=ret; i < len; ++i, ++utf8) {
+	/*
+	 * paranoia
+	 */
+	if (p >= beyond) {
+	    /* error - clear allocated length and buffer */
+	    if (retlen != NULL) {
+		*retlen = 0;
+	    }
+	    if (ret != NULL) {
+		free(ret);
+		ret = NULL;
+	    }
+
+	    warn(__func__, "ran beyond end of decoded string");
+	    return NULL;
+	}
 
 	/*
 	 * examine the current character
 	 */
 	c = (char)((uint8_t)(ptr[i]));
 
-	/*
-	 * paranoia
-	 */
-	if (p >= beyond) {
-	    /* error - free buffer and clear allocated length */
-	    if (ret != NULL) {
-		free(ret);
-		ret = NULL;
-	    }
-	    if (retlen != NULL) {
-		*retlen = 0;
-	    }
-	    warn(__func__, "ran beyond end of decoded string");
-	    return NULL;
-	}
 
 	/*
 	 * case: JSON decode non \-escape character
@@ -954,77 +954,76 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 	     * decode \uxxxx
 	     */
 	    case 'u':
-
 		/*
 		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
-		    /* error - free buffer and clear allocated length */
+		    /* error - clear allocated length and free buffer */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
 		    if (ret != NULL) {
 			free(ret);
 			ret = NULL;
 		    }
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
+
 		    warn(__func__, "found \\u while decoding, but not enough for 4 hex chars at end of buffer");
 		    return NULL;
 		}
-		xa = hexval[(uint8_t)(ptr[i+2])];
-		xb = hexval[(uint8_t)(ptr[i+3])];
-		xc = hexval[(uint8_t)(ptr[i+4])];
-		xd = hexval[(uint8_t)(ptr[i+5])];
-
-		/*
-		 * case: \u00xx
-		 */
-		if (xa == 0 && xb == 0) {
-		    /* single byte \u00xx */
-		    i += 5;
-		    *p++ = (char)((xc << 4) | xd);
-
-		    if (xc == 0 && xd == 0 && has_nul != NULL) {
-			*has_nul = true; /* record NUL byte */
+		xa = 0;
+		scanned = sscanf(ptr + i + 2, "%4x", &xa);
+		if (scanned == EOF) {
+		    /* error - clear allocated length and free buffer */
+		    if (retlen != NULL) {
+			*retlen = 0;
 		    }
-		/*
-		 * case: \uxxxx
-		 */
-		} else {
-
-		    /*
-		     * paranoia
-		     */
-		    if (p+1 >= beyond) {
-			/* error - free buffer and clear allocated length */
-			if (ret != NULL) {
-			    free(ret);
-			    ret = NULL;
-			}
-			if (retlen != NULL) {
-			    *retlen = 0;
-			}
-			warn(__func__, "ran beyond end of decoded string for non-UTF-8 \\u encoding");
-			return NULL;
+		    if (ret != NULL) {
+			free(ret);
+			ret = NULL;
 		    }
-		    /* double byte \uxxxx */
-		    i += 5;
-		    *p++ = (char)((xa << 4) | xb);
-		    *p++ = (char)((xc << 4) | xd);
+
+		    warn(__func__, "reached EOF trying to scan for hex bytes");
+		    return NULL;
+		} else if (scanned != 1) {
+		    /* error - clear allocated length and free buffer */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    if (ret != NULL) {
+			free(ret);
+			ret = NULL;
+		    }
+		    warn(__func__, "did not read \\uxxxx hex value");
+		    return NULL;
 		}
+
+		bytes = utf8encode(utf8, xa);
+		/*
+		 * bytes - 1 because we increment utf8 in the increment phase
+		 * of the loop
+		 */
+		utf8 += bytes - 1;
+		/*
+		 * however, for p we need to update the entire amount
+		 */
+		p += bytes;
+		i += 5;
+
 		break;
 
 	    /*
 	     * unknown \c escaped pairs
 	     */
 	    default:
-		/* error - free buffer and clear allocated length */
+		/* error - clear allocated length and free buffer */
+		if (retlen != NULL) {
+		    *retlen = 0;
+		}
 		if (ret != NULL) {
 		    free(ret);
 		    ret = NULL;
 		}
-		if (retlen != NULL) {
-		    *retlen = 0;
-		}
+
 		warn(__func__, "found invalid JSON \\-escape while decoding: followed by 0x%02x", (uint8_t)c);
 		return NULL;
 	    }
@@ -1037,19 +1036,19 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
     if (unicode != NULL) {
 	*unicode = unicode_count_chars((uint8_t *)ptr) >= 0;
     }
+
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from decode_json_string(ptr, %ju, %ju, *%ju, %s, %s)",
-		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0, has_nul != NULL ? booltostr(*has_nul) : "false",
-		 unicode != NULL ? booltostr(*unicode) : "false");
+
+    dbg(DBG_VVVHIGH, "returning from decode_json_string(ptr, %ju, %ju, *%ju, %s)",
+		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0, has_nul != NULL ? booltostr(*has_nul) : "false");
     if (retlen != NULL) {
-	*retlen = len;
+	*retlen = mlen;
     }
 
     return ret;
 }
-
 
 /*
  * json_decode - return the decoding of a JSON encoded block of memory
@@ -1077,6 +1076,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
     char c = 0;		    /* character to decode or third hex character after \u */
     char d = 0;		    /* fourth hex character after \u */
     size_t i;
+    size_t bytes = 0;	    /* for count_utf8_bytes() */
 
     /*
      * firewall
@@ -1186,6 +1186,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
 	    case 'u':
 
 		/*
+		 * Yes, count_utf8_bytes() also makes the below checks but we
+		 * still do these here.
+		 */
+
+		/*
 		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
@@ -1205,32 +1210,25 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
 		 * the next 4 characters beyond \u must be hex characters
 		 */
 		if (isxdigit(a) && isxdigit(b) && isxdigit(c) && isxdigit(d)) {
-
-		    /*
-		     * case: \u00xx is 1 character
-		     */
-		    if (a == '0' && b == '0') {
-			++mlen;
-			i += 5;
-
-			if (c == '0' && d == '0' && has_nul != NULL) {
-			    *has_nul = true; /* set has_nul to true */
+		    bytes = 0; /* reset bytes */
+		    if (!count_utf8_bytes(ptr + i, &bytes)) {
+			if (retlen != NULL) {
+			    *retlen = 0;
 			}
-		    /*
-		     * case: count \uxxxx as 2 characters
-		     */
-		    } else {
-			mlen += 2;
-			i += 5;
+			/* count_utf8_bytes() already warns */
+			return NULL;
 		    }
-		    break;
+		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
+		    mlen += bytes;
+		    i += 5;
 
+		    break;
 		/*
 		 * case: \uxxxx is invalid because xxxx is not HEX
 		 */
 		} else {
-			warn(__func__, "\\u, not followed by 4 hex chars");
-			return NULL;
+		    warn(__func__, "\\u, not followed by 4 hex chars");
+		    return NULL;
 		}
 		break;
 
@@ -1259,14 +1257,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
     if (ret != NULL) {
 	dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju, %s)",
 			 (uintmax_t)len, (uintmax_t)mlen, has_nul != NULL ? booltostr(*has_nul) : "false");
-	if (retlen != NULL) {
-	    *retlen = mlen;
-	}
     } else {
 	dbg(DBG_VVVHIGH, "in json_decode(): decode_json_string(ptr, %ju, *%ju, %s) returned NULL",
 			 (uintmax_t)len, (uintmax_t)mlen, has_nul != NULL ? booltostr(*has_nul) : "false");
 	if (retlen != NULL) {
-	    *retlen = mlen;
+	    *retlen = 0;
 	}
 	return NULL;
     }
@@ -1312,6 +1307,14 @@ json_decode_str(char const *str, size_t *retlen)
 	warn(__func__, "called with NULL ptr");
 	return NULL;
     }
+
+    if (retlen != NULL) {
+	/*
+	 * set *retlen = 0
+	 */
+	*retlen = 0;
+    }
+
     len = strlen(str);
 
     /*
@@ -1322,7 +1325,12 @@ json_decode_str(char const *str, size_t *retlen)
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
 	dbg(DBG_VVHIGH, "string: <%s> JSON decoded", str);
+	if (retlen != NULL) {
+	    dbg(DBG_VVHIGH, "retlen for <%s> is %ju", str, *retlen);
+	}
     }
+
+
 
     /*
      * return decoded result or NULL

@@ -1,5 +1,65 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.21 2024-10-06
+
+Fix test cases in `jstr_test.sh`. Extra bytes were being written due to the way
+the size of the decoded string was being calculated. Instead a new function is
+in `json_utf8.c` called `count_utf8_bytes()`. This does the same sanity checks
+(though slightly different) in `json_decode()`. As well the for loop had to be
+fixed (the increment stage and the `\uxxxx` parsing) in `decode_json_string()`.
+With this change the `jstr_test.sh` script now passes all tests.
+
+The above fixes required a modification to `jstr_test.txt` and its change is the
+answer to the above fixes: it had extra bytes in it as all decoding with
+`\uxxxx` did. After that problem was fixed (the `count_utf8_bytes()`) the loop
+had to be fixed so that `char *utf8` (renamed from `offset`) is always
+incremented by 1 (this is why in `decode_json_string()` we now have `utf8 +=
+bytes - 1;` and `p += bytes;`).
+
+The `byte2asciistr` table had to be updated as obviously some size differences
+occurred.
+
+The JSON parser version has been bumped to `"1.1.7 2024-10-06"`.
+
+The issue #13 is NOT completely resolved as the recent commits do not address
+sequences in `\uxxxx\uxxxx` and it also does not work for every `\uxxxx`
+sequence.
+
+
+## Release 1.0.20 2024-10-05
+
+Add to `struct byte2asciistr` a `size_t` for the decoded length in order to
+verify the decoded length is correct, since not every byte has the same decoded
+length. This allows us to test the decoded length in the table.
+
+
+## Release 1.0.19 2024-10-04
+
+Fix the JSON decode bug #13. Using the function `utf8encode()` it appears that
+the bug is now fixed. More testing does need to be done but numerous test cases
+now seem to work.
+
+The calculation of the length to allocate has been changed somewhat to get this
+to work. The retlen had to be updated too, to refer to len, not mlen.
+
+The check for the `unicode` boolean should be improved and it is not
+even clear if it can remain the way it is (this is the part where it checks for
+invalid codes).
+
+Added test file `test_jparse/jstr_test.txt` to compare for a new decoding test
+in the `jstr_test.sh` script.
+
+A few tests in `jstr_test.sh` had to be temporarily disabled as in fixing the
+decoding seems to have broken them. Whether another fix with decoding bug is
+needed or a fix with the script itself is unclear at this time.
+
+The `jstr_test.sh` exit codes have been changed. Man page updated.
+
+Once the test cases have been enabled and the `unicode` boolean is implemented
+properly, and assuming this bug is resolved, the file `json_utf8.c` and
+`json_utf8.h` can be cleaned up.
+
+
 ## Release 1.0.18 2024-10-01
 
 Improve `test_jparse/is_available.sh`: it now will do a trivial test on

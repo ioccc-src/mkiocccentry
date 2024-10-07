@@ -29,6 +29,13 @@
 #endif
 
 /*
+ * util - common utility functions for the JSON parser
+ */
+#include "util.h"
+
+extern bool count_utf8_bytes(const char *str, size_t *bytes);
+
+/*
  * NOTE: until the bug documented at https://github.com/xexyl/jparse/issues/13
  * is resolved fully, we have code here that comes from a number of locations.
  * Once the bug is resolved this file will be cleaned up. There are two
