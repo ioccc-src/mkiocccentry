@@ -236,14 +236,14 @@ utf8encode(char *str, unsigned int val)
 	warn(__func__, "codepoint: %X: illegal value", val);
 	len = UNICODE_NOT_CHARACTER;
     } else if (val >= UNI_SUR_HIGH_START && val <= UNI_SUR_LOW_END) {
-	warn(__func__, "codepoint: %X: illegal surrogate");
+	warn(__func__, "codepoint: %X: illegal surrogate", val);
 	len = UNICODE_SURROGATE_PAIR;
     } else if (val < 0x80) {
-	dbg(DBG_MED, "%s: val: %X < 0x80", __func__, (uintmax_t)val);
+	dbg(DBG_MED, "%s: val: %X < 0x80", __func__, val);
 	str[0] = val;
 	len = 1;
     } else if (val < 0x800) {
-	dbg(DBG_MED, "%s: val: %X < 0x800", __func__, (uintmax_t)val);
+	dbg(DBG_MED, "%s: val: %X < 0x800", __func__, val);
 	str[1] = val & UTF8_V_MASK;
 	str[1] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
@@ -251,7 +251,7 @@ utf8encode(char *str, unsigned int val)
 	str[0] |= UTF8_2_BITS;
 	len = 2;
     } else if (val < 0x10000) {
-	dbg(DBG_MED, "%s: val: %X < 0x10000", __func__, (uintmax_t)val);
+	dbg(DBG_MED, "%s: val: %X < 0x10000", __func__, val);
 	str[2] = val & UTF8_V_MASK;
 	str[2] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
@@ -262,7 +262,7 @@ utf8encode(char *str, unsigned int val)
 	str[0] |= UTF8_3_BITS;
 	len = 3;
     } else if (val < 0x110000) {
-	dbg(DBG_MED, "%s: val: %X < 0x110000", __func__, (uintmax_t)val);
+	dbg(DBG_MED, "%s: val: %X < 0x110000", __func__, val);
 	str[3] = val & UTF8_V_MASK;
 	str[3] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
