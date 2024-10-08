@@ -229,7 +229,6 @@ struct json_string
 {
     bool parsed;		/* true ==> able to parse correctly */
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
-    bool unicode;               /* true ==> no invalid Unicode symbols found during decoding */
 
     char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
     char *str;			/* allocated decoded JSON string, NUL terminated */
@@ -491,8 +490,8 @@ extern struct byte2asciistr byte2asciistr[];
  */
 extern char *json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
 extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
-extern void jencchk(void);
-extern char *json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *unicode);
+extern void chkbyte2asciistr(void);
+extern char *json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul);
 extern char *json_decode_str(char const *str, size_t *retlen);
 extern struct json *parse_json_string(char const *string, size_t len);
 extern struct json *parse_json_bool(char const *string);
