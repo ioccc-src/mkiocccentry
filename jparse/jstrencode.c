@@ -43,7 +43,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "1.1.2 2024-09-19"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "1.1.3 2024-10-08"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * usage message

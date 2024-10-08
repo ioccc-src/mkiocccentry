@@ -1,5 +1,81 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.0.23 2024-10-08
+
+Fix surrogate pair decoding in `json_decode()` / `decode_json_string()`. Now one
+can do for example:
+
+```sh
+jstrdecode "\ud834\udd1e"
+```
+
+(which is UTF-16 as `U+1D11E`) and expect to get:
+
+```
+𝄞
+```
+
+or:
+
+```sh
+jstrdecode "\ud834\udd1ef"
+```
+
+and get:
+
+```
+𝄞f
+```
+
+At this time the only issue with JSON decoding that I am aware of is with
+characters that are `!isprint()`. Once that is resolved I believe that #13 will
+be resolved.
+
+Updated versions of `jstrencode`, `jstrdecode` and the JSON parser library for
+this fix.
+
+Formatted `json_utf8.[hc]` a bit. This includes removing duplicate `#define`s
+and formatting comments. This does not include the changing of `type*` to `type
+*` as much as we want that. A line has to be drawn somewhere, and we don't even
+know every function we will have to keep.
+
+```
+-----------------
+```
+
+`^` The above is the line.
+
+Reject certain UTF-8 codepoints. It is believed that issue #13 might be resolved
+fully. Codepoints that were thought to be valid but not displayed might be
+because they are not printable at the console. In a web page the following:
+
+```html
+&#x1e;
+```
+
+shows something but pasting it into this document shows nothing at all.
+
+It is possible that #13 is not completely resolved but it seems in good shape at
+this time, anyway, and unless something comes up, it might be declared good,
+except that the files `json_utf8.[hc]` could be cleaned up to not have what we
+do not need.
+
+Add more encode/decode tests to `test_jparse/jstr_test.sh`.
+
+Greatly simplify `json_utf8.[hc]` by removing code/macros not needed. It might
+be possible to further reduce it but that will depend on at least one question
+that still has to be thought out.
+
+
+## Release 1.0.22 2024-10-07
+
+Improve `test_jparse/jparse_test.sh`. Don't show blank line at top of failure
+messages (when more than one failure) and don't prefix each file/string with
+`FILE:`/`STRING:` as this is redundant due to how it is displayed. Updated
+script to version `1.0.7 2024-10-07`.
+
+Add `dbg()` calls to `utf8encode()`.
+
 ## Release 1.0.21 2024-10-06
 
 Fix test cases in `jstr_test.sh`. Extra bytes were being written due to the way

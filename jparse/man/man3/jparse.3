@@ -301,7 +301,6 @@ Although error reporting does have locations it is only line numbers and columns
 Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (tabs for example).
 .sp
 Although the scanner and parser are re-entrant only one parse at one time in a process has been tested.
-The testing of more than one parse at the same time is way out of scope of this repo but will be tested more as it's moved to a separate repo.
 .sp
 If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
 .SH SEE ALSO

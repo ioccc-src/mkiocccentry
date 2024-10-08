@@ -70,9 +70,11 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.0.6 2024-09-06"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="1.0.8 2024-10-08"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
 export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
+export JPARSE_JSON="./jparse.json"
+export JPARSE_JSON_FOUND=1
 export JPARSE="./jparse"
 export PRINT_TEST="./test_jparse/print_test"
 export JSON_TREE="./test_jparse/test_JSON"
@@ -100,7 +102,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -f			extra files specified must fail check, not pass (def: must $PASS_FAIL)
     -L			skip the error location reporting (def: do not skip)
 
-    [file ...]		read JSON documents, one per line, from these files, - means stdin (def: $CHK_TEST_FILE)
+    [file ...]		read JSON documents, one per line, from these files (- means stdin, def: $CHK_TEST_FILE)
 			NOTE: to use stdin, end the command line with: -- -.
 			NOTE: without -f, do not check any strings for failure.
 
@@ -112,7 +114,7 @@ Exit codes:
      4	 jparse not a regular executable file
      5	 couldn't create writable log file
      6	 missing directory or directories
-     7	 missing JSON file
+     7	 missing or unreadable JSON file
   >= 10  internal error
 
 jparse_test.sh version: $JPARSE_TEST_VERSION"
@@ -374,6 +376,18 @@ if [[ -n "$D_FLAG" ]]; then
     fi
 fi
 
+# make sure jparse.json exists
+#
+if [[ ! -e "$JPARSE_JSON" ]]; then
+    JPARSE_JSON_FOUND=0
+fi
+if [[ ! -f "$JPARSE_JSON" ]]; then
+    JPARSE_JSON_FOUND=0
+fi
+if [[ ! -r "$JPARSE_JSON" ]]; then
+    JPARSE_JSON_FOUND=0
+fi
+
 # We need a file to write the output of jparse to in order to compare it
 # with any error file. This is needed for the files that are supposed to
 # fail but it's possible that there could be a use for good files too.
@@ -414,6 +428,45 @@ else
     trap "rm -f \$TMP_STDERR_FILE; exit" 1 2 3 15
 fi
 
+# update_file_summary - updates file failure summary message
+#
+# We do this this way so a blank line is not put at the top.
+#
+# usage: update_file_summary file
+update_file_summary()
+{
+    if [[ "$#" -ne 1 ]]; then
+	echo "$0: ERROR: update_summary: expected 1 arg, got $#" 1>&2
+	exit 13
+    fi
+
+    if [[ -z "$FILE_FAILURE_SUMMARY" ]]; then
+	FILE_FAILURE_SUMMARY="${1}"
+    else
+	FILE_FAILURE_SUMMARY="$FILE_FAILURE_SUMMARY
+${1}"
+    fi
+}
+
+# update_string_summary - updates string failure summary message
+#
+# We do this this way so a blank line is not put at the top.
+#
+# usage: update_string_summary file
+update_string_summary()
+{
+    if [[ "$#" -ne 1 ]]; then
+	echo "$0: ERROR: update_summary: expected 1 arg, got $#" 1>&2
+	exit 13
+    fi
+
+    if [[ -z "$STRING_FAILURE_SUMMARY" ]]; then
+	STRING_FAILURE_SUMMARY="${1}"
+    else
+	STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
+${1}"
+    fi
+}
 # run_location_err_test - run a single test
 #
 # usage:
@@ -574,8 +627,10 @@ run_file_test()
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
-	    FILE_FAILURE_SUMMARY="$FILE_FAILURE_SUMMARY
-	    FILE: $json_doc_file"
+	    update_file_summary "json_doc_file"
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "Try: $JPARSE -J $JSON_DBG_LEVEL $json_doc_file" >> "${LOGFILE}"
+	    fi
 	    EXIT_CODE=1
 	fi
     else
@@ -586,8 +641,7 @@ run_file_test()
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
-	    FILE_FAILURE_SUMMARY="$FILE_FAILURE_SUMMARY
-	    FILE: $json_doc_file"
+	    update_file_summary "$json_doc_file"
 	    EXIT_CODE=1
 	else
 	    if [[ $V_FLAG -ge 1 ]]; then
@@ -742,8 +796,7 @@ run_string_test()
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
-	    STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
-	    STRING: $json_doc_string"
+	    update_string_summary "$json_doc_string"
 	    EXIT_CODE=1
 	fi
     else
@@ -752,8 +805,7 @@ run_string_test()
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
-	    STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
-	    STRING: $json_doc_string"
+	    update_string_summary "$json_doc_string"
 	    EXIT_CODE=1
 	else
 	    echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
@@ -886,6 +938,11 @@ if [[ -n "$D_FLAG" ]]; then
 	    run_location_err_test "$file"
 	done < <(find "$JSON_BAD_LOC_TREE" -type f -name '*.json' -print)
     fi
+fi
+
+# run test on jparse.json if found
+if [[ "$JPARSE_JSON_FOUND" -eq 1 ]]; then
+    run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JPARSE_JSON" pass
 fi
 
 # run print_test tool if -p used

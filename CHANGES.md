@@ -11,6 +11,15 @@ The files `utf8_posix_map.c` and `utf8_posix_map.h` have been renamed
 for their true purpose.  Additionally the function `check_utf8_posix_map()`
 was renamed to `check_default_handle_map()` for the same clarifying reason.
 
+Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
+should fix JSON decoding bugs. Although a couple things have to be done still to
+close [that issue](https://github.com/xexyl/jparse/issues/13) out it appears
+everything is good now. Some 'good' JSON files were changed to be 'bad' as they
+have invalid UTF-8 bytes, it seems, but if this turns out to be false (or if the
+so-called JSON spec allows for accepting it), this can be changed back,
+especially as some test suites suggest that those files are legal, even though
+multiple sources say otherwise.
+
 
 ## Release 1.5.22 2024-10-01
 
