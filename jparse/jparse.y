@@ -193,7 +193,7 @@ YY_DECL;
  *
  * etc. where <token name> is whatever is returned in the lexer actions (e.g.
  * JSON_STRING) to the parser. But the problem is what do we call an invalid
- * token without knowing what what the token actually is? Thus we call it token
+ * token without knowing what the token actually is? Thus we call it token
  * so that it will read literally as 'unexpected token' which removes any
  * ambiguity (otherwise it could be read as 'it's unexpected in this place but
  * it is valid in other contexts' but it's actually never valid: it's a catch

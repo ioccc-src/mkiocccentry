@@ -64,9 +64,9 @@
  *
  * NOTE: This table assumes we process on an 8-bit byte basis.
  *
- * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
- * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
- * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
+ * This map is not a canonical way to encode Unicode characters.
+ * Instead it helps translate certain "forbidden" bytes within a
+ * JSON encoded string.
  */
 struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 
@@ -824,9 +824,11 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
     char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
     int xa = 0;		    /* first hex character numeric value */
+    int xb = 0;		    /* second hex character numeric value */
     char c = 0;		    /* character to decode or third hex character after \u */
     size_t i;
     int32_t bytes = 0;
+    int32_t surrogate = 0;
     char *utf8 = NULL;
     int scanned = 0;
 
@@ -971,7 +973,12 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 		    return NULL;
 		}
 		xa = 0;
-		scanned = sscanf(ptr + i + 2, "%4x", &xa);
+		xb = 0;
+		/*
+		 * we check for a second \uxxxx first, in case it is a surrogate
+		 * pair
+		 */
+		scanned = sscanf(ptr + i + 2, "%4x\\u%4x", &xa, &xb);
 		if (scanned == EOF) {
 		    /* error - clear allocated length and free buffer */
 		    if (retlen != NULL) {
@@ -984,7 +991,78 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 
 		    warn(__func__, "reached EOF trying to scan for hex bytes");
 		    return NULL;
-		} else if (scanned != 1) {
+		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
+		    /*
+		     * no possible surrogate pair found so proceed like there
+		     * was not another \uxxxx
+		     */
+		    bytes = utf8encode(utf8, xa);
+		    if (bytes < 0) {
+			/* error - clear allocated length and free buffer */
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			if (ret != NULL) {
+			    free(ret);
+			    ret = NULL;
+			}
+			/* utf8encode warns on error */
+			return NULL;
+		    }
+		    /*
+		     * bytes - 1 because we increment utf8 in the increment phase
+		     * of the loop
+		     */
+		    utf8 += bytes - 1;
+		    /*
+		     * however, for p we need to update the entire amount
+		     */
+		    p += bytes;
+		    i += 5;
+		} else if (scanned == 2) {
+		    /*
+		     * in this case we have to check if we have a valid
+		     * surrogate pair.
+		     */
+		    surrogate = surrogates_to_unicode(xa, xb);
+		    if (surrogate < 0) {
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			if (ret != NULL) {
+			    free(ret);
+			    ret = NULL;
+			}
+			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
+
+			return NULL;
+		    }
+
+		    bytes = utf8encode(utf8, surrogate);
+		    if (bytes < 0) {
+			/* error - clear allocated length and free buffer */
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			if (ret != NULL) {
+			    free(ret);
+			    ret = NULL;
+			}
+			/* utf8encode warns on error */
+			return NULL;
+		    }
+
+		    /*
+		     * we skip 11 forwards because 5 (like above) +
+		     * LITLEN("\\uxxxx") is 11.
+		     */
+		    i += 11;
+		    /*
+		     * these are like for a single \uxxxx found
+		     */
+		    utf8 += bytes - 1;
+		    p += bytes;
+		} else {
 		    /* error - clear allocated length and free buffer */
 		    if (retlen != NULL) {
 			*retlen = 0;
@@ -996,19 +1074,6 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 		    warn(__func__, "did not read \\uxxxx hex value");
 		    return NULL;
 		}
-
-		bytes = utf8encode(utf8, xa);
-		/*
-		 * bytes - 1 because we increment utf8 in the increment phase
-		 * of the loop
-		 */
-		utf8 += bytes - 1;
-		/*
-		 * however, for p we need to update the entire amount
-		 */
-		p += bytes;
-		i += 5;
-
 		break;
 
 	    /*
@@ -1071,10 +1136,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
     char *ret = NULL;	    /* allocated encoding string or NULL */
     size_t mlen = 0;	    /* length of allocated encoded string */
     char n = 0;		    /* next character beyond a \\ */
-    char a = 0;		    /* first hex character after \u */
-    char b = 0;		    /* second hex character after \u */
     char c = 0;		    /* character to decode or third hex character after \u */
-    char d = 0;		    /* fourth hex character after \u */
+    int xa = 0;		    /* first hex number for \uxxxx (if surrogates) */
+    int xb = 0;		    /* second hex number for \uxxxx (if surrogates) */
+    int32_t surrogate = 0;  /* for surrogate pairs */
+    int scanned = 0;	    /* for sscanf() */
     size_t i;
     size_t bytes = 0;	    /* for count_utf8_bytes() */
 
@@ -1184,12 +1250,6 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
 	     * process \uxxxx where x is a hex character
 	     */
 	    case 'u':
-
-		/*
-		 * Yes, count_utf8_bytes() also makes the below checks but we
-		 * still do these here.
-		 */
-
 		/*
 		 * there must be at least five more characters beyond \
 		 */
@@ -1201,17 +1261,22 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
 		    warn(__func__, "found \\u, but not enough for 4 hex chars at end of buffer");
 		    return NULL;
 		}
-		a = (char)((uint8_t)(ptr[i+2]));
-		b = (char)((uint8_t)(ptr[i+3]));
-		c = (char)((uint8_t)(ptr[i+4]));
-		d = (char)((uint8_t)(ptr[i+5]));
+		xa = 0;
+		xb = 0;
+		scanned = sscanf(ptr + i + 2, "%4x\\u%4x", &xa, &xb);
 
-		/*
-		 * the next 4 characters beyond \u must be hex characters
-		 */
-		if (isxdigit(a) && isxdigit(b) && isxdigit(c) && isxdigit(d)) {
+		if (scanned == EOF) {
+		    /* error - clear allocated length and free buffer */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+
+		    warn(__func__, "reached EOF trying to scan for hex bytes");
+		    return NULL;
+		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
+		    surrogate = xa;
 		    bytes = 0; /* reset bytes */
-		    if (!count_utf8_bytes(ptr + i, &bytes)) {
+		    if (!count_utf8_bytes(ptr + i, surrogate, &bytes)) {
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
@@ -1221,15 +1286,50 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
 		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
 		    mlen += bytes;
 		    i += 5;
+		} else if (scanned == 2) {
+		    /*
+		     * if there is a \uxxxx\uxxxx then we try for a surrogate
+		     * pair.
+		     */
+		    surrogate = surrogates_to_unicode(xa, xb);
+		    if (surrogate < 0) {
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
 
-		    break;
-		/*
-		 * case: \uxxxx is invalid because xxxx is not HEX
-		 */
+			return NULL;
+		    }
+
+		    /*
+		     * assuming no error from surrogates_to_unicode(), we will
+		     * try counting the bytes needed.
+		     */
+		    bytes = 0; /* reset bytes */
+		    if (!count_utf8_bytes(NULL, surrogate, &bytes)) {
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			/* count_utf8_bytes() already warns */
+			return NULL;
+		    }
+		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
+		    mlen += bytes;
+
+		    /*
+		     * we skip 11 instead of 5 because 5 + LITLEN("\\uxxxx") is
+		     * 11.
+		     */
+		    i += 11;
 		} else {
-		    warn(__func__, "\\u, not followed by 4 hex chars");
+		    /* error - clear allocated length and free buffer */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "did not read \\uxxxx hex value");
 		    return NULL;
 		}
+
 		break;
 
 	    /*

@@ -50,9 +50,9 @@
  *
  * NOTE: this table assumes we process on a byte basis.
  *
- * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
- * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
- * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
+ * This map is not a canonical way to encode Unicode characters.
+ * Instead it helps translate certain "forbidden" bytes within a
+ * JSON encoded string.
  */
 struct byte2asciistr
 {

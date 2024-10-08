@@ -308,7 +308,7 @@ character sequences.  For example the G clef character (`U+1D11E`)
 may be represented as the following 12 characters:
 
 ```json
-\ud834\udd1e
+"\ud834\udd1e"
 ```
 
 

@@ -24,7 +24,7 @@ export JSTRDECODE="./jstrdecode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="1.0.3 2024-09-13" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="1.0.4 2024-10-08" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -310,7 +310,7 @@ else
 fi
 
 echo "$0: about to run test #7" 1>&2
-echo "$JSTRDECODE '\\u0153\\u00df\\u00e5\\u00e9'"
+echo "$JSTRDECODE '\\u0153\\u00df\\u00e5\\u00e9'" 1>&2
 "$JSTRDECODE" "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #7 passed" 1>&2
@@ -319,6 +319,25 @@ else
     EXIT_CODE=4
 fi
 
+echo "$0: about to run test #8" 1>&2
+echo "$JSTRDECODE" "$("$JSTRENCODE" '\\u0153\\u00df\\u00e5\\u00e9')" 1>&2
+RESULT=$("$JSTRDECODE" "$("$JSTRENCODE" '\u0153\u00df\u00e5\u00e9')")
+if [[ "$RESULT" = "\\u0153\\u00df\\u00e5\\u00e9" ]]; then
+    echo "$0: test #8 passed" 1>&2
+else
+    echo "$0: test #8 failed: result: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
+
+echo "$0: about to run test #9" 1>&2
+echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\\u0153\\u00df\\u00e5\\u00e9'))")"
+"$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
+if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
+    echo "$0: test #9 passed" 1>&2
+else
+    echo "$0: test #9 failed: result: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
