@@ -315,9 +315,6 @@ main(int argc, char **argv)
 	    print("%s: Beginning jencchk test of the byte2asciistr table...\n", program);
 	    jencchk();
 	    print("%s: ... passed byte2asciistr table test\n", program);
-	    print("%s: Beginning tests of JSON decode/encode functionality ...\n", program);
-	    print("%s: XXX - JSON encode/decode tests not yet written - XXX\n", program);
-	    print("%s: ... passed JSON encode/decode tests\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
