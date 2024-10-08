@@ -38,7 +38,7 @@ ioccc_sanity_chks(void)
      * length of the source and target strings.
      */
     dbg(DBG_VVHIGH, "Running sanity checks on UTF-8 POSIX map ...");
-    check_utf8_posix_map();
+    check_default_handle_map();
     dbg(DBG_VVHIGH, "... all OK.");
 
     /*

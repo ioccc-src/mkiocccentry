@@ -217,11 +217,11 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_time.c entry_util.c \
 	location_util.c location_main.c sanity.c rule_count.c
 H_SRC= chk_validate.h soup.h entry_time.h entry_util.h foo.h limit_ioccc.h location.h \
-	sanity.h utf8_posix_map.h version.h iocccsize_err.h
+	sanity.h default_handle.h version.h iocccsize_err.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= utf8_posix_map.c foo.c location_tbl.c
+LESS_PICKY_CSRC= default_handle.c foo.c location_tbl.c
 LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts
@@ -249,7 +249,7 @@ LOCAL_DIR_TAGS= .local.dir.tags
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_time.o entry_util.o \
-	location_tbl.o location_util.o sanity.o foo.o utf8_posix_map.o rule_count.o
+	location_tbl.o location_util.o sanity.o foo.o default_handle.o rule_count.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -422,8 +422,8 @@ foo.o: foo.c
 sanity.o: sanity.c
 	${CC} ${CFLAGS} sanity.c -c
 
-utf8_posix_map.o: utf8_posix_map.c
-	${CC} ${CFLAGS} utf8_posix_map.c -c
+default_handle.o: default_handle.c
+	${CC} ${CFLAGS} default_handle.c -c
 
 soup.a: ${LIB_OBJS}
 	${Q} ${RM} ${RM_V} -f $@
@@ -965,6 +965,10 @@ chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h chk_sem_auth.h chk_sem_info.h chk_validate.c \
     chk_validate.h entry_time.h entry_util.h location.h
+default_handle.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    default_handle.c default_handle.h limit_ioccc.h version.h
 entry_time.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
@@ -993,9 +997,5 @@ sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h chk_sem_auth.h chk_sem_info.h chk_validate.h \
-    entry_time.h entry_util.h limit_ioccc.h location.h sanity.c sanity.h \
-    soup.h utf8_posix_map.h version.h
-utf8_posix_map.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    limit_ioccc.h utf8_posix_map.c utf8_posix_map.h version.h
+    default_handle.h entry_time.h entry_util.h limit_ioccc.h location.h \
+    sanity.c sanity.h soup.h version.h

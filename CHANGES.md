@@ -1,10 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.5.23 2024-10-06
+## Release 1.5.23 2024-10-08
 
 Noted dependency of `MAX_SUBMIT_SLOT` and `MAX_TARBALL_LEN` defines
 in `soup/limit_ioccc.h` with the IOCCC submit server.
+
+The files `utf8_posix_map.c` and `utf8_posix_map.h` have been renamed
+`default_handle.c` and `default_handle.h` respectively to better account
+for their true purpose.  Additionally the function `check_utf8_posix_map()`
+was renamed to `check_default_handle_map()` for the same clarifying reason.
 
 
 ## Release 1.5.22 2024-10-01

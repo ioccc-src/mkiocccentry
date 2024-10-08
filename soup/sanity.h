@@ -30,9 +30,9 @@
 #include "location.h"
 
 /*
- * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
+ * default_handle - translate UTF-8 into handle that is POSIX portable and + chars
  */
-#include "utf8_posix_map.h"
+#include "default_handle.h"
 
 
 /*

@@ -1,7 +1,10 @@
 /*
- * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
+ * default_handle - translate UTF-8 into POSIX portable handle
  *
  * "Because even POSIX needs an extra plus." :-)
+ *
+ * IMPORTANT NOTE: This is NOT a table to translate UTF-8 strings into
+ *		   ASCII strings or some other encoding!!!
  *
  * An author_handle, if the submission is selected by the
  * IOCCC judges to win the IOCCC, will be used to form a
@@ -15,7 +18,7 @@
  *
  *	^[0-9A-Za-z][0-9A-Za-z._+-]*$
  *
- * Copyright (c) 2022,2023 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -56,9 +59,9 @@
 
 
 /*
- * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
+ * default_handle_map - translate UTF-8 into POSIX portable filename and + chars
  */
-#include "utf8_posix_map.h"
+#include "default_handle.h"
 
 
 /*
@@ -67,6 +70,9 @@
  * certain UTF-8 strings into strings that match this regular expression:
  *
  *	^[0-9a-z][0-9a-z_]*$
+ *
+ * IMPORTANT NOTE: This is NOT a table to translate UTF-8 strings into
+ *		   ASCII strings or some other encoding!!!
  *
  * This table is NOT linguistic.  This table is NOT intended to be
  * an accurate translation of alphabets.  This table maps some UTF-8 byte
@@ -85,7 +91,7 @@
  *
  * This table ends in a NULL entry.
  */
-struct utf8_posix_map hmap[] =
+static struct default_handle_map hmap[] =
 {
     /* \x00 - special case */
     {"\x00", "",  0,  0},		/* NUL - ignored character */
@@ -1546,13 +1552,13 @@ struct utf8_posix_map hmap[] =
 /*
  * file variables
  */
-static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was successfully */
+static bool default_handle_map_checked = false;	/* true ==> check_default_handle_map() run was successfully */
 static bool seeded = false;			/* true ==> default_handle() was seeded for random() */
 static char state[STATE_LEN+1];			/* random() state */
 
 
 /*
- * check_utf8_posix_map	- fill in string lengths and sanity check hmap[]
+ * check_default_handle_map	- fill in string lengths and sanity check hmap[]
  *
  * This function verifies that the only NULL element in the table is the very
  * last element: if it's not there or there's another NULL element it's a
@@ -1560,7 +1566,7 @@ static char state[STATE_LEN+1];			/* random() state */
  * additionally it sets the length of each utf8_str and posix_str in the table.
  */
 void
-check_utf8_posix_map(void)
+check_default_handle_map(void)
 {
     size_t max = 0;		/* number of elements in hmap[] */
     size_t i;
@@ -1569,7 +1575,7 @@ check_utf8_posix_map(void)
      * firewall - check if we already ran to completion
      */
     max = TBLLEN(hmap);
-    if (utf8_posix_map_checked == true) {
+    if (default_handle_map_checked == true) {
 	dbg(DBG_VVVHIGH, "hmap[0..%ju] was already setup, returning", (uintmax_t)(max-1));
 	return;
     }
@@ -1617,7 +1623,7 @@ check_utf8_posix_map(void)
 	err(14, __func__, "no final NULL element at hmap[%ju]; fix table in %s and recompile", (uintmax_t)(max-1), __FILE__);
 	not_reached();
     }
-    utf8_posix_map_checked = true;
+    default_handle_map_checked = true;
     dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready in %s", (uintmax_t)(max-1), __FILE__);
     return;
 }
@@ -1627,7 +1633,7 @@ check_utf8_posix_map(void)
  * default_handle - compute a default handle given name
  *
  * A default author handle attempted to be computed from the author name, using
- * the utf8_posix_map hmap[] to translate certain UTF-8 strings in the name
+ * the default_handle_map hmap[] to translate certain UTF-8 strings in the name
  * into POSIX+ safe strings.  If for some reason the translation results in
  * an empty string, a string using the author_num, submit_slot and ioccc_id
  * will be returned.  If the translation results in a string that would
@@ -1651,7 +1657,7 @@ default_handle(char const *name)
     size_t def_len = 0;		/* default handle length */
     size_t namelen = 0;		/* length of name */
     char *ret = NULL;		/* calloc string to return */
-    struct utf8_posix_map *m;	/* pointer into hmap[] table */
+    struct default_handle_map *m;	/* pointer into hmap[] table */
     bool safe = false;		/* true ==> default handle has safe characters */
     size_t cur_len = 0;		/* current default handle length that is bring formed */
     size_t len = 0;		/* string length of computed default handle */
@@ -1676,7 +1682,7 @@ default_handle(char const *name)
     /*
      * setup hmap[] - OK to call if already set up
      */
-    check_utf8_posix_map();
+    check_default_handle_map();
 
     /*
      * determine length of default handle

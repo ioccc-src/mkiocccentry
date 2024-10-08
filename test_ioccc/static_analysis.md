@@ -1121,10 +1121,10 @@ Fixed in commit 55950a67be3319c085e0656d45c4391ee79b73c5. See also
 ### Example
 
 ```c
-utf8_posix_map.c:1601:25: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+default_handle.c:1601:25: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
         hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
                              ~ ^~~~~~~~~~~~~~~~~~~~~~~~
-utf8_posix_map.c:1602:26: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
+default_handle.c:1602:26: warning: implicit conversion loses integer precision: 'unsigned long' to 'int' [-Wshorten-64-to-32]
         hmap[i].posix_str_len = strlen(hmap[i].posix_str);
                               ~ ^~~~~~~~~~~~~~~~~~~~~~~~~
 ```
@@ -1234,7 +1234,7 @@ otherwise.
 ### Example
 
 ```c
-utf8_posix_map.c:1707:46: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+default_handle.c:1707:46: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
             if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
                 ~~~~~~~~~~~                      ~~~^~~~~~~~~~~~
 

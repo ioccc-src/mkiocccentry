@@ -1,5 +1,5 @@
 /*
- * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
+ * default_handle - translate UTF-8 into handle that is POSIX portable and + chars
  *
  * "Because even POSIX needs an extra plus." :-)
  *
@@ -15,7 +15,7 @@
  *
  *	^[0-9A-Za-z][0-9A-Za-z._+-]*$
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2022,2024 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -41,8 +41,8 @@
  */
 
 
-#if !defined(INCLUDE_UTF8_POSIX_MAP_H)
-#    define  INCLUDE_UTF8_POSIX_MAP_H
+#if !defined(INCLUDE_DEFAULT_HANDLE_H)
+#    define  INCLUDE_DEFAULT_HANDLE_H
 
 
 /*
@@ -64,25 +64,20 @@
 /*
  * map certain UTF-8 strings into safe lower case POSIX portable filenames plus +.
  */
-struct utf8_posix_map
+struct default_handle_map
 {
     const char * const utf8_str;	/* UTF-8 string encode - use \x hex as needed */
     const char * const posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
-    int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing by check_utf8_posix_map() */
-    int posix_str_len;			/* length of posix_str or -1 ==> needs computing by check_utf8_posix_map() */
+    int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing by check_default_handle_map() */
+    int posix_str_len;			/* length of posix_str or -1 ==> needs computing by check_default_handle_map() */
 };
 
-/*
- * global variables
- */
-extern struct utf8_posix_map hmap[];	/* name to author handle map */
-extern size_t SIZEOF_UTF8_POSIX_MAP;
 
 /*
  * function prototypes
  */
-extern void check_utf8_posix_map(void);
+extern void check_default_handle_map(void);
 extern char *default_handle(char const *name);
 
 
-#endif				/* INCLUDE_UTF8_POSIX_MAP_H */
+#endif				/* INCLUDE_DEFAULT_HANDLE_H */
