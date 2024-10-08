@@ -66,6 +66,10 @@ Greatly simplify `json_utf8.[hc]` by removing code/macros not needed. It might
 be possible to further reduce it but that will depend on at least one question
 that still has to be thought out.
 
+Removed `unicode` boolean in `struct json_string`.
+
+Renamed `jencchk() to `chkbyte2asciistr()`.
+
 
 ## Release 1.0.22 2024-10-07
 

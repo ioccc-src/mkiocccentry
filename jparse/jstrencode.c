@@ -376,8 +376,8 @@ main(int argc, char **argv)
 	    not_reached();
 	    break;
 	case 't':		/* -t - validate the contents of the byte2asciistr[] table */
-	    print("%s: Beginning jencchk test of the byte2asciistr table...\n", program);
-	    jencchk();
+	    print("%s: Beginning chkbyte2asciistr test of the byte2asciistr table...\n", program);
+	    chkbyte2asciistr();
 	    print("%s: ... passed byte2asciistr table test\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();

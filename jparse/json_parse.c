@@ -169,7 +169,7 @@ struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 
 
 /* for json string decoding */
-static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul, bool *unicode);
+static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul);
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
@@ -368,14 +368,14 @@ json_encode_str(char const *str, size_t *retlen, bool skip_quote)
 
 
 /*
- * jencchk - validate the contents of the byte2asciistr[] table
+ * chkbyte2asciistr - validate the contents of the byte2asciistr[] table
  *
  * This function performs various sanity checks on the byte2asciistr[] table.
  *
  * This function does not return on error.
  */
 void
-jencchk(void)
+chkbyte2asciistr(void)
 {
     unsigned int int_hexval;/* hex value from xxxx part of \uxxxx */
     char guard;		/* scanf guard to catch excess amount of input */
@@ -804,11 +804,11 @@ jencchk(void)
  * decode_json_string - return the decoding of a JSON encoded block of memory
  *
  * given:
- *	ptr	start of memory block to decode
- *	len	length of block
- *	mlen	length of decoded bytes to allocate
- *	retlen	address of where to store allocated length, if retlen != NULL
- *	has_nul	if != NULL and we find an encoded NUL byte we will do *has_nul = true
+ *	ptr	    start of memory block to decode
+ *	len	    length of block
+ *	mlen	    length of decoded bytes to allocate
+ *	retlen	    address of where to store allocated length, if retlen != NULL
+ *	has_nul	    if != NULL and we find an encoded NUL byte we will do *has_nul = true
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
@@ -817,7 +817,7 @@ jencchk(void)
  * NOTE: this function is used by json_decode().
  */
 char *
-decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul, bool *unicode)
+decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
@@ -890,7 +890,6 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 	 * examine the current character
 	 */
 	c = (char)((uint8_t)(ptr[i]));
-
 
 	/*
 	 * case: JSON decode non \-escape character
@@ -1096,13 +1095,6 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
      }
 
     /*
-     * determine if any invalid Unicode symbols were found
-     */
-    if (unicode != NULL) {
-	*unicode = unicode_count_chars((uint8_t *)ptr) >= 0;
-    }
-
-    /*
      * return result
      */
 
@@ -1123,15 +1115,13 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
  *	len	length of block to decode in bytes
  *	retlen	address of where to store allocated length, if retlen != NULL
  *	has_nul	if != NULL and we find an encoded NUL byte we will do *has_nul = true
- *	unicode if != NULL then set to true if no invalid Unicode chars found
- *		during decoding
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *unicode)
+json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     size_t mlen = 0;	    /* length of allocated encoded string */
@@ -1349,7 +1339,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul, bool *un
    /*
      * decode JSON string
      */
-    ret = decode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen, has_nul, unicode);
+    ret = decode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen, has_nul);
 
     /*
      * return result, if not NULL
@@ -1420,7 +1410,7 @@ json_decode_str(char const *str, size_t *retlen)
     /*
      * convert to json_decode() call
      */
-    ret = json_decode(str, len, retlen, NULL, NULL);
+    ret = json_decode(str, len, retlen, NULL);
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
@@ -2954,7 +2944,6 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     item->str = NULL;
     item->converted = false;
     item->parsed = false;
-    item->unicode = false;
     item->quote = false;
     item->same = false;
     item->has_nul = false;
@@ -3018,18 +3007,14 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = json_decode(item->as_str, len, &(item->str_len), &(item->has_nul), &(item->unicode));
+    item->str = json_decode(item->as_str, len, &(item->str_len), &(item->has_nul));
     if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       booltostr(quote), item->as_str);
 	return ret;
     }
     item->parsed = true;	/* JSON parsed successful */
-    if (item->unicode) {	/* if no invalid Unicode symbols detected */
-	item->converted = true;	/* JSON decoding successful */
-    } else {
-	item->converted = false;
-    }
+    item->converted = true;	/* JSON decoding successful */
 
     /*
      * determine if decoded string is identical to the original JSON encoded string
