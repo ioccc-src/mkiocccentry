@@ -1,6 +1,6 @@
 # Frequently Asked Questions about the `mkiocccentry` repo
 
-This is FAQ version **28.0.1 2024-09-01**.
+This is FAQ version **28.0.2 2024-10-09**.
 
 <div id="toc"></div>
 
@@ -10,7 +10,7 @@ This is FAQ version **28.0.1 2024-09-01**.
 
 1. [How do I compile the mkiocccentry tools?](#compiling)
 
-2. [How may I install the tools if I wish to and is it required?](#install)
+2. [How may I install the tools if I wish to, and is it required?](#install)
 
 3. [What can I do if my system's tar(1) does not support the correct options?](#tar)
 
@@ -83,7 +83,7 @@ your system.
 <div id="installing"></div>
 
 
-## 2.  How may I install the tools if I wish to and is it required?
+## 2.  How may I install the tools if I wish to, and is it required?
 
 You do not need to install the code (see below) but it can be helpful to do so
 as you can then run the tools from any directory including your submission
@@ -162,6 +162,7 @@ For instance:
 ./iocccsize -h
 ./chkentry -h
 ./txzchk -h
+./test_ioccc/fnamchk -h
 ```
 
 There are man pages that go into much more detail than the `-h` help modes. You
@@ -178,14 +179,19 @@ man man/man1/mkiocccentry.1
 man man/man1/iocccsize.1
 man man/man1/chkentry.1
 man man/man1/txzchk.1
+man man/man1/fnamchk.1
 ```
 
 There are many other man pages under the `man/` directory for the curious to
 read, using a similar technique.
 
 If all that fails to satisfy your curiosity, we recommend you _"use the source,
-Luke!"_ as you may find the code in this repo reasonably un-obfuscated and fairly
+Luke!"_ as you may find the code in this repo reasonably unobfuscated and fairly
 well commented.
+
+**NOTE**: there are other tools not listed above that are not an important part
+of participating in the contest; look at the man pages, the Makefiles or
+compiled tools for more details.
 
 
 <div id="bugs"></div>
@@ -244,15 +250,21 @@ unless it's a feature request the best one is a bug report.
 On the other hand, see the [SECURITY](SECURITY.md) file if you have a security
 concern.
 
+**NOTE**: the `bug_report.sh` script runs `test_ioccc/hostchk.sh` but you can
+run it directly if you wish:
+
+
+```sh
+./test_ioccc/hostchk.sh
+```
+
 
 <div id="how-to-help"></div>
-
-## 6. How can I help test this repo?
 
 Thank you for any and all help!
 
 Please see the
-[README file](https://github.com/ioccc-src/mkiocccentry/blob/master/README.md)
+[README file in the test_ioccc subdirectory](https://github.com/ioccc-src/mkiocccentry/blob/master/test_ioccc/README.md)
 for more details on what you can do to help us.
 
 
@@ -318,9 +330,8 @@ Pay especial care to [Rule
 17](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule17)!
 
 
-<div id="uninstalling">
+<div id="uninstalling"></div>
 ## 9. How do I uninstall the toolkit?
-</div>
 
 If you have installed the tools and you wish to uninstall them, you can do so
 from the top level repo directory by typing:

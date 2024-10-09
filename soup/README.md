@@ -55,9 +55,8 @@ Please do **NOT** open a pull request for the `iocccsize(1)` tool
 or the `jparse/` subdirectory or the `dbg/` subdirectory or the `dyn_array/`
 subdirectory as these come from elsewhere.
 
-<div id="kitchen-appliances">
+<div id="kitchen-appliances"></div>
 ## Reviewing the <del>appliances</del> applications in the <del>kitchen</del> repo :-)
-</div>
 
 For a list of tools that you may wish to look at in more detail, see the below
 list.
