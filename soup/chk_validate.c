@@ -33,11 +33,6 @@
 #include "chk_validate.h"
 
 /*
- * entry_time - utility functions supporting mkiocccentry JSON files related to time
- */
-#include "entry_time.h"
-
-/*
  * location - location/country codes
  */
 #include "location.h"

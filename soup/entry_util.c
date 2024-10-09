@@ -63,11 +63,6 @@
 #include "entry_util.h"
 
 /*
- * entry_time - utility functions supporting mkiocccentry JSON files related to time
- */
-#include "entry_time.h"
-
-/*
  * location - location/country codes
  */
 #include "location.h"
@@ -2930,7 +2925,25 @@ test_formed_timestamp(time_t tstamp)
     /*
      * record the time
      */
-    now = get_now();
+    now = time(NULL);
+    if (now == (time_t)-1) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: time(3) returned an error");
+	return false;
+    }
+    if ((time_t)-1 > 0) {
+	/* case: unsigned time_t */
+	json_dbg(JSON_DBG_HIGH, __func__, "now: %ju",
+		 (uintmax_t)now);
+	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %ju",
+		 (uintmax_t)(now+MAX_CLOCK_ERROR));
+    } else {
+	/* case: signed time_t */
+	json_dbg(JSON_DBG_HIGH, __func__, "now: %jd",
+		 (intmax_t)now);
+	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %jd",
+		 (intmax_t)(now+MAX_CLOCK_ERROR));
+    }
 
     /*
      * compare with the minimum timestamp

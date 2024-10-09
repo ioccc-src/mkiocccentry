@@ -32,11 +32,6 @@
 #include "entry_util.h"
 
 /*
- * entry_time - utility functions supporting mkiocccentry JSON files related to time.h
- */
-#include "entry_time.h"
-
-/*
  * json_util - general JSON parser utility support functions
  */
 #include "../jparse/json_util.h"
