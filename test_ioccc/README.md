@@ -2,6 +2,7 @@
 
 Below are some details on the test suite of the repo. We do not give all details
 but we at least show you a few things.
+
 ## Running the test suite
 
 An exhaustive script is the `bug_report.sh` script. This is not strictly
