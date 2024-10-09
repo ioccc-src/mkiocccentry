@@ -1134,7 +1134,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
     int32_t surrogate = 0;  /* for surrogate pairs */
     int scanned = 0;	    /* for sscanf() */
     size_t i;
-    size_t bytes = 0;	    /* for count_utf8_bytes() */
+    size_t bytes = 0;	    /* for utf8len() */
 
     /*
      * firewall
@@ -1268,11 +1268,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
 		    surrogate = xa;
 		    bytes = 0; /* reset bytes */
-		    if (!count_utf8_bytes(ptr + i, surrogate, &bytes)) {
+		    if (!utf8len(ptr + i, surrogate, &bytes)) {
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			/* count_utf8_bytes() already warns */
+			/* utf8len() already warns */
 			return NULL;
 		    }
 		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
@@ -1298,11 +1298,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		     * try counting the bytes needed.
 		     */
 		    bytes = 0; /* reset bytes */
-		    if (!count_utf8_bytes(NULL, surrogate, &bytes)) {
+		    if (!utf8len(NULL, surrogate, &bytes)) {
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			/* count_utf8_bytes() already warns */
+			/* utf8len() already warns */
 			return NULL;
 		    }
 		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);

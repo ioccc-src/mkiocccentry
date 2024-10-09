@@ -39,7 +39,7 @@
 #define JPARSE_UTF8_VERSION "1.2.0 2024-10-09"	/* format: major.minor YYYY-MM-DD */
 
 
-extern bool count_utf8_bytes(const char *str, int32_t surrogate, size_t *bytes);
+extern bool utf8len(const char *str, int32_t surrogate, size_t *bytes);
 
 /*
  * The below function and macros are based on code from
@@ -67,7 +67,7 @@ extern int utf8encode(char *str, unsigned int val);
  */
 
 /*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
  */
 
 /*
@@ -130,7 +130,7 @@ extern int32_t surrogates_to_unicode (int32_t hi, int32_t lo);
  */
 
 /*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
  */
 
 #endif /* INCLUDE_JSON_UTF8_H */

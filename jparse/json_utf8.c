@@ -40,7 +40,7 @@
  * NOTE: *str should point to the \u!
  */
 bool
-count_utf8_bytes(const char *str, int32_t surrogate, size_t *bytes)
+utf8len(const char *str, int32_t surrogate, size_t *bytes)
 {
     unsigned char xa = 0;   /* first hex digit */
     unsigned char xb = 0;   /* second hex digit */
@@ -283,7 +283,7 @@ utf8encode(char *str, unsigned int val)
  */
 
 /*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
  */
 
 /*
@@ -325,5 +325,5 @@ surrogates_to_unicode (int32_t hi, int32_t lo)
  */
 
 /*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
  */

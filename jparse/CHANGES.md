@@ -18,6 +18,8 @@ Added a `JPARSE_UTF8_VERSION` in order to keep track of the current UTF-8 code.
 Set this version to the same as the other versions at this time: `1.2.0
 2024-10-09`.
 
+Rename `count_utf8_bytes` to `utf8len()` to better account for what it does.
+
 
 ## Release 1.0.23 2024-10-08
 
