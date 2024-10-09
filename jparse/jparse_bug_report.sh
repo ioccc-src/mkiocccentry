@@ -75,7 +75,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.4 2024-06-26"
+export BUG_REPORT_VERSION="1.2.0 2024-10-09"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

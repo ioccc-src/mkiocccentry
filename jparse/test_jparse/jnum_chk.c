@@ -42,11 +42,6 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 /*
- * official jnum_chk version
- */
-#define JNUM_CHK_VERSION "1.0.1 2024-03-02"      /* format: major.minor YYYY-MM-DD */
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.

@@ -41,11 +41,6 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 /*
- * official jstrdecode version
- */
-#define JSTRDECODE_VERSION "1.0.6 2024-10-08"	/* format: major.minor YYYY-MM-DD */
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
@@ -221,7 +216,7 @@ jstrdecode_stream(FILE *in_stream)
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz, NULL);
+    buf = json_decode(input, inputlen, &bufsiz);
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {

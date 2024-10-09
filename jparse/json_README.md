@@ -356,7 +356,7 @@ some digit _1_ thru _9_.
 
 While this term is not an official part of the [so-called JSON
 spec](#so-called-json-spec), we use it code such such as
-the `jparse/json_parse.h` file.
+the `json_parse.h` file.
 
 
 ## JSON float
@@ -372,7 +372,7 @@ number](#json-number) and so it not a valid **JSON float**.
 
 While this term is not an official part of the [so-called JSON
 spec](#so-called-json-spec), we use it code such such as
-the `jparse/json_parse.h` file.
+the `json_parse.h` file.
 
 
 ## JSON exp
@@ -388,8 +388,21 @@ spec](#so-called-json-spec), a [JSON number](#json-number) being
 minimal!  :-)
 
 While this term is not an official part of the [so-called JSON
-spec](#so-called-json-spec), we use it code such such as
-the `jparse/json_parse.h` file
+spec](#so-called-json-spec), we use it in code such such as
+the `json_parse.h` file.
+
+## JSON whitespace
+
+A **JSON whitespace** is either _nothing_, or it is one or more of an
+_ASCII space_ (`0x20`), _ASCII linefeed_ (`0x0a`), _ASCII carriage
+return_ (`0x0d`), or _ASCII horizontal tab_ (`0x09`).
+
+It is useful to remember that **JSON whitespace** can be nothing
+(zero bytes long).  So when we say that a [JSON element](#json-element)
+is single a [JSON value](#json-value) surrounded by [JSON
+whitespace](#json-whitespace), that surrounding [JSON
+whitespace](#json-whitespace) may be nothing (zero bytes long).
+
 
 
 ## <a name="so_called_json_spec"></a>So-called JSON spec
@@ -411,26 +424,6 @@ and misunderstandings of them as the **so-called JSON spec**. See
 the [substandard JSON spec editorial](#substandard-json-spec-editorial)
 for more information.
 
-
-## JSON whitespace
-
-A **JSON whitespace** is either _nothing_, or it is one or more of an
-_ASCII space_ (`0x20`), _ASCII linefeed_ (`0x0a`), _ASCII carriage
-return_ (`0x0d`), or _ASCII horizontal tab_ (`0x09`).
-
-It is useful to remember that **JSON whitespace** can be nothing
-(zero bytes long).  So when we say that a [JSON element](#json-element)
-is single a [JSON value](#json-value) surrounded by [JSON
-whitespace](#json-whitespace), that surrounding [JSON
-whitespace](#json-whitespace) may be nothing (zero bytes long).
-
-
-## Appendix A
-
-```
-"Share and Enjoy!"
-    --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
-```
 
 
 ### Substandard JSON spec editorial
@@ -518,4 +511,11 @@ question:
 
 ```
 How many mis-features and flaws can you find in the "so-called JSON spec"? :-)
+```
+
+### Appendix A
+
+```
+"Share and Enjoy!"
+    --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 ```

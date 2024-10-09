@@ -66,6 +66,11 @@
  */
 #include "version.h"
 
+/*
+ * official jstrencode version
+ */
+#define JSTRENCODE_VERSION "1.2.0 2024-10-09"	/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * jstrencode tool basename

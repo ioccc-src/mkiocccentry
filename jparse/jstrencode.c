@@ -41,11 +41,6 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 /*
- * official jstrencode version
- */
-#define JSTRENCODE_VERSION "1.1.3 2024-10-08"	/* format: major.minor YYYY-MM-DD */
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.

@@ -20,7 +20,7 @@
 export FAILURE_SUMMARY=
 export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0.3 2024-09-30"
+export PREP_VERSION="1.2.0 2024-10-09"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 

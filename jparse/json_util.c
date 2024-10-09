@@ -1668,7 +1668,6 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 				CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
 				item->quote ? "q" : "",
 				item->same ? "=" : "",
-				item->has_nul ? "0" : "",
 				item->slash ? "/" : "",
 				item->posix_safe ? "P" : "",
 				item->first_alphanum ? "a" : "",

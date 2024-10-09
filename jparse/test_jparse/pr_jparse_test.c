@@ -43,13 +43,6 @@
  */
 #include "pr_jparse_test.h"
 
-
-
-/*
- * official pr_jparse_test version
- */
-#define PR_JPARSE_TEST_VERSION "1.0.3 2024-09-12"	/* format: major.minor YYYY-MM-DD */
-
 /*
  * definitions
  */

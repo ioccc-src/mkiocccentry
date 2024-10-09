@@ -16,7 +16,7 @@
 #
 # Share and enjoy! :-)
 
-export VERSION="1.1.1 2024-10-01"
+export VERSION="1.2.0 2024-10-09"
 NAME=$(basename "$0")
 export NAME
 export PRINT_WHERE=""

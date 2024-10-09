@@ -57,6 +57,12 @@
 #include "../version.h"
 
 /*
+ * official pr_jparse_test version
+ */
+#define PR_JPARSE_TEST_VERSION "1.2.0 2024-10-09"	/* format: major.minor YYYY-MM-DD */
+
+
+/*
  * pr_jparse_test tool basename
  */
 #define PR_JPARSE_TEST_BASENAME "pr_jparse_test"

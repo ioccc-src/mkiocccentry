@@ -20,7 +20,7 @@
 
 # setup
 #
-export RUN_FLEX_VERSION="1.0.1 2024-03-02"
+export RUN_FLEX_VERSION="1.2.0 2024-10-09"
 export FLEX_BASENAME="flex"
 export PREFIX="jparse"
 export SORRY_H="sorry.tm.ca.h"

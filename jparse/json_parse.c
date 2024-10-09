@@ -169,7 +169,7 @@ struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 
 
 /* for json string decoding */
-static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul);
+static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen);
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
@@ -808,7 +808,6 @@ chkbyte2asciistr(void)
  *	len	    length of block
  *	mlen	    length of decoded bytes to allocate
  *	retlen	    address of where to store allocated length, if retlen != NULL
- *	has_nul	    if != NULL and we find an encoded NUL byte we will do *has_nul = true
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
@@ -817,7 +816,7 @@ chkbyte2asciistr(void)
  * NOTE: this function is used by json_decode().
  */
 char *
-decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, bool *has_nul)
+decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
@@ -1017,6 +1016,10 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 		     * however, for p we need to update the entire amount
 		     */
 		    p += bytes;
+		    /*
+		     * we increment by 5 because LITLEN("uxxxx") is 5: the for() loop
+		     * increments by 1 at the increment/update phase.
+		     */
 		    i += 5;
 		} else if (scanned == 2) {
 		    /*
@@ -1047,12 +1050,12 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
 			    free(ret);
 			    ret = NULL;
 			}
-			/* utf8encode warns on error */
+			/* utf8encode() warns on error */
 			return NULL;
 		    }
 
 		    /*
-		     * we skip 11 forwards because 5 (like above) +
+		     * we increment by 11 because LITLEN("uxxxx") +
 		     * LITLEN("\\uxxxx") is 11.
 		     */
 		    i += 11;
@@ -1099,7 +1102,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
      */
 
     dbg(DBG_VVVHIGH, "returning from decode_json_string(ptr, %ju, %ju, *%ju, %s)",
-		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0, has_nul != NULL ? booltostr(*has_nul) : "false");
+		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0);
     if (retlen != NULL) {
 	*retlen = mlen;
     }
@@ -1114,14 +1117,13 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen, boo
  *	ptr	start of memory block to decode
  *	len	length of block to decode in bytes
  *	retlen	address of where to store allocated length, if retlen != NULL
- *	has_nul	if != NULL and we find an encoded NUL byte we will do *has_nul = true
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
+json_decode(char const *ptr, size_t len, size_t *retlen)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     size_t mlen = 0;	    /* length of allocated encoded string */
@@ -1132,7 +1134,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
     int32_t surrogate = 0;  /* for surrogate pairs */
     int scanned = 0;	    /* for sscanf() */
     size_t i;
-    size_t bytes = 0;	    /* for count_utf8_bytes() */
+    size_t bytes = 0;	    /* for utf8len() */
 
     /*
      * firewall
@@ -1266,11 +1268,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
 		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
 		    surrogate = xa;
 		    bytes = 0; /* reset bytes */
-		    if (!count_utf8_bytes(ptr + i, surrogate, &bytes)) {
+		    if (!utf8len(ptr + i, surrogate, &bytes)) {
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			/* count_utf8_bytes() already warns */
+			/* utf8len() already warns */
 			return NULL;
 		    }
 		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
@@ -1296,11 +1298,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
 		     * try counting the bytes needed.
 		     */
 		    bytes = 0; /* reset bytes */
-		    if (!count_utf8_bytes(NULL, surrogate, &bytes)) {
+		    if (!utf8len(NULL, surrogate, &bytes)) {
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			/* count_utf8_bytes() already warns */
+			/* utf8len() already warns */
 			return NULL;
 		    }
 		    dbg(DBG_VVHIGH, "UTF-8 bytes: %ju", (uintmax_t)bytes);
@@ -1339,17 +1341,17 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
    /*
      * decode JSON string
      */
-    ret = decode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen, has_nul);
+    ret = decode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen);
 
     /*
      * return result, if not NULL
      */
     if (ret != NULL) {
 	dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju, %s)",
-			 (uintmax_t)len, (uintmax_t)mlen, has_nul != NULL ? booltostr(*has_nul) : "false");
+			 (uintmax_t)len, (uintmax_t)mlen);
     } else {
 	dbg(DBG_VVVHIGH, "in json_decode(): decode_json_string(ptr, %ju, *%ju, %s) returned NULL",
-			 (uintmax_t)len, (uintmax_t)mlen, has_nul != NULL ? booltostr(*has_nul) : "false");
+			 (uintmax_t)len, (uintmax_t)mlen);
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -1410,7 +1412,7 @@ json_decode_str(char const *str, size_t *retlen)
     /*
      * convert to json_decode() call
      */
-    ret = json_decode(str, len, retlen, NULL);
+    ret = json_decode(str, len, retlen);
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
@@ -2946,7 +2948,6 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     item->parsed = false;
     item->quote = false;
     item->same = false;
-    item->has_nul = false;
     item->slash = false;
     item->posix_safe = false;
     item->first_alphanum = false;
@@ -3007,7 +3008,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = json_decode(item->as_str, len, &(item->str_len), &(item->has_nul));
+    item->str = json_decode(item->as_str, len, &(item->str_len));
     if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       booltostr(quote), item->as_str);

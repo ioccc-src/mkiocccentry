@@ -1,5 +1,26 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.0 2024-10-09
+
+Remove `has_nul` in `struct json_string` as UTF-8 should, it is my
+understanding, not have a NUL byte.
+
+Fix path in `jsemcgen.sh`.
+
+Update all tools and the release to be the same version after issue #13 was
+resolved: `1.2.0 2024-10-09`. `1.2.0` was chosen because it was the first one >
+some of the versions and the others could be bumped up to it without any harm.
+
+Do a final clean up of `json_utf8.[ch]`: removed all unnecessary code and macros
+as well as clean up comments.
+
+Added a `JPARSE_UTF8_VERSION` in order to keep track of the current UTF-8 code.
+Set this version to the same as the other versions at this time: `1.2.0
+2024-10-09`.
+
+Rename `count_utf8_bytes` to `utf8len()` to better account for what it does.
+
+
 ## Release 1.0.23 2024-10-08
 
 Fix surrogate pair decoding in `json_decode()` / `decode_json_string()`. Now one
