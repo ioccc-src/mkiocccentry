@@ -56,6 +56,10 @@
  */
 #include "../version.h"
 
+/*
+ * official jnum_gen version
+ */
+#define JNUM_GEN_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * jnum_gen tool basename

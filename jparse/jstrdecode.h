@@ -66,6 +66,11 @@
  */
 #include "version.h"
 
+/*
+ * official jstrdecode version
+ */
+#define JSTRDECODE_VERSION "1.2.0 2024-10-09"	/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * jstrdecode tool basename

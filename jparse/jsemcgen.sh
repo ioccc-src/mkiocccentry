@@ -36,10 +36,10 @@ export MEMBER_FUNC=
 export OBJECT_FUNC=
 export ARRAY_FUNC=
 export UNKNOWN_FUNC=
-export JSEMTBLGEN="../jparse/jsemtblgen"
+export JSEMTBLGEN="./jsemtblgen"
 export JSEMTBLGEN_ARGS=
 export PATCH_TOOL=
-export JSEMCGEN_VERSION="1.3 2023-02-04"
+export JSEMCGEN_VERSION="1.2.0 2024-10-09"
 
 # attempt to fetch system specific paths to tools we need
 #

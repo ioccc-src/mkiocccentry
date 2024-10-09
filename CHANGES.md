@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.24 2024-10-09
+
+Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
+cleans up some code, removes code that's unnecessary and syncs the versions of
+all tools to the same: `1.2.0 2024-10-09`. A new version string was added as
+well, `JPARSE_UTF8_VERSION`. A bug in a script was also fixed.
+
+
 ## Release 1.5.23 2024-10-08
 
 Noted dependency of `MAX_SUBMIT_SLOT` and `MAX_TARBALL_LEN` defines

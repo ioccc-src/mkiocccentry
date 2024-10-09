@@ -20,7 +20,7 @@
 
 # setup
 #
-export RUN_BISON_VERSION="1.0.1 2024-03-02"
+export RUN_BISON_VERSION="1.2.0 2024-10-09"
 export BISON_BASENAME="bison"
 export PREFIX="jparse"
 export SORRY_H="sorry.tm.ca.h"

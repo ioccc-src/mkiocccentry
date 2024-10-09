@@ -153,16 +153,9 @@ count_utf8_bytes(const char *str, int32_t surrogate, size_t *bytes)
 }
 
 /*
- * NOTE: until the bug documented at https://github.com/xexyl/jparse/issues/13
- * is resolved fully, we have code here that comes from a number of locations.
- * Once the bug is resolved this file will be cleaned up. There are two
- * different locations at this time (29 Sep 2024).
- */
-
-/*
- * The below is based on code from
+ * The below function is based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with additional code added.
+ * with a number of changes.
  */
 
 /*
@@ -276,202 +269,30 @@ utf8encode(char *str, unsigned int val)
 	str[0] |= UTF8_4_BITS;
 	len = 4;
     } else {
-	err(11, __func__, "%#X: illegal val\n", val);
-	not_reached();
+	len = -1;
+	warn(__func__, "illegal value: %#X too big\n", val);
+	len = UNICODE_TOO_BIG;
     }
     return len;
 }
 
-
 /*
- * The above is based on code from
+ * The above function is based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with additional code added.
+ * with a number of changes.
  */
 
 /*
- * The below table and code is from
- * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
- * in the programming language C which deals with conversions to and from the
- * UTF-8 format', and was written by:
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ */
+
+/*
+ * The below function is from https://github.com/benkasminbullock/unicode-c/,
+ * which is 'a Unicode library in the programming language C which deals with
+ * conversions to and from the UTF-8 format', and was written by:
  *
  *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */
-
-
-/*
- * This is a Unicode library in the programming language C which deals with
- * conversions to and from the UTF-8 format.
- */
-
-/*
-  Author:
-
-  Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
-
-  Repository:
-
-  https://github.com/benkasminbullock/unicode-c
-*/
-
-
-/*
- * This table contains the length of a sequence which begins with the byte
- * given. A value of zero indicates that the byte can not begin a UTF-8
- * sequence. This comes from:
- * https://metacpan.org/source/CHANSEN/Unicode-UTF8-0.60/UTF8.xs#L8.
- */
-const uint8_t utf8_sequence_len[0x100] =
-{
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x00-0x0F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x10-0x1F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x20-0x2F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x30-0x3F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x40-0x4F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x50-0x5F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x60-0x6F */
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, /* 0x70-0x7F */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0x80-0x8F */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0x90-0x9F */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0xA0-0xAF */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0xB0-0xBF */
-    0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2, /* 0xC0-0xCF */
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, /* 0xD0-0xDF */
-    3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3, /* 0xE0-0xEF */
-    4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0, /* 0xF0-0xFF */
-};
-
-/*
- * This function converts UTF-8 encoded bytes in "input" into the equivalent
- * Unicode code point.  The return value is the Unicode code point corresponding
- * to the UTF-8 character in "input" if successful, and a negative number if not
- * successful.  Nul bytes are rejected.
- *
- * "*end_ptr" is set to the next character after the read character on success.
- * "*end_ptr" is set to the start of input on all failures.  "end_ptr" may not
- * be NULL.
- *
- * If the first byte of "input" is zero, in other words a NUL or '\0',
- * UNICODE_EMPTY_INPUT is returned.
- *
- * If the first byte of "input" is not valid UTF-8, UTF8_BAD_LEADING_BYTE is
- * returned.
- *
- * If the second or later bytes of "input" are not valid UTF-8, including NUL,
- * UTF8_BAD_CONTINUATION_BYTE is returned.
- *
- * If the value extrapolated from "input" is greater than UNICODE_MAXIMUM,
- * UNICODE_TOO_BIG is returned.
- *
- * If the value extrapolated from "input" ends in 0xFFFF or 0xFFFE,
- * UNICODE_NOT_CHARACTER is returned.
- *
- * If the value extrapolated from "input" is between 0xFDD0 and 0xFDEF,
- * UNICODE_NOT_CHARACTER is returned.
- *
- * If the value is within the range of surrogate pairs, the error
- * UNICODE_SURROGATE_PAIR is returned.
- */
-int32_t
-utf8_to_ucs2 (const uint8_t * input, const uint8_t ** end_ptr)
-{
-    uint8_t c;
-    uint8_t l;
-
-    *end_ptr = input;
-    c = input[0];
-    if (c == 0) {
-        return UNICODE_EMPTY_INPUT;
-    }
-    l = utf8_sequence_len[c];
-    if (l == 1) {
-        * end_ptr = input + 1;
-        return (int32_t) c;
-    }
-    if (l == 2) {
-	uint8_t d;
-	d = input[1];
-	/* Two byte case. */
-        if (d < 0x80 || d > 0xBF) {
-            return UTF8_BAD_CONTINUATION_BYTE;
-	}
-	if (c <= 0xC1) {
-            return UTF8_BAD_CONTINUATION_BYTE;
-	}
-        * end_ptr = input + 2;
-        return
-            ((int32_t) (c & 0x1F) << 6)  |
-            ((int32_t) (d & 0x3F));
-    }
-    if (l == 3) {
-	uint8_t d;
-	uint8_t e;
-	int32_t r;
-
-	d = input[1];
-	e = input[2];
-	/* Three byte case. */
-        if (d < 0x80 || d > 0xBF ||
-	    e < 0x80 || e > 0xBF) {
-            return UTF8_BAD_CONTINUATION_BYTE;
-	}
-	if (c == 0xe0 && d < 0xa0) {
-	    /* We don't need to check the value of input[2], because
-	       the if statement above this one already guarantees that
-	       it is 10xxxxxx. */
-            return UTF8_BAD_CONTINUATION_BYTE;
-	}
-        r = ((int32_t) (c & 0x0F)) << 12 |
-            ((int32_t) (d & 0x3F)) << 6  |
-            ((int32_t) (e & 0x3F));
-	REJECT_SURROGATE(r);
-	REJECT_FFFF(r);
-	REJECT_NOT_CHAR(r);
-        * end_ptr = input + 3;
-	return r;
-    }
-    else if (l == 4) {
-	/* Four byte case. */
-	uint8_t d;
-	uint8_t e;
-	uint8_t f;
-	int32_t v;
-
-	d = input[1];
-	e = input[2];
-	f = input[3];
-
-	if (/* c must be 11110xxx. */
-	    c >= 0xf8 ||
-	    /* d, e, f must be 10xxxxxx. */
-	    d < 0x80 || d >= 0xC0 ||
-	    e < 0x80 || e >= 0xC0 ||
-	    f < 0x80 || f >= 0xC0) {
-	    return UTF8_BAD_CONTINUATION_BYTE;
-	}
-
-	if (c == 0xf0 && d < 0x90) {
-	    /* We don't need to check the values of e and f, because
-	       the if statement above this one already guarantees that
-	       e and f are 10xxxxxx. */
-            return UTF8_BAD_CONTINUATION_BYTE;
-	}
-	/* Calculate the code point. */
-	v = FOUR (input);
-	/* Greater than U+10FFFF */
-	if (v > UNICODE_MAXIMUM) {
-	    return UNICODE_TOO_BIG;
-	}
-	/* Non-characters U+nFFFE..U+nFFFF on plane 1-16 */
-	REJECT_FFFF(v);
-	/* We don't need to check for surrogate pairs here, since the
-	   minimum value of UCS2 if there are four bytes of UTF-8 is
-	   0x10000. */
-        * end_ptr = input + 4;
-	return v;
-    }
-    return UTF8_BAD_LEADING_BYTE;
-}
 
 
 /*
@@ -496,34 +317,13 @@ surrogates_to_unicode (int32_t hi, int32_t lo)
 }
 
 /*
- * Given a nul-terminated string "utf8", return the total number of Unicode
- * characters it contains.
+ * The above function is from https://github.com/benkasminbullock/unicode-c/,
+ * which is 'a Unicode library in the programming language C which deals with
+ * conversions to and from the UTF-8 format', and was written by:
  *
- * If an error occurs, this may return UTF8_BAD_LEADING_BYTE or any of the
- * errors of "utf8_to_ucs2".
+ *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */
-int32_t
-unicode_count_chars (const uint8_t * utf8)
-{
-    int32_t chars = 0;
-    const uint8_t * p = utf8;
-    int32_t len = strlen ((const char *) utf8);
-    if (len == 0) {
-        return 0;
-    }
-    while (p - utf8 < len) {
-        int32_t ucs2;
-        ucs2 = utf8_to_ucs2 (p, & p);
-        if (ucs2 < 0) {
-	    /* Return the error from utf8_to_ucs2. */
-            return ucs2;
-        }
-        chars++;
-        if (*p == '\0') {
-            return chars;
-        }
-    }
-    /* Cannot be reached in practice, since strlen indicates the null
-       byte. */
-    return UTF8_BAD_LEADING_BYTE;
-}
+
+/*
+ * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-= 
+ */

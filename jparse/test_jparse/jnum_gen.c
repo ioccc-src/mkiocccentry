@@ -43,11 +43,6 @@
 #define CHUNK (16)		/* allocate CHUNK elements at a time */
 
 /*
- * official jnum_gen version
- */
-#define JNUM_GEN_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
