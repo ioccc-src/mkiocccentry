@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "14 September 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "10 October 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
 \- decode JSON encoded strings
@@ -22,6 +22,7 @@
 .RB [\| \-V \|]
 .RB [\| \-t \|]
 .RB [\| \-n \|]
+.RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RB [\| \-e \|]
 .RI [\| string
@@ -68,6 +69,9 @@ Run tests on the JSON decode/encode functions
 .TP
 .B \-n
 Do not output a newline after the decode function
+.TP
+.B \-N
+Skip final newline in input, for easier typing commands.
 .TP
 .B \-Q
 Enclose output in double quotes
