@@ -25,8 +25,8 @@ Add new option `-N` to `jstrdecode(1)`. This option ignores a final newline in
 the input for easier typing of commands. It does not change the validity
 checking of JSON.
 
-Add new option `-N` to `jstrencode(1)`. This option ignores a final newline in
-the input. It does not change the validity checking of JSON.
+Add new option `-N` to `jstrencode(1)`. This option ignores all newlines in
+decoding data. It does not change the validity checking of JSON.
 
 
 ## Release 1.2.0 2024-10-09
