@@ -54,6 +54,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after decode output\n"
+    "\t-N\t\tignore final newline in input\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
     "\n"
@@ -76,7 +77,7 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static struct jstring *jstrdecode_stream(FILE *in_stream);
+static struct jstring *jstrdecode_stream(FILE *in_stream, bool skip_eol_nl);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
 static void free_json_decoded_strings(void);
 
@@ -178,6 +179,7 @@ free_json_decoded_strings(void)
  *
  * given:
  *	in_stream	open file stream to decode
+ *	skip_eol_nl	true ==> ignore final newline
  *
  * returns:
  *	allocated struct jstring * ==> decoding was successful,
@@ -187,7 +189,7 @@ free_json_decoded_strings(void)
  * decoded JSON strings.
  */
 static struct jstring *
-jstrdecode_stream(FILE *in_stream)
+jstrdecode_stream(FILE *in_stream, bool skip_eol_nl)
 {
     char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
@@ -217,7 +219,11 @@ jstrdecode_stream(FILE *in_stream)
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz);
+    if (skip_eol_nl && inputlen > 0 && input[inputlen-1] == '\n') {
+	buf = json_decode(input, inputlen-1, &bufsiz);
+    } else {
+	buf = json_decode(input, inputlen, &bufsiz);
+    }
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {
@@ -264,6 +270,7 @@ main(int argc, char **argv)
     size_t outputlen;		/* length of write of decode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
+    bool skip_eol_nl = false;	/* true ==> ignore final newline when encoding */
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
     int ret;			/* libc return code */
@@ -282,7 +289,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnQe")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnNQe")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -320,6 +327,9 @@ main(int argc, char **argv)
 	    break;
 	case 'n':
 	    nloutput = false;
+	    break;
+	case 'N':
+	    skip_eol_nl = true;
 	    break;
 	case 'Q':
 	    write_quote = true;
@@ -363,7 +373,7 @@ main(int argc, char **argv)
 		 * NOTE: the function jstrdecode_stream() adds the allocated
 		 * struct jstring * to the list of decoded JSON strings
 		 */
-		jstr = jstrdecode_stream(stdin);
+		jstr = jstrdecode_stream(stdin, skip_eol_nl);
 		if (jstr != NULL) {
 		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
 		} else {
@@ -383,6 +393,9 @@ main(int argc, char **argv)
 		/*
 		 * decode arg
 		 */
+		if (skip_eol_nl && inputlen > 0 && input[inputlen-1] == '\n') {
+		    input[inputlen - 1] = '\0';
+		}
 		buf = json_decode_str(input, &bufsiz);
 		if (buf == NULL) {
 		    warn(__func__, "error while decoding processing arg: %d", i-optind);
@@ -413,7 +426,7 @@ main(int argc, char **argv)
 	 * NOTE: the function jstrdecode_stream() adds the allocated
 	 * struct jstring * to the list of decoded JSON strings
 	 */
-	jstr = jstrdecode_stream(stdin);
+	jstr = jstrdecode_stream(stdin, skip_eol_nl);
 
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);

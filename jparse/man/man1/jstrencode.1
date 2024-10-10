@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "14 September 2024" "jstrencode" "jparse tools"
+.TH jstrencode 1 "10 October 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -22,6 +22,7 @@
 .RB [\| \-V \|]
 .RB [\| \-t \|]
 .RB [\| \-n \|]
+.RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RI [\| string
 .IR ... \|]
@@ -55,6 +56,9 @@ Run tests on the JSON encode/encode functions
 .TP
 .B \-n
 Do not output a newline after the encode function
+.TP
+.B \-N
+Ignore trailing newline in input
 .TP
 .B \-Q
 Do not encode double quotes that enclose the concatenation of args (def: do encode)

@@ -21,6 +21,13 @@ Improve the way `utf8len()` works. It now returns a `size_t` and the `size_t
 *bytes` was removed from it. Returns `-1` if an error occurs. This better fits
 the name and purpose of the function.
 
+Add new option `-N` to `jstrdecode(1)`. This option ignores a final newline in
+the input for easier typing of commands. It does not change the validity
+checking of JSON.
+
+Add new option `-N` to `jstrencode(1)`. This option ignores a final newline in
+the input. It does not change the validity checking of JSON.
+
 
 ## Release 1.2.0 2024-10-09
 

@@ -13,6 +13,9 @@ something else), amongst various other things.  Should one wish to further
 progress their dementia! :-) they can look at that repo's log or the
 jparse/CHANGES.md file.
 
+New option `-N` to `jstrdecode(1)` and `jstrencode(1)` to ignore (in decoding
+and encoding internal to the tool itself, not JSON) final newline in input.
+
 
 ## Release 1.5.24 2024-10-09
 
