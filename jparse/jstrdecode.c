@@ -350,7 +350,7 @@ main(int argc, char **argv)
     size_t outputlen;		/* length of write of decode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
-    bool ignore_nl = false;	/* true ==> ignore final newline when encoding */
+    bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
     int ret;			/* libc return code */
@@ -489,6 +489,8 @@ main(int argc, char **argv)
 		     * replace input with the duplicate w/o newline input if needed
 		     */
 		    input = dup_input;
+		    dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
 		}
 
 		/*
@@ -516,7 +518,7 @@ main(int argc, char **argv)
 		/*
 		 * free duplicated arg if -N
 		 */
-		if (ignore_nl) {
+		if (ignore_nl && input != NULL) {
 		    free(input);
 		    input = NULL;
 		}

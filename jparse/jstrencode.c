@@ -54,7 +54,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
-    "\t-N\t\tignore final newline in input\n"
+    "\t-N\t\tignore all newline characters\n"
     "\t-Q\t\tdo not encode double quotes that enclose the concatenation of args (def: do encode)\n"
     "\t-e\t\tdo not output double quotes that enclose each arg (def: do not remove)\n"
     "\n"
@@ -78,7 +78,7 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last,
-	bool skip_eol_nl);
+	bool ignore_nl);
 static struct jstring *add_encoded_string(char *string, size_t bufsiz);
 static void free_json_encoded_strings(void);
 
@@ -179,6 +179,68 @@ free_json_encoded_strings(void)
 
 
 /*
+ * dup_without_nl - duplicate a buffer and remove all newlines
+ *
+ * given:
+ *	input	    original input buffer
+ *	inputlen    pointer to the length of the input buffer
+ *
+ * returns:
+ *	malloced buffer without any newlines
+ *	NULL ==> malloc error, or NULL argument
+ *
+ * NOTE: If newlines were removed in the copy, then *inputlen will be updated
+ *	 to account for the new length.
+ */
+static char *
+dup_without_nl(char *input, size_t *inputlen)
+{
+    char *dup_input = NULL;	/* duplicate of input */
+    size_t i;
+    size_t j;
+
+    /*
+     * firewall
+     */
+    if (input == NULL) {
+	warn(__func__, "input is NULL");
+	return NULL;
+    }
+    if (inputlen == NULL) {
+	warn(__func__, "inputlen is NULL");
+	return NULL;
+    }
+
+    /*
+     * copy input removing all newlines
+     */
+    dup_input = malloc(*inputlen + 1);	/* + 1 for guard NUL byte */
+    if (dup_input == NULL) {
+	warn(__func__, "malloc of input failed");
+	return NULL;
+    }
+    for (i=0, j=0; i < *inputlen; ++i) {
+	if (input[i] != '\n') {
+	    dup_input[j++] = input[i];
+	}
+    }
+    dup_input[j] = '\0';    /* paranoia */
+
+    /*
+     * update inputlen if we removed newlines
+     */
+    if (j != i) {
+	*inputlen = j;
+    }
+
+    /*
+     * return success
+     */
+    return dup_input;
+}
+
+
+/*
  * jstrencode_stream - encode an open file stream into a char *
  *
  * given:
@@ -189,7 +251,7 @@ free_json_encoded_strings(void)
  *			    false ==> do not remove
  *	remove_last	remove any final double quote
  *			    false ==> do not remove
- *	skip_eol_nl	true ==> skip final newline
+ *	ignore_nl	true ==> ignore all newline characters
  *
  * returns:
  *	allocated struct jstring * ==> encoding was successful,
@@ -199,7 +261,7 @@ free_json_encoded_strings(void)
  * encoded JSON strings.
  */
 static struct jstring *
-jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last, bool skip_eol_nl)
+jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last, bool ignore_nl)
 {
     char *orig_input = NULL;	/* argument to process */
     char *input = NULL;		/* possibly updated orig_input */
@@ -207,6 +269,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
     char *buf = NULL;		/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     struct jstring *jstr = NULL; /* for jstring list */
+    char *dup_input = NULL;	/* duplicate of input w/o newlines */
 
     /*
      * firewall
@@ -226,13 +289,30 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	return NULL;
     }
     dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
+
+    /*
+     * if -N, remove all newlines from data
+     */
+    if (ignore_nl) {
+
+	/*
+	 * copy input removing all newlines, update inputlen if needed
+	 */
+	dup_input = dup_without_nl(orig_input, &inputlen);
+	if (dup_input == NULL) {
+	    err(11, __func__, "dup_without_nl failed");
+	    not_reached();
+	}
+
+	/*
+	 * replace input with the duplicate w/o newline input if needed
+	 */
+	free(orig_input);
+	orig_input = dup_input;
+    }
     input = orig_input;
     dbg(DBG_HIGH, "stream data is: <%s>", input);
 
-    if (skip_eol_nl && inputlen > 0 && input[inputlen - 1] == '\n') {
-	input[inputlen - 1] = '\0';
-	--inputlen;
-    }
     /*
      * case: we need to remove BOTH a leading and a trailing double quote
      */
@@ -335,18 +415,19 @@ main(int argc, char **argv)
     size_t outputlen;		/* length of write of encode buffer */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON encode */
-    bool skip_eol_nl = false;	/* true ==> ignore final newline when encoding */
+    bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
     bool skip_concat_quotes = false;	/* true ==> skip enclosing quotes around the arg concatenation */
     bool skip_each = false;	/* true ==> skip enclosing quotes around each arg */
     int ret;			/* libc return code */
     int i;
     struct jstring *jstr = NULL;    /* to iterate through list */
+    char *dup_input = NULL;	/* duplicate of input w/o newlines */
 
     /*
      * set locale
      */
     if (setlocale(LC_ALL, "") == NULL) {
-	err(11, __func__, "failed to set locale");
+	err(12, __func__, "failed to set locale");
 	not_reached();
     }
 
@@ -394,7 +475,7 @@ main(int argc, char **argv)
 	    nloutput = false;
 	    break;
 	case 'N':
-	    skip_eol_nl = true;
+	    ignore_nl = true;
 	    break;
 	case 'Q':
 	    skip_concat_quotes = true;
@@ -444,7 +525,7 @@ main(int argc, char **argv)
 		 */
 		jstr = jstrencode_stream(stdin, skip_each,
 					 (skip_concat_quotes && i == optind),
-					 (skip_concat_quotes && i == argc-1), skip_eol_nl);
+					 (skip_concat_quotes && i == argc-1), ignore_nl);
 		if (!jstr) {
 		    warn(__func__, "failed to encode string from stdin");
 		    success = false;
@@ -463,11 +544,25 @@ main(int argc, char **argv)
 	    }
 
 	    /*
-	     * case: we need to remove trailing newline
+	     * If -N, and newlines in arg, remove them
 	     */
-	    if (skip_eol_nl && inputlen > 0 && input[inputlen-1] == '\n') {
-		input[inputlen - 1] = '\0';
-		--inputlen;
+	    if (ignore_nl) {
+
+		/*
+		 * copy input removing all newlines, update inputlen if needed
+		 */
+		dup_input = dup_without_nl(input, &inputlen);
+		if (dup_input == NULL) {
+		    err(13, __func__, "dup_without_nl failed");
+		    not_reached();
+		}
+
+		/*
+		 * replace input with the duplicate w/o newline input if needed
+		 */
+		input = dup_input;
+		dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
+		dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
 	    }
 
 	    /*
@@ -545,6 +640,14 @@ main(int argc, char **argv)
 		    dbg(DBG_MED, "added string of size %ju to encoded strings list", bufsiz);
 		}
 	    }
+
+	    /*
+	     * free duplicated arg if -N
+	     */
+	    if (ignore_nl && input != NULL) {
+		free(input);
+		input = NULL;
+	    }
 	}
 
     /*
@@ -560,7 +663,7 @@ main(int argc, char **argv)
 	 * NOTE: jstrencode_stream() adds the allocated struct jstring * to the
 	 * encoded JSON strings list
 	 */
-	jstr = jstrencode_stream(stdin, skip_concat_quotes, skip_each, skip_each, skip_eol_nl);
+	jstr = jstrencode_stream(stdin, skip_concat_quotes, skip_each, skip_each, ignore_nl);
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "encode length: %ju", jstr->bufsiz);
 	} else {
