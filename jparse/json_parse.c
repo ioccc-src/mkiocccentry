@@ -436,7 +436,62 @@ jdecencchk(void)
     }
 
     /*
-     * Don't Panic, unless you're the praying human! :-)
+     *	:-)
+     */
+    decstr = "\\uD83D\\uDC8D\\uD83C\\uDF0B";
+    /*
+     * test decoding the JSON encoded string
+     */
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    /* test json_decode_str() */
+    mstr2 = json_decode_str(decstr, &mlen2);
+    if (mstr2 == NULL) {
+	err(147, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+			   decstr, (uintmax_t)mlen2);
+	not_reached();
+    }
+
+    dbg(DBG_MED, "decoded string: %s (len: %ju)", mstr2, mlen2);
+
+
+    /*
+     * encode the string we just decoded
+     */
+    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+    mstr = json_encode(mstr2, mlen2, &mlen, false);
+    if (mstr == NULL) {
+	err(148, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
+	not_reached();
+    }
+    dbg(DBG_MED, "encoded string: %s (len: %ju)", mstr, mlen);
+
+
+    /*
+     * verify that the encoded string matches the original string
+     */
+    if (strcmp(mstr2, mstr) != 0) {
+	err(149, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
+	not_reached();
+    } else {
+	dbg(DBG_LOW, "%s: %s == %s: true", decstr, mstr, mstr2);
+    }
+
+    /*
+     * free strings
+     */
+    if (mstr != NULL) {
+	free(mstr);
+	mstr = NULL;
+    }
+    if (mstr2 != NULL) {
+	free(mstr2);
+	mstr2 = NULL;
+    }
+
+
+    /*
+     * Don't Panic, unless you're the praying human or the One Ring (or, as
+     * close as possible with the existing emojis)! :-)
      */
     return;
 }
