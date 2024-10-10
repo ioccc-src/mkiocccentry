@@ -57,6 +57,11 @@
 #include "../version.h"
 
 /*
+ * json_utf8.h - JSON UTF-8 decoder
+ */
+#include "../json_utf8.h"
+
+/*
  * official jnum_gen version
  */
 #define JNUM_GEN_VERSION "1.0.1 2024-03-02"	/* format: major.minor YYYY-MM-DD */

@@ -52,6 +52,4 @@
  */
 #define JPARSE_BASENAME "jparse"
 
-
-
 #endif /* INCLUDE_JPARSE_MAIN_H */

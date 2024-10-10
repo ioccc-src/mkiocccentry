@@ -1306,4 +1306,4 @@ jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
 verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    util.h verge.c verge.h version.h
+    json_utf8.h util.h verge.c verge.h version.h

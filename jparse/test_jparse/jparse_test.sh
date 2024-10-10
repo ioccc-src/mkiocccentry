@@ -45,8 +45,11 @@
 # topdir must be used) it should be fine.
 #
 # Without "-d json_tree -s subdir" a list of files on the command line are
-# tested to see if they are valid JSON files.  With no arguments, or - the
-# contents of stdin is tested.
+# tested to see if they are valid JSON files (one per line).  With no arguments,
+# or - the contents of stdin is tested.
+#
+# If -F is used, the file args are tested as files, not as a document per line
+# in the file.
 #
 # If -f is used then additional files should have invalid JSON; if any line is
 # not invalid it is an error. Whether or not -f is used, as long as the default
@@ -70,18 +73,16 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.2.0 2024-10-09"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="1.2.1 2024-10-10"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
 export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
-export JPARSE_JSON="./jparse.json"
-export JPARSE_JSON_FOUND=1
 export JPARSE="./jparse"
 export PRINT_TEST="./test_jparse/print_test"
 export JSON_TREE="./test_jparse/test_JSON"
 export PASS_FAIL="pass"
 export SUBDIR="."
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse]
-		[-p print_test] [-d json_tree] [-s subdir] [-Z topdir] [-k] [-f] [-L] [file ..]
+		[-p print_test] [-d json_tree] [-s subdir] [-Z topdir] [-k] [-f] [-L] [-F] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -101,6 +102,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -k			keep temporary files on exit (def: remove temporary files before exiting)
     -f			extra files specified must fail check, not pass (def: must $PASS_FAIL)
     -L			skip the error location reporting (def: do not skip)
+    -F			file args are files to test as files, not JSON documents per line (def: process as strings)
 
     [file ...]		read JSON documents, one per line, from these files (- means stdin, def: $CHK_TEST_FILE)
 			NOTE: to use stdin, end the command line with: -- -.
@@ -132,11 +134,12 @@ export PRINT_TEST_FAILURE=""
 export K_FLAG=""
 export D_FLAG=""
 export L_FLAG=""
+export F_FLAG=""
 export TOPDIR=
 
 # parse args
 #
-while getopts :hVv:D:J:qj:p:d:s:Z:kfL flag; do
+while getopts :hVv:D:J:qj:p:d:s:Z:kfLF flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -169,6 +172,8 @@ while getopts :hVv:D:J:qj:p:d:s:Z:kfL flag; do
     f)	PASS_FAIL="fail"
 	;;
     L)  L_FLAG="-L"
+	;;
+    F)  F_FLAG="-F"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
@@ -374,18 +379,6 @@ if [[ -n "$D_FLAG" ]]; then
 	    exit 6
 	fi
     fi
-fi
-
-# make sure jparse.json exists
-#
-if [[ ! -e "$JPARSE_JSON" ]]; then
-    JPARSE_JSON_FOUND=0
-fi
-if [[ ! -f "$JPARSE_JSON" ]]; then
-    JPARSE_JSON_FOUND=0
-fi
-if [[ ! -r "$JPARSE_JSON" ]]; then
-    JPARSE_JSON_FOUND=0
 fi
 
 # We need a file to write the output of jparse to in order to compare it
@@ -833,7 +826,11 @@ if [[ $# -gt 0 ]]; then
 	CHK_TEST_FILE="$1"
 	shift
 	if [[ $V_FLAG -ge 1 && "$CHK_TEST_FILE" != "-" ]]; then
-	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
+	    if [[ -n "$F_FLAG" ]]; then
+		echo "$0: debug[1]: reading JSON file: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
+	    else
+		echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
+	    fi
 	fi
 
 	# firewall - check test file
@@ -863,11 +860,17 @@ if [[ $# -gt 0 ]]; then
 		echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
 		exit 7
 	    fi
-	    # process all lines in test file
-	    #
-	    while read -r JSON_DOC; do
-		run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC" "$PASS_FAIL"
-	    done < "$CHK_TEST_FILE"
+	    if [[ -z "$F_FLAG" ]]; then
+		# process all lines in test file
+		#
+		while read -r JSON_DOC; do
+		    run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC" "$PASS_FAIL"
+		done < "$CHK_TEST_FILE"
+	    else
+		# process JSON file as a file
+		#
+		run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$CHK_TEST_FILE" "$PASS_FAIL"
+	    fi
 	fi
     done
 # case: no extra file specified, try reading from default files, if they exist
@@ -940,10 +943,6 @@ if [[ -n "$D_FLAG" ]]; then
     fi
 fi
 
-# run test on jparse.json if found
-if [[ "$JPARSE_JSON_FOUND" -eq 1 ]]; then
-    run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JPARSE_JSON" pass
-fi
 
 # run print_test tool if -p used
 if [[ -n "$PRINT_TEST_FLAG_USED" ]]; then

@@ -7,7 +7,7 @@ This document was prior to setting up this repo and it describes tools to be
 written (that were being worked on until one of us got sick). As such these
 tools have **NOT** been written yet. Additionally there might be some changes
 in how they work, when it is time to write them. As well, another utility is
-going to be created as well. All of these will happen at a later time as there
+going to be created. All of these will happen at a later time as there
 are other things that are of higher priority. When the tools exist then this
 note will be either removed (if the tools are complete) or modified (if the
 tools are still being worked on but do exist).

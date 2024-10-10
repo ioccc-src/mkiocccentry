@@ -31,16 +31,15 @@
  *	surrogate   if str == NULL then use this for the check
  *	bytes	    pointer to the number of bytes
  *
- * NOTE: if count is NULL we return false. Otherwise we attempt to
- * parse the string as %4x and then, assuming we extract a value, we count the
- * number of bytes required for the string and place it in *count, as long as
- * str != NULL. If, however str is NULL, we will simply check the value in
- * surrogate.  As long as this can be done we return true.
+ * NOTE: If str is NULL we use the value in surrogate; otherwise we attempt to
+ * extract the value by parsing the string as %4x and then, assuming we extract
+ * a value, we count the number of bytes required for the string. It is this
+ * value that is returned.
  *
  * NOTE: *str should point to the \u!
  */
-bool
-utf8len(const char *str, int32_t surrogate, size_t *bytes)
+size_t
+utf8len(const char *str, int32_t surrogate)
 {
     unsigned char xa = 0;   /* first hex digit */
     unsigned char xb = 0;   /* second hex digit */
@@ -49,17 +48,6 @@ utf8len(const char *str, int32_t surrogate, size_t *bytes)
     unsigned int x = 0;	    /* the hex value we attempt to extract */
     size_t len = 0;	    /* the number of bytes which *bytes will be set to */
     int scanned = 0;	    /* how many values read */
-
-
-    /*
-     * firewall
-     */
-    if (bytes == NULL) {
-	warn(__func__, "bytes is NULL");
-	return false;
-    } else {
-	*bytes = 0;
-    }
 
     if (str == NULL) {
 	x = surrogate;
@@ -73,19 +61,10 @@ utf8len(const char *str, int32_t surrogate, size_t *bytes)
 	    len = 4;
 	} else {
 	    warn(__func__, "%x: illegal value\n", x);
-
-	    if (bytes != NULL) {
-		*bytes = 0;
-	    }
-
-	    return false;
+	    len = -1;
 	}
 
-	if (bytes != NULL) {
-	    *bytes = len;
-	}
-
-	return true;
+	return len;
     }
 
     /*
@@ -95,20 +74,18 @@ utf8len(const char *str, int32_t surrogate, size_t *bytes)
     if (scanned != 4) {
 	warn(__func__, "did not find \\u followed by four HEX digits: %ju values: <%s>: %x %x %x %x", scanned, str,
 		xa, xb, xc, xd);
-	if (bytes != NULL) {
-	    *bytes = 0;
-	}
-	return false;
+	len = -1;
+
+	return len;
     } else {
 	/*
 	 * extra sanity check
 	 */
 	if (!isxdigit(xa) || !isxdigit(xb) || !isxdigit(xc) || !isxdigit(xd)) {
 	    warn(__func__, "sscanf() found \\uxxxx but not all values are hex digits!");
-	    if (bytes != NULL) {
-		*bytes = 0;
-	    }
-	    return false;
+	    len = -1;
+
+	    return len;
 	}
     }
 
@@ -136,20 +113,11 @@ utf8len(const char *str, int32_t surrogate, size_t *bytes)
 	    len = 4;
 	} else {
 	    warn(__func__, "%x: illegal value\n", x);
-
-	    if (bytes != NULL) {
-		*bytes = 0;
-	    }
-
-	    return false;
-	}
-
-	if (bytes != NULL) {
-	    *bytes = len;
+	    len = -1;
 	}
     }
 
-    return true;
+    return len;
 }
 
 /*
@@ -232,11 +200,11 @@ utf8encode(char *str, unsigned int val)
 	warn(__func__, "codepoint: %X: illegal surrogate", val);
 	len = UNICODE_SURROGATE_PAIR;
     } else if (val < 0x80) {
-	dbg(DBG_MED, "%s: val: %X < 0x80", __func__, val);
+	dbg(DBG_VVHIGH, "%s: val: %X < 0x80", __func__, val);
 	str[0] = val;
 	len = 1;
     } else if (val < 0x800) {
-	dbg(DBG_MED, "%s: val: %X < 0x800", __func__, val);
+	dbg(DBG_VVHIGH, "%s: val: %X < 0x800", __func__, val);
 	str[1] = val & UTF8_V_MASK;
 	str[1] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
@@ -244,7 +212,7 @@ utf8encode(char *str, unsigned int val)
 	str[0] |= UTF8_2_BITS;
 	len = 2;
     } else if (val < 0x10000) {
-	dbg(DBG_MED, "%s: val: %X < 0x10000", __func__, val);
+	dbg(DBG_VVHIGH, "%s: val: %X < 0x10000", __func__, val);
 	str[2] = val & UTF8_V_MASK;
 	str[2] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
@@ -255,7 +223,7 @@ utf8encode(char *str, unsigned int val)
 	str[0] |= UTF8_3_BITS;
 	len = 3;
     } else if (val < 0x110000) {
-	dbg(DBG_MED, "%s: val: %X < 0x110000", __func__, val);
+	dbg(DBG_VVHIGH, "%s: val: %X < 0x110000", __func__, val);
 	str[3] = val & UTF8_V_MASK;
 	str[3] |= UTF8_N_BITS;
 	val >>= UTF8_V_SHIFT;
