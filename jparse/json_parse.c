@@ -398,7 +398,7 @@ jdecencchk(void)
 	not_reached();
     }
 
-    dbg(DBG_MED, "decoded string: %s (len: %ju)", mstr2, mlen2);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
 
     /*
@@ -410,7 +410,7 @@ jdecencchk(void)
 	err(148, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
 	not_reached();
     }
-    dbg(DBG_MED, "encoded string: %s (len: %ju)", mstr, mlen);
+    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
     /*
@@ -420,7 +420,7 @@ jdecencchk(void)
 	err(149, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 	not_reached();
     } else {
-	dbg(DBG_LOW, "%s: %s == %s: true", decstr, mstr, mstr2);
+	dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
     }
 
     /*
@@ -451,7 +451,7 @@ jdecencchk(void)
 	not_reached();
     }
 
-    dbg(DBG_MED, "decoded string: %s (len: %ju)", mstr2, mlen2);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
 
     /*
@@ -463,7 +463,7 @@ jdecencchk(void)
 	err(148, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
 	not_reached();
     }
-    dbg(DBG_MED, "encoded string: %s (len: %ju)", mstr, mlen);
+    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
     /*
@@ -473,7 +473,7 @@ jdecencchk(void)
 	err(149, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 	not_reached();
     } else {
-	dbg(DBG_LOW, "%s: %s == %s: true", decstr, mstr, mstr2);
+	dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
     }
 
     /*
