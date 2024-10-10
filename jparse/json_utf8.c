@@ -31,11 +31,10 @@
  *	surrogate   if str == NULL then use this for the check
  *	bytes	    pointer to the number of bytes
  *
- * NOTE: if count is NULL we return false. Otherwise we attempt to
- * parse the string as %4x and then, assuming we extract a value, we count the
- * number of bytes required for the string and place it in *count, as long as
- * str != NULL. If, however str is NULL, we will simply check the value in
- * surrogate.  As long as this can be done we return true.
+ * NOTE: If str is NULL we use the value in surrogate; otherwise we attempt to
+ * extract the value by parsing the string as %4x and then, assuming we extract
+ * a value, we count the number of bytes required for the string. It is this
+ * value that is returned.
  *
  * NOTE: *str should point to the \u!
  */
