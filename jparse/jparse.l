@@ -19,12 +19,12 @@
 
 /* Section 0: Declarations and option settings */
 /*
- * %option noyywrap prevents needing to link in the flex(1) library (flex(3)) which means those
- * without flex can compile the code. Even if everyone had flex(1), though, under
- * macOS you have to pass -ll to the compiler to link in the flex library
- * whereas in other systems you have to use -lfl which would cause a lot of
- * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
- * unnecessary.
+ * %option noyywrap prevents needing to link in the flex(1) library (flex(3))
+ * which means those without flex can compile the code. Even if everyone had
+ * flex(1), though, under macOS you have to pass -ll to the compiler to link in
+ * the flex library whereas in other systems you have to use -lfl which would
+ * cause a lot of problems. Another way is to provide 'int yywrap() { return 1;
+ * }' but this is unnecessary.
  */
 %option noyywrap
 /*
