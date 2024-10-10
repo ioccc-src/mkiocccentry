@@ -104,8 +104,9 @@ static const char * const usage_msg =
     "    3\t\tcommand line error\n"
     "    >=10\tinternal error\n"
     "\n"
-    "jsemtblgen version: %s"
-    "JSON parser version: %s\n";
+    "jsemtblgen version: %s\n"
+    "jparse UTF-8 version: %s\n"
+    "jparse library version: %s";
 
 
 /*
@@ -302,7 +303,8 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s version: %s\n", JSEMTBLGEN_BASENAME, JSEMTBLGEN_VERSION);
-	    print("JSON parser version: %s", JSON_PARSER_VERSION);
+	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
+	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -1525,7 +1527,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog,
-		  DBG_DEFAULT, json_verbosity_level, JSEMTBLGEN_VERSION, JSON_PARSER_VERSION);
+		  DBG_DEFAULT, json_verbosity_level, JSEMTBLGEN_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

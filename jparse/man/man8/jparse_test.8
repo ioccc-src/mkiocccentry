@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_test.sh 8 "06 September 2024" "jparse_test.sh" "jparse tools"
+.TH jparse_test.sh 8 "10 October 2024" "jparse_test.sh" "jparse tools"
 .SH NAME
 .B jparse_test.sh
 \- test jparse on one or more files with one or more one\-line JSON blobs
@@ -35,6 +35,7 @@
 .RB [\| \-k \|]
 .RB [\| \-f \|]
 .RB [\| \-L \|]
+.RB [\| \-F \|]
 .RI [\| file
 .IR ... \|]
 .SH DESCRIPTION
@@ -67,7 +68,9 @@ However, in case someone has some strange paths, the error files will be incorre
 .B \-L
 option to avoid this.
 .PP
-One may also specify files which should be a file of one or more JSON blobs, as a string, one per line.
+One may also specify files which should be a file of one or more JSON blobs, as a string, one per line, unless
+.B \-F
+is used (see below).
 The file name
 .I \-
 means read from stdin.
@@ -86,6 +89,13 @@ But just like with the valid JSON strings file, if it is not a regular readable 
 .B \-f
 is to allow for other files to have invalid JSON strings.
 .PP
+If the
+.B \-F
+option is used then the files specified are meant to be tested as actual JSON files, not one or more JSON blobs per line.
+In this case, stdin is not read from, not even if
+.I \-
+is specified.
+.PP
 The script keeps a log of all the tests in
 .B jparse_test.log
 for later inspection.
@@ -94,7 +104,7 @@ If the
 option is specified, then the temporary stderr file is kept for inspection.
 This option allows one to compare the error messages with the error files in the
 .I bad_loc
-subdirectory.
+subdirectory, for example.
 .SH OPTIONS
 .TP
 .B \-h
@@ -152,15 +162,18 @@ and finally if that fails by checking for the file
 .BR ../../jparse.c .
 This allows the jparse test suite to properly run in the presumably rare case where one has a copy of the jparse repo in a subdirectory of their project.
 .TP
-.BI \-k
+.B \-k
 Keep temporary stderr files in the directory for investigation.
 This is only used for checking that location reporting in error messages is valid.
 .TP
-.BI \-f
+.B \-f
 Files given to the script are expected to have invalid, not valid, JSON strings (one per line).
 .TP
-.BI \-L
+.B \-L
 Skip error location tests.
+.TP
+.B \-F
+Test files given on the command line as actual full JSON documents, not JSON strings.
 .SH EXIT STATUS
 .TP
 0

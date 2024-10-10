@@ -78,8 +78,10 @@ static const char * const usage_msg =
     "     4\t\t\"submit.test-\" separated token length != %ju\n"
     "     5\t\t\"submit.UUID-\" token length != %ju\n"
     "     >=10\tinternal error\n"
+    "\n"
     "%s version: %s\n"
-    "JSON parser version: %s";
+    "jparse UTF-8 version: %s\n"
+    "jparse library version: %s";
 
 
 /*
@@ -140,7 +142,8 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s version: %s\n", FNAMCHK_BASENAME, FNAMCHK_VERSION);
-	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
+	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
+	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -407,7 +410,7 @@ usage(int exitcode, char const *prog, char const *str)
 
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS),
 	    (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_BASENAME, FNAMCHK_VERSION,
-	    JSON_PARSER_VERSION);
+	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

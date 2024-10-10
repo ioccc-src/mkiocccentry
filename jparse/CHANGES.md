@@ -1,5 +1,27 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.1 2024-10-10
+
+Add option `-F` to `test_jparse/jparse_test.sh` which means that files passed on
+the command line should be read as actual full JSON documents, rather than JSON
+blobs per line. In this case `stdin` is **NOT** read! The file `jparse.json` is
+now controlled this way.
+
+Added new function `jdecencchk()` to `json_parse.c` which `jstrencode` and
+`jstrdecode` use with the `-t` option. Beware of the dragon!
+
+Changed `JSON_PARSER_VERSION` to `JPARSE_LIBRARY_VERSION`.
+
+The `-V` and `-h` option of all tools (compiled tools, not scripts) now show the
+jparse UTF-8 version as well as the tool's version and the library version. The
+string format of the library version has been changed too (it now shows:
+`"jparse library version: %s"`).
+
+Improve the way `utf8len()` works. It now returns a `size_t` and the `size_t
+*bytes` was removed from it. Returns `-1` if an error occurs. This better fits
+the name and purpose of the function.
+
+
 ## Release 1.2.0 2024-10-09
 
 Remove `has_nul` in `struct json_string` as UTF-8 should, it is my

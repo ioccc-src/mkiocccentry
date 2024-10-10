@@ -359,7 +359,7 @@ jnum_gen.o: jnum_gen.c jnum_gen.h ../json_utf8.h ../version.h
 jnum_gen: jnum_gen.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
 
-pr_jparse_test.o: pr_jparse_test.c pr_jparse_test.h ../version.h
+pr_jparse_test.o: pr_jparse_test.c pr_jparse_test.h ../json_utf8.h ../version.h
 	${CC} ${CFLAGS} pr_jparse_test.c -c
 
 pr_jparse_test: pr_jparse_test.o ../libjparse.a
@@ -429,6 +429,16 @@ test:
 	else \
 	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt"; \
 	    ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
+		exit "$$EXIT_CODE"; \
+	    else \
+		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
+	    fi; \
+	    echo; \
+	    echo "${OUR_NAME}: RUNNING:  ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -F jparse.json"; \
+	    ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -F jparse.json; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \

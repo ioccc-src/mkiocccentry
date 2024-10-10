@@ -113,7 +113,8 @@ static const char * const usage_msg =
     " >= 10   internal error has occurred or unknown tar listing format has been encountered\n"
     "\n"
     "%s version: %s\n"
-    "JSON parser version: %s";
+    "jparse UTF-8 version: %s\n"
+    "jparse library version: %s";
 
 
 /*
@@ -155,7 +156,8 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s version: %s\n", TXZCHK_BASENAME, TXZCHK_VERSION);
-	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
+	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
+	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -399,7 +401,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0,
-	    TXZCHK_BASENAME, TXZCHK_VERSION, JSON_PARSER_VERSION);
+	    TXZCHK_BASENAME, TXZCHK_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

@@ -68,7 +68,8 @@ static const char * const usage_msg =
     " >= 10   internal error\n"
     "\n"
     "%s version: %s\n"
-    "JSON parser version: %s";
+    "jparse UTF-8 version: %s\n"
+    "jparse library version: %s";
 
 
 /*
@@ -366,7 +367,8 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s version: %s\n", JSTRENCODE_BASENAME, JSTRENCODE_VERSION);
-	    print("JSON parser version: %s\n", JSON_PARSER_VERSION);
+	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
+	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -374,6 +376,9 @@ main(int argc, char **argv)
 	    print("%s: Beginning chkbyte2asciistr test of the byte2asciistr table...\n", program);
 	    chkbyte2asciistr();
 	    print("%s: ... passed byte2asciistr table test\n", program);
+	    print("%s: Beginning jdecencchk...\n", program);
+	    jdecencchk();
+	    print("%s: ... passed jdecencchk\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
@@ -625,7 +630,8 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_BASENAME, JSTRENCODE_VERSION, JSON_PARSER_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRENCODE_BASENAME, JSTRENCODE_VERSION,
+	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

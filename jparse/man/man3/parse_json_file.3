@@ -24,7 +24,7 @@
 .sp
 \fB#define JPARSE_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fB#define JSON_PARSER_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
+\fB#define JPARSE_LIBRARY_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
 .br
 \fB#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))\fP
 .br
@@ -255,7 +255,7 @@ tool.
 The string
 .BR json_parser_version ,
 which points to
-.BR JSON_PARSER_VERSION ,
+.BR JPARSE_LIBRARY_VERSION ,
 is the current version of the parser itself.
 .SH RETURN VALUE
 .PP

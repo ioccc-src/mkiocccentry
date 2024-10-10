@@ -1,6 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.5.25 2024-10-09
+
+Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
+includes better (additional) testing of JSON encoding/decoding ('Beware of the
+<del>dragon</del> [fire
+drake](https://www.glyphweb.com/arda/f/firedrakes.html)!' :-) ), a new version
+string (UTF-8 version, which is now also displayed in the tools in this repo, as
+it also helps identify if there is a mismatch in versions in bug reporting or
+something else), amongst various other things.  Should one wish to further
+progress their dementia! :-) they can look at that repo's log or the
+jparse/CHANGES.md file.
+
+
 ## Release 1.5.24 2024-10-09
 
 Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
