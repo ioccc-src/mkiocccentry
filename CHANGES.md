@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6 2024-10-09
+
+Prep for "**Release 1.6 2024-10-10**".
+
+This is a pre-**Great Fork Merge** code freeze for this repo.
+
+We expect to make one minor change before the full **Great Fork Merge**
+when we replace all references for "_ioccc-src/temp-test-ioccc_"
+with "_ioccc-src/winner_" and replace all links to the
+`https://ioccc-src.github.io/temp-test-ioccc/` web site with the official
+`https://www.ioccc.org/index.html` web site.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.5.25 2024-10-10"
+to "1.6 2024-10-10".
+
+
+
 ## Release 1.5.25 2024-10-09
 
 Synced `jparse` from [jparse repo](https://github.com/xexyl/jparse/). This
