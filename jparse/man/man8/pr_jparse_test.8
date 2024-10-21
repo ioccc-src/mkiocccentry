@@ -1,0 +1,85 @@
+.\" section 8 man page for pr_jparse_test
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the jparse
+.\" repo on 12 October 2024.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH pr_jparse_test 8 "12 October 2024" "pr_jparse_test" "jparse tools"
+.SH NAME
+.B pr_jparse_test
+\- tool to test print function calls
+.SH SYNOPSIS
+.B pr_jparse_test
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-V \|]
+.SH DESCRIPTION
+.B pr_jparse_test
+runs a number of tests on print function calls such as:
+.BR printf (3),
+.BR fprintf (3),
+.BR dprintf (3),
+.BR vprintf (3),
+.BR vfprintf (3)
+and
+.BR vdprintf (3).
+It also runs various tests on print\-like functions from our library, such as:
+.BR fprint (),
+.BR fprstr (),
+.BR print (),
+.BR prstr (),
+.BR para (),
+.BR fpara (),
+.BR fpr ()
+and
+.BR vfpr (),
+which are used internally.
+.PP
+This tool was created because in some systems we ran into problems with certain functionality.
+.SH OPTIONS
+.TP
+.B \-h
+Print help and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.I level
+(def: 0).
+.TP
+.B \-V
+Print version and exit.
+.SH EXIT STATUS
+.TP
+0
+all is OK
+.TQ
+1
+some unexpected I/O error was detected
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+>=10
+internal error
+.SH NOTES
+.PP
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+It can be found at
+.br
+.IR \<https://github.com/xexyl/jparse/issues\> .
+.SH SEE ALSO
+.BR run_jparse_tests (8),
+.BR jparse_test (8)
