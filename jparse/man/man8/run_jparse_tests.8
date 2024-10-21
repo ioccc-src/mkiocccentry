@@ -1,0 +1,165 @@
+.\" section 8 man page for run_jparse_tests.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson 12 October
+.\" 2024 for the jparse repo.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH run_jparse_tests.sh 8 "12 October 2024" "run_jparse_tests.sh" "jparse tools"
+.SH NAME
+.B run_jparse_tests.sh
+\- test jparse on one or more files with one or more one\-line JSON blobs
+.SH SYNOPSIS
+.B run_jparse_tests.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-D
+.IR dbg_level \|]
+.RB [\| \-J
+.IR json_level \|]
+.RB [\| \-j
+.IR jparse \|]
+.RB [\| \-p
+.IR pr_jparse_test \|]
+.RB [\| \-c
+.IR jnum_chk \|]
+.RB [\| \-Z
+.IR topdir \|]
+.SH DESCRIPTION
+.B run_jparse_tests.sh
+is the driver of the
+.BR jparse (1)
+test suite
+to make sure everything is working.
+It is only meant to be run from the repo directory itself; in other words, it is not installed.
+.PP
+The tools used are
+.BR jparse_test.sh (8),
+.BR pr_jparse_test (8),
+and
+.BR jnum_chk(8).
+.PP
+The script keeps a log of all the tests in
+.BR test_jparse.log
+for later inspection.
+.SH OPTIONS
+.TP
+.B \-h
+Print help and exit.
+.TP
+.B \-V
+Print version and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-D\  level
+Set debug level for
+.B jparse_test.sh
+to
+.IR level
+(def: 0).
+.TP
+.BI \-J\  level
+Set JSON verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-j\  jparse
+Set path to the JSON parser jparse tool
+.IR jparse .
+.TP
+.BI \-p\  pr_jparse_test
+Set path to the
+.I pr_jparse_test
+tool
+.TP
+.BI \-c\  jnum_chk
+Set path to the
+.I jnum_chk
+tool
+.TP
+.BI \-Z\  topdir
+Set the top directory (where the jparse binary and the test_jparse subdirectory reside) in order for the tests to work right, in specific situations.
+If not specified, the script tries to determine the top level directory by first checking the current working directory for the file
+.B jparse.c
+and if this fails by checking for the file
+.B ../jparse.c
+and finally if that fails by checking for the file
+.BR ../../jparse.c .
+This allows the jparse test suite to properly run in the presumably rare case where one has a copy of the jparse repo in a subdirectory of their project.
+.SH EXIT STATUS
+.TP
+0
+all tests are OK
+.TQ
+2
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
+.TQ
+3
+invalid command line
+.TQ
+4
+could not create a writable log file
+.TQ
+5
+a file or tool not found, not the right type or not executable/readable
+.TQ
+6
+missing directory or directories
+.TQ
+>=20
+some test failed
+.SH NOTES
+The JSON parser
+.B jparse
+was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.SH BUGS
+.PP
+If a directory structure is not correct, one or more of the scripts called by this script can fail.
+This might happen if this is not run from the repository directory.
+.PP
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+It can be found at
+.br
+.IR \<https://github.com/xexyl/jparse/issues\> .
+.SH EXAMPLES
+.PP
+Run test suite from top level (repo root) directory:
+.sp
+.RS
+.ft B
+ make test
+.ft R
+.RE
+.PP
+Run the test script from the top level (repo root) directory manually:
+.sp
+.RS
+.ft B
+ ./test_jparse/run_jparse_tests.sh
+.ft R
+.RE
+.PP
+Run test suite from top level (repo root) directory with verbosity level 3:
+.sp
+.RS
+.ft B
+ make VERBOSITY=3 test
+.ft R
+.RE
+.SH SEE ALSO
+.BR jparse (1),
+.BR jparse_test (8)
+.BR jnum_chk (8)
