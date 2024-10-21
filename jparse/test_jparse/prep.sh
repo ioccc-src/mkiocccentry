@@ -142,7 +142,11 @@ write_echo()
     local MSG="$*"
 
     if [[ -n "$LOGFILE" ]]; then
-	echo "$MSG" | tee -a -- "$LOGFILE"
+	if [[ "$MSG" != "OK" ]]; then
+	    echo "$MSG" | tee -a -- "$LOGFILE"
+	else
+	    echo "$MSG"
+	fi
     else
 	echo "$MSG" 1>&2
     fi
@@ -334,7 +338,7 @@ make_action() {
 
     # perform action
     #
-    exec_command "$MAKE" -f "$MAKEFILE" "$RULE"
+    exec_command "$MAKE" -f "$MAKEFILE" VERBOSITY="$V_FLAG" "$RULE"
     status="$?"
     if [[ $status -ne 0 ]]; then
 
@@ -343,14 +347,14 @@ make_action() {
 	EXIT_CODE="$CODE"
 
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	make_action $EXIT_CODE: $MAKE -f $MAKEFILE $RULE: non-zero exit code: $status"
+	make_action $EXIT_CODE: $MAKE -f $MAKEFILE VERBOSITY=$V_FLAG $RULE: non-zero exit code: $status"
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	fi
 	if [[ -n $E_FLAG ]]; then
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: ERROR: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
+		write_echo "$0: ERROR: $MAKE -f $MAKEFILE VERBOSITY=$V_FLAG $RULE exit status: $status" 1>&2
 		write_echo
 		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
 		write_echo
@@ -361,7 +365,7 @@ make_action() {
 	else
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: Warning: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
+		write_echo "$0: Warning: $MAKE -f $MAKEFILE VERBOSITY=$V_FLAG $RULE exit status: $status" 1>&2
 		write_echo
 		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
 		write_echo
@@ -404,14 +408,14 @@ make_jparse_bug_report() {
     # announce pre-action
     #
     if [[ -z "$LOGFILE" ]]; then
-	write_echo "=-=-= START: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+	write_echo "=-=-= START: $MAKE bug_report-txl VERBOSITY=$V_FLAG -L $BUG_REPORT_LOGFILE =-=-="
     else
-	write_echo_n "make_action $CODE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE "
+	write_echo_n "make_action $CODE bug_report-txl VERBOSITY=$V_FLAG -L $BUG_REPORT_LOGFILE "
     fi
 
     # perform action
     #
-    exec_command "./jparse_bug_report.sh" -t -x -l -L "$BUG_REPORT_LOGFILE"
+    exec_command "./jparse_bug_report.sh" -t -x -l VERBOSITY=$V_FLAG -L "$BUG_REPORT_LOGFILE"
     status="$?"
 
     # Finally we report on the exit status of the jparse_bug_report.sh
@@ -424,16 +428,16 @@ make_jparse_bug_report() {
 	EXIT_CODE="$CODE"
 
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$MAKE jparse_bug_report-txl $EXIT_CODE: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
+	$MAKE bug_report-txl $EXIT_CODE: ./jparse_bug_report-txl -v $V_FLAG -L $BUG_REPORT_LOGFILE: non-zero exit code: $status"
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	fi
 	if [[ -n $E_FLAG ]]; then
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: Warning: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo "$0: Warning: ./jparse_bug_report-txl -v $V_FLAG -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
 		write_echo
-		write_echo "=-=-= FAIL: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+		write_echo "=-=-= FAIL: ./jparse_bug_report-txl -v $V_FLAG -L $BUG_REPORT_LOGFILE =-=-="
 		write_echo
 	    else
 		write_echo "ERROR exit code $status"
@@ -442,7 +446,7 @@ make_jparse_bug_report() {
 	else
 	    if [[ -z "$LOGFILE" ]]; then
 		write_echo
-		write_echo "$0: Warning: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
+		write_echo "$0: Warning: ./jparse_bug_report-txl -v $V_FLAG -L $BUG_REPORT_LOGFILE exit status: $status" 1>&2
 		write_echo
 		write_echo "=-=-= FAIL: $MAKE $RULE =-=-="
 		write_echo
@@ -455,7 +459,7 @@ make_jparse_bug_report() {
     else
 	if [[ -z "$LOGFILE" ]]; then
 	    write_echo
-	    write_echo "=-=-= PASS: $MAKE jparse_bug_report-txl -L $BUG_REPORT_LOGFILE =-=-="
+	    write_echo "=-=-= PASS: ./jparse_bug_report-txl -v $V_FLAG -L $BUG_REPORT_LOGFILE =-=-="
 	    write_echo
 	else
 	    write_echo "OK"
@@ -586,9 +590,9 @@ else
 		write_echo "jparse_bug_report.sh issued $NOTICE_COUNT notices."
 	    fi
 	fi
-	if [[ -e test_jparse/test_jparse.log ]]; then
+	if [[ -e test_jparse/jparse_test.log ]]; then
 	    write_echo ""
-	    write_echo "See test_jparse/test_jparse.log for more details."
+	    write_echo "See test_jparse/jparse_test.log for more details."
 	fi
     else
 	if [[ -n "$FAILURE_SUMMARY" ]]; then
@@ -605,9 +609,9 @@ else
 	else
 	    write_echo "One or more tests failed."
 	fi
-	if [[ -e test_jparse/test_jparse.log ]]; then
+	if [[ -e test_jparse/jparse_test.log ]]; then
 	    write_echo ""
-	    write_echo "See test_jparse/test_jparse.log for more details."
+	    write_echo "See test_jparse/jparse_test.log for more details."
 	fi
     fi
 fi

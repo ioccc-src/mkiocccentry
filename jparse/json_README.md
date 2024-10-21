@@ -405,7 +405,7 @@ whitespace](#json-whitespace) may be nothing (zero bytes long).
 
 
 
-## <a name="so_called_json_spec"></a>So-called JSON spec
+## <a name="so-called-json-spec"></a>So-called JSON spec
 
 What we term the **so-called JSON spec** is the contents of the
 [JSON.org](https://www.json.org/json-en.html) as well as the [ECMA-404
@@ -428,12 +428,10 @@ for more information.
 
 ### Substandard JSON spec editorial
 
-What we term the **so-called JSON spec** is the contents of the
-[JSON.org](https://www.json.org/json-en.html).  We explicitly use
-the term __so-called__ and __spec__ deliberately.  To call what
-that [JSON.org](https://www.json.org/json-en.html) website shows
-a specification would impugn many other specifications, many of
-which are much more well written then the **so-called JSON spec**.
+We explicitly use the term __so-called__ and __spec__ deliberately.  To call
+what that [JSON.org](https://www.json.org/json-en.html) website shows a
+specification would impugn many other specifications, many of which are much
+more well written then the **so-called JSON spec**.
 
 We speculate that the desire of the creators of the **so-called JSON
 spec** was to _create a spec so small as to fit in the back of a business

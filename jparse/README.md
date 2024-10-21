@@ -189,15 +189,32 @@ This tool converts data into JSON encoded strings according to the so-called
 
 
 ```sh
-jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]
+jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
 The `-v` option increases the overall verbosity level. Unlike the `jparse`
 utility, no JSON parsing functions are called, so there is no `-J level` option.
-The `-q` option suppresses some of the output.
+The `-q` option suppresses some of the output, although this might not be all
+that noticeable.
 
 The options `-V` and `-h` show the version of the parser and the help or usage
 string, respectively.
+
+Use `-Q` if you do not want to encode double quotes that enclose the
+concatenation of the args.
+
+Use `-e` to not output double quotes that enclose each arg.
+
+If you use `-N` it ignores all newlines. This does not mean that the JSON allows
+for unescaped newlines but rather newlines on the command line are ignored, as
+if the args are concatenated.
+
+`-E` is kind of undocumented but kind of documented: play with it to see what it
+does, should you wish!  :-)
+
+Running it with `-t` performs some sanity checks on JSON decode/encode
+functionality and this is not usually needed, although the test suite does do
+this.
 
 If no string is given on the command line it expects you to type something on
 `stdin`, ending it with EOF.
@@ -264,16 +281,51 @@ This tool converts JSON encoded strings to their original data according to the 
 
 
 ```sh
-jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]
+ jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
 
 The `-v` option increases the overall verbosity level. Unlike the `jparse`
 utility, no JSON parsing functions are called, so there is no `-J level` option.
-The `-q` option suppresses some of the output.
+The `-q` option suppresses some of the output, although this might not be all that
+noticeable.
 
 The options `-V` and `-h` show the version of the parser and the help or usage
 string, respectively.
+
+Use of `-Q` will enclose output in double quotes whereas the use of `-e`
+will enclose each decoded string with escaped double quotes.
+
+If you use `-N` it ignores all newlines. This does not mean that the JSON allows
+for unescaped newlines but rather newlines on the command line are ignored, as
+if the args are concatenated. Use of this option allows for:
+
+```sh
+$ echo foo bar | jstrdecode
+```
+
+to not show:
+
+```
+Warning: json_decode: found non-\-escaped char: 0x0a
+Warning: jstrdecode_stream: error while decoding stdin buffer
+Warning: main: error while decoding processing stdin
+```
+
+Instead you might see:
+
+```sh
+$ printf "foo\nbar" | jstrdecode -N
+
+foobar
+```
+
+`-E` is kind of undocumented but kind of documented: play with it to see what it
+does, should you wish!  :-)
+
+Running it with `-t` performs some sanity checks on JSON decode/encode
+functionality and this is not usually needed, although the test suite does do
+this.
 
 If no string is given on the command line it expects you to type something on
 `stdin`, ending it with EOF.
@@ -313,6 +365,46 @@ This will show:
 -5
 ```
 
+Palaeontologists might like to try:
+
+```sh
+$ jstrdecode "\uD83E\uDD96\uD83E\uDD95"
+```
+
+which will show:
+
+```
+🦖🦕
+```
+
+whereas fantasy lovers might like:
+
+```sh
+jstrdecode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
+```
+
+which will show:
+
+```
+🐉🪄🧙
+```
+
+whereas volcanologists might like:
+
+```sh
+jstrdecode "\uD83C\uDF0B"
+```
+
+which will show:
+
+
+```
+🌋
+```
+
+assuming, in all cases, your system supports displaying such emojis.
+
+
 For more information and examples, see the man page:
 
 ```sh
@@ -341,12 +433,14 @@ itself.
 ## Example
 
 For a relatively simple example program that uses the library, take a look at
-[jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c). As we already gave details on how to use it, we
-will not do that here. It is,  however, a nice example program to give you a
-basic idea of how to use the library, especially as it is commented nicely.
+[jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c). As
+we already gave details on how to use it, we will not do that here. It is,
+however, a nice example program to give you a basic idea of how to use the
+library, especially as it is commented nicely.
 
 As you will see, in the case of this tool, we include
-[jparse_main.h](https://github.com/xexyl/jparse/blob/master/jparse_main.h), which includes the two most useful header files,
+[jparse_main.h](https://github.com/xexyl/jparse/blob/master/jparse_main.h),
+which includes the two most useful header files,
 [jparse.h](https://github.com/xexyl/jparse/blob/master/jparse.h) and
 [util.h](https://github.com/xexyl/jparse/blob/master/util.h), the former of
 which is required (in actuality, `jparse.h` includes it, but it does not hurt to
@@ -386,8 +480,9 @@ In order to use the library you will have to link the static libraries (the
 program.
 
 To do this you should pass to the compiler `-ljparse -ldbg -ldyn_array`. For
-instance to compile [json_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c), with the `#include` lines
-changed to:
+instance to compile
+[json_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c), with
+the `#include` lines changed to:
 
 ```c
 #include <jparse/jparse.h>
@@ -408,7 +503,8 @@ If you need an example for a Makefile, take a look at the
 
 
 Once your code has been compiled and linked into an executable, you should be
-good to go!
+good to go, although it naturally will obfuscate your code a bit! :-)
+
 
 ## API overview
 
@@ -431,8 +527,8 @@ which gives more information about the most important functions.
 
 Although the scanner and parser are both re-entrant, only one parse at one time
 in a process has been tested. The testing of more than one parse at the same
-time might be done at a later time but that will only happen if a tool requires
-it.
+time might be done at a later time but that will likely only happen if a tool
+requires it.
 
 If it's not clear this means that having more than one parse active in the same
 process at the same time is not tested so even though it should be okay there
@@ -471,14 +567,15 @@ described earlier).
 In the
 [jparse/test_jparse](https://github.com/xexyl/jparse/blob/master/test_jparse/README.md)
 subdirectory we have a test suite script
-[jparse_test.sh](https://github.com/xexyl/jparse/blob/master/test_jparse/jparse_test.sh)
+[run_jparse_tests.sh](https://github.com/xexyl/jparse/blob/master/test_jparse/run_jparse_tests.sh)
 which runs a battery of tests on both valid and invalid JSON files, both as
-strings and as files, and if valid JSON files do **NOT** pass as valid **OR** if
-invalid JSON files **DO** pass as valid then it is an error.
+strings and files, and other things besides. One of the scripts it uses is
+[jparse_test.sh](https://github.com/xexyl/jparse/blob/master/test_jparse/jparse_test.sh).
+The latter script even checks for invalid location errors.
 
 We have used our own files (with some Easter eggs included due to a shared
 interest between Landon and Cody :-) ) as well as from the
-[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo (with **MUCH
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo[^1] (with **MUCH
 GRATITUDE** to the maintainers: **THANK YOU!**) and all is good. If for some
 reason the parser were to be modified, in error or otherwise, and the test fails
 then we know there is a problem. As the GitHub repo has workflows to make sure
@@ -491,6 +588,11 @@ If you wish to run this test-suite, try from the repo directory:
 ```sh
 make clobber all test
 ```
+
+[^1]: It should be noted, however, that some of the files there that are
+supposed to be good are apparently invalid UTF-8 so they were moved to the bad
+subdirectory instead, as the so-called JSON spec does not allow for invalid
+UTF-8.
 
 # Bug reporting
 
@@ -525,8 +627,9 @@ of, shall we say, 'issues', but this is not an issue here but rather
 
 For more detailed history that goes beyond this humble document we recommend you
 check `jparse(1)` man page here and the `chkentry(1)` man page in the
-`mkiocccentry` repo as well as its `CHANGES.md` and `README.md` files. If you
-want to go further than that you can read the GitHub git log in the
+[mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry) as well our
+`CHANGES.md` file and the `mkiocccentry`'s `CHANGES.md` file as well. If you
+wish to go further than that you can read the GitHub git log in the
 `mkiocccentry` repo under the `jparse/` subdirectory as well as reading the
 source code.
 

@@ -708,7 +708,6 @@ slow_prep: test_jparse/prep.sh
 	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
 	    fi; \
 	    echo; \
-	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
 	    else \
@@ -764,7 +763,6 @@ slow_release: test_jparse/prep.sh
 	        echo "make $@: ERROR: ./test_jparse/prep.sh exit code: $$EXIT_CODE"; \
 	    fi; \
 	    echo; \
-	    echo "make $@: see ${BUILD_LOG} for details"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		exit "$$EXIT_CODE"; \
 	    else \

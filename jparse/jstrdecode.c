@@ -3,7 +3,7 @@
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
- * This JSON parser was co-developed in 2022 by:
+ * This JSON parser and tool were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -46,7 +46,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [-e] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -57,6 +57,7 @@ static const char * const usage_msg =
     "\t-N\t\tignore all newline characters\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
+    "\t-E level\tentertainment mode\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
@@ -80,6 +81,7 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
 static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
 static void free_json_decoded_strings(void);
+static int parse_entertainment(char const *optarg);
 
 /*
  * decoded string list
@@ -348,6 +350,7 @@ main(int argc, char **argv)
     char *buf;			/* decode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of decode buffer */
+    int entertainment = 0;	/* have some fun :-) */
     bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
     bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
@@ -370,7 +373,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnNQe")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnNQeE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -396,12 +399,25 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
+	case 'E':
+	    /*
+	     * parse entertainment level
+	     */
+	    entertainment = parse_entertainment(optarg);
+	    if (entertainment < 0) {
+		usage(3, program, "invalid -E level"); /*ooo*/
+		not_reached();
+	    }
+	    jdecencchk(entertainment); /* :-) */
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
 	case 't':		/* -t - validate the contents of the byte2asciistr[] table */
 	    print("%s: Beginning chkbyte2asciistr test of the byte2asciistr table...\n", program);
 	    chkbyte2asciistr();
 	    print("%s: ... passed byte2asciistr table test\n", program);
 	    print("%s: Beginning jdecencchk...\n", program);
-	    jdecencchk();
+	    jdecencchk(entertainment);
 	    print("%s: ... passed jdecencchk\n", program);
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -665,4 +681,43 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
+}
+
+/*
+ * parse_entertainment - parse -E optarg
+ *
+ * given:
+ *	optarg		entertainment string, must be an integer >= 0
+ *
+ * returns:
+ *	parsed entertainment or -1 on conversion error or NULL arg
+ */
+static int
+parse_entertainment(char const *optarg)
+{
+    int entertainment = -1;	/* parsed entertainment level or -1 */
+
+    /*
+     * firewall
+     */
+    if (optarg == NULL) {
+	return -1;
+    }
+
+    /*
+     * parse entertainment
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    entertainment = (int)strtol(optarg, NULL, 0);
+    if (errno != 0) {
+	warnp(__func__, "error converting entertainment value");
+
+	return -1;
+    }
+
+    if (entertainment < 0) {
+	return -1;
+    }
+
+    return entertainment;
 }

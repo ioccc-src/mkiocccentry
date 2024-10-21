@@ -6,7 +6,7 @@
  *    printf(3), fprintf(3), dprintf(3),
  *    vprintf(3), vfprintf(3), vdprintf(3)
  *
- * We also test various print-like functions from jparse/util.c such as:
+ * We also test various print-like functions from util.c such as:
  *
  *    fprint(), fprstr(), print(), prstr(), para(), fpara(), fpr(), vfpr()
  *

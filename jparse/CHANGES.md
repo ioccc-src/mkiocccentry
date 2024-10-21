@@ -1,5 +1,70 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.5 2024-10-20
+
+Fix comments in `json_utf8.c` that were an artefact of the previous way the
+function `utf8len()` worked and check `bytes <= 0` in `json_parse.c` from
+function `utf8len()` and `utf8encode()`.
+
+
+## Release 1.2.4 2024-10-13
+
+The codepoints `0xFF` and `0xFE` are valid where `0xFF` is [Latin small
+letter y with
+diaeresis](https://www.fileformat.info/info/unicode/char/00ff/index.htm) and
+`0xFE` is [Latin small letter
+thorn](https://www.fileformat.info/info/unicode/char/fe/index.htm).
+
+Set `JPARSE_UTF8_VERSION` to `"1.2.2 2024-10-13"`.
+
+Bug fix `test_jparse/jparse_test.sh` to show the file that failed in some cases
+(an `$` was left off by accident).
+
+
+## Release 1.2.3 2024-10-12
+
+Add extra sanity check in `sum_and_count()` (see `util.c`).
+
+Greatly improve the test suite with new script
+`test_jparse/run_jparse_tests.sh` and a number of bug fixes and enhancements
+in other places, as described below.
+
+The script does what the `test_jparse/Makefile` `test` rule did but allows to
+specify the path to certain tools (`jparse`, `pr_jparse_test`, `jnum_chk`) and
+it allows for verbosity to be used (as in `jparse_test.sh -D`, although when
+used via `make` it uses the Makefile `VERBOSITY` level, which is also used for
+the `-v` flag), and so on.
+
+A simple man page exists for this tool though there is not much to say as it
+really is just a driver for the other test tools.
+
+The `test_jparse/prep.sh` now sets the `VERBOSITY` variable to the `-v level`
+specified so one can do `make VERBOSITY=2 test` or `make VERBOSITY=3 prep`, for
+example.
+
+The top level Makefile no longer says to check `build.log` with the rules
+`slow_prep` and `slow_release` as in those rules the log file does not exist,
+instead writing to `stdout` and `stderr`.
+
+Sequenced exit codes.
+
+Added man page for `pr_jparse_test`.
+
+Fix stray 'OK' lines in build.log after `make prep`.
+
+Improve README.md for `jstrencode(1)` and `jstrdecode(1)` and fix usage synopsis
+of both `jstrencode(1)` and `jstrdecode(1)`.
+
+
+## Release 1.2.2 2024-10-11
+
+Add a bit of fun to `jstrencode(1)` and `jstrdecode(1)`.
+
+Fix some man pages (`jstrencode.1`, `jstrdecode.1` and `jparse.1`).
+
+Fix some output problems in `test_jparse/prep.sh` wrt `jparse_bug_report.sh`.
+
+
 ## Release 1.2.1 2024-10-10
 
 Add option `-F` to `test_jparse/jparse_test.sh` which means that files passed on

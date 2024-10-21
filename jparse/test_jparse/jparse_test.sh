@@ -73,7 +73,7 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.2.1 2024-10-10"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="1.2.2 2024-10-13"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
 export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
 export JPARSE="./jparse"
@@ -620,7 +620,7 @@ run_file_test()
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
-	    update_file_summary "json_doc_file"
+	    update_file_summary "$json_doc_file"
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "Try: $JPARSE -J $JSON_DBG_LEVEL $json_doc_file" >> "${LOGFILE}"
 	    fi

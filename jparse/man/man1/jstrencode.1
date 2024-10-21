@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "10 October 2024" "jstrencode" "jparse tools"
+.TH jstrencode 1 "11 October 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -24,6 +24,9 @@
 .RB [\| \-n \|]
 .RB [\| \-N \|]
 .RB [\| \-Q \|]
+.RB [\| \-e \|]
+.RB [\| \-E
+.IR level \|]
 .RI [\| string
 .IR ... \|]
 .SH DESCRIPTION
@@ -65,6 +68,10 @@ Do not encode double quotes that enclose the concatenation of args (def: do enco
 .TP
 .B \-e
 Do not encode double quotes that enclose each arg (def: do encode)
+.TP
+.BI \-E\  level
+Entertainment mode at level
+.IR level .
 .SH EXIT STATUS
 .TP
 0
@@ -100,7 +107,7 @@ Encode the JSON string
 .sp
 .RS
 .ft B
- ./jstrencode { "test_mode" : false }
+ jstrencode { "test_mode" : false }
 .ft R
 .RE
 .sp
@@ -116,7 +123,7 @@ to encode):
 .sp
 .RS
 .ft B
- ./jstrencode
+ jstrencode
  {"test\e"ing":false}
  ^D
 .ft R
@@ -126,7 +133,31 @@ Encode just a negative number:
 .sp
 .RS
 .ft B
- ./jstrencode \-\- \-5
+ jstrencode \-\- \-5
+.ft R
+.RE
+.PP
+Run test mode:
+.sp
+.RS
+.ft B
+ jstrencode \-t
+.ft R
+.RE
+.PP
+Have some fun:
+.sp
+.RS
+.ft B
+ jstrencode -E 1
+.ft R
+.RE
+.PP
+Have even more fun:
+.sp
+.RS
+.ft B
+ jstrencode -E 3
 .ft R
 .RE
 .SH SEE ALSO

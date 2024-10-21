@@ -414,8 +414,8 @@ rebuild_jparse_err_files:
 test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
-	${Q} if [[ ! -x ./jparse_test.sh ]]; then \
-	    echo "${OUR_NAME}: ERROR: executable not found: ./jparse_test.sh" 1>&2; \
+	${Q} if [[ ! -x ./run_jparse_tests.sh ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: ./run_jparse_tests.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	elif [[ ! -x ./jstr_test.sh ]]; then \
@@ -427,54 +427,14 @@ test:
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt"; \
-	    ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -d test_jparse/test_JSON -s . test_jparse/json_teststr.txt; \
+	    echo "${OUR_NAME}: RUNNING: ./run_jparse_test.sh -D ${VERBOSITY} -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -c test_jparse/jnum_chk"; \
+	    ./run_jparse_tests.sh -D ${VERBOSITY} -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -c test_jparse/jnum_chk; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
+		echo "${OUR_NAME}: ERROR: run_jparse_tests.sh failed, error code: $$EXIT_CODE"; \
 		exit "$$EXIT_CODE"; \
 	    else \
-		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
-	    fi; \
-	    echo; \
-	    echo "${OUR_NAME}: RUNNING:  ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -F jparse.json"; \
-	    ./jparse_test.sh -v ${VERBOSITY} -j ./jparse -F jparse.json; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
-		exit "$$EXIT_CODE"; \
-	    else \
-		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
-	    fi; \
-	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jparse_test.sh -v ${VERBOSITY} -f -j ./jparse test_jparse/json_teststr_fail.txt"; \
-	    ./jparse_test.sh -v ${VERBOSITY} -f -j ./jparse test_jparse/json_teststr_fail.txt >/dev/null 2>&1; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jparse_test.sh failed, error code: $$EXIT_CODE"; \
-		exit "$$EXIT_CODE"; \
-	    else \
-		echo "${OUR_NAME}: PASSED: jparse_test.sh"; \
-	    fi; \
-	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jstr_test.sh -v ${VERBOSITY}"; \
-	    ./jstr_test.sh -v ${VERBOSITY} 2>&1; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jstr_test.sh failed, error code: $$EXIT_CODE"; \
-		exit "$$EXIT_CODE"; \
-	    else \
-		echo ${OUR_NAME}: "PASSED: jstr_test.sh"; \
-	    fi; \
-	    echo; \
-	    echo "${OUR_NAME}: RUNNING: ./jnum_chk -v ${VERBOSITY}"; \
-	    ./jnum_chk -v ${VERBOSITY} 2>&1; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "${OUR_NAME}: ERROR: jnum_chk failed, error code: $$EXIT_CODE"; \
-		exit "$$EXIT_CODE"; \
-	    else \
-		echo ${OUR_NAME}: "PASSED: jnum_chk"; \
+		echo "${OUR_NAME}: PASSED: run_jparse_tests.sh"; \
 	    fi; \
 	fi
 	${S} echo

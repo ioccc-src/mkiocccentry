@@ -4196,6 +4196,10 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
 	warn(__func__, "incremented count is lower than previous count: count %jd <= prev_count %jd", count, prev_count);
 	return false;
     }
+    if (count <= *countp) {
+	warn(__func__, "incremented count <= *countp: count %jd <= *countp %jd", count, *countp);
+	return false;
+    }
 
     /*
      * attempt the sum

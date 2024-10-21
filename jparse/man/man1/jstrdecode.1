@@ -1,4 +1,4 @@
-.\" section 1 man page for jstrencode
+.\" section 1 man page for jstrdecode
 .\"
 .\" This man page was first written by Cody Boone Ferguson for the IOCCC
 .\" in 2022.
@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "10 October 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "11 October 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
 \- decode JSON encoded strings
@@ -25,6 +25,8 @@
 .RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RB [\| \-e \|]
+.RB [\| \-E
+.IR level \|]
 .RI [\| string
 .IR ... \|]
 .SH DESCRIPTION
@@ -77,7 +79,11 @@ Ignore and skip over all newlines, for easier typing commands.
 Enclose output in double quotes
 .TP
 .B \-e
-Surround each decoded arg with escaped double quotes
+Enclose each decoded string with escaped double quotes (def: do not)
+.TP
+.BI \-E\  level
+Entertainment mode at level
+.IR level .
 .SH EXIT STATUS
 .TP
 0
@@ -142,6 +148,30 @@ Decode just a negative number:
 .RS
 .ft B
  jstrdecode \-\- \-5
+.ft R
+.RE
+.PP
+Run test mode:
+.sp
+.RS
+.ft B
+ jstrdecode \-t
+.ft R
+.RE
+.PP
+Have some fun:
+.sp
+.RS
+.ft B
+ jstrdecode -E 1
+.ft R
+.RE
+.PP
+Have even more fun:
+.sp
+.RS
+.ft B
+ jstrdecode -E 3
 .ft R
 .RE
 .SH SEE ALSO

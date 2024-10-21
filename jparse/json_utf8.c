@@ -22,6 +22,23 @@
 #include <ctype.h>
 #include "json_utf8.h"
 
+/* is_unicode_noncharacter
+ *
+ * Determine if code point is in unicode non-character range
+ *
+ * A code point in the range of >= 0xFDD0 && <= 0xFDEF is a non-character.
+ *
+ * returns:
+ *
+ *  true ==> number is in the non-character range
+ *  false ==> number is NOT in the non-character range
+ */
+bool
+is_unicode_noncharacter(int32_t x)
+{
+    return x >= UNI_NOT_CHAR_MIN && x <= UNI_NOT_CHAR_MAX;
+}
+
 /*
  * count_utf8_bytes	- count bytes needed to encode/decode in str
  *
@@ -46,21 +63,25 @@ utf8len(const char *str, int32_t surrogate)
     unsigned char xc = 0;   /* third hex digit */
     unsigned char xd = 0;   /* fourth hex digit */
     unsigned int x = 0;	    /* the hex value we attempt to extract */
-    size_t len = 0;	    /* the number of bytes which *bytes will be set to */
+    size_t len = 0;	    /* the number of bytes to return */
     int scanned = 0;	    /* how many values read */
 
     if (str == NULL) {
 	x = surrogate;
 	if (x < 0x80) {
 	    len = 1;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else {
-	    warn(__func__, "%x: illegal value\n", x);
+	    warn(__func__, "%X: illegal value\n", x);
 	    len = -1;
 	}
 
@@ -90,6 +111,10 @@ utf8len(const char *str, int32_t surrogate)
     }
 
     /*
+     * we have to perform additional checks
+     */
+
+    /*
      * now that we know that there is a \u followed by FOUR HEX digits we can
      * try and extract it as a SINGLE HEX number
      */
@@ -100,19 +125,22 @@ utf8len(const char *str, int32_t surrogate)
     } else {
 	/*
 	 * now that we have a SINGLE HEX number, we need to check the number of
-	 * bytes required, setting it in *bytes.
+	 * bytes required, setting it in len.
 	 */
-
 	if (x < 0x80) {
 	    len = 1;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
+	    dbg(DBG_VVHIGH, "%X length %d", x, len);
 	} else {
-	    warn(__func__, "%x: illegal value\n", x);
+	    warn(__func__, "%X: illegal value\n", x);
 	    len = -1;
 	}
     }
@@ -187,14 +215,12 @@ utf8encode(char *str, unsigned int val)
 	not_reached();
     }
 
-    if (val >= UNI_NOT_CHAR_MIN && val <= UNI_NOT_CHAR_MAX) {
-	warn(__func__, "invalid codepoint: %X", val);
+    if (is_unicode_noncharacter(val)) {
+	warn(__func__, "invalid codepoint: %X is non-character",
+		val, UNICODE_REPLACEMENT_CHAR);
 	len = UNICODE_NOT_CHARACTER;
     } else if ((val & 0xFFFF) >= 0xFFFE) {
 	warn(__func__, "codepoint %X: ends in either FFFE or FFFF", val);
-	len = UNICODE_NOT_CHARACTER;
-    } else if (val == 0xFF || val == 0xFE) {
-	warn(__func__, "codepoint: %X: illegal value", val);
 	len = UNICODE_NOT_CHARACTER;
     } else if (val >= UNI_SUR_HIGH_START && val <= UNI_SUR_LOW_END) {
 	warn(__func__, "codepoint: %X: illegal surrogate", val);

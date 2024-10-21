@@ -490,7 +490,7 @@ extern struct byte2asciistr byte2asciistr[];
 extern char *json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
 extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
 extern void chkbyte2asciistr(void);
-extern void jdecencchk(void);
+extern void jdecencchk(int entertainment);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
 extern struct json *parse_json_string(char const *string, size_t len);
