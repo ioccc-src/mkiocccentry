@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6.1 2024-10-22
+
+Sync the `jparse/` directory with state, as of 2024-10-22, of the
+[jparse repo](https://github.com/xexyl/jparse/) .  Those updates
+include improvements to the jparse test suite including new test cases,
+test suite improvements, and related man pages.  The `jstrencode(1)`,
+`jstrdecode(1)` and related Unicode / UTF-8 functions have been improved.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from to "1.6 2024-10-10"
+to 1.6.1 2024-10-22.
+
+
 ## Release 1.6 2024-10-09
 
 Prep for "**Release 1.6 2024-10-10**".
