@@ -58,8 +58,10 @@ typedef unsigned char bool;
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dyn_array/dyn_array.h"
+#include "../dbg/dbg.h"
 #else
 #include <dyn_array.h>
+#include <dbg.h>
 #endif
 
 

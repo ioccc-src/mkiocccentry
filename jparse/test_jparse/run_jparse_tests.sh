@@ -20,7 +20,7 @@
 
 # setup
 #
-export RUN_JPARSE_TESTS_VERSION="1.0.0 2024-10-12"
+export RUN_JPARSE_TESTS_VERSION="1.0.1 2024-10-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J json_level] [-j jparse] [-p pr_jparse_test] [-c jnum_chk] [-Z topdir]
 
     -h			print help and exit
@@ -53,6 +53,7 @@ export TOPDIR=
 export JPARSE="./jparse"
 export PR_JPARSE_TEST="./test_jparse/pr_jparse_test"
 export JNUM_CHK="./test_jparse/jnum_chk"
+export UTIL_TEST="./util_test"
 
 # parse args
 #
@@ -274,6 +275,17 @@ elif [[ ! -r test_jparse/json_teststr_fail.txt ]]; then
     echo "$0: ERROR: test_jparse/json_teststr_fail.txt is not readable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
+# util_test
+if [[ ! -e test_jparse/util_test ]]; then
+    echo "$0: ERROR: test_jparse/util_test file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f test_jparse/util_test ]]; then
+    echo "$0: ERROR: test_jparse/util_test is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x test_jparse/util_test ]]; then
+    echo "$0: ERROR: test_jparse/util_test is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
 
 # test_JSON
 if [[ ! -e ./test_jparse/test_JSON ]]; then
@@ -360,13 +372,33 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_jparse/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_jparse/jstr_test.sh non-zero exit code: $status"
-    EXIT_CODE="24"
+    EXIT_CODE="26"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo "FAILED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrencode -d $TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
 else
     echo "PASSED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrencode -d $TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
 fi
+
+# util_test
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: test_jparse/util_test" | tee -a -- "$LOGFILE"
+echo "test_jparse/util_test" | tee -a -- "$LOGFILE"
+test_jparse/util_test | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: test_jparse/util_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    test_jparse/util_test non-zero exit code: $status"
+    EXIT_CODE="27"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo "FAILED: test_jparse/util_test" | tee -a -- "$LOGFILE"
+else
+    echo "PASSED: test_jparse/util_test" | tee -a -- "$LOGFILE"
+fi
+
 
 # jnum_chk
 #
@@ -379,7 +411,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: $JNUM_CHK non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     $JNUM_CHK non-zero exit code: $status"
-    EXIT_CODE="25"
+    EXIT_CODE="28"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
     echo "FAILED: $JNUM_CHK -J ${J_FLAG}" -v "$V_FLAG" | tee -a -- "$LOGFILE"

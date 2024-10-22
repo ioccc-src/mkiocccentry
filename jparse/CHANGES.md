@@ -1,5 +1,23 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.6 2024-10-22
+
+Add extra paranoia to `calloc_path()`: make sure calloc()d `char *` is zeroed
+out.
+
+Add code to test `util.c` code. At this time it only tests `calloc_path()` but
+more tests can be devised. This code is called from
+`test_jparse/run_jparse_tests.sh`. Updated the Makefile in `test_jparse` to
+depend on this. This test code will only be compiled if one runs `make test`.
+
+Fixed exit codes in `test_jparse/run_jparse_tests.sh`.
+
+Add extra test to `jdecencchk()` in `json_parse.c`.
+
+Add inclusion of `dbg.h` in `util.h`. This allows `make test` to work in the
+rare case where jparse/ is a subdirectory, at least with one level deep.
+
+
 ## Release 1.2.5 2024-10-20
 
 Fix comments in `json_utf8.c` that were an artefact of the previous way the

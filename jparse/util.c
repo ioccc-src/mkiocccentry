@@ -38,16 +38,45 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+# if defined(UTIL_TEST)
+# include "../../dbg/dbg.h"
+# include "../../dyn_array/dyn_array.h"
+# else
+# include "../dbg/dbg.h"
+# include "../dyn_array/dyn_array.h"
+# endif
 #else
 #include <dbg.h>
+#include <dyn_array.h>
 #endif
 
 /*
  * util - common utility functions for the JSON parser
  */
+#if !defined(UTIL_TEST)
 #include "util.h"
-
+#else
+/*
+ * util_test - part of the test suite
+ */
+#include <getopt.h>
+#include "../util.h"
+#include "../version.h"
+/*
+ * usage message
+ *
+ * test util usage message
+ */
+static char const * const usage =
+"usage: %s [-h] [-v level] [-V] [-q]\n"
+"\n"
+"\t-h\t\tprint help message and exit\n"
+"\t-v level\tset verbosity level: (def level: 0)\n"
+"\t-V\t\tprint version string and exit\n"
+"\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+"\n"
+"jparse library version: %s\n";
+#endif /* UTIL_TEST */
 
 /*
  * base_name - determine the final portion of a path
@@ -4338,14 +4367,14 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
 
 
 /*
- * calloc_path - malloc a JSON file path
+ * calloc_path - calloc a file path
  *
  * given:
  *	dirname		directory containing file, or NULL ==> file is by itself
  *	filename	path of a file (if dirname == NULL), or path under dirname (if dirname != NULL)
  *
  * returns:
- *	malloced path
+ *	allocated string with the path copied into it
  *
  * NOTE: This function does not return on error.
  * NOTE: This function will not return NULL.
@@ -4392,13 +4421,23 @@ calloc_path(char const *dirname, char const *filename)
 	/*
 	 * malloc string
 	 */
-	len = strlen(dirname) + 1 + strlen(filename) + 1;	/* +1 for NUL */
-	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
+	len = strlen(dirname) + 1 + strlen(filename) + 1; /* + 1 for NUL */
+	buf = calloc(len+2, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
 	    errp(155, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
+
+	/*
+	 * paranoia - make sure string is zeroed out
+	 */
+	buf[len] = '\0';
+	buf[len+1] = '\0';
+	/*
+	 * extra paranoia
+	 */
+	memset(buf, '\0', len+1);
 
 	/*
 	 * form string
@@ -4637,3 +4676,127 @@ check_invalid_option(char const *prog, int ch, int opt)
     }
     return;
 }
+
+#if defined(UTIL_TEST)
+int
+main(int argc, char **argv)
+{
+    char *program = NULL;		/* our name */
+    extern char *optarg;		/* option argument */
+    extern int optind;			/* argv index of the next arg */
+    char *buf = NULL;
+    char const *dirname = "foo";
+    char const *filename = "bar";
+    int ret;
+    int i;
+
+    /*
+     * parse args
+     */
+    program = argv[0];
+    while ((i = getopt(argc, argv, ":hv:Vqe:")) != -1) {
+	switch (i) {
+	case 'h':	/* -h - write help, to stderr and exit 0 */
+	    fprintf_usage(0, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    not_reached();
+	    break;
+	case 'v':	/* -v verbosity */
+	    /* parse verbosity */
+	    errno = 0;			/* pre-clear errno for errp() */
+	    verbosity_level = (int)strtol(optarg, NULL, 0);
+	    if (errno != 0) {
+		errp(1, __func__, "cannot parse -v arg: %s", optarg); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'q':
+	    msg_warn_silent = true;
+	    break;
+	case 'V':		/* -V - write version and exit */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", JPARSE_LIBRARY_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error writing version string: %s", JPARSE_LIBRARY_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case ':':
+	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
+	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    not_reached();
+	    break;
+	case '?':
+	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
+	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    not_reached();
+	    break;
+	default:
+	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
+	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    not_reached();
+	}
+    }
+    /*
+     * ignore any extra args
+     */
+
+    /*
+     * report on dbg state, if debugging
+     */
+    fdbg(stderr, DBG_MED, "verbosity_level: %d", verbosity_level);
+    fdbg(stderr, DBG_MED, "msg_output_allowed: %s", booltostr(msg_output_allowed));
+    fdbg(stderr, DBG_MED, "dbg_output_allowed: %s", booltostr(dbg_output_allowed));
+    fdbg(stderr, DBG_MED, "warn_output_allowed: %s", booltostr(warn_output_allowed));
+    fdbg(stderr, DBG_MED, "err_output_allowed: %s", booltostr(err_output_allowed));
+    fdbg(stderr, DBG_MED, "usage_output_allowed: %s", booltostr(usage_output_allowed));
+    fdbg(stderr, DBG_MED, "msg_warn_silent: %s", booltostr(msg_warn_silent));
+    fdbg(stderr, DBG_MED, "msg() output: %s", msg_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "dbg(DBG_MED) output: %s", dbg_allowed(DBG_MED) ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "warn() output: %s", warn_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "err() output: %s", err_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "usage() output: %s", usage_allowed() ? "allowed" : "silenced");
+
+
+    errno = 0; /* pre-clear errno for errp() */
+    buf = calloc_path(dirname, filename);
+    if (buf == NULL) {
+	errp(171, __func__, "calloc_path(%s, %s) returned NULL", dirname, filename);
+	not_reached();
+    } else if (strcmp(buf, "foo/bar") != 0) {
+	err(172, __func__, "buf: %s != %s/%s", buf, dirname, filename);
+	not_reached();
+    } else {
+	fdbg(stderr, DBG_MED, "calloc_path(%s, %s): returned %s", dirname, filename, buf);
+    }
+
+    /*
+     * free buf
+     */
+    if (buf != NULL) {
+	free(buf);
+	buf = NULL;
+    }
+
+    /*
+     * try calloc_path() again but without directory
+     */
+    dirname = NULL;
+    errno = 0; /* pre-clear errno for errp() */
+    buf = calloc_path(dirname, filename);
+    if (buf == NULL) {
+	errp(173, __func__, "calloc_path(NULL, %s) returned NULL", filename);
+	not_reached();
+    } else if (strcmp(buf, "bar") != 0) {
+	err(174, __func__, "buf: %s != %s", buf, filename);
+	not_reached();
+    } else {
+	fdbg(stderr, DBG_MED, "calloc_path(NULL, %s): returned %s", filename, buf);
+    }
+
+    if (buf != NULL) {
+	free(buf);
+	buf = NULL;
+    }
+}
+#endif

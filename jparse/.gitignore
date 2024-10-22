@@ -40,4 +40,7 @@ build.log
 /test_jparse/print_test
 /test_jparse/pr_jparse_test
 /test_jparse/tags
+/test_jparse/util_test
+/test_jparse/util_test.c
+/test_jparse/util_test.o
 /verge
