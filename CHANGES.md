@@ -9,7 +9,10 @@ include improvements to the jparse test suite including new test cases,
 test suite improvements, and related man pages.  The `jstrencode(1)`,
 `jstrdecode(1)` and related Unicode / UTF-8 functions have been improved.
 
-Changed `MKIOCCCENTRY_REPO_VERSION` from to "1.6 2024-10-10"
+Changed `MKIOCCCENTRY_ANSWERS_VERSION` from "MKIOCCCENTRY_ANSWERS-IOCCCMOCK-1.0"
+to "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.6 2024-10-10"
 to 1.6.1 2024-10-22.
 
 

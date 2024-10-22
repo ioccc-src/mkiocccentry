@@ -108,7 +108,7 @@
  *
  * NOTE: these MUST be here and NOT in version.h or in mkiocccentry.h!
  */
-#define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28"
+#define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0"
 /* Answers file EOF marker */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
 
