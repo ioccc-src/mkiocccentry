@@ -1,6 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6.2 2024-10-23
+
+Fix annoying bug where the `MKIOCCCENTRY_ANSWERS_VERSION` could not be in
+`soup/version.h` and the `MKIOCCCENTRY_ANSWERS_EOF` could not be in
+`mkiocccentry.h`.
+
+Fix `write_echo()` in `test_ioccc/prep.sh` to not leave lines in the log file
+that simply say `OK`.
+
+
 ## Release 1.6.1 2024-10-22
 
 Sync the `jparse/` directory with state, as of 2024-10-22, of the
