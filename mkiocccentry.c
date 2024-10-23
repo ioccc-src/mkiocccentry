@@ -96,24 +96,6 @@
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
 
 /*
- * Answers file constants.
- *
- * Version of answers file.
- * Use format:
- *
- *         MKIOCCCENTRY_ANSWERS-IOCCCMOCK-major.minor
- *         MKIOCCCENTRY_ANSWERS-IOCCC[0-9[0-9]-major.minor
- *
- * The following is NOT the version of this mkiocccentry tool!
- *
- * NOTE: these MUST be here and NOT in version.h or in mkiocccentry.h!
- */
-#define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0"
-/* Answers file EOF marker */
-#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
-
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.

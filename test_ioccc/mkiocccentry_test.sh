@@ -338,7 +338,7 @@ EOF
 }
 rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
 #
 # We disable this shellcheck error because answers already is defined but we
@@ -445,7 +445,7 @@ EOF
 }
 rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
 #
 # We disable this shellcheck error because answers already is defined but we
@@ -531,7 +531,7 @@ EOF
 }
 rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
 answers >>answers.txt
 

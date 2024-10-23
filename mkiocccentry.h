@@ -108,17 +108,11 @@
 #include "soup/entry_util.h"
 
 /*
- * mkiocccentry tool basename
- */
-#define MKIOCCCENTRY_BASENAME "mkiocccentry"
-
-
-/*
  * definitions
  *
- * NOTE: MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF must be defined
- *	 in mkiocccentry.c and not here.
  */
+#define MKIOCCCENTRY_BASENAME "mkiocccentry"	/* mkiocccentry tool basename for -V/-h */
+#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 #define ISO_3166_1_CODE_URL0 "\thttps://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "\thttps://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "\thttps://www.iso.org/obp/ui/#iso:pub:PUB500001:en"

@@ -143,7 +143,11 @@ write_echo()
     local MSG="$*"
 
     if [[ -n "$LOGFILE" ]]; then
-	echo "$MSG" | tee -a -- "$LOGFILE"
+	if [[ "$MSG" != "OK" ]]; then
+	    echo "$MSG" | tee -a -- "$LOGFILE"
+	else
+	    echo "$MSG"
+	fi
     else
 	echo "$MSG" 1>&2
     fi
