@@ -5,9 +5,10 @@
 # XXX - Change "an example Makefile" in the line below to a suitable and short 1-line title for your submission - XXX
 # prog - an example Makefile
 #
-# XXX - Please remove these 3 XXX-ed comment lines - XXX
+# XXX - Please remove these 4 XXX-ed comment lines - XXX
 # XXX - Please copy this file into your submission directory under the name: Makefile - XXX
 # XXX - Modify the resulting Makefile as needed - especially lines with XXX's in them - XXX
+# XXX - Please add a space after '=' in variables unless it's empty - XXX
 
 
 #############################
@@ -86,7 +87,7 @@ COTHER=
 
 # Optimization
 #
-OPT= -O3 -g3
+OPT= -O3
 
 # Default flags for ANSI C compilation
 #
@@ -130,6 +131,14 @@ endif
 PROG= prog
 OBJ= ${PROG}.o
 TARGET= ${PROG}
+#
+# XXX - uncomment the below lines if you have alt targets - XXX
+# XXX - make sure to add all alt objects and targets that - XXX
+# XXX - you wish to have compiled by make alt             - XXX
+#
+#ALT_OBJ= ${PROG}.alt.o
+#ALT_TARGET= ${PROG}.alt
+#
 
 # list any data files supplied with the submission
 #
@@ -150,6 +159,18 @@ all: data ${TARGET}
 ${PROG}: ${PROG}.c
 	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
 
+# alternative executable
+#
+alt: data ${ALT_TARGET}
+	@${TRUE}
+
+#
+# XXX - if you have alt targets, add them here, like this - XXX
+#
+#${PROG}.alt: ${PROG}.alt.c
+#	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
+#
+
 # data files
 #
 data: ${DATA}
@@ -158,10 +179,11 @@ data: ${DATA}
 # one suggested way to run the program
 #
 try: ${PROG} ${DATA}
-	@# XXX - Please remove these 3 XXX-ed comment lines - XXX
-	@# XXX - Notice how we do not assume that . is a component in our PATH - XXX
-	@# XXX - Change the next line as needed - XXX
-	./${PROG} some arguments
+        # XXX - Please remove these 4 XXX-ed comment lines - XXX
+        # XXX - Notice how we do not assume that . is a component in our PATH - XXX
+        # XXX - If no args are necessary, you do not have to specify any - XXX
+        # XXX - Change the next line as needed - XXX
+        ./${PROG} some arguments
 
 
 ###############
@@ -169,7 +191,7 @@ try: ${PROG} ${DATA}
 ###############
 #
 clean:
-	${RM} -f ${OBJ}
+	${RM} -f ${OBJ} ${ALT_OBJ}
 
 clobber: clean
-	${RM} -f ${TARGET}
+	${RM} -f ${TARGET} ${ALT_TARGET}
