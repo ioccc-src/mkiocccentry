@@ -37,6 +37,7 @@ oebxergfB.txt
 /soup/.soup
 /soup/tags
 .sw[a-zA-Z0-9]*
+.*.sw[a-zA-Z0-9]*
 /tags
 /test_ioccc/chkentry_test.log
 /test_ioccc/fnamchk
