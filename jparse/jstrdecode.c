@@ -80,8 +80,6 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
-static void free_json_decoded_strings(void);
-static int parse_entertainment(char const *optarg);
 
 /*
  * decoded string list
@@ -149,30 +147,6 @@ add_decoded_string(char *string, size_t bufsiz)
     }
 
     return jstr;
-}
-
-
-/*
- * free_json_decoded_strings	    - free json_decoded_strings list
- *
- * This function takes no args and returns void.
- *
- * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
- * the stack due to how the decoding/encoding works.
- */
-static void
-free_json_decoded_strings(void)
-{
-    struct jstring *jstr = NULL;    /* current in list */
-    struct jstring *jstr_next = NULL;	/* next in list */
-
-    for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr_next) {
-	jstr_next = jstr->next;		/* get next in list before we free the current */
-
-	/* free current json decoded string */
-	free_jstring(jstr);
-	jstr = NULL;
-    }
 }
 
 
@@ -627,8 +601,10 @@ main(int argc, char **argv)
 	}
     }
 
-    /* we have to free the list */
-    free_json_decoded_strings();
+    /*
+     * free list of decoded strings
+     */
+    free_jstring_list(json_decoded_strings);
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
@@ -681,43 +657,4 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
-}
-
-/*
- * parse_entertainment - parse -E optarg
- *
- * given:
- *	optarg		entertainment string, must be an integer >= 0
- *
- * returns:
- *	parsed entertainment or -1 on conversion error or NULL arg
- */
-static int
-parse_entertainment(char const *optarg)
-{
-    int entertainment = -1;	/* parsed entertainment level or -1 */
-
-    /*
-     * firewall
-     */
-    if (optarg == NULL) {
-	return -1;
-    }
-
-    /*
-     * parse entertainment
-     */
-    errno = 0;		/* pre-clear errno for warnp() */
-    entertainment = (int)strtol(optarg, NULL, 0);
-    if (errno != 0) {
-	warnp(__func__, "error converting entertainment value");
-
-	return -1;
-    }
-
-    if (entertainment < 0) {
-	return -1;
-    }
-
-    return entertainment;
 }

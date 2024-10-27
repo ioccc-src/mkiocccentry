@@ -57,7 +57,7 @@ int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jpars
  *
  * NOTE: -1 means the ASCII character is not a valid hex character
  */
-int const hexval[BYTE_VALUES] = {
+int const hexval[JSON_BYTE_VALUES] = {
     /* \x00 - \x0f */
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     /* \x10 - \x1f */

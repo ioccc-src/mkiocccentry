@@ -77,6 +77,45 @@ alloc_jstr(char *string, size_t bufsiz)
 }
 
 /*
+ * parse_entertainment - parse -E optarg
+ *
+ * given:
+ *	optarg		entertainment string, must be an integer >= 0
+ *
+ * returns:
+ *	parsed entertainment or -1 on conversion error or NULL arg
+ */
+int
+parse_entertainment(char const *optarg)
+{
+    int entertainment = -1;	/* parsed entertainment level or -1 */
+
+    /*
+     * firewall
+     */
+    if (optarg == NULL) {
+	return -1;
+    }
+
+    /*
+     * parse entertainment
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    entertainment = (int)strtol(optarg, NULL, 0);
+    if (errno != 0) {
+	warnp(__func__, "error converting entertainment value");
+
+	return -1;
+    }
+
+    if (entertainment < 0) {
+	return -1;
+    }
+
+    return entertainment;
+}
+
+/*
  * free_jstring	    - free a single struct jstring *
  *
  * given:
@@ -89,26 +128,55 @@ alloc_jstr(char *string, size_t bufsiz)
  *
  * NOTE: as the strings CAN have NUL bytes it is entirely possible that there
  * might be a memory leak in some cases.
- *
- * NOTE: we do NOT take a struct jstring ** so as to set the pointer to NULL in
- * the calling function.
  */
 void
-free_jstring(struct jstring *jstr)
+free_jstring(struct jstring **jstr)
 {
     /*
      * firewall
      */
-    if (jstr != NULL) {
+    if (jstr != NULL && *jstr != NULL) {
 	/* free the string if not NULL */
-	if (jstr->jstr != NULL) {
-	    free(jstr->jstr);
-	    jstr->jstr = NULL;
+	if ((*jstr)->jstr != NULL) {
+	    free((*jstr)->jstr);
+	    (*jstr)->jstr = NULL;
 	}
 	/* free the struct itself */
-	free(jstr);
-	jstr = NULL;
+	free(*jstr);
+	*jstr = NULL;
+	jstr = NULL; /* not really needed unless for some reason extra code was added below */
     }
 
     return;
+}
+
+/*
+ * free_jstring_list	    - free a struct jstring * linked list
+ *
+ * given:
+ *
+ *  jstring_list    pointer to list to free
+ *
+ * This function takes a struct jstring *, a pointer to a linked list of struct
+ * jstring *.
+ *
+ * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
+ * the stack due to how the decoding/encoding works. If this is not the case
+ * then expect errors.
+ */
+void
+free_jstring_list(struct jstring *jstring_list)
+{
+    struct jstring *jstr = NULL;    /* current in list */
+    struct jstring *jstr_next = NULL;	/* next in list */
+
+    for (jstr = jstring_list; jstr != NULL; jstr = jstr_next) {
+	jstr_next = jstr->next;		/* get next in list before we free the current */
+
+	/* free current json decoded string */
+	free_jstring(&jstr);
+	jstr = NULL;
+    }
+
+    jstring_list = NULL;
 }

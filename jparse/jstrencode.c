@@ -81,8 +81,6 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
 static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last,
 	bool ignore_nl);
 static struct jstring *add_encoded_string(char *string, size_t bufsiz);
-static void free_json_encoded_strings(void);
-static int parse_entertainment(char const *optarg);
 
 /*
  * encoded string list
@@ -155,30 +153,6 @@ add_encoded_string(char *string, size_t bufsiz)
 
     return jstr;
 }
-
-/*
- * free_json_encoded_strings	    - free json_encoded_strings list
- *
- * This function takes no args and returns void.
- *
- * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
- * the stack due to how the decoding/encoding works.
- */
-static void
-free_json_encoded_strings(void)
-{
-    struct jstring *jstr = NULL;    /* current in list */
-    struct jstring *jstr_next = NULL;	/* next in list */
-
-    for (jstr = json_encoded_strings; jstr != NULL; jstr = jstr_next) {
-	jstr_next = jstr->next;		/* get next in list before we free the current */
-
-	/* free current json encoded string */
-	free_jstring(jstr);
-	jstr = NULL;
-    }
-}
-
 
 /*
  * dup_without_nl - duplicate a buffer and remove all newlines
@@ -325,6 +299,10 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	 * remove both the leading and a trailing double quotes
 	 */
 	dbg(DBG_HIGH, "removing leading and trailing double quotes from stream");
+	/*
+	 * NOTE: we don't do input[0] = '\0' because of the ++input
+	 * below.
+	 */
 	input[inputlen-1] = '\0';
 	--inputlen;
 	++input;
@@ -591,6 +569,10 @@ main(int argc, char **argv)
 		 */
 		if (input[0] == '"' && input[inputlen-1] == '"') {
 		    dbg(DBG_HIGH, "removing leading and trailing double quotes from arg[%d]", i-optind);
+		    /*
+		     * NOTE: we don't do input[0] = '\0' because of the ++input
+		     * below.
+		     */
 		    input[inputlen-1] = '\0';
 		    --inputlen;
 		    ++input;
@@ -718,8 +700,10 @@ main(int argc, char **argv)
 	}
     }
 
-    /* we have to free the list */
-    free_json_encoded_strings();
+    /*
+     * free list of encoded strings
+     */
+    free_jstring_list(json_encoded_strings);
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
@@ -772,42 +756,4 @@ usage(int exitcode, char const *prog, char const *str)
 	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
-}
-
-/*
- * parse_entertainment - parse -E optarg
- *
- * given:
- *	optarg		entertainment string, must be an integer >= 0
- *
- * returns:
- *	parsed entertainment or -1 on conversion error or NULL arg
- */
-static int
-parse_entertainment(char const *optarg)
-{
-    int entertainment = -1;	/* parsed entertainment level or -1 */
-
-    /*
-     * firewall
-     */
-    if (optarg == NULL) {
-	return -1;
-    }
-
-    /*
-     * parse entertainment
-     */
-    errno = 0;		/* pre-clear errno for warnp() */
-    entertainment = (int)strtol(optarg, NULL, 0);
-    if (errno != 0) {
-	warnp(__func__, "error converting entertainment value");
-	return -1;
-    }
-
-    if (entertainment < 0) {
-	return -1;
-    }
-
-    return entertainment;
 }

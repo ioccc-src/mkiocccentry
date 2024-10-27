@@ -1,5 +1,35 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.8 2024-10-27
+
+Remove duplicate code from jstrencode.c and jstrdecode.c as follows:
+
+- The `parse_entertainment()` function is now in `jstr_util.c` as the purpose of
+the file is for both jstrencode and jstrdecode.
+- Added function `free_jstring_list()` in `jstr_util.c` and use that instead of
+the unique functions (that do the same thing) in jstrencode.c and jstrdecode.c
+(`free_json_encoded_strings` and `free_json_decoded_strings`).
+
+Updated version of both tools to `"1.2.5 2024-10-27"`.
+
+
+## Release 1.2.7 2024-10-26
+
+Update `free_jstring()` to take a `struct jstring **jstr` rather than a `struct
+jstring *`. The function now, if `jstr != NULL && *jstr != NULL`, frees the
+struct from the calling function. This function still sets `jstr` to NULL in the
+case that code were to for some reason be added to the function. The struct in
+the calling code also sets it to NULL, even if redundant, as an extra sanity
+check.
+
+Updated the man page for jstrencode to point out a subtlety with the `-Q`
+option.
+
+Updated the `hexval` table to be of size `JSON_BYTE_VALUES`, even though that
+table is not used (it might be deleted as obsolete but that has not been
+determined yet).
+
+
 ## Release 1.2.6 2024-10-22
 
 Add extra paranoia to `calloc_path()`: make sure calloc()d `char *` is zeroed

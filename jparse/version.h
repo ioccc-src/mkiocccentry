@@ -30,7 +30,7 @@
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "1.2.6 2024-10-22"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "1.2.8 2024-10-27"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version
