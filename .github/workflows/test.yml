@@ -43,5 +43,7 @@ jobs:
       run: make slow_release
     - name: make clobber all test
       run: make clobber all test
+    - name: make bug_report
+      run: make bug_report
     - name: make clobber
       run: make clobber
