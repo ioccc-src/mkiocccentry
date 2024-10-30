@@ -3,7 +3,7 @@
 # jparse_bug_report.sh - produce a file suitable for filing a bug report
 #
 # Collect system information to help users report bugs and issues
-# using the jparse tools.
+# using the jparse tools and parser.
 #
 # When you run this script without any arguments:
 #
@@ -72,10 +72,10 @@ export SUBDIRS="
 # we need to determine if the system has gmake first
 MAKE="$(type -P gmake)"
 if [[ -z "$MAKE" ]]; then
-	MAKE="$(type -P make)"
+    MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.2.0 2024-10-09"
+export BUG_REPORT_VERSION="1.2.1 2024-10-30"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -84,8 +84,10 @@ export T_FLAG=""
 export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
+CC="$(type -P cc 2>/dev/null)"
+export CC
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-m make] [-M make_flags]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-m make] [-M make_flags] [-c cc]
 
     -h              print help and exit
     -V              print version and exit
@@ -97,6 +99,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfi
     -L logfile      specify logfile name (def: based on date and time)
     -m make         specify path to make(1) (def: $MAKE)
     -M make_flags   set any make flags (def: $MAKE_FLAGS)
+    -c cc           set path to cc (def: $CC)
 
 Exit codes:
      0	    all tests OK
@@ -104,6 +107,7 @@ Exit codes:
      2	    help mode exit or print version mode exit
      3	    invalid command line
      4	    error in function call
+     5      required file doesn't exist, wrong type or wrong permissions
  >= 10	    at least one check failed
 
 jparse_bug_report.sh version: $BUG_REPORT_VERSION"
@@ -118,11 +122,11 @@ LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:D:txlL:m:M: flag; do
+while getopts :hVv:D:txlL:m:M:c: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-		exit 2
-		;;
+        exit 2
+        ;;
     V)	echo "$BUG_REPORT_VERSION" 1>&2
 	exit 2
 	;;
@@ -142,6 +146,8 @@ while getopts :hVv:D:txlL:m:M: flag; do
 	;;
     M)  MAKE_FLAGS="$OPTARG"
 	;;
+    c)  CC="$OPTARG"
+        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -161,34 +167,67 @@ done
 
 # make sure that make is an executable file
 #
-# First, if the user for some reason provided an empty string, try an correct it
-# for them:
+# First, if the user for some reason provided an empty string, try and correct
+# it for them:
 if [[ -z "$MAKE" ]]; then
-	# try for gmake first
-	MAKE="$(type -P gmake)"
-	if [[ -z "$MAKE" ]]; then
-		MAKE="$(type -P make)"
-	fi
+    # try for gmake first
+    MAKE="$(type -P gmake)"
+    if [[ -z "$MAKE" ]]; then
+            MAKE="$(type -P make)"
+    fi
 fi
 if [[ -z "$MAKE" ]]; then
-	echo "make variable MAKE unset! Try -m make option." 1>&2
-	exit 3
+    echo "make variable MAKE unset! Try -m make option." 1>&2
+    exit 3
 fi
 
 if [[ ! -e "$MAKE" ]]; then
-	echo "make does not exist: $MAKE" 1>&2
-	echo "Use -m make option to set path." 1>&2
-	exit 3
+    echo "make does not exist: $MAKE" 1>&2
+    echo "Use -m make option to set path." 1>&2
+    exit 3
 fi
 if [[ ! -f "$MAKE" ]]; then
-	echo "make is not a regular file: $MAKE" 1>&2
-	echo "Use -m make option to set path." 1>&2
-	exit 3
+    echo "make is not a regular file: $MAKE" 1>&2
+    echo "Use -m make option to set path." 1>&2
+    exit 3
 fi
 if [[ ! -x "$MAKE" ]]; then
-	echo "make is not an executable file: $MAKE" 1>&2
-	echo "Use -m make option to set path." 1>&2
-	exit 3
+    echo "make is not an executable file: $MAKE" 1>&2
+    echo "Use -m make option to set path." 1>&2
+    exit 3
+fi
+
+# make sure that cc is an executable file
+#
+# First, if the user for some reason provided an empty string, try and correct
+# it for them:
+if [[ -z "$CC" ]]; then
+    # try for gcc first
+    CC="$(type -P gcc)"
+    if [[ -z "$CC" ]]; then
+        CC="$(type -P cc)"
+    fi
+fi
+if [[ -z "$CC" ]]; then
+    echo "CC variable cc unset!" 1>&2
+    echo "Use -c cc option to set path." 1>&2
+    exit 3
+fi
+
+if [[ ! -e "$CC" ]]; then
+    echo "cc does not exist: $CC" 1>&2
+    echo "Use -c cc option to set path." 1>&2
+    exit 3
+fi
+if [[ ! -f "$CC" ]]; then
+    echo "cc is not a regular file: $CC" 1>&2
+    echo "Use -c cc option to set path." 1>&2
+    exit 3
+fi
+if [[ ! -x "$CC" ]]; then
+    echo "cc is not an executable file: $CC" 1>&2
+    echo "Use -c cc option to set path." 1>&2
+    exit 3
 fi
 
 
@@ -208,6 +247,7 @@ if [[ ! -w "$LOGFILE" ]]; then
     exit 1
 fi
 
+
 # write_echo - write a message to either the log file or both the log file and
 # stdout
 #
@@ -221,6 +261,8 @@ write_echo()
 	echo "$MSG" >> "$LOGFILE"
     fi
 }
+
+
 # exec_command - invoke command redirecting output only to the log file or to
 # both stdout and the log file
 exec_command()
@@ -402,6 +444,50 @@ type_of_optional()
     write_echo "## TYPE OF $COMMAND ABOVE"
 }
 
+# test_compile - try compiling a test program with jparse/jparse.h
+#
+# NOTE: it is not considered an issue if the compilation fails, though if the
+# appropriate temporary files cannot be created a warning is issued.
+#
+# NOTE: this function does not make use of the -I or -L options with cc.
+test_compile()
+{
+    write_echo "## TEST COMPILING with jparse/jparse.h"
+    # extra firewall check
+    #
+    if [[ -z "$CC" ]]; then
+        write_echo "$0: CC variable empty, skipping test compile"
+        return 0
+    fi
+
+    # set up for compile test
+    #
+    PROG_FILE=$(mktemp -u "jparse_bug_report.XXXXXXXXXX.prog")
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+        write_echo "$0: WARNING: mktemp -u $PROG_FILE exit code: $status" 1>&2
+        write_echo "$0: WARNING: will skip test compile" 1>&2
+        return 0
+    fi
+    SOURCE_FILE=$(mktemp -u "jparse_bug_report.XXXXXXXXXX.c")
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+        write_echo "$0: WARNING: mktemp -u $SOURCE_FILE exit code: $status" 1>&2
+        write_echo "$0: WARNING: will skip test compile" 1>&2
+        return 0
+    fi
+
+    printf "#include <jparse/jparse.h>\nint main(void){return 0;}" > "$SOURCE_FILE"
+    exec_command "${CC}" "$SOURCE_FILE" -o "$PROG_FILE" -ljparse -ldbg -ldyn_array
+    status="$?"
+    rm -f "$PROG_FILE" "$SOURCE_FILE"
+    if [[ $status -eq 0 ]]; then
+        write_echo "## TEST COMPILING with jparse/jparse.h works"
+    else
+        write_echo "## TEST COMPILING with jparse/jparse.h does not work"
+    fi
+    return 0
+}
 
 # get path to tools we might need for get_version and get_version_optional
 # functions below
@@ -1482,9 +1568,10 @@ write_echo "#----------------------------------------#"
 write_echo "# SECTION 4 ABOVE: BISON AND FLEX CHECKS #"
 write_echo "#----------------------------------------#"
 
-####################################################################
-# Section 5: JPARSE environment like version info executable checks #
-####################################################################
+############################################################################
+# Section 5: JPARSE environment like version info executable checks and    #
+# test compiling a simple program with jparse/jparse.h                     #
+############################################################################
 
 write_echo ""
 write_echo "################################"
@@ -1529,6 +1616,8 @@ for d in $SUBDIRS; do
     fi
 done
 
+write_echo ""
+test_compile
 
 write_echo "#------------------------------------#"
 write_echo "# SECTION 5 ABOVE: JPARSE ENVIRONMENT #"

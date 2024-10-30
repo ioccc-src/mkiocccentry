@@ -1,5 +1,25 @@
 # Significant changes in the JSON parser repo
 
+## Release 1.2.9 2024-10-30
+
+Add function `utf8decode()` (from the same location as the `utf8encode()` but
+also modified to check for a NULL pointer.
+
+Make the updates of pointers `p` and `utf8` and the `int32_t` bytes in
+`decode_json_string()` the same order in the surrogate pairs as the single
+`\uxxxx` when processing `\u` in strings.
+
+Updated `JPARSE_UTF8_VERSION` to `"1.2.3 2024-10-30"`.
+
+Fix `make install` to install `json_utf8.h`.
+
+Improve `jparse_bug_report.sh` to test compile with `jparse/jparse.h` to try and
+determine if the `dbg`, `dyn_array` and `jparse` libraries are installed.
+
+Typo fix in `test_jparse/prep.sh`. A missing `G` in `LOGFILE`. This was a
+carry-over from the mkiocccentry repo script.
+
+
 ## Release 1.2.8 2024-10-27
 
 Remove duplicate code from jstrencode.c and jstrdecode.c as follows:
