@@ -500,11 +500,11 @@ make_action 28 test
 
 # If we have a logfile, count the number of Notice: messages in the logfile
 #
-LOFILE_NOTICE_COUNT=0
+LOGFILE_NOTICE_COUNT=0
 export NOTICE_COUNT
 if [[ -n "$LOGFILE" ]]; then
-    LOFILE_NOTICE_COUNT="$(grep -cE "[[:space:]]+Notice:[[:space:]]" "$LOGFILE")"
-    if [[ $LOFILE_NOTICE_COUNT -gt 0 ]]; then
+    LOGFILE_NOTICE_COUNT="$(grep -cE "[[:space:]]+Notice:[[:space:]]" "$LOGFILE")"
+    if [[ $LOGFILE_NOTICE_COUNT -gt 0 ]]; then
 	write_logfile
 	write_logfile "=-=-= Summary of prep.sh notices follow:"
 	write_logfile
@@ -537,7 +537,7 @@ fi
 
 # Add any logfile notice count to the bug report log notice count.
 #
-((NOTICE_COUNT=NOTICE_COUNT+LOFILE_NOTICE_COUNT))
+((NOTICE_COUNT=NOTICE_COUNT+LOGFILE_NOTICE_COUNT))
 
 if [[ $EXIT_CODE -eq 0 ]]; then
     if [[ -z "$LOGFILE" ]]; then

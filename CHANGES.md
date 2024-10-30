@@ -1,6 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6.2 2024-10-30
+
+Sync the `jparse/` directory from [jparse
+repo](https://github.com/xexyl/jparse/). This includes some important bug fixes,
+especially in the `make install` rule that did not install a header file. Not
+having this would cause a compilation error if one were to try and include
+`jparse/jparse.h` outside this repo.
+
+The `jparse_bug_report.sh` script has an improvement that will test compile a
+jparse program to see if the system can link in `libjparse.a`, `libdbg.a` and
+`libdyn_array.a`. This script is not needed for this repo though.
+
+
 ## Release 1.6.2 2024-10-23
 
 Fix annoying bug where the `MKIOCCCENTRY_ANSWERS_VERSION` could not be in

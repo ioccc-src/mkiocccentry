@@ -10,7 +10,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse_bug_report.sh 1 "01 September 2024" "jparse_bug_report.sh" "jparse tools"
+.TH jparse_bug_report.sh 1 "30 October 2024" "jparse_bug_report.sh" "jparse tools"
 .SH NAME
 .B jparse_bug_report.sh
 \- run a series of tests, collecting system information in the process, to help report bugs and issues
@@ -31,6 +31,8 @@
 .IR make \|]
 .RB [\| \-M
 .IR make_flags \|]
+.RB [\| \-c
+.IR cc \|]
 .SH DESCRIPTION
 .B jparse_bug_report.sh
 runs a series of tests and scripts to gather as much information about your system as possible in order to help with reporting bugs or other issues.
@@ -57,6 +59,16 @@ then you can use the
 .B \-m
 .I make
 option to specify the path.
+.PP
+It also tries to locate
+.BR cc (1)
+or a test compiling of the library, though it is not considered a problem if the compile fails.
+If the script cannot find
+.BR cc (1)
+then one can use the
+.B \-c
+.I cc
+option.
 It is considered a command line error if
 .BR make (1)
 is not a regular executable file as without
@@ -97,6 +109,10 @@ We recommend you to
 use this when actually reporting bugs.
 This is because it will provide us some very useful information.
 Nevertheless it is there for the cases where it's useful.
+.TP
+.BI \-c\  cc
+Set path to
+.BR cc (1).
 .SH EXIT STATUS
 .TP
 0

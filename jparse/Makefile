@@ -408,7 +408,7 @@ PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 #
 H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
 	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
-	       version.h
+	       version.h json_utf8.h
 
 # what to make by all but NOT to removed by clobber
 #

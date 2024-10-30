@@ -36,7 +36,7 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "1.2.2 2024-10-13"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "1.2.3 2024-10-30"	/* format: major.minor YYYY-MM-DD */
 
 #define UNICODE_REPLACEMENT_CHAR 0xFFFD
 
@@ -44,7 +44,7 @@ extern size_t utf8len(const char *str, int32_t surrogate);
 extern bool is_unicode_noncharacter(int32_t x);
 
 /*
- * The below function and macros are based on code from
+ * The below functions and macros are based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
  * with a number of changes.
  */
@@ -61,9 +61,10 @@ extern bool is_unicode_noncharacter(int32_t x);
 #define UTF8_V_SHIFT    6
 
 extern int utf8encode(char *str, unsigned int val);
+extern unsigned int utf8decode(const char *str);
 
 /*
- * The above function and macros are based on code from
+ * The above functions and macros are based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
  * with a number of changes.
  */

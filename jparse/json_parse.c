@@ -1554,15 +1554,20 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		    }
 
 		    /*
+		     * bytes - 1 because we increment utf8 in the increment phase
+		     * of the loop
+		     */
+		    utf8 += bytes - 1;
+		    /*
+		     * however, for p we need to update the entire amount
+		     */
+		    p += bytes;
+
+		    /*
 		     * we increment by 11 because LITLEN("uxxxx") +
 		     * LITLEN("\\uxxxx") is 11.
 		     */
 		    i += 11;
-		    /*
-		     * these are like for a single \uxxxx found
-		     */
-		    utf8 += bytes - 1;
-		    p += bytes;
 		} else {
 		    /* error - clear allocated length and free buffer */
 		    if (retlen != NULL) {
