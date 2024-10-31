@@ -464,7 +464,7 @@ jdecencchk(int entertainment)
      * encode another string that should not match the above encoded string
      */
     decstr2 = "\\u006f\\u0302";
-    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen): %s", decstr2);
+    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen)", decstr2);
     mstr = json_encode_str(decstr2, &mlen);
     if (mstr == NULL) {
 	err(151, __func__, "json_encode_str(<%s>, *mlen: %ju) == NULL",
@@ -1605,7 +1605,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
      * return result
      */
 
-    dbg(DBG_VVVHIGH, "returning from encode_json_string(ptr, %ju, %ju, *%ju, %s)",
+    dbg(DBG_VVVHIGH, "returning from encode_json_string(ptr, %ju, %ju, *%ju)",
 		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0);
     if (retlen != NULL) {
 	*retlen = mlen;
@@ -1851,10 +1851,10 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
      * return result, if not NULL
      */
     if (ret != NULL) {
-	dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju, %s)",
-			 (uintmax_t)len, (uintmax_t)mlen);
+	dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju): %s",
+			 (uintmax_t)len, (uintmax_t)mlen, ret);
     } else {
-	dbg(DBG_VVVHIGH, "in json_encode(): encode_json_string(ptr, %ju, *%ju, %s) returned NULL",
+	dbg(DBG_VVVHIGH, "in json_encode(): encode_json_string(ptr, %ju, *%ju) returned NULL",
 			 (uintmax_t)len, (uintmax_t)mlen);
 	if (retlen != NULL) {
 	    *retlen = 0;
