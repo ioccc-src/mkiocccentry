@@ -9,10 +9,10 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "26 October 2024" "jstrencode" "jparse tools"
+.TH jstrencode 1 "31 October 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
-\- encode JSON encoded strings
+\- encode JSON decoded strings
 .SH SYNOPSIS
 .B jstrencode
 .RB [\| \-h \|]
@@ -31,31 +31,43 @@
 .IR ... \|]
 .SH DESCRIPTION
 .B jstrencode
-Concatenate the string arguments and encode the result as if it were a JSON string.
+encodes JSON decoded strings given on the command line.
 If given the
 .B \-t
-option it performs a test on the JSON encode and encode functions.
-.PP
+option it performs a test on the JSON encode and decode functions.
 By default the program reads from
 .BR stdin .
+If given the
+.B \-Q
+option it will enclose the output in quotes.
+If given the
+.B \-m
+(aliased as
+.BR \-e )
+option it will surround each decoded arg (after encoding it) with escaped (backslash) quotes.
+The use of
+.B \-Q
+and
+.B \-e
+together will surround the entire output with unescaped quotes and each decoded arg's (after encoding) output will be surrounded with escaped (backslashed) quotes.
 .SH OPTIONS
 .TP
 .B \-h
-Show help and exit.
+Show help and exit
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level
+.IR level
 (def: 0)
 .TP
 .B \-q
 Suppresses some of the output (def: not quiet)
 .TP
 .B \-V
-Show version and exit.
+Show version and exit
 .TP
 .B \-t
-Run tests on the JSON encode/encode functions
+Run tests on the JSON encode/decode functions
 .TP
 .B \-n
 Do not output a newline after the encode function
@@ -64,10 +76,10 @@ Do not output a newline after the encode function
 Ignore and skip over all newlines, for easier typing commands.
 .TP
 .B \-Q
-Do not encode double quotes that enclose the concatenation of args (def: do encode)
+Enclose output in double quotes
 .TP
 .B \-e
-Do not encode double quotes that enclose each arg (def: do encode)
+Enclose each decoded string (after encoding) with escaped double quotes (def: do not)
 .TP
 .BI \-E\  level
 Entertainment mode at level
@@ -93,17 +105,15 @@ command line error
 internal error
 .SH BUGS
 .PP
-A known problem with macOS Terminal is that one has to hit ctrl\-d twice in order for it to properly send
+A known problem, at least with some terminal applications, is that one has to hit ctrl\-d (or whatever one has
 .B EOF
-but this occurs in other applications as well so we note this issue here.
-.PP
-It is worth remembering that, for the
-.B \-Q
-option, a double quote in the string will still be encoded, if it is a second arg or if another arg is specified, as it will not be a leading or trailing quote.
+configured as) twice in order for it to properly send
+.B EOF
+(this occurs in other applications as well so it seems to be a terminal problem).
 .PP
 If you have an issue with the tool you can report it at
 .br
-\fI\<https://github.com/xexyl/jparse/issues\>\fP.
+.IR \<https://github.com/xexyl/jparse/issues\> .
 .SH EXAMPLES
 .PP
 Encode the JSON string
@@ -115,9 +125,9 @@ Encode the JSON string
 .ft R
 .RE
 .sp
-Note that we didn't quote it!
+Notice that we didn't quote it!
 .PP
-Encode a string containing an escaped double quote from
+Encode input from
 .B stdin
 (send
 .BR EOF ,
@@ -128,7 +138,7 @@ to encode):
 .RS
 .ft B
  jstrencode
- {"test\e"ing":false}
+ \-5
  ^D
 .ft R
 .RE

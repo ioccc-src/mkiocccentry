@@ -565,9 +565,9 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 	    return false;
 	}
-	obj_name = sem_member_name_decoded_str(e, depth+2, sem, __func__, val_err);
+	obj_name = sem_member_name_encoded_str(e, depth+2, sem, __func__, val_err);
 	if (obj_name == NULL) {
-	    /* sem_member_name_decoded_str() will have set *val_err */
+	    /* sem_member_name_encoded_str() will have set *val_err */
 	    return false;
 	}
 
@@ -593,7 +593,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    found_name = true;
 
 	    /* obtain value as JTYPE_STRING */
-	    auth_name = sem_member_value_decoded_str(e, depth+2, sem, __func__, NULL);
+	    auth_name = sem_member_value_encoded_str(e, depth+2, sem, __func__, NULL);
 	    /* we will deal with NULL auth_name later in this function */
 
 	/* case: IOCCC author location_code */
@@ -611,7 +611,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    found_location_code = true;
 
 	    /* obtain value as JTYPE_STRING */
-	    location_code = sem_member_value_decoded_str(e, depth+2, sem, __func__, NULL);
+	    location_code = sem_member_value_encoded_str(e, depth+2, sem, __func__, NULL);
 	    /* we will deal with NULL location_code later in this function */
 
 	/* case: IOCCC author email */
@@ -873,7 +873,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    found_author_handle = true;
 
 	    /* obtain value as JTYPE_STRING */
-	    author_handle = sem_member_value_decoded_str(e, depth+2, sem, __func__, NULL);
+	    author_handle = sem_member_value_encoded_str(e, depth+2, sem, __func__, NULL);
 	    /* we will deal with NULL author_handle later in this function */
 
 	/* case: IOCCC author author_number */
@@ -1438,15 +1438,15 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * obtain JTYPE_MEMBER name and value as decoded JSON strings
 	 */
-	arr_name = sem_member_name_decoded_str(jo, depth+2, sem, __func__, val_err);
+	arr_name = sem_member_name_encoded_str(jo, depth+2, sem, __func__, val_err);
 	if (arr_name == NULL) {
-	    /* sem_member_name_decoded_str() will have set *val_err */
+	    /* sem_member_name_encoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
 	}
-	value = sem_member_value_decoded_str(jo, depth+2, sem, __func__, val_err);
+	value = sem_member_value_encoded_str(jo, depth+2, sem, __func__, val_err);
 	if (value == NULL) {
-	    /* sem_member_value_decoded_str() will have set *val_err */
+	    /* sem_member_value_encoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
 	}

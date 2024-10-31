@@ -866,10 +866,10 @@ sem_member_value(struct json const *node, unsigned int depth, struct json_sem *s
 
 
 /*
- * sem_member_name_decoded_str - return the JSON decoded name string from a JTYPE_MEMBER
+ * sem_member_name_encoded_str - return the JSON encoded name string from a JTYPE_MEMBER
  *
  * Given a JSON node of type JTYPE_MEMBER, look at the name of the JSON member
- * and if it is a JTYPE_STRING (JSON string), return the name's JSON decoded string
+ * and if it is a JTYPE_STRING (JSON string), return the name's JSON encoded string
  * or return NULL on error or invalid input.
  *
  * given:
@@ -881,18 +881,18 @@ sem_member_value(struct json const *node, unsigned int depth, struct json_sem *s
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_STRING from the name part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_STRING from the name part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL, then *val_err is JSON semantic validation error (struct json_count_err)
  */
 char *
-sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
+sem_member_name_encoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 			    char const *name, struct json_sem_val_err **val_err)
 {
     struct json *n = NULL;			/* name of JTYPE_MEMBER */
     struct json_string *istr = NULL;		/* JTYPE_MEMBER name as JTYPE_STRING */
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    char *str = NULL;				/* JTYPE_STRING as encoded JSON string */
 
     /*
      * obtain JTYPE_MEMBER name
@@ -925,28 +925,28 @@ sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct 
     }
 
     /*
-     * firewall - decoded JSON string
+     * firewall - encoded JSON string
      */
     str = istr->str;
     if (str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(56, node, depth, sem, name, "node name decoded JSON string is NULL");
+	    *val_err = werr_sem_val(56, node, depth, sem, name, "node name encoded JSON string is NULL");
 	}
 	return NULL;
     }
 
     /*
-     * case success: return decoded JSON string
+     * case success: return encoded JSON string
      */
     return str;
 }
 
 
 /*
- * sem_member_value_decoded_str - return the JSON decoded value string from a JTYPE_MEMBER
+ * sem_member_value_encoded_str - return the JSON encoded value string from a JTYPE_MEMBER
  *
  * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
- * and if it is a JTYPE_STRING (JSON string), return the value's JSON decoded string
+ * and if it is a JTYPE_STRING (JSON string), return the value's JSON encoded string
  * or return NULL on error or invalid input.
  *
  * given:
@@ -958,18 +958,18 @@ sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct 
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_STRING from the value part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_STRING from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 char *
-sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_encoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 			     char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
     struct json_string *istr = NULL;		/* JTYPE_MEMBER value as JTYPE_STRING */
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    char *str = NULL;				/* JTYPE_STRING as encoded JSON string */
 
     /*
      * obtain JTYPE_MEMBER value
@@ -1002,18 +1002,18 @@ sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct
     }
 
     /*
-     * firewall - decoded JSON string
+     * firewall - encoded JSON string
      */
     str = istr->str;
     if (str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(59, node, depth, sem, name, "node value decoded JSON string is NULL");
+	    *val_err = werr_sem_val(59, node, depth, sem, name, "node value encoded JSON string is NULL");
 	}
 	return NULL;
     }
 
     /*
-     * case success: return decoded JSON string
+     * case success: return encoded JSON string
      */
     return str;
 }
@@ -1035,7 +1035,7 @@ sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_BOOL from the value part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_BOOL from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
@@ -1085,10 +1085,10 @@ sem_member_value_bool(struct json const *node, unsigned int depth, struct json_s
 
 
 /*
- * sem_member_value_str_or_null - return JSON decoded value string or JSON null from a JTYPE_MEMBER
+ * sem_member_value_str_or_null - return JSON encoded value string or JSON null from a JTYPE_MEMBER
  *
  * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
- * and if it is a JTYPE_STRING (JSON string), return the value's JSON decoded string,
+ * and if it is a JTYPE_STRING (JSON string), return the value's JSON encoded string,
  * and if it is a JTYPE_NULL (JSON null), indicate that value is JSON null.
  *
  * The return structure gives you a  way to distinguish between JTYPE_STRING and JTYPE_NULL:
@@ -1097,7 +1097,7 @@ sem_member_value_bool(struct json const *node, unsigned int depth, struct json_s
  *
  *	ret.valid == true
  *	ret.is_null == false
- *	ret.str is the JSON decoded value string
+ *	ret.str is the JSON encoded value string
  *
  *   When value is a JTYPE_NULL (JSON null):
  *
@@ -1167,12 +1167,12 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
 	}
 
 	/*
-	 * firewall - decoded JSON string
+	 * firewall - encoded JSON string
 	 */
 	ret.str = istr->str;
 	if (ret.str == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(63, node, depth, sem, name, "node value decoded JSON string is NULL");
+		*val_err = werr_sem_val(63, node, depth, sem, name, "node value encoded JSON string is NULL");
 	    }
 	    return ret;
 	}
@@ -1234,7 +1234,7 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_NUMBER as an int from the value part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_NUMBER as an int from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
@@ -1311,7 +1311,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_NUMBER as a size_t from the value part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_NUMBER as a size_t from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
@@ -1388,7 +1388,7 @@ sem_member_value_size_t(struct json const *node, unsigned int depth, struct json
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_NUMBER as a time_t from the value part of JTYPE_MEMBER
+ *	!= NULL ==> encoded JTYPE_NUMBER as a time_t from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
@@ -1674,9 +1674,9 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	/*
 	 * try to match the smemname with this set member
 	 */
-	smemname = sem_member_name_decoded_str(s, depth+1, sem, name, val_err);
+	smemname = sem_member_name_encoded_str(s, depth+1, sem, name, val_err);
 	if (smemname == NULL) {
-	    /* sem_member_name_decoded_str() will have set *val_err */
+	    /* sem_member_name_encoded_str() will have set *val_err */
 	    return NULL;
 	}
 	if (strcmp(memname, smemname) == 0) {
@@ -1877,10 +1877,10 @@ json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem)
      */
     type = node->type;
     if (type == JTYPE_MEMBER) {
-        /* sem_member_name_decoded_str() call checks args via sem_chk_null_args() */
-	/* sem_member_name_decoded_str() also calls sem_node_valid() */
+        /* sem_member_name_encoded_str() call checks args via sem_chk_null_args() */
+	/* sem_member_name_encoded_str() also calls sem_node_valid() */
 	/* determine name of JTYPE_MEMBER or return NULL */
-	name = sem_member_name_decoded_str(node, depth, sem, __func__, NULL);
+	name = sem_member_name_encoded_str(node, depth, sem, __func__, NULL);
     } else {
 	test = sem_node_valid(node, depth, sem, __func__, NULL);
 	if (test == false) {
@@ -2056,7 +2056,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	    if (node->type == JTYPE_MEMBER) {
 		char *name = NULL;	/* name of JTYPE_MEMBER */
 
-		name = sem_member_name_decoded_str(node, depth, sem, __func__, &error);
+		name = sem_member_name_encoded_str(node, depth, sem, __func__, &error);
 		if (name == NULL) {
 		    snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s name: ((NULL)); unnamed member",
 			  depth, json_item_type_name(node));
@@ -2434,7 +2434,7 @@ fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *se
 	     * case: JSON node is a member, print name
 	     */
 	    if (sem_count_err->node->type == JTYPE_MEMBER) {
-		p = sem_member_name_decoded_str(sem_count_err->node, INF_DEPTH, &sem_node, __func__, NULL);
+		p = sem_member_name_encoded_str(sem_count_err->node, INF_DEPTH, &sem_node, __func__, NULL);
 		fpr(stream, __func__, "name: \"%s\" ", p);
 	    }
 	}
@@ -2579,7 +2579,7 @@ fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_va
 	     * case: JSON node is a member, print name
 	     */
 	    if (sem_val_err->node->type == JTYPE_MEMBER) {
-		p = sem_member_name_decoded_str(sem_val_err->node, INF_DEPTH, &sem_node, __func__, NULL);
+		p = sem_member_name_encoded_str(sem_val_err->node, INF_DEPTH, &sem_node, __func__, NULL);
 		fpr(stream, __func__, "name: \"%s\" ", p);
 	    }
 	}

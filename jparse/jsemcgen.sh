@@ -81,7 +81,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 
 	-P prefix	validate JTYPE_MEMBER JSON nodes with prefix_name() (def: do not)
 
-			NOTE: The name is based on the JTYPE_MEMBER JSON decoded name string.
+			NOTE: The name is based on the JTYPE_MEMBER JSON encoded name string.
 			NOTE: Underscore (_) replaces any name chars that are not valid in a C function name.
 			NOTE: -P overrides any use of -M.
 

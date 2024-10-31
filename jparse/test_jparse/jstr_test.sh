@@ -24,10 +24,10 @@ export JSTRDECODE="./jstrdecode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="1.2.0 2024-10-09" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="1.2.1 2024-10-31" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
-export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrdecode] [-d jstrencode] [-Z topdir]
 
     -h		print help and exit
     -V		print version and exit
@@ -41,8 +41,8 @@ Exit codes:
      2	 help or version printed
      3	 invalid command line, invalid option or option missing an argument
      4	 one or more tests failed
-     5	 missing or non-executable jstrencode
-     6	 missing or non-executable jstrdecode
+     5	 missing or non-executable jstrdecode
+     6	 missing or non-executable jstrencode
      7   missing or unreadable jstr_test.txt file
   >= 10	 internal error
 
@@ -175,7 +175,7 @@ trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
 # run the basic encoding test
 #
 echo "$0: about to run test #0" 1>&2
-"$JSTRENCODE" -v "$V_FLAG" -t
+"$JSTRDECODE" -v "$V_FLAG" -t
 status="$?"
 if [[ $status -eq 0 ]]; then
     echo "$0: test #0 passed" 1>&2
@@ -186,14 +186,14 @@ fi
 
 # test JSON encoding and decoding pipe
 echo "$0: about to run test #1"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+echo "$JSTRDECODE -v $V_FLAG -n < $JSTRDECODE | $JSTRENCODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is not correct in our case:
 #
 # SC2094 (info): Make sure not to read and write the same file in the same pipeline.
 # https://www.shellcheck.net/wiki/SC2094
 # shellcheck disable=SC2094
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
-if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
+"$JSTRDECODE" -v "$V_FLAG" -n < "$JSTRDECODE" | $JSTRENCODE -v "$V_FLAG" -n > "$TEST_FILE"
+if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
     echo "$0: test #1 passed" 1>&2
 else
     echo "$0: test #1 failed" 1>&2
@@ -201,15 +201,15 @@ else
 fi
 
 echo "$0: about to run test #2"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+echo "$JSTRDECODE -v $V_FLAG -n < $JSTRENCODE | $JSTRENCODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is incorrect in our case:
 #
 # SC2094 (info): Make sure not to read and write the same file in the same pipeline.
 # https://www.shellcheck.net/wiki/SC2094
 # shellcheck disable=SC2094
 #
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
-if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
+"$JSTRDECODE" -v "$V_FLAG" -n < "$JSTRENCODE" | "$JSTRENCODE" -v "$V_FLAG" -n > "$TEST_FILE"
+if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #2 passed"
 else
     echo "$0: test #2 failed" 1>&2
@@ -219,8 +219,8 @@ fi
 # test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #3" 1>&2
-export SRC_SET="jparse.c json_parse.c json_parse.h jstrdecode.c jstrencode.c util.h util.c"
-echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+export SRC_SET="jparse.c json_parse.c json_parse.h jstrencode.c jstrdecode.c util.h util.c"
+echo "cat \$SRC_SET | $JSTRDECODE -v $V_FLAG -n | $JSTRENCODE -v $V_FLAG -n > $TEST_FILE"
 # We cannot double-quote $SRC_SET because doing so would make the shell try
 # catting the list of files as a single file name which obviously would not work
 # so we disable the following check:
@@ -229,7 +229,7 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 # (or in our case ignored) the below is not a useless use of cat. If we were to
 # reorder the command line to say:
 #
-#   "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n < $SRC_SET > "$TEST_FILE"
+#   "$JSTRDECODE" -v "$V_FLAG" -n | "$JSTRENCODE" -v "$V_FLAG" -n < $SRC_SET > "$TEST_FILE"
 #
 # we would see something like:
 #
@@ -237,7 +237,7 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 #
 # and if we were to reorder the command line to say:
 #
-#   < $SRC_SET "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+#   < $SRC_SET "$JSTRDECODE" -v "$V_FLAG" -n | "$JSTRENCODE" -v "$V_FLAG" -n > "$TEST_FILE"
 #
 # we would see similar. There might be a way to do it but the typical ways won't
 # work so we disable the useless use of cat check SC2002 as well.
@@ -245,7 +245,7 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 # SC2086 (info): Double quote to prevent globbing and word splitting.
 # https://www.shellcheck.net/wiki/SC2086
 # shellcheck disable=SC2086
-cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+cat $SRC_SET | "$JSTRDECODE" -v "$V_FLAG" -n | "$JSTRENCODE" -v "$V_FLAG" -n > "$TEST_FILE"
 # copy the PIPESTATUS array as the following command will destroy its contents
 STATUS=("${PIPESTATUS[@]}")
 # test each part of the pipeline
@@ -280,8 +280,8 @@ if [[ -z "$ERROR" ]]; then
 fi
 
 echo "$0: about to run test #4" 1>&2
-echo "$JSTRDECODE -Q -n foo bar"
-RESULT="$($JSTRDECODE -Q -n foo bar)"
+echo "$JSTRENCODE -Q -n foo bar"
+RESULT="$($JSTRENCODE -Q -n foo bar)"
 if [[ "$RESULT" = '"foobar"' ]]; then
     echo "$0: test #4 passed" 1>&2
 else
@@ -290,8 +290,8 @@ else
 fi
 
 echo "$0: about to run test #5" 1>&2
-echo "$JSTRDECODE -Q -e -n foo bar"
-RESULT="$($JSTRDECODE -Q -e -n foo bar)"
+echo "$JSTRENCODE -Q -e -n foo bar"
+RESULT="$($JSTRENCODE -Q -e -n foo bar)"
 if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
     echo "$0: test #5 passed" 1>&2
 else
@@ -300,8 +300,8 @@ else
 fi
 
 echo "$0: about to run test #6" 1>&2
-echo "$JSTRDECODE -e -n foo bar"
-RESULT="$($JSTRDECODE -e -n foo bar)"
+echo "$JSTRENCODE -e -n foo bar"
+RESULT="$($JSTRENCODE -e -n foo bar)"
 if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
     echo "$0: test #6 passed" 1>&2
 else
@@ -310,8 +310,8 @@ else
 fi
 
 echo "$0: about to run test #7" 1>&2
-echo "$JSTRDECODE '\\u0153\\u00df\\u00e5\\u00e9'" 1>&2
-"$JSTRDECODE" "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
+echo "$JSTRENCODE '\\u0153\\u00df\\u00e5\\u00e9'" 1>&2
+"$JSTRENCODE" "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #7 passed" 1>&2
 else
@@ -320,8 +320,8 @@ else
 fi
 
 echo "$0: about to run test #8" 1>&2
-echo "$JSTRDECODE" "$("$JSTRENCODE" '\\u0153\\u00df\\u00e5\\u00e9')" 1>&2
-RESULT=$("$JSTRDECODE" "$("$JSTRENCODE" '\u0153\u00df\u00e5\u00e9')")
+echo "$JSTRENCODE" "$("$JSTRDECODE" '\\u0153\\u00df\\u00e5\\u00e9')" 1>&2
+RESULT=$("$JSTRENCODE" "$("$JSTRDECODE" '\u0153\u00df\u00e5\u00e9')")
 if [[ "$RESULT" = "\\u0153\\u00df\\u00e5\\u00e9" ]]; then
     echo "$0: test #8 passed" 1>&2
 else
@@ -330,8 +330,8 @@ else
 fi
 
 echo "$0: about to run test #9" 1>&2
-echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\\u0153\\u00df\\u00e5\\u00e9'))")"
-"$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
+echo "$JSTRENCODE" "$("$JSTRDECODE" "$("$JSTRENCODE" '\\u0153\\u00df\\u00e5\\u00e9'))")"
+"$JSTRENCODE" "$("$JSTRDECODE" "$("$JSTRENCODE" '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #9 passed" 1>&2
 else

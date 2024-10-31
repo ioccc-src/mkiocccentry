@@ -24,7 +24,7 @@ tree(s). More details (beyond the man page) on the library will be documented at
 a later date, depending on need, although we do give a bit of information below.
 
 We also have some additional tools, some of which will be documented later and
-some of which are documented below, namely `jstrencode` and `jstrdecode`.
+some of which are documented below, namely `jstrdecode` and `jstrencode`.
 
 We recommend that you read the
 [json_README.md](https://github.com/xexyl/jparse/blob/master/json_README.md)
@@ -179,9 +179,9 @@ jparse .info.json
 ```
 
 
-## `jstrencode`
+## `jstrdecode`
 
-This tool converts data into JSON encoded strings according to the so-called
+This tool converts data into JSON decoded strings according to the so-called
 [JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
 
 
@@ -189,7 +189,7 @@ This tool converts data into JSON encoded strings according to the so-called
 
 
 ```sh
-jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
+jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
 The `-v` option increases the overall verbosity level. Unlike the `jparse`
@@ -200,7 +200,7 @@ that noticeable.
 The options `-V` and `-h` show the version of the parser and the help or usage
 string, respectively.
 
-Use `-Q` if you do not want to encode double quotes that enclose the
+Use `-Q` if you do not want to decode double quotes that enclose the
 concatenation of the args.
 
 Use `-e` to not output double quotes that enclose each arg.
@@ -212,118 +212,7 @@ if the args are concatenated.
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)
 
-Running it with `-t` performs some sanity checks on JSON decode/encode
-functionality and this is not usually needed, although the test suite does do
-this.
-
-If no string is given on the command line it expects you to type something on
-`stdin`, ending it with EOF.
-
-
-## Exit status
-
-If the encoding is successful the exit status of `jstrencode` is 0, otherwise 1.
-Different non-zero values are for different error conditions, or help or version
-string printed.
-
-
-## Examples
-
-Encode an empty string (`""`):
-
-
-```sh
-jstrencode '""'
-```
-
-This will show:
-
-```
-\"\"
-```
-
-Encode a negative number:
-
-```sh
-jstrencode -- -5
-```
-
-This will show:
-
-```
--5
-```
-
-For more information and examples, see the man page:
-
-```sh
-man ./man/man1/jstrencode.1
-```
-
-from the repo directory, or if installed:
-
-```sh
-man jstrencode
-```
-
-
-**NOTE**: After doing a `make all`, this tool may be found as: `./jstrencode`.
-If you run `make install` (as root or via sudo) you can just do: `jstrencode`.
-
-
-### `jstrdecode`
-
-This tool converts JSON encoded strings to their original data according to the so-called
-[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
-
-
-## Synopsis
-
-
-```sh
- jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
-```
-
-
-The `-v` option increases the overall verbosity level. Unlike the `jparse`
-utility, no JSON parsing functions are called, so there is no `-J level` option.
-The `-q` option suppresses some of the output, although this might not be all that
-noticeable.
-
-The options `-V` and `-h` show the version of the parser and the help or usage
-string, respectively.
-
-Use of `-Q` will enclose output in double quotes whereas the use of `-e`
-will enclose each decoded string with escaped double quotes.
-
-If you use `-N` it ignores all newlines. This does not mean that the JSON allows
-for unescaped newlines but rather newlines on the command line are ignored, as
-if the args are concatenated. Use of this option allows for:
-
-```sh
-$ echo foo bar | jstrdecode
-```
-
-to not show:
-
-```
-Warning: json_decode: found non-\-escaped char: 0x0a
-Warning: jstrdecode_stream: error while decoding stdin buffer
-Warning: main: error while decoding processing stdin
-```
-
-Instead you might see:
-
-```sh
-$ printf "foo\nbar" | jstrdecode -N
-
-foobar
-```
-
-`-E` is kind of undocumented but kind of documented: play with it to see what it
-does, should you wish!  :-)
-
-Running it with `-t` performs some sanity checks on JSON decode/encode
+Running it with `-t` performs some sanity checks on JSON encode/decode
 functionality and this is not usually needed, although the test suite does do
 this.
 
@@ -340,17 +229,17 @@ string printed.
 
 ## Examples
 
-Decode `\"\"`:
+Decode an empty string (`""`):
 
 
 ```sh
-jstrdecode '\"\"'
+jstrdecode '""'
 ```
 
 This will show:
 
 ```
-""
+\"\"
 ```
 
 Decode a negative number:
@@ -365,10 +254,121 @@ This will show:
 -5
 ```
 
+For more information and examples, see the man page:
+
+```sh
+man ./man/man1/jstrdecode.1
+```
+
+from the repo directory, or if installed:
+
+```sh
+man jstrdecode
+```
+
+
+**NOTE**: After doing a `make all`, this tool may be found as: `./jstrdecode`.
+If you run `make install` (as root or via sudo) you can just do: `jstrdecode`.
+
+
+### `jstrencode`
+
+This tool converts JSON decoded strings to their original data according to the so-called
+[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+
+
+## Synopsis
+
+
+```sh
+ jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
+```
+
+
+The `-v` option increases the overall verbosity level. Unlike the `jparse`
+utility, no JSON parsing functions are called, so there is no `-J level` option.
+The `-q` option suppresses some of the output, although this might not be all that
+noticeable.
+
+The options `-V` and `-h` show the version of the parser and the help or usage
+string, respectively.
+
+Use of `-Q` will enclose output in double quotes whereas the use of `-e`
+will enclose each encoded string with escaped double quotes.
+
+If you use `-N` it ignores all newlines. This does not mean that the JSON allows
+for unescaped newlines but rather newlines on the command line are ignored, as
+if the args are concatenated. Use of this option allows for:
+
+```sh
+$ echo foo bar | jstrencode
+```
+
+to not show:
+
+```
+Warning: json_encode: found non-\-escaped char: 0x0a
+Warning: jstrencode_stream: error while encoding stdin buffer
+Warning: main: error while encoding processing stdin
+```
+
+Instead you might see:
+
+```sh
+$ printf "foo\nbar" | jstrencode -N
+
+foobar
+```
+
+`-E` is kind of undocumented but kind of documented: play with it to see what it
+does, should you wish!  :-)
+
+Running it with `-t` performs some sanity checks on JSON encode/decode
+functionality and this is not usually needed, although the test suite does do
+this.
+
+If no string is given on the command line it expects you to type something on
+`stdin`, ending it with EOF.
+
+
+## Exit status
+
+If the encoding is successful the exit status of `jstrencode` is 0, otherwise 1.
+Different non-zero values are for different error conditions, or help or version
+string printed.
+
+
+## Examples
+
+Encode `\"\"`:
+
+
+```sh
+jstrencode '\"\"'
+```
+
+This will show:
+
+```
+""
+```
+
+Encode a negative number:
+
+```sh
+jstrencode -- -5
+```
+
+This will show:
+
+```
+-5
+```
+
 Palaeontologists might like to try:
 
 ```sh
-$ jstrdecode "\uD83E\uDD96\uD83E\uDD95"
+jstrencode "\uD83E\uDD96\uD83E\uDD95"
 ```
 
 which will show:
@@ -380,7 +380,7 @@ which will show:
 whereas fantasy lovers might like:
 
 ```sh
-jstrdecode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
+jstrencode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
 ```
 
 which will show:
@@ -392,7 +392,7 @@ which will show:
 whereas volcanologists might like:
 
 ```sh
-jstrdecode "\uD83C\uDF0B"
+jstrencode "\uD83C\uDF0B"
 ```
 
 which will show:
@@ -408,17 +408,17 @@ assuming, in all cases, your system supports displaying such emojis.
 For more information and examples, see the man page:
 
 ```sh
-man ./man/man1/jstrdecode.1
+man ./man/man1/jstrencode.1
 ```
 
 from the repo directory, or if installed:
 
 ```sh
-man jstrdecode
+man jstrencode
 ```
 
-**NOTE**: After doing a `make all`, this tool may be found as: `./jstrdecode`.
-If you run `make install` (as root or via sudo) you can just do: `jstrdecode`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./jstrencode`.
+If you run `make install` (as root or via sudo) you can just do: `jstrencode`.
 
 
 # The jparse library
@@ -542,8 +542,8 @@ For more information, try from the repo directory:
 ```sh
 man ./man/man1/jparse.1
 man ./man/man3/jparse.3
-man ./man/man1/jstrencode.1
 man ./man/man1/jstrdecode.1
+man ./man/man1/jstrencode.1
 ```
 
 or if you have installed everything (i.e. you ran `make install` as root or via
@@ -552,8 +552,8 @@ or if you have installed everything (i.e. you ran `make install` as root or via
 ```
 man 1 jparse
 man 3 jparse
-man jstrencode
 man jstrdecode
+man jstrencode
 ```
 
 **NOTE**: the library man page currently has no example but you can always look
