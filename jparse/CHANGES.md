@@ -1,5 +1,28 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.0 2024-10-31
+
+Major release. The tools `jstrencode(1)` and `jstrdecode(1)` have been swapped
+as converting a code point to (say) an emoji is actually encoding, not decoding,
+according to other sources. Most places that referred to encode were changed to
+decode and those that were decode are now encode. This major change is quite
+unfortunate but was deemed necessary; as we have said: sorry (tm Canada :-) ).
+
+The version of the repo, the UTF-8 library, the jparse library, `jstrencode(1)`,
+`jstrdecode(1)` have all been updated to `"2.0.0 2024-10-31"`.
+
+Some duplicate man pages in `man/man3` are now symlinks to the source file,
+`jparse.3`. This happened when the initial import to this repo occurred. Also,
+the man pages for `jstrdecode` and `jstrencode` were swapped as well as fixed
+(the terms were incorrect in those man pages wrt the tool).
+
+Improve `jparse_bug_report.sh` for easier parsing. The script now quotes what is
+about to be executed / what was executed. A few other changes were made and the
+TOOLS variable was sorted as it should have been.
+
+Fix segfault in `jparse -J level` when acting on strings.
+
+
 ## Release 1.2.9 2024-10-30
 
 Add function `utf8decode()` (from the same location as the `utf8encode()` but

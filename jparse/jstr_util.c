@@ -1,5 +1,5 @@
 /*
- * jstr_util - common utility functions for the JSON string encoder/decoder
+ * jstr_util - common utility functions for the JSON string decoder/encoder
  * tools
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
@@ -124,7 +124,7 @@ parse_entertainment(char const *optarg)
  * This function returns void.
  *
  * NOTE: it is ASSUMED that the string in the struct if != NULL is allocated via
- * calloc()/malloc()/strdup() due to the way the encoding/decoding tools work.
+ * calloc()/malloc()/strdup() due to the way the decoding/encoding tools work.
  *
  * NOTE: as the strings CAN have NUL bytes it is entirely possible that there
  * might be a memory leak in some cases.
@@ -161,7 +161,7 @@ free_jstring(struct jstring **jstr)
  * jstring *.
  *
  * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
- * the stack due to how the decoding/encoding works. If this is not the case
+ * the stack due to how the encoding/decoding works. If this is not the case
  * then expect errors.
  */
 void
@@ -173,7 +173,7 @@ free_jstring_list(struct jstring *jstring_list)
     for (jstr = jstring_list; jstr != NULL; jstr = jstr_next) {
 	jstr_next = jstr->next;		/* get next in list before we free the current */
 
-	/* free current json decoded string */
+	/* free current json string */
 	free_jstring(&jstr);
 	jstr = NULL;
     }

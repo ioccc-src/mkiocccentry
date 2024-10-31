@@ -67,9 +67,9 @@ chk_IOCCC_auth_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -118,9 +118,9 @@ chk_IOCCC_contest_id(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -169,9 +169,9 @@ chk_IOCCC_info_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -220,9 +220,9 @@ chk_Makefile(struct json const *node,
     /*
      * firewall - args
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -322,9 +322,9 @@ chk_abstract(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -439,9 +439,9 @@ chk_auth_JSON(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -541,9 +541,9 @@ chk_author_handle(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -819,9 +819,9 @@ chk_c_src(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -870,9 +870,9 @@ chk_chkentry_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1140,9 +1140,9 @@ chk_extra_file(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1242,9 +1242,9 @@ chk_fnamchk_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1716,9 +1716,9 @@ chk_info_JSON(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1767,9 +1767,9 @@ chk_IOCCC_contest(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1869,9 +1869,9 @@ chk_iocccsize_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -1920,9 +1920,9 @@ chk_location_code(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2128,9 +2128,9 @@ chk_mkiocccentry_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2179,9 +2179,9 @@ chk_name(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2230,9 +2230,9 @@ chk_no_comment(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2383,9 +2383,9 @@ chk_remarks(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2722,9 +2722,9 @@ chk_tarball(struct json const *node,
     /*
      * obtain the tarball filename
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2751,9 +2751,9 @@ chk_tarball(struct json const *node,
     /*
      * obtain the IOCCC_contest_id
      */
-    IOCCC_contest_id = sem_member_value_decoded_str(IOCCC_contest_id_node, depth, sem, __func__, val_err);
+    IOCCC_contest_id = sem_member_value_encoded_str(IOCCC_contest_id_node, depth, sem, __func__, val_err);
     if (IOCCC_contest_id == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
     test = test_IOCCC_contest_id(IOCCC_contest_id);
@@ -2941,9 +2941,9 @@ chk_timestamp_epoch(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -2992,9 +2992,9 @@ chk_title(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 
@@ -3160,9 +3160,9 @@ chk_txzchk_version(struct json const *node,
     /*
      * firewall - args and decoded string check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    str = sem_member_value_encoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+	/* sem_member_value_encoded_str() will have set *val_err */
 	return false;
     }
 

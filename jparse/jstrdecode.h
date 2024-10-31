@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to decode JSON encoded strings
+ * jstrdecode - tool to decode a string for JSON
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -18,8 +18,8 @@
  */
 
 
-#if !defined(INCLUDE_JSTRDECODE_H)
-#    define  INCLUDE_JSTRDECODE_H
+#if !defined(INCLUDE_JSTRENCODE_H)
+#    define  INCLUDE_JSTRENCODE_H
 
 
 /*
@@ -52,7 +52,7 @@
 #include "json_parse.h"
 
 /*
- * jstr_util - jstrencode/jstrdecode utilities
+ * jstr_util - jstrdecode/jstrencode utilities
  */
 #include "jstr_util.h"
 
@@ -69,7 +69,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "1.2.5 2024-10-27"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "2.0.0 2024-10-31"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -83,4 +83,4 @@
  */
 
 
-#endif /* INCLUDE_JSTRDECODE_H */
+#endif /* INCLUDE_JSTRENCODE_H */

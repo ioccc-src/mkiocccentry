@@ -82,7 +82,7 @@ static const char * const usage_msg =
     "\n"
     "\t-P prefix\tvalidate JTYPE_MEMBER JSON nodes with prefix() (def: do not)\n"
     "\n"
-    "\t\t\tNOTE: The name is based on the JTYPE_MEMBER JSON decoded name string.\n"
+    "\t\t\tNOTE: The name is based on the JTYPE_MEMBER JSON encoded name string.\n"
     "\t\t\tNOTE: Underscore (_) replaces any name chars that are not valid in a C function name.\n"
     "\t\t\tNOTE: -P overrides any use of -M.\n"
     "\n"
@@ -609,13 +609,13 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	}
 
 	/*
-	 * case: if JTYPE_MEMBER - match non-NULL non-empty JSON decoded name
+	 * case: if JTYPE_MEMBER - match non-NULL non-empty JSON encoded name
 	 */
 	if (node->type == JTYPE_MEMBER && p->type == JTYPE_MEMBER && p->name != NULL) {
 	    struct json_member const *item = &(node->item.member);
 
 	    /*
-	     * match decoded name
+	     * match encoded name
 	     */
 	    /* paranoia */
 	    if (item->name == NULL) {
@@ -732,7 +732,7 @@ sem_cmp(void const *a, void const *b)
     /* case: type matches */
 
     /*
-     * compare match decoded name if not NULL
+     * compare match encoded name if not NULL
      */
     if (first->name != NULL) {
 	if (second->name != NULL) {

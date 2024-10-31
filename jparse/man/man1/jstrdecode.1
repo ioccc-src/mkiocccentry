@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "11 October 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "31 October 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
 \- decode JSON encoded strings
@@ -31,40 +31,28 @@
 .IR ... \|]
 .SH DESCRIPTION
 .B jstrdecode
-decodes JSON encoded strings given on the command line.
+Concatenate the string arguments and decode the result as if it were a JSON string.
 If given the
 .B \-t
 option it performs a test on the JSON decode and encode functions.
+.PP
 By default the program reads from
 .BR stdin .
-If given the
-.B \-Q
-option it will enclose the output in quotes.
-If given the
-.B \-m
-(aliased as
-.BR \-e )
-option it will surround each decoded arg with escaped (backslash) quotes.
-The use of
-.B \-Q
-and
-.B \-e
-together will surround the entire output with unescaped quotes and each decoded arg's output will be surrounded with escaped (backslashed) quotes.
 .SH OPTIONS
 .TP
 .B \-h
-Show help and exit
+Show help and exit.
 .TP
 .BI \-v\  level
 Set verbosity level to
-.IR level
+.I level
 (def: 0)
 .TP
 .B \-q
 Suppresses some of the output (def: not quiet)
 .TP
 .B \-V
-Show version and exit
+Show version and exit.
 .TP
 .B \-t
 Run tests on the JSON decode/encode functions
@@ -76,10 +64,10 @@ Do not output a newline after the decode function
 Ignore and skip over all newlines, for easier typing commands.
 .TP
 .B \-Q
-Enclose output in double quotes
+Do not decode double quotes that enclose the concatenation of args (def: do decode)
 .TP
 .B \-e
-Enclose each decoded string with escaped double quotes (def: do not)
+Do not decode double quotes that enclose each arg (def: do decode)
 .TP
 .BI \-E\  level
 Entertainment mode at level
@@ -105,15 +93,17 @@ command line error
 internal error
 .SH BUGS
 .PP
-A known problem, at least with some terminal applications, is that one has to hit ctrl\-d (or whatever one has
+A known problem with macOS Terminal is that one has to hit ctrl\-d twice in order for it to properly send
 .B EOF
-configured as) twice in order for it to properly send
-.B EOF
-(this occurs in other applications as well so it seems to be a terminal problem).
+but this occurs in other applications as well so we note this issue here.
+.PP
+It is worth remembering that, for the
+.B \-Q
+option, a double quote in the string will still be decoded, if it is a second arg or if another arg is specified, as it will not be a leading or trailing quote.
 .PP
 If you have an issue with the tool you can report it at
 .br
-.IR \<https://github.com/xexyl/jparse/issues\> .
+\fI\<https://github.com/xexyl/jparse/issues\>\fP.
 .SH EXAMPLES
 .PP
 Decode the JSON string
@@ -127,7 +117,7 @@ Decode the JSON string
 .sp
 Note that we didn't quote it!
 .PP
-Decode input from
+Decode a string containing an escaped double quote from
 .B stdin
 (send
 .BR EOF ,
@@ -138,7 +128,7 @@ to decode):
 .RS
 .ft B
  jstrdecode
- \-5
+ {"test\e"ing":false}
  ^D
 .ft R
 .RE

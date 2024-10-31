@@ -57,7 +57,7 @@
 #include "../version.h"
 
 /*
- * json_utf8.h - JSON UTF-8 decoder
+ * json_utf8.h - JSON UTF-8 encoder
  */
 #include "../json_utf8.h"
 

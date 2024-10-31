@@ -157,12 +157,12 @@ with the [JSON member name](#json-member-name).
 
 ## JSON string
 
-A **JSON string** is zero or more [JSON encoded](#json-encoded) characters.  A
-**JSON string** is represented in JSON as a [JSON encoded](#json-encoded)
+A **JSON string** is zero or more [JSON decoded](#json-decoded) characters.  A
+**JSON string** is represented in JSON as a [JSON decoded](#json-decoded)
 characters enclosed in double quotes (`"`).
 
-To be [valid JSON](#valid-json), all **JSON string**s must be [JSON encoded
-strings](#json-encoded-string) in a [JSON document](#json-document).
+To be [valid JSON](#valid-json), all **JSON string**s must be [JSON decoded
+strings](#json-decoded-string) in a [JSON document](#json-document).
 
 Note that a **JSON string** may be empty (zero bytes long). As represented in
 JSON, such an empty (zero bytes long) **JSON string** would be:
@@ -171,16 +171,16 @@ JSON, such an empty (zero bytes long) **JSON string** would be:
 ""
 ```
 
-Unless otherwise specified, a **JSON string** is a [JSON encoded
-string](#json-encoded-string).
+Unless otherwise specified, a **JSON string** is a [JSON decoded
+string](#json-decoded-string).
 
 
-## JSON encoded string
+## JSON decoded string
 
-A **JSON encoded string** starts and ends with double quotes (`"`).
+A **JSON decoded string** starts and ends with double quotes (`"`).
 
 Inside the double quotes (`"`), the following characters _must_ be
-encoded by preceding them with a reverse solidus (backslash - ASCII
+decoded by preceding them with a reverse solidus (backslash - ASCII
 `0x5c` - `U+005C`) character:
 
 * `"` (double quote - ASCII `0x22` - `U+0022`)
@@ -196,7 +196,7 @@ by preceding them with a reverse solidus (backslash - ASCII
 `0x5c` - `U+005C`) character.
 
 For example, a double quote (ASCII `0x22` - `U+0022`) followed by a carriage
-return (control-M - `'\r'` - ASCII `0x0d` - `U+000D`) must be encoded as the
+return (control-M - `'\r'` - ASCII `0x0d` - `U+000D`) must be decoded as the
 following 4 characters:
 
 ```
@@ -204,19 +204,19 @@ following 4 characters:
 ```
 
 In addition the control characters `U+0000` to `U+001F` (`0x00` - `0x1f`) that
-are _NOT_ listed above _must_ be encoded as a hexadecimal sequence as determined
+are _NOT_ listed above _must_ be decoded as a hexadecimal sequence as determined
 by [ISO/IEC 10646](https://www.iso.org/standard/76835.html).  In particular,
 they must be converted into a 6 character sequence that starts with `"\u"` and
 ends with a 4 hexadecimal digits `0` - `9` and `a` - `f` (case-insensitive).
 
 For example, the escape character (`'\e'` - ASCII `0x1b` - `U+001B`)
-_must_ be encoded as follows:
+_must_ be decoded as follows:
 
 ```
 \u000e
 ```
 
-When one removes the special 2 character backslash encoded characters, the
+When one removes the special 2 character backslash decoded characters, the
 following character ranges are converted into the 6 character sequence that
 starts with `"\uxxxx"` where _xxxx_ are 4 hexadecimal digits.
 
@@ -226,8 +226,8 @@ starts with `"\uxxxx"` where _xxxx_ are 4 hexadecimal digits.
 0x0e - 0x1f
 ```
 
-Therefore, the following character values _must_ be encoded, either
-by an above mentioned special 2 character backslash encode sequence
+Therefore, the following character values _must_ be decoded, either
+by an above mentioned special 2 character backslash decode sequence
 or a 6 character sequence that starts with `"\uxxxx"` where _xxxx_
 are 4 hexadecimal digits:
 
@@ -239,25 +239,25 @@ are 4 hexadecimal digits:
 ```
 
 _NOTE_: All other characters outside of the above mentioned range
-are _not_ required to be encoded.
+are _not_ required to be decoded.
 
 The Basic Multilingual Plane character set (`U+0000` - `U+FFFF`)
 _may_ be converted into the 6 character sequence that starts with
 `"\uxxxx"` where _xxxx_ are 4 hexadecimal digits.  A keyword in the
 preceding sentence is _may_.  Outside of the above mentioned character
-range of character values that _must_ be encoded (transformed into
+range of character values that _must_ be decoded (transformed into
 2 or 6 character sequences), any other character is allowed but
-_not_ required to be encoded as a character sequence that starts
+_not_ required to be decoded as a character sequence that starts
 with `"\uxxxx"` where _xxxx_ are 4 hexadecimal digits.
 
-While one is not required to backslash an encoded slash character (ASCII
+While one is not required to backslash an decoded slash character (ASCII
 `0x2f` - `U+002F`), one is allowed to do so.  The solidus or slash
 character (ASCII `0x2f` - `U+002F`) is allowed to be, but is _not required_,
-to be backslash encoded:
+to be backslash decoded:
 
 * `/` (solidus or slash - ASCII `0x2f` - `U+002F`)
 
-The following **JSON encoded string** are _both valid_:
+The following **JSON decoded string** are _both valid_:
 
 ```json
 "http://www.isthe.com/chongo/index.html"
@@ -275,7 +275,7 @@ as valid, the _jparse JSON parser_ in this GitHub repo produces
 only lower case hexadecimal letters.
 
 According to the [so-called JSON spec](#so-called-json-spec), the
-following four **JSON encoded string**s are all _valid_ and
+following four **JSON decoded string**s are all _valid_ and
 produce the same result:
 
 ```
@@ -295,11 +295,11 @@ The following is [Valid JSON](#valid-json):
 
 The presence of non-ASCII characters and the presence of slash
 characters (ASCII `0x2f` - `U+002F`) does _not_ impose a requirement
-for those characters to be encoded.
+for those characters to be decoded.
 
 _NOTE_: The [so-called JSON spec](#so-called-json-spec) permits one
-to encode a character for which Unicode does not currently provide
-character assignments.  So just because one may encode a value into
+to decode a character for which Unicode does not currently provide
+character assignments.  So just because one may decode a value into
 a 6 character sequence does _not_ mean that the original value was an
 assigned Unicode character.
 
@@ -312,28 +312,28 @@ may be represented as the following 12 characters:
 ```
 
 
-## JSON decoded string
+## JSON encoded string
 
-A **JSON decoded string** is a [JSON encoded string](#json-encoded-string)
-where all encoded characters are replaced by their non-encoded counterparts.
+A **JSON encoded string** is a [JSON decoded string](#json-decoded-string)
+where all decoded characters are replaced by their non-decoded counterparts.
 
-The following [valid JSON](#valid-json) is a [JSON encoded
-string](#json-encoded-string):
+The following [valid JSON](#valid-json) is a [JSON decoded
+string](#json-decoded-string):
 
 ```
 "Hello, with \\-escaped and \u00c3\u009f-like chars, world!\n"
 ```
 
-is decoded into the following string that includes a trailing newline
+is encoded into the following string that includes a trailing newline
 (control-J - `'\n'` - ASCII `0x0a` - `U+000A`):
 
 ```
 Hello, with \-escaped and ß-like chars, world!
 ```
 
-_NOTE_: A **JSON decoded string** is _not_ allowed in a [JSON
+_NOTE_: A **JSON encoded string** is _not_ allowed in a [JSON
 document](#json-document).  To be [valid JSON](#valid-json), all [JSON
-strings](#json-string) _must_ be [JSON encoded strings](#json-encoded-string).
+strings](#json-string) _must_ be [JSON decoded strings](#json-decoded-string).
 
 
 ## JSON number

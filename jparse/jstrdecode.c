@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to decode JSON encoded strings
+ * jstrdecode - tool to decode a string for JSON
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -30,7 +30,7 @@
 #include <locale.h>
 
 /*
- * jstrdecode - tool to JSON decode JSON encoded strings
+ * jstrdecode - tool to decode a string for JSON
  */
 #include "jstrdecode.h"
 
@@ -49,17 +49,17 @@ static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-t\t\tperform tests of JSON decode/encode functionality\n"
-    "\t-n\t\tdo not output newline after decode output\n"
+    "\t-t\t\tperform tests of JSON encode/decode functionality\n"
+    "\t-n\t\tdo not output newline after decode output (def: print final newline)\n"
     "\t-N\t\tignore all newline characters\n"
-    "\t-Q\t\tenclose output in double quotes (def: do not)\n"
-    "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
-    "\t-E level\tentertainment mode\n"
+    "\t-Q\t\tdo not decode double quotes that enclose the concatenation of args (def: do decode)\n"
+    "\t-e\t\tdo not output double quotes that enclose each arg (def: do not remove)\n"
+    "\t-E level\t\tentertainment mode\n"
     "\n"
-    "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
+    "\t[string ...]\tdecode the concatenation of string args (def: decode stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "Exit codes:\n"
@@ -78,7 +78,8 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl);
+static struct jstring *jstrdecode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last,
+	bool ignore_nl);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
 
 /*
@@ -115,6 +116,10 @@ add_decoded_string(char *string, size_t bufsiz)
 	not_reached();
     }
 
+
+    /*
+     * allocate a struct jstring * for list
+     */
     jstr = alloc_jstr(string, bufsiz);
     if (jstr == NULL) {
 	warn(__func__, "failed to allocate struct jstring * for list");
@@ -148,7 +153,6 @@ add_decoded_string(char *string, size_t bufsiz)
 
     return jstr;
 }
-
 
 /*
  * dup_without_nl - duplicate a buffer and remove all newlines
@@ -217,6 +221,12 @@ dup_without_nl(char *input, size_t *inputlen)
  *
  * given:
  *	in_stream	open file stream to decode
+ *	skip_enclosing	skip enclosing double quotes,
+ *			    false ==> process all bytes in the block
+ *	ignore_first	remove any leading double quote
+ *			    false ==> do not remove
+ *	remove_last	remove any final double quote
+ *			    false ==> do not remove
  *	ignore_nl	true ==> ignore all newline characters
  *
  * returns:
@@ -227,13 +237,14 @@ dup_without_nl(char *input, size_t *inputlen)
  * decoded JSON strings.
  */
 static struct jstring *
-jstrdecode_stream(FILE *in_stream, bool ignore_nl)
+jstrdecode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last, bool ignore_nl)
 {
-    char *input = NULL;		/* argument to process */
-    size_t inputlen;		/* length of input buffer */
-    size_t bufsiz;		/* length of the buffer */
+    char *orig_input = NULL;	/* argument to process */
+    char *input = NULL;		/* possibly updated orig_input */
+    size_t inputlen = 0;	/* length of input buffer */
     char *buf = NULL;		/* decode buffer */
-    struct jstring *jstr = NULL;    /* decoded string added to list */
+    size_t bufsiz;		/* length of the buffer */
+    struct jstring *jstr = NULL; /* for jstring list */
     char *dup_input = NULL;	/* duplicate of input w/o newlines */
 
     /*
@@ -247,9 +258,9 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
     /*
      * read all of the input stream
      */
-    dbg(DBG_LOW, "about to encode all data on input stream");
-    input = read_all(in_stream, &inputlen);
-    if (input == NULL) {
+    dbg(DBG_LOW, "about to decode data on input stream");
+    orig_input = read_all(in_stream, &inputlen);
+    if (orig_input == NULL) {
 	warn(__func__, "error while reading data from input stream");
 	return NULL;
     }
@@ -263,7 +274,7 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
 	/*
 	 * copy input removing all newlines, update inputlen if needed
 	 */
-	dup_input = dup_without_nl(input, &inputlen);
+	dup_input = dup_without_nl(orig_input, &inputlen);
 	if (dup_input == NULL) {
 	    err(11, __func__, "dup_without_nl failed");
 	    not_reached();
@@ -272,14 +283,72 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
 	/*
 	 * replace input with the duplicate w/o newline input if needed
 	 */
-	free(input);
-	input = dup_input;
+	free(orig_input);
+	orig_input = dup_input;
+    }
+    input = orig_input;
+    dbg(DBG_HIGH, "stream data is: <%s>", input);
+
+    /*
+     * case: we need to remove BOTH a leading and a trailing double quote
+     */
+    if (ignore_first == true && remove_last == true && inputlen > 1 &&
+	input[0] == '"' && input[inputlen-1] == '"') {
+
+	/*
+	 * remove both the leading and a trailing double quotes
+	 */
+	dbg(DBG_HIGH, "removing leading and trailing double quotes from stream");
+	/*
+	 * NOTE: we don't do input[0] = '\0' because of the ++input
+	 * below.
+	 */
+	input[inputlen-1] = '\0';
+	--inputlen;
+	++input;
+	--inputlen;
+	dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
+
+    /*
+     * case: we might need to remove either the leading or trailing double quotes, but not both
+     */
+    } else {
+
+	/*
+	 * remove, if needed, a leading double quote
+	 */
+	if (ignore_first == true && inputlen > 0 && input[0] == '"') {
+
+	    /*
+	     * remove leading double quote
+	     */
+	    dbg(DBG_HIGH, "removing leading double quote from stream");
+	    ++input;
+	    --inputlen;
+	    dbg(DBG_VHIGH, "stream read length is now: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream data is now: <%s>", input);
+
+	/*
+	 * remove, if needed, a trailing double quote
+	 */
+	} else if (remove_last == true && inputlen > 0 && input[inputlen-1] == '"') {
+
+	    /*
+	     * remove trailing double quote
+	     */
+	    dbg(DBG_HIGH, "removing trailing double quote from stream");
+	    input[inputlen-1] = '\0';
+	    --inputlen;
+	    dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
+	}
     }
 
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz);
+    buf = json_decode(input, inputlen, &bufsiz, skip_enclosing);
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {
@@ -287,16 +356,17 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
 	    input = NULL;
 	}
 
-	warn(__func__, "error while decoding stdin buffer");
+	warn(__func__, "error while decoding buffer");
 	return NULL;
     }
 
     /*
      * free input
      */
-    if (input != NULL) {
-	free(input);
-	input = NULL;
+    if (orig_input != NULL) {
+	free(orig_input);
+	orig_input = NULL;
+	input = NULL; /* paranoia */
     }
 
     jstr = add_decoded_string(buf, bufsiz);
@@ -309,7 +379,6 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
      * return struct added to list
      */
     return jstr;
-
 }
 
 
@@ -320,20 +389,20 @@ main(int argc, char **argv)
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     char *input;		/* argument to process */
-    size_t inputlen;		/* length of input buffer */
+    size_t inputlen = 0;	/* length of input buffer */
     char *buf;			/* decode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of decode buffer */
     int entertainment = 0;	/* have some fun :-) */
-    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
+    bool success = true;	/* true ==> decoding OK, false ==> error while decoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
-    bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
-    bool write_quote = false;	/* true ==> output enclosing quotes */
-    bool esc_quotes = false;	/* true ==> escape quotes */
+    bool ignore_nl = false;	/* true ==> ignore all newlines when decoding */
+    bool skip_concat_quotes = false;	/* true ==> skip enclosing quotes around the arg concatenation */
+    bool skip_each = false;	/* true ==> skip enclosing quotes around each arg */
     int ret;			/* libc return code */
     int i;
-    struct jstring *jstr = NULL;    /* decoded string */
-    char *dup_input = NULL;	/* duplicate of arg string */
+    struct jstring *jstr = NULL;    /* to iterate through list */
+    char *dup_input = NULL;	/* duplicate of input w/o newlines */
 
     /*
      * set locale
@@ -403,10 +472,10 @@ main(int argc, char **argv)
 	    ignore_nl = true;
 	    break;
 	case 'Q':
-	    write_quote = true;
+	    skip_concat_quotes = true;
 	    break;
 	case 'e':
-	    esc_quotes = true;
+	    skip_each = true;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -417,15 +486,17 @@ main(int argc, char **argv)
 	    break;
 	}
     }
-    dbg(DBG_LOW, "enclose in quotes: %s", booltostr(write_quote));
+    dbg(DBG_LOW, "-Q: skip double quotes that enclose the arg concatenation: %s", booltostr(skip_concat_quotes));
+    dbg(DBG_LOW, "-e: skip double quotes that enclose each arg: %s", booltostr(skip_each));
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
-    dbg(DBG_LOW, "escaped quotes: %s", booltostr(esc_quotes));
+
 
     /*
      * case: process arguments on command line
      */
     if (argc - optind > 0) {
+
 	/*
 	 * process each argument in order
 	 */
@@ -435,21 +506,25 @@ main(int argc, char **argv)
 	     * obtain argument string
 	     */
 	    input = argv[i];
-
 	    if (!strcmp(input, "-")) {
 
 		/*
 		 * decode stdin
-		 *
+		 */
+		dbg(DBG_LOW, "decoding from stdin");
+
+		/*
 		 * NOTE: the function jstrdecode_stream() adds the allocated
 		 * struct jstring * to the list of decoded JSON strings
 		 */
-		jstr = jstrdecode_stream(stdin, ignore_nl);
-		if (jstr != NULL) {
-		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
-		} else {
+		jstr = jstrdecode_stream(stdin, skip_each,
+					 (skip_concat_quotes && i == optind),
+					 (skip_concat_quotes && i == argc-1), ignore_nl);
+		if (!jstr) {
 		    warn(__func__, "failed to decode string from stdin");
 		    success = false;
+		} else {
+		    dbg(DBG_LOW, "decoded buf size: %ju", (uintmax_t)jstr->bufsiz);
 		}
 
 	    } else {
@@ -460,58 +535,116 @@ main(int argc, char **argv)
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
+	    }
+
+	    /*
+	     * If -N, and newlines in arg, remove them
+	     */
+	    if (ignore_nl) {
 
 		/*
-		 * If -N, and newlines in arg, remove them
+		 * copy input removing all newlines, update inputlen if needed
 		 */
-		if (ignore_nl) {
-
-		    /*
-		     * copy input removing all newlines, update inputlen if needed
-		     */
-		    dup_input = dup_without_nl(input, &inputlen);
-		    if (dup_input == NULL) {
-			err(13, __func__, "dup_without_nl failed");
-			not_reached();
-		    }
-
-		    /*
-		     * replace input with the duplicate w/o newline input if needed
-		     */
-		    input = dup_input;
-		    dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
+		dup_input = dup_without_nl(input, &inputlen);
+		if (dup_input == NULL) {
+		    err(13, __func__, "dup_without_nl failed");
+		    not_reached();
 		}
 
 		/*
-		 * decode arg
+		 * replace input with the duplicate w/o newline input if needed
 		 */
-		buf = json_decode_str(input, &bufsiz);
-		if (buf == NULL) {
-		    warn(__func__, "error while decoding processing arg: %d", i-optind);
+		input = dup_input;
+		dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
+		dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
+	    }
+
+	    /*
+	     * case: we need to remove BOTH a leading and a trailing double quote
+	     */
+	    if (skip_concat_quotes == true && i == optind && i == argc-1 && inputlen > 1) {
+
+		/*
+		 * remove both the leading and a trailing double quotes
+		 */
+		if (input[0] == '"' && input[inputlen-1] == '"') {
+		    dbg(DBG_HIGH, "removing leading and trailing double quotes from arg[%d]", i-optind);
+		    /*
+		     * NOTE: we don't do input[0] = '\0' because of the ++input
+		     * below.
+		     */
+		    input[inputlen-1] = '\0';
+		    --inputlen;
+		    ++input;
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		}
+
+	    /*
+	     * case: we might need to remove either the leading or trailing double quotes, but not both
+	     */
+	    } else {
+
+		/*
+		 * remove, if needed, a leading double quote
+		 */
+		if (skip_concat_quotes == true && i == optind && inputlen > 0 && input[0] == '"') {
+
+		    /*
+		     * remove leading double quote
+		     */
+		    dbg(DBG_HIGH, "removing leading double quote from arg[%d]", i-optind);
+		    ++input;
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		}
+
+		/*
+		 * remove, if needed, a trailing double quote
+		 */
+		if (skip_concat_quotes == true && i == argc-1 && inputlen > 0 && input[inputlen-1] == '"') {
+
+		    /*
+		     * remove trailing double quote
+		     */
+		    dbg(DBG_HIGH, "removing trailing double quote from arg[%d]", i-optind);
+		    input[inputlen-1] = '\0';
+		    --inputlen;
+		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
+		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		}
+	    }
+
+	    /*
+	     * decode arg
+	     */
+	    buf = json_decode_str(input, &bufsiz, skip_each);
+	    if (buf == NULL) {
+		warn(__func__, "error while decoding processing arg: %d", i-optind);
+		success = false;
+
+	    /*
+	     * append decoded buffer to decoded JSON strings list
+	     */
+	    } else {
+		dbg(DBG_MED, "decode length: %ju", bufsiz);
+		jstr = add_decoded_string(buf, bufsiz);
+		if (jstr == NULL) {
+		    warn(__func__, "error adding decoded string to list");
 		    success = false;
-
-		/*
-		 * append decoded buffer to decoded JSON strings list
-		 */
 		} else {
-		    dbg(DBG_MED, "decode length: %ju", bufsiz);
-		    jstr = add_decoded_string(buf, bufsiz);
-		    if (jstr == NULL) {
-			warn(__func__, "error adding decoded string to list");
-			success = false;
-		    } else {
-			dbg(DBG_MED, "added string of size %ju to decoded strings list", bufsiz);
-		    }
+		    dbg(DBG_MED, "added string of size %ju to decoded strings list", bufsiz);
 		}
+	    }
 
-		/*
-		 * free duplicated arg if -N
-		 */
-		if (ignore_nl && input != NULL) {
-		    free(input);
-		    input = NULL;
-		}
+	    /*
+	     * free duplicated arg if -N
+	     */
+	    if (ignore_nl && input != NULL) {
+		free(input);
+		input = NULL;
 	    }
 	}
 
@@ -521,27 +654,18 @@ main(int argc, char **argv)
     } else {
 
 	/*
-	 * NOTE: the function jstrdecode_stream() adds the allocated
-	 * struct jstring * to the list of decoded JSON strings
+	 * read all of stdin
 	 */
-	jstr = jstrdecode_stream(stdin, ignore_nl);
-
+	dbg(DBG_LOW, "decoding from stdin");
+	/*
+	 * NOTE: jstrdecode_stream() adds the allocated struct jstring * to the
+	 * decoded JSON strings list
+	 */
+	jstr = jstrdecode_stream(stdin, skip_concat_quotes, skip_each, skip_each, ignore_nl);
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
 	} else {
-		warn(__func__, "error while decoding processing stdin");
-		success = false;
-	    }
-	}
-
-    /*
-     * write starting quote if requested
-     */
-    if (write_quote) {
-	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fputc('"', stdout);
-	if (ret != '"') {
-	    warnp(__func__, "fputc for starting quote returned error");
+	    warn(__func__, "error while decoding processing stdin");
 	    success = false;
 	}
     }
@@ -550,44 +674,19 @@ main(int argc, char **argv)
      * now write each processed arg to stdout
      */
     for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr->next) {
-	dbg(DBG_MED, "processing decoded JSON string of size: %ju", jstr->bufsiz);
-	/*
-	 * write starting escaped quote if requested
-	 */
-	if (esc_quotes) {
-	    fprint(stdout, "%s", "\\\"");
-	}
-	buf = jstr->jstr;
-	bufsiz = (uintmax_t)jstr->bufsiz;
-	dbg(DBG_MED, "bufsiz: %ju", bufsiz);
-	errno = 0;		/* pre-clear errno for warnp() */
-	outputlen = fwrite(buf, 1, bufsiz, stdout);
-	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: wrote %ju bytes out of expected %jd bytes",
+	if (jstr->jstr != NULL) {
+	    buf = jstr->jstr;
+	    bufsiz = (uintmax_t)jstr->bufsiz;
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    outputlen = fwrite(buf, 1, bufsiz, stdout);
+	    if (outputlen != bufsiz) {
+		warnp(__func__, "error: wrote %ju bytes out of expected %ju bytes",
 			    (uintmax_t)outputlen, (uintmax_t)bufsiz);
-	    success = false;
-	}
-
-	/*
-	 * write ending escaped quote if requested
-	 */
-	if (esc_quotes) {
-	    fprint(stdout, "%s", "\\\"");
+		success = false;
+	    }
 	}
     }
 
-
-    /*
-     * write ending quote if requested
-     */
-    if (write_quote) {
-	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fputc('"', stdout);
-	if (ret != '"') {
-	    warnp(__func__, "fputc for ending quote returned error");
-	    success = false;
-	}
-    }
 
     /*
      * unless -n, output newline
@@ -644,7 +743,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
     if (prog == NULL) {
 	prog = JSTRDECODE_BASENAME;
-	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
     }
 
     /*
@@ -653,8 +752,8 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION, JPARSE_LIBRARY_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION,
+	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

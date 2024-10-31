@@ -337,11 +337,11 @@ json_vdbg(int json_dbg_lvl, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * json_putc - print a UTF-8 character with JSON encoding
+ * json_putc - print a UTF-8 character with JSON decoding
  *
  * given:
  *	stream	- string to print on
- *	c	- UTF-8 character to encode
+ *	c	- UTF-8 character to decode
  *
  * returns:
  *	true ==> stream print was OK,
@@ -361,11 +361,11 @@ json_putc(uint8_t const c, FILE *stream)
     }
 
     /*
-     * write JSON encoding to stream
+     * write JSON decoding to stream
      *
-     * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
-     * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
-     * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
+     * XXX - This is NOT the canonical way to decode Unicode characters! - XXX
+     * XXX - Valid Unicode symbols when decoded as UTF-8 bytes should be - XXX
+     * XXX - decoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
      */
     errno = 0;	    /* pre-clear errno for warnp */
     ret = fprintf(stream, "%s", byte2asciistr[c].enc);
@@ -388,7 +388,7 @@ json_putc(uint8_t const c, FILE *stream)
  *
  * else str != NULL:
  *
- *	str with JSON string encoding surrounded by '"'s
+ *	str with JSON string decoding surrounded by '"'s
  *
  * See:
  *
@@ -396,7 +396,7 @@ json_putc(uint8_t const c, FILE *stream)
  *
  * given:
  *	stream	- open file stream to print on
- *	str	- the string to JSON encode or NULL
+ *	str	- the string to JSON decode or NULL
  *
  * returns:
  *	true ==> stream print was OK,
@@ -442,7 +442,7 @@ json_fprintf_str(FILE *stream, char const *str)
     }
 
     /*
-     * print name, JSON encoded
+     * print name, JSON decoded
      */
     for (p=str; *p != '\0'; ++p) {
 	if (json_putc((uint8_t const)*p, stream) != true) {
@@ -469,14 +469,14 @@ json_fprintf_str(FILE *stream, char const *str)
  *
  * On a stream, we will print:
  *
- *	lead "name_encoded " middle "value_encoded" tail
+ *	lead "name_decoded " middle "value_decoded" tail
  *
  * given:
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
+ *	name	- name string to JSON decode or NULL
  *	middle	- middle string (often " : " )l
- *	value	- value string to JSON encode or NULL
+ *	value	- value string to JSON decode or NULL
  *	tail	- tailing string to print (often ",\n")
  *
  * returns:
@@ -513,7 +513,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
     }
 
     /*
-     * print name as a JSON encoded string
+     * print name as a JSON decoded string
      */
     if (json_fprintf_str(stream, name) != true) {
 	warn(__func__, "json_fprintf_str error printing name");
@@ -531,7 +531,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
     }
 
     /*
-     * print value as a JSON encoded string
+     * print value as a JSON decoded string
      */
     if (json_fprintf_str(stream, value) != true) {
 	warn(__func__, "json_fprintf_str for value as a string");
@@ -556,12 +556,12 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
  *
  * On a stream, we will print:
  *
- *	lead "name_encoded" middle long_value tail
+ *	lead "name_decoded" middle long_value tail
  *
  * given:
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
+ *	name	- name string to JSON decode or NULL
  *	middle	- middle string (often " : " )l
  *	value	- value as long
  *	tail	- tailing string to print (often ",\n")
@@ -600,7 +600,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
     }
 
     /*
-     * print name as a JSON encoded string
+     * print name as a JSON decoded string
      */
     if (json_fprintf_str(stream, name) != true) {
 	warnp(__func__, "json_fprintf_str error printing name");
@@ -645,12 +645,12 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
  *
  * On a stream, we will print:
  *
- *	lead "name_encoded" middle time_t_value tail
+ *	lead "name_decoded" middle time_t_value tail
  *
  * given:
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
+ *	name	- name string to JSON decode or NULL
  *	middle	- middle string (often " : " )l
  *	value	- value as time_t
  *	tail	- tailing string to print (often ",\n")
@@ -689,7 +689,7 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
     }
 
     /*
-     * print name as a JSON encoded string
+     * print name as a JSON decoded string
      */
     if (json_fprintf_str(stream, name) != true) {
 	warnp(__func__, "json_fprintf_str error printing name");
@@ -740,14 +740,14 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
  *
  * On a stream, we will print:
  *
- *	lead "name_encoded" middle true tail
+ *	lead "name_decoded" middle true tail
  * or:
- *	lead "name_encoded" middle false tail
+ *	lead "name_decoded" middle false tail
  *
  * given:
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
+ *	name	- name string to JSON decode or NULL
  *	middle	- middle string (often " : " )l
  *	value	- value as boolean
  *	tail	- tailing string to print (often ",\n")
@@ -781,7 +781,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
     }
 
     /*
-     * print name as a JSON encoded string
+     * print name as a JSON decoded string
      */
     if (json_fprintf_str(stream, name) != true) {
 	warn(__func__, "json_fprintf_str error printing name");
@@ -917,7 +917,7 @@ json_item_type_name(const struct json *node)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to get matching string from
- *	encoded	    true if we should return the encoded string
+ *	decoded	    true if we should return the decoded string
  *
  * returns:
  *	A constant (read-only) string that originally matched in the
@@ -929,7 +929,7 @@ json_item_type_name(const struct json *node)
  * the caller to check for a NULL return value.
  */
 char const *
-json_get_type_str(struct json *node, bool encoded)
+json_get_type_str(struct json *node, bool decoded)
 {
     char const *str = NULL;
 
@@ -954,7 +954,7 @@ json_get_type_str(struct json *node, bool encoded)
 		struct json_string *item = &(node->item.string);
 
 		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
-		    str = encoded ? item->as_str : item->str;
+		    str = decoded ? item->as_str : item->str;
 		}
 	    }
 	    break;
@@ -981,7 +981,7 @@ json_get_type_str(struct json *node, bool encoded)
 		struct json_member *item = &(node->item.member);
 
 		if (item != NULL && CONVERTED_PARSED_JSON_NODE(item)) {
-		    str = encoded ? item->name_as_str : item->name_str;
+		    str = decoded ? item->name_as_str : item->name_str;
 		}
 	    }
 	    break;
@@ -1662,7 +1662,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 		/*
 		 * print string preamble
 		 */
-		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
+		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
 				PARSED_JSON_NODE(item)?"p":"",
 				CONVERTED_PARSED_JSON_NODE(item)?",":":",
 				CONVERTED_PARSED_JSON_NODE(item)?"c:":"",

@@ -48,18 +48,18 @@
 # cause an infinite loop.
 #
 export TOOLS="
-    ./test_jparse/jnum_gen
-    ./jparse
-    ./jsemcgen.sh
-    ./jsemtblgen
-    ./jstrdecode
-    ./jstrencode
-    ./run_bison.sh
-    ./run_flex.sh
-    ./test_jparse/jnum_chk
-    ./test_jparse/jparse_test.sh
-    ./test_jparse/jstr_test.sh
-    ./verge
+    jparse
+    jsemcgen.sh
+    jsemtblgen
+    jstrdecode
+    jstrencode
+    run_bison.sh
+    run_flex.sh
+    test_jparse/jnum_chk
+    test_jparse/jnum_gen
+    test_jparse/jparse_test.sh
+    test_jparse/jstr_test.sh
+    verge
     "
 
 # we need this to find overriding makefile.local in all directories to see if
@@ -69,13 +69,18 @@ export SUBDIRS="
     test_jparse
     "
 
+CC="$(type -P cc 2>/dev/null)"
+export CC
 # we need to determine if the system has gmake first
 MAKE="$(type -P gmake)"
 if [[ -z "$MAKE" ]]; then
+    # ...but if it does not, then we hope that make is GNU make, or will at
+    # least work.
     MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.2.1 2024-10-30"
+export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
+export BUG_REPORT_VERSION="1.2.2 2024-10-31"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -84,9 +89,6 @@ export T_FLAG=""
 export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
-CC="$(type -P cc 2>/dev/null)"
-export CC
-export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-m make] [-M make_flags] [-c cc]
 
     -h              print help and exit
@@ -401,19 +403,19 @@ type_of()
     local COMMAND=$2
 
     write_echo
-    write_echo "## CHECKING TYPE OF: $COMMAND"
+    write_echo "## CHECKING TYPE OF \"$COMMAND\""
     TYPE_OF="$(type -a "$COMMAND" 2>/dev/null)"
     status=$?
     if [[ -n "$TYPE_OF" ]]; then
 	write_echo "$TYPE_OF"
     elif [[ "$status" -ne 0 ]]; then
 	EXIT_CODE="$CODE"
-	write_echo "$0: ERROR: type -a $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
+	write_echo "$0: ERROR: \"type -a $COMMAND\" FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$COMMAND non-zero exit code: $status"
-	write_echo "### ISSUE DETECTED: $COMMAND returned $status"
+	\"type -a $COMMAND\" non-zero exit code: $status"
+	write_echo "### ISSUE DETECTED: \"$COMMAND\" returned $status"
     fi
-    write_echo "## TYPE OF $COMMAND ABOVE"
+    write_echo "## TYPE OF \"$COMMAND\" ABOVE"
 }
 
 # type_of_optional - determine if a name is an alias, a path or a built-in
@@ -432,16 +434,16 @@ type_of_optional()
     local COMMAND=$1
 
     write_echo
-    write_echo "## CHECKING TYPE OF: $COMMAND"
+    write_echo "## CHECKING TYPE OF \"$COMMAND\""
     TYPE_OF="$(type -a "$COMMAND" 2>/dev/null)"
     status=$?
 
     if [[ -n "$TYPE_OF" ]]; then
 	write_echo "$TYPE_OF"
     elif [[ "$status" -ne 0 ]]; then
-	write_echo "$0: OPTIONAL COMMAND $COMMAND NOT FOUND: type -a returned $status"
+	write_echo "$0: OPTIONAL COMMAND $COMMAND NOT FOUND: \"type -a $COMMAND\" returned $status"
     fi
-    write_echo "## TYPE OF $COMMAND ABOVE"
+    write_echo "## TYPE OF \"$COMMAND\" ABOVE"
 }
 
 # test_compile - try compiling a test program with jparse/jparse.h
@@ -452,7 +454,7 @@ type_of_optional()
 # NOTE: this function does not make use of the -I or -L options with cc.
 test_compile()
 {
-    write_echo "## TEST COMPILING with jparse/jparse.h"
+    write_echo "## TEST COMPILING WITH: \"#include <jparse/jparse.h>\""
     # extra firewall check
     #
     if [[ -z "$CC" ]]; then
@@ -474,18 +476,22 @@ test_compile()
     if [[ $status -ne 0 ]]; then
         write_echo "$0: WARNING: mktemp -u $SOURCE_FILE exit code: $status" 1>&2
         write_echo "$0: WARNING: will skip test compile" 1>&2
+        rm -f "$PROG_FILE"
         return 0
     fi
 
     printf "#include <jparse/jparse.h>\nint main(void){return 0;}" > "$SOURCE_FILE"
     exec_command "${CC}" "$SOURCE_FILE" -o "$PROG_FILE" -ljparse -ldbg -ldyn_array
     status="$?"
-    rm -f "$PROG_FILE" "$SOURCE_FILE"
     if [[ $status -eq 0 ]]; then
-        write_echo "## TEST COMPILING with jparse/jparse.h works"
+        write_echo "## TEST COMPILING WITH: \"#include <jparse/jparse.h>\" WORKS"
     else
-        write_echo "## TEST COMPILING with jparse/jparse.h does not work"
+        write_echo "## TEST COMPILING WITH: \"#include <jparse/jparse.h>\" DOES NOT WORK"
     fi
+
+    # delete temporary files
+    rm -f "$PROG_FILE" "$SOURCE_FILE"
+
     return 0
 }
 
@@ -565,7 +571,7 @@ get_version_optional()
 	IS_EXEC=0
     fi
 
-    write_echo "## VERSION CHECK FOR: $1"
+    write_echo "## VERSION CHECK FOR: \"$COMMAND\""
 
     # try --version
     #
@@ -573,9 +579,9 @@ get_version_optional()
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" --version </dev/null
-	write_echo "## $COMMAND --version ABOVE"
+	write_echo "## \"$COMMAND --version\" ABOVE"
 	write_echo ""
-	return
+        return
     fi
 
     # try -v
@@ -584,18 +590,17 @@ get_version_optional()
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" -v </dev/null
-	write_echo "## $COMMAND -v ABOVE"
+	write_echo "## \"$COMMAND -v\" ABOVE"
 	write_echo ""
-	return
     fi
 
-    # try -V
+    # try -V too as some tools use -V
     #
     command "${COMMAND}" -V >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" -V </dev/null
-	write_echo "## $COMMAND -V ABOVE"
+	write_echo "## \"$COMMAND -V\" ABOVE"
 	write_echo ""
 	return
     fi
@@ -603,8 +608,10 @@ get_version_optional()
     if [[ "$IS_EXEC" -eq 1 ]]; then
 	# try what(1) if available
 	#
-	# An important note is that what(1) might not get the correct information.
-	# For instance running it on bmake(1) I see:
+	# An important note is that what(1) might not get the correct
+        # information. Now what(1) on Earth do I mean?
+        #
+	# Well, for instance, running it on bmake(1):
 	#
 	#   $ what ./bmake
 	#   ./bmake:
@@ -622,17 +629,17 @@ get_version_optional()
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#
-	# Looking at the Apple website this is indeed the version. Thus because it's
-	# not something that will work in all cases instead we will try ident(1) as
-	# well even if what(1) succeeds. If either succeeds we will not try
-	# strings(1).
+	# Looking at the Apple website this is indeed the version (or it was
+        # when this was originally written). Thus because it's not something
+        # that will work in all cases instead we will try ident(1) as well even
+        # if what(1) succeeds. If either succeeds we will not try strings(1).
 	#
 	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$WHAT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"what $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -648,7 +655,7 @@ get_version_optional()
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$IDENT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"ident $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -673,14 +680,14 @@ get_version_optional()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ -n "$STRINGS" ]]; then
-	    write_echo "$0: unknown version for $COMMAND: trying strings"
+	    write_echo "$0: unknown version for \"$COMMAND\": trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    Notice: unknown version for $COMMAND: trying strings"
+	    Notice: unknown version for \"$COMMAND\": trying \"strings $COMMAND\""
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command_lines 15 "$STRINGS" "${COMMAND}"
-		write_echo "## OUTPUT OF strings $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"strings $COMMAND\" ABOVE"
 		write_echo ""
 		return
 	    fi
@@ -688,15 +695,15 @@ get_version_optional()
 
 	# report unknown version
 	#
-	write_echo "Notice: unknown version for optional command: $COMMAND"
+	write_echo "Notice: unknown version for optional command: \"$COMMAND\""
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
-	$0: Notice: unknown version for optional command: $COMMAND"
+	$0: Notice: unknown version for optional command: \"$COMMAND\""
 	write_echo ""
 
     # mention that an optional command is not found or not executable
     #
     else
-	write_echo "Optional command is not found or not executable: $COMMAND"
+	write_echo "Optional command is not found or not executable: \"$COMMAND\""
 	write_echo ""
     fi
     return 0;
@@ -738,34 +745,34 @@ get_version()
 	COMMAND="$1"
 	IS_EXEC=0
     fi
-    write_echo "## VERSION CHECK FOR: $1"
+    write_echo "## VERSION CHECK FOR: \"$COMMAND\""
 
     # First check if this is bash. If it is we can do something special for
     # version information.
     if [[ "$(basename "${COMMAND}")" = "bash" ]]; then
-	write_echo "## RUNNING: echo \$BASH_VERSION"
+	write_echo "## RUNNING: \"echo \$BASH_VERSION\""
 	exec_command "echo $BASH_VERSION"
-	write_echo "## \$BASH_VERSION ABOVE"
+	write_echo "## \"\$BASH_VERSION\" ABOVE"
 	# get bash MAJOR version
-	write_echo "## RUNNING: echo \${BASH_VERSINFO[0]}"
+	write_echo "## RUNNING: \"echo \${BASH_VERSINFO[0]}\""
 	exec_command "echo ${BASH_VERSINFO[0]}"
-	write_echo "## BASH MAJOR VERSION ABOVE"
+        write_echo "## BASH \"\${BASH_VERSINFO[0]}\" (MAJOR VERSION) ABOVE"
 	# get bash MINOR version
-	write_echo "## RUNNING: echo \${BASH_VERSINFO[1]}"
+	write_echo "## RUNNING: \"echo \${BASH_VERSINFO[1]}\""
 	exec_command "echo ${BASH_VERSINFO[1]}"
-	write_echo "## BASH MINOR VERSION ABOVE"
+        write_echo "## BASH MINOR \"\${BASH_VERSINFO[1]}\" (MINOR VERSION) ABOVE"
 	# get bash PATCH LEVEL
-	write_echo "## RUNNING: echo \${BASH_VERSINFO[2]}"
+	write_echo "## RUNNING: \"echo \${BASH_VERSINFO[2]}\""
 	exec_command "echo ${BASH_VERSINFO[2]}"
-	write_echo "## BASH PATCH LEVEL ABOVE"
+        write_echo "## BASH \"\${BASH_VERSINFO[2]}\" (PATCH LEVEL) ABOVE"
 	# get bash BUILD version
-	write_echo "## RUNNING: echo \${BASH_VERSINFO[3]}"
+	write_echo "## RUNNING: \"echo \${BASH_VERSINFO[3]}\""
 	exec_command "echo ${BASH_VERSINFO[3]}"
-	write_echo "## BASH BUILD VERSION ABOVE"
+        write_echo "## BASH \"\${BASH_VERSINFO[3]}\" (BUILD VERSION) ABOVE"
 	# get bash RELEASE STATUS (e.g. beta)
-	write_echo "## RUNNING: echo \${BASH_VERSINFO[4]}"
+	write_echo "## RUNNING: \"echo \${BASH_VERSINFO[4]}\""
 	exec_command "echo ${BASH_VERSINFO[4]}"
-	write_echo "## BASH RELEASE STATUS ABOVE"
+        write_echo "## BASH \"\${BASH_VERSINFO[4]}\" (RELEASE) STATUS ABOVE"
 	# get MACHTYPE
 	#
 	# We use $MACHTYPE instead of ${BASH_VERSINFO[5]}. Why? Just in case
@@ -773,9 +780,9 @@ get_version()
 	# same value the name here can serve as additional documentation. Of
 	# course we could get that elsewhere but this is a bash variable so it
 	# seems fitting that it is put here.
-	write_echo "## RUNNING: echo \$MACHTYPE"
+	write_echo "## RUNNING: \"echo \$MACHTYPE\""
 	exec_command "echo $MACHTYPE"
-	write_echo "## \$MACHTYPE ABOVE: BASH SYSTEM TYPE"
+        write_echo "## \"\$MACHTYPE\" (BASH SYSTEM TYPE) ABOVE"
 
 	# Don't return from this function even after all this because trying
 	# --version on bash might prove useful in some way even though we should
@@ -788,7 +795,7 @@ get_version()
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" --version </dev/null
-	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
+	write_echo "## OUTPUT OF \"$COMMAND --version\" ABOVE"
 	write_echo ""
 	return
     fi
@@ -799,18 +806,17 @@ get_version()
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" -v </dev/null
-	write_echo "## OUTPUT OF $COMMAND -v ABOVE"
+	write_echo "## OUTPUT OF \"$COMMAND -v\" ABOVE"
 	write_echo ""
-	return
     fi
 
-    # try -V
+    # try -V too, as some commands use -V instead
     #
     command "${COMMAND}" -V >/dev/null 2>&1 </dev/null
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" -V </dev/null
-	write_echo "## OUTPUT OF $COMMAND -V ABOVE"
+	write_echo "## OUTPUT OF \"$COMMAND -V\" ABOVE"
 	write_echo ""
 	return
     fi
@@ -818,8 +824,10 @@ get_version()
     if [[ "$IS_EXEC" -eq 1 ]]; then
 	# try what(1) if available
 	#
-	# An important note is that what(1) might not get the correct information.
-	# For instance running it on bmake(1) I see:
+	# An important note is that what(1) might not get the correct
+        # information. Now what(1) on Earth do I mean?
+        #
+	# Well, for instance, running it on bmake(1):
 	#
 	#   $ what ./bmake
 	#   ./bmake:
@@ -837,16 +845,17 @@ get_version()
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#
-	# Looking at the Apple website this is indeed the version. Thus because it's
-	# not something that will work in all cases instead we will try ident(1) as
-	# well even if this succeeds. If either succeeds we will not try strings(1).
+	# Looking at the Apple website this is indeed the version (or it was
+        # when this was originally written). Thus because it's not something
+        # that will work in all cases instead we will try ident(1) as well even
+        # if this succeeds. If either succeeds we will not try strings(1).
 	#
 	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}"  >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$WHAT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"what $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -862,7 +871,7 @@ get_version()
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$IDENT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"ident $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -887,14 +896,14 @@ get_version()
 	# strings fails do we report positively that the version is unknown.
 	#
 	if [[ -n "$STRINGS" ]]; then
-	    write_echo "Notice: unknown version for $COMMAND: trying strings"
+	    write_echo "Notice: unknown version for \"$COMMAND\": trying strings"
 	    NOTICE_SUMMARY="$NOTICE_SUMMARY
-	    Notice: unknown version for $COMMAND: trying strings"
+	    Notice: unknown version for \"$COMMAND\": trying strings"
 	    $STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	    status=${PIPESTATUS[0]}
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command_lines 15 "$STRINGS" "${COMMAND}"
-		write_echo "## OUTPUT OF strings $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"strings ${COMMAND}\" ABOVE"
 		write_echo ""
 		return
 	    fi
@@ -902,17 +911,17 @@ get_version()
 
 	# report unknown version
 	#
-	write_echo "Notice: unknown version for required command: $COMMAND"
+	write_echo "Notice: unknown version for required command: \"$COMMAND\""
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
-	$0: Notice: unknown version for required command: $COMMAND"
+	$0: Notice: unknown version for required command: \"${COMMAND}\""
 	write_echo ""
 
-    # notice that a required command is not found or not executable
+    # note that a required command is not found or not executable
     #
     else
-	write_echo "Notice: required command is not found or is not executable: $COMMAND"
+	write_echo "Notice: required command is not found or is not executable: \"${COMMAND}\""
 	NOTICE_SUMMARY="$NOTICE_SUMMARY
-	Notice: required command is not found or is not executable: $COMMAND"
+	Notice: required command is not found or is not executable: \"${COMMAND}\""
 	write_echo ""
     fi
     return 0;
@@ -955,7 +964,7 @@ get_version_minimal()
 	COMMAND="$1"
 	IS_EXEC=0
     fi
-    write_echo "## VERSION CHECK FOR: $1"
+    write_echo "## VERSION CHECK FOR: \"$COMMAND\""
 
     # try --version
     #
@@ -963,7 +972,7 @@ get_version_minimal()
     status=$?
     if [[ "$status" -eq 0 ]]; then
 	exec_command "${COMMAND}" --version </dev/null
-	write_echo "## OUTPUT OF $COMMAND --version ABOVE"
+	write_echo "## OUTPUT OF \"$COMMAND --version\" ABOVE"
 	write_echo ""
 	return
     fi
@@ -971,8 +980,10 @@ get_version_minimal()
     if [[ "$IS_EXEC" -eq 1 ]]; then
 	# try what(1) if available
 	#
-	# An important note is that what(1) might not get the correct information.
-	# For instance running it on bmake(1) I see:
+	# An important note is that what(1) might not get the correct
+        # information. Now what(1) on Earth do I mean?
+        #
+	# Well, for instance, running it on bmake(1):
 	#
 	#   $ what ./bmake
 	#   ./bmake:
@@ -990,16 +1001,17 @@ get_version_minimal()
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#	PROGRAM:cut  PROJECT:text_cmds-154
 	#
-	# Looking at the Apple website this is indeed the version. Thus because it's
-	# not something that will work in all cases instead we will try ident(1) as
-	# well even if this succeeds.
+	# Looking at the Apple website this is indeed the version (or it was
+        # when this was originally written). Thus because it's not something
+        # that will work in all cases instead we will try ident(1) as well even
+        # if this succeeds.
 	#
 	if [[ -n "$WHAT" ]]; then
 	    $WHAT "${COMMAND}" >/dev/null 2>&1 </dev/null
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$WHAT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF what $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"what $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -1015,7 +1027,7 @@ get_version_minimal()
 	    status=$?
 	    if [[ "$status" -eq 0 ]]; then
 		exec_command "$IDENT" "${COMMAND}" </dev/null
-		write_echo "## OUTPUT OF ident $COMMAND ABOVE"
+		write_echo "## OUTPUT OF \"ident $COMMAND\" ABOVE"
 		write_echo ""
 		EXIT=1
 	    fi
@@ -1048,7 +1060,7 @@ run_optional_check()
     fi
     local COMMAND=$1
 
-    write_echo "## RUNNING: $COMMAND"
+    write_echo "## RUNNING: \"$COMMAND\""
 
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
@@ -1060,9 +1072,9 @@ run_optional_check()
     exec_command ${COMMAND} </dev/null
     status=$?
     if [[ "$status" -ne 0 ]]; then
-	write_echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status"
+	write_echo "$0: OPTIONAL COMMAND \"$COMMAND\" FAILED WITH EXIT CODE $status"
     else
-	write_echo "## OUTPUT OF ${COMMAND} ABOVE"
+	write_echo "## OUTPUT OF \"${COMMAND}\" ABOVE"
     fi
 
     write_echo ""
@@ -1073,7 +1085,7 @@ run_optional_check()
 #
 get_shell()
 {
-    write_echo "## RUNNING: echo \$SHELL"
+    write_echo "## RUNNING: \"echo \$SHELL\""
     write_echo "$SHELL"
     write_echo "## USER SHELL ABOVE"
     write_echo ""
@@ -1083,7 +1095,7 @@ get_shell()
 #
 get_path()
 {
-    write_echo "## RUNNING: echo \$PATH"
+    write_echo "## RUNNING: \"echo \$PATH\""
     write_echo "$PATH"
     write_echo "## USER PATH ABOVE"
     write_echo ""
@@ -1107,7 +1119,7 @@ run_check()
     fi
     local CODE="$1"
     local COMMAND=$2
-    write_echo "## RUNNING: $COMMAND"
+    write_echo "## RUNNING: \"$COMMAND\""
 
     exec_command "${COMMAND}"
 
@@ -1132,12 +1144,12 @@ run_check()
     status=$?
     if [[ "$status" -ne 0 ]]; then
 	EXIT_CODE="$CODE"
-	write_echo "$0: ERROR: $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
+	write_echo "$0: ERROR: \"$COMMAND\" FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$COMMAND non-zero exit code: $status"
-	write_echo "### ISSUE DETECTED: $COMMAND returned $status"
+	write_echo "### ISSUE DETECTED: \"$COMMAND\" returned $status"
     fi
-    write_echo "## OUTPUT OF ${COMMAND} ABOVE"
+    write_echo "## OUTPUT OF \"${COMMAND}\" ABOVE"
     write_echo ""
     return 0;
 }
@@ -1149,8 +1161,8 @@ run_check()
 if [[ $V_FLAG -gt 1 ]]; then
     write_echo "Will write report to $LOGFILE"
 fi
-write_echo "# TIME OF REPORT: $(date)"
-write_echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION"
+write_echo "# TIME OF REPORT: \"$(date)\""
+write_echo "# BUG_REPORT_VERSION: \"$BUG_REPORT_VERSION\""
 
 #################################################
 # Section 0: environment and system information #
@@ -1211,8 +1223,11 @@ get_version "bash"
 
 # type -a cat: find which cat the user owns :-) (okay - types of cats)
 #
-#   We didn't mean no harm, but they jumps on us like
-#   cats on poor mices, they did, precious.
+#   'Don't hurt us! Don't let them hurt us, precious! They won't hurt us will
+#   they, nice little hobbitses? We didn't mean no harm, but they jumps on us
+#   like cats on poor mices, they did, precious. And we're so lonely, *gollum*.
+#   We'll be nice to them, very nice, if they'll be nice to us, won't we, yes,
+#   yess'.
 #
 type_of 15 "cat"
 
@@ -1249,7 +1264,7 @@ get_version "date"
 type_of 20 "echo"
 
 # NOTE: we don't try getting version of echo because in some implementations
-# (all I've tested in fact) it'll just echo --version etc. despite the fact
+# (all I've tested in fact) it'll just echo "--version" etc., despite the fact
 # the man page suggests it should show a version. Well actually doing /bin/echo
 # --version does work (though command echo does not for some reason) but not all
 # implementations have this and will simply print "--version" etc. which is
@@ -1286,9 +1301,9 @@ type_of 23 "grep"
 # try getting grep version
 get_version "grep"
 
-# type -a head: determine if the user has a head :-) (on my behalf I hope they do:
-# I lost my head years ago and it's a real problem I can tell you! :-) ) Okay,
-# actually we just want to find all types of heads (or head) :-)
+# type -a head: determine if the user has a head :-) (on my behalf I hope they
+# do: I lost my head years ago and it's a real problem I can tell you! :-) )
+# Okay, actually we just want to find all types of heads (or head) :-)
 type_of 24 "head"
 
 # try getting version of head
@@ -1352,6 +1367,8 @@ type_of 33 "tr"
 get_version "tr"
 
 # type -a true: get all types of true (this is not false :-) )
+#
+# BTW: the above statement is a lie :-)
 type_of 34 "true"
 
 # make sure true is true :-)
@@ -1360,7 +1377,8 @@ run_check 35 "true"
 # try getting version of true
 get_version "true"
 
-# type -a yes: get all yesses (yes Preciouss, yesses is a valid spelling just as yeses is :-) )
+# type -a yes: get all yesses (yes Preciouss, yesses is a valid spelling just as
+# yeses is :-) )
 type_of 36 "yes"
 
 # don't try getting version of yes because it will just try printing the args
@@ -1413,7 +1431,8 @@ type_of_optional "gdate"
 # try getting version of gdate
 get_version_optional "gdate"
 
-# type -a install: which install are we using ? :-) (that is find all types of install :-) )
+# type -a install: which install are we using ? :-) (that is find all types of
+# install :-) )
 type_of_optional "install"
 
 # try getting version of install
@@ -1425,11 +1444,11 @@ type_of_optional "man"
 # try getting version of man (is that the age ? :-) )
 get_version_optional "man"
 
-# type -a picky: find how picky the bug reporter is (or is that how picky we are ? :) - actually
-# just find all types of picky)
+# type -a picky: find how picky the bug reporter is (or is that how picky we are
+# ? :), or actually just find all types of picky)
 type_of_optional "picky"
 
-# don't try getting version of picky as it'll block
+# DO NOT try getting version of picky as it'll block!
 
 # type -a rpl: get all types of rpl
 type_of_optional "rpl"
@@ -1469,7 +1488,7 @@ type_of 37 "cc"
 # cc -v: get compiler version
 run_check 38 "cc -v"
 
-# type -a make: get all makes :-)
+# type -a make: get all makes of make :-)
 type_of 39 "make"
 
 # type -a of gmake: although we prefer GNU make it might not be installed as
@@ -1509,7 +1528,10 @@ if [[ -z "$T_FLAG" ]]; then
 
     # make all: compile everything before we do anything else
     #
-    run_check 42 "$MAKE $MAKE_FLAGS all" # the answer to life, the universe and everything conveniently makes all :-)
+    #   the answer to life, the universe and everything conveniently makes all :-)
+    # 
+    # ...and yes, this actually happened by chance, not deliberately.
+    run_check 42 "$MAKE $MAKE_FLAGS all"
 
     # make test: run the JPARSE toolkit test suite
     run_check 43 "$MAKE $MAKE_FLAGS test"
@@ -1544,7 +1566,7 @@ type_of_optional "flex"
 # try getting version of flex
 get_version_optional "flex"
 
-# NOTE: we do want to check that run_bison.sh and run_flex.sh do not exit
+# NOTE: we DO WANT to check that run_bison.sh and run_flex.sh do not exit
 # non-zero because if they do it means also backup files could not be used which
 # would mean the repo could not be used properly.
 #
@@ -1557,7 +1579,7 @@ run_check 46 "$MAKE ${MAKE_FLAGS} run_flex-v7"
 if [[ -z "$T_FLAG" ]]; then
     # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
     # recompilation
-    write_echo "## RUNNING $MAKE all a second time"
+    write_echo "## RUNNING \"$MAKE all\" a second time"
     run_check 47 "$MAKE $MAKE_FLAGS all"
 fi
 
@@ -1568,15 +1590,14 @@ write_echo "#----------------------------------------#"
 write_echo "# SECTION 4 ABOVE: BISON AND FLEX CHECKS #"
 write_echo "#----------------------------------------#"
 
-############################################################################
-# Section 5: JPARSE environment like version info executable checks and    #
-# test compiling a simple program with jparse/jparse.h                     #
-############################################################################
+#################################
+# Section 5: JPARSE environment #
+#################################
 
 write_echo ""
-write_echo "################################"
+write_echo "#################################"
 write_echo "# SECTION 5: JPARSE ENVIRONMENT #"
-write_echo "################################"
+write_echo "#################################"
 write_echo ""
 
 # See that every tool is executable and run -V on each one that is.
@@ -1584,18 +1605,18 @@ write_echo ""
 # If any tool is not executable the exit code will be set to 48.
 #
 for f in $TOOLS; do
-    write_echo "## CHECKING: IF $f IS EXECUTABLE"
+    write_echo "## CHECKING: IF \"$f\" IS EXECUTABLE"
     if is_exec "$f"; then
 	write_echo "## $f IS EXECUTABLE"
-	write_echo "## RUNNING: $f -V"
+	write_echo "## RUNNING: \"$f -V\""
 	write_echo "$f version $($f -V)"
 	write_echo ""
     else
 	EXIT_CODE=48
-	write_echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE"
+	write_echo "$0: ERROR: \"$f\" IS NOT EXECUTABLE: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$f cannot be executed"
-	write_echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced"
+	\"$f\" cannot be executed"
+	write_echo "### ISSUE DETECTED: \"$f\" process execution was botched: not even a zombie process was produced"
     fi
 done
 
@@ -1603,16 +1624,16 @@ done
 #
 # If any does not exist or is not readable we report this.
 for d in $SUBDIRS; do
-    write_echo "## CHECKING: IF $d IS A SEARCHABLE DIRECTORY"
+    write_echo "## CHECKING IF: \"$d\" IS A SEARCHABLE DIRECTORY"
     if is_read_exec_dir "$d"; then
-	write_echo "## $d IS A SEARCHABLE DIRECTORY"
+	write_echo "## \"$d\" IS A SEARCHABLE DIRECTORY"
 	write_echo ""
     else
 	EXIT_CODE=49
-	write_echo "$0: ERROR: $d IS NOT A SEARCHABLE DIRECTORY: new exit code: $EXIT_CODE"
+	write_echo "$0: ERROR: \"$d\" IS NOT A SEARCHABLE DIRECTORY: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$d is not a searchable directory"
-	write_echo "### ISSUE DETECTED: $d is not a searchable directory"
+	\"$d\" is not a searchable directory"
+	write_echo "### ISSUE DETECTED: \"$d\" is not a searchable directory"
     fi
 done
 
@@ -1629,7 +1650,7 @@ write_echo "#------------------------------------#"
 
 write_echo ""
 write_echo "################################################"
-write_echo "# SECTION 6: USER MODIFICATIONS TO JPARSE TOOLS #"
+write_echo "# SECTION 6: USER MODIFICATIONS TO JPARSE REPO #"
 write_echo "################################################"
 write_echo ""
 
@@ -1637,43 +1658,43 @@ write_echo ""
 #
 # If it does not the script would have already reported an issue but we want to
 # be as complete as possible.
-write_echo "## CHECKING: IF Makefile EXISTS"
-if [[ -e "./Makefile" ]]; then
+write_echo "## CHECKING IF \"Makefile\" EXISTS"
+if [[ -f "./Makefile" ]]; then
     if [[ -r "./Makefile" ]]; then
-	write_echo "Makefile exists"
+	write_echo "\"Makefile\" is a regular, readable file"
     else
 	EXIT_CODE=50
-	write_echo "ERROR: Makefile NOT READABLE: new exit code: $EXIT_CODE"
+	write_echo "ERROR: \"Makefile\" NOT READABLE: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	Makefile not readable"
-	write_echo "### ISSUE DETECTED: Makefile not readable"
+	\"Makefile\" not readable"
+	write_echo "### ISSUE DETECTED: \"Makefile\" NOT READABLE"
     fi
 else
     EXIT_CODE=51
-    write_echo "ERROR: Makefile DOES NOT EXIST: new exit code: $EXIT_CODE"
+    write_echo "ERROR: \"Makefile\" DOES NOT EXIST OR NOT A REGULAR FILE: new exit code: $EXIT_CODE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    Makefile does not exist"
-    write_echo "### ISSUE DETECTED: Makefile does not exist"
+    \"Makefile\" does not exist"
+    write_echo "### ISSUE DETECTED: \"Makefile\" DOES NOT EXIST"
 fi
 
 # now do the same for subdirectories
 for d in $SUBDIRS; do
-    write_echo "## CHECKING: IF $d/Makefile EXISTS"
+    write_echo "## CHECKING IF \"$d/Makefile\" EXISTS"
     if [[ -f "$d/Makefile" ]]; then
 	if [[ -r "$d/Makefile" ]]; then
-	    write_echo "$d/Makefile exists"
+	    write_echo "$d/Makefile is a regular, readable file"
 	else
 	    EXIT_CODE=52
-	    write_echo "ERROR: $d/Makefile NOT READABLE: new exit code: $EXIT_CODE"
+	    write_echo "ERROR: \"$d/Makefile\" NOT READABLE: new exit code: $EXIT_CODE"
 	    FAILURE_SUMMARY="$FAILURE_SUMMARY
-	    $d/Makefile not readable"
-	    write_echo "### ISSUE DETECTED: $d/Makefile not readable"
+	    \"$d/Makefile\" not readable"
+	    write_echo "### ISSUE DETECTED: \"$d/Makefile\" NOT READABLE"
 	fi
     else
 	EXIT_CODE=53
-	write_echo "$0: ERROR: $d/Makefile DOES NOT EXIST: new exit code: $EXIT_CODE"
+	write_echo "$0: ERROR: \"$d/Makefile\" DOES NOT EXIST: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$d/Makefile does not exist"
+	\"$d/Makefile\" does not exist"
 	write_echo "### ISSUE DETECTED: $d/Makefile does not exist"
     fi
 done
@@ -1685,11 +1706,11 @@ write_echo ""
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
 #
-write_echo "## CHECKING: IF makefile.local EXISTS"
+write_echo "## CHECKING IF makefile.local EXISTS"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
 	write_echo "### Warning: found Makefile overriding file makefile.local:"
-	write_echo "cat ./makefile.local"
+	write_echo "\"cat ./makefile.local\""
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
 	    # tee -a -- "$LOGFILE" < makefile.local
@@ -1699,10 +1720,10 @@ if [[ -e "./makefile.local" ]]; then
 	fi
 	write_echo "--"
     else
-	write_echo "### Warning: found unreadable makefile.local"
+	write_echo "### Warning: found unreadable \"makefile.local\""
     fi
 else
-    write_echo "# Makefile has no overriding makefile.local"
+    write_echo "# \"Makefile\" has no overriding \"makefile.local\""
 fi
 write_echo ""
 
@@ -1710,8 +1731,7 @@ write_echo ""
 for d in $SUBDIRS; do
     if [[ -e "$d/makefile.local" ]]; then
 	if [[ -r "$d/makefile.local" ]]; then
-	    write_echo "### Warning: found $d/Makefile overriding file $d/makefile.local:"
-	    write_echo "cat $d/makefile.local"
+	    write_echo "### Warning: found \"$d/Makefile\" overriding file \"$d/makefile.local\":"
 	    write_echo "--"
 	    if [[ -z "$L_FLAG" ]]; then
 		# tee -a -- "$LOGFILE" < makefile.local
@@ -1721,10 +1741,10 @@ for d in $SUBDIRS; do
 	    fi
 	    write_echo "--"
 	else
-	    write_echo "### Warning: found unreadable $d/makefile.local"
+	    write_echo "### Warning: found unreadable \"$d/makefile.local\""
 	fi
     else
-	write_echo "# $d/Makefile has no overriding $d/makefile.local"
+	write_echo "# \"$d/Makefile\" has no overriding \"$d/makefile.local\""
     fi
 done
 write_echo ""
@@ -1739,25 +1759,25 @@ write_echo ""
 # it's not in a git repo but we don't explicitly check for this. All we care
 # about is whether or not the user has changes that might be causing a problem.
 
-write_echo "## RUNNING: git status on the code"
+write_echo "## RUNNING: \"git status\" on the code"
 exec_command git --no-pager status
 write_echo ""
-write_echo "## git status ABOVE"
+write_echo "## \"git status\" ABOVE"
 write_echo ""
 
-write_echo "## RUNNING: git diff to check for local modifications to the code"
+write_echo "## RUNNING: \"git diff\" to check for local modifications to the code"
 exec_command git --no-pager diff
-write_echo "## git diff ABOVE"
+write_echo "## \"git diff\" ABOVE"
 write_echo ""
 
-write_echo "## RUNNING: git diff --staged to check for local modifications to the code"
+write_echo "## RUNNING: \"git diff --staged\" to check for local modifications to the code"
 exec_command git --no-pager diff --staged
-write_echo "## git diff --staged ABOVE"
+write_echo "## \"git diff --staged\" ABOVE"
 write_echo ""
 
-write_echo "#-----------------------------------------------------#"
-write_echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO JPARSE TOOLS #"
-write_echo "#-----------------------------------------------------#"
+write_echo "#----------------------------------------------------#"
+write_echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO JPARSE REPO #"
+write_echo "#----------------------------------------------------#"
 write_echo ""
 
 ################

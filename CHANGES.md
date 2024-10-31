@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6.3 2024-10-31
+
+Sync the `jparse/` directory from [jparse
+repo](https://github.com/xexyl/jparse/). This includes some important bug fixes,
+including a segfault when JSON debug level was specified and a string was
+encountered (the problem was that when `has_nul` was removed it the format
+specifier, a `%s`, was not removed).
+
+A more significant change (that only requires minor changes in mkiocccentry
+code) is that the tools `jstrencode(1)` and `jstrdecode(1)` were swapped as
+according to other sources, converting a code point to another character
+(accented character, emoji etc.) is encoding, not decoding. This means that
+functions and comments were also changed. Only minor changes in this repo had to
+be made, as noted, however and specifically function name changes.
+
+With this merged the temp-test-ioccc repo will have to have the scripts updated
+to use the right tool (not jstrdecode but jstrencode) and the correct version
+(2.0.0).
+
+
 ## Release 1.6.2 2024-10-30
 
 Sync the `jparse/` directory from [jparse
