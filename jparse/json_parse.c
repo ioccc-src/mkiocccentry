@@ -503,7 +503,7 @@ jdecencchk(int entertainment)
     if (entertainment > 0) {
 
 	/*
-	 * :-)
+	 * :-) :-)
 	 */
 	decstr = "\\uD83C\\uDF0E\\u2604";
 	/*
@@ -558,7 +558,7 @@ jdecencchk(int entertainment)
 	}
 
 	/*
-	 * :-)
+	 * :-) :-) :-)
 	 */
 	decstr = "\\uD83D\\uDD25\\uD83C\\uDF0E\\uD83E\\uDD96\\uD83E\\uDD95\\u2604";
 	/*
@@ -616,6 +616,10 @@ jdecencchk(int entertainment)
 	 * and now we entertain, at least for those with a dark sense of humour :-)
 	 */
 	if (entertainment > 1) {
+
+            /*
+             * :-) :-) :-) :-)
+             */
 	    decstr = "\\uD83D\\uDD25\\uD83E\\uDDD9";
 	    /*
 	     * test encoding the JSON decoded string
@@ -673,6 +677,9 @@ jdecencchk(int entertainment)
 	}
 
 	if (entertainment > 2) {
+            /*
+             * :-) :-) :-) :-) :-)
+             */
 	    decstr = "\\uD83E\\uDEC3\\uD83D\\uDD25\\uD83D\\uDC09";
 	    /*
 	     * test encoding the JSON decoded string
@@ -731,6 +738,9 @@ jdecencchk(int entertainment)
 	     */
 	    if (entertainment > 2) {
 		dbg(DBG_VVHIGH, "entertainment level %u", entertainment);
+                /*
+                 * :-) :-) :-) :-) :-) :-)
+                 */
 		decstr = "\\uD83E\\uDD30\\uD83D\\uDD25\\uD83D\\uDC09";
 		/*
 		 * test encoding the JSON decoded string

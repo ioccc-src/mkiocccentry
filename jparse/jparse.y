@@ -20,7 +20,7 @@
 
 /* Section 0: Declarations */
 /*
- * We enable lookahead correction parser for improved errors:
+ * We enable lookahead correction parser for improved error messages:
  *
  *	%define parse.lac full
  */
@@ -102,8 +102,9 @@ int jparse_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debu
 /*
  * JSON parser library version
  */
-const char *const json_parser_version = JPARSE_LIBRARY_VERSION;	/* library version format: major.minor YYYY-MM-DD */
+const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;/* library version format: major.minor YYYY-MM-DD */
 const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
+const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	/* jparse utf8 version format: major.minor YYYY-MM-DD */
 
 %}
 
