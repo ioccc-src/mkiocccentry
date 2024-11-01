@@ -19,6 +19,12 @@ These files are in particular:
 
 The new `JPARSE_UTF8_VERSION` is `"2.0.1 2024-11-01"`.
 
+Expand `jparse.json` to include source files for our tools and to include
+subdirectories and the tools/directories under that (in other words under
+`test_jparse/`).
+
+Fixed comments in some tools.
+
 
 ## Release 2.0.0 2024-10-31
 

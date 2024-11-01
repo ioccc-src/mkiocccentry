@@ -1,5 +1,5 @@
 /*
- * pr_jparse_test - test print function call
+ * pr_jparse_test - test print function calls
  *
  * Here "print function call" refers to functions such as:
  *

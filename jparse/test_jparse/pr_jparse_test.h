@@ -1,5 +1,5 @@
 /*
- * pr_jparse_test - test print function call
+ * pr_jparse_test - test print function calls
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
