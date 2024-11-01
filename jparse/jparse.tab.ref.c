@@ -155,11 +155,12 @@ int jparse_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debu
 /*
  * JSON parser library version
  */
-const char *const json_parser_version = JPARSE_LIBRARY_VERSION;	/* library version format: major.minor YYYY-MM-DD */
+const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;/* library version format: major.minor YYYY-MM-DD */
 const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
+const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	/* jparse utf8 version format: major.minor YYYY-MM-DD */
 
 
-#line 112 "jparse.tab.c"
+#line 113 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -579,9 +580,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   226,   226,   284,   315,   346,   377,   408,   438,   468,
-     500,   531,   561,   595,   634,   670,   701,   731,   765,   803,
-     836,   868
+       0,   227,   227,   285,   316,   347,   378,   409,   439,   469,
+     501,   532,   562,   596,   635,   671,   702,   732,   766,   804,
+     837,   869
 };
 #endif
 
@@ -1544,7 +1545,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 227 "./jparse.y"
+#line 228 "./jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1598,11 +1599,11 @@ yyreduce:
 					      "json: json_element");
 	}
     }
-#line 1551 "jparse.tab.c"
+#line 1552 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 285 "./jparse.y"
+#line 286 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1631,11 +1632,11 @@ yyreduce:
 					       "json_value: json_object");
 	}
     }
-#line 1584 "jparse.tab.c"
+#line 1585 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 316 "./jparse.y"
+#line 317 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1664,11 +1665,11 @@ yyreduce:
 					       "json_value: json_array");
 	}
     }
-#line 1617 "jparse.tab.c"
+#line 1618 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 347 "./jparse.y"
+#line 348 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1697,11 +1698,11 @@ yyreduce:
 					       "json_value: json_string");
 	}
     }
-#line 1650 "jparse.tab.c"
+#line 1651 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 378 "./jparse.y"
+#line 379 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1730,11 +1731,11 @@ yyreduce:
 					       "json_value: json_number");
 	}
     }
-#line 1683 "jparse.tab.c"
+#line 1684 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 409 "./jparse.y"
+#line 410 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1762,11 +1763,11 @@ yyreduce:
 					       "json_value: JSON_TRUE");
 	}
     }
-#line 1715 "jparse.tab.c"
+#line 1716 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 439 "./jparse.y"
+#line 440 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1794,11 +1795,11 @@ yyreduce:
 					     "json_value: JSON_FALSE");
 	}
     }
-#line 1747 "jparse.tab.c"
+#line 1748 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 469 "./jparse.y"
+#line 470 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1826,11 +1827,11 @@ yyreduce:
 					       "json_value: JSON_NULL");
 	}
     }
-#line 1779 "jparse.tab.c"
+#line 1780 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 501 "./jparse.y"
+#line 502 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1859,11 +1860,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
 	}
     }
-#line 1812 "jparse.tab.c"
+#line 1813 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 532 "./jparse.y"
+#line 533 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1889,11 +1890,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
 	}
     }
-#line 1842 "jparse.tab.c"
+#line 1843 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 562 "./jparse.y"
+#line 563 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1925,11 +1926,11 @@ yyreduce:
 					      "json_members: json_member");
 	}
     }
-#line 1878 "jparse.tab.c"
+#line 1879 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 596 "./jparse.y"
+#line 597 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1964,11 +1965,11 @@ yyreduce:
 					       "json_members: json_members JSON_COMMA json_member");
 	}
     }
-#line 1917 "jparse.tab.c"
+#line 1918 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 635 "./jparse.y"
+#line 636 "./jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2000,11 +2001,11 @@ yyreduce:
 					       "json_member: json_string JSON_COLON json_element");
 	}
     }
-#line 1953 "jparse.tab.c"
+#line 1954 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 671 "./jparse.y"
+#line 672 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2033,11 +2034,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
 	}
     }
-#line 1986 "jparse.tab.c"
+#line 1987 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 702 "./jparse.y"
+#line 703 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2063,11 +2064,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
 	}
     }
-#line 2016 "jparse.tab.c"
+#line 2017 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 732 "./jparse.y"
+#line 733 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2099,11 +2100,11 @@ yyreduce:
 					       "json_elements: json_element");
 	}
     }
-#line 2052 "jparse.tab.c"
+#line 2053 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 766 "./jparse.y"
+#line 767 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2137,11 +2138,11 @@ yyreduce:
 					       "json_elements: json_elements JSON_COMMA json_element");
 	}
     }
-#line 2090 "jparse.tab.c"
+#line 2091 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 804 "./jparse.y"
+#line 805 "./jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2170,11 +2171,11 @@ yyreduce:
 					       "json_element: json_value");
 	}
     }
-#line 2123 "jparse.tab.c"
+#line 2124 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 837 "./jparse.y"
+#line 838 "./jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2202,11 +2203,11 @@ yyreduce:
 					       "json_string: JSON_STRING");
 	}
     }
-#line 2155 "jparse.tab.c"
+#line 2156 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 869 "./jparse.y"
+#line 870 "./jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2234,11 +2235,11 @@ yyreduce:
 					       "json_number: JSON_NUMBER");
 	}
     }
-#line 2187 "jparse.tab.c"
+#line 2188 "jparse.tab.c"
     break;
 
 
-#line 2191 "jparse.tab.c"
+#line 2192 "jparse.tab.c"
 
         default: break;
       }
@@ -2445,7 +2446,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 899 "./jparse.y"
+#line 900 "./jparse.y"
 
 
 

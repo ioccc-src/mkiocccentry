@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "31 October 2024" "jparse"
+.TH jparse 3  "01 November 2024" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_stream() \|,
@@ -22,10 +22,6 @@
 .SH SYNOPSIS
 \fB#include <jparse/jparse.h>\fP
 .sp
-\fB#define JPARSE_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
-.br
-\fB#define JPARSE_LIBRARY_VERSION "..." /* library format: major.minor YYYY-MM-DD */\fP
-.br
 \fB#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))\fP
 .br
 \fB#define PARSED_JSON_NODE(item) ((item) != NULL && ((item)->parsed == true))\fP
@@ -34,9 +30,11 @@
 .br
 \fB#define CONVERTED_JSON_NODE(item) ((item) != NULL && (item)->converted == true)\fP
 .sp
-.B "extern const char *const json_parser_version;	/* library version format: major.minor YYYY-MM-DD */"
+.B "extern const char *const jparse_library_version;	/* library version format: major.minor YYYY-MM-DD */"
 .br
 .B "extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */"
+.br
+.B "extern const char *const jparse_utf8_version;	/* jparse utf8 version format: major.minor YYYY-MM-DD */"
 .sp
 .B "extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);"
 .br
@@ -253,7 +251,7 @@ is the current version of the
 .B jparse
 tool.
 The string
-.BR json_parser_version ,
+.BR jparse_library_version ,
 which points to
 .BR JPARSE_LIBRARY_VERSION ,
 is the current version of the parser itself.
@@ -305,5 +303,3 @@ Although the scanner and parser are re-entrant only one parse at one time in a p
 If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
 .SH SEE ALSO
 .BR jparse (1),
-.IR README.md \|,
-.BR printf (3)

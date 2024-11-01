@@ -155,27 +155,34 @@ free_jstring(struct jstring **jstr)
  *
  * given:
  *
- *  jstring_list    pointer to list to free
+ *  jstring_list    pointer to pointer to list to free
  *
- * This function takes a struct jstring *, a pointer to a linked list of struct
+ * This function takes a struct jstring **, a pointer to a linked list of struct
  * jstring *.
  *
  * NOTE: it is ASSUMED that the string in each struct jstring * is allocated on
  * the stack due to how the encoding/decoding works. If this is not the case
  * then expect errors.
+ *
+ * NOTE: if jstring_list is NULL then nothing is done.
  */
 void
-free_jstring_list(struct jstring *jstring_list)
+free_jstring_list(struct jstring **jstring_list)
 {
     struct jstring *jstr = NULL;    /* current in list */
     struct jstring *jstr_next = NULL;	/* next in list */
 
-    for (jstr = jstring_list; jstr != NULL; jstr = jstr_next) {
+
+    for (jstr = jstring_list != NULL ? *jstring_list : NULL; jstr != NULL; jstr = jstr_next) {
 	jstr_next = jstr->next;		/* get next in list before we free the current */
 
 	/* free current json string */
 	free_jstring(&jstr);
 	jstr = NULL;
+    }
+
+    if (jstring_list != NULL) {
+        *jstring_list = NULL;
     }
 
     jstring_list = NULL;

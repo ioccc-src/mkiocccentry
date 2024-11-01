@@ -604,7 +604,8 @@ main(int argc, char **argv)
     /*
      * free list of encoded strings
      */
-    free_jstring_list(json_encoded_strings);
+    free_jstring_list(&json_encoded_strings);
+    json_encoded_strings = NULL;
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2

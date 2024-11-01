@@ -75,6 +75,6 @@ struct jstring
 extern struct jstring *alloc_jstr(char *string, size_t bufsiz);
 extern int parse_entertainment(char const *optarg);
 extern void free_jstring(struct jstring **jstr);
-extern void free_jstring_list(struct jstring *jstring_list);
+extern void free_jstring_list(struct jstring **jstring_list);
 
 #endif /* INCLUDE_JSTR_UTIL_H */

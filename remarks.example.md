@@ -2,13 +2,18 @@
 
 0.  For help with markdown format please see this [helpful guide](https://www.markdownguide.org/basic-syntax/).
 
-1.  Please see the [IOCCC markdown guidelines](https://www.isthe.com/markdown.html).
+1.  Please see the [IOCCC markdown
+guidelines](https://ioccc-src.github.io/temp-test-ioccc/markdown.html).
 
-2.  Copy this file into your entry directory under the name: remarks.md
+2.  Copy this file into your entry directory under the name: `remarks.md`.
 
 3.  After reading the rest of this file, remove down to and including the line: # END OF INSTRUCTIONS
 
 4.  Add your remarks to the resulting remarks.md file.
+
+**IMPORTANT NOTE**: make **SURE** you read the IOCCC
+[Rules](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html) and
+[Guidelines](https://ioccc-src.github.io/temp-test-ioccc/next/guidelines.html)!
 
 
 ## Sections and subsections
@@ -25,24 +30,29 @@ You need not start your remarks with a heading but you may if you wish.
 
 ## What should you say?
 
-As much or as little as you wish.
+As much or as little as you wish, except for nothing.
 
 
 ### What helps:
 
-- Explaining what your submission does,
+- Explaining what your submission does.
 
-- Tell us how to run your program,
+- Tell us how to run your program.
 
-- State any limitations of your submission in respect of portability and/or input data,
+- State any limitations of your submission in respect of portability and/or
+input data.
 
-- Write about the types obfuscations in your submission,
+- Write about the types obfuscations in your submission.
 
-- Explain how your program works,
+- Explain how your program works.
 
-- Tell us interesting facts about your submission,
+- Tell us interesting facts about your submission.
 
 **NOTE**: Use of humor can help.
+
+See also the
+FAQ on "[what to put in your
+remarks](https://ioccc-src.github.io/temp-test-ioccc/faq.html#remarks)".
 
 
 ### What does not help:
@@ -60,22 +70,44 @@ this is not clear!
 
 - Leaving the remark section without much content.
 
+See also the
+FAQ on "[what to put in your
+remarks](https://ioccc-src.github.io/temp-test-ioccc/faq.html#remarks)".
+
 
 ### Use mkiocccentry to package and submit your entry
 
 0. If you have not already done so, register for the IOCCC and obtain your UUID username and submission password.
 
-1. Form a `work_dir` directory into which your submission's files will be placed
+1. Form a `work_dir` directory into which your submission's files will be
+placed.
 
-2. Run the `mkiocccentry(1)` tool
+2. Run the `mkiocccentry(1)` tool.
 
-**NOTE**: Use `./mkiocccentry -h` and/or review the man page by running: `man man/man1/mkiocccentry.1`
+**NOTE**: Use `./mkiocccentry -h` and/or review the man page by running: `man
+man/man1/mkiocccentry.1`.
 
 3. Answer the `mkiocccentry(1)` prompts
 
 4. Upload the resulting compressed tarball to the [IOCCC submit server](https://submit.ioccc.org).
 
+**IMPORTANT NOTE**: see the
+FAQ on "[how to enter the IOCCC for more
+details](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submit) for
+details on entering the contest and the
+FAQ on "[mkiocccentry in simple
+terms](https://ioccc-src.github.io/temp-test-ioccc/faq.html#about_mkiocccentry)
+for a brief description of `mkiocccentry` and the
+FAQ on "[entering the contest in more
+detail](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submitting_help) if
+you want more help with using `mkiocccentry`.
+
+**IMPORTANT NOTE**: pay especial attention to [Rule
+17](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule17)!
+
+
 
 # END OF INSTRUCTIONS
 
-Your remarks should go here.
+Delete through this line, rename as `remarks.md` and put your comments below,
+following the instructions above.

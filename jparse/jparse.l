@@ -111,7 +111,13 @@ static YY_BUFFER_STATE bs;
  * Section 1: Patterns (regular expressions) and actions.
  */
 
+/*
+ * JSON_WS              [ \t\r]+
+ */
 JSON_WS			[ \t\r]+
+/*
+ * JSON_NL              \n+
+ */
 JSON_NL			\n+
 /*
  * NOTE: on the subject of JSON_STRING one might ask the question about the
@@ -128,20 +134,63 @@ JSON_NL			\n+
  * interested, the old regexp was:
  *
  *	    \"([^\n"]|\\\")*\"
+ *
+ * ...and this is the current one:
+ *
+ * JSON_STRING	        \"([^"\x01-\x1f]|\\\")*\"
  */
 JSON_STRING		\"([^"\x01-\x1f]|\\\")*\"
+/*
+ * JSON_INTEGER         -?([1-9][0-9]*|0)
+ */
 JSON_INTEGER		-?([1-9][0-9]*|0)
+/*
+ * JSON_FRACTION        "."[0-9]+
+ */
 JSON_FRACTION		"."[0-9]+
+/*
+ * JSON_EXPONENT	[Ee][-+]?[0-9]+
+ */
 JSON_EXPONENT		[Ee][-+]?[0-9]+
+/*
+ * JSON_NUMBER		({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}|{JSON_INTEGER}{JSON_EXPONENT})
+ */
 JSON_NUMBER		({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}|{JSON_INTEGER}{JSON_EXPONENT})
+/*
+ * JSON_TRUE		"true"
+ */
 JSON_TRUE		"true"
+/*
+ * JSON_FALSE		"false"
+ */
 JSON_FALSE		"false"
+/*
+ * JSON_NULL		"null"
+ */
 JSON_NULL		"null"
+/*
+ * JSON_OPEN_BRACE	"{"
+ */
 JSON_OPEN_BRACE		"{"
+/*
+ * JSON_CLOSE_BRACE	"}"
+ */
 JSON_CLOSE_BRACE	"}"
+/*
+ * JSON_OPEN_BRACKET	"["
+ */
 JSON_OPEN_BRACKET	"["
+/*
+ * JSON_CLOSE_BRACKET	"]"
+ */
 JSON_CLOSE_BRACKET	"]"
+/*
+ * JSON_COLON		":"
+ */
 JSON_COLON		":"
+/*
+ * JSON_COMMA		","
+ */
 JSON_COMMA		","
 
 /* Actions. */
@@ -220,7 +269,8 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    dbg(DBG_LOW, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
+			    dbg(DBG_LOW, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line,
+                                    yylloc->first_column, *yytext, *yytext);
 
 			    /*
 			     * This is a hack for better error messages with

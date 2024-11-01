@@ -36,11 +36,10 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.0.0 2024-10-3"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.0.1 2024-11-01"	/* format: major.minor YYYY-MM-DD */
 
 
 extern size_t utf8len(const char *str, int32_t surrogate);
-extern bool is_unicode_noncharacter(int32_t x);
 
 /*
  * The below functions and macros are based on code from
@@ -86,11 +85,6 @@ extern unsigned int utf8decode(const char *str);
 #define UNI_SUR_HIGH_END    0xDBFF
 #define UNI_SUR_LOW_START   0xDC00
 #define UNI_SUR_LOW_END     0xDFFF
-
-/* Start of the "not character" range. */
-#define UNI_NOT_CHAR_MIN    0xFDD0
-/* End of the "not character" range. */
-#define UNI_NOT_CHAR_MAX    0xFDEF
 
 /* For shifting by 10 bits. */
 #define TEN_BITS 10

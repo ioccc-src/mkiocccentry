@@ -574,25 +574,22 @@ strings and files, and other things besides. One of the scripts it uses is
 The latter script even checks for invalid location errors.
 
 We have used our own files (with some Easter eggs included due to a shared
-interest between Landon and Cody :-) ) as well as from the
-[JSONTestSuite](https://github.com/nst/JSONTestSuite) repo[^1] (with **MUCH
-GRATITUDE** to the maintainers: **THANK YOU!**) and all is good. If for some
-reason the parser were to be modified, in error or otherwise, and the test fails
-then we know there is a problem. As the GitHub repo has workflows to make sure
-that this does not happen it should never be added to the repo (unless of course
-we happen to push a commit that does :-) but if that happens we'll end up fixing
-it).
+interest between Landon and Cody :-) ) as well as the files from the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) (with **MUCH
+GRATITUDE** to the maintainers: **THANK YOU!**) and all is good.
+
+Now with these tests in place, if for some reason the parser were to be
+modified, in error or otherwise, and the test fails then we know there is a
+problem. As the GitHub repo has workflows to make sure that this does not happen
+(or rather it alerts us to the problem) it should never be added to the repo
+(unless of course we happen to push a commit that does :-) but if that happens
+we'll end up fixing it.
 
 If you wish to run this test-suite, try from the repo directory:
 
 ```sh
 make clobber all test
 ```
-
-[^1]: It should be noted, however, that some of the files there that are
-supposed to be good are apparently invalid UTF-8 so they were moved to the bad
-subdirectory instead, as the so-called JSON spec does not allow for invalid
-UTF-8.
 
 # Bug reporting
 
@@ -626,12 +623,13 @@ of, shall we say, 'issues', but this is not an issue here but rather
 # History
 
 For more detailed history that goes beyond this humble document we recommend you
-check `jparse(1)` man page here and the `chkentry(1)` man page in the
-[mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry) as well our
-`CHANGES.md` file and the `mkiocccentry`'s `CHANGES.md` file as well. If you
-wish to go further than that you can read the GitHub git log in the
+check `jparse(1)` man page and the `CHANGES.md` file here and at the
+[mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
+
+If you wish to go further than that you can read the GitHub git log in the
 `mkiocccentry` repo under the `jparse/` subdirectory as well as reading the
-source code.
+source code. There is a lot to read, however, so you probably will not want to
+do that.
 
 If you do read the source code we **STRONGLY** recommend you read the `jparse.l`
 and `jparse.y` files and **NOT** the bison or flex generated code! This is

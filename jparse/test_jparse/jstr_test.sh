@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# jstr_test.sh - JSON string encoding and decoding test
+# jstr_test.sh - JSON string encoding and decoding tests
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
