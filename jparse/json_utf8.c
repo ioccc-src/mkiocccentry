@@ -22,23 +22,6 @@
 #include <ctype.h>
 #include "json_utf8.h"
 
-/* is_unicode_noncharacter
- *
- * Determine if code point is in unicode non-character range
- *
- * A code point in the range of >= 0xFDD0 && <= 0xFDEF is a non-character.
- *
- * returns:
- *
- *  true ==> number is in the non-character range
- *  false ==> number is NOT in the non-character range
- */
-bool
-is_unicode_noncharacter(int32_t x)
-{
-    return x >= UNI_NOT_CHAR_MIN && x <= UNI_NOT_CHAR_MAX;
-}
-
 /*
  * count_utf8_bytes	- count bytes needed to encode/decode in str
  *
@@ -215,13 +198,7 @@ utf8encode(char *str, unsigned int val)
 	not_reached();
     }
 
-    if (is_unicode_noncharacter(val)) {
-	warn(__func__, "invalid codepoint: %X is non-character", val);
-	len = UNICODE_NOT_CHARACTER;
-    } else if ((val & 0xFFFF) >= 0xFFFE) {
-	warn(__func__, "codepoint %X: ends in either FFFE or FFFF", val);
-	len = UNICODE_NOT_CHARACTER;
-    } else if (val >= UNI_SUR_HIGH_START && val <= UNI_SUR_LOW_END) {
+    if (val >= UNI_SUR_HIGH_START && val <= UNI_SUR_LOW_END) {
 	warn(__func__, "codepoint: %X: illegal surrogate", val);
 	len = UNICODE_SURROGATE_PAIR;
     } else if (val < 0x80) {

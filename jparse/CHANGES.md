@@ -1,5 +1,25 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.1 2024-11-01
+
+Remove blockage of certain UTF-8 codepoints like non-characters as it appears
+that these are allowed (in more recent versions of Unicode, if not before), even
+if only used internally (in some cases). This means that the files previously
+moved from test_jparse/test_JSON/good to test_jparse/test_JSON/bad have been
+moved back to the `good/` subdirectory and thus every file that comes from the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) is correct and matches.
+These files are in particular:
+
+	test_jparse/test_JSON/good/y_string_escaped_noncharacter.json
+	test_jparse/test_JSON/good/y_string_last_surrogates_1_and_2.json
+	test_jparse/test_JSON/good/y_string_unicode_U+10FFFE_nonchar.json
+	test_jparse/test_JSON/good/y_string_unicode_U+1FFFE_nonchar.json
+	test_jparse/test_JSON/good/y_string_unicode_U+FDD0_nonchar.json
+	test_jparse/test_JSON/good/y_string_unicode_U+FFFE_nonchar.json
+
+The new `JPARSE_UTF8_VERSION` is `"2.0.1 2024-11-01"`.
+
+
 ## Release 2.0.0 2024-10-31
 
 Major release. The tools `jstrencode(1)` and `jstrdecode(1)` have been swapped

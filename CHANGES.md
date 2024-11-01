@@ -1,5 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.4 2024-11-01
+
+Sync the `jparse/` directory from [jparse
+repo](https://github.com/xexyl/jparse/). This includes some important bug fixes,
+namely that some codepoints that were rejected are no longer rejected as later
+Unicode standards allow them. This means that the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite) files now completely pass
+jparse.
+
+The `CODE_OF_CONDUCT.md` was removed from `jparse/` as it referred to the IOCCC
+judges which is not correct. Until a better way of doing this is derived, this
+file no longer exists. To be clear the mkiocccentry `CODE_OF_CONDUCT.md` still
+exists!
+
 
 ## Release 1.6.3 2024-10-31
 
