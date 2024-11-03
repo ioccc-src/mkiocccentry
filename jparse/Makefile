@@ -900,8 +900,8 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${C_SRC} ${H_SRC}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \

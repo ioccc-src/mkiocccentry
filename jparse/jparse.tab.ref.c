@@ -153,11 +153,11 @@
 int jparse_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 /*
- * JSON parser library version
+ * JSON parser version strings (format: major.minor YYYY-MM-DD)
  */
-const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;/* library version format: major.minor YYYY-MM-DD */
-const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
-const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	/* jparse utf8 version format: major.minor YYYY-MM-DD */
+const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;  /* jparse library version */
+const char *const jparse_version = JPARSE_VERSION;		    /* jparse tool version */
+const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	    /* jparse utf8 version */
 
 
 #line 113 "jparse.tab.c"
@@ -580,9 +580,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   227,   227,   285,   316,   347,   378,   409,   439,   469,
-     501,   532,   562,   596,   635,   671,   702,   732,   766,   804,
-     837,   869
+       0,   230,   230,   288,   319,   350,   381,   412,   442,   472,
+     504,   535,   565,   599,   638,   674,   705,   735,   769,   807,
+     840,   872
 };
 #endif
 
@@ -1545,7 +1545,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 228 "./jparse.y"
+#line 231 "./jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1603,7 +1603,7 @@ yyreduce:
     break;
 
   case 3: /* json_value: json_object  */
-#line 286 "./jparse.y"
+#line 289 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1636,7 +1636,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_array  */
-#line 317 "./jparse.y"
+#line 320 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1669,7 +1669,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_string  */
-#line 348 "./jparse.y"
+#line 351 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1702,7 +1702,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_number  */
-#line 379 "./jparse.y"
+#line 382 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1735,7 +1735,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: "true"  */
-#line 410 "./jparse.y"
+#line 413 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1767,7 +1767,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "false"  */
-#line 440 "./jparse.y"
+#line 443 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1799,7 +1799,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "null"  */
-#line 470 "./jparse.y"
+#line 473 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1831,7 +1831,7 @@ yyreduce:
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 502 "./jparse.y"
+#line 505 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1864,7 +1864,7 @@ yyreduce:
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 533 "./jparse.y"
+#line 536 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1894,7 +1894,7 @@ yyreduce:
     break;
 
   case 12: /* json_members: json_member  */
-#line 563 "./jparse.y"
+#line 566 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1930,7 +1930,7 @@ yyreduce:
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 597 "./jparse.y"
+#line 600 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1969,7 +1969,7 @@ yyreduce:
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 636 "./jparse.y"
+#line 639 "./jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2005,7 +2005,7 @@ yyreduce:
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 672 "./jparse.y"
+#line 675 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2038,7 +2038,7 @@ yyreduce:
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 703 "./jparse.y"
+#line 706 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2068,7 +2068,7 @@ yyreduce:
     break;
 
   case 17: /* json_elements: json_element  */
-#line 733 "./jparse.y"
+#line 736 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2104,7 +2104,7 @@ yyreduce:
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 767 "./jparse.y"
+#line 770 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2142,7 +2142,7 @@ yyreduce:
     break;
 
   case 19: /* json_element: json_value  */
-#line 805 "./jparse.y"
+#line 808 "./jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2175,7 +2175,7 @@ yyreduce:
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 838 "./jparse.y"
+#line 841 "./jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2207,7 +2207,7 @@ yyreduce:
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 870 "./jparse.y"
+#line 873 "./jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2446,7 +2446,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 900 "./jparse.y"
+#line 903 "./jparse.y"
 
 
 

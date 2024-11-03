@@ -19,7 +19,11 @@
 
 /* Section 0: Declarations and option settings */
 /*
- * %option noyywrap prevents needing to link in the flex(1) library (flex(3))
+ * The
+ *
+ *      %option noyywrap
+ *
+ * prevents needing to link in the flex(1) library (flex(3))
  * which means those without flex can compile the code. Even if everyone had
  * flex(1), though, under macOS you have to pass -ll to the compiler to link in
  * the flex library whereas in other systems you have to use -lfl which would
@@ -27,19 +31,30 @@
  * }' but this is unnecessary.
  */
 %option noyywrap
+
 /*
- * we also need a few other options set:
+ * We also need these options set:
  *
- * %option nodefault nounput noinput
- * %option yylineno 8bit
- * %option bison-bridge bison-locations reentrant
- * %option prefix="jparse_"
- * %option header-file="jparse.lex.h"
- * %option extra-type="struct json_extra *"
+ *      %option nodefault
+ *      %option nounput
+ *      %option noinput
+ *      %option yylineno
+ *      %option 8bit
+ *      %option bison-bridge
+ *      %option bison-locations
+ *      %option reentrant
+ *      %option prefix="jparse_"
+ *      %option header-file="jparse.lex.h"
+ *      %option extra-type="struct json_extra *"
  */
-%option nodefault nounput noinput
-%option yylineno 8bit
-%option bison-bridge bison-locations reentrant
+%option nodefault
+%option nounput
+%option noinput
+%option yylineno
+%option 8bit
+%option bison-bridge
+%option bison-locations
+%option reentrant
 %option prefix="jparse_"
 %option header-file="jparse.lex.h"
 %option extra-type="struct json_extra *"
@@ -49,7 +64,6 @@
  *
  * Code is copied verbatim near the top of the generated code.
  */
-
 
 /*
  * jparse - JSON parser
@@ -199,104 +213,137 @@ JSON_COMMA		","
 			    /*
 			     * Whitespace excluding newlines
 			     *
-			     * NOTE: we have to include this action (JSON_WS) as
+			     * NOTE: we MUST include this action (JSON_WS) as
 			     * otherwise the action '.' will return an invalid
-			     * token to the parser.
+			     * token to the parser!
 			     *
-			     * We don't need the below message but for debugging
-			     * purposes we print how many whitespaces are
-			     * ignored, if the JSON debug level is high enough.
+			     * We don't really need the below debug message but
+                             * when we were developing the scanner/parser we
+                             * used it to see how many whitespaces were ignored
+                             * (depending on if the JSON debug level was high
+                             * enough).
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
 							     (uintmax_t)yyleng, yyleng==1?"":"s");
 			}
 
 {JSON_NL}		{
-			    yycolumn = 1; /* on newline we need to reset the column for error location tracking */
+                            /*
+                             * on newline (JSON_NL) we need to reset the column
+                             * for error location tracking.
+                             */
+			    yycolumn = 1;
 			}
 
 {JSON_STRING}		{
-			    /* string */
+			    /*
+                             * string (JSON_STRING)
+                             */
 			    return JSON_STRING;
 			}
 
 {JSON_NUMBER}		{
-			    /* number */
+			    /*
+                             * number (JSON_NUMBER)
+                             */
 			    return JSON_NUMBER;
 			}
 
 {JSON_NULL}		{
-			    /* null object */
+			    /*
+                             * null object (JSON_NULL)
+                             */
 			    return JSON_NULL;
 			}
 
 {JSON_TRUE}		{
-			    /* boolean: true */
+			    /*
+                             * true (JSON_TRUE)
+                             */
 			    return JSON_TRUE;
 			}
 {JSON_FALSE}		{
-			    /* boolean: false */
+			    /*
+                             * false (JSON_FALSE)
+                             *
+                             * NOTE: the fact this is false does not make it
+                             * really false, as we do need false! :-)
+                             */
 			    return JSON_FALSE;
 			}
 
 {JSON_OPEN_BRACE}	{
-			    /* start of object */
+			    /*
+                             * start of object - open brace i.e. "{" (JSON_OPEN_BRACE)
+                             */
 			    return JSON_OPEN_BRACE;
 			}
 {JSON_CLOSE_BRACE}	{
-			    /* end of object */
+			    /*
+                             * end of object - close brace i.e. "}" (JSON_CLOSE_BRACE)
+                             */
 			    return JSON_CLOSE_BRACE;
 			}
 
 {JSON_OPEN_BRACKET}	{
-			    /* start of array */
+			    /*
+                             * start of array - open bracket i.e. "[" (JSON_OPEN_BRACKET)
+                             */
 			    return JSON_OPEN_BRACKET;
 			}
 {JSON_CLOSE_BRACKET}	{
-			    /* end of array */
+			    /*
+                             * end of array - close bracket i.e. "]" (JSON_CLOSE_BRACKET)
+                             */
 			    return JSON_CLOSE_BRACKET;
 			}
 
 {JSON_COLON}		{
-			    /* colon or 'equals' */
+			    /*
+                             * colon or 'equals' (JSON_COLON)
+                             */
 			    return JSON_COLON;
 			}
 
 {JSON_COMMA}		{
-			    /* comma: name/value pair separator */
+			    /*
+                             * comma: name/value pair separator (JSON_COMMA)
+                             */
 			    return JSON_COMMA;
 			}
 
 .			{
-			    /* invalid token: any other character */
+			    /*
+                             * invalid token: any other character (regexp ".")
+                             */
 			    dbg(DBG_LOW, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line,
                                     yylloc->first_column, *yytext, *yytext);
 
 			    /*
-			     * This is a hack for better error messages with
-			     * invalid tokens. Bison syntax error messages are
-			     * in the form of:
+			     * Returning 'token' (return token;) is a hack for
+                             * better error messages with invalid tokens. Bison
+                             * syntax error messages are in the form of:
 			     *
 			     *	    syntax error, unexpected <token name>
 			     *	    syntax error, unexpected <token name>, expecting } or JSON_STRING
 			     *
 			     * etc. where <token name> is whatever we return
-			     * here in the lexer actions (e.g.  JSON_STRING or
-			     * in this case literally token) to the parser. But
-			     * the problem is what do we call an invalid token
-			     * without knowing what what the token actually is?
-			     * Thus we call it token so that it will read
-			     * literally as 'unexpected token' which removes any
-			     * ambiguity (it could otherwise be read as 'it's
-			     * unexpected in this place but it is valid in other
-			     * contexts' but it's never actually valid: it's a
-			     * catch all for anything that's not valid).
+                             * here in the lexer actions (e.g.  JSON_STRING or
+                             * in this case literally token) to the parser. But
+                             * the problem is what do we call an invalid token
+                             * without knowing what what the token actually is?
+                             * Thus we call it token so that it will read
+                             * literally as 'unexpected token' which removes any
+                             * ambiguity (it could otherwise be read as 'it's
+                             * unexpected in this place but it is valid in other
+                             * contexts' but it's never actually valid: it's a
+                             * catch all for anything that's not valid).
 			     *
-			     * We also make use of yytext in yyerror()
-			     * which makes for a somewhat reasonable error
-			     * message even when yyerror() is called from
-			     * memory exhaustion. See that function and the
-			     * comments for '%token token' in jparse.y.
+			     * We also make use of yytext in yyerror() which
+                             * makes for a somewhat reasonable error message
+                             * even when yyerror() is called from memory
+                             * exhaustion. See that function and the comments
+                             * for '%token token' in jparse.y.
 			     */
 			    return token;
 			}
@@ -304,7 +351,6 @@ JSON_COMMA		","
 %%
 
 /* Section 2: Code that's copied to the generated scanner */
-
 
 /*
  * low_byte_scan - detect certain low byte values
@@ -483,14 +529,14 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
 	    ++(*low_bytes);
 
 	    /*
-	     * case below the report limit
+	     * case: below the report limit
 	     */
 	    if (*low_bytes <= MAX_LOW_BYTES_REPORTED) {
 		werr(36, __func__, "invalid LOW byte 0x%02x detected in line: %zu byte position: %zu",
 			 data[i], linenum, byte_pos);
 
 	    /*
-	     * case at or above the report limit
+	     * case: at or above the report limit
 	     */
 	    } else if (low_limit == false) {
 		werr(37, __func__, "too many LOW bytes ([\\x01-\\x08\\x0e-\\x1f] detected: "
@@ -540,9 +586,12 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  * NOTE: the reason this is in the scanner and not the parser is because
  * YY_BUFFER_STATE is part of the scanner and not the parser.
  *
- * NOTE: this function only warns on error. This is so that an entire report of
- * all the problems can be given at the end if the verbosity level is high
- * enough (or otherwise if this information is requested).
+ * NOTE: if filename is NULL we set it to "-" for stdin.
+ *
+ * NOTE: this function only warns on error, except for NULL is_valid, in which
+ *       case it is an error; warning on errors is so that an entire report of
+ *       all the problems can be given at the end if the verbosity level is high
+ *       enough (or otherwise if this information is requested).
  */
 struct json *
 parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
@@ -560,9 +609,9 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * set to true so that the caller does not need to worry about it (well
-	 * they should in case this is removed but we do it explicitly for them
-	 * anyway).
+	 * assume the JSON block is is valid; set *is_valid to true so that the
+         * caller does not need to worry about it (well they should in case this
+         * is removed but we do it explicitly for them anyway).
 	 */
 	*is_valid = true;
     }
@@ -571,20 +620,24 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
      * firewall
      */
     if (ptr == NULL) {
-
-	/* this should never happen */
 	werr(39, __func__, "ptr is NULL");
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
 
     if (filename == NULL) {
-	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+        if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+        }
 	filename = "-";	/* assume stdin */
     }
 
@@ -595,6 +648,12 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     ret = jparse_lex_init_extra(&extra, &scanner);
     if (ret != 0) {
 	werrp(40, __func__, "jparse_lex_init_extra failed");
+
+        /*
+         * if jparse_lex_init_extra() reports an error (!= 0) then *is_valid
+         * must be set to false and we must return NULL
+         */
+        *is_valid = false;
 	return NULL;
     }
     extra.filename = filename;
@@ -611,18 +670,23 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 	 */
 	werr(41, __func__, "unable to scan string");
 
-	/* flag that we have invalid JSON */
+	/*
+         * since we cannot scan the bytes, we set *is_valid to false, even
+         * though it could very well be valid if it could be scanned.
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	jparse_lex_destroy(scanner);
 	return tree;
     }
 
     /*
-     * we cannot set the column and probably line number without first having a
-     * buffer which is why the yy_scan_bytes() is called first.
+     * we cannot set the column (and probably line number) without first having
+     * a buffer which is why the yy_scan_bytes() is called first (see above).
      *
      * For why we set the column to 0 but the line to 1 see the comments with
      * the YY_USER_ACTION macro.
@@ -631,7 +695,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     jparse_set_lineno(1, scanner);
 
     /*
-     * announce beginning to parse
+     * announce beginning of parse, if JSON debug level is high enough
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** BEGIN PARSE\n");
@@ -652,27 +716,52 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     bs = NULL;
 
     /*
-     * announce end of parse
+     * announce end of parse, if JSON debug level is high enough
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** END PARSE\n");
     }
 
     /*
-     * report scanner / parser success or failure
+     * report scanner / parser success or failure, if JSON debug level is high
+     * enough
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	json_dbg(JSON_DBG_VVHIGH, __func__, "jparse_parse() returned: %d", ret);
     }
+
     if (ret == 0) {
-	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
-	*is_valid = true; /* flag that we have valid JSON */
+        /*
+         * we will only report valid JSON (whatever that means :-) ) in debug
+         * message if JSON debug level is high enough (where high is low :-)
+         */
+        if (json_dbg_allowed(JSON_DBG_LOW)) {
+	    json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
+        }
+        /*
+         * flag that we have valid JSON, even though we assumed it will be
+         */
+	*is_valid = true;
     } else {
-	json_dbg(JSON_DBG_LOW, __func__, "invalid JSON");
-	*is_valid = false; /* flag that we have invalid JSON */
+        /*
+         * we will only report invalid JSON in debug message if JSON debug level
+         * is high enough (where high is low :-)
+         */
+        if (json_dbg_allowed(JSON_DBG_LOW)) {
+	    json_dbg(JSON_DBG_LOW, __func__, "invalid JSON");
+        }
+
+        /*
+         * whereas if it's valid JSON it is redundant to set *is_valid, here we
+         * must set *is_valid to false as we always assume at first that it will
+         * be valid JSON (whatever that means :-) )
+         */
+	*is_valid = false;
     }
 
-    /* free scanner */
+    /*
+     * free the scanner of the so-called JSON <del>spec</del> nightmare
+     */
     jparse_lex_destroy(scanner);
 
     /*
@@ -703,10 +792,13 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
  *	 for the parse_json_block() function.
  *
- * NOTE: this function only warns on error. It does this via the called function
- *	 parse_json(). This is done so that an entire report of all the problems can
- *	 be given at the end if the verbosity level is high enough (or otherwise if
- *	 this information is requested).
+ * NOTE: if filename is "-" and stream is NULL, then the stream is set to stdin,
+ * as if the filename was NULL.
+ *
+ * NOTE: this function only warns on error, except for NULL is_valid, in which
+ *       case it is an error; warning on errors is so that an entire report of
+ *       all the problems can be given at the end if the verbosity level is high
+ *       enough (or otherwise if this information is requested).
  */
 struct json *
 parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
@@ -726,9 +818,9 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * set to true so that the caller does not need to worry about it (well
-	 * they should in case this is removed but we do it explicitly for them
-	 * anyway).
+	 * assume the JSON stream is is valid JSON; set *is_valid to true so
+         * that the caller does not need to worry about it (well they should in
+         * case this is removed but we do it explicitly for them anyway).
 	 */
 	*is_valid = true;
     }
@@ -743,25 +835,41 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 
     if (stream == NULL) {
 
-	/* report NULL stream */
+	/*
+         * report NULL stream
+         */
 	werr(43, __func__, "stream is NULL");
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
+
+    /*
+     * if stream is not stdin check if the stream is open
+     */
     if (stream != stdin && fd_is_ready(__func__, false, fileno(stream)) == false) {
 
-	/* report closed stream */
+	/*
+         * report closed stream
+         */
 	werr(44, __func__, "stream is not open");
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
@@ -772,11 +880,18 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     data = read_all(stream, &len);
     if (data == NULL) {
 
-	/* warn about read error */
+	/*
+         * warn about read error
+         */
 	werr(45, __func__, "could not read read stream");
+        /*
+         * we need to clearerr() or fclose(), depending on the stream.
+         */
 	clearerr_or_fclose(stream);
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
 	/* return a blank JSON tree */
@@ -785,12 +900,14 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     }
 
     /*
-     * pre-scan data for byte values from [\x00-\x08\x0e-\x1f]
+     * pre-scan data for byte values in range of [\x00-\x08\x0e-\x1f]
      */
     low_byte_detected = low_byte_scan(data, len, &low_bytes, &nul_bytes);
     if (low_byte_detected || low_bytes > 0 || nul_bytes > 0) {
 
-	/* report invalid JSON */
+	/*
+         * report invalid bytes
+         */
 	if (low_bytes > 0 && nul_bytes > 0) {
 	    werr(46, __func__, "%ju low byte%s and %ju NUL byte%s detected: data block is NOT valid JSON",
 		    (uintmax_t)low_bytes, low_bytes > 1 ? "s":"",
@@ -803,10 +920,14 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 		    (uintmax_t)nul_bytes, nul_bytes > 1 ? "s":"");
 	}
 
-	/* clean up input stream */
+	/*
+         * clearerr() or fclose() depending on stream
+         */
 	clearerr_or_fclose(stream);
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
 	/* free data */
@@ -821,9 +942,15 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     }
 
     /*
+     * if JSON debug level is high enough we will log the call with the length
+     */
+    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+        json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
+    }
+
+    /*
      * JSON parse the data from the file
      */
-    json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
     tree = parse_json(data, len, filename, is_valid);
 
     /* free data */
@@ -833,9 +960,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     }
 
     /*
-     * clear error or close stream
-     *
-     * NOTE: clearerr_or_fclose() does nothing if stream is NULL.
+     * clear error or close stream, depending on stream
      */
     clearerr_or_fclose(stream);
     stream = NULL;
@@ -857,9 +982,8 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
  * return:
  *	pointer to a JSON parse tree
  *
- * If name is NULL or the name is not a readable file (or is empty) or
- * if read_all() read_all() fails, then this function warns and sets *is_valid
- * to false.
+ * If name is NULL or the name is not a readable file (or is empty) or if
+ * read_all() fails, then this function warns and sets *is_valid to false.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
@@ -884,45 +1008,53 @@ parse_json_file(char const *name, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * set to true so that the caller does not need to worry about it (well
-	 * they should in case this is removed but we do it explicitly for them
-	 * anyway).
+	 * assume the JSON file is is valid JSON; set *is_valid to true so
+         * that the caller does not need to worry about it (well they should in
+         * case this is removed but we do it explicitly for them anyway).
 	 */
 	*is_valid = true;
     }
     if (name == NULL) {
-
-	/* this should actually never happen if called from jparse */
 	werr(50, __func__, "passed NULL name");
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
     if (*name == '\0') { /* strlen(name) == 0 */
 
-	/* warn about bogus name */
+	/*
+         * warn about bogus name
+         */
 	werr(51, __func__, "passed empty filename");
 
-	/* flag that we have invalid JSON */
+	/*
+         * flag that we have invalid JSON
+         */
 	*is_valid = false;
 
-	/* return a blank JSON tree */
+	/*
+         * return a blank JSON tree
+         */
 	tree = json_alloc(JTYPE_UNSET);
 	return tree;
     }
 
     /*
-     * if file is -, then we will parse stdin
+     * if file is "-", then we will parse stdin
      */
     if (strcmp(name, "-") == 0) {
 	stream = stdin;
 
     /*
-     * case will read from a file
+     * case: will read from a file
      */
     } else {
 
@@ -930,37 +1062,54 @@ parse_json_file(char const *name, bool *is_valid)
 	 * validate filename
 	 */
 	if (!exists(name)) {
-	    /* report missing file */
+	    /*
+             * report missing file
+             */
 	    werr(52, __func__, "passed filename that's not actually a file: %s", name);
 
-	    /* flag that we have invalid JSON */
+	    /*
+             * flag that we have invalid JSON
+             */
 	    *is_valid = false;
 
-	    /* return a blank JSON tree */
+	    /*
+             * return a blank JSON tree
+             */
 	    tree = json_alloc(JTYPE_UNSET);
 	    return tree;
 
 	}
 	if (!is_file(name)) {
-	    /* report that file is not a normal file */
+	    /*
+             * report that file is not a normal file
+             */
 	    werr(53, __func__, "passed filename not a normal file: %s", name);
 
-	    /* report invalid JSON */
+	    /*
+             * report invalid JSON
+             */
 	    *is_valid = false;
 
-	    /* return a blank JSON tree */
+	    /*
+             * return a blank JSON tree
+             */
 	    tree = json_alloc(JTYPE_UNSET);
 	    return tree;
 	}
 	if (!is_read(name)) {
-
-	    /* report unreadable file */
+	    /*
+             * report unreadable file
+             */
 	    werr(54, __func__, "passed filename not a readable file: %s", name);
 
-	    /* flag that we have invalid JSON */
+	    /*
+             * flag that we have invalid JSON
+             */
 	    *is_valid = false;
 
-	    /* return a blank JSON tree */
+	    /*
+             * return a blank JSON tree
+             */
 	    tree = json_alloc(JTYPE_UNSET);
 	    return tree;
 	}
@@ -972,13 +1121,19 @@ parse_json_file(char const *name, bool *is_valid)
 	stream = fopen(name, "r");
 	if (stream == NULL) {
 
-	    /* warn about file open error */
+	    /*
+             * warn about file open error
+             */
 	    werrp(55, __func__, "couldn't open file %s, ignoring", name);
 
-	    /* flag that we have invalid JSON */
+	    /*
+             * flag that we have invalid JSON
+             */
 	    *is_valid = false;
 
-	    /* return a blank JSON tree */
+	    /*
+             * return a blank JSON tree
+             */
 	    tree = json_alloc(JTYPE_UNSET);
 	    return tree;
 	}

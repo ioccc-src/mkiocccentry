@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.5 2024-11-03
+
+Sync the `jparse/` directory from [jparse
+repo](https://github.com/xexyl/jparse/). This adds some extra sanity checks in
+`jstrencode(1)`/`jstrdecode(1)` and it also makes some fixes to the change in
+decode/encode terminology, namely to do with comments. An unused macro (after a
+fix) was removed. Comments were updated and improved in `jparse.l` and
+`jparse.y`. Regenerated parser backup files.
+
+
 ## Release 1.6.4 2024-11-01
 
 Sync the `jparse/` directory from [jparse

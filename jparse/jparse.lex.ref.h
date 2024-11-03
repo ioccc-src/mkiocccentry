@@ -777,7 +777,7 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 304 "./jparse.l"
+#line 351 "./jparse.l"
 
 
 #line 732 "jparse.lex.h"
