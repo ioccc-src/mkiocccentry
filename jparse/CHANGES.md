@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.2 2024-11-03
+
+Remove unused macro from `json_utf8.h`. Updated `JPARSE_UTF8_VERSION`.
+
+Fixed and improved some comments in `json_parse.c` and `jparse.l` and
+`jparse.y`.
+
+
 ## Release 2.0.1 2024-11-01
 
 Remove blockage of certain UTF-8 codepoints like non-characters as it appears

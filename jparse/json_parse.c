@@ -55,12 +55,18 @@
  */
 #include "json_util.h"
 
+/* for json string encoding */
+static char *encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen);
+/* for json number strings */
+static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
+static bool json_process_floating(struct json_number *item, char const *str, size_t len);
+
 
 /*
  * byte2asciistr - a trivial way to map an 8-bit byte into string of ASCII characters
  *
  * NOTE: JSON_BYTE_VALUES is #defined as (BYTE_VALUES) (see util.h) and this table
- * MUST be 256 long.
+ * MUST be 256 in length.
  *
  * NOTE: This table assumes we process on an 8-bit byte basis.
  *
@@ -168,44 +174,29 @@ struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 };
 
 
-/* for json string encoding */
-static char *encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen);
-/* for json number strings */
-static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
-static bool json_process_floating(struct json_number *item, char const *str, size_t len);
-
 /*
- * json_decode - return a JSON decoding of a block of memory
- *
- * JSON string decoding:
- *
- * These escape characters are required by JSON:
- *
- *         old			      new
- *      ---------------------------------------
- *	\x00-\x07		\u0000 - \u0007
- *	<backspace>		\b	(\x08)
- *	<horizontal_tab>	\t	(\x09)
- *	<newline>		\n	(\x0a)
- *	\x0b			\u000b <vertical_tab>
- *	<form_feed>		\f	(\x0c)
- *	<enter>			\r	(\x0d)
- *	\x0e-\x1f		\u000e - \x001f
- *	<double_quote>		\"	(\x22)
- *	\			\\	(\x5c)
+ * json_decode - return the decoding of a JSON encoded block of memory
  *
  * given:
- *	ptr		start of memory block to decode
- *	len		length of block to decode in bytes
- *	retlen		address of where to store allocated length,
- *			    if retlen != NULL
+ *	ptr	start of memory block to decode
+ *	len	length of block to decode in bytes
+ *	retlen	address of where to store allocated length, if retlen != NULL
+ *
  *	skip_quote	true ==> ignore any double quotes if they are both
  *				 at the start and end of the memory block
- *			false ==> process all bytes in the block
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: this does not convert a Unicode character like a letter with a
+ * diacritic or an emoji to its code point. In fact, for reasons we do not
+ * comprehend, the following is perfectly valid JSON:
+ *
+ *      { "🔥" "🐉" }
+ *
+ * Instead, if one were to pass to this function the string "\\", it would
+ * return "\\\\", for example.
  */
 char *
 json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
@@ -1625,13 +1616,32 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 }
 
 /*
- * json_encode - return the encoding of a JSON decoded block of memory
+ * json_encode - return a JSON encoding of a block of memory
+ *
+ * JSON string encoding:
+ *
+ * Along with Unicode code points (in the form of \uxxxx where x is a
+ * hexadecimal digit), these escape characters are required by JSON, all of
+ * which have their code points (as listed below):
+ *
+ *         old			      new
+ *      ---------------------------------------
+ *	\x00-\x07		\u0000 - \u0007
+ *	<backspace>		\b	(\x08)
+ *	<horizontal_tab>	\t	(\x09)
+ *	<newline>		\n	(\x0a)
+ *	\x0b			\u000b <vertical_tab>
+ *	<form_feed>		\f	(\x0c)
+ *	<enter>			\r	(\x0d)
+ *	\x0e-\x1f		\u000e - \x001f
+ *	<double_quote>		\"	(\x22)
+ *	\			\\	(\x5c)
  *
  * given:
- *	ptr	start of memory block to encode
- *	len	length of block to encode in bytes
- *	retlen	address of where to store allocated length, if retlen != NULL
- *
+ *	ptr		start of memory block to encode
+ *	len		length of block to encode in bytes
+ *	retlen		address of where to store allocated length,
+ *			    if retlen != NULL
  * returns:
  *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error

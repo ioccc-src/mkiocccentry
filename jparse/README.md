@@ -1,4 +1,4 @@
-# jparse - JSON parser and tools written in C
+# jparse -  JSON parser, library and tools written in C
 
 `jparse` is a JSON parser (a stand-alone tool and a library) written in C with
 the help of `flex(1)` and `bison(1)`. The library, and the additional tools,

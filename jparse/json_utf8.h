@@ -36,7 +36,7 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.0.1 2024-11-01"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.0.2 2024-11-03"	/* format: major.minor YYYY-MM-DD */
 
 
 extern size_t utf8len(const char *str, int32_t surrogate);
@@ -107,12 +107,6 @@ extern unsigned int utf8decode(const char *str);
  * which was greater than UNICODE_MAXIMUM or UNICODE_UTF8_4 into UTF-8 bytes.
  */
 #define UNICODE_TOO_BIG -7
-/*
- * This return value indicates that the Unicode code-point ended with either
- * 0xFFFF or 0xFFFE, meaning it cannot be used as a character code point, or it
- * was in the disallowed range FDD0 to FDEF.
- */
-#define UNICODE_NOT_CHARACTER -8
 
 extern int32_t surrogates_to_unicode (int32_t hi, int32_t lo);
 

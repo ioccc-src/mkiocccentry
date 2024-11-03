@@ -100,11 +100,11 @@
 int jparse_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 /*
- * JSON parser library version
+ * JSON parser version strings (format: major.minor YYYY-MM-DD)
  */
-const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;/* library version format: major.minor YYYY-MM-DD */
-const char *const jparse_version = JPARSE_VERSION;		/* jparse version format: major.minor YYYY-MM-DD */
-const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	/* jparse utf8 version format: major.minor YYYY-MM-DD */
+const char *const jparse_library_version = JPARSE_LIBRARY_VERSION;  /* jparse library version */
+const char *const jparse_version = JPARSE_VERSION;		    /* jparse tool version */
+const char *const jparse_utf8_version = JPARSE_UTF8_VERSION;	    /* jparse utf8 version */
 
 %}
 
@@ -172,6 +172,9 @@ YY_DECL;
  *	%token JSON_FALSE "false"
  *	%token JSON_STRING
  *	%token JSON_NUMBER
+ *
+ * Observe that these exist in jparse.l. In the case that t here is no value,
+ * you might check jparse.l for the regexp.
  */
 %token JSON_OPEN_BRACE "{"
 %token JSON_CLOSE_BRACE "}"
