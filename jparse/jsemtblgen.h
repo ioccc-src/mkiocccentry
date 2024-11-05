@@ -3,11 +3,7 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * The concept of this file was developed by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * The JSON parser was co-developed in 2022 by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -17,10 +13,11 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
+ * The concept of the JSON semantics tables was developed by Landon Curt Noll.
+ *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
-
 
 #if !defined(INCLUDE_JSEMTBLGEN_H)
 #    define  INCLUDE_JSEMTBLGEN_H

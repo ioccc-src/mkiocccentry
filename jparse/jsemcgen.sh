@@ -2,17 +2,17 @@
 #
 # jsemcgen.sh - generate JSON semantics table
 #
-# The concept of this file was developed by:
-#
-#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-#
-# The JSON parser was co-developed in 2022 by:
+# This JSON parser was co-developed in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 # and:
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
+# The concept of the JSON semantics tables was developed by Landon Curt Noll.
 #
 # Share and enjoy! :-)
 #     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)

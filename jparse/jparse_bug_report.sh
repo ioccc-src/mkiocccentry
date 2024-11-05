@@ -37,7 +37,7 @@
 #
 # and then adapted to the jparse repo in 2024.
 #
-# "Because sometimes even the JPARSE Judges need some help." :-)
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
 
 # setup
@@ -80,7 +80,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export BUG_REPORT_VERSION="1.2.2 2024-10-31"
+export BUG_REPORT_VERSION="2.0.0 2024-11-05"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1176,14 +1176,7 @@ write_echo ""
 
 # Required tool checks
 #
-# These tools are required in order to compile tools that are needed
-# by someone submitting an submission to the JPARSE.
-#
-# If your system cannot compile and/or fails in this section, you may
-# still consider submitting an JPARSE submission from this system.  However
-# you will have to use a more modern and/or more capable system in which
-# to compile this tool set OR add missing tools your system.
-#
+
 # echo $SHELL: we need to know their default shell
 get_shell
 
@@ -1247,12 +1240,6 @@ type_of 17 "cp"
 # try getting version of cp
 get_version "cp"
 
-# type -a cut: get all types of cut
-type_of 18 "cut"
-
-# try getting cut version
-get_version "cut"
-
 # type -a date: find the bug reporter a date :-) (okay - get all types of date
 # command)
 type_of 19 "date"
@@ -1290,10 +1277,9 @@ get_version "find"
 # NOTE: this might not be necessary but it was suggested anyway. I might be
 # wrong but I suspect in shell scripts it would use the built-in unless given
 # the command command or a path but using type -a should give us everything.
-# will give the path under both linux and macOS.
 type_of 22 "getopts"
 # NOTE: no need to try and get version as it's a built-in under both macOS and
-# linux and neither have even a --version option.
+# linux and neither appear to have a --version option.
 
 # type -a grep: get all types of grep
 type_of 23 "grep"
@@ -1309,7 +1295,7 @@ type_of 24 "head"
 # try getting version of head
 get_version "head"
 
-# type -a mktemp: get all types of mktemp (well not the C library :-) )
+# type -a mktemp: get all types of mktemp (well not in the C library :-) )
 type_of 25 "mktemp"
 
 # try getting version of mktemp
@@ -1339,13 +1325,6 @@ type_of 29 "sed"
 # try getting sed version
 get_version "sed"
 
-# type -a tar: get all types of tar (okay - actually tar in the system ... we
-# don't care about the dark, flammable liquid :-) )
-type_of 30  "tar"
-
-# tar --version: find out what version tar is
-get_version "tar"
-
 # type -a tee: get all types of tee (none of it will be as good as a cup of
 # black tea but we still need to find the tees here :-) )
 type_of 31 "tee"
@@ -1359,30 +1338,6 @@ type_of 32 "touch"
 
 # try getting version of touch
 get_version "touch"
-
-# type -a tr: get all types of tr
-type_of 33 "tr"
-
-# try getting version of tr
-get_version "tr"
-
-# type -a true: get all types of true (this is not false :-) )
-#
-# BTW: the above statement is a lie :-)
-type_of 34 "true"
-
-# make sure true is true :-)
-run_check 35 "true"
-
-# try getting version of true
-get_version "true"
-
-# type -a yes: get all yesses (yes Preciouss, yesses is a valid spelling just as
-# yeses is :-) )
-type_of 36 "yes"
-
-# don't try getting version of yes because it will just try printing the args
-# over and over again as it is designed to do
 
 write_echo "#-----------------------------------------------------#"
 write_echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION #"
@@ -1401,11 +1356,9 @@ write_echo ""
 # optional tool checks
 #
 # If is OK to not have an optional tool in that such optional tools
-# are NOT mandatory to compile the core tools that someone needs
-# to submit an submission to the JPARSE.
+# are NOT mandatory to compile the core tools.
 #
-# These optional tools are used by the maintainers and/or
-# there are workarounds for not having these tools.
+# These optional tools are used by the maintainers.
 
 # type -a checknr: get all types of checknr
 type_of_optional "checknr"
@@ -1419,18 +1372,6 @@ type_of_optional "ctags"
 # try getting version of ctags
 get_version_optional "ctags"
 
-# type -a fmt: get all types of fmt
-type_of_optional "fmt"
-
-# try getting version of fmt
-get_version_optional "fmt"
-
-# type -a gdate: get all types of gdate
-type_of_optional "gdate"
-
-# try getting version of gdate
-get_version_optional "gdate"
-
 # type -a install: which install are we using ? :-) (that is find all types of
 # install :-) )
 type_of_optional "install"
@@ -1438,23 +1379,17 @@ type_of_optional "install"
 # try getting version of install
 get_version_optional "install"
 
-# type -a man: find all types of men (okay man :-) )
+# type -a man: find a good man for the females here :-)
 type_of_optional "man"
 
-# try getting version of man (is that the age ? :-) )
+# try getting age (okay, version :-) ) of man
 get_version_optional "man"
 
-# type -a picky: find how picky the bug reporter is (or is that how picky we are
-# ? :), or actually just find all types of picky)
+# type -a picky: find how picky the bug reporter is (or perhaps it's how picky
+# we are ? :-) ), or actually just find all types of picky
 type_of_optional "picky"
 
 # DO NOT try getting version of picky as it'll block!
-
-# type -a rpl: get all types of rpl
-type_of_optional "rpl"
-
-# try getting version of rpl
-get_version_optional "rpl"
 
 # type -a seqcexit: get all types of seqcexit
 type_of_optional "seqcexit"
@@ -1530,10 +1465,13 @@ if [[ -z "$T_FLAG" ]]; then
     #
     #   the answer to life, the universe and everything conveniently makes all :-)
     # 
-    # ...and yes, this actually happened by chance, not deliberately.
+    # ...and yes, this actually happened by chance, not deliberately, at least
+    # in the mkiocccentry repo. Later on, after this script in jparse was
+    # updated to be correct, the numbers were kept the same even after the tools
+    # that were unneeded were removed.
     run_check 42 "$MAKE $MAKE_FLAGS all"
 
-    # make test: run the JPARSE toolkit test suite
+    # make test: run the jparse test suite
     run_check 43 "$MAKE $MAKE_FLAGS test"
 fi
 
