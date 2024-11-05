@@ -1,5 +1,28 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.3 2024-11-05
+
+Fixed `jparse_bug_report.sh` to not refer to the IOCCC except in the top
+comment, and remove tool checks that are not needed for this repo. Because the
+exit code `42` was by mere chance the `make all` the exit code sequence has been
+kept the same by not updating the exit code sequence after removing tools not
+needed here.
+
+Reorganise documentation, moving utilities to a new file (renaming
+`json_util_README.md`
+[jparse_util_README.md](https://github.com/xexyl/jparse/blob/master/jparse_util_README.md)
+to better reflect that they are related to jparse). Moved the details about
+`jstrencode(1)` and `jstrdecode(1)` to this new file and moved the library
+details from the `README.md` to the new file
+[jparse_library_README.md](https://github.com/xexyl/jparse/blob/master/jparse_library_README.md).
+This is to make the top level README.md file easier to go through.
+
+Commented out all details about unwritten (for now) tools in the util README.md
+file.
+
+Reordered the utilities a bit.
+
+
 ## Release 2.0.2 2024-11-03
 
 Remove unused macro from `json_utf8.h`. Updated `JPARSE_UTF8_VERSION`.

@@ -9,10 +9,10 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 1 "11 October 2024" "jparse" "jparse tools"
+.TH jparse 1 "05 November 2024" "jparse" "jparse tools"
 .SH NAME
 .B jparse
-\- IOCCC JSON parser
+\- a JSON parser written in C
 .SH SYNOPSIS
 .B jparse
 .RB [\| \-h \|]
@@ -157,22 +157,9 @@ file:
  jparse .info.json
 .ft R
 .RE
-.PP
-From the repo directory, run the
-.B jparse_test.sh
-script using the default
-.I json_teststr.txt
-file with verbosity set at 5:
-.PP
-Run the test suite (from the repo directory):
-.RS
-.ft B
- ./jparse_test.sh \-v 5
-.ft R
-.RE
 .SH SEE ALSO
 .PP
-.BR jparse (1),
+.BR jparse (3),
 .BR jstrencode (1),
 .BR jstrdecode (1),
 .BR flex (1),

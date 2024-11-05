@@ -1,19 +1,72 @@
-# The jparse test suite
+# The jparse testing suite
 
-There are many files in this directory including a lot of JSON files, both good
-and bad, in subdirectories, that are tested with the `-d` option to the
-`jparse_test.sh` test-suite script, along with a text file of a number of valid
-JSON strings and another file with invalid JSON strings. The good/valid JSON
-must pass validation and the bad/invalid must fail validation.
+Here we briefly describe for you our testing suite, for those who are
+interested, though some of it is only relevant to repo maintainers (that is put
+at the end of the file for that reason).
 
-To see the options of the script:
+If you are looking for information on the `jparse` repo, see the [jparse repo
+README.md](https://github.com/xexyl/jparse/blob/master/README.md).
 
-```sh
-./jparse_test.sh -h
-```
+For information on the `jparse` utilities see
+[jparse_util_README.md](https://github.com/xexyl/jparse/blob/master/jparse_util_README.md).
 
-If you need more information on this tool, check the man page `jparse_test.8`.
-To run the script it is better to use `make test` from the top level directory.
+For information on the `jparse` library, see
+[jparse_library_README.md](https://github.com/xexyl/jparse/blob/master/jparse_library_README.md).
+
+We also do recommend that you read the
+[json_README.md](https://github.com/xexyl/jparse/blob/master/json_README.md)
+document to better understand the JSON terms used in this repo.
+
+
+
+# [test_jparse](https://github.com/xexyl/jparse/tree/master/test_jparse)
+
+In this directory we have a [subdirectory with test JSON
+files](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON), both
+[good](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON/good)
+and [bad](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON/bad)
+(plus a subdirectory to test error location reporting,
+[bad_loc](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON/bad_loc)),
+and a number of tools and scripts that run a battery of tests on the parser
+(internally and otherwise) and the tools, including encoding and decoding, via
+code that is in
+[json_parse.c](https://github.com/xexyl/jparse/blob/master/json_parse.c), for a
+few examples.
+
+This directory also has a number of tools and scripts, some of which work with
+the test JSON files.
+
+
+<div id="test-json-files"></div>
+
+# Test JSON files
+
+The files referred to above come from at least two sources: our own (with some
+Easter eggs included due to a shared interest between Landon and Cody :-) ) as
+well as from the [JSONTestSuite](https://github.com/nst/JSONTestSuite) (with
+**MUCH GRATITUDE** to the maintainers: **THANK YOU!**), which also has good and
+bad files (we simply copied the invalid JSON files to the bad subdirectory and
+the valid JSON files to the good subdirectory), and all is good.
+
+Now with the tests on these files in place, if for some reason the parser were to be
+modified, in error or otherwise, and the test fails then we know there is a
+problem. As the GitHub repo has workflows to make sure that this does not happen
+(or rather it alerts us to the problem) it should never be added to the repo
+(unless of course we happen to push a commit that does :-) but if that happens
+we'll end up fixing it.
+
+
+<div id="jparse-testing-suite-scripts"></div>
+
+# jparse testing suite scripts and tools
+
+The driver script is
+[run_jparse_tests.sh](https://github.com/xexyl/jparse/blob/master/test_jparse/run_jparse_tests.sh).
+This script, run by the Makefile rule test,  runs the other scripts.
+
+If you must know what this script does, or what scripts and tools it uses,
+please take a look at it, as it is a lot to write and probably most people are
+not interested in it.
 
 If, on the other hand, you are reporting a bug, it is best to run `make
 bug_report` from the top level directory, and then open a bug report in the
@@ -25,7 +78,17 @@ page](https://github.com/xexyl/jparse/issues/new/choose). **PLEASE** attach the
 bug report log file!
 
 
-## Preparing the bad location tests
+# Running the test-suite
+
+If you wish to run this test-suite, try from the top level directory of the repo:
+
+```sh
+make clobber all test
+```
+
+<hr>
+
+# Preparing the bad location tests
 
 This task is only meant for the repo maintainers but for the curious if ever a
 file is added to the `test_JSON/bad_loc` directory then one **MUST** take the

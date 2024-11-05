@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "31 October 2024" "jstrencode" "jparse tools"
+.TH jstrencode 1 "04 November 2024" "jstrencode" "jparse tools"
 .SH NAME
 .B jstrencode
 \- encode JSON decoded strings
@@ -148,6 +148,14 @@ Encode just a negative number:
 .RS
 .ft B
  jstrencode \-\- \-5
+.ft R
+.RE
+.PP
+Display the dragon emoji (U+1F409):
+.sp
+.RS
+.ft B
+ jstrencode "\\uD83D\\uDC09"
 .ft R
 .RE
 .PP
