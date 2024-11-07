@@ -134,7 +134,7 @@ utf8len(const char *str, int32_t surrogate)
 /*
  * The below functions are based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes.
+ * with a number of changes made by us.
  */
 
 /*
@@ -243,53 +243,15 @@ utf8encode(char *str, unsigned int val)
 	warn(__func__, "illegal value: %#X too big\n", val);
 	len = UNICODE_TOO_BIG;
     }
+
     return len;
-}
-
-unsigned int
-utf8decode(const char *str)
-{
-    const unsigned char *s = NULL;
-    unsigned int unichar = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-        err(12, __func__, "str is NULL");
-        not_reached();
-    }
-
-    s = (const unsigned char*)str;
-    if (*s < 0x80) {
-        unichar = *s;
-    } else if (*s < UTF8_3_BITS) {
-        unichar = *s++ & 0x1F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s & 0x3F;
-    } else if (*s < UTF8_4_BITS) {
-        unichar = *s++ & 0x0F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s++ & 0x3F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s & 0x3F;
-    } else {
-        unichar = *s++ & 0x0F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s++ & 0x3F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s++ & 0x3F;
-        unichar <<= UTF8_V_SHIFT;
-        unichar |= *s & 0x3F;
-    }
-    return unichar;
 }
 
 
 /*
  * The above function is based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes.
+ * with a number of changes made by us.
  */
 
 /*
@@ -297,9 +259,10 @@ utf8decode(const char *str)
  */
 
 /*
- * The below function is from https://github.com/benkasminbullock/unicode-c/,
- * which is 'a Unicode library in the programming language C which deals with
- * conversions to and from the UTF-8 format', and was written by:
+ * The below function (with some extra sanity checks added by us) come from
+ * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
+ * in the programming language C which deals with conversions to and from the
+ * UTF-8 format', and was written by:
  *
  *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */
@@ -314,22 +277,42 @@ utf8decode(const char *str)
  * https://android.googlesource.com/platform/external/id3lib/+/master/unicode.org/ConvertUTF.c.
  */
 int32_t
-surrogates_to_unicode (int32_t hi, int32_t lo)
+surrogates_to_unicode(int32_t hi, int32_t lo)
 {
     int32_t u;
+
+    /*
+     * sanity checks
+     *
+     * These should theoretically never happen.
+     */
+    if (hi < 0 && lo < 0) {
+        warn(__func__, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
+        return UNICODE_NOT_SURROGATE_PAIR;
+    } else if (hi < 0) {
+        warn(__func__, "hi %jd < 0", (intmax_t)hi);
+        return UNICODE_NOT_SURROGATE_PAIR;
+    } else if (lo < 0) {
+        warn(__func__, "lo %jd < 0", (intmax_t)lo);
+        return UNICODE_NOT_SURROGATE_PAIR;
+    }
+
     if (hi < UNI_SUR_HIGH_START || hi > UNI_SUR_HIGH_END ||
 	lo < UNI_SUR_LOW_START || lo > UNI_SUR_LOW_END) {
 	return UNICODE_NOT_SURROGATE_PAIR;
     }
+
     u = ((hi - UNI_SUR_HIGH_START) << TEN_BITS)
       + (lo - UNI_SUR_LOW_START) + HALF_BASE;
+
     return u;
 }
 
 /*
- * The above function is from https://github.com/benkasminbullock/unicode-c/,
- * which is 'a Unicode library in the programming language C which deals with
- * conversions to and from the UTF-8 format', and was written by:
+ * The above function (with some extra sanity checks added by us) come from
+ * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode which is
+ * 'a Unicode library in the programming language C which deals with conversions
+ * to and from the UTF-8 format', and was written by:
  *
  *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */

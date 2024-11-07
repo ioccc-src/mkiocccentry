@@ -36,15 +36,15 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.0.2 2024-11-03"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.0.3 2024-11-07"	/* format: major.minor YYYY-MM-DD */
 
 
 extern size_t utf8len(const char *str, int32_t surrogate);
 
 /*
- * The below functions and macros are based on code from
+ * The below function and macros are based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes.
+ * with a number of changes made by us.
  */
 
 #define UTF8_2_BITS     0xC0
@@ -59,12 +59,11 @@ extern size_t utf8len(const char *str, int32_t surrogate);
 #define UTF8_V_SHIFT    6
 
 extern int utf8encode(char *str, unsigned int val);
-extern unsigned int utf8decode(const char *str);
 
 /*
- * The above functions and macros are based on code from
+ * The above function and macros are based on code from
  * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes.
+ * with a number of changes made by us.
  */
 
 /*
@@ -72,10 +71,10 @@ extern unsigned int utf8decode(const char *str);
  */
 
 /*
- * The below function and macros come from
- * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
- * in the programming language C which deals with conversions to and from the
- * UTF-8 format', and was written by:
+ * The below function (with some extra sanity checks added by us) and macros
+ * come from https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode
+ * library in the programming language C which deals with conversions to and
+ * from the UTF-8 format', and was written by:
  *
  *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */
@@ -110,11 +109,12 @@ extern unsigned int utf8decode(const char *str);
 
 extern int32_t surrogates_to_unicode (int32_t hi, int32_t lo);
 
+
 /*
- * The above macros and function from
- * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
- * in the programming language C which deals with conversions to and from the
- * UTF-8 format', and was written by:
+ * The above function (with some extra sanity checks added by us) and macros
+ * come from https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode
+ * library in the programming language C which deals with conversions to and
+ * from the UTF-8 format', and was written by:
  *
  *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
  */
