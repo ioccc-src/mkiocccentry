@@ -1,5 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.7 2024-11-07
+
+Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) to
+remove unused code and extra sanity checks added to a function and to match a
+filename change.
+
+## Release 1.6.6 2024-11-05
+
+Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) with
+some important documentation changes along with some typo fixes.
+
+
 ## Release 1.6.5 2024-11-03
 
 Sync the `jparse/` directory from [jparse

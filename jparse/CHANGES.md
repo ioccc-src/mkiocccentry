@@ -1,5 +1,21 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.4 2024-11-07
+
+Removed `utf8decode()` from `json_utf8.c` as it appears we will not need it
+after all.
+
+Added extra sanity checks in `surrogates_to_unicode()` that warn if `hi` or `lo`
+are `< 0`. This should theoretically never happen but the point is that if it
+does happen it is warned about before returning `UNICODE_NOT_SURROGATE_PAIR`
+(these would be triggered in the other check too but we do not warn about those
+because the function tests whether it is a surrogate pair or not, so the only
+function difference is that if either is `< 0` it is warned about as it should
+never happen).
+
+Updated `JPARSE_UTF8_VERSION` to `"2.0.3 2024-11-07"`.
+
+
 ## Release 2.0.3 2024-11-05
 
 Fixed `jparse_bug_report.sh` to not refer to the IOCCC except in the top

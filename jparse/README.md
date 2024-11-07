@@ -25,7 +25,7 @@ history on `jparse` as a whole.
 For information on our utilities, including `jparse(1)` but also tools to
 encode/decode JSON decoded/encoded strings (others of different applications are
 in the pipeline as well), we refer you to the
-[jparse_util_README.md](https://github.com/xexyl/jparse/blob/master/jparse_util_README.md)
+[jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md)
 file.
 
 As a stand-alone tool, `jparse` itself is less useful, except for validating
@@ -233,7 +233,7 @@ man jstrdecode
 at [jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c)
 for a relatively simple example (the source code for `jparse(1)` itself, as
 described in the
-[jparse_util_README.md](https://github.com/xexyl/jparse/blob/master/jparse_util_README.md)
+[jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md)
 file.
 
 <hr>

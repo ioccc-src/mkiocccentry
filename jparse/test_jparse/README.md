@@ -8,7 +8,7 @@ If you are looking for information on the `jparse` repo, see the [jparse repo
 README.md](https://github.com/xexyl/jparse/blob/master/README.md).
 
 For information on the `jparse` utilities see
-[jparse_util_README.md](https://github.com/xexyl/jparse/blob/master/jparse_util_README.md).
+[jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md).
 
 For information on the `jparse` library, see
 [jparse_library_README.md](https://github.com/xexyl/jparse/blob/master/jparse_library_README.md).
