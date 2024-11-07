@@ -467,14 +467,14 @@ test_compile()
     PROG_FILE=$(mktemp -u "jparse_bug_report.XXXXXXXXXX.prog")
     status="$?"
     if [[ $status -ne 0 ]]; then
-        write_echo "$0: WARNING: mktemp -u $PROG_FILE exit code: $status" 1>&2
+        write_echo "$0: WARNING: \"mktemp -u $PROG_FILE\" exit code: $status" 1>&2
         write_echo "$0: WARNING: will skip test compile" 1>&2
         return 0
     fi
     SOURCE_FILE=$(mktemp -u "jparse_bug_report.XXXXXXXXXX.c")
     status="$?"
     if [[ $status -ne 0 ]]; then
-        write_echo "$0: WARNING: mktemp -u $SOURCE_FILE exit code: $status" 1>&2
+        write_echo "$0: WARNING: \"mktemp -u $SOURCE_FILE\" exit code: $status" 1>&2
         write_echo "$0: WARNING: will skip test compile" 1>&2
         rm -f "$PROG_FILE"
         return 0
@@ -1159,7 +1159,7 @@ run_check()
 #############################
 
 if [[ $V_FLAG -gt 1 ]]; then
-    write_echo "Will write report to $LOGFILE"
+    write_echo "Will write report to \"$LOGFILE\""
 fi
 write_echo "# TIME OF REPORT: \"$(date)\""
 write_echo "# BUG_REPORT_VERSION: \"$BUG_REPORT_VERSION\""
@@ -1545,7 +1545,7 @@ write_echo ""
 for f in $TOOLS; do
     write_echo "## CHECKING: IF \"$f\" IS EXECUTABLE"
     if is_exec "$f"; then
-	write_echo "## $f IS EXECUTABLE"
+	write_echo "## \"$f\" IS EXECUTABLE"
 	write_echo "## RUNNING: \"$f -V\""
 	write_echo "$f version $($f -V)"
 	write_echo ""
@@ -1620,7 +1620,7 @@ for d in $SUBDIRS; do
     write_echo "## CHECKING IF \"$d/Makefile\" EXISTS"
     if [[ -f "$d/Makefile" ]]; then
 	if [[ -r "$d/Makefile" ]]; then
-	    write_echo "$d/Makefile is a regular, readable file"
+	    write_echo "\"$d/Makefile\" is a regular, readable file"
 	else
 	    EXIT_CODE=52
 	    write_echo "ERROR: \"$d/Makefile\" NOT READABLE: new exit code: $EXIT_CODE"
@@ -1633,7 +1633,7 @@ for d in $SUBDIRS; do
 	write_echo "$0: ERROR: \"$d/Makefile\" DOES NOT EXIST: new exit code: $EXIT_CODE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	\"$d/Makefile\" does not exist"
-	write_echo "### ISSUE DETECTED: $d/Makefile does not exist"
+	write_echo "### ISSUE DETECTED: \"$d/Makefile\" does not exist"
     fi
 done
 write_echo ""
@@ -1644,11 +1644,11 @@ write_echo ""
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
 #
-write_echo "## CHECKING IF makefile.local EXISTS"
+write_echo "## CHECKING IF \"makefile.local\" EXISTS"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
-	write_echo "### Warning: found Makefile overriding file makefile.local:"
-	write_echo "\"cat ./makefile.local\""
+	write_echo "### Warning: found \"Makefile\" overriding file \"makefile.local\":"
+	write_echo "RUNNING: \"cat ./makefile.local\""
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
 	    # tee -a -- "$LOGFILE" < makefile.local
