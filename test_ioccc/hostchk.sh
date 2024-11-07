@@ -291,14 +291,14 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	status="$?"
 	if [[ $status -ne 0 ]]; then
 	    EXIT_CODE=17	# will exit 17 at the end unless EXIT_CODE is changed later on
-	    echo "$0: ERROR: unable to compile with $h: new exit code: $EXIT_CODE" 1>&2
+	    echo "$0: ERROR: unable to compile with \"$h\": new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	elif [[ -s $PROG_FILE && -x $PROG_FILE ]]; then
 	    ./"$PROG_FILE"
 	    status="$?"
 	    if [[ $status -ne 0 ]]; then
 		EXIT_CODE=18	# will exit 18 at the end unless EXIT_CODE is changed later on
-		echo "$0: ERROR: unable to run executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
+		echo "$0: ERROR: unable to run executable compiled using: \"$h\": new exit code: $EXIT_CODE" 1>&2
 		INCLUDE_TEST_SUCCESS="false"
 	    else
 		if [[ $V_FLAG -gt 1 ]]; then
@@ -307,7 +307,7 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	    fi
 	else
 	    EXIT_CODE=19	# will exit 19 at the end unless EXIT_CODE is changed later on
-	    echo "$0: ERROR: unable to form an executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
+	    echo "$0: ERROR: unable to form an executable compiled using: \"$h\": new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	fi
 
