@@ -6,6 +6,10 @@ Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) to
 remove unused code and extra sanity checks added to a function and to match a
 filename change.
 
+Improve (to help parse output a bit better) the scripts `bug_report.sh` and
+`hostchk.sh`.
+
+
 ## Release 1.6.6 2024-11-05
 
 Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) with
