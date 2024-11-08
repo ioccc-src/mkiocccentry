@@ -3497,9 +3497,15 @@ clearerr_or_fclose(FILE *stream)
  * escape chars as literal C escape chars (i.e. if a \n was encountered it would
  * print "\\n" to show that it was a newline), this function will print the
  * buffer as a single line, possibly enclosed in starting and ending characters.
- * Non-ASCII characters, non-printable ASCII characters, \-characters, start and
- * end characters (if non-NUL) will all be printed as \x99 where 99 is the hex
- * value, or \C where C is a C-style \-character.
+ *
+ * Other characters, such as non ASCII characters or certain non-printable
+ * characters will be printed as \\x99, where 99 is the hex value. In some
+ * cases, like \n, which is valid JSON, it will be \n, as noted above. An
+ * example where it is NOT valid JSON, which we will print two '\'s, is '\e', so
+ * that becomes "\\e" instead.
+ *
+ * The above rules are important because without them in place the output would
+ * be invalid JSON.
  *
  * The line printed will be printed as a single line, without a final
  * newline.
@@ -3510,7 +3516,7 @@ clearerr_or_fclose(FILE *stream)
  *
  * The stream is flushed before returning.
  *
- * The errno value is restore to its original state before returning.
+ * The errno value is restored to its original state before returning.
  *
  * Examples:
  *	line_len = fprint_line_buf(stderr, buf, len, '<', '>');
@@ -3531,6 +3537,11 @@ clearerr_or_fclose(FILE *stream)
  * returns:
  *	length of line (even if MULL stream), or
  *	EOF ==> write error or NULL buf
+ *
+ * NOTE: this function will NOT print unicode symbols. To do this a new flag
+ * to not print the \\x99 but just the character. Another option would be to
+ * print it out by default but since this function is used in debug output it
+ * seems fitting to not do that by default.
  */
 ssize_t
 fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
@@ -3594,15 +3605,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 	    /* print character as \x99 if non-NULL stream to avoid start/end confusion */
 	    if (stream != NULL) {
 		errno = 0;  /* clear errno */
-		ret = fprintf(stream, "\\x%02x", c);
-		if (chk_stdio_printf_err(stream, ret) || ret != 2) {
+		ret = fprintf(stream, "\\\\x%02x", c);
+		if (chk_stdio_printf_err(stream, ret) || ret != 5) {
 		    delayed_errno = errno;
 		    success = false;
 		}
 	    }
 
-	    /* count the 4 characters */
-	    count += 4;
+	    /* count the 5 characters */
+	    count += 5;
 
 	/*
 	 * case: ASCII character
@@ -3619,15 +3630,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		/* print \0 if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
-		    ret = fprintf(stream, "\\0");
-		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
+		    ret = fprintf(stream, "\\\\0");
+		    if (chk_stdio_printf_err(stream, ret) || ret != 3) {
 			delayed_errno = errno;
 			success = false;
 		    }
 		}
 
-		/* count the 2 characters */
-		count += 2;
+		/* count the 3 characters */
+		count += 3;
 		break;
 
 	    case '\a':	/* alert (beep, bell) */
@@ -3635,15 +3646,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		/* print \a if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
-		    ret = fprintf(stream, "\\a");
-		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
+		    ret = fprintf(stream, "\\\\a");
+		    if (chk_stdio_printf_err(stream, ret) || ret != 3) {
 			delayed_errno = errno;
 			success = false;
 		    }
 		}
 
-		/* count the 2 characters */
-		count += 2;
+		/* count the 3 characters */
+		count += 3;
 		break;
 
 	    case '\b':	/* backspace */
@@ -3667,15 +3678,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		/* print \e if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
-		    ret = fprintf(stream, "\\e");
-		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
+		    ret = fprintf(stream, "\\\\e");
+		    if (chk_stdio_printf_err(stream, ret) || ret != 3) {
 			delayed_errno = errno;
 			success = false;
 		    }
 		}
 
-		/* count the 2 characters */
-		count += 2;
+		/* count the 3 characters */
+		count += 3;
 		break;
 
 	    case '\f':	/* form feed page break */
@@ -3747,15 +3758,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		/* print \v if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
-		    ret = fprintf(stream, "\\v");
-		    if (chk_stdio_printf_err(stream, ret) || ret != 2) {
+		    ret = fprintf(stream, "\\\\v");
+		    if (chk_stdio_printf_err(stream, ret) || ret != 3) {
 			delayed_errno = errno;
 			success = false;
 		    }
 		}
 
-		/* count the 2 characters */
-		count += 2;
+		/* count the 3 characters */
+		count += 3;
 		break;
 
 	    case '\\':	/* backslash */
@@ -3802,15 +3813,15 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 		    /* print character as \x99 if non-NULL stream */
 		    if (stream != NULL) {
 			errno = 0;  /* clear errno */
-			ret = fprintf(stream, "\\x%02x", c);
-			if (chk_stdio_printf_err(stream, ret) || ret != 4) {
+			ret = fprintf(stream, "\\\\x%02x", c);
+			if (chk_stdio_printf_err(stream, ret) || ret != 5) {
 			    delayed_errno = errno;
 			    success = false;
 			}
 		    }
 
-		    /* count the 4 characters */
-		    count += 4;
+		    /* count the 5 characters */
+		    count += 5;
 		}
 		break;
 	    }

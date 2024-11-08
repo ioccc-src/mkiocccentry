@@ -1,5 +1,26 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.5 2024-11-08
+
+Important bug fixes in `fprint_line_buf()` in `util.c`, as follows. First, for
+example, the text `"\xf0"` is NOT valid JSON but `"\\xf0"` is. However, that
+function printed the former, not the latter, and thus if one were to copy paste
+the debug output to a file it would be invalid JSON. Second, there was a
+miscalculation in the increment of count in one case, possibly due to the
+earlier function.
+
+What prompted this fix is that it was thought that it might be nice to have
+debug output print unicode characters (emojis, non-ASCII characters etc.). Now
+this might be nice with a new flag for the tools but this means modifying a lot
+of functions and might or might not be worth it. What is definitely worth it is
+these fixes, however, so that is done for now. If a new option is desired to
+print unicode symbols then that can be considered later.
+
+The `JPARSE_VERSION` was updated to `"1.2.1 2024-11-08"`.
+
+The `JPARSE_LIBRARY_VERSION` was updated to `"2.0.1 2024-11-08"`.
+
+
 ## Release 2.0.4 2024-11-07
 
 Removed `utf8decode()` from `json_utf8.c` as it appears we will not need it
@@ -14,6 +35,8 @@ function difference is that if either is `< 0` it is warned about as it should
 never happen).
 
 Updated `JPARSE_UTF8_VERSION` to `"2.0.3 2024-11-07"`.
+
+Further improvements to `jparse_bug_report.sh`.
 
 
 ## Release 2.0.3 2024-11-05
