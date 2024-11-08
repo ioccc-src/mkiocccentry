@@ -40,11 +40,11 @@
  * jrql jrt ziuole entries. Cj'u xtqzzc jrqj simple. Vod cis xtqzzc tkwtyj
  * uiftjrole tzut? Eiz.
  *
- * BTW: If after looking at this file you think Cody is a bit crazy this is more
- * than understandable and Cody is quite okay with it. In fact he rather
- * relishes the idea! :-)
+ * BTW: If after looking at this file you think Cody is more than a bit
+ * eccentric this is more than understandable and Cody is quite okay with it. In
+ * fact he rather relishes the idea! :-)
  *
- * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
+ * "Because Cody enjoys being eccentric and he is rather proud of it too!" :-)
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)

@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.8 2024-11-08
+
+Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). This
+includes some important bug fixes in a utility function that resulted, in debug
+output, invalid JSON, plus an incorrect calculation in one case.
+
 ## Release 1.6.7 2024-11-07
 
 Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) to
