@@ -1,5 +1,23 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.6 2024-11-09
+
+After some discussion, part of the change to `fprint_line_buf()` from  yesterday
+was rolled back. In particular, the `fprint_line_buf()` function should print,
+as part of debug output, the raw data and not encoded/decoded strings. Thus if
+`'\a'` is encountered it should print just `"\a"`, not `"\\a"`, and if `Ã` is
+encountered then it should print `"\xc3\x83"`, not `"\\xc3\\x83"`, and so on.
+
+The return value error fix was kept in place and as an extra sanity check before
+checking `isprint()` check `isascii(c)`, though this might not matter in some or
+maybe most cases.
+
+Improve man page for `jstrencode` and `jstrdecode` with more examples, more
+details and also reword what the programs do. The `jparse_utils_README.md` has
+had the same sort of improvements. The source code and header files for these
+two tools have also had the update (the summary of what the tool does).
+
+
 ## Release 2.0.5 2024-11-08
 
 Important bug fixes in `fprint_line_buf()` in `util.c`, as follows. First, for

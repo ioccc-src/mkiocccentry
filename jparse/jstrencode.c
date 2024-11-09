@@ -1,5 +1,5 @@
 /*
- * jstrencode - tool to encode JSON decoded strings
+ * jstrencode - tool to JSON encode command line strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -54,7 +54,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON encode/decode functionality\n"
     "\t-n\t\tdo not output newline after encode output\n"
-    "\t-N\t\tignore all newline characters\n"
+    "\t-N\t\tignore all newline characters in input\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each encoded string with escaped double quotes (def: do not)\n"
     "\t-E level\tentertainment mode\n"
