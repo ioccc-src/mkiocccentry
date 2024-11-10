@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to decode a string for JSON
+ * jstrdecode - tool to convert JSON encoded strings into normal strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -54,9 +54,9 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON encode/decode functionality\n"
     "\t-n\t\tdo not output newline after decode output (def: print final newline)\n"
-    "\t-N\t\tignore all newline characters\n"
-    "\t-Q\t\tdo not decode double quotes that enclose the concatenation of args (def: do decode)\n"
-    "\t-e\t\tdo not output double quotes that enclose each arg (def: do not remove)\n"
+    "\t-N\t\tignore all newline characters in input\n"
+    "\t-Q\t\tskip double quotes that enclose each arg's concatenation\n"
+    "\t-e\t\tskip double quotes that enclose each arg\n"
     "\t-E level\tentertainment mode\n"
     "\n"
     "\t[string ...]\tdecode the concatenation of string args (def: decode stdin)\n"

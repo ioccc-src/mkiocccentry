@@ -2129,7 +2129,7 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsig
 /*
  * json_tree_walk - walk a JSON parse tree calling a function on each node
  *
- * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ * Walk a JSON parse tree, Depth-first Post-order (LRN).  See:
  *
  *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
  *
@@ -2204,7 +2204,7 @@ json_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bo
  *
  * This is the va_list form of json_tree_walk().
  *
- * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ * Walk a JSON parse tree, Depth-first Post-order (LRN).  See:
  *
  *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
  *

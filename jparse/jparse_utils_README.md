@@ -1,8 +1,9 @@
 # Command line utilities that parse, read and process JSON in different ways
 
-We provide a number of utilities that work with JSON, which we describe below.
-Others are in the pipeline and when they are developed this file will document
-them as well. These utilities are described below.
+We provide a number of utilities that work with JSON, or which perform actions
+according to the so-called JSON spec, which we describe below. These utilities
+are described below. Other tools are in the pipeline and when they are
+developed this file will document them as well.
 
 If you want more information on the `jparse` repo, see the [jparse repo
 README.md](https://github.com/xexyl/jparse/blob/master/README.md).
@@ -19,9 +20,47 @@ document to better understand the JSON terms used in this repo.
 
 # Table of Contents
 
+- [Common command line options](#common)
 - [jparse stand-alone tool](#jparse-tool)
-- [jstrencode: a tool to encode JSON decoded strings](#jstrencode)
-- [jstrdecode: a tool to decode JSON encoded strings](#jstrdecode)
+- [jstrencode: a tool to JSON encode command line strings](#jstrencode)
+- [jstrdecode: a tool to convert JSON encoded strings into normal strings](#jstrdecode)
+
+<div id="common"></div>
+
+# Common command line options
+
+All the tools provide a few options that do the same thing, regardless of the
+tool used. These are as follows:
+
+## Help/usage: `-h`
+
+This shows the help/usage string of the tool and then exits.
+
+
+## Verbosity/debug level: `-v level`
+
+This sets the verbosity level. This is NOT the same thing as the JSON debug
+level which is only used in tools that actually use the `jparse` library
+(parsing JSON).
+
+This option can provide valuable information but it is not normally needed.
+
+## Quiet mode: `-q`
+
+This sets quiet mode, which will silence some of the output of the tool. In
+particular, it silences `msg()`, `warn()` and `warnp()` in the debug library, if
+`-v 0` (the default verbosity level). The default is not quiet.
+
+### Print version string: `-V`
+
+This option prints the version of the tool, the jparse UTF-8 library and the
+jparse library version and then it exits.
+
+
+### Terminate parsing of options: `--`
+
+If you need to pass to the program a string that starts with a `-`, then you can
+terminate the parsing of options by specifying `--`.
 
 
 <div id="jparse-tool"></div>
@@ -42,15 +81,10 @@ if it is invalid JSON.
 jparse [-h] [-v level] [-J level] [-q] [-V] [-s] -- arg
 ```
 
-The `-v` option increases the overall verbosity level whereas the `-J` option
-increases the verbosity of the JSON parser. The `-q` option suppresses some of
-the output.
+The `-J` option increases the verbosity of the JSON parser.
 
 If `-s` is passed the arg is expected to be a string; otherwise it is expected
 to be a file.
-
-The options `-V` and `-h` show the version of the parser and the help or usage
-string, respectively.
 
 
 <div id="jparse-examples"></div>
@@ -87,6 +121,28 @@ jparse party.json
 ```
 
 
+### Attempt to parse invalid JSON:
+
+
+```sh
+jparse -s "\n"
+```
+
+This might show something like:
+
+```
+syntax error in file - at line 1 column 1: <\>
+Warning: jparse: JSON parse tree is NULL
+ERROR[1]: jparse: invalid JSON
+```
+
+This would work, however:
+
+```sh
+jparse -s '"\n"'
+```
+
+
 <div id="jparse-exit-codes"></div>
 
 ## jparse exit codes
@@ -98,11 +154,14 @@ are for different error conditions, or help or version string printed.
 
 <div id="jstrencode"></div>
 
-# jstrencode: a tool to encode JSON decoded strings
+# jstrencode: a tool to JSON encode command line strings
 
-
-This tool converts JSON decoded strings to their original data according to the so-called
-[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+This tool encodes command line strings according to the so-called [JSON data
+interchange syntax -
+ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+It will also encode UTF-8 or UTF-16 codepoints, in the JSON form of of `\uxxxx`
+or `\uxxxx\uxxxx`, to their proper Unicode symbol, although if your system
+cannot show it, or it is invalid, you might see a character indicating this.
 
 
 <div id="jstrencode-synopsis"></div>
@@ -115,39 +174,32 @@ This tool converts JSON decoded strings to their original data according to the 
 ```
 
 
-The `-v` option increases the overall verbosity level. Unlike the `jparse`
-utility, no JSON parsing functions are called, so there is no `-J level` option.
-The `-q` option suppresses some of the output, although this might not be all that
-noticeable.
-
-The options `-V` and `-h` show the version of the parser and the help or usage
-string, respectively.
+Unlike the `jparse` utility, no JSON parsing functions are called, so there is
+no `-J level` option.
 
 Use of `-Q` will enclose output in double quotes whereas the use of `-e`
-will enclose each encoded string with escaped double quotes.
+will enclose each encoded string with escaped double quotes. Use of `-Q` and
+`-e` together will surround the entire output with unescaped quotes and each
+encoded arg will be surrounded with escaped (backslashed) quotes.
 
-If you use `-N` it ignores all newlines. This does not mean that the JSON allows
-for unescaped newlines but rather newlines on the command line are ignored, as
-if the args are concatenated. Use of this option allows for:
-
-```sh
-$ echo foo bar | jstrencode
-```
-
-to not show:
-
-```
-Warning: json_encode: found non-\-escaped char: 0x0a
-Warning: jstrencode_stream: error while encoding stdin buffer
-Warning: main: error while encoding processing stdin
-```
-
-Instead you might see:
+If you use `-N` it ignores all newlines in input. This does not mean that the
+JSON allows for unescaped newlines but rather newlines on the command line are
+ignored, as if the args are concatenated. Use of this option allows one to pipe
+a command to the program without getting an error message, for instance:
 
 ```sh
-$ printf "foo\nbar" | jstrencode -N
-foobar
+echo foo bar | jstrencode -N
 ```
+
+or
+
+```sh
+printf "foo\nbar" | jstrencode -N
+```
+
+A more complicated example is given in the examples below.
+
+If you need to not have a trailing newline in the output, use the `-n` option.
 
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)
@@ -165,7 +217,7 @@ If no string is given on the command line it expects you to type something on
 
 ## jstrencode examples
 
-Encode `\"\"`:
+### Encode `\"\"`:
 
 
 ```sh
@@ -178,7 +230,7 @@ This will show:
 ""
 ```
 
-Encode a negative number:
+### Encode a negative number:
 
 ```sh
 jstrencode -- -5
@@ -189,6 +241,50 @@ This will show:
 ```
 -5
 ```
+
+### Ignore newlines in input:
+
+```sh
+printf "foo\nbar" | jstrencode -N
+
+echo foo bar | jstrencode -N
+```
+
+Note that the above two commands will result in different output.
+
+### Enclose output in double quotes:
+
+```sh
+jstrencode -Q foo bar baz
+```
+
+### Enclose each encoded string with escaped quotes:
+
+```sh
+jstrencode -e 'foo bar' 'baz'
+```
+
+This will show:
+
+```
+\"foo bar\"\"baz\"
+```
+
+### Enclose output with double quotes and each encoded string with escaped quotes:
+
+```sh
+jstrencode -Q -e 'foo bar' 'baz'
+```
+
+This will show:
+
+```
+"\"foo bar\"\"baz\""
+```
+
+
+
+### Unicode examples:
 
 Palaeontologists might like to try `U+1F996` and `U+F995`:
 
@@ -246,6 +342,8 @@ Of course you may also use this program to encode diacritics and characters from
 other languages.
 
 
+### More jstrencode information and examples:
+
 For more information and examples, see the man page:
 
 ```sh
@@ -271,10 +369,19 @@ string printed.
 
 <div id="jstrdecode"></div>
 
-# jstrdecode: a tool to decode JSON encoded strings
+# jstrdecode: a tool to convert JSON encoded strings to normal strings
 
 This tool converts data into JSON decoded strings according to the so-called
-[JSON data interchange syntax - ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+[JSON data interchange syntax -
+ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
+
+Something to note is that this command will not convert an emoji or Unicode
+character to its `\uxxxx` form. In fact, for reasons we do not comprehend, this
+is perfectly valid JSON:
+
+```json
+{ "🔥" "🐉" }
+```
 
 
 <div id="jstrdecode-synopsis"></div>
@@ -286,22 +393,31 @@ This tool converts data into JSON decoded strings according to the so-called
 jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
-The `-v` option increases the overall verbosity level. Unlike the `jparse`
-utility, no JSON parsing functions are called, so there is no `-J level` option.
-The `-q` option suppresses some of the output, although this might not be all
-that noticeable.
-
-The options `-V` and `-h` show the version of the parser and the help or usage
-string, respectively.
+Unlike the `jparse` utility, no JSON parsing functions are called, so there is
+no `-J level` option.
 
 Use `-Q` if you do not want to decode double quotes that enclose the
 concatenation of the args.
 
-Use `-e` to not output double quotes that enclose each arg.
+If you use `-N` it ignores all newlines in input. This does not mean that the
+JSON allows for unescaped newlines but rather newlines on the command line are
+ignored, as if the args are concatenated. Use of this option allows one to pipe
+a command to the program without getting, for example, a `\n` at the end of the
+output. For instance:
 
-If you use `-N` it ignores all newlines. This does not mean that the JSON allows
-for unescaped newlines but rather newlines on the command line are ignored, as
-if the args are concatenated.
+```sh
+echo foo bar | jstrdecode -N
+```
+
+or
+
+```sh
+printf "foo\nbar\n" | jstrdecode -N
+```
+
+If you need to not have a trailing newline in the output, use the `-n` option.
+
+Use `-e` to not output double quotes that enclose each arg.
 
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)
@@ -314,12 +430,12 @@ If no string is given on the command line it expects you to type something on
 `stdin`, ending it with EOF.
 
 
-
 <div id="jstrdecode-examples"></div>
+
 
 ## jstrdecode examples
 
-Decode an empty string (`""`):
+### Decode `""`:
 
 
 ```sh
@@ -332,7 +448,7 @@ This will show:
 \"\"
 ```
 
-Decode `"\"`
+### Decode `"\"`:
 
 ```sh
 jstrdecode '"\"'
@@ -343,6 +459,9 @@ That will show:
 ```
 \"\\\"
 ```
+
+
+### Ignore newlines in input:
 
 If you need to ignore newlines in input, use the `-N` option. For example, here
 is the same command with and without the `-N` option:
@@ -355,14 +474,83 @@ $ echo '"\"' | jstrdecode
 \"\\\"\n
 ```
 
-Something to note is that this command will not convert an emoji or Unicode
-character to its `\uxxxx` form. In fact, for reasons we do not comprehend, this
-is perfectly valid JSON:
+### Skip double quotes that enclose each arg concatenation
 
-```json
-{ "🔥" "🐉" }
+```sh
+jstrdecode -Q '"foo"bar"' baz
 ```
 
+This will show:
+
+```
+foo\"bar\"baz
+```
+
+instead of:
+
+```
+\"foo\"bar\"baz
+```
+
+
+### Skip double quotes that enclose each arg:
+
+```sh
+jstrdecode -e '"foo"bar"' 'baz'
+```
+
+This will show:
+
+```
+foo\"barbaz
+```
+
+instead of:
+
+```
+\"foo\"bar\"baz
+```
+
+
+A more convoluted example:
+
+
+```sh
+jstrdecode -e '"foo"\"bar"' 'baz'
+```
+
+This will show:
+
+```
+foo\"\\\"barbaz
+```
+
+instead of:
+
+```
+\"foo\"\\\"bar\"baz
+```
+
+
+### Skip double quotes that enclose the arg concatenation:
+
+```sh
+jstrdecode -Q '"foo bar"' 'baz'
+```
+
+This will show:
+
+```
+foo bar\"baz
+```
+
+instead of:
+
+```
+\"foo bar\"baz
+```
+
+### More jstrdecode information and examples
 
 For more information and examples, see the man page:
 

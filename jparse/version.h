@@ -30,17 +30,17 @@
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "2.0.5 2024-11-08"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "2.0.6 2024-11-09"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "1.2.1 2024-11-08"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "1.2.2 2024-11-09"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official JSON parser version
  */
-#define JPARSE_LIBRARY_VERSION "2.0.1 2024-11-08"	/* library version format: major.minor YYYY-MM-DD */
+#define JPARSE_LIBRARY_VERSION "2.0.2 2024-11-09"	/* library version format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_JPARSE_VERSION_H */

@@ -9,10 +9,10 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "31 October 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "09 November 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
-\- decode JSON encoded strings
+\- convert JSON encoded strings into normal strings
 .SH SYNOPSIS
 .B jstrdecode
 .RB [\| \-h \|]
@@ -31,13 +31,27 @@
 .IR ... \|]
 .SH DESCRIPTION
 .B jstrdecode
-Concatenate the string arguments and decode the result as if it were a JSON string.
+converts JSON encoded strings into a normal strings.
+If given the
+.B \-Q
+option, the program skips double quotes that enclose each arg's concatenation.
+If given the
+.B \-e
+option it will skip double quotes that enclose each arg.
+To ignore newlines in the input, use the
+.B \-N
+option.
+On the other hand, if you do not want a newline printed after the output, use the
+.B \-n
+option.
+By default the program reads from
+.BR stdin ,
+if no arg is specified.
+Otherwise it will act on the arguments to the program.
+.PP
 If given the
 .B \-t
 option it performs a test on the JSON decode and encode functions.
-.PP
-By default the program reads from
-.BR stdin .
 .SH OPTIONS
 .TP
 .B \-h
@@ -61,13 +75,13 @@ Run tests on the JSON decode/encode functions
 Do not output a newline after the decode function
 .TP
 .B \-N
-Ignore and skip over all newlines, for easier typing commands.
+Ignore all newline characters in input
 .TP
 .B \-Q
-Do not decode double quotes that enclose the concatenation of args (def: do decode)
+Skip double quotes that enclose each arg's concatenation
 .TP
 .B \-e
-Do not decode double quotes that enclose each arg (def: do decode)
+Skip double quotes that enclose each arg
 .TP
 .BI \-E\  level
 Entertainment mode at level
@@ -99,7 +113,7 @@ but this occurs in other applications as well so we note this issue here.
 .PP
 It is worth remembering that, for the
 .B \-Q
-option, a double quote in the string will still be decoded, if it is a second arg or if another arg is specified, as it will not be a leading or trailing quote.
+option, if the string is not enclosed in double quotes (in other words, the first character and last character are both double quotes), the quote will not be removed, as it's not enclosed in double quotes.
 .PP
 If you have an issue with the tool you can report it at
 .br
@@ -138,6 +152,21 @@ Decode just a negative number:
 .RS
 .ft B
  jstrdecode \-\- \-5
+.ft R
+.RE
+Ignore newlines in input:
+.sp
+.RS
+.ft B
+ printf "foo\\\\nbar" | jstrdecode -N 
+.ft R
+.RE
+.PP
+Skip double quotes that enclose each arg's concatenation:
+.sp
+.RS
+.ft B
+ jstrdecode -Q '"foo"' bar baz
 .ft R
 .RE
 .PP

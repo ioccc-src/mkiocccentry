@@ -1,5 +1,5 @@
 /*
- * jstrencode - tool to encode JSON decoded strings
+ * jstrencode - tool to JSON encode command line strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *

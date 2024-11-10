@@ -250,7 +250,7 @@ range of character values that _must_ be decoded (transformed into
 _not_ required to be decoded as a character sequence that starts
 with `"\uxxxx"` where _xxxx_ are 4 hexadecimal digits.
 
-While one is not required to backslash an decoded slash character (ASCII
+While one is not required to backslash a decoded slash character (ASCII
 `0x2f` - `U+002F`), one is allowed to do so.  The solidus or slash
 character (ASCII `0x2f` - `U+002F`) is allowed to be, but is _not required_,
 to be backslash decoded:
@@ -328,7 +328,7 @@ is encoded into the following string that includes a trailing newline
 (control-J - `'\n'` - ASCII `0x0a` - `U+000A`):
 
 ```
-Hello, with \-escaped and ß-like chars, world!
+Hello, with \-escaped and Ã-like chars, world!
 ```
 
 _NOTE_: A **JSON encoded string** is _not_ allowed in a [JSON

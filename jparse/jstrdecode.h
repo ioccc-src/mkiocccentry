@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to decode a string for JSON
+ * jstrdecode - tool to convert JSON encoded strings into normal strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
