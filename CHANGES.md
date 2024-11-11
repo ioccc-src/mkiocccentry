@@ -1,5 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.9 2024-11-09
+
+Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). This
+came from discussion on JSON debug output as well as discussion about wording. A
+fix in one of the man pages was also made (no longer true statement) and the man
+pages and utils README.md were all expanded with more details and examples.
+
+
 ## Release 1.6.8 2024-11-08
 
 Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). This
