@@ -1,5 +1,36 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.0.8 2024-11-14
+
+Renamed `utf8encode()` to `utf8_to_unicode()` to be less confusing as although
+converting a code point to unicode is called encoding (from all sources we have
+seen) in JSON, according to encoders **AND** decoders out there, a code point in a
+string should be converted to unicode.
+
+A number of bugs have been identified in `jstrencode(1)` during discussion in
+'the other repo' (or one of the 'other repos'). This is in `jstrencode(1)` now
+(as of yesterday); prior to yesterday it was in `jstrdecode(1)` due to the
+unfortunate swap in names. This swap happened because when focusing on issue #13
+(the decoding - which turned out to be encoding - bug of `\uxxxx`) focus of the
+fact that the `jstrencode(1)` tool is not strictly UTF-8 but rather JSON was
+lost. The man page has had these bugs added so it is important to remove them
+when the bugs are fixed. A new issue #28 has been opened for these problems.
+
+
+## Release 2.0.7 2024-11-13
+
+Swap encode/decode terminology again. This is because it refers to **JSON**
+encoding/decoding. This issue arose when working on correcting converting a
+codepoint to a Unicode symbol. It has been discovered that encoding **AND**
+decoding `\uxxxx` should, according to the JavaScript `JSON` library(?), convert
+it to the unicode symbol.
+
+The above is the next step but it means that for now the
+encoding/decoding of codepoints to unicode does NOT work for now. New
+version for jstrencode(1), jstrdecode(1), jparse UTF-8 library, jparse
+library and jstr_test.sh.
+
+
 ## Release 2.0.6 2024-11-09
 
 After some discussion, part of the change to `fprint_line_buf()` from  yesterday
@@ -183,7 +214,7 @@ Remove duplicate code from jstrencode.c and jstrdecode.c as follows:
 the file is for both jstrencode and jstrdecode.
 - Added function `free_jstring_list()` in `jstr_util.c` and use that instead of
 the unique functions (that do the same thing) in jstrencode.c and jstrdecode.c
-(`free_json_encoded_strings` and `free_json_decoded_strings`).
+(`free_json_decoded_strings` and `free_json_decoded_strings`).
 
 Updated version of both tools to `"1.2.5 2024-10-27"`.
 

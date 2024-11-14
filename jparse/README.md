@@ -23,7 +23,7 @@ your system :-) ) the `jparse` tools and library, how to report bugs and a brief
 history on `jparse` as a whole.
 
 For information on our utilities, including `jparse(1)` but also tools to
-encode/decode JSON decoded/encoded strings (others of different applications are
+decode/encode JSON encoded/decoded strings (others of different applications are
 in the pipeline as well), we refer you to the
 [jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md)
 file.
@@ -215,8 +215,8 @@ For more information, try from the repo directory:
 ```sh
 man ./man/man1/jparse.1
 man ./man/man3/jparse.3
-man ./man/man1/jstrencode.1
 man ./man/man1/jstrdecode.1
+man ./man/man1/jstrencode.1
 ```
 
 or if you have installed everything (i.e. you ran `make install` as root or via
@@ -225,8 +225,8 @@ or if you have installed everything (i.e. you ran `make install` as root or via
 ```
 man 1 jparse
 man 3 jparse
-man jstrencode
 man jstrdecode
+man jstrencode
 ```
 
 **NOTE**: the library man page does have an example but you can always look

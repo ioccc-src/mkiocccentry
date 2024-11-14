@@ -22,8 +22,8 @@ document to better understand the JSON terms used in this repo.
 
 - [Common command line options](#common)
 - [jparse stand-alone tool](#jparse-tool)
-- [jstrencode: a tool to JSON encode command line strings](#jstrencode)
-- [jstrdecode: a tool to convert JSON encoded strings into normal strings](#jstrdecode)
+- [jstrdecode: a tool to JSON decode command line strings](#jstrdecode)
+- [jstrencode: a tool to convert JSON decoded strings into normal strings](#jstrencode)
 
 <div id="common"></div>
 
@@ -152,25 +152,25 @@ are for different error conditions, or help or version string printed.
 
 
 
-<div id="jstrencode"></div>
+<div id="jstrdecode"></div>
 
-# jstrencode: a tool to JSON encode command line strings
+# jstrdecode: a tool to JSON decode command line strings
 
-This tool encodes command line strings according to the so-called [JSON data
+This tool decodes command line strings according to the so-called [JSON data
 interchange syntax -
 ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
-It will also encode UTF-8 or UTF-16 codepoints, in the JSON form of of `\uxxxx`
+It will also decode UTF-8 or UTF-16 codepoints, in the JSON form of of `\uxxxx`
 or `\uxxxx\uxxxx`, to their proper Unicode symbol, although if your system
 cannot show it, or it is invalid, you might see a character indicating this.
 
 
-<div id="jstrencode-synopsis"></div>
+<div id="jstrdecode-synopsis"></div>
 
-## jstrencode synopsis
+## jstrdecode synopsis
 
 
 ```sh
- jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
+ jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
 
@@ -178,9 +178,9 @@ Unlike the `jparse` utility, no JSON parsing functions are called, so there is
 no `-J level` option.
 
 Use of `-Q` will enclose output in double quotes whereas the use of `-e`
-will enclose each encoded string with escaped double quotes. Use of `-Q` and
+will enclose each decoded string with escaped double quotes. Use of `-Q` and
 `-e` together will surround the entire output with unescaped quotes and each
-encoded arg will be surrounded with escaped (backslashed) quotes.
+decoded arg will be surrounded with escaped (backslashed) quotes.
 
 If you use `-N` it ignores all newlines in input. This does not mean that the
 JSON allows for unescaped newlines but rather newlines on the command line are
@@ -188,13 +188,13 @@ ignored, as if the args are concatenated. Use of this option allows one to pipe
 a command to the program without getting an error message, for instance:
 
 ```sh
-echo foo bar | jstrencode -N
+echo foo bar | jstrdecode -N
 ```
 
 or
 
 ```sh
-printf "foo\nbar" | jstrencode -N
+printf "foo\nbar" | jstrdecode -N
 ```
 
 A more complicated example is given in the examples below.
@@ -204,7 +204,7 @@ If you need to not have a trailing newline in the output, use the `-n` option.
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)
 
-Running it with `-t` performs some sanity checks on JSON encode/decode
+Running it with `-t` performs some sanity checks on JSON decode/encode
 functionality and this is not usually needed, although the test suite does do
 this.
 
@@ -213,15 +213,15 @@ If no string is given on the command line it expects you to type something on
 
 
 
-<div id="jstrencode-examples"></div>
+<div id="jstrdecode-examples"></div>
 
-## jstrencode examples
+## jstrdecode examples
 
 ### Encode `\"\"`:
 
 
 ```sh
-jstrencode '\"\"'
+jstrdecode '\"\"'
 ```
 
 This will show:
@@ -233,7 +233,7 @@ This will show:
 ### Encode a negative number:
 
 ```sh
-jstrencode -- -5
+jstrdecode -- -5
 ```
 
 This will show:
@@ -245,9 +245,9 @@ This will show:
 ### Ignore newlines in input:
 
 ```sh
-printf "foo\nbar" | jstrencode -N
+printf "foo\nbar" | jstrdecode -N
 
-echo foo bar | jstrencode -N
+echo foo bar | jstrdecode -N
 ```
 
 Note that the above two commands will result in different output.
@@ -255,13 +255,13 @@ Note that the above two commands will result in different output.
 ### Enclose output in double quotes:
 
 ```sh
-jstrencode -Q foo bar baz
+jstrdecode -Q foo bar baz
 ```
 
-### Enclose each encoded string with escaped quotes:
+### Enclose each decoded string with escaped quotes:
 
 ```sh
-jstrencode -e 'foo bar' 'baz'
+jstrdecode -e 'foo bar' 'baz'
 ```
 
 This will show:
@@ -270,10 +270,10 @@ This will show:
 \"foo bar\"\"baz\"
 ```
 
-### Enclose output with double quotes and each encoded string with escaped quotes:
+### Enclose output with double quotes and each decoded string with escaped quotes:
 
 ```sh
-jstrencode -Q -e 'foo bar' 'baz'
+jstrdecode -Q -e 'foo bar' 'baz'
 ```
 
 This will show:
@@ -289,7 +289,7 @@ This will show:
 Palaeontologists might like to try `U+1F996` and `U+F995`:
 
 ```sh
-jstrencode "\uD83E\uDD96\uD83E\uDD95"
+jstrdecode "\uD83E\uDD96\uD83E\uDD95"
 ```
 
 which will show a T-Rex and a Sauropod (includes Brontosaurus, Diplodocus,
@@ -302,7 +302,7 @@ Brachiosaurus):
 whereas fantasy lovers might like to try `U+1F409`, `U+1FA84` and `U+1F9D9`:
 
 ```sh
-jstrencode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
+jstrdecode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
 ```
 
 which will show a dragon, a wand and a mage:
@@ -314,7 +314,7 @@ which will show a dragon, a wand and a mage:
 whereas volcanologists might like to try `U+1F30B`:
 
 ```sh
-jstrencode "\uD83C\uDF0B"
+jstrdecode "\uD83C\uDF0B"
 ```
 
 which will show a volcano:
@@ -327,7 +327,7 @@ which will show a volcano:
 whereas alcoholics :-) might like to try `U+1F37B`:
 
 ```sh
-jstrencode "\uD83C\uDF7B"
+jstrdecode "\uD83C\uDF7B"
 ```
 
 which will show clinking beer mugs:
@@ -338,40 +338,40 @@ which will show clinking beer mugs:
 
 assuming, in all cases, your system supports displaying such emojis.
 
-Of course you may also use this program to encode diacritics and characters from
+Of course you may also use this program to decode diacritics and characters from
 other languages.
 
 
-### More jstrencode information and examples:
+### More jstrdecode information and examples:
 
 For more information and examples, see the man page:
 
 ```sh
-man ./man/man1/jstrencode.1
+man ./man/man1/jstrdecode.1
 ```
 
 from the repo directory, or if installed:
 
 ```sh
-man jstrencode
+man jstrdecode
 ```
 
-**NOTE**: After doing a `make all`, this tool may be found as: `./jstrencode`.
-If you run `make install` (as root or via sudo) you can just do: `jstrencode`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./jstrdecode`.
+If you run `make install` (as root or via sudo) you can just do: `jstrdecode`.
 
-<div id="jstrencode-exit-codes"></div>
+<div id="jstrdecode-exit-codes"></div>
 
-## jstrencode exit codes
+## jstrdecode exit codes
 
-If the encoding is successful the exit status of `jstrencode` is 0, otherwise 1.
+If the decoding is successful the exit status of `jstrdecode` is 0, otherwise 1.
 Different non-zero values are for different error conditions, or help or version
 string printed.
 
-<div id="jstrdecode"></div>
+<div id="jstrencode"></div>
 
-# jstrdecode: a tool to convert JSON encoded strings to normal strings
+# jstrencode: a tool to convert JSON decoded strings to normal strings
 
-This tool converts data into JSON decoded strings according to the so-called
+This tool converts data into JSON encoded strings according to the so-called
 [JSON data interchange syntax -
 ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/).
 
@@ -384,19 +384,19 @@ is perfectly valid JSON:
 ```
 
 
-<div id="jstrdecode-synopsis"></div>
+<div id="jstrencode-synopsis"></div>
 
-## jstrdecode synopsis:
+## jstrencode synopsis:
 
 
 ```sh
-jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
+jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]
 ```
 
 Unlike the `jparse` utility, no JSON parsing functions are called, so there is
 no `-J level` option.
 
-Use `-Q` if you do not want to decode double quotes that enclose the
+Use `-Q` if you do not want to encode double quotes that enclose the
 concatenation of the args.
 
 If you use `-N` it ignores all newlines in input. This does not mean that the
@@ -406,13 +406,13 @@ a command to the program without getting, for example, a `\n` at the end of the
 output. For instance:
 
 ```sh
-echo foo bar | jstrdecode -N
+echo foo bar | jstrencode -N
 ```
 
 or
 
 ```sh
-printf "foo\nbar\n" | jstrdecode -N
+printf "foo\nbar\n" | jstrencode -N
 ```
 
 If you need to not have a trailing newline in the output, use the `-n` option.
@@ -422,7 +422,7 @@ Use `-e` to not output double quotes that enclose each arg.
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)
 
-Running it with `-t` performs some sanity checks on JSON encode/decode
+Running it with `-t` performs some sanity checks on JSON decode/encode
 functionality and this is not usually needed, although the test suite does do
 this.
 
@@ -430,16 +430,16 @@ If no string is given on the command line it expects you to type something on
 `stdin`, ending it with EOF.
 
 
-<div id="jstrdecode-examples"></div>
+<div id="jstrencode-examples"></div>
 
 
-## jstrdecode examples
+## jstrencode examples
 
 ### Decode `""`:
 
 
 ```sh
-jstrdecode '""'
+jstrencode '""'
 ```
 
 This will show:
@@ -451,7 +451,7 @@ This will show:
 ### Decode `"\"`:
 
 ```sh
-jstrdecode '"\"'
+jstrencode '"\"'
 ```
 
 That will show:
@@ -467,17 +467,17 @@ If you need to ignore newlines in input, use the `-N` option. For example, here
 is the same command with and without the `-N` option:
 
 ```sh
-$ echo '"\"' | jstrdecode -N
+$ echo '"\"' | jstrencode -N
 \"\\\"
 
-$ echo '"\"' | jstrdecode
+$ echo '"\"' | jstrencode
 \"\\\"\n
 ```
 
 ### Skip double quotes that enclose each arg concatenation
 
 ```sh
-jstrdecode -Q '"foo"bar"' baz
+jstrencode -Q '"foo"bar"' baz
 ```
 
 This will show:
@@ -496,7 +496,7 @@ instead of:
 ### Skip double quotes that enclose each arg:
 
 ```sh
-jstrdecode -e '"foo"bar"' 'baz'
+jstrencode -e '"foo"bar"' 'baz'
 ```
 
 This will show:
@@ -516,7 +516,7 @@ A more convoluted example:
 
 
 ```sh
-jstrdecode -e '"foo"\"bar"' 'baz'
+jstrencode -e '"foo"\"bar"' 'baz'
 ```
 
 This will show:
@@ -535,7 +535,7 @@ instead of:
 ### Skip double quotes that enclose the arg concatenation:
 
 ```sh
-jstrdecode -Q '"foo bar"' 'baz'
+jstrencode -Q '"foo bar"' 'baz'
 ```
 
 This will show:
@@ -550,30 +550,30 @@ instead of:
 \"foo bar\"baz
 ```
 
-### More jstrdecode information and examples
+### More jstrencode information and examples
 
 For more information and examples, see the man page:
 
 ```sh
-man ./man/man1/jstrdecode.1
+man ./man/man1/jstrencode.1
 ```
 
 from the repo directory, or if installed:
 
 ```sh
-man jstrdecode
+man jstrencode
 ```
 
 
-**NOTE**: After doing a `make all`, this tool may be found as: `./jstrdecode`.
-If you run `make install` (as root or via sudo) you can just do: `jstrdecode`.
+**NOTE**: After doing a `make all`, this tool may be found as: `./jstrencode`.
+If you run `make install` (as root or via sudo) you can just do: `jstrencode`.
 
 
-<div id="jstrdecode-exit-codes"></div>
+<div id="jstrencode-exit-codes"></div>
 
-## jstrdecode exit codes
+## jstrencode exit codes
 
-If the decoding is successful the exit status of `jstrdecode` is 0, otherwise 1.
+If the encoding is successful the exit status of `jstrencode` is 0, otherwise 1.
 Different non-zero values are for different error conditions, or help or version
 string printed.
 

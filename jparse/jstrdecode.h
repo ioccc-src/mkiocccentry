@@ -1,5 +1,5 @@
 /*
- * jstrdecode - tool to convert JSON encoded strings into normal strings
+ * jstrdecode - tool to JSON decode command line strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -52,7 +52,7 @@
 #include "json_parse.h"
 
 /*
- * jstr_util - jstrdecode/jstrencode utilities
+ * jstr_util - jstrencode/jstrdecode utilities
  */
 #include "jstr_util.h"
 
@@ -69,7 +69,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "2.0.1 2024-11-01"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "2.0.2 2024-11-13"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

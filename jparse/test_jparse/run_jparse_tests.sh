@@ -365,8 +365,8 @@ fi
 #
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
-echo "test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrencode -d $TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
-test_jparse/jstr_test.sh -Z "$TOPDIR" -v "$V_FLAG" -e "$TOPDIR/jstrencode" -d "$TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
+echo "test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrdecode -d $TOPDIR/jstrencode" | tee -a -- "$LOGFILE"
+test_jparse/jstr_test.sh -Z "$TOPDIR" -v "$V_FLAG" -e "$TOPDIR/jstrdecode" -d "$TOPDIR/jstrencode" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_jparse/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
@@ -375,9 +375,9 @@ if [[ $status -ne 0 ]]; then
     EXIT_CODE="26"
     echo | tee -a -- "$LOGFILE"
     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo "FAILED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrencode -d $TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
+    echo "FAILED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrdecode -d $TOPDIR/jstrencode" | tee -a -- "$LOGFILE"
 else
-    echo "PASSED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrencode -d $TOPDIR/jstrdecode" | tee -a -- "$LOGFILE"
+    echo "PASSED: test_jparse/jstr_test.sh -Z $TOPDIR -v $V_FLAG -e $TOPDIR/jstrdecode -d $TOPDIR/jstrencode" | tee -a -- "$LOGFILE"
 fi
 
 # util_test
