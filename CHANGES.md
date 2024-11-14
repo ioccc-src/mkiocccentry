@@ -1,5 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.10 2024-11-14
+
+Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). The
+term `encode` and `decode` were swapped back to the original meaning. This
+problem occurred due to the fact that when focusing for some time on the
+encoding/decoding bug of `\uxxxx` code points in the jparse repo the fact that
+it is a **JSON** encoder was lost in focus. This change also means that terms
+were swapped here.
+
+In the process of an issue in 'the other repo', some bugs were uncovered in
+`jstrencode(1)` but this should not, I believe, affect the timeline of the next
+IOCCC, fortunately. The website tools have to be updated which I will work on
+next a bit later on today.
+
+
+
 ## Release 1.6.9 2024-11-09
 
 Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). This

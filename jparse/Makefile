@@ -213,9 +213,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
-       jsemtblgen.c jstrencode.c jstrdecode.c util.c verge.c jstr_util.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
-       jstrencode.h jstrdecode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
+       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
        jstr_util.h version.h
 
 # source files that do not conform to strict picky standards
@@ -234,7 +234,7 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh jparse_bug_report.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/jparse.1 man/man1/jstrencode.1 man/man1/jstrdecode.1 man/man1/jparse_bug_report.1
+MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/jparse_bug_report.1
 MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
 	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
 	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
@@ -265,7 +265,7 @@ LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o json_
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jsemtblgen.o jstrencode.o jstrdecode.o jparse_main.o
+OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -374,7 +374,7 @@ EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= libjparse.a
-EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrencode jstrdecode
+EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -402,7 +402,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrencode jstrdecode
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 
 # include files NOT to removed by clobber
 #
@@ -503,19 +503,19 @@ jparse: jparse_main.o libjparse.a
 jstr_util.o: jstr_util.c jstr_util.h
 	${CC} ${CFLAGS} jstr_util.c -c
 
-jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_util.c json_utf8.h version.h
-	${CC} ${CFLAGS} jstrdecode.c -c
+jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h version.h
+	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrdecode: jstrdecode.o libjparse.a jstr_util.o
+jstrencode: jstrencode.o libjparse.a jstr_util.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_utf8.o: json_utf8.c json_utf8.h
 	${CC} ${CFLAGS} json_utf8.c -c
 
-jstrencode.o: jstrencode.c jstrencode.h json_util.h json_parse.h json_utf8.h version.h
-	${CC} ${CFLAGS} jstrencode.c -c
+jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h version.h
+	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrencode: jstrencode.o libjparse.a jstr_util.o
+jstrdecode: jstrdecode.o libjparse.a jstr_util.o
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
@@ -1179,15 +1179,15 @@ uninstall: legacy_uninstall
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jparse
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/verge
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jsemtblgen
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jstrencode
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jstrdecode
+	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jstrencode
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jsemcgen.sh
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_bison.sh
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/run_flex.sh
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jparse_bug_report.1
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jparse.1
-	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrencode.1
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrdecode.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrencode.1
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/jparse.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg_allowed.3

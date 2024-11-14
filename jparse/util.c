@@ -3534,7 +3534,7 @@ clearerr_or_fclose(FILE *stream)
  *
  * NOTE: this function will NOT print unicode symbols. To do this a new flag
  * to not print the \x99 but just the character. The purpose of this function is
- * not to print encoded/decoded data but rather the raw data in the buffer.
+ * not to print decoded/encoded data but rather the raw data in the buffer.
  */
 ssize_t
 fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)

@@ -24,8 +24,8 @@ build.log
 /jparse_test.log
 /jprint
 /jsemtblgen
-/jstrdecode
 /jstrencode
+/jstrdecode
 /jval
 /makefile.local
 /tags

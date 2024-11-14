@@ -1,5 +1,5 @@
 /*
- * json_utf8 - JSON UTF-8 decoder
+ * json_utf8 - JSON UTF-8 encoder/decoder
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -36,7 +36,7 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.0.3 2024-11-07"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.0.5 2024-11-14"	/* format: major.minor YYYY-MM-DD */
 
 
 extern size_t utf8len(const char *str, int32_t surrogate);
@@ -58,7 +58,13 @@ extern size_t utf8len(const char *str, int32_t surrogate);
 #define UTF8_V_MASK     0x3F
 #define UTF8_V_SHIFT    6
 
-extern int utf8encode(char *str, unsigned int val);
+/*
+ * NOTE: the original function name is utf8encode() but we have
+ * renamed it because in JSON in BOTH encoding and decoding it should convert
+ * \uxxxx to unicode. This is by all sources seen called encoding but since this
+ * is a JSON library, to be less confusing, we call it utf8_to_unicode().
+ */
+extern int utf8_to_unicode(char *str, unsigned int val);
 
 /*
  * The above function and macros are based on code from

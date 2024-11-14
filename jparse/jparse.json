@@ -50,22 +50,22 @@
             ]
         },
         {
-            "name" : "jstrencode",
-            "description" : "tool to encode a string for JSON",
-            "files" : [
-                {
-                    "source" : "jstrencode.c",
-                    "header" : "jstrencode.h"
-                }
-            ]
-        },
-        {
             "name" : "jstrdecode",
-            "description" : "tool to decode JSON encoded strings",
+            "description" : "tool to decode a string for JSON",
             "files" : [
                 {
                     "source" : "jstrdecode.c",
                     "header" : "jstrdecode.h"
+                }
+            ]
+        },
+        {
+            "name" : "jstrencode",
+            "description" : "tool to encode JSON decoded strings",
+            "files" : [
+                {
+                    "source" : "jstrencode.c",
+                    "header" : "jstrencode.h"
                 }
             ]
         },
@@ -148,7 +148,7 @@
                         },
                         {
                             "name" : "test_jparse/jstr_test.sh",
-                            "description" : "JSON string encoding and decoding tests",
+                            "description" : "JSON string decoding and encoding tests",
                             "files" : [
                                 {
                                     "source" : "test_jparse/jstr_test.sh",

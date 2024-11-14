@@ -26,7 +26,7 @@
 #include "util.h"
 
 /*
- * json_utf8.h - JSON UTF-8 encoder
+ * json_utf8.h - JSON UTF-8 decoder
  */
 #include "json_utf8.h"
 
@@ -50,16 +50,16 @@
  *
  * NOTE: this table assumes we process on a byte basis.
  *
- * This map is not a canonical way to decode Unicode characters.
+ * This map is not a canonical way to encode Unicode characters.
  * Instead it helps translate certain "forbidden" bytes within a
- * JSON decoded string.
+ * JSON encoded string.
  */
 struct byte2asciistr
 {
-    const u_int8_t byte;	/* 8 bit character to decode */
-    const size_t len;		/* length of decoding */
-    const char * const enc;	/* JSON decoding of val */
-    const size_t encoded_len;   /* length of encoded byte */
+    const u_int8_t byte;	/* 8 bit character to encode */
+    const size_t len;		/* length of encoding */
+    const char * const enc;	/* JSON encoding of val */
+    const size_t decoded_len;   /* length of decoded byte */
 };
 
 
@@ -228,22 +228,22 @@ struct json_number
 struct json_string
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON string, false ==> str is invalid or not encoded */
+    bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
 
-    char *as_str;		/* allocated non-encoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
-    char *str;			/* allocated encoded JSON string, NUL terminated */
+    char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
+    char *str;			/* allocated decoded JSON string, NUL terminated */
 
     size_t as_str_len;		/* length of as_str, not including final NUL */
     size_t str_len;		/* length of str, not including final NUL */
 
     bool quote;			/* The original JSON string included surrounding '"'s */
 
-    bool same;			/* true => as_str same as str, JSON encoding not required */
+    bool same;			/* true => as_str same as str, JSON decoding not required */
 
-    bool slash;			/* true ==> / was found after encoding */
-    bool posix_safe;		/* true ==> all chars are POSIX portable safe plus + and maybe / after encoding */
-    bool first_alphanum;	/* true ==> first char is alphanumeric after encoding */
-    bool upper;			/* true ==> UPPER case chars found after encoding */
+    bool slash;			/* true ==> / was found after decoding */
+    bool posix_safe;		/* true ==> all chars are POSIX portable safe plus + and maybe / after decoding */
+    bool first_alphanum;	/* true ==> first char is alphanumeric after decoding */
+    bool upper;			/* true ==> UPPER case chars found after decoding */
 };
 
 
@@ -261,7 +261,7 @@ struct json_string
 struct json_boolean
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON boolean, false ==> as_str is invalid or not encoded */
+    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
 
     char *as_str;		/* allocated JSON boolean string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
@@ -283,7 +283,7 @@ struct json_boolean
 struct json_null
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON null, false ==> as_str is invalid or not encoded */
+    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
 
     char *as_str;		/* allocated JSON null string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
@@ -326,10 +326,10 @@ struct json_null
 struct json_member
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON member */
+    bool converted;		/* true ==> able to decode JSON member */
 
-    char *name_as_str;		/* name string as non-encoded JSON string - will not be NULL */
-    char *name_str;		/* name string as encoded JSON string - will not be NULL */
+    char *name_as_str;		/* name string as non-decoded JSON string - will not be NULL */
+    char *name_str;		/* name string as decoded JSON string - will not be NULL */
 
     size_t name_as_str_len;	/* length of name_as_str, not including final NUL */
     size_t name_str_len;	/* length of name_str, not including final NUL */
@@ -357,7 +357,7 @@ struct json_member
 struct json_object
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON object */
+    bool converted;		/* true ==> able to decode JSON object */
 
     intmax_t len;		/* number of JSON members in the object, 0 ==> empty object */
     struct json **set;		/* set of JSON members belonging to the object */
@@ -387,7 +387,7 @@ struct json_object
 struct json_array
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON array */
+    bool converted;		/* true ==> able to decode JSON array */
 
     intmax_t len;		/* number of JSON values in the JSON array, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON array */
@@ -414,7 +414,7 @@ struct json_array
 struct json_elements
 {
     bool parsed;		/* true ==> able to parse correctly */
-    bool converted;		/* true ==> able to encode JSON array */
+    bool converted;		/* true ==> able to decode JSON array */
 
     intmax_t len;		/* number of JSON values in the JSON elements, 0 ==> empty array */
     struct json **set;		/* set of JSON values belonging to the JSON elements */
@@ -477,9 +477,9 @@ struct json
  *
  * NOTE: This table assumes we process on an 8-bit byte basis.
  *
- * XXX - This is NOT the canonical way to decode Unicode characters! - XXX
- * XXX - Valid Unicode symbols when decoded as UTF-8 bytes should be - XXX
- * XXX - decoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
+ * XXX - This is NOT the canonical way to encode Unicode characters! - XXX
+ * XXX - Valid Unicode symbols when encoded as UTF-8 bytes should be - XXX
+ * XXX - encoded as 1 or more consecutive \\u[0-9A-Fa-f]{4} strings! - XXX
  */
 extern struct byte2asciistr byte2asciistr[];
 
@@ -487,12 +487,12 @@ extern struct byte2asciistr byte2asciistr[];
 /*
  * external function declarations
  */
-extern char *json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
-extern char *json_decode_str(char const *str, size_t *retlen, bool skip_quote);
+extern char *json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
+extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
 extern void chkbyte2asciistr(void);
 extern void jdecencchk(int entertainment);
-extern char *json_encode(char const *ptr, size_t len, size_t *retlen);
-extern char *json_encode_str(char const *str, size_t *retlen);
+extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
+extern char *json_decode_str(char const *str, size_t *retlen);
 extern struct json *parse_json_string(char const *string, size_t len);
 extern struct json *parse_json_bool(char const *string);
 extern struct json *parse_json_null(char const *string);

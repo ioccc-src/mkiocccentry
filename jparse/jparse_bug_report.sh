@@ -51,8 +51,8 @@ export TOOLS="
     jparse
     jsemcgen.sh
     jsemtblgen
-    jstrdecode
     jstrencode
+    jstrdecode
     run_bison.sh
     run_flex.sh
     test_jparse/jnum_chk

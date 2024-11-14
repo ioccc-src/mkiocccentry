@@ -107,7 +107,7 @@ struct json_sem
     bool (* validate)(struct json const *node,
                       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
                                 /* JSON parse tree node validator, or NULL */
-    char *name;                 /* if type == JTYPE_MEMBER, match decoded name or NULL */
+    char *name;                 /* if type == JTYPE_MEMBER, match encoded name or NULL */
 };
 .fi
 .in -0.5i
@@ -272,7 +272,7 @@ structure.
 .sp 1
 The
 .B name
-element refers to the decoded name of a JSON member for JSON nodes that are of type
+element refers to the encoded name of a JSON member for JSON nodes that are of type
 .BR JTYPE_MEMBER \|.
 For nodes that are not
 .B JTYPE_MEMBER

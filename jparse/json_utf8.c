@@ -1,5 +1,5 @@
 /*
- * json_utf8 - JSON UTF-8 decoder
+ * json_utf8 - JSON UTF-8 encoder/decoder
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -23,7 +23,7 @@
 #include "json_utf8.h"
 
 /*
- * count_utf8_bytes	- count bytes needed to encode/decode in str
+ * count_utf8_bytes	- count bytes needed to decode/encode in str
  *
  * given:
  *
@@ -138,9 +138,16 @@ utf8len(const char *str, int32_t surrogate)
  */
 
 /*
+ * NOTE: the following comment describes the function utf8encode() but we have
+ * renamed it because in JSON in BOTH encoding and decoding it should convert
+ * \uxxxx to unicode. This is by all sources seen called encoding but since this
+ * is a JSON library, to be less confusing, we call it utf8_to_unicode().
+ *
+ * --
+ *
  * UTF8 valid ranges.
  *
- * The UTF-8 encoding spreads the bits of a 32bit word over several
+ * The UTF-8 decoding spreads the bits of a 32bit word over several
  * bytes. This table gives the ranges that can be held and how they'd
  * be represented.
  *
@@ -152,8 +159,8 @@ utf8len(const char *str, int32_t surrogate)
  * 0x00000000 0x7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
  *
  * There is an additional requirement on UTF-8, in that only the
- * shortest representation of a 32bit value is to be used.  A decoder
- * must not decode sequences that do not satisfy this requirement.
+ * shortest representation of a 32bit value is to be used.  A encoder
+ * must not encode sequences that do not satisfy this requirement.
  * Thus the allowed ranges have a lower bound.
  *
  * 0x00000000 0x0000007F: 0xxxxxxx
@@ -186,7 +193,7 @@ utf8len(const char *str, int32_t surrogate)
  *
  */
 int
-utf8encode(char *str, unsigned int val)
+utf8_to_unicode(char *str, unsigned int val)
 {
     int len = -1;
 

@@ -28,7 +28,7 @@ and [bad](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON/bad)
 (plus a subdirectory to test error location reporting,
 [bad_loc](https://github.com/xexyl/jparse/tree/master/test_jparse/test_JSON/bad_loc)),
 and a number of tools and scripts that run a battery of tests on the parser
-(internally and otherwise) and the tools, including encoding and decoding, via
+(internally and otherwise) and the tools, including decoding and encoding, via
 code that is in
 [json_parse.c](https://github.com/xexyl/jparse/blob/master/json_parse.c), for a
 few examples.

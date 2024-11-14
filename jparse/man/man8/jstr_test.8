@@ -12,7 +12,7 @@
 .TH jstr_test.sh 8 "04 October 2024" "jstr_test.sh" "jparse tools"
 .SH NAME
 .B jstr_test.sh
-\- JSON string encoding and decoding tests
+\- JSON string decoding and encoding tests
 .SH SYNOPSIS
 .B jstr_test.sh
 .RB [\| \-h \|]
@@ -20,19 +20,19 @@
 .RB [\| \-v
 .IR level \|]
 .RB [\| \-e
-.IR jstrencode \|]
-.RB [\| \-d
 .IR jstrdecode \|]
+.RB [\| \-d
+.IR jstrencode \|]
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
 Using
-.BR jstrencode (1)
-and
 .BR jstrdecode (1)
+and
+.BR jstrencode (1)
 the
 .B jstr_test.sh
-script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
+script runs a series of tests to make sure that both decoding and encoding of JSON strings work as expected.
 This is important because if either is not working right then there will be a problem with the JSON parser as well as these tools that use the same routines that the JSON parser uses.
 .SH OPTIONS
 .TP
@@ -47,17 +47,17 @@ Set verbosity level to
 .IR level
 (def: 0).
 .TP
-.BI \-e\  jstrencode
-Set path of
-.BR jstrencode (1)
-tool to
-.IR jstrencode .
-.TP
-.BI \-d\  jstrdecode
+.BI \-e\  jstrdecode
 Set path of
 .BR jstrdecode (1)
 tool to
 .IR jstrdecode .
+.TP
+.BI \-d\  jstrencode
+Set path of
+.BR jstrencode (1)
+tool to
+.IR jstrencode .
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
@@ -67,8 +67,8 @@ directory must contain the source files
 .IR jparse.c ,
 .IR json_parse.c ,
 .IR json_parse.h ,
-.IR jstrdecode.c ,
 .IR jstrencode.c ,
+.IR jstrdecode.c ,
 .I util.h
 and
 .IR util.c .
@@ -109,11 +109,11 @@ one or more tests failed
 .TQ
 5
 missing or non\-executable
-.BR jstrencode (1)
+.BR jstrdecode (1)
 .TQ
 6
 missing or non\-executable
-.BR jstrdecode (1)
+.BR jstrencode (1)
 .TQ
 7
 missing or unreadable
@@ -125,13 +125,13 @@ internal error
 .SH FILES
 .I jstr_test.out
 .RS
-This temporary file holds the output of an encoded JSON string (via
-.BR jstrencode (1))
-decoded by
-.BR jstrdecode (1)
+This temporary file holds the output of an decoded JSON string (via
+.BR jstrdecode (1))
+encoded by
+.BR jstrencode (1)
 which, along with
 .IR jstr_test2.out ,
-is used to to verify that encoding and decoding work.
+is used to to verify that decoding and encoding work.
 If the file exists and cannot be removed the script will exit with an error.
 In the script this file is the variable
 .BR TEST_FILE .
@@ -139,13 +139,13 @@ When the script ends this file should be deleted but the script attempts to dele
 .RE
 .I jstr_test2.out
 .RS
-This temporary file holds the output of an encoded JSON string (via
-.BR jstrencode (1))
-decoded by
-.BR jstrdecode (1)
+This temporary file holds the output of an decoded JSON string (via
+.BR jstrdecode (1))
+encoded by
+.BR jstrencode (1)
 which, along with
 .IR jstr_test.out ,
-is used to to verify that encoding and decoding work.
+is used to to verify that decoding and encoding work.
 If the file exists and cannot be removed the script will exit with an error.
 In the script this file is the variable
 .BR TEST_FILE2 .
@@ -163,5 +163,5 @@ It can be found at
 .SH SEE ALSO
 .BR jparse (1),
 .BR jparse (3),
-.BR jstrencode (1),
-.BR jstrdecode (1)
+.BR jstrdecode (1),
+.BR jstrencode (1)

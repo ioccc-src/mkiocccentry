@@ -1,7 +1,7 @@
 /*
  * verge - determine if first version is greater or equal to the second version
  *
- * "Because too much minimalism can be sub-minimal." :-)
+ * "Because too much minimalism can be subminimal." :-)
  *
  * This JSON parser was co-developed in 2022 by:
  *

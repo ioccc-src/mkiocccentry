@@ -42,7 +42,7 @@
 .br
 .B "extern struct json *parse_json_file(char const *name, bool *is_valid);"
 .sp
-.B "extern char const *json_get_type_str(struct json *node, bool decoded);"
+.B "extern char const *json_get_type_str(struct json *node, bool encoded);"
 .sp
 .B "extern bool json_dbg_allowed(int json_dbg_lvl);"
 .br
@@ -122,8 +122,8 @@ returns a
 .B char const *
 with what was matched in the parser.
 Depending on if the
-.I decoded
-boolean is true or not, it returns the decoded or encoded string, assuming the JSON node type has a distinction.
+.I encoded
+boolean is true or not, it returns the encoded or decoded string, assuming the JSON node type has a distinction.
 .SS Debug, warn and error functions
 .PP
 The function

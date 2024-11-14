@@ -98,7 +98,7 @@ struct json_sem
     bool (* validate)(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 				/* JSON parse tree node validator, or NULL */
-    char *name;			/* if type == JTYPE_MEMBER, match encoded name or NULL */
+    char *name;			/* if type == JTYPE_MEMBER, match decoded name or NULL */
 };
 
 
@@ -113,7 +113,7 @@ struct json_sem
 struct str_or_null {
     bool valid;		/* true == JSON JTYPE_MEMBER value was is valid JSON_STRING or a valid JSON_NULL */
     bool is_null;	/* true ==> JTYPE_MEMBER value is valid JSON_NULL, false ==> is valid JSON_STRING */
-    char *str;		/* encoded value string from JSON member or NULL */
+    char *str;		/* decoded value string from JSON member or NULL */
 };
 
 
@@ -134,9 +134,9 @@ extern struct json *sem_member_name(struct json const *node, unsigned int depth,
 				    char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
 				     char const *name, struct json_sem_val_err **val_err);
-extern char *sem_member_name_encoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
+extern char *sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 				         char const *name, struct json_sem_val_err **val_err);
-extern char *sem_member_value_encoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
+extern char *sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 				          char const *name, struct json_sem_val_err **val_err);
 extern bool *sem_member_value_bool(struct json const *node, unsigned int depth, struct json_sem *sem,
 			           char const *name, struct json_sem_val_err **val_err);

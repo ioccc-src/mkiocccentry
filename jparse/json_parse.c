@@ -55,8 +55,8 @@
  */
 #include "json_util.h"
 
-/* for json string encoding */
-static char *encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen);
+/* for json string decoding */
+static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen);
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
@@ -70,9 +70,9 @@ static bool json_process_floating(struct json_number *item, char const *str, siz
  *
  * NOTE: This table assumes we process on an 8-bit byte basis.
  *
- * This map is not a canonical way to decode Unicode characters.
+ * This map is not a canonical way to encode Unicode characters.
  * Instead it helps translate certain "forbidden" bytes within a
- * JSON decoded string.
+ * JSON encoded string.
  */
 struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
 
@@ -110,7 +110,7 @@ struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
     {'P', 1, "P", 1}, {'Q', 1, "Q", 1},    {'R', 1, "R", 1}, {'S', 1, "S", 1},
     {'T', 1, "T", 1}, {'U', 1, "U", 1},    {'V', 1, "V", 1}, {'W', 1, "W", 1},
     {'X', 1, "X", 1}, {'Y', 1, "Y", 1},    {'Z', 1, "Z", 1}, {'[', 1, "[", 1},
-    {'\\', 2, "\\\\", 1}, {']', 1, "]",1}, {'^', 1, "^", 1}, {'_', 1, "_", 1},
+    {'\\', 1, "\\\\", 1}, {']', 1, "]",1}, {'^', 1, "^", 1}, {'_', 1, "_", 1},
 
     /* \x60 - \x6f */
     {'`', 1, "`", 1}, {'a', 1, "a", 1}, {'b', 1, "b", 1}, {'c', 1, "c", 1},
@@ -173,38 +173,47 @@ struct byte2asciistr byte2asciistr[JSON_BYTE_VALUES] = {
     {0xfc, 1, "\xfc", 1}, {0xfd, 1, "\xfd", 1}, {0xfe, 1, "\xfe", 1}, {0xff, 1, "\xff", 1}
 };
 
-
 /*
- * json_decode - return the decoding of a JSON encoded block of memory
+ * json_encode - return a JSON encoding of a block of memory
+ *
+ * JSON string encoding:
+ *
+ * Along with Unicode code points (in the form of \uxxxx where x is a
+ * hexadecimal digit), these escape characters are required by JSON, all of
+ * which have their code points (as listed below):
+ *
+ *         old			      new
+ *      ---------------------------------------
+ *	\x00-\x07		\u0000 - \u0007
+ *	<backspace>		\b	(\x08)
+ *	<horizontal_tab>	\t	(\x09)
+ *	<newline>		\n	(\x0a)
+ *	\x0b			\u000b <vertical_tab>
+ *	<form_feed>		\f	(\x0c)
+ *	<enter>			\r	(\x0d)
+ *	\x0e-\x1f		\u000e - \x001f
+ *	<double_quote>		\"	(\x22)
+ *	\			\\	(\x5c)
  *
  * given:
- *	ptr	start of memory block to decode
- *	len	length of block to decode in bytes
- *	retlen	address of where to store allocated length, if retlen != NULL
- *
+ *	ptr		start of memory block to encode
+ *	len		length of block to encode in bytes
+ *	retlen		address of where to store allocated length,
+ *			    if retlen != NULL
  *	skip_quote	true ==> ignore any double quotes if they are both
  *				 at the start and end of the memory block
- *
  * returns:
- *	allocated JSON decoding of a block, or NULL ==> error
+ *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
- *
- * NOTE: this does not convert a Unicode character like a letter with a
- * diacritic or an emoji to its code point. In fact, for reasons we do not
- * comprehend, the following is perfectly valid JSON:
- *
- *      { "🔥" "🐉" }
- *
- * Instead, if one were to pass to this function the string "\\", it would
- * return "\\\\", for example.
  */
 char *
-json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
+json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 {
-    char *ret = NULL;	    /* allocated decoding string or NULL */
-    char *beyond = NULL;    /* beyond the end of the allocated decoding string */
-    ssize_t mlen = 0;	    /* length of allocated decoded string */
-    char *p;		    /* next place to decode */
+    char *ret = NULL;       /* return value */
+    char *str = NULL;	    /* allocated encoding string or NULL */
+    char *beyond = NULL;    /* beyond the end of the allocated encoding string */
+    ssize_t mlen = 0;	    /* length of allocated encoded string */
+    char *p;		    /* next place to encode */
     size_t i;
 
     /*
@@ -220,7 +229,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     }
 
     /*
-     * count the bytes that will be in the decoded allocated string
+     * count the bytes that will be in the encoded allocated string
      */
     for (i=0; i < len; ++i) {
 	mlen += byte2asciistr[(uint8_t)(ptr[i])].len;
@@ -235,10 +244,10 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     }
 
     /*
-     * malloc the decoded string
+     * malloc the encoded string
      */
-    ret = malloc((size_t)mlen + 1 + 1);
-    if (ret == NULL) {
+    str = malloc((size_t)mlen + 1 + 1);
+    if (str == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
@@ -246,9 +255,9 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	warn(__func__, "malloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
-    ret[mlen] = '\0';   /* terminate string */
-    ret[mlen + 1] = '\0';   /* paranoia */
-    beyond = &(ret[mlen]);
+    str[mlen] = '\0';   /* terminate string */
+    str[mlen + 1] = '\0';   /* paranoia */
+    beyond = &(str[mlen]);
 
     /*
      * skip any enclosing quotes if requested
@@ -258,75 +267,100 @@ json_decode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
      * a '"'.
      */
     if (skip_quote == true && len > 1 && ptr[0] == '"' && ptr[len-1] == '"') {
-	i = 1;	/* start decoding on the next byte beyond the " */
-	--len;	/* do not decode the last byte */
+	i = 1;	/* start encoding on the next byte beyond the " */
+	--len;	/* do not encode the last byte */
     } else {
-	i = 0;	/* start decoding at the first byte */
+	i = 0;	/* start encoding at the first byte */
     }
 
     /*
-     * JSON decode each byte
+     * JSON encode each byte
      */
-    for (p=ret; i < len; ++i) {
+    for (p=str; i < len; ++i) {
 	if (p+byte2asciistr[(uint8_t)(ptr[i])].len > beyond) {
 	    /* error - clear allocated length */
 	    if (retlen != NULL) {
 		*retlen = 0;
 	    }
-	    if (ret != NULL) {
-		free(ret);
-		ret = NULL;
+	    if (str != NULL) {
+		free(str);
+		str = NULL;
 	    }
-	    warn(__func__, "decoding ran beyond end of allocated decoded string");
+	    warn(__func__, "encoding ran beyond end of allocated encoded string");
 	    return NULL;
 	}
 	strcpy(p, byte2asciistr[(uint8_t)(ptr[i])].enc);
 	p += byte2asciistr[(uint8_t)(ptr[i])].len;
     }
     *p = '\0';	/* paranoia */
-    mlen = p - ret; /* paranoia */
+    mlen = p - str; /* paranoia */
     if (mlen < 0) { /* paranoia */
 	warn(__func__, "mlen #1: %ju < 0", (uintmax_t)mlen);
-	if (ret != NULL) {
-	    free(ret);
-	    ret = NULL;
+	if (str != NULL) {
+	    free(str);
+	    str = NULL;
 	}
 	return NULL;
     }
 
     /*
+     * we now have to decode the \uxxxx code points
+     */
+    ret = json_decode(str, mlen, retlen);
+    if (ret == NULL) {
+        if (retlen != NULL) { /* should never be NULL but we check anyway */
+            *retlen = 0;
+        }
+        if (str != NULL) {
+            /*
+             * str should never be NULL but we check as an extra sanity check
+             */
+            free(str);
+            str = NULL;
+        }
+        warn(__func__, "post encoding failed");
+        return NULL;
+    }
+
+    if (str != NULL) {
+        /*
+         * str should always be non NULL at this point but we check as an extra
+         * sanity check
+         */
+        free(str);
+        str = NULL;
+    }
+
+    /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju, %s)",
-		     (uintmax_t)len, (uintmax_t)mlen, booltostr(skip_quote));
-    if (retlen != NULL) {
-	*retlen = (size_t)mlen;
-    }
+    dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju, %s): %s",
+		     (uintmax_t)len, (uintmax_t)mlen, booltostr(skip_quote), ret);
     return ret;
 }
 
 
 /*
- * json_decode_str - return a JSON decoding of a string
+ * json_encode_str - return a JSON encoding of a string
  *
- * This is a simplified interface for json_decode().
+ * This is a simplified interface for json_encode().
  *
  * given:
- *	str		NUL terminated C-style string to decode
+ *	str		NUL terminated C-style string to encode
  *	retlen		address of where to store allocated length, if retlen != NULL
  *	skip_quotes	true ==> ignore any double quotes if they are both
  *				 at the start and end of the memory block
  *			false ==> process all bytes in the block
  *
  * returns:
- *	allocated JSON decoding of a block, or NULL ==> error
+ *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_decode_str(char const *str, size_t *retlen, bool skip_quote)
+json_encode_str(char const *str, size_t *retlen, bool skip_quote)
 {
-    void *ret = NULL;	    /* allocated decoding string or NULL */
-    size_t len = 0;	    /* length of string to decode */
+    void *ret = NULL;	    /* allocated encoding string or NULL */
+    size_t len = 0;	    /* length of string to encode */
 
     /*
      * firewall
@@ -342,25 +376,25 @@ json_decode_str(char const *str, size_t *retlen, bool skip_quote)
     len = strlen(str);
 
     /*
-     * convert to json_decode() call
+     * convert to json_encode() call
      */
-    ret = json_decode(str, len, retlen, skip_quote);
+    ret = json_encode(str, len, retlen, skip_quote);
     if (ret == NULL) {
-	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
+	dbg(DBG_VVHIGH, "returning NULL for encoding of: <%s>", str);
     } else {
-	dbg(DBG_VVHIGH, "string: JSON decoded as: <%s>", (char *)ret);
+	dbg(DBG_VVHIGH, "string: JSON encoded as: <%s>", (char *)ret);
     }
 
     /*
-     * return decoded result or NULL
+     * return encoded result or NULL
      */
     return ret;
 }
 
 /*
- * jdecencchk  - validate that JSON decoding and encoding works
+ * jdecencchk  - validate that JSON encoding and decoding works
  *
- * This function performs various sanity checks in JSON decoding and encoding.
+ * This function performs various sanity checks in JSON encoding and decoding.
  *
  * given:
  *
@@ -371,45 +405,45 @@ json_decode_str(char const *str, size_t *retlen, bool skip_quote)
 void
 jdecencchk(int entertainment)
 {
-    char const *decstr;	/* string to encode */
-    char const *decstr2;/* string to encode */
-    char *mstr = NULL;	/* allocated decoding string */
-    size_t mlen = 0;	/* length of allocated decoding string */
-    char *mstr2 = NULL;	/* allocated encoding string */
-    size_t mlen2 = 0;	/* length of allocated encoding string */
+    char const *decstr;	/* string to decode */
+    char const *decstr2;/* string to decode */
+    char *mstr = NULL;	/* allocated encoding string */
+    size_t mlen = 0;	/* length of allocated encoding string */
+    char *mstr2 = NULL;	/* allocated decoding string */
+    size_t mlen2 = 0;	/* length of allocated decoding string */
 
     /*
      *	:-)
      */
     decstr = "\\ud83d\\ude4f\\uD83D\\uDD25\\uD83D\\uDC09";
     /*
-     * test encoding the JSON decoded string
+     * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-    /* test json_encode_str() */
-    mstr2 = json_encode_str(decstr, &mlen2);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    /* test json_decode_str() */
+    mstr2 = json_decode_str(decstr, &mlen2);
     if (mstr2 == NULL) {
-	err(147, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	err(147, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
 
-    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
     /*
-     * decode the string we just encoded
+     * encode the string we just decoded
      */
-    dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-    mstr = json_decode(mstr2, mlen2, &mlen, false);
+    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+    mstr = json_encode(mstr2, mlen2, &mlen, false);
     if (mstr == NULL) {
-	err(148, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
+	err(148, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
 	not_reached();
     }
-    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
     /*
-     * verify that the decoded string matches the original string
+     * verify that the encoded string matches the original string
      */
     if (strcmp(mstr2, mstr) != 0) {
 	err(149, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -438,35 +472,35 @@ jdecencchk(int entertainment)
      */
     decstr = "\\u0302\\u006f";
     /*
-     * test encoding the JSON decoded string
+     * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-    /* test json_encode_str() */
-    mstr2 = json_encode_str(decstr, &mlen2);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    /* test json_decode_str() */
+    mstr2 = json_decode_str(decstr, &mlen2);
     if (mstr2 == NULL) {
-	err(150, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	err(150, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
 
-    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
     /*
-     * encode another string that should not match the above encoded string
+     * decode another string that should not match the above decoded string
      */
     decstr2 = "\\u006f\\u0302";
-    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen)", decstr2);
-    mstr = json_encode_str(decstr2, &mlen);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen)", decstr2);
+    mstr = json_decode_str(decstr2, &mlen);
     if (mstr == NULL) {
-	err(151, __func__, "json_encode_str(<%s>, *mlen: %ju) == NULL",
+	err(151, __func__, "json_decode_str(<%s>, *mlen: %ju) == NULL",
 			   decstr2, (uintmax_t)mlen);
 	not_reached();
     }
-    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
 
 
     /*
-     * verify that the encoded strings do NOT match
+     * verify that the decoded strings do NOT match
      */
     if (strcmp(mstr2, mstr) == 0) {
 	err(152, __func__, "mstr2 %s == mstr: %s", mstr2, mstr);
@@ -498,34 +532,34 @@ jdecencchk(int entertainment)
 	 */
 	decstr = "\\uD83C\\uDF0E\\u2604";
 	/*
-	 * test encoding the JSON decoded string
+	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-	/* test json_encode_str() */
-	mstr2 = json_encode_str(decstr, &mlen2);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	/* test json_decode_str() */
+	mstr2 = json_decode_str(decstr, &mlen2);
 	if (mstr2 == NULL) {
-	    err(153, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(153, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			       decstr, (uintmax_t)mlen2);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "%s == %s", decstr, mstr2);
-	    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+	    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
 	    /*
-	     * decode the string we just encoded
+	     * encode the string we just decoded
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-	    mstr = json_decode(mstr2, mlen2, &mlen, false);
+	    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+	    mstr = json_encode(mstr2, mlen2, &mlen, false);
 	    if (mstr == NULL) {
-		err(154, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
+		err(154, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
 			(uintmax_t)mlen2, (uintmax_t)mlen);
 		not_reached();
 	    }
-	    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+	    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
 	    /*
-	     * verify that the decoded string matches the original string
+	     * verify that the encoded string matches the original string
 	     */
 	    if (strcmp(mstr2, mstr) != 0) {
 		err(155, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -553,34 +587,34 @@ jdecencchk(int entertainment)
 	 */
 	decstr = "\\uD83D\\uDD25\\uD83C\\uDF0E\\uD83E\\uDD96\\uD83E\\uDD95\\u2604";
 	/*
-	 * test encoding the JSON decoded string
+	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-	/* test json_encode_str() */
-	mstr2 = json_encode_str(decstr, &mlen2);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	/* test json_decode_str() */
+	mstr2 = json_decode_str(decstr, &mlen2);
 	if (mstr2 == NULL) {
-	    err(156, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(156, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			       decstr, (uintmax_t)mlen2);
 	    not_reached();
 	} else {
-	    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+	    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 	    dbg(DBG_MED, "%s == %s", decstr, mstr2);
 
 	    /*
-	     * decode the string we just encoded
+	     * encode the string we just decoded
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-	    mstr = json_decode(mstr2, mlen2, &mlen, false);
+	    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+	    mstr = json_encode(mstr2, mlen2, &mlen, false);
 	    if (mstr == NULL) {
-		err(157, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
+		err(157, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
 			(uintmax_t)mlen2, (uintmax_t)mlen);
 		not_reached();
 	    }
-	    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+	    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
 	    /*
-	     * verify that the decoded string matches the original string
+	     * verify that the encoded string matches the original string
 	     */
 	    if (strcmp(mstr2, mstr) != 0) {
 		err(158, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -613,35 +647,35 @@ jdecencchk(int entertainment)
              */
 	    decstr = "\\uD83D\\uDD25\\uD83E\\uDDD9";
 	    /*
-	     * test encoding the JSON decoded string
+	     * test decoding the JSON encoded string
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-	    /* test json_encode_str() */
-	    mstr2 = json_encode_str(decstr, &mlen2);
+	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	    /* test json_decode_str() */
+	    mstr2 = json_decode_str(decstr, &mlen2);
 	    if (mstr2 == NULL) {
-		err(159, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+		err(159, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 				   decstr, (uintmax_t)mlen2);
 		not_reached();
 	    } else {
 
-		dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+		dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 		dbg(DBG_MED, "%s == %s", decstr, mstr2);
 
 		/*
-		 * decode the string we just encoded
+		 * encode the string we just decoded
 		 */
-		dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-		mstr = json_decode(mstr2, mlen2, &mlen, false);
+		dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+		mstr = json_encode(mstr2, mlen2, &mlen, false);
 		if (mstr == NULL) {
-		    err(160, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
+		    err(160, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
 			    (uintmax_t)mlen2, (uintmax_t)mlen);
 		    not_reached();
 		}
-		dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+		dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
 		/*
-		 * verify that the decoded string matches the original string
+		 * verify that the encoded string matches the original string
 		 */
 		if (strcmp(mstr2, mstr) != 0) {
 		    err(161, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -673,35 +707,35 @@ jdecencchk(int entertainment)
              */
 	    decstr = "\\uD83E\\uDEC3\\uD83D\\uDD25\\uD83D\\uDC09";
 	    /*
-	     * test encoding the JSON decoded string
+	     * test decoding the JSON encoded string
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-	    /* test json_encode_str() */
-	    mstr2 = json_encode_str(decstr, &mlen2);
+	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	    /* test json_decode_str() */
+	    mstr2 = json_decode_str(decstr, &mlen2);
 	    if (mstr2 == NULL) {
-		err(162, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+		err(162, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 				   decstr, (uintmax_t)mlen2);
 		not_reached();
 	    } else {
 
-		dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+		dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 		dbg(DBG_MED, "%s == %s", decstr, mstr2);
 
 		/*
-		 * decode the string we just encoded
+		 * encode the string we just decoded
 		 */
-		dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-		mstr = json_decode(mstr2, mlen2, &mlen, false);
+		dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+		mstr = json_encode(mstr2, mlen2, &mlen, false);
 		if (mstr == NULL) {
-		    err(163, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
+		    err(163, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
 			    (uintmax_t)mlen2, (uintmax_t)mlen);
 		    not_reached();
 		}
-		dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+		dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
 		/*
-		 * verify that the decoded string matches the original string
+		 * verify that the encoded string matches the original string
 		 */
 		if (strcmp(mstr2, mstr) != 0) {
 		    err(164, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -734,35 +768,35 @@ jdecencchk(int entertainment)
                  */
 		decstr = "\\uD83E\\uDD30\\uD83D\\uDD25\\uD83D\\uDC09";
 		/*
-		 * test encoding the JSON decoded string
+		 * test decoding the JSON encoded string
 		 */
-		dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-		/* test json_encode_str() */
-		mstr2 = json_encode_str(decstr, &mlen2);
+		dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+		/* test json_decode_str() */
+		mstr2 = json_decode_str(decstr, &mlen2);
 		if (mstr2 == NULL) {
-		    err(165, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+		    err(165, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 				       decstr, (uintmax_t)mlen2);
 		    not_reached();
 		} else {
 
-		    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+		    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 		    dbg(DBG_MED, "%s == %s", decstr, mstr2);
 
 		    /*
-		     * decode the string we just encoded
+		     * encode the string we just decoded
 		     */
-		    dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-		    mstr = json_decode(mstr2, mlen2, &mlen, false);
+		    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+		    mstr = json_encode(mstr2, mlen2, &mlen, false);
 		    if (mstr == NULL) {
-			err(166, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
+			err(166, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2,
 				(uintmax_t)mlen2, (uintmax_t)mlen);
 			not_reached();
 		    }
-		    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+		    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
 		    /*
-		     * verify that the decoded string matches the original string
+		     * verify that the encoded string matches the original string
 		     */
 		    if (strcmp(mstr2, mstr) != 0) {
 			err(167, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -805,34 +839,34 @@ jdecencchk(int entertainment)
      */
     decstr = "\\uD83D\\uDC8D\\uD83C\\uDF0B";
     /*
-     * test encoding the JSON decoded string
+     * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, &mlen2)", decstr);
-    /* test json_encode_str() */
-    mstr2 = json_encode_str(decstr, &mlen2);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    /* test json_decode_str() */
+    mstr2 = json_decode_str(decstr, &mlen2);
     if (mstr2 == NULL) {
-	err(168, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	err(168, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
 
-    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr2, mlen2);
+    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr2, mlen2);
 
 
     /*
-     * decode the string we just encoded
+     * encode the string we just decoded
      */
-    dbg(DBG_VVVHIGH, "testing json_decode(mstr2, 1, mlen): %s", mstr2);
-    mstr = json_decode(mstr2, mlen2, &mlen, false);
+    dbg(DBG_VVVHIGH, "testing json_encode(mstr2, 1, mlen): %s", mstr2);
+    mstr = json_encode(mstr2, mlen2, &mlen, false);
     if (mstr == NULL) {
-	err(169, __func__, "json_decode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
+	err(169, __func__, "json_encode(mstr2: %s, mlen2: %ju, mlen: %ju) == NULL", mstr2, (uintmax_t)mlen2, (uintmax_t)mlen);
 	not_reached();
     }
-    dbg(DBG_HIGH, "decoded string: %s (len: %ju)", mstr, mlen);
+    dbg(DBG_HIGH, "encoded string: %s (len: %ju)", mstr, mlen);
 
 
     /*
-     * verify that the decoded string matches the original string
+     * verify that the encoded string matches the original string
      */
     if (strcmp(mstr2, mstr) != 0) {
 	err(170, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
@@ -878,13 +912,13 @@ chkbyte2asciistr(void)
     unsigned int int_hexval;/* hex value from xxxx part of \uxxxx */
     char guard;		/* scanf guard to catch excess amount of input */
     int indx;		/* test index */
-    char const *encstr;	/* decoding string */
+    char const *encstr;	/* encoding string */
     int ret;		/* libc function return value */
-    char str[2];	/* character string to decode */
-    char *mstr = NULL;	/* allocated decoding string */
-    size_t mlen = 0;	/* length of allocated decoding string */
-    char *mstr2 = NULL;	/* allocated encoding string */
-    size_t mlen2 = 0;	/* length of allocated encoding string */
+    char str[2];	/* character string to encode */
+    char *mstr = NULL;	/* allocated encoding string */
+    size_t mlen = 0;	/* length of allocated encoding string */
+    char *mstr2 = NULL;	/* allocated decoding string */
+    size_t mlen2 = 0;	/* length of allocated decoding string */
     unsigned int i;
 
     /*
@@ -945,7 +979,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x00-\x07 decodes to \uxxxx
+     * assert: \x00-\x07 encodes to \uxxxx
      */
     for (i=0x00; i <= 0x07; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
@@ -966,7 +1000,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x08 decodes to \b
+     * assert: \x08 encodes to \b
      */
     indx = 0x08;
     encstr = "\\b";
@@ -982,7 +1016,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x09 decodes to \t
+     * assert: \x09 encodes to \t
      */
     indx = 0x09;
     encstr = "\\t";
@@ -998,7 +1032,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x0a decodes to \n
+     * assert: \x0a encodes to \n
      */
     indx = 0x0a;
     encstr = "\\n";
@@ -1014,7 +1048,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x0b decodes to \u000b
+     * assert: \x0b encodes to \u000b
      */
     indx = 0x0b;
     encstr = "\\u000b";
@@ -1030,7 +1064,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x0c decodes to \f
+     * assert: \x0c encodes to \f
      */
     indx = 0x0c;
     encstr = "\\f";
@@ -1046,7 +1080,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x0d decodes to \r
+     * assert: \x0d encodes to \r
      */
     indx = 0x0d;
     encstr = "\\r";
@@ -1062,7 +1096,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x0e-\x1f decodes to \uxxxx
+     * assert: \x0e-\x1f encodes to \uxxxx
      */
     for (i=0x0e; i <= 0x1f; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
@@ -1083,7 +1117,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x20-\x21 decodes to the character
+     * assert: \x20-\x21 encodes to the character
      */
     for (i=0x20; i <= 0x21; ++i) {
 	if (byte2asciistr[i].len != 1) {
@@ -1098,7 +1132,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x22 decodes to \"
+     * assert: \x22 encodes to \"
      */
     indx = 0x22;
     encstr = "\\\"";
@@ -1114,7 +1148,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x23-\x5b decodes to the character
+     * assert: \x23-\x5b encodes to the character
      */
     for (i=0x23; i <= 0x5b; ++i) {
 	if (byte2asciistr[i].len != 1) {
@@ -1129,7 +1163,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x5c decodes to \\
+     * assert: \x5c encodes to \\
      */
     indx = 0x5c;
     encstr = "\\\\";
@@ -1145,7 +1179,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x5d-\x7e decodes to the character
+     * assert: \x5d-\x7e encodes to the character
      */
     for (i=0x5d; i <= 0x7e; ++i) {
 	if (byte2asciistr[i].len != 1) {
@@ -1160,7 +1194,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x7f decodes to \u007f
+     * assert: \x7f encodes to \u007f
      */
     for (i=0x7f; i <= 0x7f; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
@@ -1181,7 +1215,7 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * assert: \x80-\xff decodes to the character
+     * assert: \x80-\xff encodes to the character
      */
     for (i=0x80; i <= 0xff; ++i) {
 	if (byte2asciistr[i].len != 1) {
@@ -1202,85 +1236,85 @@ chkbyte2asciistr(void)
     }
 
     /*
-     * special test for decoding a NUL byte
+     * special test for encoding a NUL byte
      */
-    dbg(DBG_VVVHIGH, "testing json_decode(0x00, 1, *mlen)");
+    dbg(DBG_VVVHIGH, "testing json_encode(0x00, 1, *mlen)");
     memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final '\0' */
-    mstr = json_decode(str, 1,  &mlen, false);
+    mstr = json_encode(str, 1,  &mlen, false);
     if (mstr == NULL) {
-	err(211, __func__, "json_decode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
+	err(211, __func__, "json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
 	not_reached();
     }
     if (mlen != byte2asciistr[0].len) {
-	err(212, __func__, "json_decode(0x00, 1, *mlen: %ju != %ju)",
+	err(212, __func__, "json_encode(0x00, 1, *mlen: %ju != %ju)",
 			   (uintmax_t)mlen, (uintmax_t)(byte2asciistr[0].len));
 	not_reached();
     }
     if (strcmp(byte2asciistr[0].enc, mstr) != 0) {
-	err(213, __func__, "json_decode(0x00, 1, *mlen: %ju) != <%s>",
+	err(213, __func__, "json_encode(0x00, 1, *mlen: %ju) != <%s>",
 			   (uintmax_t)mlen, byte2asciistr[0].enc);
 	not_reached();
     }
-    /* free the allocated decoded string */
+    /* free the allocated encoded string */
     if (mstr != NULL) {
 	free(mstr);
 	mstr = NULL;
     }
 
     /*
-     * finally try to decode every possible string with a single non-NUL character
+     * finally try to encode every possible string with a single non-NUL character
      */
     for (i=1; i < JSON_BYTE_VALUES; ++i) {
 
 	/*
-	 * test JSON decoding
+	 * test JSON encoding
 	 */
-	dbg(DBG_VVVHIGH, "testing json_decode_str(0x%02x, *mlen)", i);
+	dbg(DBG_VVVHIGH, "testing json_encode_str(0x%02x, *mlen)", i);
 	/* load input string */
 	str[0] = (char)i;
-	/* test json_decode_str() */
-	mstr = json_decode_str(str, &mlen, false);
-	/* check decoding result */
+	/* test json_encode_str() */
+	mstr = json_encode_str(str, &mlen, false);
+	/* check encoding result */
 	if (mstr == NULL) {
-	    err(214, __func__, "json_decode_str(0x%02x, *mlen: %ju) == NULL",
+	    err(214, __func__, "json_encode_str(0x%02x, *mlen: %ju) == NULL",
 			       i, (uintmax_t)mlen);
 	    not_reached();
 	}
 	if (mlen != byte2asciistr[i].len) {
-	    err(215, __func__, "json_decode_str(0x%02x, *mlen %ju != %ju)",
+	    err(215, __func__, "json_encode_str(0x%02x, *mlen %ju != %ju)",
 			       i, (uintmax_t)mlen, (uintmax_t)byte2asciistr[i].len);
 	    not_reached();
 	}
 	if (strcmp(byte2asciistr[i].enc, mstr) != 0) {
-	    err(216, __func__, "json_decode_str(0x%02x, *mlen: %ju) != <%s>", i,
+	    err(216, __func__, "json_encode_str(0x%02x, *mlen: %ju) != <%s>", i,
 			       (uintmax_t)mlen, byte2asciistr[i].enc);
 	    not_reached();
 	}
-	dbg(DBG_VVHIGH, "testing json_decode_str(0x%02x, *mlen) decoded to <%s>", i, mstr);
+	dbg(DBG_VVHIGH, "testing json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
 
 	/*
-	 * test encoding the JSON decoded string
+	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_encode_str(<%s>, *mlen)", mstr);
-	/* test json_encode_str() */
-	mstr2 = json_encode_str(mstr, &mlen2);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, *mlen)", mstr);
+	/* test json_decode_str() */
+	mstr2 = json_decode_str(mstr, &mlen2);
 	if (mstr2 == NULL) {
-	    err(217, __func__, "json_encode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(217, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
-	if (mlen2 != byte2asciistr[i].encoded_len) {
-	    err(218, __func__, "json_encode_str(<%s>, *mlen2 %ju != %ju)",
-			       mstr, (uintmax_t)mlen2, byte2asciistr[i].encoded_len);
+	if (mlen2 != byte2asciistr[i].decoded_len) {
+	    err(218, __func__, "json_decode_str(<%s>, *mlen2 %ju != %ju)",
+			       mstr, (uintmax_t)mlen2, byte2asciistr[i].decoded_len);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(219, __func__, "json_encode_str(<%s>, *mlen2: %ju): 0x%02x != 0x%02x",
+	    err(219, __func__, "json_decode_str(<%s>, *mlen2: %ju): 0x%02x != 0x%02x",
 			       mstr, (uintmax_t)mlen2, (uint8_t)(mstr2[0]) & 0xff, i);
 	    not_reached();
 	}
 
-	/* free the allocated decoded string */
+	/* free the allocated encoded string */
 	if (mstr != NULL) {
 	    free(mstr);
 	    mstr = NULL;
@@ -1299,30 +1333,30 @@ chkbyte2asciistr(void)
 }
 
 /*
- * encode_json_string - return the encoding of a JSON decoded block of memory
+ * decode_json_string - return the decoding of a JSON encoded block of memory
  *
  * given:
- *	ptr	    start of memory block to encode
+ *	ptr	    start of memory block to decode
  *	len	    length of block
- *	mlen	    length of encoded bytes to allocate
+ *	mlen	    length of decoded bytes to allocate
  *	retlen	    address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	allocated JSON encoding of a block, or NULL ==> error
+ *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: this function is used by json_encode().
+ * NOTE: this function is used by json_decode().
  */
 char *
-encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
+decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 {
-    char *ret = NULL;	    /* allocated decoding string or NULL */
-    char *beyond = NULL;    /* beyond the end of the allocated decoding string */
-    char *p = NULL;	    /* next place to decode */
+    char *ret = NULL;	    /* allocated encoding string or NULL */
+    char *beyond = NULL;    /* beyond the end of the allocated encoding string */
+    char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
     int xa = 0;		    /* first hex character numeric value */
     int xb = 0;		    /* second hex character numeric value */
-    char c = 0;		    /* character to encode or third hex character after \u */
+    char c = 0;		    /* character to decode or third hex character after \u */
     size_t i;
     int32_t bytes = 0;
     int32_t surrogate = 0;
@@ -1342,7 +1376,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
     }
 
     /*
-     * allocated encoded string
+     * allocated decoded string
      */
     ret = malloc(mlen + 1 + 1);
     if (ret == NULL) {
@@ -1359,10 +1393,10 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 
 
     /*
-     * JSON string encode
+     * JSON string decode
      *
-     * In the counting code in json_encode(), prior to the malloc for the
-     * encoded string, we already determined that the JSON decoded block of
+     * In the counting code in json_decode(), prior to the malloc for the
+     * decoded string, we already determined that the JSON encoded block of
      * memory is valid.
      */
     for (i=0, p=utf8=ret; i < len; ++i, ++utf8) {
@@ -1379,7 +1413,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		ret = NULL;
 	    }
 
-	    warn(__func__, "ran beyond end of encoded string");
+	    warn(__func__, "ran beyond end of decoded string");
 	    return NULL;
 	}
 
@@ -1389,14 +1423,14 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 	c = (char)((uint8_t)(ptr[i]));
 
 	/*
-	 * case: JSON encode non \-escape character
+	 * case: JSON decode non \-escape character
 	 */
 	if (c != '\\') {
-	    /* no translation decoding */
+	    /* no translation encoding */
 	    *p++ = c;
 
 	/*
-	 * case: JSON encode \-escape character
+	 * case: JSON decode \-escape character
 	 */
 	} else {
 
@@ -1406,7 +1440,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 	    n = (char)((uint8_t)(ptr[i+1]));
 
 	    /*
-	     * encode single \c escaped pairs
+	     * decode single \c escaped pairs
 	     */
 	    switch (n) {
 	    case 'b':	/* ASCII backspace */
@@ -1445,11 +1479,11 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 	    case '/':	/*fallthrough*/
 	    case '\\':
 		++i;
-		*p++ = n;	/* escape encodes to itself */
+		*p++ = n;	/* escape decodes to itself */
 		break;
 
 	    /*
-	     * encode \uxxxx
+	     * decode \uxxxx
 	     */
 	    case 'u':
 		/*
@@ -1465,7 +1499,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			ret = NULL;
 		    }
 
-		    warn(__func__, "found \\u while encoding, but not enough for 4 hex chars at end of buffer");
+		    warn(__func__, "found \\u while decoding, but not enough for 4 hex chars at end of buffer");
 		    return NULL;
 		}
 		xa = 0;
@@ -1494,7 +1528,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		     * was not another \uxxxx
 		     */
 
-		    bytes = utf8encode(utf8, xa);
+		    bytes = utf8_to_unicode(utf8, xa);
 		    if (bytes <= 0) {
 			/* error - clear allocated length and free buffer */
 			if (retlen != NULL) {
@@ -1504,7 +1538,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			    free(ret);
 			    ret = NULL;
 			}
-			/* utf8encode warns on error */
+			/* utf8_to_unicode warns on error */
 			return NULL;
 		    }
 		    /*
@@ -1540,7 +1574,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			return NULL;
 		    }
 
-		    bytes = utf8encode(utf8, surrogate);
+		    bytes = utf8_to_unicode(utf8, surrogate);
 		    if (bytes <= 0) {
 			/* error - clear allocated length and free buffer */
 			if (retlen != NULL) {
@@ -1550,7 +1584,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			    free(ret);
 			    ret = NULL;
 			}
-			/* utf8encode() warns on error */
+			/* utf8_to_unicode() warns on error */
 			return NULL;
 		    }
 
@@ -1596,7 +1630,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		    ret = NULL;
 		}
 
-		warn(__func__, "found invalid JSON \\-escape while encoding: followed by 0x%02x", (uint8_t)c);
+		warn(__func__, "found invalid JSON \\-escape while decoding: followed by 0x%02x", (uint8_t)c);
 		return NULL;
 	    }
 	}
@@ -1606,7 +1640,7 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
      * return result
      */
 
-    dbg(DBG_VVVHIGH, "returning from encode_json_string(ptr, %ju, %ju, *%ju)",
+    dbg(DBG_VVVHIGH, "returning from decode_json_string(ptr, %ju, %ju, *%ju)",
 		 (uintmax_t)len, (uintmax_t)mlen, retlen != NULL ? *retlen : 0);
     if (retlen != NULL) {
 	*retlen = mlen;
@@ -1616,43 +1650,34 @@ encode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 }
 
 /*
- * json_encode - return a JSON encoding of a block of memory
- *
- * JSON string encoding:
- *
- * Along with Unicode code points (in the form of \uxxxx where x is a
- * hexadecimal digit), these escape characters are required by JSON, all of
- * which have their code points (as listed below):
- *
- *         old			      new
- *      ---------------------------------------
- *	\x00-\x07		\u0000 - \u0007
- *	<backspace>		\b	(\x08)
- *	<horizontal_tab>	\t	(\x09)
- *	<newline>		\n	(\x0a)
- *	\x0b			\u000b <vertical_tab>
- *	<form_feed>		\f	(\x0c)
- *	<enter>			\r	(\x0d)
- *	\x0e-\x1f		\u000e - \x001f
- *	<double_quote>		\"	(\x22)
- *	\			\\	(\x5c)
+ * json_decode - return the decoding of a JSON encoded block of memory
  *
  * given:
- *	ptr		start of memory block to encode
- *	len		length of block to encode in bytes
- *	retlen		address of where to store allocated length,
- *			    if retlen != NULL
+ *	ptr	start of memory block to decode
+ *	len	length of block to decode in bytes
+ *	retlen	address of where to store allocated length, if retlen != NULL
+ *
+ *
  * returns:
- *	allocated JSON encoding of a block, or NULL ==> error
+ *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: this does not convert a Unicode character like a letter with a
+ * diacritic or an emoji to its code point. In fact, for reasons we do not
+ * comprehend, the following is perfectly valid JSON:
+ *
+ *      { "🔥" "🐉" }
+ *
+ * Instead, if one were to pass to this function the string "\\", it would
+ * return "\\\\", for example.
  */
 char *
-json_encode(char const *ptr, size_t len, size_t *retlen)
+json_decode(char const *ptr, size_t len, size_t *retlen)
 {
-    char *ret = NULL;	    /* allocated decoding string or NULL */
-    size_t mlen = 0;	    /* length of allocated decoded string */
+    char *ret = NULL;	    /* allocated encoding string or NULL */
+    size_t mlen = 0;	    /* length of allocated encoded string */
     char n = 0;		    /* next character beyond a \\ */
-    char c = 0;		    /* character to encode or third hex character after \u */
+    char c = 0;		    /* character to decode or third hex character after \u */
     int xa = 0;		    /* first hex number for \uxxxx (if surrogates) */
     int xb = 0;		    /* second hex number for \uxxxx (if surrogates) */
     int32_t surrogate = 0;  /* for surrogate pairs */
@@ -1673,7 +1698,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
     }
 
     /*
-     * count the bytes that will be in the encoded allocated string
+     * count the bytes that will be in the decoded allocated string
      */
     for (i=0; i < len; ++i) {
 
@@ -1863,18 +1888,18 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
     }
 
    /*
-     * encode JSON string
+     * decode JSON string
      */
-    ret = encode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen);
+    ret = decode_json_string(ptr, (uintmax_t)len, (uintmax_t)mlen, retlen);
 
     /*
      * return result, if not NULL
      */
     if (ret != NULL) {
-	dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %ju, *%ju): %s",
+	dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju): %s",
 			 (uintmax_t)len, (uintmax_t)mlen, ret);
     } else {
-	dbg(DBG_VVVHIGH, "in json_encode(): encode_json_string(ptr, %ju, *%ju) returned NULL",
+	dbg(DBG_VVVHIGH, "in json_decode(): decode_json_string(ptr, %ju, *%ju) returned NULL",
 			 (uintmax_t)len, (uintmax_t)mlen);
 	if (retlen != NULL) {
 	    *retlen = 0;
@@ -1886,16 +1911,16 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 
 
 /*
- * json_encode_str - return a JSON encoding of a string
+ * json_decode_str - return a JSON decoding of a string
  *
- * This is a simplified interface for json_encode().
+ * This is a simplified interface for json_decode().
  *
  * given:
- *	str	NUL terminated C-style string to encode
+ *	str	NUL terminated C-style string to decode
  *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	allocated JSON encoding of a block, or NULL ==> error
+ *	allocated JSON decoding of a block, or NULL ==> error
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -1903,14 +1928,14 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
  *	 NUL byte.  This code assumes that the first NUL byte found is the end of
  *	 the string.  When working with raw binary data, or data that could have
  *	 a NUL byte inside the block of memory (instead at the very end), this
- *	 function should NOT be used.  In such cases, json_encode() should
+ *	 function should NOT be used.  In such cases, json_decode() should
  *	 be used instead!
  */
 char *
-json_encode_str(char const *str, size_t *retlen)
+json_decode_str(char const *str, size_t *retlen)
 {
-    void *ret = NULL;	    /* allocated encoding string or NULL */
-    size_t len = 0;	    /* length of string to encode */
+    void *ret = NULL;	    /* allocated decoding string or NULL */
+    size_t len = 0;	    /* length of string to decode */
 
     /*
      * firewall
@@ -1934,13 +1959,13 @@ json_encode_str(char const *str, size_t *retlen)
     len = strlen(str);
 
     /*
-     * convert to json_encode() call
+     * convert to json_decode() call
      */
-    ret = json_encode(str, len, retlen);
+    ret = json_decode(str, len, retlen);
     if (ret == NULL) {
-	dbg(DBG_VVHIGH, "returning NULL for encoding of: <%s>", str);
+	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
-	dbg(DBG_VVHIGH, "string: <%s> JSON encoded", str);
+	dbg(DBG_VVHIGH, "string: <%s> JSON decoded", str);
 	if (retlen != NULL) {
 	    dbg(DBG_VVHIGH, "retlen for <%s> is %ju", str, *retlen);
 	}
@@ -1949,7 +1974,7 @@ json_encode_str(char const *str, size_t *retlen)
 
 
     /*
-     * return encoded result or NULL
+     * return decoded result or NULL
      */
     return ret;
 }
@@ -3387,7 +3412,7 @@ struct json *
 json_conv_number_str(char const *str, size_t *retlen)
 {
     struct json *ret = NULL;	    /* JSON parser tree node to return */
-    size_t len = 0;		    /* length of string to decode */
+    size_t len = 0;		    /* length of string to encode */
 
     /*
      * firewall
@@ -3424,15 +3449,15 @@ json_conv_number_str(char const *str, size_t *retlen)
 
 
 /*
- * json_conv_string - convert JSON decoded string to C string
+ * json_conv_string - convert JSON encoded string to C string
  *
  * A JSON string is of the form:
  *
  *      "([^\n"]|\\")*"
  *
  * given:
- *	ptr	pointer to buffer containing a JSON decoded string
- *	len	length, starting at ptr, of the JSON decoded string
+ *	ptr	pointer to buffer containing a JSON encoded string
+ *	len	length, starting at ptr, of the JSON encoded string
  *	quote	true ==>  ignore JSON double quotes: both ptr[0] & ptr[len-1]
  *			  must be '"'
  *		false ==> the entire ptr is to be converted
@@ -3529,30 +3554,30 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     item->as_str[len+1] = '\0';	/* paranoia */
 
     /*
-     * encode the JSON decoded string
+     * decode the JSON encoded string
      */
-    /* encode the entire string */
-    item->str = json_encode(item->as_str, len, &(item->str_len));
+    /* decode the entire string */
+    item->str = json_decode(item->as_str, len, &(item->str_len));
     if (item->str == NULL) {
-	warn(__func__, "quote === %s: JSON string encode failed for: <%s>",
+	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       booltostr(quote), item->as_str);
 	return ret;
     }
     item->parsed = true;	/* JSON parsed successful */
-    item->converted = true;	/* JSON encoding successful */
+    item->converted = true;	/* JSON decoding successful */
 
     /*
-     * determine if encoded string is identical to the original JSON decoded string
+     * determine if decoded string is identical to the original JSON encoded string
      *
      * NOTE: We use memcmp() because there might be NUL bytes in the 'char *'
      * and strcmp() would stop at the first '\0'.
      */
     if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
-	item->same = true;	/* encoded string same an original JSON decoded string (perhaps sans '"'s) */
+	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans '"'s) */
     }
 
     /*
-     * determine POSIX state of the encoded string
+     * determine POSIX state of the decoded string
      */
     posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
@@ -3565,12 +3590,12 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 
 
 /*
- * json_conv_string_str - convert JSON decoded string to C string
+ * json_conv_string_str - convert JSON encoded string to C string
  *
  * This is a simplified interface for json_conv_string(). See that function for details.
  *
  * given:
- *	str	decoded JSON string in the from of a NUL terminated C-style string
+ *	str	encoded JSON string in the from of a NUL terminated C-style string
  *	retlen	address of where to store length of str, if retlen != NULL
  *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1]
  *		must be '"', false ==> the entire str is to be converted
@@ -3587,7 +3612,7 @@ struct json *
 json_conv_string_str(char const *str, size_t *retlen, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    size_t len = 0;			    /* length of string to decode */
+    size_t len = 0;			    /* length of string to encode */
 
     /*
      * firewall
@@ -3646,7 +3671,7 @@ struct json *
 json_conv_bool(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_boolean *item = NULL;	    /* allocated encoding string or NULL */
+    struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -3683,7 +3708,7 @@ json_conv_bool(char const *ptr, size_t len)
     }
 
     /*
-     * duplicate the JSON decoded string
+     * duplicate the JSON encoded string
      */
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
@@ -3697,7 +3722,7 @@ json_conv_bool(char const *ptr, size_t len)
     item->as_str_len = len;
 
     /*
-     * encode the JSON boolean
+     * decode the JSON boolean
      */
     if (strcmp(item->as_str, "true") == 0) {
 	item->converted = true;
@@ -3743,7 +3768,7 @@ struct json *
 json_conv_bool_str(char const *str, size_t *retlen)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    size_t len = 0;			    /* length of string to decode */
+    size_t len = 0;			    /* length of string to encode */
 
     /*
      * firewall
@@ -3801,7 +3826,7 @@ struct json *
 json_conv_null(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_null *item = NULL;	    /* allocated encoding string or NULL */
+    struct json_null *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -3852,7 +3877,7 @@ json_conv_null(char const *ptr, size_t len)
     item->as_str_len = len;
 
     /*
-     * encode the JSON null
+     * decode the JSON null
      */
     if (strcmp(item->as_str, "null") == 0) {
 	item->converted = true;
@@ -3894,7 +3919,7 @@ struct json *
 json_conv_null_str(char const *str, size_t *retlen)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    size_t len = 0;			    /* length of string to decode */
+    size_t len = 0;			    /* length of string to encode */
 
     /*
      * firewall
