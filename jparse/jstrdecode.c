@@ -3,7 +3,7 @@
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
- * This JSON parser and tool were co-developed in 2022 by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

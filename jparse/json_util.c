@@ -469,7 +469,7 @@ json_fprintf_str(FILE *stream, char const *str)
  *
  * On a stream, we will print:
  *
- *	lead "name_decoded " middle "value_decoded" tail
+ *	lead "name_encoded " middle "value_encoded" tail
  *
  * given:
  *	stream	- open file stream to print on
@@ -556,7 +556,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
  *
  * On a stream, we will print:
  *
- *	lead "name_decoded" middle long_value tail
+ *	lead "name_encoded" middle long_value tail
  *
  * given:
  *	stream	- open file stream to print on
@@ -645,7 +645,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
  *
  * On a stream, we will print:
  *
- *	lead "name_decoded" middle time_t_value tail
+ *	lead "name_encoded" middle time_t_value tail
  *
  * given:
  *	stream	- open file stream to print on
@@ -740,9 +740,9 @@ json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char
  *
  * On a stream, we will print:
  *
- *	lead "name_decoded" middle true tail
+ *	lead "name_encoded" middle true tail
  * or:
- *	lead "name_decoded" middle false tail
+ *	lead "name_encoded" middle false tail
  *
  * given:
  *	stream	- open file stream to print on

@@ -214,7 +214,7 @@ Remove duplicate code from jstrencode.c and jstrdecode.c as follows:
 the file is for both jstrencode and jstrdecode.
 - Added function `free_jstring_list()` in `jstr_util.c` and use that instead of
 the unique functions (that do the same thing) in jstrencode.c and jstrdecode.c
-(`free_json_decoded_strings` and `free_json_decoded_strings`).
+(`free_json_encoded_strings` and `free_json_decoded_strings`).
 
 Updated version of both tools to `"1.2.5 2024-10-27"`.
 

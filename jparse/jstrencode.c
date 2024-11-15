@@ -3,7 +3,7 @@
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
- * This JSON parser and tool were co-developed in 2022 by:
+ * This JSON parser was co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -80,16 +80,16 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 static struct jstring *jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool remove_last,
 	bool ignore_nl);
-static struct jstring *add_decoded_string(char *string, size_t bufsiz);
+static struct jstring *add_encoded_string(char *string, size_t bufsiz);
 
 /*
  * encoded string list
  */
-static struct jstring *json_decoded_strings = NULL;
+static struct jstring *json_encoded_strings = NULL;
 
 
 /*
- * add_decoded_string	- allocate and add a JSON encoded string to the json_decoded_strings list
+ * add_encoded_string	- allocate and add a JSON encoded string to the json_encoded_strings list
  *
  * given:
  *	string	    - string to add (char *)
@@ -97,13 +97,13 @@ static struct jstring *json_decoded_strings = NULL;
  *
  * returns:
  *	pointer to a newly allocated struct jstring *, added to the
- *	json_decoded_strings list or NULL if allocation failed
+ *	json_encoded_strings list or NULL if allocation failed
  *
  * NOTE: it is ASSUMED that the string is allocated so one should NOT pass a
  * char * that is not allocated on the stack.
  */
 static struct jstring *
-add_decoded_string(char *string, size_t bufsiz)
+add_encoded_string(char *string, size_t bufsiz)
 {
     struct jstring *jstr = NULL; /* for jstring list */
     struct jstring *jstr_next = NULL; /* to get last in list */
@@ -139,14 +139,14 @@ add_decoded_string(char *string, size_t bufsiz)
     /*
      * find end of list
      */
-    for (jstr_next = json_decoded_strings; jstr_next != NULL && jstr_next->next != NULL; jstr_next = jstr_next->next)
+    for (jstr_next = json_encoded_strings; jstr_next != NULL && jstr_next->next != NULL; jstr_next = jstr_next->next)
 	;;
 
     /*
      * add to end of list
      */
     if (jstr_next == NULL){
-	json_decoded_strings = jstr;
+	json_encoded_strings = jstr;
     } else {
 	jstr_next->next = jstr;
     }
@@ -369,7 +369,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	input = NULL; /* paranoia */
     }
 
-    jstr = add_decoded_string(buf, bufsiz);
+    jstr = add_encoded_string(buf, bufsiz);
     if (jstr == NULL) {
 	warn(__func__, "failed to allocate jstring of size %ju", bufsiz);
 	return NULL;
@@ -630,7 +630,7 @@ main(int argc, char **argv)
 	     */
 	    } else {
 		dbg(DBG_MED, "encode length: %ju", bufsiz);
-		jstr = add_decoded_string(buf, bufsiz);
+		jstr = add_encoded_string(buf, bufsiz);
 		if (jstr == NULL) {
 		    warn(__func__, "error adding encoded string to list");
 		    success = false;
@@ -673,7 +673,7 @@ main(int argc, char **argv)
     /*
      * now write each processed arg to stdout
      */
-    for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr->next) {
+    for (jstr = json_encoded_strings; jstr != NULL; jstr = jstr->next) {
 	if (jstr->jstr != NULL) {
 	    buf = jstr->jstr;
 	    bufsiz = (uintmax_t)jstr->bufsiz;
@@ -703,8 +703,8 @@ main(int argc, char **argv)
     /*
      * free list of encoded strings
      */
-    free_jstring_list(&json_decoded_strings);
-    json_decoded_strings = NULL;
+    free_jstring_list(&json_encoded_strings);
+    json_encoded_strings = NULL;
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2

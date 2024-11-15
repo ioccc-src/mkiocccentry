@@ -5471,7 +5471,7 @@ show_registration_url(void)
      */
     para("",
          "The IOCCC registration process and submit servers are not ready.  You cannot",
-	 "register for the IOCCC nor use the IOCCC submit server at this time.",
+	 "register for the IOCCC or use the IOCCC submit server at this time.",
 	 "Please try again later, and monitor the IOCCC news for updates:",
 	 "",
 	 NULL);
