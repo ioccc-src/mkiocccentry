@@ -53,7 +53,7 @@ static const char * const usage_msg =
     "\t-v level\tSet verbosity level (def level: %d)\n"
     "\t-J level\tSet JSON verbosity level (def level: %d)\n"
     "\t-V\t\tPrint version string and exit\n"
-    "\t-q\t\tQuiet mode (def: not quiet)\n"
+    "\t-q\t\tQuiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-S\t\tStrict testing for all struct json_number elements\n"
     "\t\t\t    (def: test only 8, 16, 32, 64 bit and max size signed and unsigned integer types)\n"

@@ -89,7 +89,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
-    -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
+    -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )
     -j jparse		path to jparse tool (def: $JPARSE)
     -p print_test	path to print_test tool (def: $PRINT_TEST)
     -d json_tree	read files under json_tree/subdir/good and json_tree/subdir/bad (def: $JSON_TREE)

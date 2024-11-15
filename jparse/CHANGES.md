@@ -1,5 +1,36 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.0 2024-11-15
+
+Release version `"2.1.0 2024-11-15"` as a significant change to the jparse
+library, `jstrencode(1)` and `jstrdecode(1)` was made, as described below. The
+`jstrencode(1)` and `jstrdecode(1)` tools have a new option, each `-s`, but with
+different functionality. The new version of each of these tools as well as the
+library, is also `"2.1.0 2024-11-15"`.
+
+The functions `json_decode()` and `json_decode_str()` take a new boolean,
+`quote`, which if true, means that the string must start with a `"` and end with
+a `"`. If the length is < 2 then NULL is returned. If the first character is not
+a `"` or the last character is not a `"` it is an error.
+
+The new option `-s` to `jstrencode(1)` means that all input are supposed to be
+strings. As such, the output is enclosed in `"`s (double quotes).
+
+The new option `-s` to `jstrdecode(1)` means that all input are supposed to be
+strings and thus it is expected that it is enclosed in `"`s (double quotes),
+unescaped.
+
+The reason the option says that it's a string, rather than assume it is a string
+unless otherwise specified, is because there are many other JSON data types and
+if we assumed string by default then it would mean that unless one were
+inputting strings they would have to specify the option, which is a bother,
+although it is quite possible that a lot of the time the input is a string.
+
+The man pages have been updated, with a fix in one, and some fun injected into
+them (that correspond to some fun injected into certain tools, though this fun
+does not affect any functionality; it's merely in wording in a string).
+
+
 ## Release 2.0.8 2024-11-14
 
 Renamed `utf8encode()` to `utf8_to_unicode()` to be less confusing as although

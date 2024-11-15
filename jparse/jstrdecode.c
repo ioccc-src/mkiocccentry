@@ -46,20 +46,21 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-s] [-E level] [arg ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-N\t\tignore all newline characters in input\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
+    "\t-s\t\tassume all input are strings, expecting a leading and trailing \" (double quote)\n"
     "\t-E level\tentertainment mode\n"
     "\n"
-    "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
+    "\t[arg ...]\tJSON decode args on command line (def: read stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "Exit codes:\n"
@@ -78,7 +79,7 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl);
+static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
 
 /*
@@ -218,6 +219,7 @@ dup_without_nl(char *input, size_t *inputlen)
  * given:
  *	in_stream	open file stream to decode
  *	ignore_nl	true ==> ignore all newline characters
+ *	quote    true ==> read as strings, expect enclosing "s
  *
  * returns:
  *	allocated struct jstring * ==> decoding was successful,
@@ -227,7 +229,7 @@ dup_without_nl(char *input, size_t *inputlen)
  * decoded JSON strings.
  */
 static struct jstring *
-jstrdecode_stream(FILE *in_stream, bool ignore_nl)
+jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote)
 {
     char *input = NULL;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
@@ -279,7 +281,7 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl)
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz);
+    buf = json_decode(input, inputlen, quote, &bufsiz);
     if (buf == NULL) {
 	/* free input */
 	if (input != NULL) {
@@ -330,6 +332,7 @@ main(int argc, char **argv)
     bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
+    bool quote = false;  /* true ==> assume args are strings, expecting enclosing "s */
     int ret;			/* libc return code */
     int i;
     struct jstring *jstr = NULL;    /* decoded string */
@@ -347,7 +350,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnNQeE:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnNQesE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -373,6 +376,9 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
+        case 's': /* -s - assume strings */
+            quote = true;
+            break;
 	case 'E':
 	    /*
 	     * parse entertainment level
@@ -421,6 +427,7 @@ main(int argc, char **argv)
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
     dbg(DBG_LOW, "escaped quotes: %s", booltostr(esc_quotes));
+    dbg(DBG_LOW, "JSON strings: %s", booltostr(quote));
 
     /*
      * case: process arguments on command line
@@ -444,7 +451,7 @@ main(int argc, char **argv)
 		 * NOTE: the function jstrdecode_stream() adds the allocated
 		 * struct jstring * to the list of decoded JSON strings
 		 */
-		jstr = jstrdecode_stream(stdin, ignore_nl);
+		jstr = jstrdecode_stream(stdin, ignore_nl, quote);
 		if (jstr != NULL) {
 		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
 		} else {
@@ -486,7 +493,7 @@ main(int argc, char **argv)
 		/*
 		 * decode arg
 		 */
-		buf = json_decode_str(input, &bufsiz);
+		buf = json_decode_str(input, quote, &bufsiz);
 		if (buf == NULL) {
 		    warn(__func__, "error while decoding processing arg: %d", i-optind);
 		    success = false;
@@ -524,7 +531,7 @@ main(int argc, char **argv)
 	 * NOTE: the function jstrdecode_stream() adds the allocated
 	 * struct jstring * to the list of decoded JSON strings
 	 */
-	jstr = jstrdecode_stream(stdin, ignore_nl);
+	jstr = jstrdecode_stream(stdin, ignore_nl, quote);
 
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);

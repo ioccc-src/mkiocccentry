@@ -69,7 +69,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
 	-J level	set JSON verbosity level (def level: 0)
-	-q		quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
+        -q		quiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )
 	-V		print version string and exit
 	-s		file.json is a string (def: arg is a filename)
 

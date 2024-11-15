@@ -2,8 +2,12 @@
 
 ## Release 1.6.11 2024-11-15
 
-Fixes in `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/) that
-were not applied or even done until a short bit ago.
+Fixes and improvements in `jparse` synced from the [jparse
+repo](https://github.com/xexyl/jparse/). This includes an update to the jparse
+library for decoding strings and a new option for the `jstrencode(1)` and
+`jstrdecode(1)` tools that have to do with whether or not input is supposed to
+be a string. New jparse version release, new version for jparse library and the
+tools `jstrencode(1)` and `jstrdecode(1)`.
 
 Typo fix in mkiocccentry.c.
 

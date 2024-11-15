@@ -1,6 +1,5 @@
 /*
  * jstr_util - common utility functions for the JSON string encoder/decoder
- * tools
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *

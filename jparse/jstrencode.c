@@ -46,20 +46,21 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-s] [-E level] [arg ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON decode/encode functionality\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
     "\t-N\t\tignore all newline characters in input\n"
     "\t-Q\t\tskip double quotes that enclose each arg's concatenation\n"
     "\t-e\t\tskip double quotes that enclose each arg\n"
+    "\t-s\t\tassume all input are strings, enclosing output in double quotes (\"s)\n"
     "\t-E level\tentertainment mode\n"
     "\n"
-    "\t[string ...]\tencode the concatenation of string args (def: encode stdin)\n"
+    "\t[arg ...]\tJSON encode the concatenation of args (def: encode stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "Exit codes:\n"
@@ -399,6 +400,7 @@ main(int argc, char **argv)
     bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
     bool skip_concat_quotes = false;	/* true ==> skip enclosing quotes around the arg concatenation */
     bool skip_each = false;	/* true ==> skip enclosing quotes around each arg */
+    bool quote = false;         /* true ==> args are strings, enclose in double quotes ("s) */
     int ret;			/* libc return code */
     int i;
     struct jstring *jstr = NULL;    /* to iterate through list */
@@ -416,7 +418,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnNQeE:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnNQesE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -477,6 +479,9 @@ main(int argc, char **argv)
 	case 'e':
 	    skip_each = true;
 	    break;
+        case 's':
+            quote = true;
+            break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -488,8 +493,9 @@ main(int argc, char **argv)
     }
     dbg(DBG_LOW, "-Q: skip double quotes that enclose the arg concatenation: %s", booltostr(skip_concat_quotes));
     dbg(DBG_LOW, "-e: skip double quotes that enclose each arg: %s", booltostr(skip_each));
-    dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
-    dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
+    dbg(DBG_LOW, "-n: do not print a final newline in output: %s", booltostr(nloutput));
+    dbg(DBG_LOW, "-q: silence warnings: %s", booltostr(msg_warn_silent));
+    dbg(DBG_LOW, "-s: string args: %s", booltostr(quote));
 
 
     /*
@@ -671,6 +677,18 @@ main(int argc, char **argv)
     }
 
     /*
+     * if we have at least one encoded string and we need to quote the output,
+     * write a single double quote.
+     */
+    if (quote && json_encoded_strings && json_encoded_strings->jstr != NULL && json_encoded_strings->jstr != NULL) {
+	errno = 0;		/* pre-clear errno for warnp() */
+	ret = fputc('"', stdout);
+	if (ret != '"') {
+	    warnp(__func__, "fputc for starting quote returned error");
+	    success = false;
+	}
+    }
+    /*
      * now write each processed arg to stdout
      */
     for (jstr = json_encoded_strings; jstr != NULL; jstr = jstr->next) {
@@ -686,6 +704,21 @@ main(int argc, char **argv)
 	    }
 	}
     }
+
+    /*
+     * if we have at least one encoded string and we need to quote the output,
+     * write a single double quote.
+     */
+    if (quote && json_encoded_strings && json_encoded_strings->jstr != NULL && json_encoded_strings->jstr != NULL) {
+	errno = 0;		/* pre-clear errno for warnp() */
+	ret = fputc('"', stdout);
+	if (ret != '"') {
+	    warnp(__func__, "fputc for starting quote returned error");
+	    success = false;
+	}
+    }
+
+
 
 
     /*

@@ -69,7 +69,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "2.0.2 2024-11-13"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "2.1.0 2024-11-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

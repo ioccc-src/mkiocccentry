@@ -53,7 +53,7 @@ static const char * const usage_msg =
     "\t-h\t\tPrint help message and exit\n"
     "\t-v level\tSet verbosity level (def level: %d)\n"
     "\t-V\t\tPrint version string and exit\n"
-    "\t-q\t\tSet quiet mode (def: not quiet)\n"
+    "\t-q\t\tSet quiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
     "\tfilename\tfile containing JSON number test cases\n"

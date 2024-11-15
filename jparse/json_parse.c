@@ -393,11 +393,11 @@ jdecencchk(int entertainment)
     /*
      * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
     /* test json_decode_str() */
-    mstr2 = json_decode_str(decstr, &mlen2);
+    mstr2 = json_decode_str(decstr, false, &mlen2);
     if (mstr2 == NULL) {
-	err(147, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	err(147, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
@@ -448,11 +448,11 @@ jdecencchk(int entertainment)
     /*
      * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
     /* test json_decode_str() */
-    mstr2 = json_decode_str(decstr, &mlen2);
+    mstr2 = json_decode_str(decstr, false, &mlen2);
     if (mstr2 == NULL) {
-	err(150, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	err(150, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
@@ -463,10 +463,10 @@ jdecencchk(int entertainment)
      * decode another string that should not match the above decoded string
      */
     decstr2 = "\\u006f\\u0302";
-    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen)", decstr2);
-    mstr = json_decode_str(decstr2, &mlen);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen)", decstr2);
+    mstr = json_decode_str(decstr2, false, &mlen);
     if (mstr == NULL) {
-	err(151, __func__, "json_decode_str(<%s>, *mlen: %ju) == NULL",
+	err(151, __func__, "json_decode_str(<%s>, false, *mlen: %ju) == NULL",
 			   decstr2, (uintmax_t)mlen);
 	not_reached();
     }
@@ -508,11 +508,11 @@ jdecencchk(int entertainment)
 	/*
 	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
 	/* test json_decode_str() */
-	mstr2 = json_decode_str(decstr, &mlen2);
+	mstr2 = json_decode_str(decstr, false, &mlen2);
 	if (mstr2 == NULL) {
-	    err(153, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(153, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			       decstr, (uintmax_t)mlen2);
 	    not_reached();
 	} else {
@@ -563,11 +563,11 @@ jdecencchk(int entertainment)
 	/*
 	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
 	/* test json_decode_str() */
-	mstr2 = json_decode_str(decstr, &mlen2);
+	mstr2 = json_decode_str(decstr, false, &mlen2);
 	if (mstr2 == NULL) {
-	    err(156, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(156, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			       decstr, (uintmax_t)mlen2);
 	    not_reached();
 	} else {
@@ -623,11 +623,11 @@ jdecencchk(int entertainment)
 	    /*
 	     * test decoding the JSON encoded string
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
 	    /* test json_decode_str() */
-	    mstr2 = json_decode_str(decstr, &mlen2);
+	    mstr2 = json_decode_str(decstr, false, &mlen2);
 	    if (mstr2 == NULL) {
-		err(159, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+		err(159, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 				   decstr, (uintmax_t)mlen2);
 		not_reached();
 	    } else {
@@ -683,11 +683,11 @@ jdecencchk(int entertainment)
 	    /*
 	     * test decoding the JSON encoded string
 	     */
-	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+	    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
 	    /* test json_decode_str() */
-	    mstr2 = json_decode_str(decstr, &mlen2);
+	    mstr2 = json_decode_str(decstr, false, &mlen2);
 	    if (mstr2 == NULL) {
-		err(162, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+		err(162, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 				   decstr, (uintmax_t)mlen2);
 		not_reached();
 	    } else {
@@ -744,11 +744,11 @@ jdecencchk(int entertainment)
 		/*
 		 * test decoding the JSON encoded string
 		 */
-		dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+		dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
 		/* test json_decode_str() */
-		mstr2 = json_decode_str(decstr, &mlen2);
+		mstr2 = json_decode_str(decstr, false, &mlen2);
 		if (mstr2 == NULL) {
-		    err(165, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+		    err(165, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 				       decstr, (uintmax_t)mlen2);
 		    not_reached();
 		} else {
@@ -815,11 +815,11 @@ jdecencchk(int entertainment)
     /*
      * test decoding the JSON encoded string
      */
-    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, &mlen2)", decstr);
+    dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, &mlen2)", decstr);
     /* test json_decode_str() */
-    mstr2 = json_decode_str(decstr, &mlen2);
+    mstr2 = json_decode_str(decstr, false, &mlen2);
     if (mstr2 == NULL) {
-	err(168, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	err(168, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			   decstr, (uintmax_t)mlen2);
 	not_reached();
     }
@@ -1269,21 +1269,21 @@ chkbyte2asciistr(void)
 	/*
 	 * test decoding the JSON encoded string
 	 */
-	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, *mlen)", mstr);
+	dbg(DBG_VVVHIGH, "testing json_decode_str(<%s>, false, *mlen)", mstr);
 	/* test json_decode_str() */
-	mstr2 = json_decode_str(mstr, &mlen2);
+	mstr2 = json_decode_str(mstr, false, &mlen2);
 	if (mstr2 == NULL) {
-	    err(217, __func__, "json_decode_str(<%s>, *mlen2: %ju) == NULL",
+	    err(217, __func__, "json_decode_str(<%s>, false, *mlen2: %ju) == NULL",
 			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
 	if (mlen2 != byte2asciistr[i].decoded_len) {
-	    err(218, __func__, "json_decode_str(<%s>, *mlen2 %ju != %ju)",
+	    err(218, __func__, "json_decode_str(<%s>, false, *mlen2 %ju != %ju)",
 			       mstr, (uintmax_t)mlen2, byte2asciistr[i].decoded_len);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(219, __func__, "json_decode_str(<%s>, *mlen2: %ju): 0x%02x != 0x%02x",
+	    err(219, __func__, "json_decode_str(<%s>, false, *mlen2: %ju): 0x%02x != 0x%02x",
 			       mstr, (uintmax_t)mlen2, (uint8_t)(mstr2[0]) & 0xff, i);
 	    not_reached();
 	}
@@ -1627,9 +1627,10 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
  * json_decode - return the decoding of a JSON encoded block of memory
  *
  * given:
- *	ptr	start of memory block to decode
- *	len	length of block to decode in bytes
- *	retlen	address of where to store allocated length, if retlen != NULL
+ *	ptr	    start of memory block to decode
+ *	len	    length of block to decode in bytes
+ *	quote       true ==> assume string, expect surrounding "s
+ *	retlen	    address of where to store allocated length, if retlen != NULL
  *
  *
  * returns:
@@ -1646,7 +1647,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
  * return "\\\\", for example.
  */
 char *
-json_decode(char const *ptr, size_t len, size_t *retlen)
+json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     size_t mlen = 0;	    /* length of allocated encoded string */
@@ -1669,6 +1670,29 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	}
 	warn(__func__, "called with NULL ptr");
 	return NULL;
+    }
+
+    if (quote) {
+	/*
+	 * firewall
+	 */
+	if (len < 2) {
+	    warn(__func__, "quote === true: called with len: %ju < 2", (uintmax_t)len);
+	    return NULL;
+	}
+	if (ptr[0] != '"') {
+	    warn(__func__, "quote === true: string does NOT start with a \"");
+	    return NULL;
+	}
+	if (ptr[len-1] != '"') {
+	    warn(__func__, "quote === true: string does NOT end with a \"");
+	    return NULL;
+	}
+	/*
+	 * ignore JSON surrounding '"'s
+	 */
+	++ptr;
+	len -= 2;
     }
 
     /*
@@ -1694,21 +1718,14 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	    case '\t':  /*fallthrough*/
 	    case '\n':  /*fallthrough*/
 	    case '\f':  /*fallthrough*/
-	    case '\r':
-		/* error - clear allocated length */
-		if (retlen != NULL) {
-		    *retlen = 0;
-		}
-		warn(__func__, "found non-\\-escaped char: 0x%02x", (uint8_t)c);
-		return NULL;
-		break;
+	    case '\r':  /*fallthrough*/
 	    case '"':   /*fallthrough*/
 	    case '\\':
 		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
-		warn(__func__, "found \\-escaped char: %c", c);
+		warn(__func__, "found non-\\-escaped char: 0x%02x", (uint8_t)c);
 		return NULL;
 		break;
 
@@ -1870,8 +1887,8 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
      * return result, if not NULL
      */
     if (ret != NULL) {
-	dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju): %s",
-			 (uintmax_t)len, (uintmax_t)mlen, ret);
+	dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju, %s): %s",
+			 (uintmax_t)len, (uintmax_t)mlen, booltostr(quote), ret);
     } else {
 	dbg(DBG_VVVHIGH, "in json_decode(): decode_json_string(ptr, %ju, *%ju) returned NULL",
 			 (uintmax_t)len, (uintmax_t)mlen);
@@ -1890,8 +1907,9 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
  * This is a simplified interface for json_decode().
  *
  * given:
- *	str	NUL terminated C-style string to decode
- *	retlen	address of where to store allocated length, if retlen != NULL
+ *	str	    NUL terminated C-style string to decode
+ *	quote       assume JSON strings, expect enclosing "s
+ *	retlen	    address of where to store allocated length, if retlen != NULL
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
@@ -1906,7 +1924,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
  *	 be used instead!
  */
 char *
-json_decode_str(char const *str, size_t *retlen)
+json_decode_str(char const *str, bool quote, size_t *retlen)
 {
     void *ret = NULL;	    /* allocated decoding string or NULL */
     size_t len = 0;	    /* length of string to decode */
@@ -1935,8 +1953,11 @@ json_decode_str(char const *str, size_t *retlen)
     /*
      * convert to json_decode() call
      */
-    ret = json_decode(str, len, retlen);
+    ret = json_decode(str, len, quote, retlen);
     if (ret == NULL) {
+        if (retlen != NULL) {
+            *retlen = 0;
+        }
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
 	dbg(DBG_VVHIGH, "string: <%s> JSON decoded", str);
@@ -3511,6 +3532,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 	 */
 	item->quote = true;
 	++ptr;
+        quote = false; /* Important! If this is not done the json_decode() function WILL FAIL! */
 	len -= 2;
     }
 
@@ -3531,7 +3553,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = json_decode(item->as_str, len, &(item->str_len));
+    item->str = json_decode(item->as_str, len, quote, &(item->str_len));
     if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       booltostr(quote), item->as_str);
@@ -3569,10 +3591,10 @@ json_conv_string(char const *ptr, size_t len, bool quote)
  * This is a simplified interface for json_conv_string(). See that function for details.
  *
  * given:
- *	str	encoded JSON string in the from of a NUL terminated C-style string
- *	retlen	address of where to store length of str, if retlen != NULL
- *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1]
- *		must be '"', false ==> the entire str is to be converted
+ *	str	        encoded JSON string in the from of a NUL terminated C-style string
+ *	retlen	        address of where to store length of str, if retlen != NULL
+ *	quote	        true ==> ignore JSON double quotes, both str[0] & str[len-1]
+ *		        must be '"', false ==> the entire str is to be converted
  *
  * returns:
  *	allocated JSON parser tree node converted JSON string

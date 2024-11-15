@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemtblgen 8 "30 January 2023" "jsemtblgen" "jparse tools"
+.TH jsemtblgen 8 "15 November 2024" "jsemtblgen" "jparse tools"
 .SH NAME
 .B jsemtblgen
 \- generate JSON semantics table
@@ -301,7 +301,7 @@ Set JSON verbosity level to
 .IR level .
 .TP
 .B \-q
-Set quiet mode.
+Suppress some of the output (def: loud :\-) ).
 .TP
 .B \-V
 Print version and exit.
@@ -331,8 +331,8 @@ is NULL.
 .TP
 .BI \-P\  prefix
 All
-.B validate
-functions, that are not NULL will start with
+.B validation
+functions that are not NULL will start with
 .I prefix
 followed by an underscore (_).
 .sp 1
@@ -342,7 +342,7 @@ contains invalid function name characters, those
 characters are replaced by underscore (_).
 If
 .I prefix
-is a C language keyword, or does not start with a character that is valid for a C function name, then then it is prepended with
+is a C language keyword, or does not start with a character that is valid for a C function name, then it is prepended with
 .BR x .
 .sp 1
 The default is to not use a prefix.
