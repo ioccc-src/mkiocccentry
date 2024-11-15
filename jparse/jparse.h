@@ -103,6 +103,7 @@ extern void jparse_error(JPARSE_LTYPE *yyltype, struct json **tree, yyscan_t sca
  * function prototypes for jparse.l
  */
 extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);
+extern struct json *parse_json_str(char const *ptr, size_t len, bool *is_valid);
 extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);
 extern struct json *parse_json_file(char const *name, bool *is_valid);
 

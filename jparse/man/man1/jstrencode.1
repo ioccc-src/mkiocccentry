@@ -25,7 +25,6 @@
 .RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RB [\| \-e \|]
-.RB [\| \-s \|]
 .RB [\| \-E
 .IR level \|]
 .RI [\| string
@@ -45,9 +44,6 @@ option.
 On the other hand, if you do not want a newline printed after the output, use the
 .B \-n
 option.
-If the input is supposed to be a string (or strings), use the
-.B \-s
-option so that the output is enclosed in double quotes ("s).
 .PP
 By default the program reads from
 .BR stdin ,
@@ -88,9 +84,6 @@ Skip double quotes that enclose each arg's concatenation.
 .B \-e
 Skip double quotes that enclose each arg.
 .TP
-.B \-s
-Assume input is a string, enclosing output with double quotes ("s).
-.TP
 .BI \-E\  level
 Entertainment mode at level
 .IR level .
@@ -128,42 +121,14 @@ If you have an issue with the tool you can report it at
 \fI\<https://github.com/xexyl/jparse/issues\>\fP.
 .SH EXAMPLES
 .PP
-Decode the JSON string
-.BR {\ "test_mode"\ :\ false\ } :
+Encode a string containing an escaped double quote:
 .sp
 .RS
 .ft B
- jstrencode { "test_mode" : false }
-.ft R
-.RE
-.sp
-Note that we didn't quote it!
-.PP
-Decode a string containing an escaped double quote from
-.B stdin
-(send
-.BR EOF ,
-usually ctrl\-d or
-.BR ^D ,
-to encode):
-.sp
-.RS
-.ft B
- jstrencode
- {"test\e"ing":false}
- ^D
+ jstrencode "test\\"ing"
 .ft R
 .RE
 .PP
-Decode just a negative number:
-.sp
-.RS
-.ft B
- jstrencode \-\- \-5
-.ft R
-.RE
-.PP
-.sp
 Ignore newlines in input:
 .sp
 .RS
@@ -179,16 +144,6 @@ Skip double quotes that enclose each arg's concatenation:
  jstrencode -Q '"foo"' bar baz
 .ft R
 .RE
-.PP
-.sp
-Surround output with double quotes:
-.sp
-.RS
-.ft B
- jstrencode -s 'foo'
-.ft R
-.RE
-
 .PP
 Run test mode:
 .sp

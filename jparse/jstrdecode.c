@@ -46,7 +46,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-s] [-E level] [arg ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -57,7 +57,7 @@ static const char * const usage_msg =
     "\t-N\t\tignore all newline characters in input\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
-    "\t-s\t\tassume all input are strings, expecting a leading and trailing \" (double quote)\n"
+    "\t-d\t\tdo not require a leading and trailing double quote (def: do require)\n"
     "\t-E level\tentertainment mode\n"
     "\n"
     "\t[arg ...]\tJSON decode args on command line (def: read stdin)\n"
@@ -219,7 +219,7 @@ dup_without_nl(char *input, size_t *inputlen)
  * given:
  *	in_stream	open file stream to decode
  *	ignore_nl	true ==> ignore all newline characters
- *	quote    true ==> read as strings, expect enclosing "s
+ *	quote           true ==> require leading and trailing double quotes
  *
  * returns:
  *	allocated struct jstring * ==> decoding was successful,
@@ -332,7 +332,7 @@ main(int argc, char **argv)
     bool ignore_nl = false;	/* true ==> ignore all newlines when encoding */
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
-    bool quote = false;  /* true ==> assume args are strings, expecting enclosing "s */
+    bool quote = true;          /* true ==> require surrounding quotes */
     int ret;			/* libc return code */
     int i;
     struct jstring *jstr = NULL;    /* decoded string */
@@ -350,7 +350,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnNQesE:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVtnNQedE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -376,8 +376,8 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-        case 's': /* -s - assume strings */
-            quote = true;
+        case 'd': /* -d - don't require surrounding quotes */
+            quote = false;
             break;
 	case 'E':
 	    /*
@@ -427,7 +427,7 @@ main(int argc, char **argv)
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
     dbg(DBG_LOW, "escaped quotes: %s", booltostr(esc_quotes));
-    dbg(DBG_LOW, "JSON strings: %s", booltostr(quote));
+    dbg(DBG_LOW, "ignore surrounding quotes: %s", booltostr(quote));
 
     /*
      * case: process arguments on command line
@@ -542,9 +542,9 @@ main(int argc, char **argv)
 	}
 
     /*
-     * write starting quote if requested
+     * write starting quote if requested and we have at least one decoded string
      */
-    if (write_quote) {
+    if (write_quote && json_decoded_strings && json_decoded_strings->jstr != NULL) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fputc('"', stdout);
 	if (ret != '"') {
@@ -583,11 +583,10 @@ main(int argc, char **argv)
 	}
     }
 
-
     /*
-     * write ending quote if requested
+     * write starting quote if requested and we have at least one decoded string
      */
-    if (write_quote) {
+    if (write_quote && json_decoded_strings && json_decoded_strings->jstr != NULL) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fputc('"', stdout);
 	if (ret != '"') {

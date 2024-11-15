@@ -170,7 +170,7 @@ cannot show it, or it is invalid, you might see a character indicating this.
 
 
 ```sh
- jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-s] [-E level] [arg ...]
+ jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]
 ```
 
 
@@ -180,11 +180,8 @@ no `-J level` option.
 Use of `-Q` will enclose output in double quotes whereas the use of `-e`
 will enclose each decoded string with escaped double quotes. Use of `-Q` and
 `-e` together will surround the entire output with unescaped quotes and each
-decoded arg will be surrounded with escaped (backslashed) quotes. If you need
-the input to be validated as a string, that is it is enclosed in `"`s (double
-quotes), use the `-s` option. This is not the default because strings are only
-one of many other kinds of JSON data and it would be a bother to have to specify
-an option unless you're acting on strings.
+decoded arg will be surrounded with escaped (backslashed) quotes. To not require
+surrounding the input strings with double quotes (`"`s), use the `-d` option.
 
 If you use `-N` it ignores all newlines in input. This does not mean that the
 JSON allows for unescaped newlines but rather newlines on the command line are
@@ -221,11 +218,11 @@ If no string is given on the command line it expects you to type something on
 
 ## jstrdecode examples
 
-### Encode `\"\"`:
+### Decode `"\"\""`:
 
 
 ```sh
-jstrdecode '\"\"'
+jstrdecode '"\"\""'
 ```
 
 This will show:
@@ -234,38 +231,26 @@ This will show:
 ""
 ```
 
-### Encode a negative number:
-
-```sh
-jstrdecode -- -5
-```
-
-This will show:
-
-```
--5
-```
-
 ### Ignore newlines in input:
 
 ```sh
-printf "foo\nbar" | jstrdecode -N
+printf '"foo\nbar"' | jstrdecode -N
 
-echo foo bar | jstrdecode -N
+echo '"foo bar"' | jstrdecode -N
 ```
 
 Note that the above two commands will result in different output.
 
-### Enclose output in double quotes:
+### Enclose output in double quotes, not requiring double quotes:
 
 ```sh
-jstrdecode -Q foo bar baz
+jstrdecode -d -Q foo bar baz
 ```
 
 ### Enclose each decoded string with escaped quotes:
 
 ```sh
-jstrdecode -e 'foo bar' 'baz'
+jstrdecode -e '"foo bar"' '"baz"'
 ```
 
 This will show:
@@ -277,7 +262,7 @@ This will show:
 ### Enclose output with double quotes and each decoded string with escaped quotes:
 
 ```sh
-jstrdecode -Q -e 'foo bar' 'baz'
+jstrdecode -Q -e '"foo bar"' '"baz"'
 ```
 
 This will show:
@@ -293,7 +278,7 @@ This will show:
 Palaeontologists might like to try `U+1F996` and `U+F995`:
 
 ```sh
-jstrdecode "\uD83E\uDD96\uD83E\uDD95"
+jstrdecode '"\uD83E\uDD96\uD83E\uDD95"'
 ```
 
 which will show a T-Rex and a Sauropod (includes Brontosaurus, Diplodocus,
@@ -306,7 +291,7 @@ Brachiosaurus):
 whereas fantasy lovers might like to try `U+1F409`, `U+1FA84` and `U+1F9D9`:
 
 ```sh
-jstrdecode "\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"
+jstrdecode '"\uD83D\uDC09\uD83E\uDE84\uD83E\uDDD9"'
 ```
 
 which will show a dragon, a wand and a mage:
@@ -318,7 +303,7 @@ which will show a dragon, a wand and a mage:
 whereas volcanologists might like to try `U+1F30B`:
 
 ```sh
-jstrdecode "\uD83C\uDF0B"
+jstrdecode '"\uD83C\uDF0B"'
 ```
 
 which will show a volcano:
@@ -331,7 +316,7 @@ which will show a volcano:
 whereas alcoholics :-) might like to try `U+1F37B`:
 
 ```sh
-jstrdecode "\uD83C\uDF7B"
+jstrdecode '"\uD83C\uDF7B"'
 ```
 
 which will show clinking beer mugs:
@@ -394,7 +379,7 @@ is perfectly valid JSON:
 
 
 ```sh
-jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-s] [-E level] [arg ...]
+jstrencode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-E level] [arg ...]
 ```
 
 Unlike the `jparse` utility, no JSON parsing functions are called, so there is
@@ -422,12 +407,6 @@ printf "foo\nbar\n" | jstrencode -N
 If you need to not have a trailing newline in the output, use the `-n` option.
 
 Use `-e` to not output double quotes that enclose each arg.
-
-If all input are supposed to be strings, use the `-s` option so that the output
-is enclosed in double quotes (`"`s). This is not the default because strings are
-only one of many other kinds of JSON data and it would be a bother to have to
-specify an option unless you're acting on strings.
-
 
 `-E` is kind of undocumented but kind of documented: play with it to see what it
 does, should you wish!  :-)

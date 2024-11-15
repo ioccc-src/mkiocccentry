@@ -25,7 +25,7 @@
 .RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RB [\| \-e \|]
-.RB [\| \-s \|]
+.RB [\| \-d \|]
 .RB [\| \-E
 .IR level \|]
 .RI [\| string
@@ -64,10 +64,9 @@ By default the program reads from
 if no arg is specified.
 Otherwise it will act on the arguments to the program.
 .PP
-If input is supposed to be a string, use the
-.B \-s
+If it is desired to not require surrounding double quotes ("s) in the input, use the
+.B \-d
 option.
-This will make sure that the string is at least two in length and that it starts and ends with a double quote (").
 .PP
 If given the
 .B \-t
@@ -102,6 +101,9 @@ Enclose output in double quotes
 .TP
 .B \-e
 Enclose each encoded string (after decoding) with escaped double quotes (def: do not)
+.TP
+.B \-d
+Don't require input to be surrounded by double quotes ("s).
 .TP
 .BI \-E\  level
 Entertainment mode at level
@@ -151,46 +153,11 @@ If you have an issue with the tool you can report it at
 .IR \<https://github.com/xexyl/jparse/issues\> .
 .SH EXAMPLES
 .PP
-Encode the JSON string
-.BR {\ "test_mode"\ :\ false\ } :
+Display the dragon emoji (U+1F409), without having to worry about double quotes:
 .sp
 .RS
 .ft B
- jstrdecode { "test_mode" : false }
-.ft R
-.RE
-.sp
-Notice that we didn't quote it!
-.PP
-Encode input from
-.B stdin
-(send
-.BR EOF ,
-usually ctrl\-d or
-.BR ^D ,
-to decode):
-.sp
-.RS
-.ft B
- jstrdecode
- \-5
- ^D
-.ft R
-.RE
-.PP
-Encode just a negative number:
-.sp
-.RS
-.ft B
- jstrdecode \-\- \-5
-.ft R
-.RE
-.PP
-Display the dragon emoji (U+1F409):
-.sp
-.RS
-.ft B
- jstrdecode "\\uD83D\\uDC09"
+ jstrdecode -d "\\uD83D\\uDC09"
 .ft R
 .RE
 .PP
@@ -198,15 +165,15 @@ Ignore newlines in input:
 .sp
 .RS
 .ft B
- printf "foo\\\\nbar" | jstrdecode -N 
+ printf '"foo\\\\nbar\\"' | jstrdecode -N 
 .ft R
 .RE
 .PP
-Enclose output in double quotes:
+Enclose output in double quotes, without having to worry about quoting args:
 .sp
 .RS
 .ft B
- jstrdecode -Q foo bar baz
+ jstrdecode -d -Q foo bar baz
 .ft R
 .RE
 .PP

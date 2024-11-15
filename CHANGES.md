@@ -4,10 +4,7 @@
 
 Fixes and improvements in `jparse` synced from the [jparse
 repo](https://github.com/xexyl/jparse/). This includes an update to the jparse
-library for decoding strings and a new option for the `jstrencode(1)` and
-`jstrdecode(1)` tools that have to do with whether or not input is supposed to
-be a string. New jparse version release, new version for jparse library and the
-tools `jstrencode(1)` and `jstrdecode(1)`.
+library and some bug fixes and additions to the jstrdecode and jstrencode tools.
 
 Typo fix in mkiocccentry.c.
 

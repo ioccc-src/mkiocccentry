@@ -1629,7 +1629,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
  * given:
  *	ptr	    start of memory block to decode
  *	len	    length of block to decode in bytes
- *	quote       true ==> assume string, expect surrounding "s
+ *	quote       true ==> require surrounding double quotes ("s)
  *	retlen	    address of where to store allocated length, if retlen != NULL
  *
  *
@@ -1908,7 +1908,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
  *
  * given:
  *	str	    NUL terminated C-style string to decode
- *	quote       assume JSON strings, expect enclosing "s
+ *	quote       assume double quotes surrounding the string
  *	retlen	    address of where to store allocated length, if retlen != NULL
  *
  * returns:
