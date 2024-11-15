@@ -1,4 +1,4 @@
-.\" section 1 man page for jstrencode
+.\" section 1 man page for jstrdecode
 .\"
 .\" This man page was first written by Cody Boone Ferguson for the IOCCC
 .\" in 2022.
@@ -9,12 +9,12 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrencode 1 "09 November 2024" "jstrencode" "jparse tools"
+.TH jstrdecode 1 "15 November 2024" "jstrdecode" "jparse tools"
 .SH NAME
-.B jstrencode
-\- convert JSON decoded strings into normal strings
+.B jstrdecode
+\- JSON decode command line strings
 .SH SYNOPSIS
-.B jstrencode
+.B jstrdecode
 .RB [\| \-h \|]
 .RB [\| \-v
 .IR level \|]
@@ -25,19 +25,34 @@
 .RB [\| \-N \|]
 .RB [\| \-Q \|]
 .RB [\| \-e \|]
+.RB [\| \-d \|]
 .RB [\| \-E
 .IR level \|]
 .RI [\| string
 .IR ... \|]
 .SH DESCRIPTION
-.B jstrencode
-converts JSON decoded strings into a normal strings.
+.B jstrdecode
+decodes command line strings in JSON format according to the so-called JSON specification.
+It will, in the case of UTF\-8 or UTF\-16 codepoints in the JSON format of
+.B
+.B \\\\uxxxx
+or
+.BR \\\\uxxxx\\\\uxxxx ,
+where
+.B x
+is a hexadecimal digit, decode to the proper Unicode symbol, although if your system cannot show it or it is invalid, you might see a symbol that indicates this.
+.PP
 If given the
 .B \-Q
-option, the program skips double quotes that enclose each arg's concatenation.
+option it will enclose the entire output in quotes.
 If given the
 .B \-e
-option it will skip double quotes that enclose each arg.
+option it will enclose each decoded string with escaped double quotes.
+The use of
+.B \-Q
+and
+.B \-e
+together will surround the entire output with unescaped quotes and each decoded arg will be surrounded with escaped (backslashed) quotes.
 To ignore newlines in the input, use the
 .B \-N
 option.
@@ -49,39 +64,46 @@ By default the program reads from
 if no arg is specified.
 Otherwise it will act on the arguments to the program.
 .PP
+If it is desired to not require surrounding double quotes ("s) in the input, use the
+.B \-d
+option.
+.PP
 If given the
 .B \-t
-option it performs a test on the JSON encode and decode functions.
+option it performs a test on the JSON decode and encode functions.
 .SH OPTIONS
 .TP
 .B \-h
-Show help and exit.
+Show help and exit
 .TP
 .BI \-v\  level
 Set verbosity level to
-.I level
-(def: 0)
+.IR level
+(def: 0).
 .TP
 .B \-q
-Suppresses some of the output (def: not quiet)
+Suppresses some of the output (def: loud :-) ).
 .TP
 .B \-V
-Show version and exit.
+Show version and exit
 .TP
 .B \-t
-Run tests on the JSON encode/decode functions
+Run tests on the JSON decode/encode functions
 .TP
 .B \-n
-Do not output a newline after the encode function
+Do not output a newline after the decode function
 .TP
 .B \-N
 Ignore all newline characters in input
 .TP
 .B \-Q
-Skip double quotes that enclose each arg's concatenation
+Enclose output in double quotes
 .TP
 .B \-e
-Skip double quotes that enclose each arg
+Enclose each encoded string (after decoding) with escaped double quotes (def: do not)
+.TP
+.B \-d
+Don't require input to be surrounded by double quotes ("s).
 .TP
 .BI \-E\  level
 Entertainment mode at level
@@ -89,10 +111,10 @@ Entertainment mode at level
 .SH EXIT STATUS
 .TP
 0
-encode successful
+decode successful
 .TQ
 1
-encode unsuccessful
+decode unsuccessful
 .TQ
 2
 .B \-h
@@ -107,66 +129,51 @@ command line error
 internal error
 .SH BUGS
 .PP
-A known problem with macOS Terminal is that one has to hit ctrl\-d twice in order for it to properly send
-.B EOF
-but this occurs in other applications as well so we note this issue here.
+A number of issues are known when it comes to encoding, amongst them:
 .PP
-It is worth remembering that, for the
-.B \-Q
-option, if the string is not enclosed in double quotes (in other words, the first character and last character are both double quotes), the quote will not be removed, as it's not enclosed in double quotes.
+It does not convert code points to unicode symbols.
+.PP
+It duplicates
+.BR \e
+when it should be singular, according to JavaScript encoding of JSON with
+.BR \e .
+.PP
+It does not handle invalid 
+.BR \e\-
+escaped characters in the same way as JavaScript does, and in very wrong ways.
+.PP
+Otherwise, a known problem when reading from stdin (in the case that the input does not come from the pipe), at least with some terminal applications, is that one has to hit ctrl\-d (or whatever one has
+.B EOF
+configured as) twice in order for it to properly send
+.B EOF
+(this occurs in other applications as well so it seems to be a terminal problem).
 .PP
 If you have an issue with the tool you can report it at
 .br
-\fI\<https://github.com/xexyl/jparse/issues\>\fP.
+.IR \<https://github.com/xexyl/jparse/issues\> .
 .SH EXAMPLES
 .PP
-Decode the JSON string
-.BR {\ "test_mode"\ :\ false\ } :
+Display the dragon emoji (U+1F409), without having to worry about double quotes:
 .sp
 .RS
 .ft B
- jstrencode { "test_mode" : false }
-.ft R
-.RE
-.sp
-Note that we didn't quote it!
-.PP
-Decode a string containing an escaped double quote from
-.B stdin
-(send
-.BR EOF ,
-usually ctrl\-d or
-.BR ^D ,
-to encode):
-.sp
-.RS
-.ft B
- jstrencode
- {"test\e"ing":false}
- ^D
+ jstrdecode -d "\\uD83D\\uDC09"
 .ft R
 .RE
 .PP
-Decode just a negative number:
-.sp
-.RS
-.ft B
- jstrencode \-\- \-5
-.ft R
-.RE
 Ignore newlines in input:
 .sp
 .RS
 .ft B
- printf "foo\\\\nbar" | jstrencode -N 
+ printf '"foo\\\\nbar\\"' | jstrdecode -N 
 .ft R
 .RE
 .PP
-Skip double quotes that enclose each arg's concatenation:
+Enclose output in double quotes, without having to worry about quoting args:
 .sp
 .RS
 .ft B
- jstrencode -Q '"foo"' bar baz
+ jstrdecode -d -Q foo bar baz
 .ft R
 .RE
 .PP
@@ -174,7 +181,7 @@ Run test mode:
 .sp
 .RS
 .ft B
- jstrencode \-t
+ jstrdecode \-t
 .ft R
 .RE
 .PP
@@ -182,7 +189,7 @@ Have some fun:
 .sp
 .RS
 .ft B
- jstrencode -E 1
+ jstrdecode -E 1
 .ft R
 .RE
 .PP
@@ -190,10 +197,10 @@ Have even more fun:
 .sp
 .RS
 .ft B
- jstrencode -E 3
+ jstrdecode -E 3
 .ft R
 .RE
 .SH SEE ALSO
 .PP
-For the decode counterpart, see
-.BR jstrdecode (1).
+For the encode counterpart, see
+.BR jstrencode (1).

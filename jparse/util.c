@@ -73,7 +73,7 @@ static char const * const usage =
 "\t-h\t\tprint help message and exit\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
 "\t-V\t\tprint version string and exit\n"
-"\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+"\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
 "\n"
 "jparse library version: %s\n";
 #endif /* UTIL_TEST */

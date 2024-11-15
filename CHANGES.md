@@ -1,5 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.11 2024-11-15
+
+Fixes and improvements in `jparse` synced from the [jparse
+repo](https://github.com/xexyl/jparse/). This includes an update to the jparse
+library and some bug fixes and additions to the jstrdecode and jstrencode tools.
+
+Typo fix in mkiocccentry.c.
+
+Also roll back a commit in chkentry.c - a work in progress for **after** IOCCC28
+that was, in a rush to leave the house but still get important fixes in, was
+accidentally committed yesterday.
+
+
 ## Release 1.6.10 2024-11-14
 
 Synced `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). The

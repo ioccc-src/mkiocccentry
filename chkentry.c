@@ -1,5 +1,5 @@
 /*
- * chkentry - check JSON files in an IOCCC submissions and winning entries
+ * chkentry - check JSON files in an IOCCC submission
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
@@ -29,17 +29,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
-#include <fcntl.h>		/* for open() */
 
 /*
  * chkentry - check JSON files in an IOCCC submission
  */
 #include "chkentry.h"
-
-/*
- * version - official IOCCC toolkit versions
- */
-#include "soup/version.h"
 
 
 /*
@@ -58,7 +52,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-a author_dir] [-e .entry.json] info.json auth.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json auth.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -66,9 +60,6 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\n"
-    "\t-a author_dir\tset author/ directory (def: author/)\n"
-    "\t-e .entry.json\tset .entry.json filename (def: .entry.json)\n"
     "\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
@@ -89,143 +80,7 @@ static const char * const usage_msg =
 /*
  * functions
  */
-static FILE *open_json_dir_file(char const *dir, char const *file);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-
-
-/*
- * open_json_dir_file - open a readable JSON file in a given directory
- *
- * Temporarily chdir to the directory, if non-NULL, try to open the file,
- * and then chdir back to the current directory.
- *
- * If dir == NULL, just try to open the file without a chdir.
- *
- * given:
- *	dir	directory into which we will temporarily chdir or
- *		    NULL ==> do not chdir
- *	file	path of readable JSON file to open
- *
- * returns:
- *	open readable JSON file stream
- *
- * NOTE: This function does not return if path is NULL,
- *	 if we cannot chdir to a non-NULL dir, if not a readable file,
- *	 or if unable to open file.
- *
- * NOTE: This function will NOT return NULL.
- */
-static FILE *
-open_json_dir_file(char const *dir, char const *file)
-{
-    FILE *ret_stream = NULL;		/* open file stream to return */
-    int ret = 0;		/* libc function return */
-    int cwd = -1;		/* current working directory */
-
-    /*
-     * firewall
-     */
-    if (file == NULL) {
-	err(10, __func__, "called with NULL file");
-	not_reached();
-    }
-
-    /*
-     * note the current directory so we can restore it later, after the chdir(work_dir) below
-     */
-    errno = 0;                  /* pre-clear errno for errp() */
-    cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-    if (cwd < 0) {
-        errp(11, __func__, "cannot open .");
-        not_reached();
-    }
-
-    /*
-     * Temporarily chdir if dir is non-NULL
-     */
-    if (dir != NULL && cwd >= 0) {
-
-	/*
-	 * check if we can search / work within the directory
-	 */
-	if (!exists(dir)) {
-	    err(12, __func__, "directory does not exist: %s", dir);
-	    not_reached();
-	}
-	if (!is_dir(dir)) {
-	    err(13, __func__, "is not a directory: %s", dir);
-	    not_reached();
-	}
-	if (!is_exec(dir)) {
-	    err(14, __func__, "directory is not searchable: %s", dir);
-	    not_reached();
-	}
-
-	/*
-	 * chdir to to the directory
-	 */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = chdir(dir);
-	if (ret < 0) {
-	    errp(15, __func__, "cannot cd %s", dir);
-	    not_reached();
-	}
-    }
-
-    /*
-     * must be a readable file
-     */
-    if (!exists(file)) {
-	err(16, __func__, "file does not exist: %s", file);
-	not_reached();
-    }
-    if (!is_file(file)) {
-	err(17, __func__, "file is not a regular file: %s", file);
-	not_reached();
-    }
-    if (!is_read(file)) {
-	err(18, __func__, "file is not a readable file: %s", file);
-	not_reached();
-    }
-
-    /*
-     * open the readable JSON file
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    ret_stream = fopen(file, "r");
-    if (ret_stream == NULL) {
-	errp(19, __func__, "cannot open file: %s", file);
-	not_reached();
-    }
-
-    /*
-     * if we did a chdir to dir, chdir back to cwd
-     */
-    if (dir != NULL && cwd >= 0) {
-
-	/*
-	 * switch back to the previous current directory
-	 */
-	errno = 0;                  /* pre-clear errno for errp() */
-	ret = fchdir(cwd);
-	if (ret < 0) {
-	    errp(20, __func__, "cannot fchdir to the previous current directory");
-	    not_reached();
-	}
-	errno = 0;                  /* pre-clear errno for errp() */
-	ret = close(cwd);
-	if (ret < 0) {
-	    errp(21, __func__, "close of previous current directory failed");
-	    not_reached();
-	}
-    }
-
-    /*
-     * return open stream
-     */
-    return ret_stream;
-}
-
 
 /*
  * usage - print usage to stderr
@@ -271,26 +126,18 @@ usage(int exitcode, char const *prog, char const *str)
 }
 
 
-
 int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *entry_dir = ".";	/* entry directory to process, or NULL ==> process files */
-    char const *author_dir = "author/";	/* author/ directory to process, or NULL ==> process files */
-    char const *entry_filename = ".entry.json"; /* .entry.json file to process, or NULL ==> no .entry.json to process */
-    char const *info_path = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
+    char const *submission_dir = ".";	/* submission directory to process, or NULL ==> process files */
+    char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
-    char *entry_path = NULL;		/* full path of .entry.json or NULL */
-    FILE *entry_stream = NULL;		/* open .entry.json file stream */
-    FILE *author_stream = NULL;		/* open author/author_handle.json file stream */
-    struct json *entry_tree = NULL;	/* JSON parse tree for .entry.json, or NULL ==> not parsed */
-    struct json *author_tree = NULL;	/* JSON parse tree for author_handle.json, or NULL ==> not parsed */
+    char *info_path = NULL;		/* full path of .info.json or NULL */
+    char *auth_path = NULL;		/* full path of .auth.json or NULL */
     FILE *info_stream = NULL;		/* open .info.json file stream */
-    bool entry_valid = false;		/* .entry.json is valid JSON */
-    bool author_valid = false;		/* author_handle.json is valid JSON */
     FILE *auth_stream = NULL;		/* open .auth.json file stream */
     struct json *info_tree = NULL;	/* JSON parse tree for .info.json, or NULL ==> not parsed */
     struct json *auth_tree = NULL;	/* JSON parse tree for .auth.json, or NULL ==> not parsed */
@@ -317,15 +164,11 @@ main(int argc, char *argv[])
     uintmax_t c;			/* dynamic array index */
     int i;
 
-    UNUSED_ARG(author_stream); /* XXX - after the .entry.json file parsing is implemented we can use this */
-    UNUSED_ARG(author_tree); /* XXX - after the .entry.json file parsing is implemented we can use this */
-    UNUSED_ARG(author_valid); /* XXX - after the .entry.json file parsing is implemented we can use this */
-
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vqa:e:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:Vq")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -362,12 +205,6 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-	case 'a': /* author directory */
-	    author_dir = optarg;
-	    break;
-	case 'e':
-	    entry_filename = optarg;
-	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -381,14 +218,12 @@ main(int argc, char *argv[])
     argv += optind;
     switch (argc) {
     case 1:
-	entry_dir = argv[0];
-	info_path = NULL;
-	auth_filename = NULL;
+	usage(3, program, "single argument mode is reserved for future use");	/*ooo*/
+	not_reached();
 	break;
     case 2:
-	entry_dir = NULL;
-	author_dir = NULL;
-	info_path = argv[0];
+	submission_dir = NULL;
+	info_filename = argv[0];
 	auth_filename = argv[1];
 	break;
     default:
@@ -396,27 +231,22 @@ main(int argc, char *argv[])
 	not_reached();
 	break;
     }
-    if (info_path != NULL && strcmp(info_path, ".") == 0 &&
-        auth_filename != NULL && strcmp(auth_filename, ".") == 0 && entry_dir == NULL) {
-	vrergfB(-1, -1);
+    if (info_filename != NULL && strcmp(info_filename, ".") == 0 &&
+        auth_filename != NULL && strcmp(auth_filename, ".") == 0 && submission_dir == NULL) {
+	vrergfB(-1, -1); /* Easter egg */
 	not_reached();
     }
-    if (entry_dir == NULL) {
-	dbg(DBG_LOW, "entry_dir is NULL");
+    if (submission_dir == NULL) {
+	dbg(DBG_LOW, "submission_dir is NULL");
     } else {
-	dbg(DBG_LOW, "entry_dir: %s", entry_dir);
+	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
     }
-    if (author_dir == NULL) {
-	dbg(DBG_LOW, "author_dir is NULL");
+    if (info_filename == NULL) {
+	dbg(DBG_LOW, "info_filename is NULL");
+    } else if (strcmp(info_filename, ".") == 0) {
+	dbg(DBG_LOW, "info_filename is .");
     } else {
-	dbg(DBG_LOW, "author_dir: %s", author_dir);
-    }
-    if (info_path == NULL) {
-	dbg(DBG_LOW, "info_path is NULL");
-    } else if (strcmp(info_path, ".") == 0) {
-	dbg(DBG_LOW, "info_path is .");
-    } else {
-	dbg(DBG_LOW, "info_path: %s", info_path);
+	dbg(DBG_LOW, "info_filename: %s", info_filename);
     }
     if (auth_filename == NULL) {
 	dbg(DBG_LOW, "auth_filename is NULL");
@@ -429,45 +259,40 @@ main(int argc, char *argv[])
     /*
      * case: 1 arg - directory
      */
-    if (entry_dir != NULL && author_dir != NULL && *author_dir != '\0' && entry_filename != NULL &&
-	    *entry_dir != '\0') {
+    if (submission_dir != NULL && info_filename == NULL && auth_filename == NULL) {
 
 	/*
-	 * open the entry_dir/.entry file
+	 * open the .info.json file under submission_dir
 	 */
-	entry_stream = open_json_dir_file(entry_dir, entry_filename);
-	if (entry_stream == NULL) { /* paranoia */
-	    err(22, __func__, "entry_stream = open_json_dir_file(%s, %s) returned NULL", entry_dir, entry_filename);
+	info_filename = ".info.json";
+	info_stream = open_dir_file(submission_dir, info_filename);
+	if (info_stream == NULL) { /* paranoia */
+	    err(22, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
 	    not_reached();
 	}
 
 	/*
-	 * determine if author/ exists and is a searchable directory
+	 * open the .auth.json file under submission_dir
 	 */
-	if (!exists(author_dir) || !is_dir(author_dir) || !is_exec(author_dir)) {
-	    err(23, __func__, "author/ directory is not a searchable directory: %s", author_dir);
+	auth_filename = ".auth.json";
+	auth_stream = open_dir_file(submission_dir, auth_filename);
+	if (auth_stream == NULL) { /* paranoia */
+	    err(23, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
 	    not_reached();
 	}
-
-	/*
-	 * NOTE: we can't open any author_handle.json file yet because we have
-	 * to first parse the .entry.json file to determine what those files
-	 * should be. Thus this is done later for each author in the author_set
-	 * array (with the member name author_handle).
-	 */
 
     /*
      * case: 2 args - info path and auth path
      */
-    } else if (entry_dir == NULL && info_path != NULL && auth_filename != NULL) {
+    } else if (submission_dir == NULL && info_filename != NULL && auth_filename != NULL) {
 
 	/*
 	 * open the .info.json file unless it is .
 	 */
-	if (strcmp(info_path, ".") != 0) {
-	    info_stream = open_json_dir_file(NULL, info_path);
+	if (strcmp(info_filename, ".") != 0) {
+	    info_stream = open_dir_file(NULL, info_filename);
 	    if (info_stream == NULL) { /* paranoia */
-		err(24, __func__, "open_json_dir_file for returned NULL for .info.json path: %s", info_path);
+		err(24, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
 		not_reached();
 	    }
 	} else {
@@ -478,9 +303,9 @@ main(int argc, char *argv[])
 	 * open the .auth.json file unless it is .
 	 */
 	if (strcmp(auth_filename, ".") != 0) {
-	    auth_stream = open_json_dir_file(NULL, auth_filename);
+	    auth_stream = open_dir_file(NULL, auth_filename);
 	    if (auth_stream == NULL) { /* paranoia */
-		err(25, __func__, "open_json_dir_file for returned NULL for .auth.json path: %s", auth_filename);
+		err(25, __func__, "open_dir_file returned NULL for .auth.json path: %s", auth_filename);
 		not_reached();
 	    }
 	} else {
@@ -494,35 +319,21 @@ main(int argc, char *argv[])
 	err(26, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
 	not_reached();
     }
-
-    /*
-     * if we have an entry directory we have to parse the .entry.json file and
-     * then after that the author_handle.json file (or files).
-     */
-    if (entry_dir != NULL && entry_filename != NULL) {
-	entry_path = calloc_path(entry_dir, entry_filename);
-	if (entry_path == NULL) {
-	    err(27, __func__, "entry_path is NULL");
-	    not_reached();
-	}
-
-	/*
-	 * parse .entry.json if it is open
-	 */
-	if (entry_stream != NULL) {
-	    entry_tree = parse_json_stream(entry_stream, entry_path, &entry_valid);
-	    if (!entry_valid || entry_tree == NULL) {
-		err(4, __func__, "failed to parse JSON in .entry.json file: %s", entry_path); /*ooo*/
-		not_reached();
-	    }
-	    dbg(DBG_LOW, "successful parse of JSON in .entry.json file: %s", entry_path);
-	}
+    info_path = calloc_path(submission_dir, info_filename);
+    if (info_path == NULL) {
+	err(27, __func__, "info_path is NULL");
+	not_reached();
+    }
+    auth_path = calloc_path(submission_dir, auth_filename);
+    if (auth_path == NULL) {
+	err(28, __func__, "auth_path is NULL");
+	not_reached();
     }
 
     /*
-     * parse .info.json if we have a path and it is open
+     * parse .info.json if it is open
      */
-    if (info_path != NULL && info_stream != NULL) {
+    if (info_stream != NULL) {
 	info_tree = parse_json_stream(info_stream, info_path, &info_valid);
 	if (info_valid == false || info_tree == NULL) {
 	    err(4, __func__, "failed to parse JSON in .info.json file: %s", info_path); /*ooo*/
@@ -534,29 +345,15 @@ main(int argc, char *argv[])
     /*
      * parse .auth.json if it is open
      */
-    if (auth_filename != NULL && auth_stream != NULL) {
-	auth_tree = parse_json_stream(auth_stream, auth_filename, &auth_valid);
+    if (auth_stream != NULL) {
+	auth_tree = parse_json_stream(auth_stream, auth_path, &auth_valid);
 	if (auth_valid == false || auth_tree == NULL) {
-	    err(4, __func__, "failed to parse JSON in .auth.json file: %s", auth_filename); /*ooo*/
+	    err(4, __func__, "failed to parse JSON in .auth.json file: %s", auth_path); /*ooo*/
 	    not_reached();
 	}
-	dbg(DBG_LOW, "successful parse of JSON in .auth.json file: %s", auth_filename);
+	dbg(DBG_LOW, "successful parse of JSON in .auth.json file: %s", auth_path);
     }
 
-
-    /*
-     * check JSON parse stream of .entry.json if open
-     */
-    if (entry_stream != NULL) {
-	dbg(DBG_HIGH, "about to perform JSON semantic check for .entry.json file: %s", entry_path);
-	/* XXX - do checks - XXX */
-
-	/*
-	 * XXX - for each author_handle in the author_set (this might have to be
-	 * done by another function call) make sure the
-	 * author/author_handle.json file is also valid.
-	 */
-    }
     /*
      * check a JSON parse tree against a JSON semantic table for .info.json, if open
      */
@@ -573,29 +370,29 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .info.json
 	 */
 	if (info_count_err == NULL) {
-	    err(28, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	    err(29, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_count_err) < 0) {
-	    err(29, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+	    err(30, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
 		   "for .info.json file: %s",
 		   dyn_array_tell(info_count_err), info_path);
 	    not_reached();
 	}
 	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
 	if (info_val_err == NULL) {
-	    err(30, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+	    err(31, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_val_err) < 0) {
-	    err(31, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+	    err(32, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
 		   "for .info.json file: %ss",
 		   dyn_array_tell(info_val_err), info_path);
 	    not_reached();
 	}
 	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
 	if (info_all_err_count < info_count_err_count+info_val_err_count) {
-	    err(32, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+	    err(33, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
 		   "for .info.json file: %s",
 		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
 	    not_reached();
@@ -611,7 +408,7 @@ main(int argc, char *argv[])
 	/*
 	 * perform JSON semantic analysis on the .auth.json JSON parse tree
 	 */
-	dbg(DBG_HIGH, "about to perform JSON semantic check for .auth.json file: %s", auth_filename);
+	dbg(DBG_HIGH, "about to perform JSON semantic check for .auth.json file: %s", auth_path);
 	auth_all_err_count = json_sem_check(auth_tree, JSON_DEFAULT_MAX_DEPTH, sem_auth,
 					  &auth_count_err, &auth_val_err);
 
@@ -619,29 +416,29 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .auth.json
 	 */
 	if (auth_count_err == NULL) {
-	    err(33, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_filename);
+	    err(34, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_count_err) < 0) {
-	    err(34, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
-		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_filename);
+	    err(35, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
 	    not_reached();
 	}
 	auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
 	if (auth_val_err == NULL) {
-	    err(35, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_filename);
+	    err(36, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_val_err) < 0) {
-	    err(36, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
-		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_filename);
+	    err(37, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
 	    not_reached();
 	}
 	auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
 	if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-	    err(37, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+	    err(38, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
 		   "for .auth.json file: %s",
-		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_filename);
+		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
 	    not_reached();
 	}
 	auth_int_err_count = auth_all_err_count - (auth_count_err_count+auth_val_err_count);
@@ -681,7 +478,7 @@ main(int argc, char *argv[])
      * report details of any .auth.json semantic errors
      */
     if (auth_all_err_count > 0) {
-	fpr(stderr, __func__, "What follows are semantic errors for .auth.json file: %s\n", auth_filename);
+	fpr(stderr, __func__, "What follows are semantic errors for .auth.json file: %s\n", auth_path);
 	if (auth_count_err == NULL) {
 	    fpr(stderr, __func__, "auth_count_err is NULL!!!\n");
 	} else {
@@ -762,10 +559,10 @@ main(int argc, char *argv[])
 	}
     }
     if (auth_all_err_count > 0) {
-	if (auth_filename == NULL) {
+	if (auth_path == NULL) {
 	    werr(1, __func__, "JSON semantic check failed for .auth.json file: ((NULL))"); /*ooo*/
 	} else {
-	    werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_filename); /*ooo*/
+	    werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_path); /*ooo*/
 	}
     }
     if (all_all_err_count == 0) {
@@ -803,6 +600,14 @@ main(int argc, char *argv[])
     if (auth_val_err != NULL) {
 	free_val_err(auth_val_err);
 	auth_val_err = NULL;
+    }
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
+    }
+    if (auth_path != NULL) {
+	free(auth_path);
+	auth_path = NULL;
     }
 
     /*

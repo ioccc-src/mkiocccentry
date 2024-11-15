@@ -1,5 +1,40 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.0 2024-11-15
+
+Release version `"2.1.0 2024-11-15"` as a significant change to the jparse
+library and some important fixes were made in `jstrdecode(1)` and
+`jstrencode(1)` as well.
+
+`jstrencode(1)` should and now does enclose the output with double quotes.
+Another change had been made, due to examples, that although technically valid,
+are misleading and this detail was forgotten/overlooked. This has been rolled
+back but it's why the version of this tool was updated twice today.
+
+`jstrdecode(1)` now requires, unless `-d` is given, double quotes to enclose
+each string arg.
+
+The new version of each of the tools `jstrencode(1)` and `jstrdecode(1)` is
+`"2.1.1 2024-11-15"` and the library is `"2.1.0 2024-11-15"`.
+
+The functions `json_decode()` and `json_decode_str()` take a new boolean,
+`quote`, which if true, means that the string must start with a `"` and end with
+a `"`. If the length is < 2 then NULL is returned. If the first character is not
+a `"` or the last character is not a `"` it is an error.
+
+The man pages have been updated, with a fix in one, and some fun injected into
+them (that correspond to some fun injected into certain tools, though this fun
+does not affect any functionality; it's merely in wording in a string), plus the
+new option to `jstrdecode(1)` along with the removal of the misleading examples
+in `jstrdecode(1)` and `jstrencode(1)`.
+
+Add simplified interface/version for `parse_json()` called `parse_json_str()`
+which does not take a filename arg. It uses `parse_json()` with the filename set
+to `"-"`. An unfortunate problem is that the error messages in the parser do
+refer to a filename and so the best option is to say stdin, even if it's not
+always from stdin strictly speaking.
+
+
 ## Release 2.0.8 2024-11-14
 
 Renamed `utf8encode()` to `utf8_to_unicode()` to be less confusing as although
@@ -214,7 +249,7 @@ Remove duplicate code from jstrencode.c and jstrdecode.c as follows:
 the file is for both jstrencode and jstrdecode.
 - Added function `free_jstring_list()` in `jstr_util.c` and use that instead of
 the unique functions (that do the same thing) in jstrencode.c and jstrdecode.c
-(`free_json_decoded_strings` and `free_json_decoded_strings`).
+(`free_json_encoded_strings` and `free_json_decoded_strings`).
 
 Updated version of both tools to `"1.2.5 2024-10-27"`.
 

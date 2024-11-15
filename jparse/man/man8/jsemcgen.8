@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jsemcgen.sh 8 "30 January 2023" "jsemcgen.sh" "jparse tools"
+.TH jsemcgen.sh 8 "15 November 2024" "jsemcgen.sh" "jparse tools"
 .SH NAME
 .BR jsemcgen.sh (8)
 \- generate JSON semantics table via the
@@ -115,10 +115,10 @@ output with possible head, tail and patch applied.
 .SH OPTIONS
 .TP
 .B \-h
-print help and exit.
+Print help and exit.
 .TP
 .BI \-v\  level
-set verbosity level to
+Set verbosity level to
 .IR level .
 .sp 1
 This option is passed to
@@ -126,7 +126,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-J\  level
-set JSON verbosity level to
+Set JSON verbosity level to
 .IR level .
 .sp 1
 This option is passed to
@@ -134,31 +134,31 @@ This option is passed to
 when it is invoked.
 .TP
 .B \-q
-set quiet mode.
+Suppress some of the output.
 .sp 1
 This option is passed to
 .BR jsemtblgen (8)
-when it is invoked.
+when it is invoked (def: loud :\-) ).
 .TP
 .B \-V
-print version and exit.
+Print version and exit.
 .TP
 .B \-s
-specify that arg is a string to be processed rather than a file.
+Specify that arg is a string to be processed rather than a file.
 .sp 1
 This option is passed to
 .BR jsemtblgen (8)
 when it is invoked.
 .TP
 .B \-I
-output as a C header file.
+Output as a C header file.
 .sp 1
 This option is passed to
 .BR jsemtblgen (8)
 when it is invoked.
 .TP
 .BI \-N\  name
-set name of the semantics table to
+Set name of the semantics table to
 .IR name .
 .sp 1
 This option is passed to
@@ -166,7 +166,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-D\  def_func
-validate with
+Validate with
 .I def_func()
 unless overridden by another flag.
 .sp 1
@@ -175,7 +175,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-P\  prefix
-validate
+Validate
 .B JTYPE_MEMBER
 JSON nodes with
 .B prefix_name()
@@ -186,7 +186,7 @@ Note that the name is based on the
 JSON encoded name string.
 Underscore (_) replaces any name chars that are not valid in a C function name.
 .B \-P
-overrides any use of
+Overrides any use of
 .BR \-M .
 .sp 1
 This option is passed to
@@ -195,7 +195,7 @@ when it is invoked.
 .RE
 .TP
 .BI \-1\  func
-validate
+Validate
 .B JTYPE_NUMBER
 JSON nodes with
 .IR func() .
@@ -205,7 +205,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-S\  func
-validate
+Validate
 .B JTYPE_STRING
 JSON nodes with
 .IR func() .
@@ -215,7 +215,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-B\  func
-validate
+Validate
 .B JTYPE_BOOL
 JSON nodes with
 .IR func() .
@@ -225,7 +225,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-0\  func
-validate
+Validate
 .B JTYPE_NULL
 JSON nodes with
 .IR func() .
@@ -235,7 +235,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-M\  func
-validate
+Validate
 .B JTYPE_MEMBER
 JSON nodes with
 .IR func() .
@@ -245,7 +245,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-O\  func
-validate
+Validate
 .B JTYPE_OBJECT
 JSON nodes with
 .IR func() .
@@ -255,7 +255,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-A\  func
-validate
+Validate
 .B JTYPE_ARRAY
 JSON nodes with
 .IR func() .
@@ -265,7 +265,7 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-U\  func
-validate nodes with unknown types with
+Validate nodes with unknown types with
 .IR func() .
 .sp 1
 This option is passed to
@@ -273,13 +273,13 @@ This option is passed to
 when it is invoked.
 .TP
 .BI \-j\  jsemtblgen
-set path to
+Set path to
 .BR jsemtblgen (8)
 to
 .IR jsemtblgen .
 .TP
 .BI \-p\  patch_tool
-set path to the patch program to
+Set path to the patch program to
 .IR patch_tool .
 .SH EXAMPLE
 Prepending a
@@ -310,7 +310,7 @@ file would be useful as a prepending file when forming
  * json_chk - JSON semantic check table
  */
 
-#include "json_chk.h"
+#include "jnum_chk.h"
 .fi
 .in -0.5i
 .PP
@@ -322,7 +322,7 @@ file would be useful as a prepending file when forming
 .in +0.5i
 .nf
 /*
- * json_chk - JSON semantic check table
+ * jnum_chk - JSON semantic check table
  */
 
 #if !defined(INCLUDE_JSON_CHK_H)

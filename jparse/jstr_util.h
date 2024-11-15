@@ -1,5 +1,5 @@
 /*
- * jstr_util - tool to JSON decode JSON encoded strings
+ * jstr_util - common utility functions for the JSON string encoder/decoder
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *

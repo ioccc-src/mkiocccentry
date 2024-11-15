@@ -280,8 +280,8 @@ if [[ -z "$ERROR" ]]; then
 fi
 
 echo "$0: about to run test #4" 1>&2
-echo "$JSTRDECODE -Q -n foo bar"
-RESULT="$($JSTRDECODE -Q -n foo bar)"
+echo "$JSTRDECODE -d -Q -n foo bar"
+RESULT="$($JSTRDECODE -d -Q -n foo bar)"
 if [[ "$RESULT" = '"foobar"' ]]; then
     echo "$0: test #4 passed" 1>&2
 else
@@ -290,8 +290,8 @@ else
 fi
 
 echo "$0: about to run test #5" 1>&2
-echo "$JSTRDECODE -Q -e -n foo bar"
-RESULT="$($JSTRDECODE -Q -e -n foo bar)"
+echo "$JSTRDECODE -d -Q -e -n foo bar"
+RESULT="$($JSTRDECODE -d -Q -e -n foo bar)"
 if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
     echo "$0: test #5 passed" 1>&2
 else
@@ -300,8 +300,8 @@ else
 fi
 
 echo "$0: about to run test #6" 1>&2
-echo "$JSTRDECODE -e -n foo bar"
-RESULT="$($JSTRDECODE -e -n foo bar)"
+echo "$JSTRDECODE -d -e -n foo bar"
+RESULT="$($JSTRDECODE -d -e -n foo bar)"
 if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
     echo "$0: test #6 passed" 1>&2
 else
@@ -310,8 +310,8 @@ else
 fi
 
 echo "$0: about to run test #7" 1>&2
-echo "$JSTRDECODE '\\u0153\\u00df\\u00e5\\u00e9'" 1>&2
-"$JSTRDECODE" "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
+echo "$JSTRDECODE -d '\\u0153\\u00df\\u00e5\\u00e9'" 1>&2
+"$JSTRDECODE" -d "\\u0153\\u00df\\u00e5\\u00e9" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #7 passed" 1>&2
 else
@@ -330,8 +330,8 @@ else
 fi
 
 echo "$0: about to run test #9" 1>&2
-echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\\u0153\\u00df\\u00e5\\u00e9'))")"
-"$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
+echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" -d '\\u0153\\u00df\\u00e5\\u00e9'))")"
+"$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" -d '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #9 passed" 1>&2
 else
