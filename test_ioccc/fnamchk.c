@@ -63,7 +63,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\t\tprint help message and exit\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-E ext\t\t\tchange extension to test (def: txz)\n"
     "\t-t\t\t\tfilename must match test submit filename\n"

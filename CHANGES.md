@@ -1,5 +1,10 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 1.6.12 2024-11-16
+
+Add missing `-q` option to `txzchk`.
+
+
 ## Release 1.6.11 2024-11-15
 
 Fixes and improvements in `jparse` synced from the [jparse

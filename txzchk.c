@@ -88,10 +88,11 @@ static struct txz_file *txz_files;		/* linked list of the files in the tarball *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-e] [-f feathers] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
+    "usage: %s [-h] [-v level] [-q] [-e] [-f feathers] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-e\t\tentertainment mode (def: be boring :-) )\n"
     "\t-f feathers\tdefine how many feathers is feathery (for -e)\n"
     "\t-w\t\talways show warning messages\n"
@@ -138,7 +139,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:VF:t:TE:wef:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVF:t:TE:wef:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -153,6 +154,9 @@ main(int argc, char **argv)
 		usage(3, program, "invalid -v verbosity"); /*ooo*/
 		not_reached();
 	    }
+	    break;
+	case 'q':
+	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s version: %s\n", TXZCHK_BASENAME, TXZCHK_VERSION);
