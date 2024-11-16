@@ -21,7 +21,7 @@
 export FAILURE_SUMMARY=
 export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0.3 2024-09-30"
+export PREP_VERSION="1.0.4 2024-11-16"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -132,7 +132,7 @@ fi
 # NOTE: this log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
 #
-BUG_REPORT_LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+BUG_REPORT_LOGFILE="bug-report.$(date +%Y%m%d.%H%M%S).txt"
 export BUG_REPORT_LOGFILE
 
 # write_echo - write a message to either the log file or both the log file and
