@@ -80,7 +80,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export BUG_REPORT_VERSION="2.0.0 2024-11-05"
+export BUG_REPORT_VERSION="2.0.1 2024-11-16"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -119,7 +119,7 @@ jparse_bug_report.sh version: $BUG_REPORT_VERSION"
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
 #
-LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+LOGFILE="bug-report.$(date +%Y%m%d.%H%M%S).txt"
 
 # parse args
 #

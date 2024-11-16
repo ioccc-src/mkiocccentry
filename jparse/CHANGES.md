@@ -1,5 +1,10 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.1 2024-11-16
+
+Use `date` rather than `/bin/date` in `jparse_bug_report.sh`.
+
+
 ## Release 2.1.0 2024-11-15
 
 Release version `"2.1.0 2024-11-15"` as a significant change to the jparse
