@@ -48,7 +48,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
-    -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
+    -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )
     -c chkentry		path to chkentry tool (def: $CHKENTRY)
     -d json_tree	test files json_tree/{info,auth}.json/{good,bad}/*.json (def: $JSON_TREE)
 

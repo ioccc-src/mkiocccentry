@@ -95,7 +95,7 @@ static char const * const usage_msg =
     "\t-h\t\tPrint help message and exit\n"
     "\t-v level\tSet verbosity level: (def level: 0)\n"
     "\t-V\t\tPrint version string and exit\n"
-    "\t-q\t\tQuiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
+    "\t-q\t\tQuiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\n"
     "\tname\t\tUTF-8 name to translate into POSIX portable filename and + chars\n"
     "\n"

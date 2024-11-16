@@ -106,7 +106,7 @@ static const char * const usage_msg0 =
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n"

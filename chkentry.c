@@ -58,7 +58,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
