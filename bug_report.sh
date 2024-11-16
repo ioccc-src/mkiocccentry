@@ -96,7 +96,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.4 2024-06-26"
+export BUG_REPORT_VERSION="1.0.5 2024-11-16"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -134,7 +134,7 @@ bug_report.sh version: $BUG_REPORT_VERSION"
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
 #
-LOGFILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+LOGFILE="bug-report.$(date +%Y%m%d.%H%M%S).txt"
 
 # parse args
 #

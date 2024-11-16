@@ -85,14 +85,14 @@ your system.
 
 ## 2.  How may I install the tools if I wish to, and is it required?
 
-You do not need to install the code (see below) but it can be helpful to do so
-as you can then run the tools from any directory including your submission
-directory, so you do not have to specify paths.
+You do not need to install the code (see below) but it can be helpful to do so,
+so you can run the tools from any directory including your submission directory;
+that way, you do not have to specify paths.
 
 If you do wish to install the toolkit, you can do:
 
 ```sh
-    make install
+make install
 ```
 
 as either root or via sudo. By default this will install with the `PREFIX` of
@@ -104,7 +104,7 @@ install with the `PREFIX` of `/usr`:
 
 
 ```sh
-    make PREFIX=/usr install
+make PREFIX=/usr install
 ```
 
 
@@ -222,7 +222,7 @@ You may also run the `bug_report.sh` tool directly:
 ```
 
 The bug report filename is in the format:
-`bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt` where:
+`bug-report.$(date +%Y%m%d.%H%M%S).txt` where:
 
 
 - `%Y` is the four digit year (e.g. 2024).
@@ -337,7 +337,7 @@ If you have installed the tools and you wish to uninstall them, you can do so
 from the top level repo directory by typing:
 
 ```sh
-    make uninstall
+make uninstall
 ```
 
 as either root or via sudo.
@@ -348,7 +348,7 @@ pages. For instance if you installed with the `PREFIX` of `/usr` you would type
 instead:
 
 ```sh
-    make PREFIX=/usr uninstall
+make PREFIX=/usr uninstall
 ```
 
 After this all the files installed should be removed. If this is not the case by
