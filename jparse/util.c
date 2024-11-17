@@ -75,7 +75,9 @@ static char const * const usage =
 "\t-V\t\tprint version string and exit\n"
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
 "\n"
-"jparse library version: %s\n";
+"jparse util test version: %s\n"
+"jparse UTF-8 version: %s\n"
+"jparse library version: %s";
 #endif /* UTIL_TEST */
 
 /*
@@ -666,7 +668,7 @@ chk_stdio_printf_err(FILE *stream, int ret)
 
 
 /*
- * fd_is_ready - test of a file descriptor is ready for I/O
+ * fd_is_ready - test if a file descriptor is ready for I/O
  *
  * Perform a non-blocking test to determine of a given file descriptor is ready
  * for I/O (reading or writing).  If the file descriptor is NOT open, return false.
@@ -4598,8 +4600,6 @@ open_dir_file(char const *dir, char const *file)
 }
 
 
-
-
 /*
  * count_char - count the number of instances of a char in the string
  *
@@ -4682,6 +4682,23 @@ check_invalid_option(char const *prog, int ch, int opt)
 }
 
 #if defined(UTIL_TEST)
+/*
+ * jparse - JSON library
+ */
+#include "../jparse.h"
+
+/*
+ * json_util - JSON util functions
+ */
+#include "../json_util.h"
+
+/*
+ * json_utf8 - jparse utf8 version
+ */
+#include "../json_utf8.h"
+
+#define UTIL_TEST_VERSION "1.0.0 2024-11-17" /* version format: major.minor YYYY-MM-DD */
+
 int
 main(int argc, char **argv)
 {
@@ -4691,6 +4708,7 @@ main(int argc, char **argv)
     char *buf = NULL;
     char const *dirname = "foo";
     char const *filename = "bar";
+    struct json *tree = NULL;           /* check that the jparse.json file is valid JSON */
     int ret;
     int i;
 
@@ -4701,7 +4719,7 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, ":hv:Vqe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - write help, to stderr and exit 0 */
-	    fprintf_usage(0, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(0, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -4727,17 +4745,17 @@ main(int argc, char **argv)
 	    break;
 	case ':':
 	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
-	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case '?':
 	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
-	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	default:
 	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
-	    fprintf_usage(3, stderr, usage, program, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	}
     }
@@ -4801,6 +4819,21 @@ main(int argc, char **argv)
     if (buf != NULL) {
 	free(buf);
 	buf = NULL;
+    }
+
+    /*
+     * now try parsing jparse.json as a JSON file
+     */
+    dirname = ".";
+    filename = "jparse.json";
+    tree = open_json_dir_file(dirname, filename);
+    if (tree == NULL) {
+        err(10, __func__, "jparse.json is invalid JSON"); /*ooo*/
+        not_reached();
+    } else {
+        dbg(DBG_LOW, "jparse.json is valid JSON");
+        json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+        tree = NULL;
     }
 }
 #endif
