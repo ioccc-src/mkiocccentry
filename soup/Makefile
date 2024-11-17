@@ -951,12 +951,14 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chk_sem_auth.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
-chk_sem_info.o: ../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_info.c chk_sem_info.h
+chk_sem_auth.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.c chk_sem_auth.h
+chk_sem_info.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_info.c chk_sem_info.h
 chk_validate.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \

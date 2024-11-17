@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.6.14 2024-11-17
+
+Update from dbg and jparse repos.
+
+Prep for code freeze and formal release for IOCCC28.
+
+
 ## Release 1.6.13 2024-11-16
 
 Added minor changes to the `jparse/jstrdecode(1)` tool.

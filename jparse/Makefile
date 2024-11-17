@@ -1284,13 +1284,14 @@ jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     jsemtblgen.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
     version.h
 json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.c json_parse.h json_utf8.h \
-    json_util.h util.h
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.c \
+    json_parse.h json_sem.h json_utf8.h json_util.h util.h
 json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    json_parse.h json_sem.c json_sem.h json_utf8.h json_util.h util.h
-json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h json_parse.h json_utf8.h json_util.c \
+    jparse.h jparse.tab.h json_parse.h json_sem.c json_sem.h json_utf8.h \
     json_util.h util.h
+json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
+    json_utf8.h json_util.c json_util.h util.h
 jstr_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
     json_utf8.h json_util.h jstr_util.c jstr_util.h util.h

@@ -26,6 +26,8 @@
 #include <stdint.h>
 #include <limits.h>
 #include <ctype.h>
+#include <unistd.h> /* for chdir(2) */
+#include <fcntl.h>  /* for open(2) */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -1000,6 +1002,68 @@ json_get_type_str(struct json *node, bool encoded)
 }
 
 
+/*
+ * open_json_dir_file - open a FILE * and parse as JSON
+ *
+ * Using open_dir_file(), attempt to open dir/filename (or if dir == NULL then
+ * just filename), and if it can be opened for reading, parse it as JSON (or try
+ * to) and return the tree (struct json *) if valid JSON, otherwise return NULL.
+ * If open_dir_file() has an error that function will not return; if filename is
+ * NULL here we will not return. If invalid JSON it is not an error but we do
+ * warn about it.
+ *
+ * If dir == NULL, just try to open the file without a chdir.
+ *
+ * given:
+ *	dir	directory into which we will temporarily chdir or
+ *		    NULL ==> do not chdir
+ *	file	path of readable file to open
+ *
+ * returns:
+ *	a struct json *tree, if file is a valid JSON, otherwise NULL
+ *
+ * NOTE: if the file is invalid JSON then NULL will be returned but if the file
+ *       cannot be opened it is an error.
+ *
+ * NOTE: it is the responsibility of the caller to free the JSON tree after they
+ *       have used it.
+ */
+struct json *
+open_json_dir_file(char const *dir, char const *filename)
+{
+    FILE *stream = NULL;	/* file stream to try and read as a JSON file */
+    struct json *tree = NULL;   /* if we can open the file we will try and parse it as JSON */
+    bool is_valid = false;      /* true ==> JSON is valid */
+
+    /*
+     * firewall
+     */
+    if (filename == NULL) {
+	err(158, __func__, "called with NULL file");
+	not_reached();
+    }
+
+    stream = open_dir_file(dir, filename);
+    if (stream == NULL) {
+        err(159, __func__, "open_dir_file(%s, %s) returned NULL", dir != NULL ? dir : "NULL", filename);
+        not_reached();
+    } else {
+        /*
+         * attempt to parse as JSON
+         */
+        tree = parse_json_stream(stream, filename, &is_valid);
+
+        /*
+         * the parse function should close or clearerr() the stream so we cannot
+         * do that here
+         */
+        if (tree == NULL || !is_valid) {
+            warn(__func__, "file: %s is not valid JSON");
+            return NULL;
+        }
+    }
+    return tree;
+}
 
 /*
  * json_free - free storage of a single JSON parse tree node
@@ -2688,7 +2752,7 @@ json_util_parse_match_types(char *optarg)
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(optarg);
     if (dup == NULL) {
-	errp(38, __func__, "strdup(%s) failed", optarg);
+	errp(160, __func__, "strdup(%s) failed", optarg);
 	not_reached();
     }
 
