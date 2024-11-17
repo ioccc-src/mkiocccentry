@@ -1,5 +1,30 @@
 # Significant changes in the JSON parser repo
 
+
+## Release 2.1.2 2024-11-16
+
+The `-e` for `jstrencode(1)`, only encloses each decoded arg in escaped
+double quotes when there are multiple args.  If there is only one arg,
+no escaped double quotes are added.
+
+The usage message for `-Q` and `-e` for `jstrencode(1)` has been clarified
+as well as being in sync with the above mentioned `-e` change.
+
+The new version of each of the tools `jstrencode(1)` and `jstrdecode(1)` is
+`"2.1.2 2024-11-16"`  and the library is `"2.1.0 2024-11-15"`.
+
+Improved `test_jparse/jstr_test.sh` to show, when some tests fail,
+showing what was expected vs the result found when what was expected
+was a simple string (and not a file).
+
+Added new tests to `test_jparse/jstr_test.sh` as per the above
+changes to `jstrencode(1)`.
+
+Updated `jstrencode(1)` man page according to the above.
+
+The new version of `test_jparse/jstr_test.sh` is now "1.2.3 2024-11-16".
+
+
 ## Release 2.1.1 2024-11-16
 
 Use `date` rather than `/bin/date` in `jparse_bug_report.sh`.

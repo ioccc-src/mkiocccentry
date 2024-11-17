@@ -66,7 +66,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "1.6.12 2024-11-16"	/* special release format: major.minor.patch YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "1.6.13 2024-11-16"	/* special release format: major.minor.patch YYYY-MM-DD */
 
 
 /*

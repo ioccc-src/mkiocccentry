@@ -24,7 +24,7 @@ export JSTRENCODE="./jstrencode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="1.2.2 2024-11-13" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="1.2.3 2024-11-16" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -281,31 +281,40 @@ fi
 
 echo "$0: about to run test #4" 1>&2
 echo "$JSTRDECODE -d -Q -n foo bar"
+EXPECTED='"foobar"'
 RESULT="$($JSTRDECODE -d -Q -n foo bar)"
-if [[ "$RESULT" = '"foobar"' ]]; then
+if [[ "$RESULT" = "$EXPECTED" ]]; then
     echo "$0: test #4 passed" 1>&2
 else
     echo "$0: test #4 failed" 1>&2
+    echo "$0: test #4 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #4 RESULT: $RESULT" 1>&2
     EXIT_CODE=4
 fi
 
 echo "$0: about to run test #5" 1>&2
 echo "$JSTRDECODE -d -Q -e -n foo bar"
+EXPECTED='"\"foo\"\"bar\""'
 RESULT="$($JSTRDECODE -d -Q -e -n foo bar)"
-if [[ "$RESULT" = '"\"foo\"\"bar\""' ]]; then
+if [[ "$RESULT" = "$EXPECTED" ]]; then
     echo "$0: test #5 passed" 1>&2
 else
     echo "$0: test #5 failed" 1>&2
+    echo "$0: test #5 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #5 RESULT: $RESULT" 1>&2
     EXIT_CODE=4
 fi
 
 echo "$0: about to run test #6" 1>&2
 echo "$JSTRDECODE -d -e -n foo bar"
+EXPECTED='\"foo\"\"bar\"'
 RESULT="$($JSTRDECODE -d -e -n foo bar)"
-if [[ "$RESULT" = '\"foo\"\"bar\"' ]]; then
+if [[ "$RESULT" = "$EXPECTED" ]]; then
     echo "$0: test #6 passed" 1>&2
 else
     echo "$0: test #6 failed" 1>&2
+    echo "$0: test #6 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #6 RESULT: $RESULT" 1>&2
     EXIT_CODE=4
 fi
 
@@ -321,11 +330,14 @@ fi
 
 echo "$0: about to run test #8" 1>&2
 echo "$JSTRDECODE" "$("$JSTRENCODE" '\\u0153\\u00df\\u00e5\\u00e9')" 1>&2
+EXPECTED="\\u0153\\u00df\\u00e5\\u00e9"
 RESULT=$("$JSTRDECODE" "$("$JSTRENCODE" '\u0153\u00df\u00e5\u00e9')")
-if [[ "$RESULT" = "\\u0153\\u00df\\u00e5\\u00e9" ]]; then
+if [[ "$RESULT" = "$EXPECTED" ]]; then
     echo "$0: test #8 passed" 1>&2
 else
     echo "$0: test #8 failed: result: $RESULT" 1>&2
+    echo "$0: test #8 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #8 RESULT: $RESULT" 1>&2
     EXIT_CODE=4
 fi
 
@@ -336,6 +348,58 @@ if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #9 passed" 1>&2
 else
     echo "$0: test #9 failed: result: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
+
+echo "$0: about to run test #10" 1>&2
+echo "$JSTRDECODE -d -n foo bar"
+EXPECTED='foobar'
+RESULT="$($JSTRDECODE -d -n foo bar)"
+if [[ "$RESULT" = "$EXPECTED" ]]; then
+    echo "$0: test #10 passed" 1>&2
+else
+    echo "$0: test #10 failed" 1>&2
+    echo "$0: test #10 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #10 RESULT: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
+
+echo "$0: about to run test #11" 1>&2
+echo "$JSTRDECODE -d -Q -n foo"
+EXPECTED='"foo"'
+RESULT="$($JSTRDECODE -d -Q -n foo)"
+if [[ "$RESULT" = "$EXPECTED" ]]; then
+    echo "$0: test #11 passed" 1>&2
+else
+    echo "$0: test #11 failed" 1>&2
+    echo "$0: test #11 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #11 RESULT: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
+
+echo "$0: about to run test #12" 1>&2
+echo "$JSTRDECODE -d -Q -e -n foo"
+EXPECTED='"foo"'
+RESULT="$($JSTRDECODE -d -Q -e -n foo)"
+if [[ "$RESULT" = "$EXPECTED" ]]; then
+    echo "$0: test #12 passed" 1>&2
+else
+    echo "$0: test #12 failed" 1>&2
+    echo "$0: test #12 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #12 RESULT: $RESULT" 1>&2
+    EXIT_CODE=4
+fi
+
+echo "$0: about to run test #13" 1>&2
+echo "$JSTRDECODE -d -e -n foo"
+EXPECTED='foo'
+RESULT="$($JSTRDECODE -d -e -n foo)"
+if [[ "$RESULT" = "$EXPECTED" ]]; then
+    echo "$0: test #13 passed" 1>&2
+else
+    echo "$0: test #13 failed" 1>&2
+    echo "$0: test #13 EXPECTED: $EXPECTED"  1>&2
+    echo "$0: test #13 RESULT: $RESULT" 1>&2
     EXIT_CODE=4
 fi
 

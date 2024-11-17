@@ -56,7 +56,7 @@ static const char * const usage_msg =
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-N\t\tignore all newline characters in input\n"
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
-    "\t-e\t\tenclose each decoded string with escaped double quotes (def: do not)\n"
+    "\t-e\t\tfor multiple args, enclose each decoded arg in escaped double quotes (def: do not)\n"
     "\t-d\t\tdo not require a leading and trailing double quote (def: do require)\n"
     "\t-E level\tentertainment mode\n"
     "\n"
@@ -423,6 +423,9 @@ main(int argc, char **argv)
 	    break;
 	}
     }
+    dbg(DBG_LOW, "argc: %d", argc);
+    dbg(DBG_LOW, "optind: %d", optind);
+    dbg(DBG_LOW, "arg count: %d", argc - optind);
     dbg(DBG_LOW, "enclose in quotes: %s", booltostr(write_quote));
     dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
@@ -561,7 +564,7 @@ main(int argc, char **argv)
 	/*
 	 * write starting escaped quote if requested
 	 */
-	if (esc_quotes) {
+	if (esc_quotes && argc - optind > 1) {
 	    fprint(stdout, "%s", "\\\"");
 	}
 	buf = jstr->jstr;
@@ -578,7 +581,7 @@ main(int argc, char **argv)
 	/*
 	 * write ending escaped quote if requested
 	 */
-	if (esc_quotes) {
+	if (esc_quotes && argc - optind > 1) {
 	    fprint(stdout, "%s", "\\\"");
 	}
     }

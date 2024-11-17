@@ -1,5 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 1.6.13 2024-11-16
+
+Added minor changes to the `jparse/jstrdecode(1)` tool.
+
+
 ## Release 1.6.12 2024-11-16
 
 Add missing `-q` option to `txzchk`.
