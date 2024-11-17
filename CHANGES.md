@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.0 2024-11-17
+
+This is a formal release for public use.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "1.6.13 2024-11-16"
+to "2.0 2024-11-17".
+
+This repo is now under a **CODE FREEZE**.
+
+Only super-critical bugs that have a significant impact the running
+of IOCCC28 or the **Great Fork Merge** process and the temp-test-ioccc
+repo will be considered until sometime after the winners of IOCCC28 have
+been released.
+
+
 ## Release 1.6.14 2024-11-17
 
 Update from dbg and jparse repos.
