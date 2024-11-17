@@ -1058,7 +1058,7 @@ open_json_dir_file(char const *dir, char const *filename)
          * do that here
          */
         if (tree == NULL || !is_valid) {
-            warn(__func__, "file: %s is not valid JSON");
+            warn(__func__, "file: %s is not valid JSON", filename);
             return NULL;
         }
     }
