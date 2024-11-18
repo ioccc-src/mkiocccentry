@@ -1,6 +1,53 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.1.3 2024-11-18
+
+Improve function `parse_json_str()` and `parse_json()` by allowing for empty or
+NULL strings in the following way: `parse_json_str()` will pass a NULL filename
+to `parse_json()` which will keep the filename as NULL, which will, due to
+updates in the error function, not show a file (the difference is that it now
+checks that it's not NULL **AND** not a NUL string).
+Thus to parse a string rather than a file, one can use either
+`parse_json_str()` (a simplified version) or else `parse_json()` with a NULL
+filename. Using an empty filename in the latter function will set it to `"-"` for
+stdin, though it's important to realise that the function `parse_json()` acts on
+a `char *`. If one needs to read in a file, they should instead use
+`parse_json_file()` (if they have only a filename) or else `parse_json_stream()`
+if they have a `FILE *`.
+
+Renamed some internal functions that were too ambiguous with the `parse_json()`
+family of functions. In particular the functions that parse specific JSON types
+like `json_parse_string()` which used to be `parse_json_string()` (too similar
+to `parse_json_str()` which has a very different purpose). All of the
+`parse_json_()` functions were renamed to `json_parse_()` which also match the
+conversion and allocation functions in name format.
+
+Fixed `jparse.3` man page and added a new file (also a symlink like the others)
+for `parse_json_str()`.
+
+Fixed at least one issue with `jstrdecode(1)` by first using the jparse parser
+on the string prior to decoding. This will solve the problem of input like
+`'"foo\"'` not reporting an error (previously it would throw a warning but not
+an error but it is NOT valid JSON). Furthermore something like `'"\"\"\""\'`
+will now report an error:
+
+```
+syntax error node type JTYPE_STRING at line 1 column 9: <\>
+ERROR[15]: main: invalid JSON
+```
+
+In the case that one needs to or wants to not validate the JSON first, they can
+use the `-j` option. The `-J level` sets the JSON debug level.
+
+Fix compilation error in linux for `util_test` - add missing `-lm` to
+`test_jparse/Makefile`.
+
+Updated the version of `jstrdecode` to: "2.1.3 2024-11-18".
+Updated version of the jparse library to: `"2.2.0 2024-11-18"`.
+Updated version of `jparse(1)` to: `"1.2.4 2024-11-18"`.
+
+
 ## Release 2.1.2 2024-11-17
 
 The `-e` for `jstrdecode(1)`, only encloses each decoded arg in escaped

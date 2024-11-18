@@ -451,7 +451,7 @@ util_test.o: util_test.c
 	${CC} ${CFLAGS} -DUTIL_TEST util_test.c -c
 
 util_test: util_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldbg -ldyn_array -lm
 
 # sequence exit codes
 #

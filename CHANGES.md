@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.0.1 2024-11-18
+
+Fix critical compilation error in `jparse/test_jparse/Makefile` for linux.
+
+Other bug fixes and improvements were added to `jparse/` from the jparse repo.
+
+
 ## Release 2.0 2024-11-17
 
 This is a formal release for public use.
