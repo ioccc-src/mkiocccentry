@@ -382,7 +382,7 @@ struct json_object
  *	foo.set[i-1]
  *
  * IMPORTANT: The struct json_array must be identical to struct json_elements because
- *	      json_parse_array() converts by just changing the JSON item type.
+ *	      parse_json_array() converts by just changing the JSON item type.
  */
 struct json_array
 {
@@ -409,7 +409,7 @@ struct json_array
  *	foo.set[i-1]
  *
  * IMPORTANT: The struct json_array must be identical to struct json_elements because
- *	      json_parse_array() converts by just changing the JSON item type.
+ *	      parse_json_array() converts by just changing the JSON item type.
  */
 struct json_elements
 {
@@ -493,12 +493,12 @@ extern void chkbyte2asciistr(void);
 extern void jdecencchk(int entertainment);
 extern char *json_decode(char const *ptr, size_t len, bool quote, size_t *retlen);
 extern char *json_decode_str(char const *str, bool quote, size_t *retlen);
-extern struct json *json_parse_string(char const *string, size_t len);
-extern struct json *json_parse_bool(char const *string);
-extern struct json *json_parse_null(char const *string);
-extern struct json *json_parse_number(char const *string);
-extern struct json *json_parse_array(struct json *elements);
-extern struct json *json_parse_member(struct json *name, struct json *value);
+extern struct json *parse_json_string(char const *string, size_t len);
+extern struct json *parse_json_bool(char const *string);
+extern struct json *parse_json_null(char const *string);
+extern struct json *parse_json_number(char const *string);
+extern struct json *parse_json_array(struct json *elements);
+extern struct json *parse_json_member(struct json *name, struct json *value);
 extern struct json *json_alloc(enum item_type type);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);

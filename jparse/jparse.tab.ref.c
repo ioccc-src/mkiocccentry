@@ -1748,11 +1748,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%ju>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = json_parse_bool(jparse_get_text(scanner));");
+					       "$json_value = parse_json_bool(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = json_parse_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1780,11 +1780,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = json_parse_bool(jparse_get_text(scanner))");
+					       "$json_value = parse_json_bool(jparse_get_text(scanner))");
 	}
 
 	/* action */
-	yyval = json_parse_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1812,11 +1812,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = json_parse_null(jparse_get_text(scanner));");
+					       "$json_value = parse_json_null(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = json_parse_null(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_NULL type */
+	yyval = parse_json_null(jparse_get_text(scanner)); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1986,11 +1986,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: $json_element type: %s",
 					       json_item_type_name(yyvsp[0]));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: about to perform: "
-					       "$json_member = json_parse_member($json_string, $json_element);");
+					       "$json_member = parse_json_member($json_string, $json_element);");
 	}
 
 	/* action */
-	yyval = json_parse_member(yyvsp[-2], yyvsp[0]);
+	yyval = parse_json_member(yyvsp[-2], yyvsp[0]);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2019,11 +2019,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: $json_elements type: %s",
 					       json_item_type_name(yyvsp[-1]));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: about to perform: "
-					       "$json_array = json_parse_array($json_elements);");
+					       "$json_array = parse_json_array($json_elements);");
 	}
 
 	/* action */
-	yyval = json_parse_array(yyvsp[-1]);
+	yyval = parse_json_array(yyvsp[-1]);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2188,11 +2188,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", jparse_get_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
+					       "$json_string = parse_json_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
 	}
 
 	/* action */
-	yyval = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner));
+	yyval = parse_json_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2220,11 +2220,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", jparse_get_text(scanner));
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%jd>", (intmax_t)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = json_parse_number(jparse_get_text(scanner));");
+					       "$json_number = parse_json_number(jparse_get_text(scanner));");
 	}
 
 	/* action */
-	yyval = json_parse_number(jparse_get_text(scanner));
+	yyval = parse_json_number(jparse_get_text(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2492,7 +2492,7 @@ yyerror(JPARSE_LTYPE *yyltype, struct json **node, yyscan_t scanner, char const 
 	fprint(stderr, " node type %s", json_item_type_name(*node));
     }
     if (yyltype != NULL) {
-	    if (yyltype->filename != NULL && *yyltype->filename != '\0') {
+	    if (yyltype->filename != NULL) {
 		fprint(stderr, " in file %s", yyltype->filename);
 	    }
 	    fprint(stderr, " at line %d column %d: ", yyltype->first_line, yyltype->first_column);

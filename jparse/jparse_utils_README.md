@@ -170,19 +170,18 @@ cannot show it, or it is invalid, you might see a character indicating this.
 
 
 ```sh
-jstrdecode [-h] [-v level] [-j] [-J level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]
+ jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]
 ```
+
+
+Unlike the `jparse` utility, no JSON parsing functions are called, so there is
+no `-J level` option.
 
 Use of `-Q` will enclose output in double quotes whereas the use of `-e`
 will enclose each decoded string with escaped double quotes. Use of `-Q` and
 `-e` together will surround the entire output with unescaped quotes and each
 decoded arg will be surrounded with escaped (backslashed) quotes. To not require
 surrounding the input strings with double quotes (`"`s), use the `-d` option.
-
-Before attempting to decode the string, it will use the JSON parser on the
-string, to make sure it is valid JSON. If you need to disable this, use the `-j`
-option. The `-J level` option will set the jparse debug level, assuming `-j` is
-not used.
 
 If you use `-N` it ignores all newlines in input. This does not mean that the
 JSON allows for unescaped newlines but rather newlines on the command line are
