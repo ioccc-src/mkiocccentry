@@ -409,7 +409,8 @@ valid_contest_id(char *str)
     ret = sscanf(str, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
     dbg(DBG_HIGH, "UUID version hex char: %1x", version);
     dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
-    if (ret != 8 || version != UUID_VERSION || variant != UUID_VARIANT) {
+    if (ret != 8 || version != UUID_VERSION || (variant != UUID_VARIANT_0 && variant != UUID_VARIANT_1 &&
+                variant != UUID_VARIANT_2 && variant != UUID_VARIANT_3)) {
 	return false;
     }
 
@@ -1989,11 +1990,13 @@ test_IOCCC_contest_id(char const *str)
 		 "invalid: UUID version hex char: %1x is not UUID_VERSION: %x", version, UUID_VERSION);
 	return false;
     }
-    if (variant != UUID_VARIANT) {
+    if (variant != UUID_VARIANT_0 && variant != UUID_VARIANT_1 && variant != UUID_VARIANT_2 && variant != UUID_VARIANT_3) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: UUID variant hex char != UUID_VARIANT: %x", UUID_VARIANT);
+		 "invalid: UUID variant hex char not one of: %x, %x, %x, %x", UUID_VARIANT_0, UUID_VARIANT_1,
+                 UUID_VARIANT_2, UUID_VARIANT_3);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: UUID variant hex char: %1x is not UUID_VARIANT: %x", variant, UUID_VARIANT);
+		 "invalid: UUID variant hex char: %1x is not one of: %x, %x, %x, %x", variant, UUID_VARIANT_0,
+                 UUID_VARIANT_1, UUID_VARIANT_2, UUID_VARIANT_3);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_contest_id is valid");

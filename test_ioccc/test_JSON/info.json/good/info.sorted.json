@@ -48,7 +48,7 @@
         }
     ],
     "min_timestamp" : 1716103155,
-    "mkiocccentry_version" : "1.0.8 2024-08-23",
+    "mkiocccentry_version" : "1.0.9 2024-12-26",
     "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
     "nul_warning" : false,
     "rule_2a_mismatch" : false,

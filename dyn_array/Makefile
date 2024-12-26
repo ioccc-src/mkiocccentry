@@ -349,7 +349,7 @@ TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 #
 #       CC:= gcc
 #
--include makefile.local
+-include Makefile.local
 
 
 ###########################################

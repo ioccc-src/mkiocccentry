@@ -3251,7 +3251,7 @@ get_title(struct info *infop)
 	      "",
 	      NULL);
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
+	ret = fprintf(stderr, "Your title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf #0 error: %d", ret);
 	}
