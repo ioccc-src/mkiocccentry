@@ -919,16 +919,13 @@ json_item_type_name(const struct json *node)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to get matching string from
- *	encoded	    true ==> return the encoded string, if it is a string type
+ *	encoded	    true if we should return the encoded string
  *
  * returns:
  *	A constant (read-only) string that originally matched in the
  *	lexer/parser
  *
- * NOTE: the string returned is read only; it's NOT allocated on the stack.
- *
- * NOTE: if encoded is true and the type is a string, then we return the encoded
- * string.
+ * NOTE: This string returned is read only: It's not allocated on the stack.
  *
  * NOTE: this function can return a NULL pointer. It is the responsibility of
  * the caller to check for a NULL return value.
@@ -990,11 +987,13 @@ json_get_type_str(struct json *node, bool encoded)
 		}
 	    }
 	    break;
-	case JTYPE_OBJECT:      /*fallthrough*/
-	case JTYPE_ARRAY:       /*fallthrough*/
-	case JTYPE_ELEMENTS:    /*fallthrough*/
+	case JTYPE_OBJECT:
+	    break;
+	case JTYPE_ARRAY:
+	    break;
+	case JTYPE_ELEMENTS:
+	    break;
 	default:
-            str = NULL;
 	    break;
     }
 

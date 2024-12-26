@@ -1976,7 +1976,7 @@ json_decode_str(char const *str, bool quote, size_t *retlen)
 
 
 /*
- * json_parse_string - parse a json string
+ * parse_json_string - parse a json string
  *
  * given:
  *
@@ -1992,7 +1992,7 @@ json_decode_str(char const *str, bool quote, size_t *retlen)
  * NOTE: This function does not return if passed a NULL string or if conversion fails.
  */
 struct json *
-json_parse_string(char const *string, size_t len)
+parse_json_string(char const *string, size_t len)
 {
     struct json *str = NULL;
     struct json_string *item = NULL;
@@ -2032,7 +2032,7 @@ json_parse_string(char const *string, size_t len)
 
 
 /*
- * json_parse_bool - parse a json bool
+ * parse_json_bool - parse a json bool
  *
  * given:
  *
@@ -2044,7 +2044,7 @@ json_parse_string(char const *string, size_t len)
  * NOTE: This function does not return if passed a NULL string or conversion fails.
  */
 struct json *
-json_parse_bool(char const *string)
+parse_json_bool(char const *string)
 {
     struct json *boolean = NULL;
     struct json_boolean *item = NULL;
@@ -2117,7 +2117,7 @@ json_parse_bool(char const *string)
 
 
 /*
- * json_parse_null - parse a json null
+ * parse_json_null - parse a json null
  *
  * given:
  *
@@ -2129,7 +2129,7 @@ json_parse_bool(char const *string)
  * NOTE: This function does not return if passed a NULL string or if null becomes NULL :-)
  */
 struct json *
-json_parse_null(char const *string)
+parse_json_null(char const *string)
 {
     struct json *null = NULL;
     struct json_null *item = NULL;
@@ -2166,7 +2166,7 @@ json_parse_null(char const *string)
 
 
 /*
- * json_parse_number - parse a JSON number
+ * parse_json_number - parse a JSON number
  *
  * given:
  *
@@ -2178,7 +2178,7 @@ json_parse_null(char const *string)
  * NOTE: This function does not return if passed a NULL string or if conversion fails.
  */
 struct json *
-json_parse_number(char const *string)
+parse_json_number(char const *string)
 {
     struct json *number = NULL;
     struct json_number *item = NULL;
@@ -2213,12 +2213,12 @@ json_parse_number(char const *string)
 
 
 /*
- * json_parse_array - parse a JSON array given a JSON elements
+ * parse_json_array - parse a JSON array given a JSON elements
  *
  * Given a JSON elements, we turn it into a JSON array.
  *
  * IMPORTANT: The struct json_array must be identical to struct json_elements because
- *	      json_parse_array() converts by just changing the JSON item type.
+ *	      parse_json_array() converts by just changing the JSON item type.
  *
  * given:
  *
@@ -2230,7 +2230,7 @@ json_parse_number(char const *string)
  * NOTE: This function does not return if passed a NULL elements;
  */
 struct json *
-json_parse_array(struct json *elements)
+parse_json_array(struct json *elements)
 {
     struct json_array *item = NULL;
 
@@ -2264,7 +2264,7 @@ json_parse_array(struct json *elements)
 
 
 /*
- * json_parse_member - parse a JSON member
+ * parse_json_member - parse a JSON member
  *
  * given:
  *
@@ -2277,7 +2277,7 @@ json_parse_array(struct json *elements)
  * NOTE: This function does not return if passed a NULL name or value or if conversion fails.
  */
 struct json *
-json_parse_member(struct json *name, struct json *value)
+parse_json_member(struct json *name, struct json *value)
 {
     struct json *member = NULL;
     struct json_member *item = NULL;
