@@ -78,7 +78,10 @@
 #define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
 #define UUID_LEN (36)			/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)		/* version 4 - random UUID */
-#define UUID_VARIANT (0xa)		/* variant 1 - encoded as 0xa */
+#define UUID_VARIANT_0 (0x8)		/* variant 0 - encoded as 0x8 */
+#define UUID_VARIANT_1 (0x9)		/* variant 1 - encoded as 0x9 */
+#define UUID_VARIANT_2 (0xa)		/* variant 2 - encoded as 0xa */
+#define UUID_VARIANT_3 (0xb)		/* variant 3 - encoded as 0xb */
 #define TIMESTAMP_EPOCH "Thu Jan 01 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 #define MAX_CLOCK_ERROR ((42*60)-1)	/* maximum seconds allowed for a clock to be in error */

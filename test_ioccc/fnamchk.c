@@ -278,8 +278,9 @@ main(int argc, char *argv[])
 	    err(19, __func__, "UUID token version %x != %x: %s", version, UUID_VERSION, filepath);
 	    not_reached();
 	}
-	if (variant != UUID_VARIANT) {
-	    err(20, __func__, "UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
+	if (variant != UUID_VARIANT_0 && variant != UUID_VARIANT_1 && variant != UUID_VARIANT_2 && variant != UUID_VARIANT_3) {
+	    err(20, __func__, "UUID token variant %x not one of %x, %x, %x, %x: %s", variant, UUID_VARIANT_0,
+                    UUID_VARIANT_1, UUID_VARIANT_2, UUID_VARIANT_3, filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "submit ID is a valid UUID: %s", uuid);

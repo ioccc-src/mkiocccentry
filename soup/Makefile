@@ -360,7 +360,7 @@ TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT} limit_ioccc.sh
 #
 #       CC:= gcc
 #
--include makefile.local
+-include Makefile.local
 
 
 ######################################

@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.0.1 2024-12-26
+
+Fix issues #1036, #1035 and #1033
+
+The issues in respective order:
+
+- Typo fix in mkiocccentry.c ('You title must ...' -> 'Your title must
+...').
+- mkiocccentry UUID type 4 was too strict
+- Renamed makefile.local -> Makefile.local.
+
+Updated version of mkiocccentry due to the above changes. For the second
+one new macros are in soup/limit_ioccc.h so the soup version has been
+updated as well.
+
+
 ## Release 2.0 2024-11-17
 
 This is a formal release for public use.
