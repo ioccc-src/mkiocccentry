@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.0.2 2024-12-27
+
+Resolve issue #1039
+
+This syncs jparse from jparse repo with a variety of bug fixes and improvements,
+including a lot of documentation updates.
+
+
 ## Release 2.0.1 2024-12-26
 
 Fix issues #1036, #1035 and #1033

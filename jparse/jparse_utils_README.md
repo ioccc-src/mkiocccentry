@@ -86,6 +86,14 @@ The `-J` option increases the verbosity of the JSON parser.
 If `-s` is passed the arg is expected to be a string; otherwise it is expected
 to be a file.
 
+You may pipe output of one command into `jparse` if you wish.
+
+The `-q` option will silence some output if `-v 0` (the default); `-v level`
+changes the verbosity of the tool itself but not the JSON debug output.
+
+For details on some of the JSON debug output flags, see the [`jparse` JSON debug
+output section](#jparse-json-debug) below.
+
 
 <div id="jparse-examples"></div>
 
@@ -142,7 +150,6 @@ This would work, however:
 jparse -s '"\n"'
 ```
 
-
 <div id="jparse-exit-codes"></div>
 
 ## jparse exit codes
@@ -170,18 +177,21 @@ cannot show it, or it is invalid, you might see a character indicating this.
 
 
 ```sh
- jstrdecode [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]
+jstrdecode [-h] [-v level] [-j] [-J level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]
 ```
-
-
-Unlike the `jparse` utility, no JSON parsing functions are called, so there is
-no `-J level` option.
 
 Use of `-Q` will enclose output in double quotes whereas the use of `-e`
 will enclose each decoded string with escaped double quotes. Use of `-Q` and
 `-e` together will surround the entire output with unescaped quotes and each
 decoded arg will be surrounded with escaped (backslashed) quotes. To not require
 surrounding the input strings with double quotes (`"`s), use the `-d` option.
+Note that if you use `-d` you cannot use `-j` because the JSON parser needs the
+quotes and the use of `-d` means that there cannot be quotes.
+
+If you need the input to be valid JSON, use the `-j` option to enable JSON
+parsing. The `-J level` option will set the jparse debug level, assuming `-j` is
+not used. Note that the use of `-j` and `-d` together is an error because `-j`
+means there has to be quotes and `-d` means there cannot be quotes.
 
 If you use `-N` it ignores all newlines in input. This does not mean that the
 JSON allows for unescaped newlines but rather newlines on the command line are

@@ -21,12 +21,13 @@
 #if !defined(INCLUDE_VERGE_H)
 #    define  INCLUDE_VERGE_H
 
-
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
 #else
 #include <dbg.h>
 #endif

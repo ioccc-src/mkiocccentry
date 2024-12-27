@@ -21,14 +21,24 @@
 #if !defined(INCLUDE_JNUM_GEN_H)
 #    define  INCLUDE_JNUM_GEN_H
 
-
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "../dbg/dbg.h"
 #else
 #include <dbg.h>
+#endif
+
+/*
+ * dyn_array - dynamic array facility
+ */
+#if defined(INTERNAL_INCLUDE)
+#include "../../dyn_array/dyn_array.h"
+#else
+#include <dyn_array.h>
 #endif
 
 /*
@@ -70,16 +80,6 @@
  * jnum_gen tool basename
  */
 #define JNUM_GEN_BASENAME "jnum_gen"
-
-
-/*
- * dyn_array - dynamic array facility
- */
-#if defined(INTERNAL_INCLUDE)
-#include "../../dyn_array/dyn_array.h"
-#else
-#include <dyn_array.h>
-#endif
 
 
 

@@ -30,6 +30,8 @@
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
 #else
 #include <dbg.h>
 #endif
@@ -44,6 +46,8 @@
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dyn_array/dyn_array.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dyn_array/dyn_array.h"
 #else
 #include <dyn_array.h>
 #endif

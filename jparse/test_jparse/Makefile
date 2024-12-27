@@ -308,7 +308,7 @@ TARGETS= ${PROG_TARGETS}
 # User specific configurations - override Makefile values  #
 ############################################################
 
-# The directive below retrieves any user specific configurations from makefile.local.
+# The directive below retrieves any user specific configurations from Makefile.local.
 #
 # The - before include means it's not an error if the file does not exist.
 #
@@ -318,7 +318,7 @@ TARGETS= ${PROG_TARGETS}
 #
 #       CC:= gcc
 #
--include makefile.local
+-include Makefile.local
 
 
 ######################################
@@ -451,7 +451,7 @@ util_test.o: util_test.c
 	${CC} ${CFLAGS} -DUTIL_TEST util_test.c -c
 
 util_test: util_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldbg -ldyn_array -lm
 
 # sequence exit codes
 #

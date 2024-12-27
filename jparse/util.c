@@ -45,6 +45,9 @@
 # include "../dbg/dbg.h"
 # include "../dyn_array/dyn_array.h"
 # endif
+#elif defined(INTERNAL_INCLUDE_2)
+#include "../dbg/dbg.h"
+#include "../dyn_array/dyn_array.h"
 #else
 #include <dbg.h>
 #include <dyn_array.h>
@@ -2758,10 +2761,12 @@ is_floating_notation(char const *str, size_t len)
 		      __func__, str);
 	    return false;	/* processing failed */
 	}
+
+        return true;
     }
 
 
-    return true;
+    return false;
 }
 
 

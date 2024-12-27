@@ -1,5 +1,171 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.9 2024-12-26
+
+Invert the meaning of `jstrdecode -j`.
+
+Now by default the tool will not validate the input as JSON. If that is needed
+one should use the `-j` option (previously it disabled the check). This is
+because it is not always needed, it can cause problems and it also is annoying
+to have to always double quote the input (forcing something like `jstrdecode
+'"foo"'`).
+
+`jstrdecode(1)` version is now `"2.1.5 2024-12-26"`.
+
+
+## Release 2.1.8 2024-12-22
+
+Bug fixes in both `jstrdecode(1)` and `jparse(1)`.
+
+There was a missing arg in `usage()` in `jstrdecode(1)` which caused a memory
+error causing invalid output when `-h` was used.
+
+In `jparse(1)` the `usage()` function referred to `json_verbosity_level` rather
+than the default value of `JSON_DBG_DEFAULT`. What that means is that if one
+were to have done `-J 5 -h` it the default would have been shown as 5 when in
+fact it's 0.
+
+Updated version of `jparse(1)` to `"1.2.7 2024-12-22"`.
+Updated version of `jstrdecode(1)` to `"2.1.4 2024-12-22"`.
+
+A note about why the repo release version only had the date changed: it's
+because when updating documentation on 2 December 2024 I updated it but did not
+document it here. But since it's not really necessary to note this (though it's
+been done sometimes) it did not seem useful to add another entry in this file.
+
+
+## Release 2.1.7 2024-12-02
+
+Add more documentation about each `json_` struct and added some details to
+`json_README.md` for JSON numbers.
+
+Fixed some comments in `json_parse.h`.
+
+
+## Release 2.1.6 2024-12-01
+
+Modularise the `vjson_fprint()` function (for `-J level` of the parser) by
+breaking each `JTYPE_` into its own function. The `JTYPE_NUMBER` already had
+this and now the others do too, though the most important one is for
+`JTYPE_STRING`.
+
+Moved debug documentation from `jparse_utils_README.md` to
+`jparse_library_README.md` as it is not limited to tool found here.
+
+Also, the library documentation has been greatly expanded, in
+`jparse_library_README.md`, although there certainly could be more done.
+
+
+## Release 2.1.5 2024-11-30
+
+Bug fix in JSON debug output for numbers. Due to a flow control problem, the
+floating notation flag was always set to true if no errors were found and a `.`
+was found in the string. This meant that the F flag was always present even for
+non-floating point numbers.
+
+Fix make clobber - add missing `jstr_util.o`.
+
+Removed the `jstr_util.o` from compilation of `jstrdecode` and `jstrencode` as
+it's not properly in the library.
+
+Add back inclusion (in Makefiles) local Makefiles except it's now called
+`Makefile.local`. This must be used with care and another change is pending
+(though down the road) where the `make test` will first move any local
+modification Makefiles to a temporary file to make sure tests can go okay
+without any modified Makefiles interfering. The `jparse_bug_report.sh` now
+checks for these files and cats them to the log/stdout in the case they exist.
+
+Add details about JSON debug output flags (in other words if `-J level` used and
+high enough level) for `JTYPE_NUMBER` and `JTYPE_STRING`, the types that have a
+lot of flags that might mean very little to anyone who has not looked at the
+code.
+
+
+## Release 2.1.5 2024-11-25
+
+Add another internal include possibility where one could (though this is
+not recommended as it is recommended to install the `dbg` and
+`dyn_array` libraries) include both `jparse` in their project which also
+have `dbg/` and `dyn_array/` subdirectories (under `jparse/`).
+
+More importantly, and this is why the change above is being committed
+(it was done on a whim at the console when I had nothing better to do,
+at the console, where I was for a few minutes, but it really has no
+practical use), some of the checks for the internal include macros were
+in source files rather than header files, and these have been moved to
+the header files.
+
+No functional changes were made and it is quite possible that no real changes
+will be made for some time, though as they say 'time will tell'. There are some
+changes in the pipeline, however, and that includes fixing some (possible) bugs
+that were uncovered; it would also be ideal if `jstrencode` were to encode code
+points to Unicode symbols.
+
+
+## Release 2.1.4 2024-11-19
+
+Remove `makefile.local` functionality in the Makefiles as this can cause
+compilation problems and the purpose of the file is no longer needed. Should one
+really want to override things they can pass it at the command line manually.
+This change means that the `jparse_bug_report.sh` script has been updated as
+well. This problem actually caused the mess of commits
+bcb793e7d996da45fa9d47ae70084c9294eb1f2c and the commit that rolled it back,
+bcb793e7d996da45fa9d47ae70084c9294eb1f2c, as when trying to fix a mess in
+another repo that used it, by accident it was pushed to this repo, undoing fixes
+from yesterday.
+
+Added to `jparse.3` man page details about freeing a JSON parse tree (the
+`json_tree_free()` function) and a new file (symlink) for it. Made some minor
+improvements to the man page as well.
+
+Removed unused macro `JSON_DBG_LEVEL` from `json_util.h`.
+
+## Release 2.1.3 2024-11-18
+
+Improve function `parse_json_str()` and `parse_json()` by allowing for empty or
+NULL strings in the following way: `parse_json_str()` will pass a NULL filename
+to `parse_json()` which will keep the filename as NULL, which will, due to
+updates in the error function, not show a file (the difference is that it now
+checks that it's not NULL **AND** not a NUL string).
+Thus to parse a string rather than a file, one can use either
+`parse_json_str()` (a simplified version) or else `parse_json()` with a NULL
+filename. Using an empty filename in the latter function will set it to `"-"` for
+stdin, though it's important to realise that the function `parse_json()` acts on
+a `char *`. If one needs to read in a file, they should instead use
+`parse_json_file()` (if they have only a filename) or else `parse_json_stream()`
+if they have a `FILE *`.
+
+Renamed some internal functions that were too ambiguous with the `parse_json()`
+family of functions. In particular the functions that parse specific JSON types
+like `json_parse_string()` which used to be `parse_json_string()` (too similar
+to `parse_json_str()` which has a very different purpose). All of the
+`parse_json_()` functions were renamed to `json_parse_()` which also match the
+conversion and allocation functions in name format.
+
+Fixed `jparse.3` man page and added a new file (also a symlink like the others)
+for `parse_json_str()`.
+
+Fixed at least one issue with `jstrdecode(1)` by first using the jparse parser
+on the string prior to decoding. This will solve the problem of input like
+`'"foo\"'` not reporting an error (previously it would throw a warning but not
+an error but it is NOT valid JSON). Furthermore something like `'"\"\"\""\'`
+will now report an error:
+
+```
+syntax error node type JTYPE_STRING at line 1 column 9: <\>
+ERROR[15]: main: invalid JSON
+```
+
+In the case that one needs to or wants to not validate the JSON first, they can
+use the `-j` option. The `-J level` sets the JSON debug level.
+
+Fix compilation error in linux for `util_test` - add missing `-lm` to
+`test_jparse/Makefile`.
+
+Updated the version of `jstrdecode` to: "2.1.3 2024-11-18".
+Updated version of the jparse library to: `"2.2.0 2024-11-18"`.
+Updated version of `jparse(1)` to: `"1.2.4 2024-11-18"`.
+
 
 ## Release 2.1.2 2024-11-17
 

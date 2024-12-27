@@ -27,15 +27,6 @@
 #include <limits.h>
 
 /*
- * dbg - info, debug, warning, error, and usage message facility
- */
-#if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
-#else
-#include <dbg.h>
-#endif
-
-/*
  * json_sem - JSON semantics support
  */
 #include "json_sem.h"

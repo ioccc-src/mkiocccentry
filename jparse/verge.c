@@ -254,7 +254,7 @@ main(int argc, char *argv[])
 
 
 /*
- * allocate_vers - convert version string into a allocated array or version numbers
+ * allocate_vers - convert version string into an allocated array or version numbers
  *
  * given:
  *	ver	version string

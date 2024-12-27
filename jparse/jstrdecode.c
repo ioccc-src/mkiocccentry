@@ -46,10 +46,13 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]\n"
+    "usage: %s [-h] [-v level] [-j] [-J level] [-q] [-V] [-t] [-n] [-N] [-Q] [-e] [-d] [-E level] [arg ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-j\t\tenable parsing of encoded JSON before decoding (def: don't parse)\n"
+    "\t\t\t\tNOTE: use of -j and -d is an error\n"
+    "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform tests of JSON decode/encode functionality\n"
@@ -58,6 +61,7 @@ static const char * const usage_msg =
     "\t-Q\t\tenclose output in double quotes (def: do not)\n"
     "\t-e\t\tfor multiple args, enclose each decoded arg in escaped double quotes (def: do not)\n"
     "\t-d\t\tdo not require a leading and trailing double quote (def: do require)\n"
+    "\t\t\t\tNOTE: use of -d and -j is an error\n"
     "\t-E level\tentertainment mode\n"
     "\n"
     "\t[arg ...]\tJSON decode args on command line (def: read stdin)\n"
@@ -79,7 +83,7 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote);
+static struct jstring *jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote, bool json_parse);
 static struct jstring *add_decoded_string(char *string, size_t bufsiz);
 
 /*
@@ -220,6 +224,7 @@ dup_without_nl(char *input, size_t *inputlen)
  *	in_stream	open file stream to decode
  *	ignore_nl	true ==> ignore all newline characters
  *	quote           true ==> require leading and trailing double quotes
+ *	json_parse      true ==> parse encoded JSON first
  *
  * returns:
  *	allocated struct jstring * ==> decoding was successful,
@@ -229,14 +234,16 @@ dup_without_nl(char *input, size_t *inputlen)
  * decoded JSON strings.
  */
 static struct jstring *
-jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote)
+jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote, bool json_parse)
 {
-    char *input = NULL;		/* argument to process */
-    size_t inputlen;		/* length of input buffer */
-    size_t bufsiz;		/* length of the buffer */
-    char *buf = NULL;		/* decode buffer */
+    char *input = NULL;		    /* argument to process */
+    size_t inputlen;		    /* length of input buffer */
+    size_t bufsiz;		    /* length of the buffer */
+    char *buf = NULL;		    /* decode buffer */
     struct jstring *jstr = NULL;    /* decoded string added to list */
-    char *dup_input = NULL;	/* duplicate of input w/o newlines */
+    struct json *tree = NULL;       /* to parse JSON if json_parse */
+    bool is_valid = true;           /* if json is valid */
+    char *dup_input = NULL;	    /* duplicate of input w/o newlines */
 
     /*
      * firewall
@@ -278,6 +285,20 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote)
 	input = dup_input;
     }
 
+    /*
+     * if json_parse is true, first try parsing JSON
+     */
+    if (json_parse) {
+        tree = parse_json_str(input, inputlen, &is_valid);
+        if (tree == NULL || !is_valid) {
+            err(12, __func__, "invalid JSON");
+            not_reached();
+        } else {
+            json_tree_free(tree, JSON_INFINITE_DEPTH);
+            free(tree);
+            tree = NULL;
+        }
+    }
     /*
      * decode data read from input stream
      */
@@ -333,8 +354,11 @@ main(int argc, char **argv)
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
     bool quote = true;          /* true ==> require surrounding quotes */
+    bool json_parse = false;  /* true ==> skip parsing encoded JSON before decoding */
     int ret;			/* libc return code */
     int i;
+    struct json *tree = NULL;   /* for parsing json if not -j */
+    bool is_valid = true;       /* if not -j and JSON is valid */
     struct jstring *jstr = NULL;    /* decoded string */
     char *dup_input = NULL;	/* duplicate of arg string */
 
@@ -342,7 +366,7 @@ main(int argc, char **argv)
      * set locale
      */
     if (setlocale(LC_ALL, "") == NULL) {
-	err(12, __func__, "failed to set locale");
+	err(13, __func__, "failed to set locale");
 	not_reached();
     }
 
@@ -350,7 +374,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVtnNQedE:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:jJ:qVtnNQedE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -363,6 +387,19 @@ main(int argc, char **argv)
 	    verbosity_level = parse_verbosity(optarg);
 	    if (verbosity_level < 0) {
 		usage(3, program, "invalid -v verbosity"); /*ooo*/
+		not_reached();
+	    }
+	    break;
+        case 'j':
+            json_parse = true;
+            break;
+	case 'J': /* -J json_verbosity_level */
+	    /*
+	     * parse json verbosity level
+	     */
+	    json_verbosity_level = parse_verbosity(optarg);
+	    if (verbosity_level < 0) {
+		usage(3, program, "invalid -J json_verbosity"); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -423,6 +460,15 @@ main(int argc, char **argv)
 	    break;
 	}
     }
+
+    /*
+     * -j and -d cannot be used together because -j requires surrounding quotes
+     * and -d requires that there are no surrounding quotes.
+     */
+    if (json_parse && !quote) {
+        usage(3, program, "-j and -d cannot be used together"); /*ooo*/
+        not_reached();
+    }
     dbg(DBG_LOW, "argc: %d", argc);
     dbg(DBG_LOW, "optind: %d", optind);
     dbg(DBG_LOW, "arg count: %d", argc - optind);
@@ -431,6 +477,7 @@ main(int argc, char **argv)
     dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
     dbg(DBG_LOW, "escaped quotes: %s", booltostr(esc_quotes));
     dbg(DBG_LOW, "ignore surrounding quotes: %s", booltostr(quote));
+    dbg(DBG_LOW, "parse JSON encoded string before decoding: %s", booltostr(json_parse));
 
     /*
      * case: process arguments on command line
@@ -454,7 +501,7 @@ main(int argc, char **argv)
 		 * NOTE: the function jstrdecode_stream() adds the allocated
 		 * struct jstring * to the list of decoded JSON strings
 		 */
-		jstr = jstrdecode_stream(stdin, ignore_nl, quote);
+		jstr = jstrdecode_stream(stdin, ignore_nl, quote, json_parse);
 		if (jstr != NULL) {
 		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
 		} else {
@@ -481,7 +528,7 @@ main(int argc, char **argv)
 		     */
 		    dup_input = dup_without_nl(input, &inputlen);
 		    if (dup_input == NULL) {
-			err(13, __func__, "dup_without_nl failed");
+			err(14, __func__, "dup_without_nl failed");
 			not_reached();
 		    }
 
@@ -493,6 +540,20 @@ main(int argc, char **argv)
 		    dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
 		}
 
+                /*
+                 * if -j, make sure it's valid JSON first
+                 */
+                if (json_parse) {
+                    tree = parse_json_str(input, inputlen, &is_valid);
+                    if (!is_valid || tree == NULL) {
+                        err(15, __func__, "invalid JSON");
+                        not_reached();
+                    } else {
+                        json_tree_free(tree, JSON_INFINITE_DEPTH);
+                        free(tree);
+                        tree = NULL;
+                    }
+                }
 		/*
 		 * decode arg
 		 */
@@ -534,7 +595,7 @@ main(int argc, char **argv)
 	 * NOTE: the function jstrdecode_stream() adds the allocated
 	 * struct jstring * to the list of decoded JSON strings
 	 */
-	jstr = jstrdecode_stream(stdin, ignore_nl, quote);
+	jstr = jstrdecode_stream(stdin, ignore_nl, quote, json_parse);
 
 	if (jstr != NULL) {
 	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
@@ -664,7 +725,8 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION,
+
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JSTRDECODE_BASENAME, JSTRDECODE_VERSION,
 	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

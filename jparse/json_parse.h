@@ -31,6 +31,18 @@
 #include "json_utf8.h"
 
 /*
+ * dbg - info, debug, warning, error, and usage message facility
+ */
+#if defined(INTERNAL_INCLUDE)
+#include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
+
+
+/*
  * definitions
  */
 #define JSON_BYTE_VALUES (BYTE_VALUES) /* to make the purpose clearer we have the JSON_ prefix */
@@ -66,7 +78,7 @@ struct byte2asciistr
 /*
  * parsed JSON number
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * If converted == false, then the JSON number string was not able to be
@@ -210,16 +222,18 @@ struct json_number
 /*
  * parsed JSON string
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * If the allocation of as_str fails, then as_str == NULL and parsed == false.
  *
  * The non-NULL as_str allocated will be NUL byte terminated.
  *
- * A JSON string is of the form:
+ * The scanner has the regex:
  *
- *	"([^\n"]|\\")*"
+ *	"([^"\x01-\x1f]|\\\")*"
+ *
+ * where the unescaped '"' is a literal double quote.
  *
  * NOTE: We let the conversion function decide whether the string is actually
  * invalid according to the JSON standard so the regex above is for the parser
@@ -250,7 +264,7 @@ struct json_string
 /*
  * parsed JSON boolean
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON boolean is of the form:
@@ -273,7 +287,7 @@ struct json_boolean
 /*
  * parsed JSON null
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON null is of the form:
@@ -295,16 +309,14 @@ struct json_null
 /*
  * JSON member
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON member is of the form:
  *
  *	name : value
  *
- * where name is a JSON string of the form:
- *
- *	"([^\n"]|\\")*"
+ * where name is a valid JSON string.
  *
  * and where value is any JSON value such as a:
  *
@@ -316,7 +328,7 @@ struct json_null
  *	JSON null
  *
  * These 4 items are copies of information from the JSON string name
- * and serve as a convenience for accessing JSON member name information.
+ * and serve as a convenience for accessing JSON member name information:
  *
  * The name_as_str is a pointer copy of name->item.string.as_str pointer.
  * The name_str is a pointer copy of name->item.string.str pointer.
@@ -342,7 +354,7 @@ struct json_member
 /*
  * JSON object
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * JSON object is one of:
@@ -369,7 +381,7 @@ struct json_object
 /*
  * JSON ordered array of values
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON array is of the form:
@@ -381,8 +393,8 @@ struct json_object
  *
  *	foo.set[i-1]
  *
- * IMPORTANT: The struct json_array must be identical to struct json_elements because
- *	      parse_json_array() converts by just changing the JSON item type.
+ * IMPORTANT: The struct json_array MUST be identical to struct json_elements because
+ *	      json_parse_array() converts by just changing the JSON item type.
  */
 struct json_array
 {
@@ -399,7 +411,7 @@ struct json_array
 /*
  * JSON elements
  *
- * When parsed == false, then all other fields in this structure may be invalid.
+ * When parsed == false, then all other fields in this structure might be invalid.
  * So you must check the boolean of parsed and only use values if parsed == true.
  *
  * A JSON elements is zero or more JSON values.
@@ -408,8 +420,8 @@ struct json_array
  *
  *	foo.set[i-1]
  *
- * IMPORTANT: The struct json_array must be identical to struct json_elements because
- *	      parse_json_array() converts by just changing the JSON item type.
+ * IMPORTANT: The struct json_elements MUST be identical to struct json_array because
+ *	      json_parse_array() converts by just changing the JSON item type.
  */
 struct json_elements
 {
@@ -493,12 +505,12 @@ extern void chkbyte2asciistr(void);
 extern void jdecencchk(int entertainment);
 extern char *json_decode(char const *ptr, size_t len, bool quote, size_t *retlen);
 extern char *json_decode_str(char const *str, bool quote, size_t *retlen);
-extern struct json *parse_json_string(char const *string, size_t len);
-extern struct json *parse_json_bool(char const *string);
-extern struct json *parse_json_null(char const *string);
-extern struct json *parse_json_number(char const *string);
-extern struct json *parse_json_array(struct json *elements);
-extern struct json *parse_json_member(struct json *name, struct json *value);
+extern struct json *json_parse_string(char const *string, size_t len);
+extern struct json *json_parse_bool(char const *string);
+extern struct json *json_parse_null(char const *string);
+extern struct json *json_parse_number(char const *string);
+extern struct json *json_parse_array(struct json *elements);
+extern struct json *json_parse_member(struct json *name, struct json *value);
 extern struct json *json_alloc(enum item_type type);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);
