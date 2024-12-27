@@ -27,6 +27,8 @@
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
 #else
 #include <dbg.h>
 #endif
@@ -36,6 +38,8 @@
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dyn_array/dyn_array.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dyn_array/dyn_array.h"
 #else
 #include <dyn_array.h>
 #endif
@@ -69,7 +73,7 @@
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "2.1.2 2024-11-17"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "2.1.5 2024-12-26"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

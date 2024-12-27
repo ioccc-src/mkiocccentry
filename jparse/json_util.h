@@ -21,12 +21,26 @@
 #if !defined(INCLUDE_JSON_UTIL_H)
 #    define  INCLUDE_JSON_UTIL_H
 
+/*
+ * dbg - info, debug, warning, error, and usage message facility
+ */
+#if defined(INTERNAL_INCLUDE)
+#include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
+
+
 
 /*
  * dyn_array - dynamic array facility
  */
 #if defined(INTERNAL_INCLUDE)
 #include "../dyn_array/dyn_array.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dyn_array/dyn_array.h"
 #else
 #include <dyn_array.h>
 #endif
@@ -71,7 +85,6 @@
 #define JSON_DBG_VVVHIGH    (DBG_VVVHIGH)   /* very very very verbose debugging information related to parser */
 #define JSON_DBG_VVVVHIGH   (DBG_VVVVHIGH)  /* very very very very verbose debugging information related to parser */
 #define JSON_DBG_FORCED	    (-1)	    /* always print information, even if dbg_output_allowed == false */
-#define JSON_DBG_LEVEL	    (JSON_DBG_LOW)  /* default JSON debugging level json_verbosity_level */
 
 /* WARNING: the below enums, macros and structs are VERY subject to change, if they are not deleted */
 

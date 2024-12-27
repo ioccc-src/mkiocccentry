@@ -9,11 +9,13 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "01 November 2024" "jparse"
+.TH jparse 3  "18 November 2024" "jparse"
 .SH NAME
 .BR parse_json() \|,
+.BR parse_json_str() \|,
 .BR parse_json_stream() \|,
 .BR parse_json_file() \|,
+.BR json_tree_free(tree() \|,
 .BR json_dbg_allowed() \|,
 .BR json_warn_allowed() \|,
 .BR json_err_allowed() \|,
@@ -21,6 +23,12 @@
 \- JSON parsing library
 .SH SYNOPSIS
 \fB#include <jparse/jparse.h>\fP
+.sp
+.B "extern const char *const jparse_library_version;	/* jparse library version format: major.minor YYYY-MM-DD */"
+.br
+.B "extern const char *const jparse_utf8_version;	/* jparse utf8 version format: major.minor YYYY-MM-DD */"
+.br
+.B "extern const char *const jparse_version;		/* jparse tool version format: major.minor YYYY-MM-DD */"
 .sp
 \fB#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))\fP
 .br
@@ -30,17 +38,15 @@
 .br
 \fB#define CONVERTED_JSON_NODE(item) ((item) != NULL && (item)->converted == true)\fP
 .sp
-.B "extern const char *const jparse_library_version;	/* library version format: major.minor YYYY-MM-DD */"
-.br
-.B "extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */"
-.br
-.B "extern const char *const jparse_utf8_version;	/* jparse utf8 version format: major.minor YYYY-MM-DD */"
-.sp
 .B "extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);"
+.br
+.B "extern struct json *parse_json_str(char const *ptr, size_t len, bool *is_valid);"
 .br
 .B "extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);"
 .br
-.B "extern struct json *parse_json_file(char const *name, bool *is_valid);"
+.B "extern struct json *parse_json_file(char const *filename, bool *is_valid);"
+.sp
+.B "extern void json_tree_free(struct json *node, unsigned int max_depth, ...);"
 .sp
 .B "extern char const *json_get_type_str(struct json *node, bool encoded);"
 .sp
@@ -54,39 +60,74 @@
 .SH DESCRIPTION
 The
 .B jparse
-library provides a way for C applications to parse JSON in a file (including stdin) or a string, returning a tree of the parsed JSON that one may then manipulate.
+library provides a way for C applications to parse JSON in a file (including stdin) or a string, returning a tree (a
+.B struct json *\&
+\c tree)
+of the parsed JSON that one may then traverse or manipulate in many ways.
+The functions to actually parse the JSON, as well as debug output functions (although not in great detail but rather just what they are), are described in this man page.
+.SS Parsing functions
 The function
-.B parse_json
+.BR parse_json ()
 parses a JSON string
 .I ptr
 of length
-.I len
-in file
-.IR filename .
-If
-.I is_valid
-is not NULL, it will set
-.I *is_valid
-to true prior to returning the tree but it is an error if it is NULL.
+.IR len .
 The
 .I ptr
-is a pointer to the start of the JSON data.
+is a pointer to the start of the JSON data, so that one may scan part of a document, should they wish.
 The function will scan up to
 .I len
-bytes so that as long as one knows where in the string the JSON is, they can parse a document with other kinds of data.
+bytes so that one may scan part of a document or string, which might have other kinds of data, in other words is only partly JSON.
+This function takes a
+.I filename
+arg which is used for messages, in particular error messages.
+If the wrong filename is specified, it will affect output as this function will not try and open the file; for that, use the function
+.BR parse_json_file (),
+described later.
+.PP
 If
 .I filename
-is NULL then it will read from
-.B stdin
-which can also be done by passing in \fI"\-"\fP.
+is not NULL and is an empty string, then it will set the filename to
+.BR \*(lq-\*(rq ,
+indicating that the input comes from stdin.
+If it is a NULL pointer, the filename in the parser extra data will be set to NULL, and messages will not show a filename.
+.PP
+The variable
+.BR is_valid ,
+which is a pointer to a bool, must not be NULL, and it is an error if it is.
+Its purpose, along with the return value, is to indicate to the caller if the JSON is invalid.
+If in the calling function
+.B is_valid
+is false after calling this function, then the
+.B struct json *
+returned should be NULL, although it is best practice to check if the
+.B struct json *
+is NULL and if
+.B is_valid
+is false.
 The function will return the parsed JSON as a tree of type
 .BR struct\ json\ * .
-If the parse fails a blank JSON tree is returned instead.
+If
+.B ptr
+is NULL or if the block cannot be scanned, a blank JSON tree is returned instead.
+.PP
+The function
+.BR parse_json_str ()
+is like
+.BR parse_json ()
+except that it does not take a filename; instead it passes in a NULL filename to
+.BR parse_json (),
+which affects the error message to not say it is a filename: rather it is a string, as described above.
+The function
+.BR parse_json_str ()
+is essentially a wrapper to
+.BR parse_json ()
+where the filename arg is a NULL string, to simplify parsing a string.
 .sp
 The function
-.B parse_json_stream
+.BR parse_json_stream ()
 is like
-.B parse_json
+.BR parse_json ()
 except that it parses an entire
 .B FILE *
 and does not accept a number of bytes to scan.
@@ -94,30 +135,42 @@ The
 .I filename
 is for messages and is not used to determine what file to open as the stream should already be open.
 If you wish to do that you should use the
-.B parse_json_file()
-function instead.
+.BR parse_json_file ()
+function instead, which takes a filename and the
+.B is_valid
+variable.
 Unless
 .I stream
 is
 .B stdin
 the state of it should be considered unsafe to use after the return of the function as it will be closed.
-The function returns the parsed JSON as a
-.BR struct\ json\ * .
-.sp
+.PP
 The
-.B parse_json_file
-function is essentially a wrapper to the
-.B parse_json_stream
-function as it will open the file
-.I filename
-and then call
-.B parse_json_stream
-on the stream, returning a
+.BR parse_json_file ()
+function will try and open the filename given in
+.B filename
+and then, as long as it can be opened, pass the
+.B FILE *
+to
+.BR parse_json_stream ().
+.SS Freeing the struct json * tree
+.PP
+After you are done with working with the tree, you should free it, using the
+.BR json_tree_free ()
+function, which takes a
 .B struct json *
-tree.
+and a maximum depth to descend.
+The macro
+.BR JSON_DEFAULT_MAX_DEPTH ,
+which is defined as 256, is a good value to use; on the other hand, if you do need an infinite depth, you can use
+.BR JSON_INFINITE_DEPTH ,
+which is 0.
+After you use this function, you should still free the tree with
+.BR free (3),
+and then set the pointer to NULL.
 .SS Matching functions
 The
-.B json_get_type_str
+.BR json_get_type_str ()
 returns a
 .B char const *
 with what was matched in the parser.
@@ -127,18 +180,18 @@ boolean is true or not, it returns the encoded or decoded string, assuming the J
 .SS Debug, warn and error functions
 .PP
 The function
-.B json_dbg_allowed
+.BR json_dbg_allowed ()
 will return true if debug output would be displayed at the verbosity level
 .IR json_dbg_lvl .
 .br
 The functions
-.B json_warn_allowed
+.BR json_warn_allowed ()
 and
-.B json_err_allowed
+.BR json_err_allowed ()
 will return true if warnings and error output is allowed, respectively.
 .sp
 The function
-.B json_dbg
+.BR json_dbg ()
 allows for your application to give debug information to the user.
 The
 .I json_dbg_lvl
@@ -175,7 +228,6 @@ struct json
     enum item_type type;		/* union item specifier */
     union json_union {
 .in +4n
-.nf
 	struct json_number number;	/* JTYPE_NUMBER - value is number (integer or floating point) */
 	struct json_string string;	/* JTYPE_STRING - value is a string */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
@@ -184,15 +236,13 @@ struct json
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
 	struct json_elements elements;	/* JTYPE_ELEMENTS - zero or more JSON values */
-.in
     } item;
 
+.in -4n
     /*
      * JSON parse tree links
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
-.fi
-.in
 };
 .SS Checking for converted and/or parsed JSON nodes
 .PP
@@ -244,41 +294,52 @@ checks that the node's
 boolean is true.
 .SS Version strings
 The string
+.BR jparse_library_version ,
+which points to
+.BR JPARSE_LIBRARY_VERSION ,
+is the current version of the jparse library itself.
+The string
+.BR jparse_utf8_version ,
+which points to
+.BR JPARSE_UTF8_VERSION ,
+is the current jparse UTF\-8 version.
+The string
 .BR jparse_version ,
 which points to
 .BR JPARSE_VERSION ,
 is the current version of the
 .B jparse
 tool.
-The string
-.BR jparse_library_version ,
-which points to
-.BR JPARSE_LIBRARY_VERSION ,
-is the current version of the parser itself.
 .SH RETURN VALUE
 .PP
 The functions
-.BR parse_json ,
-.B parse_json_stream
+.BR parse_json (),
+.BR parse_json_str (),
+.BR parse_json_stream ()
 and
-.B parse_json_file
+.BR parse_json_file ()
 return a
 .B struct json *
-which is either blank or, if the parse was successful, a tree of the entire parsed JSON.
+which is either blank (unset type) or, if the parse was successful, a tree of the entire parsed JSON.
+Otherwise, if the JSON is invalid, a NULL pointer is returned, and the bool
+.B is_valid
+in the calling function is set to false (this also happens if an unset type is returned).
+Certain error conditions will prevent the function from returning.
 .PP
 The functions
-.BR json_dbg_allowed ,
-.B json_warn_allowed
+.BR json_dbg_allowed (),
+.BR json_warn_allowed (),
 and
-.B json_err_allowed
+.BR json_err_allowed ()
 will return true if debug, warn or error messages are allowed, respectively, and otherwise false.
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support
-IOCCCMOCK, IOCCC28 and beyond.
+IOCCC28 and beyond.
 .PP
 For more detailed history that goes beyond this humble man page we recommend you check
 .BR jparse (1),
+the
 .IR README.md ,
 and the GitHub git log as well as reading the source code (or not :\-) ).
 Understand that by source we refer to the
@@ -292,14 +353,19 @@ See the apology at the top of the generated files or look directly at
 instead.
 .SS Valid JSON
 In the case that a value cannot be converted but it is valid JSON the parser will still successfully validate the JSON.
-This might happen if, for example, a number is too big for the C types but as long as the JSON itself is valid the parse tree will be considered valid and not NULL.
+This might happen if, for example, a number is too big for the C types, but it is still valid JSON; in this case the parse tree is valid and not NULL.
+See the macros in the
+.B Checking for converted and/or parsed JSON nodes
+section above for details.
 .PP
 .SH BUGS
 Although error reporting does have locations it is only line numbers and columns.
-Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (tabs for example).
+Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (say, because of tabs).
 .sp
 Although the scanner and parser are re-entrant only one parse at one time in a process has been tested.
 .sp
 If it's not clear this means that having more than one parse active in the same process at the same time is not tested so even though it should be okay there might be some issues that have yet to be discovered.
 .SH SEE ALSO
 .BR jparse (1),
+.BR jstrdecode (1),
+.BR jstrencode (1)

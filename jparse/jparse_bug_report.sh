@@ -62,7 +62,7 @@ export TOOLS="
     verge
     "
 
-# we need this to find overriding makefile.local in all directories to see if
+# we need this to find overriding Makefile.local in all directories to see if
 # the user is overriding any Makefile. As well, we check if the directory even
 # is searchable and has a Makefile.
 export SUBDIRS="
@@ -80,7 +80,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export BUG_REPORT_VERSION="2.0.1 2024-11-16"
+export BUG_REPORT_VERSION="2.0.3 2024-11-30"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1638,51 +1638,51 @@ for d in $SUBDIRS; do
 done
 write_echo ""
 
-# check for makefile.local files to see if user is overriding any rules or variables.
+# check for Makefile.local files to see if user is overriding any rules or variables.
 #
 # NOTE: we don't use run_check for this because it's not an actual error whether
-# or not the user has a makefile.local file. What matters is the contents of it
+# or not the user has a Makefile.local file. What matters is the contents of it
 # if they do have one.
 #
-write_echo "## CHECKING IF \"makefile.local\" EXISTS"
-if [[ -e "./makefile.local" ]]; then
-    if [[ -r "./makefile.local" ]]; then
-	write_echo "### Warning: found \"Makefile\" overriding file \"makefile.local\":"
-	write_echo "RUNNING: \"cat ./makefile.local\""
+write_echo "## CHECKING IF \"Makefile.local\" EXISTS"
+if [[ -e "./Makefile.local" ]]; then
+    if [[ -r "./Makefile.local" ]]; then
+	write_echo "### Warning: found \"Makefile\" overriding file \"Makefile.local\":"
+	write_echo "RUNNING: \"cat ./Makefile.local\""
 	write_echo "--"
 	if [[ -z "$L_FLAG" ]]; then
-	    # tee -a -- "$LOGFILE" < makefile.local
-	    < makefile.local tee -a -- "$LOGFILE"
+	    # tee -a -- "$LOGFILE" < Makefile.local
+	    < Makefile.local tee -a -- "$LOGFILE"
 	else
-	    cat makefile.local >> "$LOGFILE"
+	    cat Makefile.local >> "$LOGFILE"
 	fi
 	write_echo "--"
     else
-	write_echo "### Warning: found unreadable \"makefile.local\""
+	write_echo "### Warning: found unreadable \"Makefile.local\""
     fi
 else
-    write_echo "# \"Makefile\" has no overriding \"makefile.local\""
+    write_echo "# \"Makefile\" has no overriding \"Makefile.local\""
 fi
 write_echo ""
 
 # now do the same for subdirectories
 for d in $SUBDIRS; do
-    if [[ -e "$d/makefile.local" ]]; then
-	if [[ -r "$d/makefile.local" ]]; then
-	    write_echo "### Warning: found \"$d/Makefile\" overriding file \"$d/makefile.local\":"
+    if [[ -e "$d/Makefile.local" ]]; then
+	if [[ -r "$d/Makefile.local" ]]; then
+	    write_echo "### Warning: found \"$d/Makefile\" overriding file \"$d/Makefile.local\":"
 	    write_echo "--"
 	    if [[ -z "$L_FLAG" ]]; then
-		# tee -a -- "$LOGFILE" < makefile.local
-		< "$d/makefile.local" tee -a -- "$LOGFILE"
+		# tee -a -- "$LOGFILE" < Makefile.local
+		< "$d/Makefile.local" tee -a -- "$LOGFILE"
 	    else
-		cat "$d/makefile.local" >> "$LOGFILE"
+		cat "$d/Makefile.local" >> "$LOGFILE"
 	    fi
 	    write_echo "--"
 	else
-	    write_echo "### Warning: found unreadable \"$d/makefile.local\""
+	    write_echo "### Warning: found unreadable \"$d/Makefile.local\""
 	fi
     else
-	write_echo "# \"$d/Makefile\" has no overriding \"$d/makefile.local\""
+	write_echo "# \"$d/Makefile\" has no overriding \"$d/Makefile.local\""
     fi
 done
 write_echo ""

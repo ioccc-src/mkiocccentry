@@ -30,15 +30,6 @@
 #include <fcntl.h>  /* for open(2) */
 
 /*
- * dbg - info, debug, warning, error, and usage message facility
- */
-#if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
-#else
-#include <dbg.h>
-#endif
-
-/*
  * json_parse - JSON parser support code
  */
 #include "json_parse.h"
@@ -100,6 +91,13 @@ int const hexval[JSON_BYTE_VALUES] = {
  * static declarations
  */
 static void fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, char *poststr);
+static void fprstring(FILE *stream, struct json_string *item);
+static void fprboolean(FILE *stream, struct json_boolean *item);
+static void fprnull(FILE *stream, struct json_null *item);
+static void fprmember(FILE *stream, struct json_member *item);
+static void fprobject(FILE *stream, struct json_object *item);
+static void fprarray(FILE *stream, struct json_array *item);
+static void fprelements(FILE *stream, struct json_elements *item);
 
 
 
@@ -919,13 +917,16 @@ json_item_type_name(const struct json *node)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to get matching string from
- *	encoded	    true if we should return the encoded string
+ *	encoded	    true ==> return the encoded string, if it is a string type
  *
  * returns:
  *	A constant (read-only) string that originally matched in the
  *	lexer/parser
  *
- * NOTE: This string returned is read only: It's not allocated on the stack.
+ * NOTE: the string returned is read only; it's NOT allocated on the stack.
+ *
+ * NOTE: if encoded is true and the type is a string, then we return the encoded
+ * string.
  *
  * NOTE: this function can return a NULL pointer. It is the responsibility of
  * the caller to check for a NULL return value.
@@ -987,13 +988,11 @@ json_get_type_str(struct json *node, bool encoded)
 		}
 	    }
 	    break;
-	case JTYPE_OBJECT:
-	    break;
-	case JTYPE_ARRAY:
-	    break;
-	case JTYPE_ELEMENTS:
-	    break;
+	case JTYPE_OBJECT:      /*fallthrough*/
+	case JTYPE_ARRAY:       /*fallthrough*/
+	case JTYPE_ELEMENTS:    /*fallthrough*/
 	default:
+            str = NULL;
 	    break;
     }
 
@@ -1448,7 +1447,7 @@ json_fprint(struct json *node, unsigned int depth, ...)
  * given:
  *	stream	    open stream on which to print information about a json_number
  *	prestr	    first string to print
- *	info	    pointer to struct json_number for which to print in stream
+ *	item	    pointer to struct json_number for which to print in stream
  *	midstr	    third string to print
  *	poststr	    if non-NULL, fourth string to print, NULL ==> print "((NULL))"
  */
@@ -1465,20 +1464,21 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
 	warn(__func__, "stream is NULL");
 	return;
     }
-    if (prestr == NULL) {
-	warn(__func__, "prestr is NULL");
-	return;
-    }
     if (item == NULL) {
 	warn(__func__, "item is NULL");
 	return;
     }
+    if (prestr == NULL) {
+	warn(__func__, "prestr is NULL");
+        prestr = "((NULL prestr))";
+    }
     if (midstr == NULL) {
 	warn(__func__, "midstr is NULL");
-	return;
+        midstr = "((NULL midstr))";
     }
     if (poststr == NULL) {
-	poststr = "((NULL))";
+        warn(__func__, "poststr is NULL");
+	poststr = "((NULL poststr))";
     }
 
     /*
@@ -1589,6 +1589,429 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
     return;
 }
 
+/*
+ * fprstring - print information about a json_string on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_string
+ *	item	    pointer to struct json_string for which to print in stream
+ */
+static void
+fprstring(FILE *stream, struct json_string *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed string
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        /*
+         * print string preamble
+         */
+        fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?",":":",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
+                        item->quote ? "q" : "",
+                        item->same ? "=" : "",
+                        item->slash ? "/" : "",
+                        item->posix_safe ? "P" : "",
+                        item->first_alphanum ? "a" : "",
+                        item->upper ? "U" : "",
+                        (uintmax_t)item->str_len);
+        (void) fprint_line_buf(stream, item->str, item->str_len, '"', '"');
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+}
+
+/*
+ * fprboolean - print information about a json_boolean on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_boolean
+ *	item	    pointer to struct json_boolean for which to print in stream
+ */
+static void
+fprboolean(FILE *stream, struct json_boolean *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+
+    /*
+     * case: converted and parsed boolean
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}value: %s",
+                       PARSED_JSON_NODE(item)?"p":"",
+                       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+                       booltostr(item->value));
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+}
+
+/*
+ * fprnull - print information about a json_null on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_null
+ *	item	    pointer to struct json_null for which to print in stream
+ */
+static void
+fprnull(FILE *stream, struct json_null *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed null
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        fprint(stream, "\t{%s%s}: value: null",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+}
+
+/*
+ * fprmember - print information about a json_member on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_member
+ *	item	    pointer to struct json_member for which to print in stream
+ */
+static void
+fprmember(FILE *stream, struct json_member *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed member
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        /*
+         * print member name
+         */
+        if (item->name != NULL) {
+            enum item_type type = item->name->type;
+
+            /*
+             * case: name is JTYPE_STRING
+             */
+            if (type == JTYPE_STRING) {
+                struct json_string *item2 = &(item->name->item.string);
+
+                if (CONVERTED_PARSED_JSON_NODE(item2)) {
+                    fprint(stream, "\t{%s%s}name: ",
+                                   PARSED_JSON_NODE(item2)?"p":"",
+                                   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
+                    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
+
+                } else if (CONVERTED_PARSED_JSON_NODE(item2)) {
+                    fprint(stream, "\t{%s%s}name: no converted name data to print",
+                                   PARSED_JSON_NODE(item2)?"p":"",
+                                   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
+
+                } else {
+                    fprint(stream, "\t{%s%s}: name node not parsed",
+                                    PARSED_JSON_NODE(item2)?"p":"",
+                                    CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
+                }
+
+            /*
+             * case: name is NOT JTYPE_STRING
+             */
+            } else {
+                fprint(stream, "\t{%s%s}: Warning: wrong name type: %s",
+                               PARSED_JSON_NODE(item)?"p":"",
+                               CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+                               json_item_type_name(item->name));
+            }
+
+        /*
+         * bogus name pointer
+         */
+        } else {
+            fprint(stream, "\t{%s%s}: name == NULL",
+                            PARSED_JSON_NODE(item)?"p":"",
+                            CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+        }
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+}
+
+/*
+ * fprobject - print information about a json_object on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_object
+ *	item	    pointer to struct json_object for which to print in stream
+ */
+static void
+fprobject(FILE *stream, struct json_object *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed object
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        fprint(stream, "\t{%s%s}len: %ju",
+                       PARSED_JSON_NODE(item)?"p":"",
+                       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+                       item->len);
+        if (item->set == NULL) {
+            fprstr(stream, "\tWarning: set == NULL");
+        }
+        if (item->s == NULL) {
+            fprstr(stream, "\tWarning: s == NULL");
+        }
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+
+}
+
+/*
+ * fprarray - print information about a json_array on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_array
+ *	item	    pointer to struct json_array for which to print in stream
+ */
+static void
+fprarray(FILE *stream, struct json_array *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed object
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        fprint(stream, "\t{%s%s}len: %ju",
+                       PARSED_JSON_NODE(item)?"p":"",
+                       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+                       item->len);
+        if (item->set == NULL) {
+            fprstr(stream, "\tWarning: set == NULL");
+        }
+        if (item->s == NULL) {
+            fprstr(stream, "\tWarning: s == NULL");
+        }
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+
+
+}
+
+/*
+ * fprelements - print information about a json_element on a stream
+ *
+ * given:
+ *	stream	    open stream on which to print information about a json_element
+ *	item	    pointer to struct json_element for which to print in stream
+ */
+static void
+fprelements(FILE *stream, struct json_elements *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+        warn(__func__, "stream is NULL");
+        return;
+    }
+    if (item == NULL) {
+        warn(__func__, "item is NULL)");
+        return;
+    }
+
+    /*
+     * case: converted and parsed object
+     */
+    if (CONVERTED_PARSED_JSON_NODE(item)) {
+
+        fprint(stream, "\t{%s%s}len: %ju",
+                       PARSED_JSON_NODE(item)?"p":"",
+                       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
+                       item->len);
+        if (item->set == NULL) {
+            fprstr(stream, "\tWarning: set == NULL");
+        }
+        if (item->s == NULL) {
+            fprstr(stream, "\tWarning: s == NULL");
+        }
+
+    /*
+     * case: not converted but parsed string
+     */
+    } else if (PARSED_JSON_NODE(item)) {
+        fprint(stream, "\t{%s%s}: no converted data to print",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+
+    /*
+     * case: neither converted nor parsed
+     */
+    } else {
+        fprint(stream, "\t{%s%s}: node not parsed",
+                        PARSED_JSON_NODE(item)?"p":"",
+                        CONVERTED_PARSED_JSON_NODE(item)?"c":"");
+    }
+}
 
 /*
  * vjson_fprint - print a line about a JSON parse tree node in va_list form
@@ -1624,7 +2047,7 @@ void
 vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
-    int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used == true */
+    int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level */
     char const *tname = NULL;	/* name of the node type */
     va_list ap2;		/* copy of va_list ap */
 
@@ -1641,7 +2064,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     va_copy(ap2, ap);
 
     /*
-     * obtain the stream, json_dbg_used, and json_dbg args
+     * obtain the stream and json_dbg_lvl args
      */
     stream = va_arg(ap2, FILE *);
     if (stream == NULL) {
@@ -1651,10 +2074,10 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     json_dbg_lvl = va_arg(ap2, int);
 
     /*
-     * check JSON debug level if allowed
+     * check if JSON debug output is allowed
      */
-    if (dbg_output_allowed == false ||
-        (json_dbg_lvl != JSON_DBG_FORCED && json_dbg_lvl > json_verbosity_level)) {
+    if (!dbg_output_allowed || (json_dbg_lvl != JSON_DBG_FORCED &&
+        json_dbg_lvl > json_verbosity_level)) {
 	/* tree output disabled by json_verbosity_level */
 	va_end(ap2); /* stdarg variable argument list cleanup */
 	return;
@@ -1718,43 +2141,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_string *item = &(node->item.string);
 
-	    /*
-	     * case: converted and parsed string
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		/*
-		 * print string preamble
-		 */
-		fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?",":":",
-				CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
-				item->quote ? "q" : "",
-				item->same ? "=" : "",
-				item->slash ? "/" : "",
-				item->posix_safe ? "P" : "",
-				item->first_alphanum ? "a" : "",
-				item->upper ? "U" : "",
-				(uintmax_t)item->str_len);
-		(void) fprint_line_buf(stream, item->str, item->str_len, '"', '"');
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprstring(stream, item);
 	}
 	break;
 
@@ -1762,31 +2149,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_boolean *item = &(node->item.boolean);
 
-	    /*
-	     * case: converted and parsed boolean
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}value: %s",
-			       PARSED_JSON_NODE(item)?"p":"",
-			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
-			       booltostr(item->value));
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprboolean(stream, item);
 	}
 	break;
 
@@ -1794,31 +2157,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_null *item = &(node->item.null);
 
-	    /*
-	     * case: converted and parsed null
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		fprint(stream, "\t{%s%s}: value: null",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprnull(stream, item);
 	}
 	break;
 
@@ -1826,75 +2165,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_member *item = &(node->item.member);
 
-	    /*
-	     * case: converted and parsed member
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		/*
-		 * print member name
-		 */
-		if (item->name != NULL) {
-		    enum item_type type = item->name->type;
-
-		    /*
-		     * case: name is JTYPE_STRING
-		     */
-		    if (type == JTYPE_STRING) {
-			struct json_string *item2 = &(item->name->item.string);
-
-			if (CONVERTED_PARSED_JSON_NODE(item2)) {
-			    fprint(stream, "\t{%s%s}name: ",
-					   PARSED_JSON_NODE(item2)?"p":"",
-					   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
-			    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
-
-			} else if (CONVERTED_PARSED_JSON_NODE(item2)) {
-			    fprint(stream, "\t{%s%s}name: no converted name data to print",
-					   PARSED_JSON_NODE(item2)?"p":"",
-					   CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
-
-			} else {
-			    fprint(stream, "\t{%s%s}: name node not parsed",
-					    PARSED_JSON_NODE(item2)?"p":"",
-					    CONVERTED_PARSED_JSON_NODE(item2)?"c":"");
-			}
-
-		    /*
-		     * case: name is NOT JTYPE_STRING
-		     */
-		    } else {
-			fprint(stream, "\t{%s%s}: Warning: wrong name type: %s",
-				       PARSED_JSON_NODE(item)?"p":"",
-				       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
-				       json_item_type_name(item->name));
-		    }
-
-		/*
-		 * bogus name pointer
-		 */
-		} else {
-		    fprint(stream, "\t{%s%s}: name == NULL",
-				    PARSED_JSON_NODE(item)?"p":"",
-				    CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-		}
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprmember(stream, item);
 	}
 	break;
 
@@ -1902,38 +2173,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_object *item = &(node->item.object);
 
-	    /*
-	     * case: converted and parsed object
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		fprint(stream, "\t{%s%s}len: %ju",
-			       PARSED_JSON_NODE(item)?"p":"",
-			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
-			       item->len);
-		if (item->set == NULL) {
-		    fprstr(stream, "\tWarning: set == NULL");
-		}
-		if (item->s == NULL) {
-		    fprstr(stream, "\tWarning: s == NULL");
-		}
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprobject(stream, item);
 	}
 	break;
 
@@ -1941,38 +2181,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_array *item = &(node->item.array);
 
-	    /*
-	     * case: converted and parsed object
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		fprint(stream, "\t{%s%s}len: %ju",
-			       PARSED_JSON_NODE(item)?"p":"",
-			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
-			       item->len);
-		if (item->set == NULL) {
-		    fprstr(stream, "\tWarning: set == NULL");
-		}
-		if (item->s == NULL) {
-		    fprstr(stream, "\tWarning: s == NULL");
-		}
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprarray(stream, item);
 	}
 	break;
 
@@ -1980,38 +2189,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	{
 	    struct json_elements *item = &(node->item.elements);
 
-	    /*
-	     * case: converted and parsed object
-	     */
-	    if (CONVERTED_PARSED_JSON_NODE(item)) {
-
-		fprint(stream, "\t{%s%s}len: %ju",
-			       PARSED_JSON_NODE(item)?"p":"",
-			       CONVERTED_PARSED_JSON_NODE(item)?"c":"",
-			       item->len);
-		if (item->set == NULL) {
-		    fprstr(stream, "\tWarning: set == NULL");
-		}
-		if (item->s == NULL) {
-		    fprstr(stream, "\tWarning: s == NULL");
-		}
-
-	    /*
-	     * case: not converted but parsed string
-	     */
-	    } else if (PARSED_JSON_NODE(item)) {
-		fprint(stream, "\t{%s%s}: no converted data to print",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-
-	    /*
-	     * case: neither converted nor parsed
-	     */
-	    } else {
-		fprint(stream, "\t{%s%s}: node not parsed",
-				PARSED_JSON_NODE(item)?"p":"",
-				CONVERTED_PARSED_JSON_NODE(item)?"c":"");
-	    }
+            fprelements(stream, item);
 	}
 	break;
 

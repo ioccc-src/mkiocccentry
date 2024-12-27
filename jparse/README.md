@@ -123,6 +123,12 @@ To compile:
 make all
 ```
 
+**IMPORTANT NOTE**: the Makefiles allow one to override certain things by having
+a file `Makefile.local` in the same directory. This can cause compilation errors
+so if you do have such a file you should use so with caution.
+
+
+
 <div id="installing"></div>
 
 # Installing

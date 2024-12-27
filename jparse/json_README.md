@@ -343,6 +343,29 @@ A **JSON number** is a [JSON values](#json-value) that is numeric.
 A **JSON number** is in one of three forms [JSON int](#json-int),
 [JSON float](#json-float), or [JSON exp](#json-exp).
 
+The regexp of a JSON number is as follows:
+
+```
+({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT})
+```
+
+where `{JSON_INTEGER}` is:
+
+```regex
+-?([1-9][0-9]*|0)
+```
+
+and `{JSON_FRACTION}` is:
+
+```regex
+\.[0-9]+
+```
+
+and `{JSON_EXPONENT}` is:
+
+```regex
+[Ee][-+]?[0-9]+
+```
 
 ## JSON int
 

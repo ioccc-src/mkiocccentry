@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jstrdecode 1 "16 November 2024" "jstrdecode" "jparse tools"
+.TH jstrdecode 1 "26 December 2024" "jstrdecode" "jparse tools"
 .SH NAME
 .B jstrdecode
 \- JSON decode command line strings
@@ -17,6 +17,9 @@
 .B jstrdecode
 .RB [\| \-h \|]
 .RB [\| \-v
+.IR level \|]
+.RB [\| \-j \]
+.RB [\| \-J
 .IR level \|]
 .RB [\| \-q \|]
 .RB [\| \-V \|]
@@ -69,6 +72,23 @@ If it is desired to not require surrounding double quotes ("s) in the input, use
 .B \-d
 option.
 .PP
+By default, the tool will not use the
+.B jparse
+library to validate that the string is valid JSON, before decoding.
+If you need to validate the JSON, use the
+.B \-j
+option.
+If you use the
+.B \-j
+option and you use the
+.BI \-j\  level
+option, it will set the JSON debug level.
+Note that the use of
+.B \-j
+and
+.B \-d
+together is an error.
+.PP
 If given the
 .B \-t
 option it performs a test on the JSON decode and encode functions.
@@ -81,6 +101,14 @@ Show help and exit
 Set verbosity level to
 .IR level
 (def: 0).
+.TP
+.B \-j
+Enable parsing (as JSON) each string before decoding.
+Cannot be used with
+.BR \-d .
+.TP
+.BI \-J\  level
+Set the JSON debug level.
 .TP
 .B \-q
 Suppresses some of the output (def: loud :-) ).
@@ -106,6 +134,8 @@ if any only if more than one string is given on the command line.
 .TP
 .B \-d
 Don't require input to be surrounded by double quotes ("s).
+Cannot be used with
+.BR \-j .
 .TP
 .BI \-E\  level
 Entertainment mode at level

@@ -22,6 +22,18 @@
 #if !defined(INCLUDE_JSON_SEM_H)
 #    define  INCLUDE_JSON_SEM_H
 
+/*
+ * dbg - info, debug, warning, error, and usage message facility
+ */
+#if defined(INTERNAL_INCLUDE)
+#include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "dbg/dbg.h"
+#else
+#include <dbg.h>
+#endif
+
+
 
 /*
  * util - common utility functions for the JSON parser
