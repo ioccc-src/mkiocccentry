@@ -121,11 +121,15 @@
 
 #undef IOCCC_WINNER_HANDLE_READY /* XXX: change to #define when IOCCC winner handles are available and ready */
 
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX: change to real URL when ready */
-#define IOCCC_NEWS_URL "https://www.ioccc.org/index.html#news" /* XXX: change to news.html after the Great Fork Merge is done */
-#undef IOCCC_REGISTRATION_READY		/* XXX: change to #define when registration process is ready */
-#undef IOCCC_SUBMIT_SERVER_READY	/* XXX: change to #define when submit server is ready */
+#define IOCCC_REGISTER_URL "https://www.freelists.org/list/ioccc28-reg" /* for mailing list to register for IOCCC28 */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org"	/* URL to submit to contest */
+#define IOCCC_NEWS_URL "https://www.ioccc.org/news.html"
+#define IOCCC_REGISTER_FAQ_URL "https://www.ioccc.org/faq.html#enter"
+#define IOCCC_REGISTER_INFO_URL "https://www.ioccc.org/next/register.html"
+#define IOCCC_PW_CHANGE_INFO_URL "https://www.ioccc.org/next/pw-change.html"
+#define IOCCC_SUBMIT_INFO_URL "https://www.ioccc.org/next/submit.html"
+#define IOCCC_REGISTRATION_READY
+#define IOCCC_SUBMIT_SERVER_READY
 
 /* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */

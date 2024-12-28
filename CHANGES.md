@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.0.3 2024-12-27
+
+Resolve issue #1037
+
+The submit server details are now ready!
+
+Also change the temp-test-ioccc URLs to the main IOCCC website, for once the
+Great Fork Merge is performed and the IOCCC website is updated.
+
+Updated `mkiocccentry` version to: `"1.1.0 2024-12-28"`.
+
 ## Release 2.0.2 2024-12-27
 
 Resolve issue #1039

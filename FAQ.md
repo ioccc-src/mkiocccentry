@@ -311,23 +311,23 @@ won then it should be `entry` (or `entries`).
 
 <!--XXX Update these links after the Great Fork Merge! -->
 Please see the [official IOCCC website
-FAQ](https://ioccc-src.github.io/temp-test-ioccc/faq.html) and in particular the
+FAQ](https://www.ioccc.org/faq.html) and in particular the
 FAQ on
-"[submitting](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submit)",
+"[submitting](https://www.ioccc.org/faq.html#submit)",
 the
 FAQ on
-"[Makefiles](https://ioccc-src.github.io/temp-test-ioccc/faq.html#makefile)",
+"[Makefiles](https://www.ioccc.org/faq.html#makefile)",
 the
 FAQ on "[source code
-filename](https://ioccc-src.github.io/temp-test-ioccc/faq.html#prog),
+filename](https://www.ioccc.org/faq.html#prog),
 the
 FAQ on
-"[mkiocccentry](https://ioccc-src.github.io/temp-test-ioccc/faq.html#mkiocccentry),
-the [Rules](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html) and the
-[Guidelines](https://ioccc-src.github.io/temp-test-ioccc/next/guidelines.html).
+"[mkiocccentry](https://www.ioccc.org/faq.html#mkiocccentry),
+the [Rules](https://www.ioccc.org/next/rules.html) and the
+[Guidelines](https://www.ioccc.org/next/guidelines.html).
 
 Pay especial care to [Rule
-17](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule17)!
+17](https://www.ioccc.org/next/rules.html#rule17)!
 
 
 <div id="uninstalling"></div>

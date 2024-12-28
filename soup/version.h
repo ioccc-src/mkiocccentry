@@ -66,7 +66,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.0.2 2024-12-27"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.0.3 2024-12-28"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.0.9 2024-12-26"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.1.0 2024-12-28"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 
 /*
