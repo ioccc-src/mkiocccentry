@@ -5452,17 +5452,38 @@ show_registration_url(void)
      * print information about how to register for the IOCCC
      */
     para("",
-	 "To submit to the IOCCC, you must be a registered contestant and have received an",
-	 "IOCCC contest ID (via email) shortly after you've successfully registered.  To do so,",
-	 "please visit:",
+	 "To submit to the IOCCC, you must be a registered contestant",
+         "and have received an IOCCC contest ID (a UUID) and initial",
+         "password (via email). To do so, please visit:",
 	 "",
 	 NULL);
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
+    ret = printf("    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	err(190, __func__, "fprintf error printing IOCCC_REGISTER_URL");
+	err(190, __func__, "printf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
+    para("",
+         "Please also see the FAQ on how to enter the IOCCC:",
+         "",
+         NULL);
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = printf("    %s\n", IOCCC_REGISTER_FAQ_URL);
+    if (ret <= 0) {
+	err(191, __func__, "printf error printing IOCCC_REGISTER_FAQ_URL");
+	not_reached();
+    }
+    para("",
+        "...and the register, password change and submit help pages:",
+        "",
+        NULL);
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = printf("    %s\n    %s\n    %s\n", IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL, IOCCC_SUBMIT_INFO_URL);
+    if (ret <= 0) {
+	err(192, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
+	not_reached();
+    }
+
 
 #else /* IOCCC_REGISTRATION_READY */
 
@@ -5470,15 +5491,16 @@ show_registration_url(void)
      * print that the registration system is not ready
      */
     para("",
-         "The IOCCC registration process and submit servers are not ready.  You cannot",
-	 "register for the IOCCC or use the IOCCC submit server at this time.",
-	 "Please try again later, and monitor the IOCCC news for updates:",
+         "The IOCCC registration process and submit servers are",
+         "not ready.  You cannot register for the IOCCC or use the",
+         "IOCCC submit server at this time. Please try again later,",
+         "and monitor the IOCCC news for updates:",
 	 "",
 	 NULL);
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stderr, "    %s\n\n", IOCCC_NEWS_URL);
+    ret = printf("    %s\n\n", IOCCC_NEWS_URL);
     if (ret <= 0) {
-	err(191, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	err(193, __func__, "printf error printing IOCCC_NEWS_URL");
 	not_reached();
     }
     para("",
@@ -5527,12 +5549,13 @@ show_submit_url(char const *work_dir, char const *tarball_path)
      * print information the tarball that was formed
      */
     para("",
-	 "Once you've registered, you may submit the following tarball:",
+	 "Once you've registered and changed your initial password",
+         "you may submit the following tarball:",
 	 "",
 	 NULL);
     ret = printf("    %s/%s\n", work_dir, tarball_path);
     if (ret <= 0) {
-	errp(192, __func__, "printf #4 error");
+	errp(194, __func__, "printf #4 error");
 	not_reached();
     }
 
@@ -5541,12 +5564,13 @@ show_submit_url(char const *work_dir, char const *tarball_path)
      */
     para("",
 	 "If the contest is still open, you may upload the above",
-	 "tarball to the following submission URL:",
+	 "tarball to the following submission URL, assuming you've",
+         "registered and changed your initial password:",
 	 "",
 	 NULL);
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(193, __func__, "printf #5 error");
+	errp(195, __func__, "printf #5 error");
 	not_reached();
     }
 
@@ -5563,7 +5587,7 @@ show_submit_url(char const *work_dir, char const *tarball_path)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = fprintf(stderr, "    %s\n", IOCCC_NEWS_URL);
     if (ret <= 0) {
-	err(194, __func__, "fprintf error printing IOCCC_NEWS_URL");
+	err(196, __func__, "fprintf error printing IOCCC_NEWS_URL");
 	not_reached();
     }
     para("",

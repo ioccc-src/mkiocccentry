@@ -3,7 +3,7 @@
 0.  For help with markdown format please see this [helpful guide](https://www.markdownguide.org/basic-syntax/).
 
 1.  Please see the [IOCCC markdown
-guidelines](https://ioccc-src.github.io/temp-test-ioccc/markdown.html).
+guidelines](https://www.ioccc.org/markdown.html).
 
 2.  Copy this file into your entry directory under the name: `remarks.md`.
 
@@ -12,8 +12,8 @@ guidelines](https://ioccc-src.github.io/temp-test-ioccc/markdown.html).
 4.  Add your remarks to the resulting remarks.md file.
 
 **IMPORTANT NOTE**: make **SURE** you read the IOCCC
-[Rules](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html) and
-[Guidelines](https://ioccc-src.github.io/temp-test-ioccc/next/guidelines.html)!
+[Rules](https://www.ioccc.org/next/rules.html) and
+[Guidelines](https://www.ioccc.org/next/guidelines.html)!
 
 
 ## Sections and subsections
@@ -52,7 +52,7 @@ input data.
 
 See also the
 FAQ on "[what to put in your
-remarks](https://ioccc-src.github.io/temp-test-ioccc/faq.html#remarks)".
+remarks](https://www.ioccc.org/faq.html#remarks)".
 
 
 ### What does not help:
@@ -72,7 +72,7 @@ this is not clear!
 
 See also the
 FAQ on "[what to put in your
-remarks](https://ioccc-src.github.io/temp-test-ioccc/faq.html#remarks)".
+remarks](https://www.ioccc.org/faq.html#remarks)".
 
 
 ### Use mkiocccentry to package and submit your entry
@@ -93,17 +93,17 @@ man/man1/mkiocccentry.1`.
 
 **IMPORTANT NOTE**: see the
 FAQ on "[how to enter the IOCCC for more
-details](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submit) for
+details](https://www.ioccc.org/faq.html#enter) for
 details on entering the contest and the
 FAQ on "[mkiocccentry in simple
-terms](https://ioccc-src.github.io/temp-test-ioccc/faq.html#about_mkiocccentry)
+terms](https://www.ioccc.org/faq.html#about_mkiocccentry)
 for a brief description of `mkiocccentry` and the
 FAQ on "[entering the contest in more
-detail](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submitting_help) if
+detail](https://www.ioccc.org/faq.html#submitting_help) if
 you want more help with using `mkiocccentry`.
 
 **IMPORTANT NOTE**: pay especial attention to [Rule
-17](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule17)!
+17](https://www.ioccc.org/next/rules.html#rule17)!
 
 
 

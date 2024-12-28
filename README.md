@@ -12,10 +12,10 @@ below.
 First, a set of requirements for using the toolkit:
 
 * Unix-like environment (see IOCCC [Rule
-20](https://ioccc-src.github.io/temp-test-ioccc/next/rules.html#rule20)).
+20](https://www.ioccc.org/next/rules.html#rule20)).
 * GNU Make version 3.81 or later (see IOCCC
 FAQ on "[make
-compatibility](https://ioccc-src.github.io/temp-test-ioccc/faq.html#make_compatibility)".
+compatibility](https://www.ioccc.org/faq.html#make_compatibility)".
 * A C compiler that understands "-std=gnu17"
 * `bash` version 5.1.8 or later
 
@@ -25,11 +25,11 @@ For a quick step by step list of instructions on how to submit an entry,
 including obtaining this repo, compiling it and using it, please
 see the
 FAQ on "[submitting to the
-IOCCC](https://ioccc-src.github.io/temp-test-ioccc/faq.html#submit)".
+IOCCC](https://www.ioccc.org/faq.html#submit)".
 
 You might also wish to look at the
 guidelines about
-"[mkiocccentry](https://ioccc-src.github.io/temp-test-ioccc/next/guidelines.html#mkiocccentry)".
+"[mkiocccentry](https://www.ioccc.org/next/guidelines.html#mkiocccentry)".
 
 
 ## Getting further help / reporting issues
