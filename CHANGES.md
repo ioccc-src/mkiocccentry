@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.1 2024-12-28
+
+This is a formal release for public use.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.0 2024-11-17"
+to "2.1 2024-12-28".
+
+Updated `Makefile.example` from
+[Makefile.example from the other repo](https://github.com/ioccc-src/temp-test-ioccc/blob/master/next/Makefile.example)
+
+
 ## Release 2.0.3 2024-12-27
 
 Resolve issue #1037

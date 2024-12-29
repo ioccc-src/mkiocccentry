@@ -1,14 +1,9 @@
 #!/usr/bin/env make
 #
-# XXX - Please remove these 3 XXX-ed comment lines - XXX
-# XXX - Hint: Lines with XXX's in them should be removed once you read them and consider their suggestions - XXX
-# XXX - Change "an example Makefile" in the line below to a suitable and short 1-line title for your submission - XXX
-# prog - an example Makefile
+# prog - an example Makefile <<=== change "an example Makefile" to a suitable title for entry
 #
-# XXX - Please remove these 4 XXX-ed comment lines - XXX
-# XXX - Please copy this file into your submission directory under the name: Makefile - XXX
-# XXX - Modify the resulting Makefile as needed - especially lines with XXX's in them - XXX
-# XXX - Please add a space after '=' in variables unless it's empty - XXX
+# Please copy this file into your entry directory under the name: Makefile
+# Modify the resulting Makefile as needed.
 
 
 #############################
@@ -17,13 +12,16 @@
 #
 SHELL= bash
 
+
 #######################
 # common tool locations
 #######################
 #
-CLANG= clang
-GCC= gcc
+CC= cc
+GINDENT= gindent
+MV= mv
 RM= rm
+TRUE= true
 
 # Common C compiler warnings to silence
 #
@@ -34,9 +32,10 @@ RM= rm
 #
 # NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
 #
+#
 CSILENCE=
 
-# Attempt to silence unknown warning option
+# Attempt to silence unknown warnings
 #
 # If you add -Wno-stuff to CSILENCE, then please change CUNKNOWN to read:
 #
@@ -131,14 +130,16 @@ endif
 PROG= prog
 OBJ= ${PROG}.o
 TARGET= ${PROG}
+# If you have alternate code, try something like:
+# ALT_OBJ= ${PROG}.alt.o
+# ALT_TARGET= ${PROG}.alt
 #
-# XXX - uncomment the below lines if you have alt targets - XXX
-# XXX - make sure to add all alt objects and targets that - XXX
-# XXX - you wish to have compiled by make alt             - XXX
+# or so.
 #
-#ALT_OBJ= ${PROG}.alt.o
-#ALT_TARGET= ${PROG}.alt
+# Please remove these lines either way.
 #
+ALT_OBJ=
+ALT_TARGET=
 
 # list any data files supplied with the submission
 #
@@ -150,9 +151,9 @@ DATA=
 #################
 #
 all: data ${TARGET}
-	@:
+	@${TRUE}
 
-.PHONY: all data try clean clobber
+.PHONY: all data try clean clobber install
 
 # how to compile
 #
@@ -164,26 +165,30 @@ ${PROG}: ${PROG}.c
 alt: data ${ALT_TARGET}
 	@${TRUE}
 
-#
-# XXX - if you have alt targets, add them here, like this - XXX
-#
-#${PROG}.alt: ${PROG}.alt.c
-#	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
-#
+${PROG}.alt: ${PROG}.alt.c
+	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
+
+
 
 # data files
 #
 data: ${DATA}
-	@:
+	@${TRUE}
 
-# one suggested way to run the program
+# both all and alt
+#
+everything: all alt
+	@${TRUE}
+
+
+# suggested way(s) to run the program
 #
 try: ${PROG} ${DATA}
-        # XXX - Please remove these 4 XXX-ed comment lines - XXX
-        # XXX - Notice how we do not assume that . is a component in our PATH - XXX
-        # XXX - If no args are necessary, you do not have to specify any - XXX
-        # XXX - Change the next line as needed - XXX
-        ./${PROG} some arguments
+	@# remove these comments
+	@# notice how we do not assume that . is a component of the $PATH environment variable
+	@# you may use the try.sh script if you have one
+	@# change this next line as needed
+	./${PROG} some arguments
 
 
 ###############
@@ -191,7 +196,22 @@ try: ${PROG} ${DATA}
 ###############
 #
 clean:
-	${RM} -f ${OBJ} ${ALT_OBJ}
+	${RM} -f ${OBJ}
+	@-if [[ -f indent.c ]]; then \
+	    echo ${RM} -f indent.c; \
+	    ${RM} -f indent.c; \
+	fi
 
 clobber: clean
-	${RM} -f ${TARGET} ${ALT_TARGET}
+	${RM} -f ${TARGET} *.dSYM
+	@-if [[ -e sandwich ]]; then \
+	    ${RM} -f sandwich; \
+	    echo 'ate sandwich'; \
+	fi
+
+
+######################################
+# optional include of 1337 hacker rulz
+######################################
+
+-include 1337.mk ../1337.mk ../../1337.mk

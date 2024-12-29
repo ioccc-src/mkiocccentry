@@ -60,7 +60,7 @@ remarks](https://www.ioccc.org/faq.html#remarks)".
 - Admitting that your submission is not very obfuscated (you see, the contest is
 called the **IOCCC**, not the **INVOCCC** :-) ); but even if you do not admit
 it, not very obfuscated submission have a minuscule chance to win (although
-[2000/tomx](https://github.com/ioccc-src/temp-test-ioccc/tree/master/years.html#2000_tomx)
+[2000/tomx](https://github.com/ioccc-src/winner/tree/master/years.html#2000_tomx)
 is a notable counterexample).
 
 - Mentioning your name or any identifying information in the remark section (or
