@@ -2816,6 +2816,18 @@ test_extra_file(char const *str)
      * validate str
      */
 
+    /*
+     * test the filename length is > 0 && <= MAX_FILENAME_LEN
+     */
+    if (!test_filename_len(str)) {
+        json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: filename length check on extra_file failed");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: filename length check on extra_file failed: <%s>", str);
+
+	return false;
+    }
+
     /* validate that the filename is POSIX portable safe plus + chars */
     if (posix_plus_safe(str, false, false, true) == false) {
 	json_dbg(JSON_DBG_MED, __func__,
@@ -2846,6 +2858,53 @@ test_extra_file(char const *str)
     return true;
 }
 
+/*
+ * test_filename_len - test filename length
+ *
+ * Determine if the filename length is > 0 && <= MAX_FILENAME_LEN.
+ *
+ * given:
+ *	str	filename to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_filename_len(char const *str)
+{
+    size_t len = 0;      /* length of filename */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    len = strlen(str);
+
+    /*
+     * validate filename
+     */
+    if (len <= 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: filename length <= 0");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: filename: %s length is <= 0: %ju", str, (uintmax_t)len);
+	return false;
+    } else if (len > MAX_FILENAME_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: filename length > MAX_FILENAME_LEN");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: filename: %s length %ju > %ju", str, (uintmax_t)len, (uintmax_t)MAX_FILENAME_LEN);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "filename length is valid");
+    return true;
+}
 
 /*
  * test_first_rule_is_all - test if first_rule_is_all is valid

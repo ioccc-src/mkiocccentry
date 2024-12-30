@@ -11,7 +11,7 @@
  *
  *	make chk_sem_auth.h
  *
- * The JSON parser was co-developed in 2022 by:
+ * The JSON parser and this tool were co-developed in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson

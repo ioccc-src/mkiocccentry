@@ -242,6 +242,7 @@ extern bool test_email(char const *str);
 extern bool test_empty_override(bool boolean);
 extern bool test_submit_slot(int submit_slot);
 extern bool test_extra_file(char const *str);
+extern bool test_filename_len(char const *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char const *str);
 extern bool test_formed_timestamp(time_t tstamp);

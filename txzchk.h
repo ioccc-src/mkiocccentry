@@ -104,6 +104,7 @@ struct tarball
     off_t remarks_md_size;		    /* remarks.md file size */
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
+    uintmax_t invalid_filename_lengths;     /* > 0 ==> some filenames are <= 0 or > MAX_FILENAME_LEN */
     off_t Makefile_size;		    /* Makefile file size */
     uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_plus_safe()) */
     off_t size;				    /* size of the tarball itself */

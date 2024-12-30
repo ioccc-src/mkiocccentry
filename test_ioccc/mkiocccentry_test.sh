@@ -83,7 +83,7 @@ fi
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.1 2023-02-05"
+export MKIOCCCENTRY_TEST_VERSION="1.0.2 2024-12-30"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-c cp] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
@@ -533,9 +533,16 @@ rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
 grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
+#
+# We disable this shellcheck error because answers already is defined but we
+# redefine it as well. The error is ironically erroneous.
+#
+# SC2218 (error): This function is only defined later. Move the definition up.
+# https://www.shellcheck.net/wiki/SC2218
+# shellcheck disable=SC2218
 answers >>answers.txt
 
-# fake a few more files
+# fake a couple more files
 #
 test -f "${src_dir}"/foo || cat LICENSE >"${src_dir}"/foo
 test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
@@ -547,6 +554,105 @@ status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
+fi
+
+# Answers as of mkiocccentry version: v0.40 2022-03-15
+answers() {
+cat <<"EOF"
+test
+2
+title-for-entry0
+abstract for entry #0
+5
+author0 middle0 thisisaveryverylonglastname0
+AU
+user0@example.com
+https://a.host0.example.com/index.html
+https://b.host0.example.com/index.html
+@mastodon0@example.com
+@github0
+an affiliation for #0 author
+n
+
+author1 middle1a middle1b last1
+UK
+
+
+
+
+
+
+n
+replaced_author1_handle
+EOF
+# Avoid triggering an out of date shellcheck bug by using encoded hex characters
+printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
+cat <<"EOF"
+US
+user2@example.com
+http://c.host2.example.com/index.html
+http://d.host2.example.com/index.html
+@mastodon2@example.com
+@github2
+an affiliation for #2 author
+y
+
+author3 middle3 last3
+AU
+user0@example.com
+https://e.host0.example.com/index.html
+https://f.host0.example.com/index.html
+@mastodon3@example.com
+@github3
+an affiliation for #3 author
+y
+author3_last3
+@#$%^
+AU
+user0@example.com
+https://g.host0.example.com/index.html
+
+@mastodon4@example.com
+@github4
+an affiliation for #4 author
+n
+
+ANSWERS_EOF
+EOF
+}
+rm -f answers.txt
+# Retrieve the answers version from mkiocccentry.c and write to answers file:
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+# Append answers + EOF marker
+#
+# We disable this shellcheck error because answers already is defined but we
+# redefine it as well. The error is ironically erroneous as if one is to move up
+# in the file they'll see that answers is actually defined above as well.
+#
+# SC2218 (error): This function is only defined later. Move the definition up.
+# https://www.shellcheck.net/wiki/SC2218
+# shellcheck disable=SC2218
+answers >>answers.txt
+
+
+# this next test must FAIL as it has too long a filename.
+#
+
+# fake a filename that's too long
+#
+LONG_FILENAME="ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
+
+# run the test, looking for an exit
+#
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar,"${LONG_FILENAME}"}
+status=$?
+if [[ ${status} -eq 0 ]]; then
+    echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
+    exit 1
+else
+    echo "$0: NOTICE: the above error is expected as we were testing that the filename" 1>&2
+    echo "$0: NOTICE: length limit works." 1>&2
 fi
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2

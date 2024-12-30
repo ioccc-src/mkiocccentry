@@ -55,6 +55,7 @@
 #define MANDATORY_FILE_COUNT (5)		/* number of required files in an entry */
 /* NOTE: MAX_FILE_COUNT must be > MANDATORY_FILE_COUNT */
 #define MAX_FILE_COUNT (42)		/* maximum number of files in an entry (MANDATORY_FILE_COUNT + extra files) */
+#define MAX_FILENAME_LEN (99)      /* filenames may not be > 99 in length */
 /* NOTE: MAX_SUBMIT_SLOT must be < 10 to the MAX_SUBMIT_SLOT_CHARS power */
 /*
  * IMPORTANT:
