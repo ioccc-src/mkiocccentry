@@ -237,7 +237,8 @@ SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh jparse_bug_report.sh
 MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/jparse_bug_report.1
 MAN3_PAGES= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
 	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
-	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3
+	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3 man/man3/json_tree_free.3 \
+	    man/man3/parse_json_str.3
 MAN8_PAGES= man/man8/jnum_chk.8 man/man8/jnum_gen.8 man/man8/jparse_test.8 man/man8/jsemcgen.8 \
 	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/verge.8 \
 	man/man8/run_bison.8 man/man8/run_bison.sh.8 man/man8/run_flex.8 man/man8/run_flex.sh.8 \
