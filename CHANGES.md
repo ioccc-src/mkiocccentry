@@ -1,6 +1,44 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.2 2024-12-30
+
+Resolve issues #1044, #1045 and #1046.
+
+Fix tools for filename length rule (part of rule 17)
+
+Fix `mkiocccentry`, `chkentry` and `txzchk` for the requirement of filenames to
+be of length > 0 && <= 99 as per rule 17.
+
+This is somewhat involved and required all the JSON test files to be updated
+(for versions) as well as some new JSON files.
+
+A new macro `MAX_FILENAME_LEN` had to be added. Then in `soup/entry_util.c` a new
+function called `test_filename_len()` was added. This function is then used in
+`txzchk.c` (function `check_all_txz_files()`), `mkiocccentry.c` (in the `check_*()`
+functions) and then, for `chkentry`, in `chk_validate.c` the function
+`chk_extra_file()`; it is not necessary in the code that checks for the required
+files as the functions that test those files check for exact filenames. The
+function `test_extra_file()` calls the new function as `test_extra_file()` does
+a variety of kinds of tests on the file.
+
+A new bad txzchk test file was also added (with its corresponding .err file).
+
+The `mkiocccentry_test.sh` script along with `txzchk_test.sh` (see above) and
+`chkentry_test.sh` now test for too long filenames and too short filenames. In
+the case of `mkiocccentry_test.sh` a change in the script itself had to be made
+so the version was updated to `"1.0.2 2024-12-30"` from `"1.0.1 2023-02-05"`.
+
+Changed `SOUP_VERSION` to `"1.1.2 2024-12-30"` from `"1.1.1 2024-12-26"`.
+
+Changed `MKIOCCCENTRY_VERSION` to `"1.1.1 2024-12-30"` from `"1.1.0
+2024-12-28"`.
+
+Changed `TXZCHK_VERSION` to `"1.0.9 2024-12-30"` from `"1.0.8 2024-07-11"`.
+
+Changed `CHKENTRY_VERSION` to `"1.0.3 2024-12-30"` from `"1.0.2 2024-08-26"`.
+
+
 ## Release 2.1 2024-12-28
 
 This is a formal release for public use.

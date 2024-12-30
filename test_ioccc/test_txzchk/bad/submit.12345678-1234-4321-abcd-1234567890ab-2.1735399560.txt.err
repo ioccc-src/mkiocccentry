@@ -1,0 +1,2 @@
+Warning: txzchk: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff: filename length: 100 not in range of > 0 && <= MAX_FILENAME_LEN 99
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1735399560.txt: found 1 feather stuck in the tarball

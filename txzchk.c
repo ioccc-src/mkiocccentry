@@ -355,6 +355,10 @@ show_tarball_info(char const *tarball_path)
 	    dbg(DBG_MED, "%s has %ju invalidly named file%s", tarball_path, tarball.invalid_filenames,
 		    SINGULAR_OR_PLURAL(tarball.invalid_filenames));
 	}
+        if (tarball.invalid_filename_lengths > 0) {
+            dbg(DBG_MED, "%s has %ju oversized or undersized filename%s", tarball_path, tarball.invalid_filename_lengths,
+                    SINGULAR_OR_PLURAL(tarball.invalid_filename_lengths));
+        }
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
 		    SINGULAR_OR_PLURAL(tarball.total_feathers));
@@ -687,6 +691,8 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	}
     }
 
+
+
     /* check the dirs in the path */
     check_directories(file, dir_name, tarball_path);
 }
@@ -777,7 +783,8 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
 static void
 check_all_txz_files(char const *dir_name)
 {
-    struct txz_file *file; /* to iterate through files list */
+    struct txz_file *file;  /* to iterate through files list */
+    size_t len = 0;         /* length of each filename */
 
     /*
      * Now go through the files list to verify the required files are there and
@@ -803,6 +810,14 @@ check_all_txz_files(char const *dir_name)
 	} else if (!strcmp(file->basename, REMARKS_FILENAME)) {
 	    tarball.has_remarks_md = true;
 	}
+
+        len = strlen(file->basename);
+        if (!test_filename_len(file->basename)) {
+            warn("txzchk", "%s: filename length: %ju not in range of > 0 && <= MAX_FILENAME_LEN %ju", file->basename,
+                    (uintmax_t)len, (uintmax_t)MAX_FILENAME_LEN);
+            ++tarball.total_feathers;
+            ++tarball.invalid_filename_lengths;
+        }
 
 	if (dir_name != NULL && tarball.correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
@@ -1604,6 +1619,9 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     dbg(DBG_MED, "txzchk: %s size in bytes: %jd", tarball_path, (intmax_t)tarball.size);
 
+    /*
+     * if -T we need to open it as a text file: for test mode
+     */
     if (read_from_text_file) {
 	input_stream = fopen(tarball_path, "r");
 	errno = 0;
@@ -1619,16 +1637,15 @@ check_tarball(char const *tar, char const *fnamchk)
 
     } else {
 	/*
-	 * -T was not specified so we have to execute tar: if it fails it's an
-	 * error and we abort; else we open a pipe to read the output of the
-	 * command.
-	 */
+	 * case: -T was not specified so we have to execute tar: if we cannot
+         * get a tarball listing it is an error and we abort; else we open a
+         * pipe to read the output of the command.
+         */
 
 	/*
 	 * first execute the tar command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
-
 	if (verbosity_level) {
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	} else {
