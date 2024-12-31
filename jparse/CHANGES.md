@@ -1,5 +1,18 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.10 2024-12-31
+
+Improve invalid JSON token error message (`yyerror()`)
+
+In particular, instead of surrounding the bad token with `<>`s, which could be
+one of the invalid chars and which might make someone think that that's the
+problematic character, do not surround it any more. Since it is by itself after
+the ':' (and the next char is the newline) it should be clearer this way.
+
+Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
+and `"2.2.3 2024-12-31"` respectively.
+
+
 ## Release 2.1.9 2024-12-26
 
 Invert the meaning of `jstrdecode -j`.

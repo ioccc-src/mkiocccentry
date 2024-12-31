@@ -2498,7 +2498,7 @@ yyerror(JPARSE_LTYPE *yyltype, struct json **node, yyscan_t scanner, char const 
 	    fprint(stderr, " at line %d column %d: ", yyltype->first_line, yyltype->first_column);
     }
     if (jparse_get_text(scanner) != NULL && *jparse_get_text(scanner) != '\0') {
-	fprint(stderr, "<%s>\n", jparse_get_text(scanner));
+	fprint(stderr, "%s\n", jparse_get_text(scanner));
     } else if (jparse_get_text(scanner) == NULL) {
 	fprstr(stderr, "text == NULL\n");
     } else {

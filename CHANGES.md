@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.2.1 2024-12-31
+
+Improve `jparse` error messages in `yyerror()`.
+
+In particular, instead of surrounding the bad token with `<>`s, which could be
+one of the invalid chars and which might make someone think that that's the
+problematic character, do not surround it any more. Since it is by itself after
+the ':' (and the next char is the newline) it should be clearer this way.
+
+Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
+and `"2.2.3 2024-12-31"` respectively.
+
+**NOTE**: there is **ABSOLUTELY NO** functional change in this, just a display
+improvement, and so it's a useful change to include here too.
+
+
+
 ## Release 2.2 2024-12-30
 
 Resolve issues #1044, #1045 and #1046.
