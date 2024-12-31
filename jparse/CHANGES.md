@@ -28,6 +28,9 @@ still be able to test the party.json error file. This problem has to do with the
 error message has to be exact and rebuilding the error location file was
 problematic with the above updates.
 
+To be more portable, don't use `-v` by default in `install` rule. If one needs
+it, they can do `make INSTALL_V=-v install`.
+
 
 ## Release 2.1.9 2024-12-26
 

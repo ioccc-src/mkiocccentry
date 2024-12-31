@@ -79,8 +79,8 @@ if [[ -z "$MAKE" ]]; then
     MAKE="$(type -P make)"
 fi
 export MAKE
-export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
-export BUG_REPORT_VERSION="2.0.3 2024-11-30"
+export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V= MAKE_CD_Q="
+export BUG_REPORT_VERSION="2.0.4 2024-12-31"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1464,7 +1464,7 @@ if [[ -z "$T_FLAG" ]]; then
     # make all: compile everything before we do anything else
     #
     #   the answer to life, the universe and everything conveniently makes all :-)
-    # 
+    #
     # ...and yes, this actually happened by chance, not deliberately, at least
     # in the mkiocccentry repo. Later on, after this script in jparse was
     # updated to be correct, the numbers were kept the same even after the tools
