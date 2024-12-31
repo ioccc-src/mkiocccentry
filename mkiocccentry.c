@@ -5555,13 +5555,9 @@ show_submit_url(char const *work_dir, char const *tarball_path, int slot_number)
     }
 
 
-    para("",
-        "When the contest is open (see https://www.ioccc.org/status.html),",
-        "after you have registered, you must upload:",
-        "",
-        NULL);
-
-    ret = printf("    %s/%s into slot %d\n", work_dir, tarball_path, slot_number);
+    ret = printf("\nWhen the contest is open (see https://www.ioccc.org/status.html),\n"
+        "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
+        work_dir, tarball_path);
     if (ret <= 0) {
 	errp(197, __func__, "printf error printing tarball path and slot number");
 	not_reached();
