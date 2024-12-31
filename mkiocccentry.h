@@ -172,7 +172,7 @@ static void write_auth(struct auth *authp, char const *submission_dir, char cons
 static void form_tarball(char const *work_dir, char const *submission_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *submission_dir, char const *tar, char const *tarball_path,
-	bool test_mode);
+	bool test_mode, int submit_slot);
 static void show_registration_url(void);
-static void show_submit_url(char const *work_dir, char const *tarball_path);
+static void show_submit_url(char const *work_dir, char const *tarball_path, int slot_number);
 #endif /* INCLUDE_MKIOCCCENTRY_H */
