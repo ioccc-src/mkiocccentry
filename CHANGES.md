@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.2.1 2024-12-31
+## Release 2.3 2024-12-31
 
 Improve `jparse` error messages in `yyerror()`.
 
