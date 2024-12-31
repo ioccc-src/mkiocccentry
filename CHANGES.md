@@ -34,6 +34,16 @@ functional difference in this commit.
 
 Updated `ioccc_test.sh` version to: `"1.0.3 2024-12-31"`.
 
+`mkiocccentry` updated to show that the registration URL and submit server URL
+are available and to show what file and what slot to upload, how to register
+etc. The macros that checked for the readiness of these servers are no more as
+they are always ready now even if one can only register if in pending and open
+and only submit if status is open.
+
+Updated `mkiocccentry version to `"1.1.2 2024-12-31"` and soup version to
+`"1.1.3 2024-12-31"`. The reason the soup version was updated is because of
+macro changes, including new ones for the URLs.
+
 
 ## Release 2.2 2024-12-30
 

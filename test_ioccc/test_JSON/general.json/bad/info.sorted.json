@@ -28,7 +28,7 @@
 	"iocccsize_version" : "28.15 2024-06-27",
 	"chkentry_version" : "1.0.3 2024-12-30",
 	"min_timestamp" : 1716103155,
-	"mkiocccentry_version" : "1.1.1 2024-12-30",
+	"mkiocccentry_version" : "1.1.2 2024-12-31",
 	"nul_warning" : false,
 	"rule_2a_mismatch" : false,
 	"rule_2a_override" : false,

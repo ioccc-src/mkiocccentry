@@ -1,7 +1,7 @@
 /*
  * limit_ioccc - IOCCC size and rule related limitations
  *
- * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021,2022,2023,2024 by Landon Curt Noll. All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -127,6 +127,9 @@
  */
 #define JSON_PARSING_DIRECTIVE_NAME "no_comment"
 #define JSON_PARSING_DIRECTIVE_VALUE "mandatory comment: because comments were removed from the original JSON spec"
+
+#define IOCCC_STATUS_URL "https://www.ioccc.org/status.html"        /* status of IOCCC URL */
+#define IOCCC_ENTER_FAQ_URL "https://www.ioccc.org/faq.html#enter"  /* how to enter FAQ */
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */

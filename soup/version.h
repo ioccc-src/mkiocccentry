@@ -72,7 +72,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.2 2024-12-30"		/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.3 2024-12-31"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.1.1 2024-12-30"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.1.2 2024-12-31"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 
 /*
