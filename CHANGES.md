@@ -1,6 +1,40 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.2.1 2024-12-31
+
+Improve `jparse` error messages in `yyerror()`.
+
+In particular, instead of surrounding the bad token with `<>`s, which could be
+one of the invalid chars and which might make someone think that that's the
+problematic character, do not surround it any more. Since it is by itself after
+the ':' (and the next char is the newline) it should be clearer this way.
+
+Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
+and `"2.2.3 2024-12-31"` respectively.
+
+**NOTE**: there is **ABSOLUTELY NO** functional change in the above, just a
+display improvement, and so it's a useful change to include here too.
+
+Fix typo in `jparse`'s `rebuild_jparse_err_files` rule that was causing a
+display problem. Also here the -v flag cannot depend on the `VERBOSITY` level as
+the script was designed specifically for -v 0! This has been fixed.
+
+Moved `party.json` and `party.json.err` files from
+`test_ioccc/test_JSON/general.json/bad_loc` to the jparse repo so that it's now
+under `jparse/test_jparse/test_JSON/bad_loc`. This had to be done due to the
+improvement with `yyerror()` and how the error messages have to be exact. It
+might be possible to fix the issue but it is not worth it as long as jparse here
+tests location errors and it now does. Plus `party.json` belongs in jparse
+anyway.
+
+Updated `test_ioccc/ioccc_test.sh` to use option `-L` in `jparse_test.sh`
+as we no longer want to test error location messages. This is the only
+functional difference in this commit.
+
+Updated `ioccc_test.sh` version to: `"1.0.3 2024-12-31"`.
+
+
 ## Release 2.2 2024-12-30
 
 Resolve issues #1044, #1045 and #1046.

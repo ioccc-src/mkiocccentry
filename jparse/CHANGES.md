@@ -1,5 +1,34 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.1.10 2024-12-31
+
+Improve invalid JSON token error message (`yyerror()`)
+
+In particular, instead of surrounding the bad token with `<>`s, which could be
+one of the invalid chars and which might make someone think that that's the
+problematic character, do not surround it any more. Since it is by itself after
+the ':' (and the next char is the newline) it should be clearer this way.
+
+Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
+and `"2.2.3 2024-12-31"` respectively.
+
+Fix typo in `test_jparse/Makefile` rule `rebuild_jparse_err_files` that caused a
+display problem.
+
+The `rebuild_jparse_err_files` rule **MUST NOT** use `-v ${VERBOSITY}` because
+the error message files are specifically for -v 0 (the `jparse_test.sh` script
+does not use `-v` in the error location tests at all)!
+
+Add new JSON file and error location files
+`test_jparse/test_JSON/bad_loc/party.json` and
+`test_jparse/test_JSON/bad_loc/party.json.err`. This is necessary as it allows
+another repo, the [mkiocccentry
+repo](https://github.com/ioccc-src/mkiocccentry), to not have any problems and
+still be able to test the party.json error file. This problem has to do with the
+error message has to be exact and rebuilding the error location file was
+problematic with the above updates.
+
+
 ## Release 2.1.9 2024-12-26
 
 Invert the meaning of `jstrdecode -j`.

@@ -1,3 +1,0 @@
-syntax error in file ./test_ioccc/test_JSON/general.json/bad_loc/party.json at line 4 column 1: <}>
-Warning: jparse/jparse: JSON parse tree is NULL
-ERROR[1]: jparse/jparse: invalid JSON

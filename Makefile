@@ -773,8 +773,8 @@ all_sem_ref_ptch: soup/Makefile
 
 # rebuild jparse error files for testing
 #
-# IMPORTANT: DO NOT run this tool unless you KNOW that
-#	     the tables produced by jparse are CORRECT!
+# IMPORTANT: DO NOT run this rule unless you KNOW that the output produced by
+#	     jparse on each file is CORRECT!
 #
 rebuild_jparse_err_files: jparse/test_jparse/Makefile
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
