@@ -20,10 +20,19 @@ Fix typo in `jparse`'s `rebuild_jparse_err_files` rule that was causing a
 display problem. Also here the -v flag cannot depend on the `VERBOSITY` level as
 the script was designed specifically for -v 0! This has been fixed.
 
-The `rebuild_jparse_err_files` rule **HERE** must also use the new rule in
-test_ioccc/Makefile as we have additional error location files to test. Although
-only Landon or I (Cody) will ever need to do this and it's also extremely
-unlikely it'll have to happen again, it is still a needed update.
+Moved `party.json` and `party.json.err` files from
+`test_ioccc/test_JSON/general.json/bad_loc` to the jparse repo so that it's now
+under `jparse/test_jparse/test_JSON/bad_loc`. This had to be done due to the
+improvement with `yyerror()` and how the error messages have to be exact. It
+might be possible to fix the issue but it is not worth it as long as jparse here
+tests location errors and it now does. Plus `party.json` belongs in jparse
+anyway.
+
+Updated `test_ioccc/ioccc_test.sh` to use option `-L` in `jparse_test.sh`
+as we no longer want to test error location messages. This is the only
+functional difference in this commit.
+
+Updated `ioccc_test.sh` version to: `"1.0.3 2024-12-31"`.
 
 
 ## Release 2.2 2024-12-30

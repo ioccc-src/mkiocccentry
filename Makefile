@@ -779,8 +779,6 @@ all_sem_ref_ptch: soup/Makefile
 rebuild_jparse_err_files: jparse/test_jparse/Makefile
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
 		     LD_DIR2="${LD_DIR2}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}" \
-		     LD_DIR2="${LD_DIR2}"
 
 # sequence exit codes
 #

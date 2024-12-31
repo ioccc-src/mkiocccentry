@@ -548,22 +548,6 @@ check_man: ${ALL_MAN_TARGETS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-# rebuild jparse error files for testing
-#
-# IMPORTANT: DO NOT run this rule unless you KNOW that the output produced by
-#	     jparse on each file is CORRECT!
-#
-rebuild_jparse_err_files: ../jparse/jparse
-	${Q} ${RM} ${RM_V} -f ./test_JSON/general.json/bad_loc/*.err
-	-@for i in ./test_JSON/general.json/bad_loc/*.json; do \
-	    ../jparse/jparse -v ${VERBOSITY} -- "$$i" 2> "$$i.err" ;  \
-	done
-	${S} echo
-	${S} echo "Make sure to run make test from the top level directory before doing a"
-	${S} echo "git add on all the *.json and *.json.err files in test_jparse/test_JSON/bad_loc!"
-	${S} echo
-	${S} echo "${OUR_NAME}: make $@ ending"
-
 
 
 # install man pages

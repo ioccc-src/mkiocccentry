@@ -19,6 +19,16 @@ The `rebuild_jparse_err_files` rule **MUST NOT** use `-v ${VERBOSITY}` because
 the error message files are specifically for -v 0 (the `jparse_test.sh` script
 does not use `-v` in the error location tests at all)!
 
+Add new JSON file and error location files
+`test_jparse/test_JSON/bad_loc/party.json` and
+`test_jparse/test_JSON/bad_loc/party.json.err`. This is necessary as it allows
+another repo, the [mkiocccentry
+repo](https://github.com/ioccc-src/mkiocccentry), to not have any problems and
+still be able to test the party.json error file. This problem has to do with the
+error message has to be exact and rebuilding the error location file was
+problematic with the above updates.
+
+
 ## Release 2.1.9 2024-12-26
 
 Invert the meaning of `jstrdecode -j`.
