@@ -12,6 +12,12 @@ the ':' (and the next char is the newline) it should be clearer this way.
 Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
 and `"2.2.3 2024-12-31"` respectively.
 
+Fix typo in `test_jparse/Makefile` rule `rebuild_jparse_err_files` that caused a
+display problem.
+
+The `rebuild_jparse_err_files` rule **MUST NOT** use `-v ${VERBOSITY}` because
+the error message files are specifically for -v 0 (the `jparse_test.sh` script
+does not use `-v` in the error location tests at all)!
 
 ## Release 2.1.9 2024-12-26
 

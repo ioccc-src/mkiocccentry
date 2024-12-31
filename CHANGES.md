@@ -13,9 +13,17 @@ the ':' (and the next char is the newline) it should be clearer this way.
 Updated `JPARSE_VERSION` and `JPARSE_LIBRARY_VERSION` to `"1.2.8 2024-12-31"`
 and `"2.2.3 2024-12-31"` respectively.
 
-**NOTE**: there is **ABSOLUTELY NO** functional change in this, just a display
-improvement, and so it's a useful change to include here too.
+**NOTE**: there is **ABSOLUTELY NO** functional change in the above, just a
+display improvement, and so it's a useful change to include here too.
 
+Fix typo in `jparse`'s `rebuild_jparse_err_files` rule that was causing a
+display problem. Also here the -v flag cannot depend on the `VERBOSITY` level as
+the script was designed specifically for -v 0! This has been fixed.
+
+The `rebuild_jparse_err_files` rule **HERE** must also use the new rule in
+test_ioccc/Makefile as we have additional error location files to test. Although
+only Landon or I (Cody) will ever need to do this and it's also extremely
+unlikely it'll have to happen again, it is still a needed update.
 
 
 ## Release 2.2 2024-12-30

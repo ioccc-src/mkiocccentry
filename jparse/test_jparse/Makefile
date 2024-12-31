@@ -402,11 +402,16 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c
 	${CP} -f -v jnum_header.c jnum_test.c
 	./jnum_gen -v ${VERBOSITY} jnum.testset >> jnum_test.c
 
+# rebuild jparse error files for testing
+#
+# IMPORTANT: DO NOT run this rule unless you KNOW that the output produced by
+#	     jparse on each file is CORRECT!
+#
 rebuild_jparse_err_files:
 	${S} echo
-	${S} echo "${OUT_NAME}: make $@ starting"
+	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${Q} cd .. ; \
+	${Q} cd .. && \
 	    ${MAKE} $@
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
