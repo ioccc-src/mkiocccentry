@@ -96,7 +96,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.5 2024-11-16"
+export BUG_REPORT_VERSION="1.0.6 2024-12-31"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -105,7 +105,7 @@ export T_FLAG=""
 export X_FLAG=""
 export L_FLAG=""
 export EXIT_CODE=0
-export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V='-v' MAKE_CD_Q="
+export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V= MAKE_CD_Q="
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level] [-t] [-x] [-l] [-L logfile] [-m make] [-M make_flags]
 
     -h              print help and exit
