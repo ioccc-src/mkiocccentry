@@ -748,7 +748,6 @@ run_string_test()
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_string_test: pass_fail neither 'pass' nor 'fail'" 1>&2
 	exit 12
-	return
     fi
 
     # debugging
