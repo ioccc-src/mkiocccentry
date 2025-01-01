@@ -5,6 +5,12 @@
 
 Fix a minor issue relating to the invalid UUID error message.
 
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3 2024-12-31"
+to "2.3.1 2024-12-31".
+
+Changed `SOUP_VERSION` from "1.1.3 2024-12-31"
+to "1.1.4 2024-12-31".
+
 
 ## Release 2.3 2024-12-31
 
