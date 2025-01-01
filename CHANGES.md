@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.2 2025-01-01
+
+Fix exit code errors in `jparse_test.sh`.
+
+Remove rule `rebuild_jparse_err_files` from top level Makefile. This rule should
+only be in jparse/. The reason it would cause a failure is because of `argv[0]`
+being in error messages and since in this repo `jparse` binary is in a
+subdirectory it changes the name of the program so the error files are
+incorrect. It might be possible to do a `cd jparse && ...` but this is not
+necessary as there are no error location files in this repo itself due to
+precisely this reason.
+
+Happy New Year!
+
+
 ## Release 2.3.1 2024-12-31
 
 Fix a minor issue relating to the invalid UUID error message.
