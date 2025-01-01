@@ -1527,9 +1527,9 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	 *
 	 * The contest ID, if not "test" must be a UUID.  The UUID has the 36 character format:
 	 *
-	 *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+	 *     xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx
 	 *
-	 * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
+	 * where 'x' is a hex character,  is the UUID version, and N is one of 8, 9, a, or b.
 	 */
 	valid = test_IOCCC_contest_id(malloc_ret);
 	if (valid == false) {
@@ -1540,9 +1540,9 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    fpara(stderr,
 		  "IOCCC contest IDs are in the form:",
 		  "",
-		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
+		  "    xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version, and N is one of 8, 9, a, or b.",
 		  "",
 		  NULL);
 

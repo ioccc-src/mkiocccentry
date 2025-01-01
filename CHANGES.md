@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.1 2024-12-31
+
+Fix a minor issue relating to the invalid UUID error message.
+
+
 ## Release 2.3 2024-12-31
 
 Improve `jparse` error messages in `yyerror()`.

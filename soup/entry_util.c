@@ -391,9 +391,9 @@ valid_contest_id(char *str)
      * validate format of non-test contest ID.  The contest ID, if not "test"
      * must be a UUID.  The UUID has the 36 character format:
      *
-     *	    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+     *     xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx
      *
-     * where 'x' is a hex character.  The 4 is the UUID version and the variant
+     * where 'x' is a hex character,  is the UUID version, and N is one of 8, 9, a, or b.
      * 1.
      */
     if (len != UUID_LEN) {
@@ -1922,9 +1922,9 @@ test_IOCCC_auth_version(char const *str)
  *
  * The contest ID, if not "test" must be a UUID.  The UUID has the 36 character format:
  *
- *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+ *             xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx
  *
- * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
+ * where 'x' is a hex character,  is the UUID version, and N is one of 8, 9, a, or b.
  *
  * Example:
  *
