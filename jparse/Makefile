@@ -830,8 +830,7 @@ rebuild_jparse_err_files: jparse
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f test_jparse/test_JSON/bad_loc/*.err
-	-${Q} for i in test_jparse/test_JSON/./bad_loc/*.json; do \
-	    echo './jparse -v 0 -- "'$$i'" 2> "'$$i'.err"' ;  \
+	-@for i in test_jparse/test_JSON/./bad_loc/*.json; do \
 	    ./jparse -v 0 -- "$$i" 2> "$$i.err" ;  \
 	done
 	${S} echo
