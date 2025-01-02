@@ -15,6 +15,8 @@ precisely this reason.
 
 Happy New Year!
 
+Disabled 2 invalid JSON string encode/decode tests.
+
 
 ## Release 2.3.1 2024-12-31
 
