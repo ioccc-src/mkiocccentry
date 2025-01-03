@@ -830,7 +830,7 @@ rebuild_jparse_err_files: jparse
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f test_jparse/test_JSON/bad_loc/*.err
-	-@for i in test_jparse/test_JSON/./bad_loc/*.json; do \
+	-${Q} for i in test_jparse/test_JSON/./bad_loc/*.json; do \
 	    echo './jparse -v 0 - "'$$i'" 2> "'$$i'.err"'; \
 	    ./jparse -v 0 -- "$$i" 2> "$$i.err" ;  \
 	done
@@ -1263,49 +1263,29 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    jparse.c jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
-    json_util.h util.h
-jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.ref.c jparse.tab.h \
-    json_parse.h json_sem.h json_utf8.h json_util.h util.h
-jparse.tab.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.c \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
-    version.h
-jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.h \
-    jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h json_util.h util.h \
-    version.h
-jparse_main.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h jparse_main.c \
-    jparse_main.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
-    version.h
-jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h jsemtblgen.c \
-    jsemtblgen.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
-    version.h
-json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.c \
-    json_parse.h json_sem.h json_utf8.h json_util.h util.h
-json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    jparse.h jparse.tab.h json_parse.h json_sem.c json_sem.h json_utf8.h \
-    json_util.h util.h
-json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.c json_util.h util.h
-jstr_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h jstr_util.c jstr_util.h util.h
-jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h \
-    version.h
-jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h jparse.h jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h jstr_util.h jstrencode.c jstrencode.h util.h \
-    version.h
-util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    util.c util.h
-verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    json_utf8.h util.h verge.c verge.h version.h
+jparse.o: jparse.c jparse.h jparse.tab.h json_parse.h json_sem.h \
+    json_utf8.h json_util.h util.h
+jparse.ref.o: jparse.h jparse.ref.c jparse.tab.h json_parse.h json_sem.h \
+    json_utf8.h json_util.h util.h
+jparse.tab.o: jparse.h jparse.lex.h jparse.tab.c jparse.tab.h json_parse.h \
+    json_sem.h json_utf8.h json_util.h util.h version.h
+jparse.tab.ref.o: jparse.h jparse.lex.h jparse.tab.h jparse.tab.ref.c \
+    json_parse.h json_sem.h json_utf8.h json_util.h util.h version.h
+jparse_main.o: jparse.h jparse.tab.h jparse_main.c jparse_main.h \
+    json_parse.h json_sem.h json_utf8.h json_util.h util.h version.h
+jsemtblgen.o: jparse.h jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h \
+    json_sem.h json_utf8.h json_util.h util.h version.h
+json_parse.o: jparse.h jparse.tab.h json_parse.c json_parse.h json_sem.h \
+    json_utf8.h json_util.h util.h
+json_sem.o: jparse.h jparse.tab.h json_parse.h json_sem.c json_sem.h \
+    json_utf8.h json_util.h util.h
+json_util.o: jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.c json_util.h util.h
+jstr_util.o: jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h jstr_util.c jstr_util.h util.h
+jstrdecode.o: jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h jstr_util.h jstrdecode.c jstrdecode.h util.h version.h
+jstrencode.o: jparse.h jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h jstr_util.h jstrencode.c jstrencode.h util.h version.h
+util.o: util.c util.h
+verge.o: json_utf8.h util.h verge.c verge.h version.h
