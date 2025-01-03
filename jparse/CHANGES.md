@@ -1,5 +1,10 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.1 2025-01-02
+
+Disable 2 invalid JSON encode/decode string tests in `jstr_test.sh`.
+
+
 ## Release 2.2.0 2025-01-01
 
 Bug fixes to do with exit codes in `test_jparse/jparse_test.sh`. Some functions
