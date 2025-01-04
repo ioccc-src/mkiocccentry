@@ -20,7 +20,7 @@
 export FAILURE_SUMMARY=
 export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.2.0 2024-10-09"
+export PREP_VERSION="1.2.1 2025-01-04"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -415,7 +415,7 @@ make_jparse_bug_report() {
 
     # perform action
     #
-    exec_command "./jparse_bug_report.sh" -t -x -l VERBOSITY=$V_FLAG -L "$BUG_REPORT_LOGFILE"
+    exec_command "./jparse_bug_report.sh" -t -x -l VERBOSITY="$V_FLAG" -L "$BUG_REPORT_LOGFILE"
     status="$?"
 
     # Finally we report on the exit status of the jparse_bug_report.sh
@@ -615,6 +615,46 @@ else
 	fi
     fi
 fi
+
+# Note at the very end if we find a non-empty Makefile.local containing non-comments
+#
+# Because this is just a potential warning, we do not perform this as an action.
+#
+export NOT_A_COMMENT="test_jparse/not_a_comment.sh"
+if [[ ! -e $NOT_A_COMMENT ]]; then
+    write_echo "Warning: executable not found: $NOT_A_COMMENT"
+elif [[ ! -f $NOT_A_COMMENT ]]; then
+    write_echo "Warning: not a file: $NOT_A_COMMENT"
+elif [[ ! -x $NOT_A_COMMENT ]]; then
+    write_echo "Warning: not an executable file: $NOT_A_COMMENT"
+else
+    # SC2046 (warning): Quote this to prevent word splitting.
+    #
+    # The paths printed by find will not word split.
+    #
+    # https://www.shellcheck.net/wiki/SC2046
+    # shellcheck disable=SC2046
+    if ! "$NOT_A_COMMENT" $(find . -name 'Makefile.local' -print 2>/dev/null) >/dev/null 2>&1; then
+	write_echo ""
+	write_echo "Notice: Found non-comments in some Makefile.local file(s)."
+	write_echo "Notice: Be sure that these Makefile.local file(s) are not skew the results above."
+	write_logfile
+	write_logfile "=-=-= output from soup/not_a_comment.sh -v 1 follows:"
+	write_logfile
+	# SC2046 (warning): Quote this to prevent word splitting.
+	#
+	# The paths printed by find will not word split.
+	#
+	# https://www.shellcheck.net/wiki/SC2046
+	# shellcheck disable=SC2046
+	FOUND=$("$NOT_A_COMMENT" -v 1 $(find . -name 'Makefile.local' -print 2>/dev/null) 2>&1)
+	write_logfile "$FOUND"
+	write_logfile
+	write_logfile "=-=-= End of output from soup/not_a_comment.sh -v 1"
+    fi
+fi
+
+
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
