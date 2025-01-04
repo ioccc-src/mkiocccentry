@@ -227,7 +227,7 @@ LESS_PICKY_HSRC= oebxergfB.h
 # all shell scripts
 #
 SH_FILES= all_sem_ref.sh run_usage.sh vermod.sh \
-	reset_tstamp.sh
+	reset_tstamp.sh not_a_comment.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #

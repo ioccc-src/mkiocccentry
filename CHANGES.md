@@ -1,6 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.3 2025-01-04
+
+Added `soup/not_a_comment.sh` to test if file that exists
+contains a non-#-comment.
+
+Both `make prep` and `make release` will issue a notice (via
+`soup/not_a_comment.sh`) if a non-empty `Makefile.local` is found
+containing more than just comments.  This will allow for one to
+keep a `Makefile.local` with only comments in it, without raising
+a notice as such a file will not impact the make procedure.
+Then if one needs to temporary add comments (perhaps by un-commenting
+lines in a `Makefile.local` file), one can.  However if one then
+forgets, then the notice will alert you to the potential problem.
+
+Changed `test_ioccc/prep.sh` PREP_VERSION from "1.0.4 2024-11-16"
+to "1.0.5 2025-01-03".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.1 2025-01-01"
+to "2.3.3 2025-01-04".
+
+
 ## Release 2.3.2 2025-01-01
 
 Fix exit code errors in `jparse_test.sh`.
