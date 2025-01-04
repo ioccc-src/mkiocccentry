@@ -220,7 +220,7 @@ LESS_PICKY_HSRC=
 
 # all shell scripts
 #
-SH_FILES= jparse_test.sh jstr_test.sh
+SH_FILES= prep.sh jparse_test.sh jstr_test.sh
 
 
 ######################

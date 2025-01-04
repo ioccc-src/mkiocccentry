@@ -1,5 +1,37 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.2 2025-01-04
+
+Add `test_jparse/not_a_comment.sh` and update `test_jparse/prep.sh` to use it.
+This will test if any Makefile.local files exist and if any do it'll warn at the
+end so that the user of `make prep` or `make release` can be aware of it and be
+sure it does not skew the results.
+
+The script `not_a_comment.sh` is from the mkiocccentry repo and was
+written by Landon Curt Noll (thanks!).
+
+Fix `shellcheck` for `test_jparse/prep.sh` and add script to missing `SH_FILES`
+in `test_jparse/Makefile` (the reason it was not caught by `make shellcheck` is
+because the script was missing from the Makefile).
+
+
+## Release 2.2.1 2025-01-02
+
+Disable 2 invalid JSON encode/decode string tests in `jstr_test.sh`.
+
+
+## Release 2.2.0 2025-01-01
+
+Bug fixes to do with exit codes in `test_jparse/jparse_test.sh`. Some functions
+being passed invalid data did not exit but rather change the exit code which
+could then be changed by a function that runs later. Also in the case that a
+test passed, in one location, it would change the exit code back to 0, thus
+changing the result of a failed test back to not failing, giving a false result.
+As the exit code starts at 0 now if any test fails it'll never be a 0 exit code
+(though if an internal error occurs later the exit code won't indicate a test
+failed, if there was one).
+
+
 ## Release 2.1.10 2024-12-31
 
 Improve invalid JSON token error message (`yyerror()`)

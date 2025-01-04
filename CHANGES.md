@@ -11,7 +11,7 @@ Both `make prep` and `make release` will issue a notice (via
 containing more than just comments.  This will allow for one to
 keep a `Makefile.local` with only comments in it, without raising
 a notice as such a file will not impact the make procedure.
-Then if one needs to temporary add comments (perhaps by un-commenting
+Then if one needs to temporary add comments (perhaps by uncommenting
 lines in a `Makefile.local` file), one can.  However if one then
 forgets, then the notice will alert you to the potential problem.
 
@@ -20,6 +20,13 @@ to "1.0.5 2025-01-03".
 
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.1 2025-01-01"
 to "2.3.3 2025-01-04".
+
+Synced `jparse/` from [jparse repo](https://github.com/xexyl/jparse/) with the
+new script `not_a_comment.sh` which is now used in `jparse/test_jparse/prep.sh`
+as well. Thanks Landon! Doing this also uncovered a bug in
+`jparse/test_jparse/prep.sh`: namely that shellcheck failed due to the fact the
+script was missing from `jparse/test_jparse/Makefile` (this goes all the way
+back to the initial import of `jparse` as there was no `prep.sh` at the time!).
 
 
 ## Release 2.3.2 2025-01-01

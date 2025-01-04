@@ -24,7 +24,7 @@ export JSTRENCODE="./jstrencode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="1.2.5 2024-12-26" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="1.2.7 2025-01-02" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -184,37 +184,43 @@ else
     EXIT_CODE=4
 fi
 
-# test JSON decoding and encoding pipe
-echo "$0: about to run test #1"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
-# This warning is not correct in our case:
-#
-# SC2094 (info): Make sure not to read and write the same file in the same pipeline.
-# https://www.shellcheck.net/wiki/SC2094
-# shellcheck disable=SC2094
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
-if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
-    echo "$0: test #1 passed" 1>&2
-else
-    echo "$0: test #1 failed" 1>&2
-    EXIT_CODE=4
-fi
+###################################################################################
+# NOTE: We disable these 2 tests as per https://github.com/xexyl/jparse/issues/32 #
+#	with perhaps restoring them to some extent when this issue is resolved:   #
+#	https://github.com/xexyl/jparse/issues/31				  #
+###################################################################################
 
-echo "$0: about to run test #2"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
-# This warning is incorrect in our case:
-#
-# SC2094 (info): Make sure not to read and write the same file in the same pipeline.
-# https://www.shellcheck.net/wiki/SC2094
-# shellcheck disable=SC2094
-#
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
-if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
-    echo "$0: test #2 passed"
-else
-    echo "$0: test #2 failed" 1>&2
-    EXIT_CODE=4
-fi
+# disabled ## test JSON decoding and encoding pipe
+# disabled #echo "$0: about to run test #1"
+# disabled #echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+# disabled ## This warning is not correct in our case:
+# disabled ##
+# disabled ## SC2094 (info): Make sure not to read and write the same file in the same pipeline.
+# disabled ## https://www.shellcheck.net/wiki/SC2094
+# disabled ## shellcheck disable=SC2094
+# disabled #"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
+# disabled #if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
+# disabled #    echo "$0: test #1 passed" 1>&2
+# disabled #else
+# disabled #    echo "$0: test #1 failed" 1>&2
+# disabled #    EXIT_CODE=4
+# disabled #fi
+
+# disabled #echo "$0: about to run test #2"
+# disabled #echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+# disabled ## This warning is incorrect in our case:
+# disabled ##
+# disabled ## SC2094 (info): Make sure not to read and write the same file in the same pipeline.
+# disabled ## https://www.shellcheck.net/wiki/SC2094
+# disabled ## shellcheck disable=SC2094
+# disabled ##
+# disabled #"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+# disabled #if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
+# disabled #    echo "$0: test #2 passed"
+# disabled #else
+# disabled #    echo "$0: test #2 failed" 1>&2
+# disabled #    EXIT_CODE=4
+# disabled #fi
 
 # test some text holes in the decoding and encoding pipe
 #
