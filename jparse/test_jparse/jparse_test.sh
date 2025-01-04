@@ -73,7 +73,7 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.2.3 2025-01-01"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="1.2.2 2024-10-13"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
 export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
 export JPARSE="./jparse"
@@ -535,7 +535,7 @@ run_location_err_test()
 	fi
 
 	echo | tee -a -- "${LOGFILE}" 1>&2
-	EXIT_CODE=1
+	EXIT_CODE=50
     elif [[ "$V_FLAG" -ge 1 ]]; then
 	echo "$0: debug[1]: fail test OK, $JPARSE -- $jparse_test_file matches error file" | tee -a -- "$LOGFILE"
     fi
@@ -575,7 +575,8 @@ run_file_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_file_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	exit 10
+	EXIT_CODE=11
+	return
     fi
 
     # debugging
@@ -707,7 +708,7 @@ run_print_test()
     else
 	echo "$0: in test that must pass: print_test FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	PRINT_TEST_FAILURE="1"
-	EXIT_CODE=1
+	EXIT_CODE=2
     fi
     echo >> "${LOGFILE}"
 
@@ -747,7 +748,8 @@ run_string_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_string_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	exit 12
+	EXIT_CODE=11
+	return
     fi
 
     # debugging
@@ -803,6 +805,7 @@ run_string_test()
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
+	    EXIT_CODE=0
 	fi
     fi
     echo >> "${LOGFILE}"

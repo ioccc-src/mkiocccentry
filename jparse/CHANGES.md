@@ -1,22 +1,5 @@
 # Significant changes in the JSON parser repo
 
-## Release 2.2.1 2025-01-02
-
-Disable 2 invalid JSON encode/decode string tests in `jstr_test.sh`.
-
-
-## Release 2.2.0 2025-01-01
-
-Bug fixes to do with exit codes in `test_jparse/jparse_test.sh`. Some functions
-being passed invalid data did not exit but rather change the exit code which
-could then be changed by a function that runs later. Also in the case that a
-test passed, in one location, it would change the exit code back to 0, thus
-changing the result of a failed test back to not failing, giving a false result.
-As the exit code starts at 0 now if any test fails it'll never be a 0 exit code
-(though if an internal error occurs later the exit code won't indicate a test
-failed, if there was one).
-
-
 ## Release 2.1.10 2024-12-31
 
 Improve invalid JSON token error message (`yyerror()`)
