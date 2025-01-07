@@ -1,5 +1,70 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.3 2025-01-07
+
+Updated comments in jparse.l and jparse.y and rebuilt backup files.
+
+Updated sorry.tm.ca.h to be more specific on what files bison and flex generate.
+
+`make install` now installs `jparse.y` and `jparse.l` into
+`${PREFIX}/include/jparse` like other projects do with their bison and flex
+source files. These files are deleted by `make uninstall` because the
+subdirectory is deleted.
+
+New utility functions:
+
+```c
+extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
+        uintmax_t max_depth);
+extern char const *path_sanity_name(enum path_sanity sanity);
+extern char const *path_sanity_error(enum path_sanity sanity);
+```
+
+which determine if a path is both relative and POSIX plus + safe, based on the
+maximum depth, maximum path length and the maximum length of each component. An
+enum was added:
+
+
+```c
+/*
+ * for the path sanity functions
+ */
+enum path_sanity {
+    PATH_ERR_UNKNOWN = -1,              /* unknown error code (default in switch) */
+    PATH_OK = 0,                        /* path (str) is a sane relative path */
+    PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
+    PATH_ERR_PATH_EMPTY,                /* path string (str) is 0 length (empty) */
+    PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
+    PATH_ERR_MAX_PATH_LEN_0,            /* max_path_len <= 0 */
+    PATH_ERR_MAX_DEPTH_0,               /* max_depth is <= 0 */
+    PATH_ERR_NOT_RELATIVE,              /* path (str) not relative (i.e. it starts with a '/') */
+    PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
+    PATH_ERR_MAX_NAME_LEN_0,            /* max filename length <= 0 */
+    PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
+    PATH_ERR_NOT_POSIX_SAFE             /* invalid/not sane path component */
+};
+```
+
+The new function `sane_relative_path()` returns one of those values depending on
+the condition (except that it won't return `PATH_ERR_UNKNOWN` as that is for the
+other two functions in the case one passes an invalid value). The function
+`path_sanity_name()` returns a read-only string of the enum value that matches
+the name (i.e. `"PATH_OK"` for `PATH_OK`). `path_sanity_error()` returns a
+simple message based on the value passed in although there is some room for
+improvement.
+
+The markdown files have a `Last updated:` at the top now, to more easily keep
+track of when the file was last modified.
+
+The man page `jparse.3` was updated with clarifications of a function.
+
+The utility test code has many new cases that tests every condition of
+`sane_relative_path()`.
+
+Updated version of `JPARSE_LIBRARY_VERSION` to `"2.2.4 2025-01-07"` from `"2.2.3
+2024-12-31"`.
+
+
 ## Release 2.2.2 2025-01-04
 
 Add `test_jparse/not_a_comment.sh` and update `test_jparse/prep.sh` to use it.

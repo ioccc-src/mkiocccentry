@@ -18,7 +18,10 @@
  */
 
 
-/* Section 0: Declarations */
+/*
+ * Section 0 - Declarations
+ */
+
 /*
  * We enable lookahead correction parser for improved error messages:
  *
@@ -215,7 +218,10 @@ YY_DECL;
 
 
 /*
- * Section 1: Rules
+ * Section 1 - Rules
+ */
+
+/*
  *
  * See https://www.json.org/json-en.html for the JSON specification. We have
  * tried to make the below grammar as close to the JSON specification as
@@ -903,7 +909,9 @@ json_number:
 %%
 
 
-/* Section 2: C code */
+/*
+ * Section 2 - C code
+ */
 
 
 /*

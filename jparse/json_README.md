@@ -1,3 +1,5 @@
+_Last updated: 02 December 2024_
+
 # JSON Terms
 
 _Disclaimer_: While a number of **JSON terms** appear to describe JSON, they do

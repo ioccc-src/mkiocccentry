@@ -160,6 +160,28 @@ typedef unsigned char bool;
 
 
 /*
+ * enums
+ */
+
+/*
+ * for the path sanity functions
+ */
+enum path_sanity {
+    PATH_ERR_UNKNOWN = -1,              /* unknown error code (default in switch) */
+    PATH_OK = 0,                        /* path (str) is a sane relative path */
+    PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
+    PATH_ERR_PATH_EMPTY,                /* path string (str) is 0 length (empty) */
+    PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
+    PATH_ERR_MAX_PATH_LEN_0,            /* max_path_len <= 0 */
+    PATH_ERR_MAX_DEPTH_0,               /* max_depth is <= 0 */
+    PATH_ERR_NOT_RELATIVE,              /* path (str) not relative (i.e. it starts with a '/') */
+    PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
+    PATH_ERR_MAX_NAME_LEN_0,            /* max filename length <= 0 */
+    PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
+    PATH_ERR_NOT_POSIX_SAFE             /* invalid/not sane path component */
+};
+
+/*
  * external function declarations
  */
 extern char *base_name(char const *path);
@@ -202,6 +224,10 @@ extern bool is_e_notation_str(char const *str, size_t *retlen);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);
+extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
+        uintmax_t max_depth);
+extern char const *path_sanity_name(enum path_sanity sanity);
+extern char const *path_sanity_error(enum path_sanity sanity);
 extern void clearerr_or_fclose(FILE *stream);
 extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
