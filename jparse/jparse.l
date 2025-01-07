@@ -17,7 +17,10 @@
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
-/* Section 0: Declarations and option settings */
+/*
+ * Section 0 - Declarations and option settings
+ */
+
 /*
  * The
  *
@@ -122,7 +125,7 @@ static YY_BUFFER_STATE bs;
 %}
 
 /*
- * Section 1: Patterns (regular expressions) and actions.
+ * Section 1 - Patterns (regular expressions) and actions.
  */
 
 /*
@@ -350,7 +353,9 @@ JSON_COMMA		","
 
 %%
 
-/* Section 2: Code that's copied to the generated scanner */
+/*
+ * Section 2 - Code that's copied to the generated scanner
+ */
 
 /*
  * low_byte_scan - detect certain low byte values

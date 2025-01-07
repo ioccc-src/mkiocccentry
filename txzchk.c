@@ -609,6 +609,7 @@ static void
 check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *file)
 {
     bool allowed_dot_file = false;	/* true ==> basename is an allowed '.' file */
+    enum path_sanity sanity = PATH_OK;  /* assume path is okay */
 
     /*
      * firewall
@@ -638,19 +639,24 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
     }
 
     /*
-     * filename must use only POSIX portable filename and + chars plus /
-     */
-    if (!posix_plus_safe(file->filename, false, true, false)) {
-	++tarball.total_feathers; /* report it once and consider it only one feather */
-	++tarball.unsafe_chars;
-	warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
-	    tarball_path, file->filename);
-    }
-
-    /*
      * case: basename is NOT allowed to begin with a dot.
      */
     if (!allowed_dot_file) {
+        /*
+         * filename must use only POSIX portable filename and + chars plus /
+         *
+         * NOTE: we check for sane relative paths here only if the file is not a
+         * valid dot file. This is because if it is a valid dot file the
+         * sane_relative_path() will still flag it as invalid as it has a '.' in
+         * it.
+         */
+        sanity = sane_relative_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
+        if (sanity != PATH_OK) {
+            ++tarball.total_feathers; /* report it once and consider it only one feather */
+            ++tarball.unsafe_chars;
+            warn(__func__, "%s: file \"%s\": %s", tarball_path, file->filename, path_sanity_error(sanity));
+        }
+
 	/*
 	 * Check for dot files but note that a basename of only '.' also counts
 	 * as a filename with just '.': so if the file starts with a '.' and
@@ -673,15 +679,7 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    }
 	}
 
-	/*
-	 * basename must use only POSIX portable filename and + chars
-	 */
-	if (!posix_plus_safe(file->basename, false, false, true)) {
-	    ++tarball.total_feathers; /* report it once and consider it only one feather */
-	    ++tarball.unsafe_chars;
-	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
-		tarball_path, file->basename);
-	} else if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME) ||
+	if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME) ||
 	    !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ALT_FILENAME) ||
 	    !strcasecmp(file->basename, PROG_ORIG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
 		   !strcasecmp(file->basename, README_MD_FILENAME)) {
@@ -690,8 +688,6 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
 	}
     }
-
-
 
     /* check the dirs in the path */
     check_directories(file, dir_name, tarball_path);
@@ -781,7 +777,7 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
  * happen).
  */
 static void
-check_all_txz_files(char const *dir_name)
+check_all_txz_files(void)
 {
     struct txz_file *file;  /* to iterate through files list */
     size_t len = 0;         /* length of each filename */
@@ -818,13 +814,6 @@ check_all_txz_files(char const *dir_name)
             ++tarball.total_feathers;
             ++tarball.invalid_filename_lengths;
         }
-
-	if (dir_name != NULL && tarball.correct_directory) {
-	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
-		warn("txzchk", "%s: found directory change in filename %s", tarball_path, file->filename);
-		++tarball.total_feathers;
-	    }
-	}
 
 	if (file->count > 1) {
 	    warn("txzchk", "%s: found a total of %ju files with the name %s", tarball_path, file->count, file->basename);
@@ -895,11 +884,6 @@ check_all_txz_files(char const *dir_name)
 static void
 check_directories(struct txz_file *file, char const *dir_name, char const *tarball_path)
 {
-    uintmax_t dir_count = 0; /* number of directories in the path */
-    int prev = '\0';
-    int first = '\0';
-    int i;
-
     /*
      * firewall
      */
@@ -908,88 +892,13 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
 	not_reached();
     }
 
-    /* check that there is a directory */
-    if (strchr(file->filename, '/') == NULL && strcmp(file->filename, ".")) {
-	warn("txzchk", "%s: no directory found in filename %s", tarball_path, file->filename);
-	++tarball.total_feathers;
-    }
-    if (strstr(file->filename, "..")) /* check for '..' in path */ {
-	/*
-	 * Note that this check does NOT detect a file in the form of "../.file"
-	 * but since the basename of each file is checked in check_txz_file() this
-	 * is okay.
-	 */
-	++tarball.total_feathers;
-	warn("txzchk", "%s: found file with '..' in the path: %s", tarball_path, file->filename);
-    }
-    if (*(file->filename) == '/') {
-	++tarball.total_feathers;
-	warn("txzchk", "%s: found absolute path %s", tarball_path, file->filename);
-    }
-
-    /*
-     * Check the path to see if there are any subdirectories. The way this is
-     * done is counting the number of '/' but done carefully: for example the
-     * path test-1//prog.c would not count as two directories but just one.
-     *
-     * Another example: ..// would be counted as one directory but it still has
-     * ../ so that would have been detected above.
-     *
-     * It does this by saving the previous character: if it was also a '/' then
-     * it's not counted as another directory: the first one will be counted
-     * however since there wasn't one before it.
-     *
-     * We don't count the first character of the path because a path like:
-     * /test-3/ would be counted as two directories but it's actually only one.
-     * Well it kind of is two but / is special and it would still trigger an
-     * absolute path warning - at least from a text file (tar strips it off) -
-     * because it starts with a '/'.
-     *
-     * Note that the path /test-3 would trigger a warning that it's not in the
-     * correct directory because it's an absolute directory. However since tar
-     * strips the initial '/'s this would probably not get flagged.
-     *
-     * Note also that if the tar output does not have a trailing '/' in a
-     * submission directory itself it would not count as another directory. However
-     * since we also check for more than one 'd' line in the output it would
-     * trigger more than one directory in the tarball.
-     *
-     * We keep track of two previous characters. The reason is that
-     * 'test-3/././file' should count as only one directory but previously
-     * (first version of this) it detected more than one directory because the
-     * '.' was not considered. Notice that the path 'test-3/.././file' will
-     * trigger both '../' in the path as well as more than one directory.
-     */
-    first = file->filename[0];
-    prev = file->filename[1];
-    for (i = 1; file->filename[i]; ++i) {
-	if (file->filename[i] == '/' && prev != '/' && first != '.') {
-	    ++dir_count;
-	}
-
-	first = prev;
-	prev = file->filename[i];
-    }
-
-    if (dir_count > 1) {
-	++tarball.total_feathers;
-	warn("txzchk", "%s: found more than one directory in path %s", tarball_path, file->filename);
-    }
-
-    /*
-     * Now we have to run some tests on the directory name which we obtained
-     * from fnamchk earlier on - but only if fnamchk did not return an
-     * error! If it did we'll report other feathers/issues but we won't check
-     * directory names (at least the directory name expected in the
-     * tarball).
-     */
     if (dir_name != NULL && *dir_name != '\0')
     {
 	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
-	    warn("txzchk", "%s: found incorrect directory in filename %s", tarball_path, file->filename);
+	    warn("txzchk", "%s: found incorrect top level directory in filename %s", tarball_path, file->filename);
 	    ++tarball.total_feathers;
 	} else {
-	    /* This file is in the right directory */
+	    /* This file has the right top level directory */
 	    tarball.correct_directory++;
 	}
     }
@@ -1420,19 +1329,9 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     }
 
     /*
-     * look for more than one directory
-     */
-    if (*linep == 'd') {
-	++(*dir_count);
-	if (*dir_count > 1) {
-	    warn("txzchk", "%s: found more than one directory: %s", tarball_path, linep);
-	    ++tarball.total_feathers;
-	}
-	++tarball.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
-    /*
      * look for non-directory non-regular non-hard-linked items
      */
-    } else if (*linep != '-') {
+    if (*linep != '-' && *linep != 'd') {
 	warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s",
 	    tarball_path, linep);
 	++tarball.total_feathers;
@@ -1758,7 +1657,7 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * check files list and report any additional feathers stuck in the tarball
      */
-    check_all_txz_files(dir_name);
+    check_all_txz_files();
 
     /* free the files list */
     free_txz_files_list();
@@ -1766,11 +1665,11 @@ check_tarball(char const *tar, char const *fnamchk)
     /* free txz_lines list */
     free_txz_lines();
 
+    /* free the allocated memory */
     if (dir_name != NULL) {
 	free(dir_name);
 	dir_name = NULL;
     }
-    /* free the allocated memory */
     if (linep != NULL) {
 	free(linep);
 	linep = NULL;
@@ -2023,7 +1922,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
     ++tarball.total_files;
 
     for (file = txz_files; file != NULL; file = file->next) {
-	if (!strcasecmp(file->basename, txzfile->basename)) {
+	if (!strcasecmp(file->filename, txzfile->filename)) {
 	    dbg(DBG_MED, "incrementing count of filename %s", txzfile->basename);
 	    file->count++;
 	    return;

@@ -1,0 +1,5 @@
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: file "test-1/extra1/extra2/extra3/extra4": depth > max depth
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: file "test-1/extra1/extra2//..": path component invalid
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found non .auth.json and .info.json dot file ..
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found a total of 1 invalidly named dot file
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found 3 feathers stuck in the tarball

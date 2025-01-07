@@ -3013,10 +3013,10 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	    err(120, __func__, "extra[%i] does not exist: %s", i, args[i]);
 	    not_reached();
 	}
-	if (!is_file(args[i])) {
+	if (!is_file(args[i]) && !is_dir(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The path, while it exists, is not a regular file.",
+		   "The path, while it exists, is not a regular file or directory.",
 		   "",
 		   NULL);
 	    err(121, __func__, "extra[%i] is not a regular file: %s", i, args[i]);
@@ -3055,7 +3055,7 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	/*
 	 * basename must use only POSIX portable filename and + chars
 	 */
-	if (posix_plus_safe(base, false, false, true) == false) {
+	if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
 	    fpara(stderr,
 		  "",
 		  "The basename of an extra file must match the following regular expression:",
@@ -3117,8 +3117,8 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	/*
 	 * copy remarks_md under submission_dir
 	 */
-	dbg(DBG_HIGH, "about to perform: %s -- %s %s", cp, args[i], dest);
-	exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, args[i], dest);
+	dbg(DBG_HIGH, "about to perform: %s -r -- %s %s", cp, args[i], dest);
+	exit_code = shell_cmd(__func__, false, true, "% -r -- % %", cp, args[i], dest);
 	if (exit_code != 0) {
 	    err(131, __func__, "%s -- %s %s failed with exit code: %d",
 			       cp, args[i], dest, WEXITSTATUS(exit_code));

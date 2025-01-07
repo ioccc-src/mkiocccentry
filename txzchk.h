@@ -180,7 +180,7 @@ static void show_tarball_info(char const *tarball_path);
 static void check_file_size(char const *tarball_path, off_t size, struct txz_file *file);
 static void count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t length);
 static void check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *file);
-static void check_all_txz_files(char const *dir_name);
+static void check_all_txz_files(void);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *tarball_path);
 static bool has_special_bits(char const *str);
 static void add_txz_line(char const *str, uintmax_t line_num);

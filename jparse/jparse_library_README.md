@@ -1,3 +1,5 @@
+_Last updated: 07 January 2024_
+
 # Information on the jparse C library
 
 In this document we describe the `jparse` C library so you can get an idea of
@@ -60,21 +62,40 @@ tree.
 In order to use the library, you will need to `#include` the necessary header
 files and then link in the libraries (jparse and the dependency libraries).
 
+<div id="jparse-api-overview"></div>
 
-Before we give you information about header files and linking in the libraries,
-we will give you an example (or at least refer you to a simple example). This
-way, you can hopefully follow it a bit better.
+## jparse API overview
+
+To get an overview of the API, try from the repo directory:
+
+```sh
+man ./man/man3/jparse.3
+```
+
+or if installed:
+
+```sh
+man 3 jparse
+```
+
+which gives more information about some of the most important functions, namely
+those that parse the JSON itself.
 
 
 <div id="jparse-library-example"></div>
 
 # jparse library example
 
+Before we give you information about header files and linking in the libraries,
+we will give you an example (or at least refer you to a simple example). This
+way, you can hopefully follow it a bit better.
+
 For a relatively simple example program that uses the library, take a look at
 [jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c). As
-we already gave details on how to use it, we will not do that here. It is,
-however, a nice example program to give you a basic idea of how to use the
-library, especially as it is commented nicely.
+we already gave details on how to use it in the
+[jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md),
+we will not do that here. It is, however, a nice example program to give you a
+basic idea of how to use the library, especially as it is commented well.
 
 As you will see, in the case of this tool, we include
 [jparse_main.h](https://github.com/xexyl/jparse/blob/master/jparse_main.h),
@@ -85,7 +106,6 @@ which is required (in actuality, `jparse.h` includes it, but it does not hurt to
 include it anyway due to inclusion guards).
 
 Below we give finer details on using the library.
-
 
 <div id="jparse-header-files"></div>
 
@@ -842,20 +862,4 @@ JSON item type.
 
 
 
-<div id="jparse-api-overview"></div>
 
-# jparse API overview
-
-To get an overview of the API, try from the repo directory:
-
-```sh
-man ./man/man3/jparse.3
-```
-
-or if installed:
-
-```sh
-man 3 jparse
-```
-
-which gives more information about the most important functions.

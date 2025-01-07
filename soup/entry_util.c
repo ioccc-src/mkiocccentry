@@ -2816,24 +2816,12 @@ test_extra_file(char const *str)
      * validate str
      */
 
-    /*
-     * test the filename length is > 0 && <= MAX_FILENAME_LEN
-     */
-    if (!test_filename_len(str)) {
-        json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: filename length check on extra_file failed");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: filename length check on extra_file failed: <%s>", str);
-
-	return false;
-    }
-
     /* validate that the filename is POSIX portable safe plus + chars */
-    if (posix_plus_safe(str, false, false, true) == false) {
+    if (sane_relative_path(str, MAX_FILENAME_LEN, MAX_PATH_LEN, MAX_PATH_DEPTH) != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: posix_plus_safe check on extra_file failed");
+		 "invalid: sane_relative_path check on extra_file failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: posix_plus_safe check on extra_file failed: <%s>", str);
+		 "invalid: sane_relative_path check on extra_file failed: <%s>", str);
 	return false;
     }
 

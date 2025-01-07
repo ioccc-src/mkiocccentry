@@ -1,15 +1,12 @@
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file "test-2/..test": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found non .auth.json and .info.json dot file ..test
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: ..test
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found file with '..' in the path: test-2/..test
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file "test-2/..": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found non .auth.json and .info.json dot file ..
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: ..
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found file with '..' in the path: test-2/..
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file "test-2/.": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found non .auth.json and .info.json dot file .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found file called '.' in path test-2/.
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found absolute path /test-2/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found incorrect directory in filename /test-2/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found directory change in filename /test-2/Makefile
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file "/test-2/Makefile": path not a relative path
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found incorrect top level directory in filename /test-2/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found a total of 3 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found 13 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found 10 feathers stuck in the tarball

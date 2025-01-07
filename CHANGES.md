@@ -1,6 +1,73 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.4 2025-01-07
+
+Submission tarballs can now have subdirectories! This is a major release that
+will require updates to the guidelines, the rules and FAQ in the website (and
+this will be done soon). To get this to work a new jparse library release was
+also made, synced from the [jparse repo](https://github.com/xexyl/jparse/).
+There are other changes as well but the relevant ones are:
+
+New utility functions:
+
+```c
+extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
+        uintmax_t max_depth);
+extern char const *path_sanity_name(enum path_sanity sanity);
+extern char const *path_sanity_error(enum path_sanity sanity);
+```
+
+which determine if a path is both relative and POSIX plus + safe, based on the
+maximum depth, maximum path length and the maximum length of each component. An
+enum was added:
+
+```c
+/*
+ * for the path sanity functions
+ */
+enum path_sanity {
+    PATH_ERR_UNKNOWN = -1,              /* unknown error code (default in switch) */
+    PATH_OK = 0,                        /* path (str) is a sane relative path */
+    PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
+    PATH_ERR_PATH_EMPTY,                /* path string (str) is 0 length (empty) */
+    PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
+    PATH_ERR_MAX_PATH_LEN_0,            /* max_path_len <= 0 */
+    PATH_ERR_MAX_DEPTH_0,               /* max_depth is <= 0 */
+    PATH_ERR_NOT_RELATIVE,              /* path (str) not relative (i.e. it starts with a '/') */
+    PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
+    PATH_ERR_MAX_NAME_LEN_0,            /* max filename length <= 0 */
+    PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
+    PATH_ERR_NOT_POSIX_SAFE             /* invalid/not sane path component */
+};
+```
+
+The new function `sane_relative_path()` returns one of those values depending on
+the condition (except that it won't return `PATH_ERR_UNKNOWN` as that is for the
+other two functions in the case one passes an invalid value). The function
+`path_sanity_name()` returns a read-only string of the enum value that matches
+the name (i.e. `"PATH_OK"` for `PATH_OK`). `path_sanity_error()` returns a
+simple message based on the value passed in although there is some room for
+improvement.
+
+The utility test code has many new cases that tests every condition of
+`sane_relative_path()`.
+
+Tools in this repo that were changed for this enhancement are `txzchk`,
+`mkiocccentry` and `chkentry`. To include a subdirectory in a submission tarball
+you may just specify the path and `mkiocccentry(1)` will do the right thing by
+using `-r` to `cp`.
+
+Maximum depth of 4 directories. Reduced size of max filename length (to 38, the
+length of UUIDs) and max path length of a file is 99.
+
+New test tarball files. Rebuilt error files.
+
+Changed `SOUP_VERSION` to `"1.1.4 2024-12-31"`.
+Changed `MKIOCCCENTRY_VERSION` to `"1.1.3 2025-01-07"`.
+Changed `TXZCHK_VERSION` to `"1.1.0 2025-01-07"`.
+Changed `CHKENTRY_VERSION` to `"1.0.4 2025-01-07"`.
+
 ## Release 2.3.3 2025-01-04
 
 Added `soup/not_a_comment.sh` to test if file that exists

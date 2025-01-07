@@ -55,7 +55,6 @@
 #define MANDATORY_FILE_COUNT (5)		/* number of required files in an entry */
 /* NOTE: MAX_FILE_COUNT must be > MANDATORY_FILE_COUNT */
 #define MAX_FILE_COUNT (42)		/* maximum number of files in an entry (MANDATORY_FILE_COUNT + extra files) */
-#define MAX_FILENAME_LEN (99)      /* filenames may not be > 99 in length */
 /* NOTE: MAX_SUBMIT_SLOT must be < 10 to the MAX_SUBMIT_SLOT_CHARS power */
 /*
  * IMPORTANT:
@@ -86,6 +85,14 @@
 #define TIMESTAMP_EPOCH "Thu Jan 01 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 #define MAX_CLOCK_ERROR ((42*60)-1)	/* maximum seconds allowed for a clock to be in error */
+
+/*
+ * submission tarballs may have subdirectories as long as they fit certain
+ * constraints
+ */
+#define MAX_FILENAME_LEN (38)    /* max path component length */
+#define MAX_PATH_DEPTH (4)       /* max depth of a subdirectory tree */
+#define MAX_PATH_LEN (99)        /* max length of a path */
 
 #define MIN_FORMED_TIMESTAMP_USEC (1)       /* minimum formed_timestamp_usec value */
 #define MAX_FORMED_TIMESTAMP_USEC (999999)  /* maximum formed_timestamp_usec value */

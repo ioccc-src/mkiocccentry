@@ -637,9 +637,9 @@ else
     if ! "$NOT_A_COMMENT" $(find . -name 'Makefile.local' -print 2>/dev/null) >/dev/null 2>&1; then
 	write_echo ""
 	write_echo "Notice: Found non-comments in some Makefile.local file(s)."
-	write_echo "Notice: Be sure that these Makefile.local file(s) are not skew the results above."
+	write_echo "Notice: Be sure that these Makefile.local file(s) will not skew the results above."
 	write_logfile
-	write_logfile "=-=-= output from soup/not_a_comment.sh -v 1 follows:"
+	write_logfile "=-=-= output from test_jparse/not_a_comment.sh -v 1 follows:"
 	write_logfile
 	# SC2046 (warning): Quote this to prevent word splitting.
 	#
@@ -650,7 +650,7 @@ else
 	FOUND=$("$NOT_A_COMMENT" -v 1 $(find . -name 'Makefile.local' -print 2>/dev/null) 2>&1)
 	write_logfile "$FOUND"
 	write_logfile
-	write_logfile "=-=-= End of output from soup/not_a_comment.sh -v 1"
+	write_logfile "=-=-= End of output from test_jparse/not_a_comment.sh -v 1"
     fi
 fi
 

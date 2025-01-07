@@ -75,6 +75,7 @@ static char const * const usage =
 "\n"
 "\t-h\t\tprint help message and exit\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
+"\t-J level\tset JSON verbosity level (def level: 0)\n"
 "\t-V\t\tprint version string and exit\n"
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
 "\n"
@@ -129,7 +130,7 @@ base_name(char const *path)
      */
     len = strlen(copy);
     if (len == 0) {
-	dbg(DBG_VVHIGH, "#0: basename of path:%s is an empty string", path);
+	dbg(DBG_VVHIGH, "#0: basename of path: \"%s\" is an empty string", path);
 	return copy;
     }
 
@@ -156,7 +157,7 @@ base_name(char const *path)
 	/*
 	 * path is just /, so return /
 	 */
-	dbg(DBG_VVHIGH, "#1: basename(%s) == %s", path, copy);
+	dbg(DBG_VVHIGH, "#1: basename(\"%s\") == \"/\"", path);
 	return copy;
     }
 
@@ -168,7 +169,7 @@ base_name(char const *path)
 	/*
 	 * path is just a filename, return that filename
 	 */
-	dbg(DBG_VVHIGH, "#2: basename(%s) == %s", path, copy);
+	dbg(DBG_VVHIGH, "#2: basename(\"%s\") == \"%s\"", path, copy);
 	return copy;
     }
 
@@ -178,7 +179,7 @@ base_name(char const *path)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(p + 1);
     if (ret == NULL) {
-	errp(102, __func__, "strdup(%s) failed", p + 1);
+	errp(102, __func__, "strdup(\"%s\") failed", p + 1);
 	not_reached();
     }
 
@@ -193,7 +194,7 @@ base_name(char const *path)
     /*
      * return beyond the last /
      */
-    dbg(DBG_VVHIGH, "#3: basename(%s) == %s", path, ret);
+    dbg(DBG_VVHIGH, "#3: basename(\"%s\") == \"%s\"", path, ret);
     return ret;
 }
 
@@ -3119,7 +3120,7 @@ is_e_notation_str(char const *str, size_t *retlen)
 
 
 /*
- * posix_plus_safe - if string is a valid POSIX portable safe plus + chars
+ * posix_plus_safe - if string is a valid POSIX portable safe and + chars
  *
  * If slash_ok is true:
  *
@@ -3177,9 +3178,7 @@ is_e_notation_str(char const *str, size_t *retlen)
  * returns:
  *	true ==> str is a valid POSIX portable safe + filename, AND
  *		 the case of str matches lower_only and slash_ok conditions
- *	false ==> an unsafe issue was found, or
- *		  str is an empty string, or
- *		  str is NULL
+ *	false ==> an unsafe issue was found, or str is empty, or str is NULL
  */
 bool
 posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
@@ -3284,6 +3283,493 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     return true;
 }
 
+/*
+ * sane_relative_path - test if each component of a path is posix plus safe
+ *
+ * Using posix_plus_safe() with lower_only == false, slash_ok == false and first
+ * == true, for each component of the relative path, we determine if each
+ * component of a relative path is sane.
+ *
+ * By relative we mean that the path cannot start with a '/'.
+ *
+ * By sane we mean that no path component is an unsafe name according to
+ * posix_plus_safe(str, false, false, true).
+ *
+ * given:
+ *	str		    - string to test
+ *      max_path_len        - max path length (length of str)
+ *	max_filename_len    - max length of each component of path
+ *      max_depth           - max depth of subdirectory tree
+ *
+ * returns:
+ *      if a relative sane path: PATH_OK, otherwise another one of the enum
+ *      path_sanity depending on what went wrong (see below for a table).
+ *
+ * NOTE: if str is NULL or empty we return PATH_ERR_PATH_IS_NULL rather than
+ * make it an actual error that terminates the program.
+ *
+ * NOTE: depth is defined in the same way as the find(1) tool. For instance,
+ * given the below directory tree:
+ *
+ *      foo/bar/baz/zab/rab/oof
+ *
+ *
+ * the directory names and depths are as follows:
+ *
+ *      depth                   directory name
+ *      0                       .
+ *      1                       ./foo
+ *      2                       ./foo/bar
+ *      3                       ./foo/bar/baz
+ *      4                       ./foo/bar/baz/zab
+ *      5                       ./foo/bar/baz/zab/rab
+ *      6                       ./foo/bar/baz/zab/rab/oof
+ *
+ * The following table shows the error conditions and the respective enum
+ * path_sanity value:
+ *
+ *      condition                       path_sanity enum value
+ *
+ *      relative, sane                  PATH_OK
+ *      str == NULL                     PATH_ERR_PATH_IS_NULL
+ *      empty path (str)                PATH_ERR_PATH_EMPTY
+ *      path starts with '/'            PATH_ERR_NOT_RELATIVE
+ *      max_depth <= 0                  PATH_ERR_DEPTH_0
+ *      max_path_len <= 0               PATH_ERR_PATH_LEN_0
+ *      path (str) too long             PATH_ERR_PATH_TOO_LONG
+ *      path component name too long    PATH_ERR_NAME_TOO_LONG
+ *      max_filename_len <= 0           PATH_ERR_MAX_NAME_LEN_0
+ *      depth > max_depth               PATH_ERR_PATH_TOO_DEEP
+ *      path component not sane         PATH_ERR_NOT_POSIX_SAFE
+ *
+ *
+ * NOTE: we MUST use strdup() on the string because we need to use strtok_r() to
+ * extract the '/'s in the string. This strdup()d char * will be freed prior to
+ * calling, unless an error occurs.
+ */
+enum path_sanity
+sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
+        uintmax_t max_depth)
+{
+    size_t len;		    /* length of str */
+    size_t n;
+    uintmax_t depth = 1;    /* to check max depth */
+    char *p = NULL;         /* first '/' */
+    char *saveptr = NULL;   /* for strtok_r() */
+    char *dup = NULL;       /* we need to strdup() the string */
+    bool sane = true;       /* assume path is sane */
+
+    /*
+     * firewall
+     */
+    /*
+     * the path string (str) must not be NULL
+     */
+    if (str == NULL) {
+	dbg(DBG_VVHIGH, "%s: str is NULL", __func__);
+
+        return PATH_ERR_PATH_IS_NULL;
+    }
+
+    /*
+     * if the max path length <= 0 we can't do anything else
+     */
+    if (max_path_len <= (uintmax_t)0) {
+        dbg(DBG_VVHIGH, "%s: max_path_len %ju <= 0", __func__, max_path_len);
+
+        return PATH_ERR_MAX_PATH_LEN_0;
+    }
+
+    /*
+     * if the max filename length <= 0 we can't do anything else
+     */
+    if (max_filename_len <= (uintmax_t)0) {
+        dbg(DBG_VVHIGH, "%s: max_filename_len %ju <= 0", __func__, max_filename_len);
+
+        return PATH_ERR_MAX_NAME_LEN_0;
+    }
+
+
+    /*
+     * now that we know the max path len > 0 we can determine if the path string
+     * (str) is empty or too long
+     */
+    len = strlen(str);
+    /*
+     * case: empty path
+     */
+    if (len <= 0) {
+	dbg(DBG_VVHIGH, "%s: str is an empty string", __func__);
+
+        return PATH_ERR_PATH_EMPTY;
+    /*
+     * case: length of path too long
+     */
+    } else if (len > max_path_len) {
+	dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju > max %ju", __func__, str, len, max_path_len);
+        dbg(DBG_VVVHIGH, "\"%s\" is not a relative, sane path", str);
+
+        return PATH_ERR_PATH_TOO_LONG;
+    }
+
+    /*
+     * if the max depth is <= 0 there's nothing we can do
+     */
+    if (max_depth <= (uintmax_t)0) {
+        dbg(DBG_VVHIGH, "%s: max depth %ju <= 0", __func__, (uintmax_t)max_depth);
+        return PATH_ERR_MAX_DEPTH_0;
+    }
+
+    /*
+     * debug output max values
+     */
+    dbg(DBG_VVVHIGH, "%s: max_filename_len: %ju", __func__, (uintmax_t)max_filename_len);
+    dbg(DBG_VVVHIGH, "%s: max_depth: %ju", __func__, (uintmax_t)max_depth);
+    dbg(DBG_VVVHIGH, "%s: max_path_len: %ju", __func__, (uintmax_t)max_path_len);
+
+    /*
+     * determine if the path is relative or not
+     *
+     * NOTE: a relative path is one that does not start with a '/'.
+     */
+    if (*str == '/') {
+        dbg(DBG_VVVVVHIGH, "%s: \"%s\" first char is '/'", __func__, str);
+        dbg(DBG_VVVHIGH, "\"%s\" is not a relative path", str);
+
+        return PATH_ERR_NOT_RELATIVE;
+    }
+
+    /*
+     * If we get here we KNOW it's a relative path so we must extract each
+     * component and use posix_safe_plus(str, false, false, false) as well as
+     * run checks on the depth (as we extract the components) and the length of
+     * each component itself, with the max_depth and max_filename_len
+     * parameters.
+     */
+
+    /*
+     * Before we can do anything else, we have to duplicate the string. If
+     * this fails, it is an error because we can't do anything more.
+     *
+     * NOTE: as this will terminate the program we do not need an error code in
+     * the path_sanity enum.
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    dup = strdup(str);
+    if (dup == NULL) {
+        errp(152, __func__, "duplicating \"%s\" failed", str);
+        not_reached();
+    }
+
+    /*
+     * show the string we're checking, if debug level high enough
+     */
+    dbg(DBG_VVVHIGH, "%s: parsing string: \"%s\"", __func__, dup);
+
+    /*
+     * ensure depth is set to 1 first
+     */
+    depth = 1;
+
+    /*
+     * We already know it's a relative path so we can begin parsing the string.
+     */
+    p = strtok_r(dup, "/", &saveptr);
+    if (p == NULL) {
+        /*
+         * In the case of no '/' found at all, the initial string is tested by itself.
+         *
+         * NOTE: we do not need to check the depth here because we KNOW the
+         * max_depth is >= 1!
+         */
+        dbg(DBG_VVVHIGH, "%s: \"%s\" has no '/'", __func__, dup);
+
+        /*
+         * obtain length of the entire path as we have no '/'.
+         */
+        n = strlen(dup);
+        dbg(DBG_VVVHIGH, "%s: \"%s\" length %ju", __func__, dup, (uintmax_t)n);
+
+        /*
+         * Here we have to verify that the path is not longer than the max filename
+         * length, whereas if there is a '/' we check this against each
+         * component. This check mean that even if the total length of the
+         * path is not too long, if passed an invalid max filename length, the
+         * check here could end up declaring the path is not a sane relative
+         * path.
+         */
+        if (n > max_filename_len) {
+            dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju > max %ju", __func__, dup, (uintmax_t)n, (uintmax_t)max_filename_len);
+            return PATH_ERR_NAME_TOO_LONG;
+        } else {
+            /*
+             * we know that the filename length (in this case the entire path)
+             * is not too long but we still have to check for POSIX plus safe
+             * chars on the entire string (instead of a component).
+             */
+            dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju <= max %ju", __func__, dup, (uintmax_t)n, (uintmax_t)max_filename_len);
+            dbg(DBG_VVVHIGH, "%s: about to call: posix_plus_safe(\"%s\", false, false, true)", __func__, dup);
+            sane = posix_plus_safe(dup, false, false, true);
+            if (!sane) {
+                dbg(DBG_VVVHIGH, "%s: \"%s\" is not POSIX plus + safe chars", __func__, dup);
+                return PATH_ERR_NOT_POSIX_SAFE;
+            } else {
+                dbg(DBG_VVVHIGH, "%s: \"%s\" is POSIX plus + safe chars", __func__, dup);
+            }
+        }
+    } else {
+        /*
+         * here we actually have at least one '/' so the checks above are done
+         * for each component, rather than the entire path in str.
+         */
+        dbg(DBG_VVVVHIGH, "%s: testing first component \"%s\"", __func__, p);
+
+        /*
+         * like for the check when there is no '/' we need to check the filename
+         * length, except that the filename is the component (which could be a
+         * subdirectory name).
+         */
+        n = strlen(p);
+        dbg(DBG_VVVHIGH, "%s: first component \"%s\" length %ju", __func__, p, (uintmax_t)n);
+        if (n > max_filename_len) {
+            /*
+             * if the first component is too long we won't bother with the rest
+             * of them
+             */
+            dbg(DBG_VVVVHIGH, "%s: first component \"%s\" length %ju > max %ju", __func__, p, (uintmax_t)n,
+                    (uintmax_t)max_filename_len);
+
+            return PATH_ERR_NAME_TOO_LONG;
+        } else {
+            /*
+             * we first report, if debug level is high enough, that the first
+             * component length is not too long according to max_filename_len.
+             */
+            dbg(DBG_VVVVHIGH, "%s: first component \"%s\" length %ju <= max %ju", __func__, p, n, max_filename_len);
+
+            /*
+             * also report, if debug level high enough, that we're about to test
+             * the POSIX plus + safe chars on the first component.
+             */
+            dbg(DBG_VVVHIGH, "%s: about to call: posix_plus_safe(\"%s\", false, false, true)", __func__, p);
+
+            /*
+             * before we check for further components we have to verify that the
+             * first component (before the first '/') is POSIX plus + safe
+             * chars.
+             */
+            sane = posix_plus_safe(p, false, false, true);
+            /*
+             * if the first component is sane, we have to check any
+             * additional components for sanity, doing the same steps as
+             * above.
+             */
+            if (sane) {
+                /*
+                 * here we extract the remaining components of the path (after
+                 * the first '/'), by looking for the next path separator
+                 */
+                for (p = strtok_r(NULL, "/", &saveptr), ++depth; p != NULL && sane; p = strtok_r(NULL, "/", &saveptr), ++depth) {
+                    /*
+                     * show additional debug information here as here we have to
+                     * check depths too
+                     */
+                    dbg(DBG_VVVHIGH, "%s: testing component \"%s\" (depth %ju)", __func__, p, (uintmax_t)depth);
+
+                    /*
+                     * If the max depth is > 1 we do need to check the current
+                     * depth. The reason we check for max depth > 1 first is
+                     * because if we're here the depth will always be at least
+                     * 1. This was arbitrarily chosen, however, and it is
+                     * possible that it could be undone, if a reason occurs that
+                     * necessitates it.
+                     */
+                    if (depth > max_depth) {
+                        /*
+                         * if we have gone beyond the max depth, we won't bother
+                         * to continue so just report it (if verbosity level
+                         * high enough), flag the path as not sane and break out
+                         * of the loop.
+                         */
+                        dbg(DBG_VVVHIGH, "%s: depth %ju > max depth %ju", __func__, (uintmax_t)depth, (uintmax_t)max_depth);
+
+                        return PATH_ERR_PATH_TOO_DEEP;
+                    } else {
+                        dbg(DBG_VVVVHIGH, "%s: depth %ju <= max depth %ju", __func__, (uintmax_t)depth, (uintmax_t)max_depth);
+                    }
+
+                    /*
+                     * whereas earlier in this function we checked the full
+                     * string (as there is no '/') here we check just this
+                     * component, just like the first component before this loop
+                     */
+                    n = strlen(p);
+                    if (n > max_filename_len) {
+                        dbg(DBG_VVVVHIGH, "%s: component \"%s\" length %ju > max %ju", __func__, p, (uintmax_t)n,
+                                (uintmax_t)max_filename_len);
+
+                        return PATH_ERR_NAME_TOO_LONG;
+                    } else {
+                        dbg(DBG_VVVVHIGH, "%s: component \"%s\" length %ju <= max %ju", __func__, p, (uintmax_t)n,
+                                (uintmax_t)max_filename_len);
+                    }
+
+                    /*
+                     * as long as the depth is not > the max depth and the
+                     * current component length is not > the max length, we can
+                     * do the POSIX plus + safe chars checks
+                     */
+                    dbg(DBG_VVVHIGH, "%s: about to call: posix_plus_safe(\"%s\", false, false, true)", __func__, p);
+                    sane = posix_plus_safe(p, false, false, true);
+                    if (sane) {
+                        dbg(DBG_VVVHIGH, "%s: component \"%s\" is POSIX plus + safe chars", __func__, p);
+                    } else {
+                        dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);
+
+                        return PATH_ERR_NOT_POSIX_SAFE;
+                    }
+                }
+            } else {
+                /*
+                 * when we get here, the first component is not safe so we don't
+                 * do anything else but report, if verbosity level high enough,
+                 * that the component is not POSIX plus safe.
+                 */
+                dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);
+
+                return PATH_ERR_NOT_POSIX_SAFE;
+            }
+        }
+    }
+
+    /*
+     * free dup, if not NULL (and it never should be)
+     */
+    if (dup != NULL) {
+        free(dup);
+        dup = NULL;
+    }
+
+    /*
+     * return sane value
+     */
+    dbg(DBG_VVVHIGH, "%s is a relative, sane path", str);
+    return PATH_OK;
+}
+
+
+
+/*
+ * path_sanity_error
+ *
+ * Returns read-only string describing path sanity enum value.
+ *
+ * given:
+ *      sanity  - an enum path_sanity
+ */
+char const *
+path_sanity_error(enum path_sanity sanity)
+{
+    char const *str = NULL;
+
+    switch (sanity) {
+        case PATH_OK:
+            str ="path is a sane relative path";
+            break;
+        case PATH_ERR_PATH_IS_NULL:
+            str = "path string is NULL";
+            break;
+        case PATH_ERR_PATH_EMPTY:
+            str = "path string length <= 0";
+            break;
+        case PATH_ERR_PATH_TOO_LONG:
+            str = "path string length > max path length";
+            break;
+        case PATH_ERR_MAX_PATH_LEN_0:
+            str = "max path length <= 0";
+            break;
+        case PATH_ERR_MAX_DEPTH_0:
+            str = "max path depth <= 0";
+            break;
+        case PATH_ERR_NOT_RELATIVE:
+            str = "path not a relative path";
+            break;
+        case PATH_ERR_NAME_TOO_LONG:
+            str = "a path component > max filename length";
+            break;
+        case PATH_ERR_MAX_NAME_LEN_0:
+            str = "max filename length is <= 0";
+            break;
+        case PATH_ERR_PATH_TOO_DEEP:
+            str = "depth > max depth";
+            break;
+        case PATH_ERR_NOT_POSIX_SAFE:
+            str = "path component invalid";
+            break;
+        default:
+            str = "invalid path_sanity value";
+            break;
+    }
+
+    return str;
+}
+
+/*
+ * path_sanity_name
+ *
+ * Returns read-only string representation of path sanity enum value.
+ *
+ * given:
+ *      sanity  - an enum path_sanity
+ */
+char const *
+path_sanity_name(enum path_sanity sanity)
+{
+    char const *str = NULL;
+
+    switch (sanity) {
+        case PATH_OK:
+            str ="PATH_OK";
+            break;
+        case PATH_ERR_PATH_IS_NULL:
+            str = "PATH_ERR_PATH_IS_NULL";
+            break;
+        case PATH_ERR_PATH_EMPTY:
+            str = "PATH_ERR_PATH_EMPTY";
+            break;
+        case PATH_ERR_PATH_TOO_LONG:
+            str = "PATH_ERR_PATH_TOO_LONG";
+            break;
+        case PATH_ERR_MAX_PATH_LEN_0:
+            str = "PATH_ERR_MAX_PATH_LEN_0";
+            break;
+        case PATH_ERR_MAX_DEPTH_0:
+            str = "PATH_ERR_MAX_DEPTH_0";
+            break;
+        case PATH_ERR_NOT_RELATIVE:
+            str = "PATH_ERR_NOT_RELATIVE";
+            break;
+        case PATH_ERR_NAME_TOO_LONG:
+            str = "PATH_ERR_NAME_TOO_LONG";
+            break;
+        case PATH_ERR_MAX_NAME_LEN_0:
+            str = "PATH_ERR_MAX_NAME_LEN_0";
+            break;
+        case PATH_ERR_PATH_TOO_DEEP:
+            str = "PATH_ERR_PATH_TOO_DEEP";
+            break;
+        case PATH_ERR_NOT_POSIX_SAFE:
+            str = "PATH_ERR_NOT_POSIX_SAFE";
+            break;
+        default:
+        case PATH_ERR_UNKNOWN:
+            str = "PATH_ERR_UNKNOWN";
+            break;
+    }
+
+    return str;
+}
+
 
 /*
  * posix_safe_chk - test a string for various POSIX related tests
@@ -3312,7 +3798,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(152, __func__, "called with NULL arg(s)");
+	err(153, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -4401,7 +4887,7 @@ calloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(153, __func__, "filename is NULL");
+	err(154, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -4418,7 +4904,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(154, __func__, "strdup of filename failed: %s", filename);
+	    errp(155, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -4436,7 +4922,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+2, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(155, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(156, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -4456,7 +4942,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(156, __func__, "snprintf returned: %zu < 0", len);
+	    errp(157, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -4465,7 +4951,7 @@ calloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(157, __func__, "function attempted to return NULL");
+	errp(158, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -4504,7 +4990,7 @@ open_dir_file(char const *dir, char const *file)
      * firewall
      */
     if (file == NULL) {
-	err(158, __func__, "called with NULL file");
+	err(159, __func__, "called with NULL file");
 	not_reached();
     }
 
@@ -4514,7 +5000,7 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-        errp(159, __func__, "cannot open .");
+        errp(160, __func__, "cannot open .");
         not_reached();
     }
 
@@ -4527,15 +5013,15 @@ open_dir_file(char const *dir, char const *file)
 	 * check if we can search / work within the directory
 	 */
 	if (!exists(dir)) {
-	    err(160, __func__, "directory does not exist: %s", dir);
+	    err(161, __func__, "directory does not exist: %s", dir);
 	    not_reached();
 	}
 	if (!is_dir(dir)) {
-	    err(161, __func__, "is not a directory: %s", dir);
+	    err(162, __func__, "is not a directory: %s", dir);
 	    not_reached();
 	}
 	if (!is_exec(dir)) {
-	    err(162, __func__, "directory is not searchable: %s", dir);
+	    err(163, __func__, "directory is not searchable: %s", dir);
 	    not_reached();
 	}
 
@@ -4545,7 +5031,7 @@ open_dir_file(char const *dir, char const *file)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = chdir(dir);
 	if (ret < 0) {
-	    errp(163, __func__, "cannot cd %s", dir);
+	    errp(164, __func__, "cannot cd %s", dir);
 	    not_reached();
 	}
     }
@@ -4554,15 +5040,15 @@ open_dir_file(char const *dir, char const *file)
      * must be a readable file
      */
     if (!exists(file)) {
-	err(164, __func__, "file does not exist: %s", file);
+	err(165, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
-	err(165, __func__, "file is not a regular file: %s", file);
+	err(166, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
-	err(166, __func__, "file is not a readable file: %s", file);
+	err(167, __func__, "file is not a readable file: %s", file);
 	not_reached();
     }
 
@@ -4572,7 +5058,7 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;		/* pre-clear errno for errp() */
     ret_stream = fopen(file, "r");
     if (ret_stream == NULL) {
-	errp(167, __func__, "cannot open file: %s", file);
+	errp(168, __func__, "cannot open file: %s", file);
 	not_reached();
     }
 
@@ -4587,13 +5073,13 @@ open_dir_file(char const *dir, char const *file)
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = fchdir(cwd);
 	if (ret < 0) {
-	    errp(168, __func__, "cannot fchdir to the previous current directory");
+	    errp(169, __func__, "cannot fchdir to the previous current directory");
 	    not_reached();
 	}
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = close(cwd);
 	if (ret < 0) {
-	    errp(169, __func__, "close of previous current directory failed");
+	    errp(170, __func__, "close of previous current directory failed");
 	    not_reached();
 	}
     }
@@ -4625,7 +5111,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(170, __func__, "given NULL str");
+	err(171, __func__, "given NULL str");
 	not_reached();
     }
 
@@ -4702,7 +5188,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.0 2024-11-17" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.1 2025-01-07" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -4713,15 +5199,17 @@ main(int argc, char **argv)
     char *buf = NULL;
     char const *dirname = "foo";
     char const *filename = "bar";
+    char const *relpath = "foo";
     struct json *tree = NULL;           /* check that the jparse.json file is valid JSON */
     int ret;
     int i;
+    enum path_sanity sanity;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:Vqe:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:Vqe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - write help, to stderr and exit 0 */
 	    fprintf_usage(0, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
@@ -4733,6 +5221,15 @@ main(int argc, char **argv)
 	    verbosity_level = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		errp(1, __func__, "cannot parse -v arg: %s", optarg); /*ooo*/
+		not_reached();
+	    }
+	    break;
+	case 'J':	/* -J verbosity */
+	    /* parse JSON verbosity */
+	    errno = 0;			/* pre-clear errno for errp() */
+	    json_verbosity_level = (int)strtol(optarg, NULL, 0);
+	    if (errno != 0) {
+		errp(1, __func__, "cannot parse -J arg: %s", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -4772,6 +5269,7 @@ main(int argc, char **argv)
      * report on dbg state, if debugging
      */
     fdbg(stderr, DBG_MED, "verbosity_level: %d", verbosity_level);
+    fdbg(stderr, DBG_MED, "json_verbosity_level: %d", json_verbosity_level);
     fdbg(stderr, DBG_MED, "msg_output_allowed: %s", booltostr(msg_output_allowed));
     fdbg(stderr, DBG_MED, "dbg_output_allowed: %s", booltostr(dbg_output_allowed));
     fdbg(stderr, DBG_MED, "warn_output_allowed: %s", booltostr(warn_output_allowed));
@@ -4788,10 +5286,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(171, __func__, "calloc_path(%s, %s) returned NULL", dirname, filename);
+	errp(172, __func__, "calloc_path(%s, %s) returned NULL", dirname, filename);
 	not_reached();
     } else if (strcmp(buf, "foo/bar") != 0) {
-	err(172, __func__, "buf: %s != %s/%s", buf, dirname, filename);
+	err(173, __func__, "buf: %s != %s/%s", buf, dirname, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(%s, %s): returned %s", dirname, filename, buf);
@@ -4812,10 +5310,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(173, __func__, "calloc_path(NULL, %s) returned NULL", filename);
+	errp(174, __func__, "calloc_path(NULL, %s) returned NULL", filename);
 	not_reached();
     } else if (strcmp(buf, "bar") != 0) {
-	err(174, __func__, "buf: %s != %s", buf, filename);
+	err(175, __func__, "buf: %s != %s", buf, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(NULL, %s): returned %s", filename, buf);
@@ -4838,7 +5336,140 @@ main(int argc, char **argv)
     } else {
         dbg(DBG_LOW, "jparse.json is valid JSON");
         json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+        free(tree);
         tree = NULL;
     }
+
+    /*
+     * test the first relative path that we know is good
+     */
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_OK) {
+        err(176, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+                relpath, path_sanity_name(sanity)); /*coo*/
+        not_reached();
+    }
+
+    /*
+     * test another sane path but with components
+     */
+    relpath = "foo/bar";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_OK) {
+        err(177, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test empty path
+     */
+    relpath = "";
+    sanity = sane_relative_path(relpath, 99, 25, 2);
+    if (sanity != PATH_ERR_PATH_EMPTY) {
+        err(178, __func__, "sane_relative_path(\"%s\", 99, 25, 2): expected PATH_ERR_PATH_EMPTY, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test path too long (path length > max_path_len)
+     */
+    relpath = "foo/bar/baz";
+    sanity =sane_relative_path(relpath, 2, 99, 2);
+    if (sanity != PATH_ERR_PATH_TOO_LONG) {
+        err(179, __func__, "sane_relative_path(\"%s\", 2, 25, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test max path len <= 0
+     */
+    relpath = "foo/bar/baz";
+    sanity =sane_relative_path(relpath, 0, 25, 2);
+    if (sanity != PATH_ERR_MAX_PATH_LEN_0) {
+        err(180, __func__, "sane_relative_path(\"%s\", 0, 25, 2): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test max depth <= 0
+     */
+    relpath = "foo/bar/baz";
+    sanity = sane_relative_path(relpath, 99, 25, 0);
+    if (sanity != PATH_ERR_MAX_DEPTH_0) {
+        err(181, __func__, "sane_relative_path(\"%s\", 99, 25, 0, &sanity): expected PATH_ERR_MAX_DEPTH_0, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test path starting with '/' (not relative path)
+     */
+    relpath = "/foo";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_ERR_NOT_RELATIVE) {
+        err(182, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_RELATIVE, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test path with filename too long
+     */
+    relpath = "aequeosalinocalcalinoceraceoaluminosocupreovitriolic"; /* 52 letter word recognised by some */
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_ERR_NAME_TOO_LONG) {
+        err(183, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NAME_TOO_LONG, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test max name length <= 0
+     */
+    relpath = "foo";
+    sanity = sane_relative_path(relpath, 99, 0, 2);
+    if (sanity != PATH_ERR_MAX_NAME_LEN_0) {
+        err(184, __func__, "sane_relative_path(\"%s\", 99, 0, 2): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test a path that's too deep (depth)
+     */
+    relpath = "foo/bar";
+    sanity = sane_relative_path(relpath, 99, 25, 1);
+    if (sanity != PATH_ERR_PATH_TOO_DEEP) {
+        err(185, __func__, "sane_relative_path(\"%s\", 99, 25, 1): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test invalid path component
+     */
+    relpath = "foo/../";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
+        err(186, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s", __func__,
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test path with number in it
+     */
+    relpath = "foo1";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_OK) {
+        err(187, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_OK, got: %s", __func__,
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
 }
 #endif

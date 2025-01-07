@@ -1,4 +1,10 @@
+_Last updated: 26 December 2024_
+
 # Command line utilities that parse, read and process JSON in different ways
+
+<div id="introduction"></div>
+
+# Introduction
 
 We provide a number of utilities that work with JSON, or which perform actions
 according to the so-called JSON spec, which we describe below. These utilities
