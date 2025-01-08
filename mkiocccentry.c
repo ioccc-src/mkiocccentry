@@ -3058,12 +3058,13 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
 	    fpara(stderr,
 		  "",
-		  "The basename of an extra file must match the following regular expression:",
+		  "The basename of an extra file/directory must match the",
+                  "following regular expression:",
 		  "",
 		  "    ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
 		  "",
 		  NULL);
-	    err(125, __func__, "basename of %s does not match regexp: ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
+	    err(125, __func__, "basename of %s does not match regexp: ^([[:alnum:]_+-]+/)*([[:alnum:]_+-]+(\.[[:alnum:]_+-]+))?$",
 			       args[i]);
 	    not_reached();
 	}

@@ -1,5 +1,16 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.4 2025-01-08
+
+Add comment about the regexp that `sane_relative_path()` should enforce, namely:
+
+```regexp
+^([[:alnum:]_+-]+/)*([[:alnum:]_+-]+(\.[[:alnum:]_+-]+))?$
+```
+
+and update the util test code to test additional checks.
+
+
 ## Release 2.2.3 2025-01-07
 
 Updated comments in jparse.l and jparse.y and rebuilt backup files.

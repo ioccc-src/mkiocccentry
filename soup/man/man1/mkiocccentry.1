@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "12 July 2024" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "08 January 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -20,11 +20,11 @@
 .I prog.c
 .I Makefile
 .I remarks.md
-.RI [\| file
+.RI [\| \[ file | directory
 .IR ... \|]
 .SH DESCRIPTION
 .B mkiocccentry
-gathers your source file, Makefile, remarks as well as any other files and creates an XZ compressed tarball.
+gathers your source file, Makefile and remarks as well as any other files and/or directories, and assuming everything is correct and valid, it will create an XZ compressed tarball.
 The tool runs
 .B iocccsize
 on your
@@ -33,30 +33,31 @@ and it also runs tests on the
 .IR Makefile \|,
 the
 .IR remarks.md
-and any extra files as well to verify that everything seems in order.
-You can ignore the warnings except that the
-.I Makefile
-cannot be empty.
+and any extra files as well, to verify that everything seems in order.
+You can ignore certain warnings but some issues are errors; if invalid input or files are provided the program will let you know more about it so you can fix it.
 .PP
 Under the
 .I work_dir
 .B mkiocccentry
-will create an entry directory (based on the IOCCC contestant ID and entry number) that the program will copy the files to in order to create the tarball.
-If the entry directory already exists the program will tell you to move it or delete it.
-The program does
+will create a submission directory (based on the IOCCC contestant ID and submission slot) that the program will copy the mandatory files to the work directory in order to create the tarball.
+If the submission directory under the work directory already exists, the program will tell you to move it or delete it; the program does
 .B NOT
-delete it for you.
+delete or move it for you.
+.PP
+One may pass in additional files or directories to be copied to the submission directory.
+Files are copied to the submission top level directory and directories are copied recursively as subdirectories.
+There is a maximum depth allowed for subdirectories and the basename of files and directories are restricted to POSIX plus \+ safe characters, plus a maximum name length.
 .PP
 Before forming the tarball,
 .B mkiocccentry
-will ask you for information about your entry including the number of authors and various information about the author(s).
-Once all the information has been collected it will copy the files to the entry directory under the
+will ask you for information about your submission including the number of authors and various information about the author(s).
+Once all the information has been collected it will copy the files to the submission directory under the
 .IR work_dir \|.
 At this point it will create the
 .I .info.json
 and
 .I .auth.json
-files with information about the entry and information about the authors (which is for winning entries).
+files with information about the submission and information about the authors (which are for winning entries).
 .PP
 After each file is formed it will run
 .BR chkentry (1)
@@ -267,13 +268,13 @@ The
 .BR fnamchk (1)
 tool was by necessity changed accordingly.
 .PP
-Astute proof readers might find circumstances where variables, comments, error messages and prompt strings use
+Astute proofreaders might find circumstances where variables, comments, error messages and prompt strings use
 .B entry
 instead of
 .BR submission .
 You are welcome to submit pull requests to
 .I https://github.com/ioccc-src/mkiocccentry/pulls
-correct such oversights in variables,
+to correct such oversights in variables,
 comments, error messages and prompt strings.
 Note, however, that there are many cases where the words
 .B entry
@@ -316,11 +317,11 @@ for future updates:
 .ft R
 .RE
 .PP
-Use the answers file from the previous invocation to quickly update the entry with an additional file added:
+Use the answers file from the previous invocation to quickly update the entry with an additional file and directory added:
 .sp
 .RS
 .ft B
- ./mkiocccentry \-i answers work_dir prog.c Makefile remarks.md data.txt
+ ./mkiocccentry \-i answers work_dir prog.c Makefile remarks.md data.txt subdir
 .ft R
 .RE
 .PP

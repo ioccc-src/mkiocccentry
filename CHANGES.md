@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.5 2025-01-08
+
+Update `mkiocccentry_test.sh` to test the new subdirectory option of
+`mkiocccentry`, with the depth being valid and the depth being too high.
+
+Fix regexp in error message for basename of files according to how
+`sane_relative_path()` functions.
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/) with a
+comment to `sane_relative_path()` (about regexp it enforces) and additional test
+cases to the util test code.
+
+Updated FAQ about how to use `mkiocccentry as well as the man page (with some
+details on how the mkiocccentry will copy directories now). The FAQ, guidelines
+and rules have to be updated in the winner repo and that'll come next unless
+something comes up here.
+
 ## Release 2.3.4 2025-01-07
 
 Submission tarballs can now have subdirectories! This is a major release that
