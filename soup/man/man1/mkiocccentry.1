@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "12 July 2024" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "08 January 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -20,11 +20,11 @@
 .I prog.c
 .I Makefile
 .I remarks.md
-.RI [\| file
+.RI [\| \[ file | directory \]
 .IR ... \|]
 .SH DESCRIPTION
 .B mkiocccentry
-gathers your source file, Makefile, remarks as well as any other files and creates an XZ compressed tarball.
+gathers your source file, Makefile and remarks as well as any other files and/or directories, and creates an XZ compressed tarball, assuming input is correct and everything is valid.
 The tool runs
 .B iocccsize
 on your
@@ -34,14 +34,13 @@ and it also runs tests on the
 the
 .IR remarks.md
 and any extra files as well to verify that everything seems in order.
-You can ignore the warnings except that the
-.I Makefile
-cannot be empty.
+You can ignore certain warnings but some warnings cannot be disabled; the program will let you know more about errors and you can correct them in that case.
 .PP
 Under the
 .I work_dir
 .B mkiocccentry
 will create an entry directory (based on the IOCCC contestant ID and entry number) that the program will copy the files to in order to create the tarball.
+One may pass in a directory name and the directory and everything under it will be copied to the work directory; however the filename restrictions still apply and there is a limit on the depth you may use, and if the filenames are not valid or the depth is higher than the max depth, it is an error.
 If the entry directory already exists the program will tell you to move it or delete it.
 The program does
 .B NOT

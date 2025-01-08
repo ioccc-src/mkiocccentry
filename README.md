@@ -42,3 +42,12 @@ answers to a number of possible problems as well as to see how to report issues.
 If your problem is a problem compiling the tools or you have encountered what
 you think is a bug, please see the
 FAQ on "[reporting bugs](FAQ.md#bugs)".
+
+Additionally, if you have more questions on the use of the toolkit, see the FAQ
+section [Entering the IOCCC: the bare minimum you need to
+know](https:/www.ioccc.org/faq.html#enter_questions), the FAQ section [Entering
+the IOCCC: more help and
+details](https://www.ioccc.org/faq.html#submitting_help), the [IOCCC
+Guidelines](https://www.ioccc.org/next/guidelines.html) and the [IOCCC
+Rules](https://www.ioccc.org/next/rules.html) at the [Official IOCCC
+website](https://www.ioccc.org).

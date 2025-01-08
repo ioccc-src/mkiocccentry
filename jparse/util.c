@@ -3295,6 +3295,10 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  * By sane we mean that no path component is an unsafe name according to
  * posix_plus_safe(str, false, false, true).
  *
+ * In other words, it must match the following regexp:
+ *
+ *      ^([[:alnum:]_+-]+/)*([[:alnum:]_+-]+(\.[[:alnum:]_+-]+))?$
+ *
  * given:
  *	str		    - string to test
  *      max_path_len        - max path length (length of str)
@@ -5188,7 +5192,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.1 2025-01-07" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.1 2025-01-08" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -5461,12 +5465,34 @@ main(int argc, char **argv)
     }
 
     /*
+     * test another invalid path component
+     */
+    relpath = "foo/./";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
+        err(187, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s", __func__,
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
+     * test another invalid path component
+     */
+    relpath = "./foo/";
+    sanity = sane_relative_path(relpath, 99, 25, 4);
+    if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
+        err(188, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s", __func__,
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    }
+
+    /*
      * test path with number in it
      */
     relpath = "foo1";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_OK) {
-        err(187, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_OK, got: %s", __func__,
+        err(189, __func__, "%s(\"%s\", 99, 25, 4): expected PATH_OK, got: %s", __func__,
                 relpath, path_sanity_name(sanity));
         not_reached();
     }
