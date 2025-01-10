@@ -3295,9 +3295,14 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  * By sane we mean that no path component is an unsafe name according to
  * posix_plus_safe(str, false, false, true).
  *
- * In other words, it must match the following regexp:
+ * In other words, each directory and the final file in a path must match the
+ * regexp:
  *
- *      ^([[:alnum:]_+-]+/)*([[:alnum:]_+-]+(\.[[:alnum:]_+-]+))?$
+ *      ^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$
+ *
+ * and in addition, all paths must be relative to the top directory (first
+ * component; i.e. it must not start with a '/') and may not exceed max_depth
+ * directories in the file path.
  *
  * given:
  *	str		    - string to test

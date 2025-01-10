@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.6 2025-01-10
+
+Update regexp error message in mkiocccentry. (This was done in jparse too and
+that was synced from the jparse repo).
+
+Fix check in mkiocccentry (<= 0, not < 0).
+
+Minor bug fix in txzchk where errno was set to 0 after the function call.
+
+Updated txzchk and mkiocccentry version which required updating JSON files too.
+
+Slight update to GitHub issue template files to match the other one (and should
+look nicer in the subject line).
+
+
 ## Release 2.3.5 2025-01-08
 
 Update `mkiocccentry_test.sh` to test the new subdirectory option of

@@ -1522,8 +1522,8 @@ check_tarball(char const *tar, char const *fnamchk)
      * if -T we need to open it as a text file: for test mode
      */
     if (read_from_text_file) {
+	errno = 0;		/* pre-clear errno for warnp() */
 	input_stream = fopen(tarball_path, "r");
-	errno = 0;
 	if (input_stream == NULL)
 	{
 	    errp(39, __func__, "fopen of %s failed", tarball_path);
@@ -1865,14 +1865,15 @@ alloc_txz_file(char const *path, intmax_t length)
 	err(48, __func__, "passed NULL path");
 	not_reached();
     }
-    errno = 0;
+
+    errno = 0; /* pre-clear errno for errp() */
     file = calloc(1, sizeof *file);
     if (file == NULL) {
 	errp(49, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
 	not_reached();
     }
 
-    errno = 0;
+    errno = 0; /* pre-clear errno for errp() */
     file->filename = strdup(path);
     if (!file->filename) {
 	errp(50, __func__, "%s: unable to strdup filename %s", tarball_path, path);
