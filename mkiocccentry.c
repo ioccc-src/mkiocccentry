@@ -2928,7 +2928,6 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *cp,
     return;
 }
 
-
 /*
  * check_extra_data_files - check extra data files args and if OK, copy into submission_dir/Makefile
  *
@@ -3038,7 +3037,7 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	base = base_name(args[i]);
 	dbg(DBG_VHIGH, "basename(%s): %s", args[i], base);
 	base_len = strlen(base);
-	if (base_len == 0) {
+	if (base_len <= 0) {
 	    err(123, __func__, "basename of extra data file: %s has a length of 0", args[i]);
 	    not_reached();
 	} else if (base_len > MAX_BASENAME_LEN) {
@@ -3052,37 +3051,34 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	    not_reached();
 	}
 
-	/*
-	 * basename must use only POSIX portable filename and + chars
-	 */
-	if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
-	    fpara(stderr,
-		  "",
-		  "The basename of an extra file/directory must match the",
-                  "following regular expression:",
-		  "",
-		  "    ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
-		  "",
-		  NULL);
-	    err(125, __func__, "basename of %s does not match regexp: ^([[:alnum:]_+-]+/)*([[:alnum:]_+-]+(\.[[:alnum:]_+-]+))?$",
-			       args[i]);
-	    not_reached();
-	}
+        if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
+            fpara(stderr,
+                  "",
+                  "The basename of each directory and the final file in a path",
+                  "must match the regexp:",
+                  "",
+                  "    ^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                  "",
+                  NULL);
+            err(125, __func__, "basename of %s does not match regexp: ^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                               args[i]);
+            not_reached();
+        }
 
-	if (!strcasecmp(args[i], README_MD_FILENAME) || !strcasecmp(args[i], INDEX_HTML_FILENAME) ||
-	    !strcasecmp(args[i], INVENTORY_HTML_FILENAME) || !strcasecmp(args[i], PROG_FILENAME) ||
-	    !strcasecmp(args[i], PROG_ALT_FILENAME) || !strcasecmp(args[i], PROG_ORIG_FILENAME) ||
-	    !strcasecmp(args[i], PROG_ORIG_C_FILENAME)) {
-	    fpara(stderr,
-		"",
-		"An extra file cannot be named any of:",
-		"",
-		"   index.html, inventory.html, README.md, prog.orig.c, prog.orig or prog",
-		"",
-		NULL);
-		err(126, __func__, "filename %s not allowed", args[i]);
-	    not_reached();
-	}
+        if (!strcasecmp(args[i], README_MD_FILENAME) || !strcasecmp(args[i], INDEX_HTML_FILENAME) ||
+            !strcasecmp(args[i], INVENTORY_HTML_FILENAME) || !strcasecmp(args[i], PROG_FILENAME) ||
+            !strcasecmp(args[i], PROG_ALT_FILENAME) || !strcasecmp(args[i], PROG_ORIG_FILENAME) ||
+            !strcasecmp(args[i], PROG_ORIG_C_FILENAME)) {
+            fpara(stderr,
+                "",
+                "An extra file cannot be named any of:",
+                "",
+                "   index.html, inventory.html, README.md, prog.orig.c, prog.orig or prog",
+                "",
+                NULL);
+                err(126, __func__, "filename %s not allowed", args[i]);
+            not_reached();
+        }
 
 	/*
 	 * form destination path

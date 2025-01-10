@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.5 2025-01-10
+
+Improve comment in `sane_relative_path()` about the regexp, keeping in mind that
+the locale does affect `[[:alnum:]]`.
+
+Fixed typo in jparse.l (this means that jparse.ref.c was regenerated).
+
+
 ## Release 2.2.4 2025-01-08
 
 Add comment about the regexp that `sane_relative_path()` should enforce, namely:

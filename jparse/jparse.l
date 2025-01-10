@@ -412,7 +412,7 @@ JSON_COMMA		","
  * (say should a large block of NUL (\x00) and SOM (\x01) bytes are
  * encountered), we limit the number of NUL (\x00) byte warnings to the first
  * MAX_NUL_BYTES_REPORTED, and limit the number of low ([\x01-\x08\x0e-\x1f]) byte
- * warnings to the first MAX_LOW_BYTES_REPORTED.  Should we find more warnings that
+ * warnings to the first MAX_LOW_BYTES_REPORTED.  Should we find more warnings than
  * the limit, a one time "too many" warning is issues.
  *
  * given:
