@@ -215,9 +215,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_util.c \
-	location_util.c location_main.c sanity.c rule_count.c
+	location_util.c location_main.c sanity.c rule_count.c random_answers.c
 H_SRC= chk_validate.h soup.h entry_util.h foo.h limit_ioccc.h location.h \
-	sanity.h default_handle.h version.h iocccsize_err.h
+	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h
 
 # source files that do not conform to strict picky standards
 #
@@ -249,7 +249,8 @@ LOCAL_DIR_TAGS= .local.dir.tags
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_util.o \
-	location_tbl.o location_util.o sanity.o foo.o default_handle.o rule_count.o
+	location_tbl.o location_util.o sanity.o foo.o default_handle.o rule_count.o \
+	random_answers.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -986,6 +987,10 @@ location_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h location.h location_util.c
+random_answers.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h random_answers.c random_answers.h version.h
 rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \

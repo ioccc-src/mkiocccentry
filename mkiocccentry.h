@@ -31,7 +31,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -108,6 +108,17 @@
 #include "soup/entry_util.h"
 
 /*
+ * entry_util - utilities supporting mkiocccentry JSON files
+ */
+#include "soup/entry_util.h"
+
+/*
+ * random_answers - generate a random answer file for mkiocccentry
+ */
+#include "soup/random_answers.h"
+
+
+/*
  * definitions
  *
  */
@@ -134,7 +145,6 @@
 /* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
 #define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
-
 
 
 /*
@@ -175,4 +185,6 @@ static void remind_user(char const *work_dir, char const *submission_dir, char c
 	bool test_mode, int submit_slot);
 static void show_registration_url(void);
 static void show_submit_url(char const *work_dir, char const *tarball_path, int slot_number);
+
+static long answer_seed = NO_SEED;	/* if != 0 ==> srandom argument used to seed generation of answers */
 #endif /* INCLUDE_MKIOCCCENTRY_H */

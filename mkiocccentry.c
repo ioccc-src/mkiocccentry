@@ -37,7 +37,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -126,6 +126,12 @@ static const char * const usage_msg3 =
     "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
     "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
     "\n"
+    "\t-s seed\t\tGenerate and use pseudo-random answers, seeding with seed & 0x%08u (def: do not)\n"
+    "\t-d\t\tAlias for -s %u\n"
+    "\n"
+    "\t    NOTE: Implies -A random_answers.seed\n"
+    "\t    NOTE: One cannot use -a, -A nor -i with -s seed nor with -d at the same time.\n"
+    "\n"
     "\twork_dir\tdirectory where the submission directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your submission\n";
 static const char * const usage_msg4 =
@@ -184,7 +190,7 @@ main(int argc, char *argv[])
     char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
     char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
-    char const *answers = NULL;			/* path to the answers file (recording input given on stdin) */
+    char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
     char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
@@ -213,7 +219,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:eF:C:y")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:eF:C:yds:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -299,6 +305,25 @@ main(int argc, char *argv[])
 	    need_confirm = false;
 	    ignore_warnings = true;
 	    break;
+	case 'd':		/* alias for -s DEFAULT_SEED */
+	    answer_seed = DEFAULT_SEED & SEED_MASK;
+	    break;
+	case 's':		/* set seed as seed & SEED_MASK */
+	    /*
+	     * parse seed
+	     */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    answer_seed = (long)strtol(optarg, NULL, 0);
+	    if (errno != 0) {
+		warnp(__func__, "invalid -s argument, most be an integer >= 0");
+		answer_seed = NO_SEED;
+	    } else if (answer_seed < 0) {
+		warnp(__func__, "invalid -s argument, most be >= 0");
+		answer_seed = NO_SEED;
+	    } else {
+		answer_seed &= SEED_MASK;
+	    }
+	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -328,12 +353,66 @@ main(int argc, char *argv[])
 	       txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
 	       chkentry_flag_used, &chkentry);
 
-    /* check that conflicting answers file options are not used together */
+    /*
+     * check that conflicting answers file options are not used together
+     */
     if (answers_flag_used && read_answers_flag_used) {
 	err(3, __func__, "-a answers and -i answers cannot be used together"); /*ooo*/
 	not_reached();
     }
-    /* collect required the required args */
+    if (answer_seed != NO_SEED && (overwrite_answers_flag_used || answers_flag_used || read_answers_flag_used)) {
+	err(3, __func__, "-a answers and -A answers and -i answers cannot be used with with -d nor -s seed"); /*ooo*/
+	not_reached();
+    }
+
+    /*
+     * if we are seeding (-s seed or -d), setup seed and answers file
+     */
+    if (answer_seed != NO_SEED) {
+
+	int answer_len;	    /* length of the answers filename we will form */
+
+	/*
+	 * seed the BSD pseudo-random number generator
+	 */
+	srandom((unsigned)(answer_seed & SEED_MASK));
+
+	/*
+	 * form the answers filename based on seed
+	 *
+	 * We need to form the filename:
+	 *
+	 *	random_answers.answer_seed
+	 */
+	answer_len = (sizeof("random_answers.")-1) + SEED_DECIMAL_DIGITS + 1 + 1;   /* +1 for NULL, +1 for paranoia */
+	answers = malloc(answer_len + 1);	/* +1 for paranoia */
+	if (answers == NULL) {
+	    err(3, __func__, "failed to malloc %d bytes for answers filename", answer_len + 1); /*ooo*/
+	    not_reached();
+	}
+	answers[answer_len] = '\0';		/* paranoia */
+	ret = snprintf(answers, answer_len, "random_answers.%u", (unsigned)(answer_seed & SEED_MASK));
+	if (ret <= 0) {
+	    errp(3, __func__, "snprintf of random_answers.%u filename failed", (unsigned)(answer_seed & SEED_MASK)); /*ooo*/
+	    not_reached();
+	}
+
+	/*
+	 * load the random_answers.answer_seed file with randomly generated answers
+	 */
+	generate_answers(answers);
+
+	/*
+	 * fake as if we called -i random_answers.seed
+	 */
+	read_answers_flag_used = true;
+	need_confirm = false;
+	need_hints = false;
+    }
+
+    /*
+     * collect required the required args
+     * */
     extra_count = (argc - optind > REQUIRED_ARGS) ? argc - optind - REQUIRED_ARGS : 0;
     extra_list = argv + optind + REQUIRED_ARGS;
     dbg(DBG_LOW, "tar: %s", tar);
@@ -349,6 +428,9 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "remarks: %s", remarks_md);
     dbg(DBG_LOW, "number of extra data file args: %d", extra_count);
     dbg(DBG_LOW, "answers file: %s", answers);
+    if (answer_seed != NO_SEED) {
+	dbg(DBG_LOW, "pseudo random seed: %u", (unsigned)(answer_seed & SEED_MASK));
+    }
 
     /*
      * zeroize info
@@ -883,7 +965,7 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
     fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
 	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
