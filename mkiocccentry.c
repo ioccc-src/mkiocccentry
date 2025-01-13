@@ -3357,7 +3357,7 @@ get_title(struct info *infop)
      * inform the user of the title
      */
     if (need_hints) {
-	para("A submission title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
+	para("A submission title is a short name using the [a-z0-9][a-z0-9._+-]* regex pattern.",
 	      "",
 	      "If your submission wins, the title might become the directory name of the winning entry,",
 	      "although the IOCCC judges might change the title for various reason.",

@@ -47,6 +47,11 @@
 #include "limit_ioccc.h"
 
 /*
+ * location - location/country codes
+ */
+#include "location.h"
+
+/*
  * json_util - general JSON parser utility support functions
  */
 #include "../jparse/json_util.h"
@@ -55,7 +60,7 @@
 /*
  * definitions
  */
-#define NO_SEED (-1)		    /* neither -d not -s seed has been used, don't generate / use pseudo-random answers */
+#define NO_SEED (-1)		    /* neither -d nor -s seed used, don't generate / use pseudo-random answers */
 #define DEFAULT_SEED (1)	    /* -d is an alias for -s DEFAULT_SEED - XXX - value TBD - XXX */
 #define SEED_MASK (0x7fffffff)	    /* bit mask answer_seed with SEED_MASK before calling srandom(3) */
 #define SEED_DECIMAL_DIGITS (10)    /* decimal digits in the maximum seed value */
@@ -64,12 +69,71 @@
 /*
  * forward declarations
  */
-long biased_random_range(long min, long max);
-char random_alphanum(void);
+long biased_random_range(long min, long above);
+long top_skew_random_range(long min, long above);
+
+char random_alpha(void);
+char random_upper_alpha_char(void);
+char random_lower_alpha_char(void);
+
+char random_alphanum_char(void);
+char random_upper_alphanum_char(void);
 char random_lower_alphanum_char(void);
+
+char random_posixsafe_char(void);
+char random_upper_posixsafe_char(void);
 char random_lower_posixsafe_char(void);
-void random_lower_posixsafe_str(char *str, unsigned int min, unsigned int max);
-void random_words_str(char *str, unsigned int min, unsigned int max);
+
+void random_alpha_str(char *str,
+		      unsigned int minlen,
+		      unsigned int maxlen);
+void random_upper_alpha_str(char *str,
+			    unsigned int minlen,
+			    unsigned int maxlen);
+void random_lower_alpha_str(char *str,
+			    unsigned int minlen,
+			    unsigned int maxlen);
+
+void random_alphanum_str(char *str,
+			 unsigned int minlen,
+			 unsigned int maxlen);
+void random_upper_alphanum_str(char *str,
+			       unsigned int minlen,
+			       unsigned int maxlen);
+void random_lower_alphanum_str(char *str,
+			       unsigned int minlen,
+			       unsigned int maxlen);
+
+void random_posixsafe_str(char *str,
+			  unsigned int minlen,
+			  unsigned int maxlen);
+void random_upper_posixsafe_str(char *str,
+				unsigned int minlen,
+				unsigned int maxlen);
+void random_lower_posixsafe_str(char *str,
+				unsigned int minlen,
+				unsigned int maxlen);
+
+void random_words_str(char *str,
+		      unsigned int minlen,
+		      unsigned int maxlen);
+void random_upper_words_str(char *str,
+			    unsigned int minlen,
+			    unsigned int maxlen);
+void random_lower_words_str(char *str,
+			    unsigned int minlen,
+			    unsigned int maxlen);
+
+void random_posixsafe_words_str(char *str,
+				unsigned int minlen,
+				unsigned int maxlen);
+void random_upper_posixsafe_words_str(char *str,
+				      unsigned int minlen,
+				      unsigned int maxlen);
+void random_lower_posixsafe_words_str(char *str,
+				      unsigned int minlen,
+				      unsigned int maxlen);
+
 void generate_answers(char const *answers);
 
 
