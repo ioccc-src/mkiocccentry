@@ -36,6 +36,9 @@
 #include <stdlib.h>
 #include <strings.h> /* strcasecmp */
 #include <ctype.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <fts.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -2834,10 +2837,9 @@ test_extra_file(char const *str)
 	return false;
     }
     /* also verify it does not match a disallowed filename */
-    else if (!strcasecmp(str, INDEX_HTML_FILENAME) || !strcasecmp(str, INVENTORY_HTML_FILENAME) ||
-	     !strcasecmp(str, PROG_FILENAME) || !strcasecmp(str, PROG_ALT_FILENAME) ||
-	     !strcasecmp(str, PROG_ORIG_FILENAME) || !strcasecmp(str, PROG_ORIG_C_FILENAME) ||
-	     !strcasecmp(str, README_MD_FILENAME)) {
+    else if (!strcasecmp(str, INDEX_HTML_FILENAME) || !strcasecmp(str, PROG_FILENAME) ||
+            !strcasecmp(str, PROG_ALT_FILENAME) || !strcasecmp(str, PROG_ORIG_FILENAME) ||
+            !strcasecmp(str, PROG_ORIG_C_FILENAME) || !strcasecmp(str, README_MD_FILENAME)) {
 		json_dbg(JSON_DBG_MED, __func__,
 			"invalid: extra_file matches disallowed filename: <%s>", str);
 		return false;
@@ -4704,4 +4706,151 @@ test_wordbuf_warning(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
     return true;
+}
+
+/*
+ * test_paths
+ *
+ * Verify that path and anything under it is sane and relative, based on the
+ * sane_relative_path() function.
+ *
+ * given:
+ *      path        - the path to check
+ *
+ * Returns:
+ *
+ *      true ==> path exists and is sane and relative
+ *      false ==> path does not exist or is not sane and relative
+ *
+ * NOTE: this function does not return if passed NULL pointers or an error is
+ * encountered.
+ */
+bool
+test_paths(char * const *args)
+{
+    FTS *fts = NULL;
+    FTSENT *item = NULL;
+
+    /*
+     * firewall
+     */
+    if (args == NULL || args[0] == NULL) {
+        err(148, __func__, "passed NULL args");
+        not_reached();
+    }
+
+    errno = 0;      /* pre-clear errno for errp() */
+    fts = fts_open(args, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
+    if (fts == NULL) {
+        errp(149, __func__, "fts_open() for args returned NULL");
+        not_reached();
+    } else {
+        while ((item = fts_read(fts)) != NULL)
+        {
+            switch (item->fts_info)
+            {
+                case FTS_D:
+                case FTS_F:
+                case FTS_DP:
+                    if (sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
+                        warn(__func__, "%s is not a sane relative path", item->fts_path);
+                        json_dbg(JSON_DBG_MED, __func__,
+                                 "invalid: path not a relative or sane path");
+                        json_dbg(JSON_DBG_HIGH, __func__,
+                                 "invalid: path: <%s> is invalid", item->fts_path);
+                        return false;
+                    }
+                    break;
+                case FTS_DNR: /* directory not readable */
+                    err(150, __func__, "directory not readable: %s", (char *)item->fts_path);
+                    not_reached();
+                case FTS_ERR:
+                    /*
+                     * fake errno
+                     */
+                    errno = item->fts_errno;
+                    errp(151, __func__, "encountered error reading path: %s", (char *)item->fts_path);
+                    not_reached();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*
+         * make sure we close and set the FTS * to NULL.
+         */
+        fts_close(fts);
+        fts = NULL;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "path is valid");
+    return true;
+}
+
+/*
+ * count_files
+ *
+ * Count total number of files in all args (paths)
+ *
+ * given:
+ *      path    - the args
+ *
+ * Returns:
+ *
+ *      the total number of files that we accept
+ *
+ * NOTE: if args is NULL we return 0.
+ * NOTE: if an error is encountered traversing the path(s) it is an error.
+ */
+int
+count_files(char * const *args)
+{
+    FTS *fts = NULL;
+    FTSENT *item = NULL;
+    int count = 0;
+
+    /*
+     * firewall
+     */
+    if (args == NULL || args[0] == NULL) {
+        return 0;
+    }
+
+    errno = 0;      /* pre-clear errno for errp() */
+    fts = fts_open(args, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
+    if (fts == NULL) {
+        errp(152, __func__, "fts_open() for path returned NULL");
+        not_reached();
+    } else {
+        while ((item = fts_read(fts)) != NULL)
+        {
+            switch (item->fts_info)
+            {
+                case FTS_D:
+                case FTS_F:
+                case FTS_DP:
+                    ++count;
+                    break;
+                case FTS_DNR: /* directory not readable */
+                    err(153, __func__, "directory not readable: %s", (char *)item->fts_path);
+                    not_reached();
+                case FTS_ERR:
+                    /*
+                     * fake errno
+                     */
+                    errno = item->fts_errno;
+                    errp(154, __func__, "encountered error reading path: %s", (char *)item->fts_path);
+                    not_reached();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        fts_close(fts);
+        fts = NULL;
+    }
+
+    return count;
 }

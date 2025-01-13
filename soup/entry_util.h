@@ -41,7 +41,6 @@
 #define REMARKS_FILENAME "remarks.md"
 #define MAKEFILE_FILENAME "Makefile"
 #define INDEX_HTML_FILENAME "index.html"
-#define INVENTORY_HTML_FILENAME "inventory.html"
 #define PROG_FILENAME "prog"
 #define PROG_ALT_FILENAME "prog.alt"
 #define PROG_ORIG_FILENAME "prog.orig"
@@ -283,6 +282,7 @@ extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
-
+extern bool test_paths(char * const *args);
+extern int count_files(char * const *args);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

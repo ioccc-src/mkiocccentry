@@ -1,6 +1,38 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.8 2025-01-13
+
+Work done on new `mkiocccentry` options `-d` and `-s seed` (both will be
+documented when completed).
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` with new
+utility functions that act on directory paths. These functions are:
+
+- `dir_name()`: takes a path and strips off `level` components (i.e. `/`). In
+the case of successive `/`s it removes those as well. The comments at the top of
+the function explains in more detail the way the `level` works. This is modelled
+after the `base_name()` function which functions as the `basename(3)` function;
+`dir_name()` functions as `dirname(3)`.
+- `count_comps()`: counts in a string the number of components delimited by the
+component character (a `char`). Successive component characters are counted as
+one. The comments at the top of the function details specifics.
+- `count_dirs()`: using `count_comps()` (with component `/`), count the number
+of directory components in a path.
+
+Updated the jparse utility test code to test the new functions.
+
+Remove blacklisting of `inventory.html` file. This involved a new version of
+`mkiocccentry`, `txzchk` and `chkentry` as all of these tools prevented such
+files from existing.
+
+
+## Release 2.3.7 2025-01-12
+
+Removed `Makefile.example` as this file duplicates the contents of
+[Makefile.example from "the other repo"](https://github.com/ioccc-src/winner/blob/master/next/Makefile.example).
+
+
 ## Release 2.3.6 2025-01-10
 
 Update regexp error message in mkiocccentry. (This was done in jparse too and
@@ -15,8 +47,6 @@ Updated txzchk and mkiocccentry version which required updating JSON files too.
 Slight update to GitHub issue template files to match the other one (and should
 look nicer in the subject line).
 
-Removed `Makefile.example` as this file duplicates the contents of
-[Makefile.example from "the other repo"](https://github.com/ioccc-src/winner/blob/master/next/Makefile.example).
 
 
 ## Release 2.3.5 2025-01-08

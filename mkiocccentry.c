@@ -3146,19 +3146,17 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
                                args[i]);
             not_reached();
         }
-
-        if (!strcasecmp(args[i], README_MD_FILENAME) || !strcasecmp(args[i], INDEX_HTML_FILENAME) ||
-            !strcasecmp(args[i], INVENTORY_HTML_FILENAME) || !strcasecmp(args[i], PROG_FILENAME) ||
-            !strcasecmp(args[i], PROG_ALT_FILENAME) || !strcasecmp(args[i], PROG_ORIG_FILENAME) ||
-            !strcasecmp(args[i], PROG_ORIG_C_FILENAME)) {
+        if (!strcasecmp(base, README_MD_FILENAME) || !strcasecmp(base, INDEX_HTML_FILENAME) ||
+            !strcasecmp(base, PROG_FILENAME) || !strcasecmp(base, PROG_ALT_FILENAME) ||
+            !strcasecmp(base, PROG_ORIG_FILENAME) || !strcasecmp(base, PROG_ORIG_C_FILENAME)) {
             fpara(stderr,
                 "",
                 "An extra file cannot be named any of:",
                 "",
-                "   index.html, inventory.html, README.md, prog.orig.c, prog.orig or prog",
+                "   README.md, index.html, prog, prog.alt, prog.orig, prog.orig.c",
                 "",
                 NULL);
-                err(126, __func__, "filename %s not allowed", args[i]);
+                err(126, __func__, "filename %s not allowed", base);
             not_reached();
         }
 
