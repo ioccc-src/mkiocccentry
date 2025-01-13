@@ -15,6 +15,9 @@ Updated txzchk and mkiocccentry version which required updating JSON files too.
 Slight update to GitHub issue template files to match the other one (and should
 look nicer in the subject line).
 
+Removed `Makefile.example` as this file duplicates the contents of
+[Makefile.example from "the other repo"](https://github.com/ioccc-src/winner/blob/master/next/Makefile.example).
+
 
 ## Release 2.3.5 2025-01-08
 

@@ -345,7 +345,7 @@ answers >>answers.txt
 
 # fake some required files
 #
-test -f "${src_dir}"/Makefile || cat Makefile.example >"${src_dir}"/Makefile
+test -f "${src_dir}"/Makefile || cat Makefile >"${src_dir}"/Makefile
 test -f "${src_dir}"/remarks.md || cat README.md >"${src_dir}"/remarks.md
 test -f "${src_dir}"/extra1 || echo "123" >"${src_dir}"/extra1
 test -f "${src_dir}"/extra2 || echo "456" >"${src_dir}"/extra2
