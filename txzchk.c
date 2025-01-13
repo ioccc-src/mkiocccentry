@@ -679,10 +679,9 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 	    }
 	}
 
-	if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, INVENTORY_HTML_FILENAME) ||
-	    !strcasecmp(file->basename, PROG_FILENAME) || !strcasecmp(file->basename, PROG_ALT_FILENAME) ||
-	    !strcasecmp(file->basename, PROG_ORIG_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) ||
-		   !strcasecmp(file->basename, README_MD_FILENAME)) {
+	if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, PROG_FILENAME) ||
+            !strcasecmp(file->basename, PROG_ALT_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_FILENAME) ||
+            !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) || !strcasecmp(file->basename, README_MD_FILENAME)) {
 	    ++tarball.total_feathers;
 	    ++tarball.invalid_filenames;
 	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);

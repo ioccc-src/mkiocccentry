@@ -1,5 +1,28 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.6 2025-01-13
+
+Add new utility functions that act on directory paths:
+
+- `dir_name()`: takes a path and strips off `level` components (i.e. `/`). In
+the case of successive `/`s it removes those as well. The comments at the top of
+the function explains in more detail the way the `level` works. This is modelled
+after the `base_name()` function which functions as the `basename(3)` function;
+`dir_name()` functions as `dirname(3)`.
+- `count_comps()`: counts in a string the number of components delimited by the
+component character (a `char`). Successive component characters are counted as
+one. The comments at the top of the function details specifics.
+- `count_dirs()`: using `count_comps()` (with component `/`), count the number
+of directory components in a path.
+
+Updated the utility test code to test the new functions.
+
+Updated `JPARSE_LIBRARY_VERSION` to `""2.2.5 2025-01-13""` from  "2.2.4
+2025-01-07".
+
+Updated `UTIL_TEST_VERSION` to `"1.0.2 2025-01-13"` from `"1.0.1 2025-01-08"`.
+
+
 ## Release 2.2.5 2025-01-10
 
 Improve comment in `sane_relative_path()` about the regexp, keeping in mind that
