@@ -35,17 +35,26 @@
 /*
  * defines
  */
-#define INFO_JSON_FILENAME ".info.json"
-#define AUTH_JSON_FILENAME ".auth.json"
-#define PROG_C_FILENAME "prog.c"
-#define REMARKS_FILENAME "remarks.md"
-#define MAKEFILE_FILENAME "Makefile"
-#define INDEX_HTML_FILENAME "index.html"
-#define PROG_FILENAME "prog"
-#define PROG_ALT_FILENAME "prog.alt"
-#define PROG_ORIG_FILENAME "prog.orig"
-#define PROG_ORIG_C_FILENAME "prog.orig.c"
-#define README_MD_FILENAME "README.md"
+/*
+ * mandatory filenames in the top directory
+ */
+#define INFO_JSON_FILENAME ".info.json"         /* filename of the .info.json file */
+#define AUTH_JSON_FILENAME ".auth.json"         /* filename of the .auth.json file */
+#define PROG_C_FILENAME "prog.c"                /* submission/winning entry source code filename */
+#define REMARKS_FILENAME "remarks.md"           /* remarks filename that form README.md for winning entries */
+#define MAKEFILE_FILENAME "Makefile"            /* submission/winning entry Makefile filename */
+/*
+ * forbidden filenames in the top directory
+ */
+#define INDEX_HTML_FILENAME "index.html"        /* winning entry index.html filename */
+#define PROG_FILENAME "prog"                    /* compiled submission/winning entry code filename */
+#define PROG_ALT_FILENAME "prog.alt"            /* compiled submission/winning entry alt code filename */
+#define PROG_ORIG_FILENAME "prog.orig"          /* compiled winning entry code filename */
+#define PROG_ORIG_C_FILENAME "prog.orig.c"      /* entry source code filename */
+#define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
+
+extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
+extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
 
 /*
  * IOCCC author information
@@ -240,7 +249,7 @@ extern bool test_default_handle(bool boolean);
 extern bool test_email(char const *str);
 extern bool test_empty_override(bool boolean);
 extern bool test_submit_slot(int submit_slot);
-extern bool test_extra_file(char const *str);
+extern bool test_extra_filename(char const *str);
 extern bool test_filename_len(char const *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char const *str);

@@ -1149,7 +1149,7 @@ chk_extra_file(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_extra_file(str);
+    test = test_extra_filename(str);
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(126, node, depth, sem, __func__, "invalid extra_file filename");

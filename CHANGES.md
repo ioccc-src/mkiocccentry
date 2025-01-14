@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.9 2025-01-14
+
+Renamed `test_extra_file()` to better account for what it is:
+`test_extra_filename()`. Improved the function to use two `char *[]`s so that we
+don't have to have checks on each file manually in each tool that uses it,
+though at present only `chkentry(1)` uses it (it is not clear if any other tool
+can use it in the future but this update allows for more easily maintaining the
+list of filenames that must be present and that must not be present).
+
+
+
 ## Release 2.3.8 2025-01-13
 
 Work done on new `mkiocccentry` options `-d` and `-s seed` (both will be
