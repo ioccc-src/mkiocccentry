@@ -396,7 +396,7 @@ valid_contest_id(char *str)
      *
      *     xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx
      *
-     * where 'x' is a hex character,  is the UUID version, and N is one of 8, 9, a, or b.
+     * where 'x' is a hex character, 4 is the UUID version, and N is one of 8, 9, a, or b.
      * 1.
      */
     if (len != UUID_LEN) {
