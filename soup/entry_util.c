@@ -70,6 +70,31 @@
  */
 #include "location.h"
 
+/*
+ * mandatory files that must exist in the submission top level directory
+ */
+char *mandatory_filenames[] =
+{
+    INFO_JSON_FILENAME,
+    AUTH_JSON_FILENAME,
+    PROG_C_FILENAME,
+    REMARKS_FILENAME,
+    MAKEFILE_FILENAME,
+    NULL
+};
+/*
+ * forbidden files that must NOT exist in the submission top level directory
+ */
+char *forbidden_filenames[] =
+{
+    INDEX_HTML_FILENAME,
+    PROG_FILENAME,
+    PROG_ALT_FILENAME,
+    PROG_ORIG_FILENAME,
+    PROG_ORIG_C_FILENAME,
+    README_MD_FILENAME,
+    NULL
+};
 
 /*
  * free_auth - free auto and related sub-elements
@@ -1609,7 +1634,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	} else if (strcmp(arr_name, "extra_file") == 0) {
 
 	    /* validate extra_file filename */
-	    test = test_extra_file(value);
+	    test = test_extra_filename(value);
 	    if (test == false) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
@@ -2788,7 +2813,7 @@ test_submit_slot(int submit_slot)
 
 
 /*
- * test_extra_file - test if extra_file is valid
+ * test_extra_filename - test if extra_file is valid
  *
  * Determine if extra_file is a valid filename and does not
  * match one of the mandatory filenames.
@@ -2805,8 +2830,10 @@ test_submit_slot(int submit_slot)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_extra_file(char const *str)
+test_extra_filename(char const *str)
 {
+    size_t i;       /* to iterate through list of filenames */
+
     /*
      * firewall
      */
@@ -2829,20 +2856,20 @@ test_extra_file(char const *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    if (!strcasecmp(str, AUTH_JSON_FILENAME) || !strcasecmp(str, INFO_JSON_FILENAME) ||
-	!strcasecmp(str, MAKEFILE_FILENAME) || !strcasecmp(str, PROG_C_FILENAME) ||
-	!strcasecmp(str, REMARKS_FILENAME)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file: <%s>", str);
-	return false;
+    for (i = 0; mandatory_filenames[i] != NULL; ++i) {
+        if (!strcasecmp(str, mandatory_filenames[i])) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: extra_file matches a mandatory file: <%s>", str);
+            return false;
+        }
     }
     /* also verify it does not match a disallowed filename */
-    else if (!strcasecmp(str, INDEX_HTML_FILENAME) || !strcasecmp(str, PROG_FILENAME) ||
-            !strcasecmp(str, PROG_ALT_FILENAME) || !strcasecmp(str, PROG_ORIG_FILENAME) ||
-            !strcasecmp(str, PROG_ORIG_C_FILENAME) || !strcasecmp(str, README_MD_FILENAME)) {
-		json_dbg(JSON_DBG_MED, __func__,
-			"invalid: extra_file matches disallowed filename: <%s>", str);
-		return false;
+    for (i = 0; forbidden_filenames[i] != NULL; ++i) {
+        if (!strcasecmp(str, forbidden_filenames[i])) {
+            json_dbg(JSON_DBG_MED, __func__,
+                    "invalid: extra_file matches disallowed filename: <%s>", str);
+            return false;
+        }
     }
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
     return true;
@@ -3488,7 +3515,7 @@ bool
 test_manifest(struct manifest *manp)
 {
     intmax_t count_extra_file = -1;		/* number of extra files */
-    bool test = false;			/* test_extra_file() test result */
+    bool test = false;			/* test_extra_filename() test result */
     char *extra_filename = NULL;	/* filename of an extra file */
     char *extra_filename2 = NULL;	/* second filename of an extra file */
     intmax_t i;
@@ -3567,7 +3594,7 @@ test_manifest(struct manifest *manp)
 	}
 
 	/* validate filename for this extra file */
-	test = test_extra_file(extra_filename);
+	test = test_extra_filename(extra_filename);
 	if (test == false) {
 	    json_dbg(JSON_DBG_MED, __func__,
 		     "invalid: manifest extra[%jd] filename is invalid", i);
