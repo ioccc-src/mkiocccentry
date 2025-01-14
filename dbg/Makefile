@@ -115,7 +115,7 @@ I=
 # INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
-INSTALL_V= -v
+INSTALL_V=
 
 # where to install
 #
