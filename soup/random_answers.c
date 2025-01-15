@@ -45,10 +45,16 @@
  * definitions
  */
 #define DISABLED_UUID "00000000-0000-4000-8000-000000000000"	/* username for which "disable_login" is true */
-#define SPACE_ODDS (8)		    /* average letters between a space */
-#define RANDOM_TITLE_MIN_LEN (8)    /* minimum length of a title */
-#define MAX_RANDOM (0x7fffffff)	    /* maximum value returned by random(3) */
-#define STRLEN(s) (sizeof (s)-1)    /* length of a constant string */
+#define SPACE_ODDS (6)			/* average letters between a space */
+#define RANDOM_TITLE_MIN_LEN (8)	/* minimum length of a title */
+#define RANDOM_ABSTRACT_MIN_LEN (8)	/* minimum length of an abstract */
+#define RANDOM_NAME_MIN_LEN (10)	/* minimum length of an author name */
+#define RANDOM_EMAIL_MIN_LEN (6)	/* min email length is 6: x@x.xx */
+#define RANDOM_URL_MIN_LEN (13)		/* min URL is 13: http://h.xx/u or 14: https://h.xx/u */
+#define RANDOM_MASTODON_MIN_LEN (7)	/* min Mastodon handle is 7: @u@h.xx */
+#define RANDOM_AFFILIATION_MIN_LEN (8)  /* minimum length of an affiliation */
+#define MAX_RANDOM (0x7fffffff)		/* maximum value returned by random(3) */
+#define STRLEN(s) (sizeof (s)-1)	/* length of a constant string */
 
 
 /*
@@ -1203,16 +1209,16 @@ random_words_str(char *str, unsigned int minlen, unsigned int maxlen)
 	/*
 	 * case: If the previous character is not space, and
 	 *	 we are not on the last character, and
-	 *	 the quadratically skewed top SPACE_ODDS is 0,
+	 *	 the of SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < len-1 && str[i-1] != ' ' && biased_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
 	 * case: select first character of a new word
 	 */
-	} else if (str[i-i] == ' ') {
+	} else if (str[i-1] == ' ') {
 	    str[i] = random_upper_alpha_char();
 
 	/*
@@ -1297,7 +1303,7 @@ random_upper_words_str(char *str, unsigned int minlen, unsigned int maxlen)
 	 *	 the quadratically skewed top SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < maxlen-1 && str[i-1] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
@@ -1382,7 +1388,7 @@ random_lower_words_str(char *str, unsigned int minlen, unsigned int maxlen)
 	 *	 the quadratically skewed top SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < maxlen-1 && str[i-1] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
@@ -1454,7 +1460,7 @@ random_posixsafe_words_str(char *str, unsigned int minlen, unsigned int maxlen)
     /*
      * generate the first character
      */
-    str[0] = random_alphanum_char();
+    str[0] = random_upper_alpha_char();
 
     /*
      * load the rest of the string
@@ -1467,14 +1473,14 @@ random_posixsafe_words_str(char *str, unsigned int minlen, unsigned int maxlen)
 	 *	 the quadratically skewed top SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < maxlen-1 && str[i-1] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
 	 * case: select first character of a new word
 	 */
-	} else if (str[i-i] == ' ') {
-	    str[i] = random_alphanum_char();
+	} else if (str[i-1] == ' ') {
+	    str[i] = random_upper_alpha_char();
 
 	/*
 	 * otherwise: select a subsequent word character
@@ -1560,13 +1566,13 @@ random_upper_posixsafe_words_str(char *str, unsigned int minlen, unsigned int ma
 	 *	 the quadratically skewed top SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < maxlen-1 && str[i-1] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
 	 * case: select first character of a word
 	 */
-	} else if (str[i-i] == ' ') {
+	} else if (str[i-1] == ' ') {
 	    str[i] = random_upper_alpha_char();
 
 	/*
@@ -1651,13 +1657,13 @@ random_lower_posixsafe_words_str(char *str, unsigned int minlen, unsigned int ma
 	 *	 the quadratically skewed top SPACE_ODDS is 0,
 	 *	 we set this character as space.
 	 */
-	if (i < maxlen-1 && str[i-i] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
+	if (i < maxlen-1 && str[i-1] != ' ' && top_skew_random_range(0, SPACE_ODDS) == 0) {
 	    str[i] = ' ';
 
 	/*
 	 * case: select first character of a word
 	 */
-	} else if (str[i-i] == ' ') {
+	} else if (str[i-1] == ' ') {
 	    str[i] = random_lower_alpha_char();
 
 	/*
@@ -1726,62 +1732,74 @@ generate_answers(char const *answers)
     /*
      * pick a random slot number
      */
-    fprint(answerp, "%ld\n", biased_random_range(1, MAX_SUBMIT_SLOT+1));
+    fprint(answerp, "%ld\n", biased_random_range(0, MAX_SUBMIT_SLOT+1));
 
     /*
      * form a random title
      */
-    buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
-    random_lower_posixsafe_str(buf, 1, MAX_TITLE_LEN);
+    memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+    (void) random();		/* just for j-random fun */
+    random_lower_posixsafe_str(buf, RANDOM_TITLE_MIN_LEN, MAX_TITLE_LEN);
     fprint(answerp, "%s\n", buf);
 
     /*
      * form a random abstract
      */
-    buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
-    random_words_str(buf, RANDOM_TITLE_MIN_LEN, MAX_TITLE_LEN);
+    memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+    (void) random();		/* just for j-random fun */
+    random_words_str(buf, RANDOM_ABSTRACT_MIN_LEN, MAX_TITLE_LEN);
     fprint(answerp, "%s\n", buf);
 
     /*
      * select a random number of authors
      */
+    (void) random();		/* just for j-random fun */
     author_count = biased_random_range(1, MAX_AUTHORS+1);
+    fprint(answerp, "%d\n", author_count);
 
     /*
      * form information for each author
      */
     for (i=0; i < author_count; ++i) {
 
+	unsigned int pos;	/* position to assign a specific character within a string */
 	unsigned int head_len;	/* length of the leading part of what is being formed */
-	unsigned int tail_len;	/* length of the trailing part of what is being formed */
 	char const *url_lead;	/* URL lead for http:// or https:// */
+	char *handle = NULL;	/* default author handle */
 	bool anonymous;		/* true ==> is anonymous */
 
 	/*
 	 * form random author name
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
-	random_words_str(buf, 1, MAX_AUTHORS_CHARS);
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
+	random_words_str(buf, RANDOM_NAME_MIN_LEN, MAX_NAME_LEN);
 	fprint(answerp, "%s\n", buf);
+
+	/*
+	 * form default handle
+	 */
+	handle = default_handle(buf);
 
 	/*
 	 * form random author location
 	 */
-	fprint(answerp, "%s\n", loc[biased_random_range(0, SIZEOF_LOCATION_TABLE)].code);
+	(void) random();		/* just for j-random fun */
+	fprint(answerp, "%s\n", loc[biased_random_range(0, SIZEOF_LOCATION_TABLE-1)].code);
 
 	/*
 	 * form random author email address
 	 *
 	 * 25% of the time, the author will be anonymous.
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(3, MAX_EMAIL_LEN+1);		    /* min length is 3: x@y */
-	    head_len = biased_random_range(1, ((rlen-1)/2)+1);		    /* user length up to 1/2 length */
-	    tail_len = rlen - head_len - 1;				    /* host length with room for @ */
-	    random_posixsafe_str(buf, head_len, head_len);		    /* form user */
-	    buf[head_len] = '@';					    /* @ */
-	    random_lower_posixsafe_str(buf+head_len+1, tail_len, tail_len); /* form host */
+	    rlen = biased_random_range(RANDOM_EMAIL_MIN_LEN, MAX_EMAIL_LEN+1);
+	    random_alphanum_str(buf, rlen, rlen);			    /* form overall string */
+	    pos = biased_random_range(2, rlen-4);			    /* put the @ randomly in the middle */
+	    buf[pos] = '@';						    /* load @ */
+	    buf[rlen-3] = '.';						    /* load . */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1790,21 +1808,25 @@ generate_answers(char const *answers)
 	 *
 	 * 25% of the time, the author will be anonymous.
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	anonymous = true;
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
 	    anonymous = false;
-	    if (biased_random_range(0, 4) > 0) {
-		url_lead =	  "https://";					/* 75% chance of https:// */
+	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
+		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
+		url_lead =	  "https://";
 		head_len = STRLEN("https://");
-	    } else {
-		url_lead =	  "http://";					/* 25% chance of http:// */
+	    } else {								/* 25% chance of http:// */
+		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
+		url_lead =	  "http://";
 		head_len = STRLEN("http://");
 	    }
-	    rlen = biased_random_range(head_len+1, MAX_URL_LEN);
-	    strcpy(buf, url_lead);
-	    tail_len = rlen - head_len;
-	    random_lower_posixsafe_str(buf+head_len, tail_len, tail_len);   /* lower case POSIX safe for rest of URL */
+	    strncpy(buf, url_lead, head_len);
+	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
+	    pos = biased_random_range(head_len+2,  rlen-4);
+	    buf[pos] = '.';						    /* load . */
+	    buf[pos+3] = '/';						    /* load / */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1813,19 +1835,23 @@ generate_answers(char const *answers)
 	 *
 	 * If author URL was NOT anonymous, 50% of the time, the author will have a 2nd URL
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	if (anonymous == false && biased_random_range(0, 2) > 0) {	    /* 50% change of 2nd URL if 1st URL */
-	    if (biased_random_range(0, 4) > 0) {
-		url_lead =	  "https://";				        /* 75% chance of https:// */
+	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
+		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
+		url_lead =	  "https://";
 		head_len = STRLEN("https://");
-	    } else {
-		url_lead =	  "http://";					/* 25% chance of http:// */
+	    } else {								/* 25% chance of http:// */
+		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
+		url_lead =	  "http://";
 		head_len = STRLEN("http://");
 	    }
-	    rlen = biased_random_range(head_len+1, MAX_URL_LEN);
-	    strcpy(buf, url_lead);
-	    tail_len = rlen - head_len;
-	    random_lower_posixsafe_str(buf+head_len, tail_len, tail_len);   /* lower case POSIX safe for rest of URL */
+	    strncpy(buf, url_lead, head_len);
+	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
+	    pos = biased_random_range(head_len+2,  rlen-4);
+	    buf[pos] = '.';						    /* load . */
+	    buf[pos+3] = '/';						    /* load / */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1834,15 +1860,15 @@ generate_answers(char const *answers)
 	 *
 	 * 25% of the time, the author will be anonymous.
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(4, MAX_MASTODON_LEN+1);		    /* min Mastodon handle is 4: @x@y */
-	    head_len = biased_random_range(1, ((rlen-2)/2)+1);		    /* user length up to 1/2 length */
-	    tail_len = rlen - head_len - 2;				    /* host length with room for 2x@ */
-	    buf[0] = '@';						    /* @ */
-	    random_posixsafe_str(buf+1, head_len, head_len);		    /* form user */
-	    buf[head_len+1] = '@';					    /* @ */
-	    random_lower_posixsafe_str(buf+head_len+2, tail_len, tail_len); /* form host */
+	    rlen = biased_random_range(RANDOM_MASTODON_MIN_LEN, MAX_MASTODON_LEN+1);
+	    random_lower_alphanum_str(buf+1, rlen-1, rlen-1);		    /* form overall string */
+	    buf[0] = '@';						    /* 1st @ */
+	    pos = biased_random_range(2, rlen-3);
+	    buf[pos] = '@';						    /* 2nd @ */
+	    buf[rlen-3] = '.';						    /* load . */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1851,11 +1877,12 @@ generate_answers(char const *answers)
 	 *
 	 * 25% of the time, the author will be anonymous.
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
 	    rlen = biased_random_range(2, MAX_GITHUB_LEN+1);		    /* min length is 2: @x */
 	    buf[0] = '@';						    /* @ */
-	    random_lower_posixsafe_str(buf+1, rlen, rlen);		    /* form user */
+	    random_lower_alphanum_str(buf+1, rlen-1, rlen-1);		    /* form user */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1864,18 +1891,29 @@ generate_answers(char const *answers)
 	 *
 	 * 25% of the time, the author will be anonymous.
 	 */
-	buf[BUFSIZ] = buf[0] = '\0';    /* paranoia */
+	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
+	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(1, MAX_AFFILIATION_LEN+1);	    /* min length is 1 */
+	    rlen = biased_random_range(RANDOM_AFFILIATION_MIN_LEN, MAX_AFFILIATION_LEN+1);
 	    random_posixsafe_words_str(buf, rlen, rlen);		    /* form user */
 	}
 	fprint(answerp, "%s\n", buf);
 
-	/* XXX - add more code here XXX */
-
+	/*
+	 * form author handle
+	 *
+	 * 50% of the time, the author will be a previous IOCCC winner
+	 */
+	fprint(answerp, "%s\n", handle);
+	/* free allocation by default_handle() */
+	free(handle);
+	handle = NULL; /* paranoia */
     }
 
-    /* XXX - add more code here XXX */
+    /*
+     * end answers file
+     */
+    fprint(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 
     /*
      * close up the answers file
@@ -1885,6 +1923,5 @@ generate_answers(char const *answers)
     if (ret != 0) {
 	warnp(__func__, "error in fclose to the random answers file");
     }
-    err(0, __func__, "XXX - -d and -s seed code not fully implemented - XXX"); /*ooo*/
     return;
 }

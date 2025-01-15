@@ -123,14 +123,11 @@
  *
  */
 #define MKIOCCCENTRY_BASENAME "mkiocccentry"	/* mkiocccentry tool basename for -V/-h */
-#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 #define ISO_3166_1_CODE_URL0 "\thttps://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "\thttps://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "\thttps://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
 #define ISO_3166_1_CODE_URL3 "\thttps://www.iso.org/obp/ui/#search"
 #define ISO_3166_1_CODE_URL4 "\thttps://www.iso.org/glossary-for-iso-3166.html"
-
-#undef IOCCC_WINNER_HANDLE_READY /* XXX: change to #define when IOCCC winner handles are available and ready */
 
 #define IOCCC_REGISTER_URL "https://www.freelists.org/list/ioccc28-reg" /* for mailing list to register for IOCCC28 */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org"	/* URL to submit to contest */
@@ -152,7 +149,6 @@
  */
 static void warn_empty_prog(char const *prog_c);
 static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
-static void warn_high_bit(char const *prog_c);
 static void warn_nul_chars(char const *prog_c);
 static void warn_trigraph(char const *prog_c);
 static void warn_wordbuf(char const *prog_c);

@@ -111,7 +111,7 @@ struct location loc[] = {
     {"AG", "Antigua and Barbuda", "Antigua and Barbuda"},
     {"AI", "Anguilla", "Anguilla"},
     {"AL", "Republic of Albania", "Albania"},
-    {"AM", "Republic of Armenia,", "Armenia,"},
+    {"AM", "Republic of Armenia", "Armenia"},
     {"AN", "Netherlands Antilles", "Netherlands Antilles"},	/* Transitionally reserved code */
     {"AO", "Republic of Angola", "Angola"},
 /*  {"AP", "African Regional Industrial Property Organization", "African Regional Industrial Property Organization"}, */ /* WIPO Indeterminately reserved code */
@@ -237,7 +237,7 @@ struct location loc[] = {
     {"IM", "Isle of Man", "Mann"},
     {"IN", "Republic of India", "India"},
     {"IO", "British Indian Ocean Territory", "British Indian Ocean Territory"},
-    {"IQ", "Republic of Iraq,", "Iraq"},
+    {"IQ", "Republic of Iraq", "Iraq"},
     {"IR", "Islamic Republic of Iran", "Iran"},
     {"IS", "Iceland", "Iceland"},
     {"IT", "Italian Republic", "Italy"},
@@ -327,7 +327,7 @@ struct location loc[] = {
     {"PS", "State of Palestine", "Palestine"},
     {"PT", "Portuguese Republic", "Portugal"},
     {"PU", "United States Miscellaneous Pacific Islands", "United States Miscellaneous Pacific Islands"},	/* Formerly assigned code */
-    {"PW", "Republic of Palau,", "Palau"},
+    {"PW", "Republic of Palau", "Palau"},
     {"PY", "Republic of Paraguay", "Paraguay"},
     {"PZ", "Panama Canal Zone", "Canal Zone"},	/* Formerly assigned code */
     {"QA", "State of Qatar", "Qatar"},

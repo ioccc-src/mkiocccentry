@@ -84,6 +84,7 @@
  */
 #define MKIOCCCENTRY_VERSION "1.1.6 2025-01-13"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
+#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
 /*
  * Version of info for JSON the .info.json file.

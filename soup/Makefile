@@ -990,8 +990,8 @@ location_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
 random_answers.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h limit_ioccc.h location.h random_answers.c \
-    random_answers.h version.h
+    ../jparse/version.h default_handle.h limit_ioccc.h location.h \
+    random_answers.c random_answers.h version.h
 rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
     rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \

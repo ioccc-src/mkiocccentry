@@ -52,6 +52,11 @@
 #include "location.h"
 
 /*
+ * default_handle - translate UTF-8 into POSIX portable filename and + chars
+ */
+#include "default_handle.h"
+
+/*
  * json_util - general JSON parser utility support functions
  */
 #include "../jparse/json_util.h"
@@ -61,7 +66,7 @@
  * definitions
  */
 #define NO_SEED (-1)		    /* neither -d nor -s seed used, don't generate / use pseudo-random answers */
-#define DEFAULT_SEED (1)	    /* -d is an alias for -s DEFAULT_SEED - XXX - value TBD - XXX */
+#define DEFAULT_SEED (21701)	    /* -d is an alias for -s DEFAULT_SEED - a gun nice prime */
 #define SEED_MASK (0x7fffffff)	    /* bit mask answer_seed with SEED_MASK before calling srandom(3) */
 #define SEED_DECIMAL_DIGITS (10)    /* decimal digits in the maximum seed value */
 
