@@ -4719,8 +4719,9 @@ get_author_info(struct author **author_set_p)
 			 "",
 			 "If you do not know your IOCCC winner handle, then read the following FAQ entry:",
 			 "",
-			 "     https://www.ioccc.org/faq.html#find_author_handle",
-			 "",
+			 NULL);
+		    print("    %s\n", IOCCC_FIND_AUTHOR_HANDLE);
+		    para("",
 			 "By entering your IOCCC winner handle, you will help us match up this submission",
 			 "on the website should you happen to win (again) with this submission.",
 			 NULL);

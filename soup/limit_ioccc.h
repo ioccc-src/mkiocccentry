@@ -137,6 +137,7 @@
 
 #define IOCCC_STATUS_URL "https://www.ioccc.org/status.html"        /* status of IOCCC URL */
 #define IOCCC_ENTER_FAQ_URL "https://www.ioccc.org/faq.html#enter"  /* how to enter FAQ */
+#define IOCCC_FIND_AUTHOR_HANDLE "https://www.ioccc.org/faq.html#find_author_handle"	/* how to find an author handle */
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */
