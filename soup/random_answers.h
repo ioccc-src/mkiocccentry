@@ -75,72 +75,73 @@
 /*
  * forward declarations
  */
-long biased_random_range(long min, long above);
-long top_skew_random_range(long min, long above);
+extern long biased_random_range(long min, long above);
+extern long top_skew_random_range(long min, long above);
 
-char random_alpha(void);
-char random_upper_alpha_char(void);
-char random_lower_alpha_char(void);
+extern char random_alpha(void);
+extern char random_upper_alpha_char(void);
+extern char random_lower_alpha_char(void);
 
-char random_alphanum_char(void);
-char random_upper_alphanum_char(void);
-char random_lower_alphanum_char(void);
+extern char random_alphanum_char(void);
+extern char random_upper_alphanum_char(void);
+extern char random_lower_alphanum_char(void);
 
-char random_posixsafe_char(void);
-char random_upper_posixsafe_char(void);
-char random_lower_posixsafe_char(void);
+extern char random_posixsafe_char(void);
+extern char random_upper_posixsafe_char(void);
+extern char random_lower_posixsafe_char(void);
 
-void random_alpha_str(char *str,
+extern void random_alpha_str(char *str,
 		      unsigned int minlen,
 		      unsigned int maxlen);
-void random_upper_alpha_str(char *str,
+extern void random_upper_alpha_str(char *str,
 			    unsigned int minlen,
 			    unsigned int maxlen);
-void random_lower_alpha_str(char *str,
+extern void random_lower_alpha_str(char *str,
 			    unsigned int minlen,
 			    unsigned int maxlen);
 
-void random_alphanum_str(char *str,
+extern void random_alphanum_str(char *str,
 			 unsigned int minlen,
 			 unsigned int maxlen);
-void random_upper_alphanum_str(char *str,
+extern void random_upper_alphanum_str(char *str,
 			       unsigned int minlen,
 			       unsigned int maxlen);
-void random_lower_alphanum_str(char *str,
+extern void random_lower_alphanum_str(char *str,
 			       unsigned int minlen,
 			       unsigned int maxlen);
 
-void random_posixsafe_str(char *str,
+extern void random_posixsafe_str(char *str,
 			  unsigned int minlen,
 			  unsigned int maxlen);
-void random_upper_posixsafe_str(char *str,
+extern void random_upper_posixsafe_str(char *str,
 				unsigned int minlen,
 				unsigned int maxlen);
-void random_lower_posixsafe_str(char *str,
+extern void random_lower_posixsafe_str(char *str,
 				unsigned int minlen,
 				unsigned int maxlen);
 
-void random_words_str(char *str,
+extern void random_words_str(char *str,
 		      unsigned int minlen,
 		      unsigned int maxlen);
-void random_upper_words_str(char *str,
+extern void random_upper_words_str(char *str,
 			    unsigned int minlen,
 			    unsigned int maxlen);
-void random_lower_words_str(char *str,
+extern void random_lower_words_str(char *str,
 			    unsigned int minlen,
 			    unsigned int maxlen);
 
-void random_posixsafe_words_str(char *str,
+extern void random_posixsafe_words_str(char *str,
 				unsigned int minlen,
 				unsigned int maxlen);
-void random_upper_posixsafe_words_str(char *str,
+extern void random_upper_posixsafe_words_str(char *str,
 				      unsigned int minlen,
 				      unsigned int maxlen);
-void random_lower_posixsafe_words_str(char *str,
+extern void random_lower_posixsafe_words_str(char *str,
 				      unsigned int minlen,
 				      unsigned int maxlen);
 
-void generate_answers(char const *answers);
+extern void generate_answers(char const *answers);
+extern char random_alpha_char(void);
 
 
 #endif /* INCLUDE_RANDOM_ANSWERS_H */

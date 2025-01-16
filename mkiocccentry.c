@@ -429,7 +429,7 @@ main(int argc, char *argv[])
 	 *	random_answers.answer_seed
 	 */
 	answer_len = (sizeof("random_answers.")-1) + SEED_DECIMAL_DIGITS + 1 + 1;   /* +1 for NULL, +1 for paranoia */
-	answers = malloc(answer_len + 1);	/* +1 for paranoia */
+	answers = malloc((size_t)answer_len + 1);	/* +1 for paranoia */
 	if (answers == NULL) {
 	    err(3, __func__, "failed to malloc %d bytes for answers filename", answer_len + 1); /*ooo*/
 	    not_reached();

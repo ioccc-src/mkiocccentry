@@ -192,7 +192,7 @@ C_OPT= -O3 -g3
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts
+WARN_FLAGS= -pedantic -Wall -Wextra -Wno-char-subscripts -Wno-sign-conversion
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
 # special compiler flags
