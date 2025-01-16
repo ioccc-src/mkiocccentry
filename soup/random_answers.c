@@ -1753,7 +1753,6 @@ generate_answers(char const *answers)
     /*
      * select a random number of authors
      */
-    (void) random();		/* just for j-random fun */
     author_count = biased_random_range(1, MAX_AUTHORS+1);
     fprint(answerp, "%d\n", author_count);
 
@@ -1900,9 +1899,18 @@ generate_answers(char const *answers)
 	fprint(answerp, "%s\n", buf);
 
 	/*
-	 * form author handle
+	 * determine if previous winner
 	 *
 	 * 50% of the time, the author will be a previous IOCCC winner
+	 */
+	if (biased_random_range(0, 2) > 0) {				    /* 50% chance previous winner */
+	    fprstr(answerp, "y\n");
+	} else {
+	    fprstr(answerp, "n\n");
+	}
+
+	/*
+	 * form author handle
 	 */
 	fprint(answerp, "%s\n", handle);
 	/* free allocation by default_handle() */

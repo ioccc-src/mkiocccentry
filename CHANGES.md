@@ -1,6 +1,52 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.10 2025-01-16
+
+Added `-E` to `mkiocccentr(1)` to exit non-zero (1 in fact) on
+the first warning.
+
+Added `-s seed` to `mkiocccentr(1)` seed a pseudo-random generator,
+then generate a `random_answers.seed` file with pseudo-random answers,
+and then to use that as if `-i random_answers.seed` had been called with
+pseudo-random answers.  This is useful as a **dry run** in that one does
+not have go thru the interactive process of answering questions.
+
+Added `-d` as an alias for `-s 21701`.
+
+While an effective seed is any value from 0 thru 2147483647, we tested
+`mkiocccentr -s seed` for seeds 0 thru 32767.
+
+Fixed the message about use of the 'test" user to not refer
+to sending Email.
+
+Removed the need for `IOCCC_WINNER_HANDLE_READY` as it is now ready.
+The hint now refers to the FAQ URL:
+
+    https://www.ioccc.org/faq.html#find_author_handle
+
+Fixed typos in `soup/location_tbl.c` where there were improper trailing
+commas in strings.
+
+Moved `MKIOCCCENTRY_ANSWERS_EOF` from `mkiocccentry.h` to
+`soup/version.h`, even though it is not strictly a version related
+string, because `MKIOCCCENTRY_ANSWERS_EOF` is used in conjunction with
+`MKIOCCCENTRY_ANSWERS_VERSION` which is in `soup/version.h`.
+
+Fixed `mkiocccentry -y` so that is prevents a yes/no prompt from being
+used.  The use of `mkiocccentry -i answers` will ask the user to verify
+the list of files for the submission unless `-y` is also given.
+
+The highbit warning is not permanently set to `false` as we now allow
+all UTF-8 in IOCCC source code.
+
+Changed `MKIOCCCENTRY_VERSION` from "1.1.6 2025-01-13"
+to "1.2 2025-01-16".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.9 2025-01-14"
+to "2.3.10 2025-01-16".
+
+
 ## Release 2.3.9 2025-01-14
 
 Renamed `test_extra_file()` to better account for what it is:

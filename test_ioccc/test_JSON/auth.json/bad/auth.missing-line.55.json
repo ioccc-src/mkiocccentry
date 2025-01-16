@@ -3,7 +3,7 @@
 	"IOCCC_auth_version" : "1.22 2024-05-18",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2023,
-	"mkiocccentry_version" : "1.1.6 2025-01-13",
+	"mkiocccentry_version" : "1.2 2025-01-16",
 	"chkentry_version" : "1.0.5 2025-01-13",
 	"fnamchk_version" : "1.0.2 2024-05-15",
 	"IOCCC_contest_id" : "test",

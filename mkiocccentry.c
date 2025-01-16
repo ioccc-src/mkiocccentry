@@ -101,7 +101,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
+    "usage: %s [options] workdir prog.c Makefile remarks.md [file ...]\n"
     "\noptions:\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -110,7 +110,7 @@ static const char * const usage_msg0 =
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n"
-    "\t-E\t\texit non-zero after first input warning (def: do not)\n"
+    "\t-E\t\texit non-zero after the first warning (def: do not)\n"
     "\t    NOTE: One cannot use both -W and -E at the same time.\n"
     "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n";
 static const char * const usage_msg1 =
@@ -134,7 +134,7 @@ static const char * const usage_msg3 =
     "\t    NOTE: Implies -y -E -A random_answers.seed and then reads answers from random_answers.seed\n"
     "\t    NOTE: One cannot use -a, -A nor -i with -s seed nor with -d at the same time.\n"
     "\n"
-    "\twork_dir\tdirectory where the submission directory and tarball are formed\n"
+    "\tworkdir\tdirectory where the submission directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your submission\n";
 static const char * const usage_msg4 =
     "\n"
@@ -178,6 +178,7 @@ static bool seed_used = false;		/* true ==> -d or -s seed given */
  * forward declarations
  */
 static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
+static bool noprompt_yes_or_no(void);
 
 
 int
@@ -316,7 +317,7 @@ main(int argc, char *argv[])
 	    need_confirm = false;
 	    break;
 	case 'd':		/* alias for -s DEFAULT_SEED */
-	    answer_seed = (DEFAULT_SEED & SEED_MASK);
+	    answer_seed = DEFAULT_SEED;
 	    seed_used = true;
 	    /* set -y */
 	    answer_yes = true;
@@ -340,7 +341,6 @@ main(int argc, char *argv[])
 		warnp(__func__, "invalid -s argument, most be >= 0, disabling -s seed");
 		answer_seed = NO_SEED;
 	    } else {
-		answer_seed &= SEED_MASK;
 		seed_used = true;
 		/* set -y */
 		answer_yes = true;
@@ -417,9 +417,9 @@ main(int argc, char *argv[])
 	int answer_len;	    /* length of the answers filename we will form */
 
 	/*
-	 * seed the BSD pseudo-random number generator
+	 * seed using random offset and srandom arg mask
 	 */
-	srandom((unsigned)(answer_seed & SEED_MASK));
+	srandom((unsigned)((answer_seed-RANDOM_OFFSET) & SEED_MASK));
 
 	/*
 	 * form the answers filename based on seed
@@ -435,9 +435,9 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	answers[answer_len] = '\0';		/* paranoia */
-	ret = snprintf(answers, answer_len, "random_answers.%u", (unsigned)(answer_seed & SEED_MASK));
+	ret = snprintf(answers, answer_len, "random_answers.%u", (unsigned)answer_seed);
 	if (ret <= 0) {
-	    errp(3, __func__, "snprintf of random_answers.%u filename failed", (unsigned)(answer_seed & SEED_MASK)); /*ooo*/
+	    errp(3, __func__, "snprintf of random_answers.%u filename failed", (unsigned)answer_seed); /*ooo*/
 	    not_reached();
 	}
 
@@ -461,21 +461,21 @@ main(int argc, char *argv[])
      * */
     extra_count = (argc - optind > REQUIRED_ARGS) ? argc - optind - REQUIRED_ARGS : 0;
     extra_list = argv + optind + REQUIRED_ARGS;
-    dbg(DBG_LOW, "tar: %s", tar);
-    dbg(DBG_LOW, "cp: %s", cp);
-    dbg(DBG_LOW, "ls: %s", ls);
+    dbg(DBG_MED, "tar: %s", tar);
+    dbg(DBG_MED, "cp: %s", cp);
+    dbg(DBG_MED, "ls: %s", ls);
     work_dir = argv[optind];
-    dbg(DBG_LOW, "work_dir: %s", work_dir);
+    dbg(DBG_MED, "work_dir: %s", work_dir);
     prog_c = argv[optind + 1];
-    dbg(DBG_LOW, "prog.c: %s", prog_c);
+    dbg(DBG_MED, "prog.c: %s", prog_c);
     Makefile = argv[optind + 2];
-    dbg(DBG_LOW, "Makefile: %s", Makefile);
+    dbg(DBG_MED, "Makefile: %s", Makefile);
     remarks_md = argv[optind + 3];
-    dbg(DBG_LOW, "remarks: %s", remarks_md);
-    dbg(DBG_LOW, "number of extra data file args: %d", extra_count);
-    dbg(DBG_LOW, "answers file: %s", answers);
+    dbg(DBG_MED, "remarks: %s", remarks_md);
+    dbg(DBG_MED, "number of extra data file args: %d", extra_count);
+    dbg(DBG_MED, "answers file: %s", answers);
     if (seed_used) {
-	dbg(DBG_LOW, "pseudo random seed: %u", (unsigned)(answer_seed & SEED_MASK));
+	dbg(DBG_MED, "pseudo random seed: %u", (unsigned)answer_seed);
     }
 
     /*
@@ -588,7 +588,7 @@ main(int argc, char *argv[])
      * obtain the IOCCC contest ID
      */
     info.ioccc_id = get_contest_id(&info.test_mode, &read_answers_flag_used);
-    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+    dbg(DBG_LOW, "Submission: IOCCC contest ID: %s", info.ioccc_id);
 
     /*
      * found the answer file header in stdin
@@ -601,7 +601,7 @@ main(int argc, char *argv[])
      * obtain submit slot number
      */
     info.submit_slot = get_submit_slot(&info);
-    dbg(DBG_MED, "submit slot number: %d", info.submit_slot);
+    dbg(DBG_LOW, "Submission: slot number: %d", info.submit_slot);
 
     /*
      * create submission directory
@@ -614,7 +614,7 @@ main(int argc, char *argv[])
 	not_reached();
     }
 
-    dbg(DBG_LOW, "formed submission directory: %s", submission_dir);
+    dbg(DBG_MED, "Directory formed: %s", submission_dir);
 
     /*
      * if -a, open the answers file. We only do it after verifying that we can
@@ -704,7 +704,7 @@ main(int argc, char *argv[])
      * obtain the title
      */
     info.title = get_title(&info);
-    dbg(DBG_LOW, "submission title: %s", info.title);
+    dbg(DBG_LOW, "Submission: title: %s", info.title);
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.title);
@@ -718,7 +718,7 @@ main(int argc, char *argv[])
      * obtain the abstract
      */
     info.abstract = get_abstract(&info);
-    dbg(DBG_LOW, "submission abstract: %s", info.abstract);
+    dbg(DBG_LOW, "Submission: abstract: %s", info.abstract);
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.abstract);
@@ -732,7 +732,7 @@ main(int argc, char *argv[])
      * obtain author information
      */
     author_count = get_author_info(&author_set);
-    dbg(DBG_LOW, "collected information on %d authors", author_count);
+    dbg(DBG_MED, "collected information on %d authors", author_count);
 
     /*
     * if we have an answers file, record the verified author information
@@ -1685,7 +1685,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
     /*
      * report on the result of the contest ID validation
      */
-    dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", malloc_ret);
+    dbg(DBG_MED, "Contest ID is a UUID: %s", malloc_ret);
 
     /*
      * report contest ID format is valid
@@ -1949,7 +1949,7 @@ warn_empty_prog(char const *prog_c)
 	    err(64, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
+	dbg(DBG_MED, "user says that their empty prog.c: %s is OK", prog_c);
     }
 }
 
@@ -2007,7 +2007,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
 		err(66, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
-	    dbg(DBG_LOW, "user says that their prog.c %s size: %jd > Rule 2a max size: %jd is OK", prog_c,
+	    dbg(DBG_MED, "user says that their prog.c %s size: %jd > Rule 2a max size: %jd is OK", prog_c,
 		(intmax_t)infop->rule_2a_size, (intmax_t)RULE_2A_SIZE);
 	}
 
@@ -2032,7 +2032,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
 		err(67, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
-	    dbg(DBG_LOW, "user says that prog.c %s size: %jd != rule_count function size: %jd is OK", prog_c,
+	    dbg(DBG_MED, "user says that prog.c %s size: %jd != rule_count function size: %jd is OK", prog_c,
 		(intmax_t)infop->rule_2a_size, (intmax_t)size.rule_2a_size);
 	}
 
@@ -2087,7 +2087,7 @@ warn_nul_chars(char const *prog_c)
 	    err(70, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
+	dbg(DBG_MED, "user says that prog.c %s having NUL character(s) is OK", prog_c);
     }
 }
 
@@ -2133,7 +2133,7 @@ warn_trigraph(char const *prog_c)
 	    err(72, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
+	dbg(DBG_MED, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
     }
 }
 
@@ -2179,7 +2179,7 @@ warn_wordbuf(char const *prog_c)
 	    err(74, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
+	dbg(DBG_MED, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
     }
 }
 
@@ -2226,7 +2226,7 @@ warn_ungetc(char const *prog_c)
 	    err(76, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggering an ungetc warning OK", prog_c);
+	dbg(DBG_MED, "user says that prog.c %s triggering an ungetc warning OK", prog_c);
     }
 }
 
@@ -2279,7 +2279,7 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
 	    err(79, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that their prog.c %s size: %ju > Rule 2B max size: %ju is OK", prog_c,
+	dbg(DBG_MED, "user says that their prog.c %s size: %ju > Rule 2B max size: %ju is OK", prog_c,
 	    (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
     }
 }
@@ -3625,6 +3625,144 @@ get_abstract(struct info *infop)
 
 
 /*
+ * noprompt_yes_or_no - read yes or no without a prompt
+ *
+ * Unlike the yes_or_no() function, this function does NOT issue a prompt.
+ *
+ * Unlike the yes_or_no() function, this function does NOT attempt to
+ * re-ask is the input not valid.  Unless the input is "y" or "yes"
+ * regardless of the case, this function will return false, even
+ * with a read error.
+ *
+ * returns:
+ *      true ==> input is yes in some form,
+ *      false ==> input is not yes or there was a read error.
+ *
+ * NOTE: The -y (answer_yes) as no impact on this function as
+ *	 the yes or no input will be read regardless.
+ */
+static bool
+noprompt_yes_or_no(void)
+{
+    char *linep = NULL;		/* readline_dup line buffer */
+    size_t len;			/* length of input */
+    char *response;		/* yes or no response */
+    char *p;
+
+    /*
+     * read user input - return input length
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    response = readline_dup(&linep, true, &len, input_stream);
+    if (response == NULL) {
+
+	/*
+	 * case: readline_dup error
+	 */
+	warnp(__func__, "readline_dup returned NULL, assuming a no answer");
+	if (abort_on_warning) {
+	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	}
+	dbg(DBG_HIGH, "due to readline_dup error, returning false");
+	return false;
+    }
+
+    /*
+     * examine response length
+     */
+    dbg(DBG_VVHIGH, "received a %ju byte response", (uintmax_t)len);
+    if (len <= 0) {
+
+	/*
+	 * free storage
+	 */
+	if (response != NULL) {
+	    free(response);
+	    response = NULL;
+	}
+
+	/*
+	 * report empty response
+	 */
+	warn(__func__, "readline_dup returned empty string, assuming a no answer");
+	if (abort_on_warning) {
+	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	}
+	dbg(DBG_HIGH, "due to readline_dup error, returning false");
+	return false;
+    }
+
+    /*
+     * convert response to lower case
+     */
+    for (p = response; *p != '\0'; ++p) {
+	if (isascii(*p) && isalpha(*p)) {
+	    *p = (char)tolower(*p);
+	}
+    }
+    dbg(DBG_VHIGH, "response converted into lower case is: <<%s>>", response);
+
+    /*
+     * check for a valid reply
+     */
+    if (strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
+
+	/*
+	 * free storage
+	 */
+	if (response != NULL) {
+	    free(response);
+	    response = NULL;
+	}
+
+	/*
+	 * return yes
+	 */
+	dbg(DBG_HIGH, "yes read, returning true");
+	return true;
+
+    } else if (strcmp(response, "n") == 0 || strcmp(response, "no") == 0) {
+
+	/*
+	 * free storage
+	 */
+	if (response != NULL) {
+	    free(response);
+	    response = NULL;
+	}
+
+	/*
+	 * return no
+	 */
+	dbg(DBG_HIGH, "no read, returning false");
+	return false;
+    }
+
+    /*
+     * free storage
+     */
+    if (response != NULL) {
+	free(response);
+	response = NULL;
+    }
+
+    /*
+     * invalid response
+     */
+    warn(__func__, "response was neither yes nor no");
+    if (abort_on_warning) {
+	err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+    }
+
+    /*
+     * should not get here - but assume no if we do
+     */
+    dbg(DBG_HIGH, "due to invalid response, returning false");
+    return false;
+}
+
+
+/*
  * get_author_info - obtain information on submission authors
  *
  * given:
@@ -3808,7 +3946,7 @@ get_author_info(struct author **author_set_p)
 	     */
 	    author_set[i].name = NULL;
 	    author_set[i].name = prompt("Enter author name", &len);
-	    dbg(DBG_LOW, "submission author[%d] name: %s", i, author_set[i].name);
+	    dbg(DBG_MED, "read: author[%d] name: %s", i, author_set[i].name);
 
 	    /*
 	     * reject empty author name
@@ -3891,7 +4029,7 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].name == NULL);
-	dbg(DBG_MED, "Author #%d Name %s", i, author_set[i].name);
+	dbg(DBG_LOW, "Submission: author[%d] name: %s", i, author_set[i].name);
 
 	/*
 	 * obtain author location/country code
@@ -3903,7 +4041,7 @@ get_author_info(struct author **author_set_p)
 	     */
 	    author_set[i].location_code = NULL;
 	    author_set[i].location_code = prompt("Enter author 2 character location/country code (XX for anonymous)", &len);
-	    dbg(DBG_LOW, "submission author[%d] location/country code: %s", i, author_set[i].location_code);
+	    dbg(DBG_MED, "read: author[%d] location code: %s", i, author_set[i].location_code);
 
 	    /*
 	     * inspect code input
@@ -4064,8 +4202,9 @@ get_author_info(struct author **author_set_p)
 		 author_set[i].location_name == NULL ||
 		 author_set[i].common_name == NULL ||
 		 !yorn);
-	dbg(DBG_MED, "Author #%d location/country: %s %s (%s)",
-		     i, author_set[i].location_code, author_set[i].location_name, author_set[i].common_name);
+	dbg(DBG_LOW, "Submission: author[%d] location: %s", i, author_set[i].location_code);
+	dbg(DBG_LOW, "\t      location code: %s == %s (%s)",
+		     author_set[i].location_code, author_set[i].location_name, author_set[i].common_name);
 
 	/*
 	 * ask for Email address
@@ -4080,9 +4219,9 @@ get_author_info(struct author **author_set_p)
 		"Enter author email address, or press return to skip" :
 		"Enter author email address", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] email address withheld", i);
+		dbg(DBG_MED, "read: author[%d] Email address withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] email address: %s", i, author_set[i].email);
+		dbg(DBG_MED, "read: author[%d] Email: %s", i, author_set[i].email);
 	    }
 
 	    /*
@@ -4117,8 +4256,11 @@ get_author_info(struct author **author_set_p)
 		continue;
 	    }
 	} while (author_set[i].email == NULL);
-
-	dbg(DBG_MED, "Author #%d Email: %s", i, author_set[i].email);
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] Email address withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] Email address: %s", i, author_set[i].email);
+	}
 
 	/*
 	 * ask for main URL
@@ -4134,9 +4276,9 @@ get_author_info(struct author **author_set_p)
 		    "Enter author home page URL (starting with http:// or https://), or press return to skip" :
 		    "Enter author home page URL", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] URL withheld", i);
+		dbg(DBG_MED, "read: author[%d] URL withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] URL: %s", i, author_set[i].url);
+		dbg(DBG_MED, "read: author[%d] URL: %s", i, author_set[i].url);
 	    }
 
 	    /*
@@ -4208,11 +4350,14 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].url == NULL);
-
-	dbg(DBG_MED, "Author #%d URL #0: %s", i, author_set[i].url);
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] URL withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] URL: %s", i, author_set[i].url);
+	}
 
 	/*
-	 * ask for alt URL
+	 * ask for Alt URL
 	 */
 	do {
 
@@ -4225,9 +4370,9 @@ get_author_info(struct author **author_set_p)
 		    "Enter second URL (starting with http:// or https://), or press return to skip" :
 		    "Enter second URL", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] alt URL withheld", i);
+		dbg(DBG_MED, "read: author[%d] Alt URL withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] alt URL: %s", i, author_set[i].alt_url);
+		dbg(DBG_MED, "read: author[%d] Alt URL: %s", i, author_set[i].alt_url);
 	    }
 
 	    /*
@@ -4299,9 +4444,11 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].alt_url == NULL);
-
-	dbg(DBG_MED, "Author #%d alt URL: %s", i, author_set[i].alt_url);
-
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] Alt URL withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] Alt URL: %s", i, author_set[i].alt_url);
+	}
 
 	/*
 	 * ask for mastodon handle
@@ -4316,9 +4463,9 @@ get_author_info(struct author **author_set_p)
 		"Enter author Mastodon handle, starting with @, or press return to skip" :
 		"Enter author Mastodon handle", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] Mastodon handle withheld", i);
+		dbg(DBG_MED, "read: author[%d] Mastodon handle withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] Mastodon handle: %s", i, author_set[i].mastodon);
+		dbg(DBG_MED, "read: author[%d] Mastodon handle: %s", i, author_set[i].mastodon);
 	    }
 
 	    /*
@@ -4383,8 +4530,11 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].mastodon == NULL);
-
-	dbg(DBG_MED, "Author #%d mastodon: %s", i, author_set[i].mastodon);
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] Mastodon handle withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] Mastodon handle: %s", i, author_set[i].mastodon);
+	}
 
 	/*
 	 * ask for GitHub account
@@ -4399,9 +4549,9 @@ get_author_info(struct author **author_set_p)
 		"Enter author GitHub account, starting with @, or press return to skip" :
 		"Enter author GitHub account", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] GitHub account withheld", i);
+		dbg(DBG_MED, "read: author[%d] GitHub account withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] GitHub account: %s", i, author_set[i].github);
+		dbg(DBG_MED, "read: author[%d] GitHub account: %s", i, author_set[i].github);
 	    }
 
 	    /*
@@ -4465,8 +4615,11 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].github == NULL);
-
-	dbg(DBG_MED, "Author #%d GitHub: %s", i, author_set[i].github);
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] GitHub account withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] GitHub account: %s", i, author_set[i].github);
+	}
 
 	/*
 	 * ask for affiliation
@@ -4481,9 +4634,9 @@ get_author_info(struct author **author_set_p)
 		"Enter author affiliation, or press return to skip" :
 		"Enter author affiliation", &len);
 	    if (len == 0) {
-		dbg(DBG_LOW, "submission author[%d] Affiliation withheld", i);
+		dbg(DBG_MED, "read: author[%d] Affiliation withheld", i);
 	    } else {
-		dbg(DBG_LOW, "submission author[%d] Affiliation account: %s", i, author_set[i].affiliation);
+		dbg(DBG_MED, "read: author[%d] Affiliation: %s", i, author_set[i].affiliation);
 	    }
 
 	    /*
@@ -4515,7 +4668,11 @@ get_author_info(struct author **author_set_p)
 		continue;
 	    }
 	} while (author_set[i].affiliation == NULL);
-	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
+	if (len == 0) {
+	    dbg(DBG_LOW, "Submission: author[%d] Affiliation withheld", i);
+	} else {
+	    dbg(DBG_LOW, "Submission: author[%d] Affiliation: %s", i, author_set[i].affiliation);
+	}
 
 	/*
 	 * ask if they are a past IOCCC winning author
@@ -4528,7 +4685,12 @@ get_author_info(struct author **author_set_p)
 		"",
 		NULL);
 	}
-	author_set[i].past_winning_author = yes_or_no("Are you a past IOCCC winning author? [yn]");
+	if (seed_used) {
+	    author_set[i].past_winning_author = noprompt_yes_or_no();
+	} else {
+	    author_set[i].past_winning_author = yes_or_no("Are you a past IOCCC winning author? [yn]");
+	}
+	dbg(DBG_LOW, "Submission: author[%d] Past winner: %s", i, (author_set[i].past_winning_author ? "true" : "false"));
 
 	/*
 	 * ask for IOCCC author handle
@@ -4614,7 +4776,7 @@ get_author_info(struct author **author_set_p)
 		    def_handle = NULL;
 		}
 	    }
-	    dbg(DBG_LOW, "submission author[%d] handle: %s", i, author_set[i].author_handle);
+	    dbg(DBG_MED, "read: author[%d] handle: %s", i, author_set[i].author_handle);
 
 	    /*
 	     * reject if handle is invalid
@@ -4681,7 +4843,7 @@ get_author_info(struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].author_handle == NULL);
-	dbg(DBG_MED, "Author #%d IOCCC author handle: %s", i, author_set[i].author_handle);
+	dbg(DBG_LOW, "Submission: author[%d] IOCCC author handle: %s", i, author_set[i].author_handle);
 
 	/*
 	 * verify the information for this author
@@ -4822,7 +4984,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 	err(142, __func__, "ls k-block value: %d <= 0", kdirsize);
 	not_reached();
     }
-    dbg(DBG_LOW, "submission directory %s size in kibibyte (1024 byte blocks): %d", submission_dir, kdirsize);
+    dbg(DBG_MED, "Directory %s size in kibibyte (1024 byte blocks): %d", submission_dir, kdirsize);
 
     /*
      * close down pipe
@@ -5441,7 +5603,7 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
      * verify submission directory contents
      */
     verify_submission_dir(submission_dir, ls);
-    dbg(DBG_LOW, "verified submission directory: %s", submission_dir);
+    dbg(DBG_MED, "verified submission directory: %s", submission_dir);
 
     /*
      * note the current directory so we can restore it later, after the chdir(work_dir) below
