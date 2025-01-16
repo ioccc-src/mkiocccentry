@@ -108,10 +108,10 @@ static const char * const usage_msg0 =
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-V\t\tprint version string and exit\n"
+    "\t-V\t\tprint version string and exit\n\n"
     "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n"
-    "\t-E\t\texit non-zero after the first warning (def: do not)\n"
-    "\t    NOTE: One cannot use both -W and -E at the same time.\n"
+    "\t-E\t\texit non-zero after the first warning (def: do not)\n\n"
+    "\t\t\t    NOTE: One cannot use both -W and -E.\n\n"
     "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
@@ -126,26 +126,30 @@ static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a file for easier updating of a submission\n"
     "\t-A answers\twrite answers file even if it already exists\n"
     "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
-    "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
+    "\t\t\t    NOTE: One cannot use both -a/-A answers and -i answers.\n"
     "\n"
     "\t-s seed\t\tGenerate and use pseudo-random answers, seeding with seed & 0x%08u (def: do not)\n"
     "\t-d\t\tAlias for -s %u\n"
     "\n"
-    "\t    NOTE: Implies -y -E -A random_answers.seed and then reads answers from random_answers.seed\n"
-    "\t    NOTE: One cannot use -a, -A nor -i with -s seed nor with -d at the same time.\n"
+    "\t\t\t    NOTE: Implies -y -E -A random_answers.seed and reads answers from random_answers.seed\n"
+    "\t\t\t    NOTE: One cannot use -a/-A or -i with -s seed/-d.\n"
     "\n"
-    "\tworkdir\tdirectory where the submission directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your submission\n";
+    "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
+    "\tprog.c\t\tpath to the C source for your submission";
 static const char * const usage_msg4 =
-    "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
+    "\tremarks.md\tRemarks about your submission in markdown format\n\n"
+    "\t\t\t    NOTE: The following is a guide to markdown:\n"
     "\n"
-    "\tremarks.md\tRemarks about your submission in markdown format\n"
-    "\t\t\tNOTE: The following is a guide to markdown:\n"
+    "\t\t\t        https://www.markdownguide.org/basic-syntax\n"
     "\n"
-    "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
+    "\t\t\t    NOTE: PLEASE also see our markdown guidelines:\n"
     "\n"
-    "\t[file ...]\textra data files to include with your submission\n"
+    "\t\t\t        https://www.ioccc.org/markdown.html\n"
+    "\n"
+    "\t[file ...]\textra data files to include with your submission\n";
+
+static const char * const usage_msg5 =
     "\n"
     "Exit codes:\n"
     "     0   all OK\n"
@@ -1007,7 +1011,8 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
-    fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg4);
+    fprintf_usage(exitcode, stderr, usage_msg5, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
 	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
