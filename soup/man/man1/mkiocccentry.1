@@ -10,14 +10,10 @@
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
 .TH mkiocccentry 1 "16 January 2025" "mkiocccentry" "IOCCC tools"
-
 .SH NAME
-
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
-
 .SH SYNOPSIS
-
 .B mkiocccentry
 .RB [\| options \|]
 .I workdir
@@ -26,9 +22,7 @@
 .I remarks.md
 .RI [\| \[ file | directory
 .IR ... \|]
-
 .SH DESCRIPTION
-
 .B mkiocccentry
 gathers your source file, Makefile and remarks as well as any other files and/or directories, and assuming everything is correct and valid, it will create an XZ compressed tarball.
 The tool runs
@@ -41,9 +35,7 @@ the
 .IR remarks.md
 and any extra files as well, to verify that everything seems in order.
 You can ignore certain warnings but some issues are errors; if invalid input or files are provided the program will let you know more about it so you can fix it.
-
 .PP
-
 Under the
 .I workdir
 .B mkiocccentry
@@ -51,15 +43,11 @@ will create a submission directory (based on the IOCCC contestant ID and submiss
 If the submission directory under the work directory already exists, the program will tell you to move it or delete it; the program does
 .B NOT
 delete or move it for you.
-
 .PP
-
 One may pass in additional files or directories to be copied to the submission directory.
 Files are copied to the submission top level directory and directories are copied recursively as subdirectories.
 There is a maximum depth allowed for subdirectories and the basename of files and directories are restricted to POSIX plus \+ safe characters, plus a maximum name length.
-
 .PP
-
 Before forming the tarball,
 .B mkiocccentry
 will ask you for information about your submission including the number of authors and various information about the author(s).
@@ -70,9 +58,7 @@ At this point it will create the
 and
 .I .auth.json
 files with information about the submission and information about the authors (which are for winning entries).
-
 .PP
-
 After each file is formed it will run
 .BR chkentry (1)
 on the file. If
@@ -88,9 +74,7 @@ wrote indicates that there is a serious mismatch between what
 is doing and what
 .BR chkentry (1)
 expects.
-
 .PP
-
 After forming the tarball
 .BR txzchk (1)
 is run which verifies that the tarball is okay (\c
@@ -98,48 +82,37 @@ is run which verifies that the tarball is okay (\c
 in turn will call
 .BR fnamchk (1)\c
 \&).
-
 .PP
-
 Because some might want or need to update an entry there is functionality to write your answers to a file so that you can feed the program the answers quickly.
-
 .SH OPTIONS
-
 .TP
 .B \-h
 Show help and exit.
-
 .TP
 .BI \-v\  level
 Set verbosity level to
 .IR level .
-
 .TP
 .B \-J\  level
 Set verbosity level for the internal jparse library.
 The default JSON verbosity level is 0, which is produces no JSON debug messages.
-
 .TP
 .B \-q
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
-
 .TP
 .B \-V
 Show version and exit.
-
 .TP
 .B \-W
 Ignore all warnings.
 When this option is specified the program warns you that you've ignored all warnings (therefore not ignoring all warnings :) ), informing you that the judges will not ignore all warnings.
-
 .TP
 .B \-E
 Exit 1 after the first warning.
 This option conflicts with the
 .B \-W
 option.
-
 .TP
 .B \-y
 Answer yes to most questions.
@@ -147,15 +120,12 @@ Use with
 .B EXTREME CAUTION
 as answering yes to everything may produce a submission that violates the IOCCC rules
 and/or conflicts with the IOCCC guidelines.
-
 .br
-
 See:
 .ft B
 https://www.ioccc.org/next/index.html
 .ft R
 for information on the IOCCC rules and guidelines.
-
 .TP
 .BI \-t\  tar
 Set path to
@@ -170,7 +140,6 @@ checks
 and
 .I /bin/tar
 if this option is not specified.
-
 .TP
 .BI \-c\  cp
 Set
@@ -183,7 +152,6 @@ checks
 and
 .I /bin/cp
 if this option is not specified.
-
 .TP
 .BI \-l\  ls
 Set
@@ -196,7 +164,6 @@ checks
 and
 .I /bin/ls
 if this option is not specified.
-
 .TP
 .BI \-T\  txzchk
 Set
@@ -209,14 +176,12 @@ checks
 and
 .I /usr/local/bin/txzchk
 if this option is not specified.
-
 .TP
 .B \-e
 Pass
 .B \-e
 to
 .BR txzchk (1).
-
 .TP
 .BI \-F\  fnamchk
 Set
@@ -229,7 +194,6 @@ checks
 and
 .I /usr/local/bin/fnamchk
 if this option is not specified.
-
 .TP
 .BI \-C\  chkentry
 Set
@@ -242,7 +206,6 @@ checks
 and
 .I /usr/local/bin/chkentry
 if this option is not specified.
-
 .TP
 .BI \-a\  answers
 .B mkiocccentry
@@ -256,12 +219,10 @@ If the file exists
 will ask you if you wish to overwrite it unless
 .B \-A
 is specified which will always overwrite the answers file.
-
 .TP
 .BI \-A\  answers
 Always overwrite answers file
 .IR answers \|.
-
 .TP
 .BI \-i\  answers
 Read the answers from the file
@@ -272,7 +233,6 @@ This option cannot be used with
 or
 .B \-A\
 \&.
-
 .TP
 .BI \-s\  seed
 Generate pseudo-random answers to the questions
@@ -283,9 +243,7 @@ the file
 and then processed as if
 .BI \-i\  random_answers.seed
 had been used.
-
 .br
-
 This mode is intended as a
 .B dry run
 only, allowing a submitter to quickly check if there are
@@ -295,9 +253,7 @@ The result is for
 as the result is
 .B NOT SUITABLE
 for submitting to an open IOCCC.
-
 .br
-
 The pseudo-random answers generated via
 calls to
 .BR random (3)
@@ -314,23 +270,18 @@ must be an non-negative integer.
 Useful values of
 .I seed
 are integers between 0 and 2147483647 inclusive.
-
 .br
-
 The use of
 .BI \-s\  seed
 implies the use of
 .B \-y
 and
 .BR \-E .
-
 .TP
 .B \-d
 Alias for
 .BR \-s\  21701\ .
-
 .SH EXIT STATUS
-
 .TP
 0
 all OK
@@ -349,15 +300,10 @@ invalid command line, invalid option or option missing an argument
 .TQ
 >= 10
 internal error
-
 .SH BUGS
-
 .PP
-
 More than 0 humans work on it! :)
-
 .PP
-
 The IOCCC uses the term
 .B entry
 to refer to a submission that won the IOCCC whereas the term
@@ -380,9 +326,7 @@ The IOCCC decided to
 in the name of
 .BR fputs (3)
 backward compatibility. :)
-
 .PP
-
 As a compromise, the name of the compressed tarball produced by
 .BR mkiocccentry (1)
 was changed to start with
@@ -392,9 +336,7 @@ instead of
 The
 .BR fnamchk (1)
 tool was by necessity changed accordingly.
-
 .PP
-
 Astute proofreaders might find circumstances where variables, comments, error messages and prompt strings use
 .B entry
 instead of
@@ -412,17 +354,12 @@ In other words if it refers to submissions won then it should be
 .B entry
 or
 .BR entries .
-
 .PP
-
 If you have an issue with the tool you can open an issue at
 .IR https://github.com/ioccc\-src/mkiocccentry/issues
 as a bug report or feature request.
-
 .SH EXAMPLES
-
 .PP
-
 Run test script:
 .sp
 .RS
@@ -430,9 +367,7 @@ Run test script:
  ./mkiocccentry_test.sh
 .ft R
 .RE
-
 .PP
-
 Make
 .I workdir
 and then make an entry from the files
@@ -450,9 +385,7 @@ for future updates:
  ./mkiocccentry \-a answers workdir prog.c Makefile remarks.md
 .ft R
 .RE
-
 .PP
-
 Use the answers file from the previous invocation to quickly update the entry with an additional file and directory added:
 .sp
 .RS
@@ -460,9 +393,7 @@ Use the answers file from the previous invocation to quickly update the entry wi
  ./mkiocccentry \-i answers workdir prog.c Makefile remarks.md data.txt subdir
 .ft R
 .RE
-
 .PP
-
 Run program, specifying alternative path to
 .B tar
 and

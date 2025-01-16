@@ -1814,12 +1814,12 @@ generate_answers(char const *answers)
 	    anonymous = false;
 	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
 		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
-		url_lead =	  "https://";
-		head_len = STRLEN("https://");
+		url_lead =	  "https://example.com/";
+		head_len = STRLEN("https://example.com/");
 	    } else {								/* 25% chance of http:// */
 		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
-		url_lead =	  "http://";
-		head_len = STRLEN("http://");
+		url_lead =	  "http://example.com/";
+		head_len = STRLEN("http://example.com/");
 	    }
 	    strncpy(buf, url_lead, head_len);
 	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
@@ -1839,12 +1839,12 @@ generate_answers(char const *answers)
 	if (anonymous == false && biased_random_range(0, 2) > 0) {	    /* 50% change of 2nd URL if 1st URL */
 	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
 		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
-		url_lead =	  "https://";
-		head_len = STRLEN("https://");
+		url_lead =	  "https://example.com/";
+		head_len = STRLEN("https://example.com/");
 	    } else {								/* 25% chance of http:// */
 		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
-		url_lead =	  "http://";
-		head_len = STRLEN("http://");
+		url_lead =	  "http://example.com/";
+		head_len = STRLEN("http://example.com/");
 	    }
 	    strncpy(buf, url_lead, head_len);
 	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */

@@ -56,6 +56,15 @@ to `"1.1.3 2025-01-16"`. The test JSON files were updated for both of these
 version updates. A new bad test file for txzchk was added along with its
 appropriate err file.
 
+Make `mkiocccentry_test.sh` test `-d` option (which uses `-s seed). Updated
+version of script to `"1.0.4 2025-01-16"`.
+
+Removed blank lines from `mkiocccentry.1` (they're not needed and some say it's
+incorrect).
+
+Make `mkiocccentry` random answers file prepend `http://example.com/` (and
+`https://example.com/` to the URLs. The emails probably should be `@example.com`
+too but that can be worried about another time.
 
 
 ## Release 2.3.9 2025-01-14
