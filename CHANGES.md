@@ -33,7 +33,7 @@ Moved `MKIOCCCENTRY_ANSWERS_EOF` from `mkiocccentry.h` to
 string, because `MKIOCCCENTRY_ANSWERS_EOF` is used in conjunction with
 `MKIOCCCENTRY_ANSWERS_VERSION` which is in `soup/version.h`.
 
-Fixed `mkiocccentry -y` so that is prevents a yes/no prompt from being
+Fixed `mkiocccentry -y` so that it prevents a yes/no prompt from being
 used.  The use of `mkiocccentry -i answers` will ask the user to verify
 the list of files for the submission unless `-y` is also given.
 
@@ -47,6 +47,15 @@ Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.9 2025-01-14"
 to "2.3.10 2025-01-16".
 
 Fixed `make all test; make test` failure.
+
+Added to list of forbidden files `GNUmakefile`. This involved an update to the
+`forbidden_filenames` array in `soup/entry_util.c` and making both `txzchk` and
+`mkiocccentry` use that array. This means that the `MKIOCCCENTRY_VERSION` was
+bumped again, making it `"1.2.1 2025-01-16"`. The `TXZCHK_VERSION` was updated
+to `"1.1.3 2025-01-16"`. The test JSON files were updated for both of these
+version updates. A new bad test file for txzchk was added along with its
+appropriate err file.
+
 
 
 ## Release 2.3.9 2025-01-14

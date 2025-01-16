@@ -93,6 +93,7 @@ char *forbidden_filenames[] =
     PROG_ORIG_FILENAME,
     PROG_ORIG_C_FILENAME,
     README_MD_FILENAME,
+    GNUMAKEFILE_FILENAME,
     NULL
 };
 

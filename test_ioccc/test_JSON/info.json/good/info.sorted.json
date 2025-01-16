@@ -48,7 +48,7 @@
         }
     ],
     "min_timestamp" : 1716103155,
-    "mkiocccentry_version" : "1.2 2025-01-16",
+    "mkiocccentry_version" : "1.2.1 2025-01-16",
     "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
     "nul_warning" : false,
     "rule_2a_mismatch" : false,
@@ -61,7 +61,7 @@
     "timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
     "title" : "title-for-entry0",
     "trigraph_warning" : false,
-    "txzchk_version" : "1.1.2 2025-01-13",
+    "txzchk_version" : "1.1.3 2025-01-16",
     "ungetc_warning" : false,
     "wordbuf_warning" : false
 }

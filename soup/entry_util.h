@@ -52,6 +52,7 @@
 #define PROG_ORIG_FILENAME "prog.orig"          /* compiled winning entry code filename */
 #define PROG_ORIG_C_FILENAME "prog.orig.c"      /* entry source code filename */
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
+#define GNUMAKEFILE_FILENAME "GNUmakefile"      /* GNUmakefile takes priority over Makefile which we don't want */
 
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
