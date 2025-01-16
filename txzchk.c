@@ -592,13 +592,13 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 
 
 /*
- * check_txz_file - checks on the current file only
+ * check_txz_file - checks on the current filename only
  *
  * given:
  *
  *	tarball_path	- the tarball (or text file) we're processing
  *	dir_name	- the directory name (if fnamchk passed - else NULL)
- *	file		- file structure
+ *	file		- txz_file structure
  *
  * Report feathers stuck in the current tarball.
  *
@@ -610,6 +610,7 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 {
     bool allowed_dot_file = false;	/* true ==> basename is an allowed '.' file */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay */
+    size_t i = 0;                       /* we need this to iterate through forbidden files list */
 
     /*
      * firewall
@@ -678,13 +679,12 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 		warn("txzchk", "%s: found file called '.' in path %s", tarball_path, file->filename);
 	    }
 	}
-
-	if (!strcasecmp(file->basename, INDEX_HTML_FILENAME) || !strcasecmp(file->basename, PROG_FILENAME) ||
-            !strcasecmp(file->basename, PROG_ALT_FILENAME) || !strcasecmp(file->basename, PROG_ORIG_FILENAME) ||
-            !strcasecmp(file->basename, PROG_ORIG_C_FILENAME) || !strcasecmp(file->basename, README_MD_FILENAME)) {
-	    ++tarball.total_feathers;
-	    ++tarball.invalid_filenames;
-	    warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
+        for (i = 0; forbidden_filenames[i] != NULL; ++i) {
+	    if (!strcasecmp(file->basename, forbidden_filenames[i])) {
+                ++tarball.total_feathers;
+                ++tarball.invalid_filenames;
+	        warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
+            }
 	}
     }
 

@@ -82,7 +82,7 @@
     "IOCCC_year" : 2024,
     "chkentry_version" : "1.0.5 2025-01-13",
     "min_timestamp" : 1716103155,
-    "mkiocccentry_version" : "1.2 2025-01-16",
+    "mkiocccentry_version" : "1.2.1 2025-01-16",
     "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
     "tarball" : "submit.test-0.1716103155.txz",
     "test_mode" : true,

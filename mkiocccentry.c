@@ -74,6 +74,7 @@
 #include <stdarg.h>
 #include <getopt.h>
 #include <string.h>
+#include <strings.h>	/* strcasecmp() */
 #include <errno.h>
 #include <sys/stat.h>
 #include <ctype.h>
@@ -82,7 +83,6 @@
 #include <sys/types.h>
 #include <sys/wait.h> /* for WEXITSTATUS() */
 #include <fcntl.h> /* for open() */
-#include <string.h> /* for strdup() */
 
 /*
  * mkiocccentry - form IOCCC entry compressed tarball
@@ -3056,6 +3056,7 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
     size_t extra_file_filename_len;	/* length of the extra filename path */
     int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
+    size_t j;                   /* for iterating through forbidden filenames */
     int i;
 
     /*
@@ -3166,19 +3167,19 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
                                args[i]);
             not_reached();
         }
-        if (!strcasecmp(base, README_MD_FILENAME) || !strcasecmp(base, INDEX_HTML_FILENAME) ||
-            !strcasecmp(base, PROG_FILENAME) || !strcasecmp(base, PROG_ALT_FILENAME) ||
-            !strcasecmp(base, PROG_ORIG_FILENAME) || !strcasecmp(base, PROG_ORIG_C_FILENAME)) {
-            fpara(stderr,
-                "",
-                "An extra file cannot be named any of:",
-                "",
-                "   README.md, index.html, prog, prog.alt, prog.orig, prog.orig.c",
-                "",
-                NULL);
-                err(124, __func__, "filename %s not allowed", base);
-            not_reached();
-        }
+        for (j = 0; forbidden_filenames[j] != NULL; ++j) {
+	    if (!strcasecmp(base, forbidden_filenames[j])) {
+                fpara(stderr,
+                    "",
+                    "An extra file cannot be named any of:",
+                    "",
+                    "   index.html, prog, prog.alt, prog.orig, prog.orig.c, README.md, GNUmakefile",
+                    "",
+                    NULL);
+                    err(124, __func__, "filename %s not allowed", base);
+                not_reached();
+            }
+	}
 
 	/*
 	 * form destination path
