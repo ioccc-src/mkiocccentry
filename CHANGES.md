@@ -46,6 +46,8 @@ to "1.2 2025-01-16".
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.9 2025-01-14"
 to "2.3.10 2025-01-16".
 
+Fixed `make all test; make test` failure.
+
 
 ## Release 2.3.9 2025-01-14
 
