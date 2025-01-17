@@ -50,7 +50,7 @@
 #define RANDOM_ABSTRACT_MIN_LEN (8)	/* minimum length of an abstract */
 #define RANDOM_NAME_MIN_LEN (10)	/* minimum length of an author name */
 #define RANDOM_EMAIL_MIN_LEN (6)	/* min email length is 6: x@x.xx */
-#define RANDOM_URL_MIN_LEN (13)		/* min URL is 13: http://h.xx/u or 14: https://h.xx/u */
+#define RANDOM_URLPATH_MIN_LEN (8)	/* minimum path length after the http://example.org/ or https://example.org/ */
 #define RANDOM_MASTODON_MIN_LEN (7)	/* min Mastodon handle is 7: @u@h.xx */
 #define RANDOM_AFFILIATION_MIN_LEN (8)  /* minimum length of an affiliation */
 #define MAX_RANDOM (0x7fffffff)		/* maximum value returned by random(3) */
@@ -1812,20 +1812,17 @@ generate_answers(char const *answers)
 	anonymous = true;
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
 	    anonymous = false;
-	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
-		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
-		url_lead =	  "https://example.com/";
-		head_len = STRLEN("https://example.com/");
-	    } else {								/* 25% chance of http:// */
-		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
-		url_lead =	  "http://example.com/";
-		head_len = STRLEN("http://example.com/");
+	    if (anonymous == false && biased_random_range(0, 2) > 0) {	    /* 50% change of 2nd URL if 1st URL */
+		if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
+		    url_lead = "https://example.org/";
+		} else {							/* 25% chance of http:// */
+		    url_lead = "http://example.org/";
+		}
+		head_len = strlen(url_lead);
+		strlcpy(buf, url_lead, head_len+1);
+		rlen = biased_random_range(head_len+RANDOM_URLPATH_MIN_LEN, MAX_URL_LEN-head_len+1);
+		random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
 	    }
-	    strncpy(buf, url_lead, head_len);
-	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
-	    pos = biased_random_range(head_len+2,  rlen-4);
-	    buf[pos] = '.';						    /* load . */
-	    buf[pos+3] = '/';						    /* load / */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1838,19 +1835,14 @@ generate_answers(char const *answers)
 	(void) random();		/* just for j-random fun */
 	if (anonymous == false && biased_random_range(0, 2) > 0) {	    /* 50% change of 2nd URL if 1st URL */
 	    if (biased_random_range(0, 4) > 0) {				/* 75% chance of https:// */
-		rlen = biased_random_range(RANDOM_URL_MIN_LEN+1, MAX_URL_LEN+1);
-		url_lead =	  "https://example.com/";
-		head_len = STRLEN("https://example.com/");
+		url_lead = "https://example.org/";
 	    } else {								/* 25% chance of http:// */
-		rlen = biased_random_range(RANDOM_URL_MIN_LEN, MAX_URL_LEN+1);
-		url_lead =	  "http://example.com/";
-		head_len = STRLEN("http://example.com/");
+		url_lead = "http://example.org/";
 	    }
-	    strncpy(buf, url_lead, head_len);
+	    head_len = strlen(url_lead);
+	    strlcpy(buf, url_lead, head_len+1);
+	    rlen = biased_random_range(head_len+RANDOM_URLPATH_MIN_LEN, MAX_URL_LEN-head_len+1);
 	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
-	    pos = biased_random_range(head_len+2,  rlen-4);
-	    buf[pos] = '.';						    /* load . */
-	    buf[pos+3] = '/';						    /* load / */
 	}
 	fprint(answerp, "%s\n", buf);
 
