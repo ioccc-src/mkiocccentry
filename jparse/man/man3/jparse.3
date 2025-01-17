@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "07 January 2025" "jparse"
+.TH jparse 3  "17 January 2025" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_str() \|,
@@ -25,6 +25,8 @@
 \fB#include <jparse/jparse.h>\fP
 .sp
 .B "extern const char *const jparse_library_version;	/* jparse library version format: major.minor YYYY-MM-DD */"
+.br
+.B "extern const char *const jparse_utils_version;	/* jparse utils (util.c) version format: major.minor YYYY-MM-DD */"
 .br
 .B "extern const char *const jparse_utf8_version;	/* jparse utf8 version format: major.minor YYYY-MM-DD */"
 .br
@@ -299,6 +301,11 @@ The string
 which points to
 .BR JPARSE_LIBRARY_VERSION ,
 is the current version of the jparse library itself.
+The string
+.BR jparse_utils_version ,
+which points to
+.BR JPARSE_UTILS_VERSION ,
+is the current jparse utils (util.c) version.
 The string
 .BR jparse_utf8_version ,
 which points to

@@ -21,8 +21,12 @@
 #    define  INCLUDE_JPARSE_VERSION_H
 
 /*
- * NOTE: only the repo release version, the jparse tool and the JSON parser
- * versions are here. For the version of the other tools, see their header file.
+ * NOTE: only the repo release version, the jparse tool version, the jparse
+ * utils (util.c, not json_util.c, see below) version and the JSON parser
+ * version are here.  For the version of the other tools, see their header file.
+ *
+ * NOTE: the json_util.c is part of the jparse library version so when that code
+ * is updated the JPARSE_LIBRARY_VERSION should be updated.
  */
 
 /*
@@ -41,6 +45,11 @@
  * official JSON parser version
  */
 #define JPARSE_LIBRARY_VERSION "2.2.6 2025-01-17"	/* library version format: major.minor YYYY-MM-DD */
+
+/*
+ * official utility functions (util.c) version
+ */
+#define JPARSE_UTILS_VERSION "1.0.0 2025-01-17"         /* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_JPARSE_VERSION_H */

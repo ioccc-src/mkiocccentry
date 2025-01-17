@@ -107,7 +107,7 @@
 extern int jparse_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 122 "./jparse.y"
+#line 123 "./jparse.y"
 
     #if !defined(JPARSE_LTYPE_IS_DECLARED)
     struct JPARSE_LTYPE
@@ -198,7 +198,7 @@ struct JPARSE_LTYPE
 int jparse_parse (struct json **tree, yyscan_t scanner);
 
 /* "%code provides" blocks.  */
-#line 114 "./jparse.y"
+#line 115 "./jparse.y"
 
 #ifndef YY_DECL
 #define YY_DECL int jparse_lex(JPARSE_STYPE *yylval_param, JPARSE_LTYPE *yylloc_param, yyscan_t yyscanner)

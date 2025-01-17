@@ -80,6 +80,7 @@ static char const * const usage =
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
 "\n"
 "jparse util test version: %s\n"
+"jparse utils version: %s\n"
 "jparse UTF-8 version: %s\n"
 "jparse library version: %s";
 #endif /* UTIL_TEST */
@@ -5613,7 +5614,8 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, ":hv:J:Vqe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - write help, to stderr and exit 0 */
-	    fprintf_usage(0, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(178, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+                    JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -5639,26 +5641,38 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - write version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", JPARSE_LIBRARY_VERSION);
+	    ret = printf("util_test version: %s\n", UTIL_TEST_VERSION);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error writing version string: %s", JPARSE_LIBRARY_VERSION);
+		warnp(__func__, "printf error writing util_test version string: %s", UTIL_TEST_VERSION);
+	    }
+	    ret = printf("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error writing jparse utils version string: %s", JPARSE_UTILS_VERSION);
+	    }
+            errno = 0;          /* pre-clear errno for warnp() */
+	    ret = printf("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error writing jparse library version string: %s", JPARSE_LIBRARY_VERSION);
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
 	case ':':
 	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
-	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(179, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+                    JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case '?':
 	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
-	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(180, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+                    JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	default:
 	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
-	    fprintf_usage(3, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
+	    fprintf_usage(181, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION,
+                    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	}
     }
@@ -5687,10 +5701,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(178, __func__, "calloc_path(%s, %s) returned NULL", dirname, filename);
+	errp(182, __func__, "calloc_path(%s, %s) returned NULL", dirname, filename);
 	not_reached();
     } else if (strcmp(buf, "foo/bar") != 0) {
-	err(179, __func__, "buf: %s != %s/%s", buf, dirname, filename);
+	err(183, __func__, "buf: %s != %s/%s", buf, dirname, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(%s, %s): returned %s", dirname, filename, buf);
@@ -5711,10 +5725,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(180, __func__, "calloc_path(NULL, %s) returned NULL", filename);
+	errp(184, __func__, "calloc_path(NULL, %s) returned NULL", filename);
 	not_reached();
     } else if (strcmp(buf, "bar") != 0) {
-	err(181, __func__, "buf: %s != %s", buf, filename);
+	err(185, __func__, "buf: %s != %s", buf, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(NULL, %s): returned %s", filename, buf);
@@ -5746,7 +5760,7 @@ main(int argc, char **argv)
      */
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_OK) {
-        err(182, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(186, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity)); /*coo*/
         not_reached();
     } else {
@@ -5759,7 +5773,7 @@ main(int argc, char **argv)
     relpath = "foo/bar";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_OK) {
-        err(183, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5772,7 +5786,7 @@ main(int argc, char **argv)
     relpath = "";
     sanity = sane_relative_path(relpath, 99, 25, 2);
     if (sanity != PATH_ERR_PATH_EMPTY) {
-        err(184, __func__, "sane_relative_path(\"%s\", 99, 25, 2): expected PATH_ERR_PATH_EMPTY, got: %s",
+        err(188, __func__, "sane_relative_path(\"%s\", 99, 25, 2): expected PATH_ERR_PATH_EMPTY, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5785,7 +5799,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity =sane_relative_path(relpath, 2, 99, 2);
     if (sanity != PATH_ERR_PATH_TOO_LONG) {
-        err(185, __func__, "sane_relative_path(\"%s\", 2, 99, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
+        err(189, __func__, "sane_relative_path(\"%s\", 2, 99, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5798,7 +5812,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity =sane_relative_path(relpath, 0, 25, 2);
     if (sanity != PATH_ERR_MAX_PATH_LEN_0) {
-        err(186, __func__, "sane_relative_path(\"%s\", 0, 25, 2): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
+        err(190, __func__, "sane_relative_path(\"%s\", 0, 25, 2): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5811,7 +5825,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity = sane_relative_path(relpath, 99, 25, 0);
     if (sanity != PATH_ERR_MAX_DEPTH_0) {
-        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 0): expected PATH_ERR_MAX_DEPTH_0, got: %s",
+        err(191, __func__, "sane_relative_path(\"%s\", 99, 25, 0): expected PATH_ERR_MAX_DEPTH_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5824,7 +5838,7 @@ main(int argc, char **argv)
     relpath = "/foo";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_ERR_NOT_RELATIVE) {
-        err(188, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_RELATIVE, got: %s",
+        err(192, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_RELATIVE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5837,7 +5851,7 @@ main(int argc, char **argv)
     relpath = "aequeosalinocalcalinoceraceoaluminosocupreovitriolic"; /* 52 letter word recognised by some */
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_ERR_NAME_TOO_LONG) {
-        err(189, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NAME_TOO_LONG, got: %s",
+        err(193, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NAME_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5850,7 +5864,7 @@ main(int argc, char **argv)
     relpath = "foo";
     sanity = sane_relative_path(relpath, 99, 0, 2);
     if (sanity != PATH_ERR_MAX_NAME_LEN_0) {
-        err(190, __func__, "sane_relative_path(\"%s\", 99, 0, 2): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
+        err(194, __func__, "sane_relative_path(\"%s\", 99, 0, 2): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5863,7 +5877,7 @@ main(int argc, char **argv)
     relpath = "foo/bar";
     sanity = sane_relative_path(relpath, 99, 25, 1);
     if (sanity != PATH_ERR_PATH_TOO_DEEP) {
-        err(191, __func__, "sane_relative_path(\"%s\", 99, 25, 1): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+        err(195, __func__, "sane_relative_path(\"%s\", 99, 25, 1): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5876,7 +5890,7 @@ main(int argc, char **argv)
     relpath = "foo/../";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(192, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(196, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5889,7 +5903,7 @@ main(int argc, char **argv)
     relpath = "foo/./";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(193, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(197, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5902,7 +5916,7 @@ main(int argc, char **argv)
     relpath = "./foo/";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(194, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(198, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5915,7 +5929,7 @@ main(int argc, char **argv)
     relpath = "foo1";
     sanity = sane_relative_path(relpath, 99, 25, 4);
     if (sanity != PATH_OK) {
-        err(195, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(199, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -5940,10 +5954,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 0);
     if (name == NULL) {
-        err(196, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
+        err(200, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, relpath) != 0) {
-        err(197, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
+        err(201, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 0) == %s", relpath, relpath);
@@ -5955,10 +5969,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 1);
     if (name == NULL) {
-        err(198, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
+        err(202, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab/rab") != 0) {
-        err(199, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
+        err(203, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 1) == foo/bar/baz/zab/rab", relpath);
@@ -5974,10 +5988,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 2);
     if (name == NULL) {
-        err(200, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
+        err(204, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab") != 0) {
-        err(201, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
+        err(205, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 2) == foo/bar/baz/zab", relpath);
@@ -5993,10 +6007,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 3);
     if (name == NULL) {
-        err(202, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
+        err(206, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz") != 0) {
-        err(203, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
+        err(207, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 3) == foo/bar/baz", relpath);
@@ -6012,10 +6026,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 4);
     if (name == NULL) {
-        err(204, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
+        err(208, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar") != 0) {
-        err(205, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
+        err(209, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 4) == foo/bar", relpath);
@@ -6031,10 +6045,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 5);
     if (name == NULL) {
-        err(206, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
+        err(210, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(207, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
+        err(211, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 5) == foo", relpath);
@@ -6056,10 +6070,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 6);
     if (name == NULL) {
-        err(208, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
+        err(212, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(209, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
+        err(213, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 6) == foo", relpath);
@@ -6075,10 +6089,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, -1);
     if (name == NULL) {
-        err(210, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        err(214, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(211, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
+        err(215, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1) == foo", relpath);
@@ -6094,10 +6108,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = base_name(relpath);
     if (name == NULL) {
-        err(212, __func__, "base_name(\"%s\"): returned NULL", relpath);
+        err(216, __func__, "base_name(\"%s\"): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "oof") != 0) {
-        err(213, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
+        err(217, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "base_name(\"%s\") == oof", relpath);
@@ -6114,7 +6128,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(214, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(218, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6126,7 +6140,7 @@ main(int argc, char **argv)
     relpath = "foo//baz";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(215, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(219, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6138,7 +6152,7 @@ main(int argc, char **argv)
     relpath = "///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(216, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(220, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6150,7 +6164,7 @@ main(int argc, char **argv)
     relpath = "/";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(217, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(221, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6162,7 +6176,7 @@ main(int argc, char **argv)
     relpath = "foo///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(218, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(222, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6174,7 +6188,7 @@ main(int argc, char **argv)
     relpath = "";
     comps = count_dirs(relpath);
     if (comps != 0) {
-        err(219, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
+        err(223, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 0", relpath);
@@ -6186,7 +6200,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(220, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(224, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6198,7 +6212,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(221, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(225, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -6210,7 +6224,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(222, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(226, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6222,7 +6236,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(223, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(227, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -6234,7 +6248,7 @@ main(int argc, char **argv)
     relpath = "foo//foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(224, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(228, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6246,7 +6260,7 @@ main(int argc, char **argv)
     relpath = "foo//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(225, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(229, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -6258,7 +6272,7 @@ main(int argc, char **argv)
     relpath = "foo/foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(226, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(230, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6270,7 +6284,7 @@ main(int argc, char **argv)
     relpath = "foo/foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(227, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(231, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -6286,7 +6300,7 @@ main(int argc, char **argv)
     relpath = "foo,bar,,,";
     comps = count_comps(relpath, ',', true);
     if (comps != 2) {
-        err(228, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
+        err(232, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_comps(\"%s\", ',', true) == 2", relpath);
