@@ -15,6 +15,16 @@ parser but the `util.c` file) which involved syncing the jparse repo again.
 
 Updated `TXZCHK_VERSION` to `"1.1.4 2025-01-17"`.
 
+Added new macro (in jparse) `JPARSE_UTILS_VERSION` set at `"1.0.0 2025-01-17"`.
+This is strictly so that the JSON parser library version is not changed when
+something not strictly related the jparse JSON parse(r) related routines are
+changed. In other words, `json_util.c` is a jparse library version (like
+`jparse.l` and `jparse.y`) change but a change in `util.c` is a change in the
+`JPARSE_UTILS_VERSION`. The tools (in jparse and here) now refer to this in both
+`-h` and `-V`.
+
+
+
 
 ## Release 2.3.10 2025-01-16
 

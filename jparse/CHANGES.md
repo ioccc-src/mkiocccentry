@@ -28,7 +28,15 @@ Fixed format warnings in various files so that we no longer need `-Wno-format`.
 Fixing this allows for errors and suspect code (both types of issues were
 corrected, both in `json_parse.c` and `json_utf8.c`).
 
-Updated `PARSE_LIBRARY_VERSION` to `"2.2.6 2025-01-17"`.
+Added new macro `JPARSE_UTILS_VERSION` set at `"1.0.0 2025-01-17"`. This is
+strictly so that the JSON parser library version is not changed when something
+not strictly related the jparse JSON parse(r) related routines are changed. In
+other words, `json_util.c` is a jparse library version (like `jparse.l` and
+`jparse.y`) change but a change in `util.c` is a change in the
+`JPARSE_UTILS_VERSION`. The tools now refer to this in both `-h` and `-V`.
+
+Updated `JPARSE_LIBRARY_VERSION` to `"2.2.6 2025-01-17"` (this was done prior to
+adding the `JPARSE_UTILS_VERSION`).
 Updated `JPARSE_UTF8_VERSION` to `"2.0.6 2025-01-17"`.
 
 
