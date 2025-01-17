@@ -394,8 +394,8 @@ struct location loc[] = {
     {"TM", "Turkmenistan", "Turkmenistan"},
     {"TN", "Republic of Tunisia", "Tunisia"},
     {"TO", "Kingdom of Tonga", "Tonga"},
-    {"TP", "Republic of T\xc3\x9crkiye", "Turkey"},		/* Transitionally reserved code */
-    {"TR", "Republic of T\xc3\x9crkiye", "Turkey"},
+    {"TP", "Republic of T\xc3\xbcrkiye", "Turkey"},		/* Transitionally reserved code */
+    {"TR", "Republic of T\xc3\xbcrkiye", "Turkey"},
     {"TT", "Republic of Trinidad and Tobago", "Trinidad and Tobago"},
     {"TV", "Tuvalu", "Tuvalu"},
     {"TW", "Taiwan", "Taiwan"},		/* set the name and common_name to be the same for this location */
