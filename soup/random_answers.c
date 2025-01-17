@@ -1692,7 +1692,7 @@ generate_answers(char const *answers)
     FILE *answerp = NULL;		/* file pointer to the answers file */
     char buf[BUFSIZ+1];			/* scratch buffer for random strings of sane length */
     int author_count;			/* number of authors */
-    int rlen;				/* random length of something to form */
+    long rlen;				/* random length of something to form */
     int ret;				/* libc return code */
     int i;
 
@@ -1784,7 +1784,7 @@ generate_answers(char const *answers)
 	 * form random author location
 	 */
 	(void) random();		/* just for j-random fun */
-	fprint(answerp, "%s\n", loc[biased_random_range(0, SIZEOF_LOCATION_TABLE-1)].code);
+	fprint(answerp, "%s\n", loc[biased_random_range(0, (long)SIZEOF_LOCATION_TABLE-1)].code);
 
 	/*
 	 * form random author email address
