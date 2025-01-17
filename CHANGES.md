@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.11 2025-01-17
+
+Bug fix `txzchk` to check for required files in top level directory only (with
+the exception that dot files are not allowed in any subdirectory and the only
+dot files allowed in the top level directory are `.info.json` and `.auth.json`).
+
+Added new test files to `txzchk` test suite, both good and bad (with associated
+`.err` files).
+
+This fix involved a bug fix and enhancement to the jparse library (not the JSON
+parser but the `util.c` file) which involved syncing the jparse repo again.
+
+Updated `TXZCHK_VERSION` to `"1.1.4 2025-01-17"`.
+
+
 ## Release 2.3.10 2025-01-16
 
 Added `-E` to `mkiocccentr(1)` to exit non-zero (1 in fact) on

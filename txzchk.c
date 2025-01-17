@@ -635,7 +635,8 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
      * lower case upper case! :-) Alternatively you can just deal with the
      * irony.
      */
-    if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTH_JSON_FILENAME)) {
+    if (count_dirs(file->filename) == 1 && (!strcmp(file->basename, INFO_JSON_FILENAME) ||
+                !strcmp(file->basename, AUTH_JSON_FILENAME))) {
 	allowed_dot_file = true;
     }
 
@@ -794,15 +795,15 @@ check_all_txz_files(void)
 	    err(25, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
 	}
-	if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
+	if (count_dirs(file->filename) == 1 && !strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    tarball.has_info_json = true;
-	} else if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
+	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, AUTH_JSON_FILENAME)) {
 	    tarball.has_auth_json = true;
-	} else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
+	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, MAKEFILE_FILENAME)) {
 	    tarball.has_Makefile = true;
-	} else if (!strcmp(file->basename, PROG_C_FILENAME)) {
+	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, PROG_C_FILENAME)) {
 	    tarball.has_prog_c = true;
-	} else if (!strcmp(file->basename, REMARKS_FILENAME)) {
+	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, REMARKS_FILENAME)) {
 	    tarball.has_remarks_md = true;
 	}
 

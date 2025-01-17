@@ -53,18 +53,18 @@ utf8len(const char *str, int32_t surrogate)
 	x = surrogate;
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else {
-	    warn(__func__, "%X: illegal value\n", x);
+	    warn(__func__, "%X: illegal value, len: %jd\n", x, (intmax_t)len);
 	    len = -1;
 	}
 
@@ -76,7 +76,7 @@ utf8len(const char *str, int32_t surrogate)
      */
     scanned = sscanf(str, "\\u%c%c%c%c", &xa, &xb, &xc, &xd);
     if (scanned != 4) {
-	warn(__func__, "did not find \\u followed by four HEX digits: %ju values: <%s>: %x %x %x %x", scanned, str,
+	warn(__func__, "did not find \\u followed by four HEX digits: %ju values: <%s>: %x %x %x %x", (uintmax_t)scanned, str,
 		xa, xb, xc, xd);
 	len = -1;
 
@@ -112,18 +112,18 @@ utf8len(const char *str, int32_t surrogate)
 	 */
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %d", x, len);
+	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
 	} else {
-	    warn(__func__, "%X: illegal value\n", x);
+	    warn(__func__, "%X: illegal value, len %jd\n", x, (intmax_t)len);
 	    len = -1;
 	}
     }

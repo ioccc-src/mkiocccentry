@@ -1,5 +1,37 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.7 2025-01-17
+
+Update `count_comps()` to have a boolean `remove_all` which will, if true,
+remove all the trailing delimiter characters. The `count_dirs()` sets that
+boolean to `false` now. To explain the fixes, we assume that the path is
+`foo///` and the delimiter character is `/`: we now remove all but the last
+trailing `/`. With this there is one component. In other words, if there are 0
+delimiting characters it is 0. If however the string is `foo//foo` the middle
+`//` is changed to "/" and it ends up being one component. But if it was
+instead `foo//foo/` it would be two because of the trailing `/`. This allows
+for properly counting directories at the same time as accounting for files in
+the directories. For instance if there is a filename `bar` in the directory
+`foo` then it is incorrect to say that there are two directories. On the other
+hand, if one needs to count components in a different way, say because it's not
+directories and they want all trailing delimiter chars removed, they can use
+`true`.
+
+Updated util test code quite a bit: when no error is encountered in the
+functions added in the previous releases (`dir_name()`, `count_dirs()` and
+`sane_relative_path()`) we print out the result as well. Also more test cases
+were added to test the above change with how components are counted. An
+additional test case was added for `count_comps()` with `remove_all` set to
+true.
+
+Fixed format warnings in various files so that we no longer need `-Wno-format`.
+Fixing this allows for errors and suspect code (both types of issues were
+corrected, both in `json_parse.c` and `json_utf8.c`).
+
+Updated `PARSE_LIBRARY_VERSION` to `"2.2.6 2025-01-17"`.
+Updated `JPARSE_UTF8_VERSION` to `"2.0.6 2025-01-17"`.
+
+
 ## Release 2.2.6 2025-01-13
 
 Add new utility functions that act on directory paths:

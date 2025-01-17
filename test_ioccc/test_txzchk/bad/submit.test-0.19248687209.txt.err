@@ -1,0 +1,2 @@
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.19248687209.txt: no prog.c found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.19248687209.txt: found 1 feather stuck in the tarball

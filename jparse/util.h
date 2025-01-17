@@ -186,7 +186,7 @@ enum path_sanity {
  */
 extern char *base_name(char const *path);
 extern char *dir_name(char const *path, int level);
-extern size_t count_comps(char const *str, char comp);
+extern size_t count_comps(char const *str, char comp, bool remove_all);
 extern size_t count_dirs(char const *path);
 extern bool exists(char const *path);
 extern bool is_file(char const *path);
