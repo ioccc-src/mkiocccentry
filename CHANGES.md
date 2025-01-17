@@ -66,6 +66,29 @@ Make `mkiocccentry` random answers file prepend `http://example.com/` (and
 `https://example.com/` to the URLs. The emails probably should be `@example.com`
 too but that can be worried about another time.
 
+Changed `MANDATORY_FILE_COUNT` to `MANDATORY_SUBMISSION_FILES` to clarify
+the meaning of this value.  This value remains at 5.
+
+Added `OPTIONAL_SUBMISSION_FILES` to list the 2 files that are
+may be added without being counted an extra file.
+
+Added `MAX_EXTRA_FILE_COUNT` to give the maximum number of extra files
+for a submission.  This does **NOT** include mandatory files, nor does
+it include optional files a submission.  This value as been set to 31.
+
+Now `MAX_FILE_COUNT` refers to the maximum total file count, including
+mandatory files, optional files, and extra files for a submission.
+
+Added important comments to `soup/limit_ioccc.h` about
+both submission and winning entry mandatory and optional files.
+
+**NOTE**: The above file limits refer to submissions, not a winning entries
+as IOCCC judges are free to add additional files to a winning entry as needed.
+
+**NOTE**: As a result of the above, `MAX_FILE_COUNT` is 5+2+31 = 38,
+an increase from the effective file count limit of 42-5 = 37 when
+the mandatory file count was subtracted from MAX_FILE_COUNT in the code.
+
 
 ## Release 2.3.9 2025-01-14
 

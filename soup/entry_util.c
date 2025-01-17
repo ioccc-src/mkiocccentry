@@ -1719,11 +1719,11 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      * verify that we do not have too many extra filenames or a bogus < 0 extra
      * filenames
      */
-    if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
+    if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
 				    "manifest: man.count_extra_file: %jd just be >=0 and < %d",
-				    man.count_extra_file, MAX_FILE_COUNT-MANDATORY_FILE_COUNT);
+				    man.count_extra_file, MAX_FILE_COUNT);
 	}
 	dyn_array_free(man.extra);
         return false;

@@ -49,18 +49,55 @@
  *
  * The MAX_TARBALL_LEN value MUST match the MAX_TARBALL_LEN variable as defined
  * in the IOCCC submit server code.
+ *
+ * Possible mandatory files for a submission:
+ *
+ *	prog.c
+ *	Makefile
+ *	remarks.md	    (NOTE: turns into README.md for a winning entry)
+ *	.info.json	    (NOTE: ignored by mkiocccentry, error for txzchk, becomes .entry.json for a winning entry)
+ *	.auth.json	    (NOTE: ignored by mkiocccentry, error for txzchk, becomes .entry.json for a winning entry)
+ *
+ * FYI: Optional files (and sometimes encouraged) for a submission that are not considered extra:
+ *
+ *	try.sh		    (NOTE: encouraged optional file that does NOT count as an extra file if it exists)
+ *	prog.alt.c	    (NOTE: a file, if it exists, that does NOT count as an extra file if it exists)
+ *
+ * FYI: Possible mandatory files for a winning entry, not a submission, include:
+ *
+ *	prog.c
+ *	Makefile
+ *	README.md	    (NOTE: built in part from the submission remarks.md file)
+ *	.entry.json	    (NOTE: built in part from the submission .info.json and .auth.json files)
+ *	index.html	    (NOTE: built in part from the README.md file)
+ *	YYYY_name.tar.bz2   (NOTE: built from the set of winning entry directories and files)
+ *	.path		    (NOTE: error for both mkiocccentry and txzchk, while winning entries will have this file)
+ *	prog.orig.c	    (NOTE: error for both mkiocccentry and txzchk)
+ *
+ * FYI: Possible files that may be added to a winning entry:
+ *
+ *	.gitignore	    (NOTE: error for both mkiocccentry and txzchk, while winning entries may have this file)
+ *	prog.alt.c	    (NOTE: winning entries may have this file)
+ *	try.sh		    (NOTE: winning entries likely have this file)
+ *	*		    (NOTE: The IOCCC judges may add more files to a winning entry as needed)
+ *
+ * NOTE: The MANDATORY_SUBMISSION_FILES file is a limit on extra files for a submission, NOT a winning entry
+ *	 and does NOT include any mandatory files.
  */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
 #define MAX_SUM_FILELEN ((off_t)(27651*1024))	/* maximum sum of the byte lengths of all files in the entry */
-#define MANDATORY_FILE_COUNT (5)		/* number of required files in an entry */
-/* NOTE: MAX_FILE_COUNT must be > MANDATORY_FILE_COUNT */
-#define MAX_FILE_COUNT (42)		/* maximum number of files in an entry (MANDATORY_FILE_COUNT + extra files) */
-/* NOTE: MAX_SUBMIT_SLOT must be < 10 to the MAX_SUBMIT_SLOT_CHARS power */
+#define MANDATORY_SUBMISSION_FILES (5)		/* number of required files in submission */
+#define OPTIONAL_SUBMISSION_FILES (2)		/* submission files, if they exist, that do NOT count towards the extra total */
+#define MAX_EXTRA_FILE_COUNT (31)		/* maximum number of files not including mandatory submission files */
+/* maximum total file count, including mandatory files, for a submission */
+#define MAX_FILE_COUNT (MANDATORY_SUBMISSION_FILES+OPTIONAL_SUBMISSION_FILES+MAX_EXTRA_FILE_COUNT)
 /*
  * IMPORTANT:
  *
  * The MAX_SUBMIT_SLOT value MUST match the MAX_SUBMIT_SLOT variable as defined
  * in the IOCCC submit server code.
+ *
+ * The MAX_SUBMIT_SLOT must be < 10 to the MAX_SUBMIT_SLOT_CHARS power!
  */
 #define MAX_SUBMIT_SLOT (9)		/* entry numbers from 0 to MAX_SUBMIT_SLOT */
 #define MAX_SUBMIT_SLOT_CHARS (1)	/* characters that represent the maximum entry number */
