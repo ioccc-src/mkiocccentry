@@ -23,6 +23,8 @@ changed. In other words, `json_util.c` is a jparse library version (like
 `JPARSE_UTILS_VERSION`. The tools (in jparse and here) now refer to this in both
 `-h` and `-V`.
 
+Added even more bad `txzchk` test files for those with special bits (as anything
+not marked as `-` or `d` in `ls -l`).
 
 
 
