@@ -487,8 +487,9 @@ count_comps(char const *str, char comp, bool remove_all)
      * case: length is 1
      */
     } else if (len == 1) {
-        char tmp = *copy;
+        char tmp = '\0';
         if (copy != NULL) {
+            tmp = *copy;
             free(copy);
             copy = NULL;
         }
