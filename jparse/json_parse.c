@@ -530,7 +530,7 @@ jdecencchk(int entertainment)
 		err(155, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 		not_reached();
 	    } else {
-		msg(mstr2);
+		msg("%s", mstr2);
 		dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
 	    }
 
@@ -585,7 +585,7 @@ jdecencchk(int entertainment)
 		err(158, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 		not_reached();
 	    } else {
-		msg(mstr2);
+		msg("%s", mstr2);
 		dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
 	    }
 
@@ -646,7 +646,7 @@ jdecencchk(int entertainment)
 		    err(161, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 		    not_reached();
 		} else {
-		    msg(mstr2);
+		    msg("%s", mstr2);
 		    dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
 		}
 
@@ -706,7 +706,7 @@ jdecencchk(int entertainment)
 		    err(164, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 		    not_reached();
 		} else {
-		    msg(mstr2);
+		    msg("%s", mstr2);
 		    dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
 		}
 
@@ -767,7 +767,7 @@ jdecencchk(int entertainment)
 			err(167, __func__, "mstr2: %s != decstr: %s", mstr2, mstr);
 			not_reached();
 		    } else {
-			msg(mstr2);
+			msg("%s", mstr2);
 			dbg(DBG_MED, "%s: %s == %s: true", decstr, mstr, mstr2);
 		    }
 

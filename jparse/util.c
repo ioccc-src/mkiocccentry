@@ -379,8 +379,10 @@ dir_name(char const *path, int level)
  * count_comps       - count comp delimited components in a string
  *
  * given:
- *      str     - string to test
- *      comp    - component delimiting character
+ *      str             - string to test
+ *      comp            - component delimiting character
+ *      remove_all      - true ==> remove all trailing delimiter chars,
+ *                        false ==> remove all but last trailing delimiter char
  *
  * returns:
  *      0 ==> empty string,
@@ -389,9 +391,17 @@ dir_name(char const *path, int level)
  *
  * NOTE: successive components are counted as one (i.e. if comp is '/' then
  * foo///bar will be counted as two and /// will be counted as 1.
+ *
+ * NOTE: if the delimiting character is '/' and the string is "foo///" then
+ * after removing the trailing '/'s the string will be "foo/".
+ *
+ * NOTE: if the delimiting character is '/' and the string is "foo/" then the
+ * count is 1 just as if it was "foo//"; on the other hand, if the string is
+ * "foo" without the delimiting character, the count is 0 as there actually is
+ * not component!
  */
 size_t
-count_comps(char const *str, char comp)
+count_comps(char const *str, char comp, bool remove_all)
 {
     size_t count = 0;       /* number of components */
     char *copy;             /* to simplify counting */
@@ -418,59 +428,92 @@ count_comps(char const *str, char comp)
 	not_reached();
     }
 
+    dbg(DBG_VVVHIGH, "#0: count_comps(\"%s\", %c, %s)", str, comp, booltostr(remove_all));
+
     /*
      * case: empty string is 0
      */
     len = strlen(copy);
     if (len <= 0) {
-	dbg(DBG_VVHIGH, "#0: count_comps(\"%s\", %c): \"%s\" is an empty string", str, comp, str);
+	dbg(DBG_VVHIGH, "#1: count_comps(\"%s\", %c, %s): \"%s\" is an empty string", str, comp, str,
+                booltostr(remove_all));
 	return 0;
     }
+    dbg(DBG_HIGH, "#2: string before removing successive '%c's: %s", comp, copy);
 
     /*
-     * remove any multiple trailing delimiter chars
+     * remove any multiple trailing delimiter chars except the last one
      */
     for (i = len - 1; i > 0; --i) {
 	if (copy[i] == comp) {
-	    /* trim the trailing / */
-	    copy[i] = '\0';
+            if ((i > 0 && copy[i-1] != comp) || !remove_all) {
+                /*
+                 * if we get here it means that there are no more successive
+                 * delimiting characters so we do not want to remove this one
+                 */
+                dbg(DBG_HIGH, "#3: string after removing trailing '%c's: %s", comp, copy);
+                break;
+            } else {
+                /* trim the trailing / */
+                copy[i] = '\0';
+            }
 	} else {
-	    /* last character (now) is not component delimiter */
+	    /*
+             * no more than one trailing delimiter char exist (now)
+             */
 	    break;
 	}
     }
+    dbg(DBG_HIGH, "#4: string after removing trailing '%c's: %s", comp, copy);
+
     /*
-     * now copy has no trailing /'s, unless it is just /
+     * now copy has no successive trailing delimiting characters
      */
     len = strlen(copy);
+    /*
+     * case: length is 0
+     */
     if (len <= 0) {
         /*
          * string is empty
          */
-	dbg(DBG_VVHIGH, "#1: count_comps(\"%s\", '%c') == =", str, comp);
+	dbg(DBG_VHIGH, "#5: count_comps(\"%s\", '%c', %s) == 0", str, comp, booltostr(remove_all));
         if (copy != NULL) {
             free(copy);
             copy = NULL;
         }
         return 0;
+    /*
+     * case: length is 1
+     */
     } else if (len == 1) {
-        /*
-         * if len is 1 then there is exactly 1 component.
-         *
-         * We know this because we have removed all successive component chars
-         * at the end of the string.
-         */
+        char tmp = *copy;
         if (copy != NULL) {
             free(copy);
             copy = NULL;
         }
-        return 1;
+        if (tmp == comp) {
+            /*
+             * if len is 1 and the character is the component then there is exactly 1 component.
+             *
+             * We know this because we have removed all successive component chars
+             * at the end of the string.
+             */
+            dbg(DBG_VHIGH, "#6: count_comps(\"%s\", '%c', %s) == 1", str, comp, booltostr(remove_all));
+            return 1;
+        } else {
+            /*
+             * if there is only one character and it is not the delimiting
+             * character then we have 0 components
+             */
+            return 0;
+        }
     }
 
     /*
      * if we get here, we have more work to do
      */
-    count = 1; /* start count as 1 as we know we have at least one */
+    count = 0;
 
     /*
      * look for the last component char
@@ -480,8 +523,8 @@ count_comps(char const *str, char comp)
 	/*
 	 * str does not have the component, return 1
 	 */
-	dbg(DBG_VVHIGH, "#3: count_comps(\"%s\", %c) == 1", str, comp);
-        return 1;
+	dbg(DBG_VVHIGH, "#3: count_comps(\"%s\", %c, %s) == 1", str, comp, booltostr(remove_all));
+        return 0;
     } else {
         while (p != NULL) {
             ++count;
@@ -510,7 +553,7 @@ count_comps(char const *str, char comp)
     /*
      * return the total components
      */
-    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c) == %ju", str, comp, (uintmax_t)count);
+    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, %s) == %ju", str, comp, booltostr(remove_all), (uintmax_t)count);
     return count;
 }
 
@@ -542,7 +585,7 @@ count_dirs(char const *path)
     /*
      * return the number of components in the path
      */
-    return count_comps(path, '/');
+    return count_comps(path, '/', false);
 }
 
 /*
@@ -2793,14 +2836,14 @@ string_to_intmax(char const *str, intmax_t *ret)
     num = strtoimax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
-	warn(__func__, "string <%s> has no digits", str);
+	warn(__func__, "string \"%s\" has no digits", str);
 	return false;
     } else if (*endptr != '\0') {
-	warn(__func__, "number <%s> has invalid characters", str);
+	warn(__func__, "number \"%s\" has invalid characters", str);
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;
-	warnp(__func__, "error converting string <%s> to intmax_t", str);
+	warnp(__func__, "error converting string \"%s\" to intmax_t", str);
 	return false;
     } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
 	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
@@ -2854,14 +2897,14 @@ string_to_uintmax(char const *str, uintmax_t *ret)
     num = strtoumax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
-	warn(__func__, "string <%s> has no digits", str);
+	warn(__func__, "string \"%s\" has no digits", str);
 	return false;
     } else if (*endptr != '\0') {
-	warn(__func__, "number <%s> has invalid characters", str);
+	warn(__func__, "number \"%s\" has invalid characters", str);
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;
-	warnp(__func__, "error converting string <%s> to uintmax_t", str);
+	warnp(__func__, "error converting string \"%s\" to uintmax_t", str);
 	return false;
     } else if (num <= 0 || num >= UINTMAX_MAX) {
 	warn(__func__, "number %s out of range for uintmax_t (must be >= %jd && < %jd)", str, (uintmax_t)0, UINTMAX_MAX);
@@ -3076,7 +3119,7 @@ is_floating_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with .
      */
     } else if (str[len-1] == '.') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3084,7 +3127,7 @@ is_floating_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with -
      */
     } else if (str[len-1] == '-') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3092,7 +3135,7 @@ is_floating_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with +
      */
     } else if (str[len-1] == '+') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3104,7 +3147,7 @@ is_floating_notation(char const *str, size_t len)
     if (dot_found != NULL) {
 	dot = strrchr(str, '.');
 	if (dot != NULL && dot != dot_found) {
-	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: \"%s\"",
 		      __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -3229,7 +3272,7 @@ is_e_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot start with .
      */
     if (str[0] == '.') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot start with .: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot start with .: \"%s\"",
 		       __func__, str);
 	return false;	/* processing failed */
 
@@ -3237,7 +3280,7 @@ is_e_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with .
      */
     } else if (str[len-1] == '.') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3245,7 +3288,7 @@ is_e_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with -
      */
     } else if (str[len-1] == '-') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3253,7 +3296,7 @@ is_e_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with +
      */
     } else if (str[len-1] == '+') {
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -3261,7 +3304,7 @@ is_e_notation(char const *str, size_t len)
      * JSON spec detail: floating point numbers must end in a digit
      */
     } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: \"%s\"",
 		       __func__, str);
 	return false;	/* processing failed */
     }
@@ -3272,7 +3315,7 @@ is_e_notation(char const *str, size_t len)
     if (dot_found != NULL) {
 	dot = strrchr(str, '.');
 	if (dot != NULL && dot != dot_found) {
-	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have two '.'s: \"%s\"",
 		      __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -3286,14 +3329,14 @@ is_e_notation(char const *str, size_t len)
     /* case: both e and E found */
     if (e_found != NULL && cap_e_found != NULL) {
 
-	dbg(DBG_HIGH, "in %s(): floating point numbers cannot use both e and E: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot use both e and E: \"%s\"",
 		      __func__, str);
 	return false;	/* processing failed */
 
     /* case: neither 'e' nor 'E' found */
     } else if (e_found == NULL && cap_e_found == NULL) {
 	/* NOTE: don't warn as it could be a floating point without e notation */
-	dbg(DBG_HIGH, "in %s(): not e notation: neither 'e' nor 'E' found: <%s>",
+	dbg(DBG_HIGH, "in %s(): not e notation: neither 'e' nor 'E' found: \"%s\"",
 		      __func__, str);
 	return false;
     /* case: just e found, no E */
@@ -3302,7 +3345,7 @@ is_e_notation(char const *str, size_t len)
 	/* firewall - search for two 'e's */
 	e = strrchr(str, 'e');
 	if (e_found != e) {
-	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one e: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one e: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -3316,7 +3359,7 @@ is_e_notation(char const *str, size_t len)
 	/* firewall - search for two 'E's */
 	e = strrchr(str, 'E');
 	if (cap_e_found != e) {
-	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -3337,7 +3380,7 @@ is_e_notation(char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot start with e or E
 	 */
 	if (e == str) {
-	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot start with e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot start with e or E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -3345,7 +3388,7 @@ is_e_notation(char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot end with e or E
 	 */
 	} else if (e == &(str[len-1])) {
-	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot end with e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot end with e or E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -3353,7 +3396,7 @@ is_e_notation(char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot have e or E after .
 	 */
 	} else if (e > str && e[-1] == '.') {
-	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot have '.' before e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot have '.' before e or E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -3361,7 +3404,7 @@ is_e_notation(char const *str, size_t len)
 	 * JSON spec detail: e notation number must have digit before e or E
 	 */
 	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
-	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -3376,7 +3419,7 @@ is_e_notation(char const *str, size_t len)
 	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
 	     */
 	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit <%s>",
+		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit \"%s\"",
 			      __func__, str);
 		return false;	/* processing failed */
 	    }
@@ -3392,7 +3435,7 @@ is_e_notation(char const *str, size_t len)
 	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
 	     */
 	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit <%s>",
+		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit \"%s\"",
 			      __func__, str);
 		return false;	/* processing failed */
 	    }
@@ -3401,7 +3444,7 @@ is_e_notation(char const *str, size_t len)
 	 * JSON spec detail: e notation number must have + or - or digit after e or E
 	 */
 	} else if (!isascii(e[1]) || !isdigit(e[1])) {
-	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -3552,7 +3595,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     if (first == true) {
 	if (str[0] == '/') {
 		if (slash_ok == false) {
-		    dbg(DBG_VVHIGH, "str[0]: slash_ok is false and first character is /");
+		    dbg(DBG_VVHIGH, "str[0]: slash_ok is false and first character is '/'");
 		    return false;
 		}
 
@@ -3624,7 +3667,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     /*
      * all is well
      */
-    dbg(DBG_VVVHIGH, "lower_only: %s slash_ok: %s first: %s str is valid: <%s>",
+    dbg(DBG_VVVHIGH, "lower_only: %s slash_ok: %s first: %s str is valid: \"%s\"",
 		     booltostr(lower_only), booltostr(slash_ok), booltostr(first), str);
     return true;
 }
@@ -4287,7 +4330,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * report POSIX portable safe plus + safe with maybe /
      */
     } else {
-	dbg(DBG_VVHIGH, "posix_safe_chk(%s, %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
+	dbg(DBG_VVHIGH, "posix_safe_chk(%s, %s, %s, %s, %s): string is POSIX portable safe plus +/: \"%s\"",
 		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
     }
     return;
@@ -5543,7 +5586,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.2 2025-01-13" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.3 2025-01-17" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -5691,7 +5734,7 @@ main(int argc, char **argv)
         err(10, __func__, "jparse.json is invalid JSON"); /*ooo*/
         not_reached();
     } else {
-        dbg(DBG_LOW, "jparse.json is valid JSON");
+        fdbg(stderr, DBG_MED, "jparse.json is valid JSON");
         json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
         free(tree);
         tree = NULL;
@@ -5705,6 +5748,8 @@ main(int argc, char **argv)
         err(182, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity)); /*coo*/
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
     }
 
     /*
@@ -5716,6 +5761,8 @@ main(int argc, char **argv)
         err(183, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
     }
 
     /*
@@ -5727,6 +5774,8 @@ main(int argc, char **argv)
         err(184, __func__, "sane_relative_path(\"%s\", 99, 25, 2): expected PATH_ERR_PATH_EMPTY, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 2) == PATH_ERR_PATH_EMPTY", relpath);
     }
 
     /*
@@ -5735,9 +5784,11 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity =sane_relative_path(relpath, 2, 99, 2);
     if (sanity != PATH_ERR_PATH_TOO_LONG) {
-        err(185, __func__, "sane_relative_path(\"%s\", 2, 25, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
+        err(185, __func__, "sane_relative_path(\"%s\", 2, 99, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 2, 99, 2) == PATH_ERR_PATH_TOO_LONG", relpath);
     }
 
     /*
@@ -5749,6 +5800,8 @@ main(int argc, char **argv)
         err(186, __func__, "sane_relative_path(\"%s\", 0, 25, 2): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 0, 25, 2) == PATH_ERR_MAX_PATH_LEN_0", relpath);
     }
 
     /*
@@ -5757,9 +5810,11 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity = sane_relative_path(relpath, 99, 25, 0);
     if (sanity != PATH_ERR_MAX_DEPTH_0) {
-        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 0, &sanity): expected PATH_ERR_MAX_DEPTH_0, got: %s",
+        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 0): expected PATH_ERR_MAX_DEPTH_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 0) == PATH_ERR_MAX_DEPTH_0", relpath);
     }
 
     /*
@@ -5771,6 +5826,8 @@ main(int argc, char **argv)
         err(188, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_RELATIVE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_RELATIVE", relpath);
     }
 
     /*
@@ -5782,6 +5839,8 @@ main(int argc, char **argv)
         err(189, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NAME_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NAME_TOO_LONG", relpath);
     }
 
     /*
@@ -5793,6 +5852,8 @@ main(int argc, char **argv)
         err(190, __func__, "sane_relative_path(\"%s\", 99, 0, 2): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 0, 2) == PATH_ERR_MAX_NAME_LEN_0", relpath);
     }
 
     /*
@@ -5804,6 +5865,8 @@ main(int argc, char **argv)
         err(191, __func__, "sane_relative_path(\"%s\", 99, 25, 1): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 1) == PATH_ERR_PATH_TOO_DEEP", relpath);
     }
 
     /*
@@ -5815,6 +5878,8 @@ main(int argc, char **argv)
         err(192, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
@@ -5826,6 +5891,8 @@ main(int argc, char **argv)
         err(193, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
@@ -5837,6 +5904,8 @@ main(int argc, char **argv)
         err(194, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
@@ -5848,6 +5917,8 @@ main(int argc, char **argv)
         err(195, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
     }
 
     /*
@@ -5873,6 +5944,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, relpath) != 0) {
         err(197, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 0) == %s", relpath, relpath);
     }
 
     /*
@@ -5886,6 +5959,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo/bar/baz/zab/rab") != 0) {
         err(199, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 1) == foo/bar/baz/zab/rab", relpath);
     }
 
     /*
@@ -5903,6 +5978,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo/bar/baz/zab") != 0) {
         err(201, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 2) == foo/bar/baz/zab", relpath);
     }
 
     /*
@@ -5920,6 +5997,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo/bar/baz") != 0) {
         err(203, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 3) == foo/bar/baz", relpath);
     }
 
     /*
@@ -5937,6 +6016,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo/bar") != 0) {
         err(205, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 4) == foo/bar", relpath);
     }
 
     /*
@@ -5954,6 +6035,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo") != 0) {
         err(207, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 5) == foo", relpath);
     }
 
     /*
@@ -5977,6 +6060,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo") != 0) {
         err(209, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 6) == foo", relpath);
     }
 
     /*
@@ -5994,6 +6079,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "foo") != 0) {
         err(211, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1) == foo", relpath);
     }
 
     /*
@@ -6011,6 +6098,8 @@ main(int argc, char **argv)
     } else if (strcmp(name, "oof") != 0) {
         err(213, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "base_name(\"%s\") == oof", relpath);
     }
 
     if (name != NULL) {
@@ -6023,9 +6112,11 @@ main(int argc, char **argv)
      */
     relpath = "foo/bar/baz";
     comps = count_dirs(relpath);
-    if (comps != 3) {
-        err(214, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+    if (comps != 2) {
+        err(214, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
     }
 
     /*
@@ -6033,9 +6124,11 @@ main(int argc, char **argv)
      */
     relpath = "foo//baz";
     comps = count_dirs(relpath);
-    if (comps != 2) {
-        err(215, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+    if (comps != 1) {
+        err(215, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
     }
 
     /*
@@ -6046,6 +6139,8 @@ main(int argc, char **argv)
     if (comps != 1) {
         err(216, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
     }
 
     /*
@@ -6056,6 +6151,8 @@ main(int argc, char **argv)
     if (comps != 1) {
         err(217, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
     }
 
     /*
@@ -6066,6 +6163,8 @@ main(int argc, char **argv)
     if (comps != 1) {
         err(218, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
     }
 
     /*
@@ -6076,6 +6175,120 @@ main(int argc, char **argv)
     if (comps != 0) {
         err(219, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
         not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 0", relpath);
+    }
+
+    /*
+     * "foo/..//foo" counts as 2
+     */
+    relpath = "foo/..//foo";
+    comps = count_dirs(relpath);
+    if (comps != 2) {
+        err(220, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
+    }
+
+    /*
+     * "foo/..//foo/3/" counts as 4
+     */
+    relpath = "foo/..//foo/3/";
+    comps = count_dirs(relpath);
+    if (comps != 4) {
+        err(221, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
+    }
+
+    /*
+     * "foo/../foo" counts as 2
+     */
+    relpath = "foo/../foo";
+    comps = count_dirs(relpath);
+    if (comps != 2) {
+        err(222, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
+    }
+
+    /*
+     * "foo/../foo/3/" counts as 4
+     */
+    relpath = "foo/../foo/3/";
+    comps = count_dirs(relpath);
+    if (comps != 4) {
+        err(223, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
+    }
+
+    /*
+     * "foo//foo" counts as 1
+     */
+    relpath = "foo//foo";
+    comps = count_dirs(relpath);
+    if (comps != 1) {
+        err(224, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
+    }
+
+    /*
+     * "foo//foo/3/" counts as 3
+     */
+    relpath = "foo//foo/3/";
+    comps = count_dirs(relpath);
+    if (comps != 3) {
+        err(225, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
+    }
+
+    /*
+     * "foo/foo" counts as 1
+     */
+    relpath = "foo/foo";
+    comps = count_dirs(relpath);
+    if (comps != 1) {
+        err(226, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
+    }
+
+    /*
+     * "foo/foo/3/" counts as 3
+     */
+    relpath = "foo/foo/3/";
+    comps = count_dirs(relpath);
+    if (comps != 3) {
+        err(227, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
+    }
+
+    /*
+     * test count_comps() by removing all trailing delimiters
+     */
+
+    /*
+     * "foo/bar,,," should count as 2
+     */
+    relpath = "foo,bar,,,";
+    comps = count_comps(relpath, ',', true);
+    if (comps != 2) {
+        err(228, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "count_comps(\"%s\", ',', true) == 2", relpath);
     }
 }
 #endif

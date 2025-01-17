@@ -1,13 +1,13 @@
 ERROR[5]: main: "submit.UUID-" separated token length: 50 != 38: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt failed with exit code: 5
-Warning: string_to_intmax: string <fred> has no digits
+Warning: string_to_intmax: string "fred" has no digits
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: trying to parse file size in on line: <drw-r--r--  0 501    20       fred Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra1/extra2>: token: <fred>
-Warning: string_to_intmax: string <fred> has no digits
+Warning: string_to_intmax: string "fred" has no digits
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: trying to parse file size in on line: <drw-r--r--  0 501    20       fred Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra1/>: token: <fred>
-Warning: string_to_intmax: number <155a> has invalid characters
+Warning: string_to_intmax: number "155a" has invalid characters
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: trying to parse file size in on line: <-rw-r--r--  0 501    20       155a Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/.info.json>: token: <155a>
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: file "12345678-1234-4321-abcd-1234567890ab-2/-foo": path component invalid
-Warning: string_to_intmax: number <4.0> has invalid characters
+Warning: string_to_intmax: number "4.0" has invalid characters
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: trying to parse file size in on line: <-rw-r--r--  0 501    20        4.0 Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra2>: token: <4.0>
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: no .info.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411115.txt: not all files in correct directory
