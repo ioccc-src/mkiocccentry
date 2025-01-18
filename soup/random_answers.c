@@ -1769,7 +1769,6 @@ generate_answers(char const *answers)
 	char const *url_lead;	/* URL lead for http:// or https:// */
 	char *handle = NULL;	/* default author handle */
 	char fqdn[MAX_HOST_LEN+DOT_DOMAIN_LEN+1];	/* pseudo-random hostname ending in.example.org */
-	unsigned int fqdn_len;	/* string length of the fqdn */
 	bool anonymous;		/* true ==> is anonymous */
 
 	/*
@@ -1794,12 +1793,11 @@ generate_answers(char const *answers)
 	/*
 	 * form some hostname under example.org
 	 */
-	memset(fqdn, 0, MAX_HOST_LEN+DOT_DOMAIN_LEN+1);	/* clear fqdn and paranoia */
+	memset(fqdn, 0, MAX_HOST_LEN+DOT_DOMAIN_LEN+1);		/* clear fqdn and paranoia and +1 for more paranoia */
 	(void) random();		/* just for j-random fun */
 	rlen = biased_random_range(MIN_HOST_LEN, MAX_HOST_LEN+1);
 	random_alphanum_str(fqdn, rlen, rlen);				    /* load host part of fqdn */
-	strlcpy(fqdn+rlen, DOT_DOMAIN, DOT_DOMAIN_LEN+1);		    /* append the .example.org */
-	fqdn_len = strlen(fqdn);
+	strcpy(fqdn+rlen, DOT_DOMAIN);					    /* append the .example.org */
 
 	/*
 	 * form random author email address
@@ -1812,7 +1810,7 @@ generate_answers(char const *answers)
 	    random_alphanum_str(buf, RANDOM_USER_MIN_LEN, RANDOM_USER_MAX_LEN);	/* load username */
 	    rlen = strlen(buf);
 	    buf[rlen] = '@';						    /* load @ */
-	    strlcpy(buf+rlen+1, fqdn, fqdn_len+1);			    /* append FQDN, +1 for NUL byte */
+	    strcpy(buf+rlen+1, fqdn);					    /* append FQDN, +1 for NUL byte */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1833,7 +1831,7 @@ generate_answers(char const *answers)
 		    url_lead = "http://example.org/";
 		}
 		head_len = strlen(url_lead);
-		strlcpy(buf, url_lead, head_len+1);
+		strcpy(buf, url_lead);
 		rlen = biased_random_range(head_len+RANDOM_URL_PATH_MIN_LEN, MAX_URL_LEN-head_len+1);
 		random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
 	    }
@@ -1854,7 +1852,7 @@ generate_answers(char const *answers)
 		url_lead = "http://example.org/";
 	    }
 	    head_len = strlen(url_lead);
-	    strlcpy(buf, url_lead, head_len+1);
+	    strcpy(buf, url_lead);
 	    rlen = biased_random_range(head_len+RANDOM_URL_PATH_MIN_LEN, MAX_URL_LEN-head_len+1);
 	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
 	}
@@ -1872,7 +1870,7 @@ generate_answers(char const *answers)
 	    random_alphanum_str(buf+1, RANDOM_USER_MIN_LEN, RANDOM_USER_MAX_LEN);	/* load username */
 	    rlen = strlen(buf);
 	    buf[rlen] = '@';						    /* 2nd @ */
-	    strlcpy(buf+rlen+1, fqdn, fqdn_len+1);			    /* append FQDN, +1 for NUL byte */
+	    strcpy(buf+rlen+1, fqdn);					    /* append FQDN, +1 for NUL byte */
 	}
 	fprint(answerp, "%s\n", buf);
 
