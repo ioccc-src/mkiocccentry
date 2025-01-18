@@ -6,6 +6,9 @@
 Increase the `OPTIONAL_SUBMISSION_FILES` to 3 due to the additional optional
 file `try.alt.sh`.
 
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` to fix some
+bugs and add missing strings (to `-h` and `-V` in some tools). Also bug fixed
+the `jparse_bug_report.sh` script (yes this is ironic).
 
 ## Release 2.3.11 2025-01-17
 

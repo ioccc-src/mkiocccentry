@@ -177,7 +177,7 @@ C_OPT= -O3
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unused-but-set-variable -Wno-char-subscripts -Wno-sign-compare
+WARN_FLAGS= -pedantic -Wall -Wextra -Wformat -Wno-unused-but-set-variable -Wno-char-subscripts -Wno-sign-compare
 	    
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 

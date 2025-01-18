@@ -57,18 +57,19 @@
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V]\n"
     "\n"
-    "\t-h\t\tPrint help message and exit\n"
-    "\t-v level\tSet verbosity level (def level: %d)\n"
-    "\t-V\t\tPrint version string and exit\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-V\t\tprint version strings and exit\n"
     "\n"
     "Exit codes:\n"
     "\t0\t\tall is OK\n"
     "\t1\t\tsome unexpected I/O error was detected\n"
-    "\t2\t\t-h and help string printed or -V and version string printed\n"
+    "\t2\t\t-h and help string printed or -V and version strings printed\n"
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
     "%s version: %s\n"
+    "jparse utils version: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
 
@@ -145,8 +146,9 @@ main(int argc, char *argv[])
 		not_reached();
 	    }
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version strings and exit */
 	    print("pr_jparse_test version %s\n", PR_JPARSE_TEST_VERSION);
+	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
@@ -1056,7 +1058,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, PR_JPARSE_TEST_BASENAME,
-	    PR_JPARSE_TEST_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+	    PR_JPARSE_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

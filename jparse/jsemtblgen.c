@@ -61,7 +61,7 @@ static char *unknown_func = NULL;	/* -U func - validate nodes with unknown types
 /*
  * usage message
  */
-static const char * const usage_msg =
+static const char * const usage_msg0 =
     "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]\n"
     "\t\t    [-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func] json_arg\n"
     "\n"
@@ -69,7 +69,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
-    "\t-V\t\tprint version string and exit\n"
+    "\t-V\t\tprint version strings and exit\n"
     "\t-s\t\targ is a string (def: arg is a filename)\n"
     "\n"
     "\t-I\t\toutput as .h include file (def: output as .c src)\n"
@@ -83,7 +83,8 @@ static const char * const usage_msg =
     "\t\t\tNOTE: The name is based on the JTYPE_MEMBER JSON decoded name string.\n"
     "\t\t\tNOTE: Underscore (_) replaces any name chars that are not valid in a C function name.\n"
     "\t\t\tNOTE: -P overrides any use of -M.\n"
-    "\n"
+    "\n";
+static const char * const usage_msg1 =
     "\t-1 func\t\tvalidate JTYPE_NUMBER JSON nodes with func() (def: NULL)\n"
     "\t-S func\t\tvalidate JTYPE_STRING JSON nodes with func() (def: NULL)\n"
     "\t-B func\t\tvalidate JTYPE_BOOL JSON nodes with func() (def: NULL)\n"
@@ -98,11 +99,12 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "    0\t\tJSON is valid\n"
     "    1\t\tJSON is invalid\n"
-    "    2\t\t-h and help string printed or -V and version string printed\n"
+    "    2\t\t-h and help string printed or -V and version strings printed\n"
     "    3\t\tcommand line error\n"
     "    >=10\tinternal error\n"
     "\n"
     "jsemtblgen version: %s\n"
+    "jparse utils version: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
 
@@ -301,6 +303,7 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s version: %s\n", JSEMTBLGEN_BASENAME, JSEMTBLGEN_VERSION);
+	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
@@ -1524,8 +1527,10 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog,
-		  DBG_DEFAULT, json_verbosity_level, JSEMTBLGEN_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog,
+		  DBG_DEFAULT, json_verbosity_level);
+    fprintf_usage(exitcode, stderr, usage_msg1,
+		  JSEMTBLGEN_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

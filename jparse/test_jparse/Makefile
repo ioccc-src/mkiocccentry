@@ -174,7 +174,7 @@ C_OPT= -O3
 
 # Compiler warnings
 #
-WARN_FLAGS= -Wall -Wextra -Wno-char-subscripts
+WARN_FLAGS= -Wall -Wextra -Wformat -Wno-char-subscripts
 #WARN_FLAGS= -Wall -Wextra -Werror
 
 # special compiler flags

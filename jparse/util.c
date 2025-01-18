@@ -76,7 +76,7 @@ static char const * const usage =
 "\t-h\t\tprint help message and exit\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
 "\t-J level\tset JSON verbosity level (def level: 0)\n"
-"\t-V\t\tprint version string and exit\n"
+"\t-V\t\tprint version strings and exit\n"
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
 "\n"
 "jparse util test version: %s\n"
@@ -5588,7 +5588,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.3 2025-01-17" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.4 2025-01-18" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -5639,12 +5639,13 @@ main(int argc, char **argv)
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
-	case 'V':		/* -V - write version and exit */
+	case 'V':		/* -V - write version strings and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("util_test version: %s\n", UTIL_TEST_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error writing util_test version string: %s", UTIL_TEST_VERSION);
 	    }
+	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error writing jparse utils version string: %s", JPARSE_UTILS_VERSION);

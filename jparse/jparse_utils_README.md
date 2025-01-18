@@ -6,6 +6,7 @@ _Last updated: 26 December 2024_
 
 # Introduction
 
+
 We provide a number of utilities that work with JSON, or which perform actions
 according to the so-called JSON spec, which we describe below. These utilities
 are described below. Other tools are in the pipeline and when they are
@@ -26,12 +27,14 @@ document to better understand the JSON terms used in this repo.
 
 # Table of Contents
 
-- [Common command line options](#common)
+- [Common command line options](#common-options)
+- [Common exit codes](#common)
 - [jparse stand-alone tool](#jparse-tool)
 - [jstrdecode: a tool to JSON decode command line strings](#jstrdecode)
 - [jstrencode: a tool to convert JSON decoded strings into normal strings](#jstrencode)
+- [verge: a tool to compare two version strings](#verge)
 
-<div id="common"></div>
+<div id="common-options"></div>
 
 # Common command line options
 
@@ -67,6 +70,16 @@ jparse library version and then it exits.
 
 If you need to pass to the program a string that starts with a `-`, then you can
 terminate the parsing of options by specifying `--`.
+
+<div id="common-exit-codes"></div>
+
+# Common exit codes
+
+Every tool in this document, as well as some others that are not yet documented,
+have the following common exit codes:
+
+- 2: `-h` and help string printed or `-V` and version strings printed
+- 3: command line error
 
 
 <div id="jparse-tool"></div>
@@ -372,6 +385,7 @@ If the decoding is successful the exit status of `jstrdecode` is 0, otherwise 1.
 Different non-zero values are for different error conditions, or help or version
 string printed.
 
+
 <div id="jstrencode"></div>
 
 # jstrencode: a tool to convert JSON decoded strings to normal strings
@@ -436,7 +450,6 @@ If no string is given on the command line it expects you to type something on
 
 
 <div id="jstrencode-examples"></div>
-
 
 ## jstrencode examples
 
@@ -581,6 +594,55 @@ If you run `make install` (as root or via sudo) you can just do: `jstrencode`.
 If the encoding is successful the exit status of `jstrencode` is 0, otherwise 1.
 Different non-zero values are for different error conditions, or help or version
 string printed.
+
+
+<div id="verge"></div>
+
+# [verge: a tool to compare two version strings](#verge)
+
+This tool will take two version arg strings (as major.minor.patch or
+major.minor) and determine if the first is equal to, greater than equal to or
+less than the second arg. This is used to determine if one has a recent enough
+version of `flex(1)` and `bison(1)`.
+
+<div id="verge-examples"></div>
+
+## verge examples:
+
+### Test version `1.1.0` against version `1.1.0`:
+
+```sh
+verge 1.1.0 1.1.0
+```
+
+This will exit with code 0 because 1.1.0 is >= 1.1.0.
+
+### Test version `0.0.1` against `1.0.1`:
+
+```sh
+verge 0.0.1 1.0.1
+```
+
+This will exit with code 1 because 0.0.1 < 1.0.1.
+
+### Test version `1.0` against `2.0.0`:
+
+```sh
+verge 1.0 2.0.0
+```
+
+This will also exit code 1 because 1.0 is < 2.0.0.
+
+This example demonstrates that one can do `major.minor` and you do not need the
+patch level.
+
+
+<div id="verge-exit-codes"></div>
+
+## verge exit codes
+
+If the first version arg is >= the second version arg then 0 is returned;
+otherwise, if the first version is < the second version, 1 is returned.
 
 
 

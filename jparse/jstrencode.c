@@ -65,7 +65,7 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "     0   encode successful\n"
     "     1   encode unsuccessful\n"
-    "     2   -h and help string printed or -V and version string printed\n"
+    "     2   -h and help string printed or -V and version strings printed\n"
     "     3   invalid command line, invalid option or option missing an argument\n"
     " >= 10   internal error\n"
     "\n"

@@ -51,7 +51,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\t\tprint help message and exit\n"
     "\t-v level\t\tset verbosity level (def level: %d)\n"
-    "\t-V\t\t\tprint version string and exit\n"
+    "\t-V\t\t\tprint version strings and exit\n"
     "\n"
     "\tmajor.minor.patch-1\tfirst version  (example: 0.1.1)\n"
     "\tmajor.minor.patch-2\tsecond version (example: 1.3.2)\n"
@@ -59,12 +59,13 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "     0   first version >= second version\n"
     "     1   first version < second version\n"
-    "     2   -h and help string printed or -V and version string printed\n"
+    "     2   -h and help string printed or -V and version strings printed\n"
     "     3   command line error\n"
     "     4   first or second version string is an invalid version\n"
     "  >=10   internal error\n"
     "\n"
     "%s version: %s\n"
+    "jparse utils version: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
 
@@ -111,6 +112,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    print("%s version: %s\n", VERGE_BASENAME, VERGE_VERSION);
+	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
 	    exit(2); /*ooo*/
@@ -462,7 +464,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, VERGE_BASENAME, VERGE_VERSION,
-	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+	    JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
