@@ -424,8 +424,17 @@ main(int argc, char *argv[])
 
 	/*
 	 * seed using random offset and srandom arg mask
+	 *
+	 * We add the non-zero SEED_OFFSET_BIAS value so that -s 0
+	 * will not simply select the default 0 argument value.  Why?
+	 * Well, why not?  :-)  Sure, someone could use -s 2147470909
+	 * to get the default 0 argument value, but they'd have to really
+	 * try. :-)
+	 *
+	 * BTW: There is nothing wrong with using the default 0 argument,
+	 *	we are just having fun.
 	 */
-	srandom((unsigned)((answer_seed-RANDOM_OFFSET) & SEED_MASK));
+	srandom((unsigned)((answer_seed+SEED_OFFSET_BIAS) & SEED_MASK));
 
 	/*
 	 * form the answers filename based on seed

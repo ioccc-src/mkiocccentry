@@ -44,17 +44,21 @@
 /*
  * definitions
  */
+#define STRLEN(s) (sizeof(s)-1)		/* length of a constant string */
 #define DISABLED_UUID "00000000-0000-4000-8000-000000000000"	/* username for which "disable_login" is true */
 #define SPACE_ODDS (6)			/* average letters between a space */
+#define MIN_HOST_LEN (1)		/* minimum length of a hostname without any .do.main part */
+#define MAX_HOST_LEN (8)		/* maximum length of a hostname without any .do.main part */
+#define DOT_DOMAIN ".example.org"	/* we will use this as our .do.main when forming random hostnames */
+#define DOT_DOMAIN_LEN (STRLEN(DOT_DOMAIN))	/* string length of DOT_DOMAIN */
 #define RANDOM_TITLE_MIN_LEN (8)	/* minimum length of a title */
 #define RANDOM_ABSTRACT_MIN_LEN (8)	/* minimum length of an abstract */
 #define RANDOM_NAME_MIN_LEN (10)	/* minimum length of an author name */
-#define RANDOM_EMAIL_MIN_LEN (6)	/* min email length is 6: x@x.xx */
-#define RANDOM_URLPATH_MIN_LEN (8)	/* minimum path length after the http://example.org/ or https://example.org/ */
-#define RANDOM_MASTODON_MIN_LEN (7)	/* min Mastodon handle is 7: @u@h.xx */
+#define RANDOM_USER_MIN_LEN (3)		/* minimum username length for email, Masdoton, GitHub, etc. */
+#define RANDOM_USER_MAX_LEN (12)	/* maximum username length for email, Masdoton, GitHub, etc. */
+#define RANDOM_URL_PATH_MIN_LEN (8)	/* minimum path length after the http://example.org/ or https://example.org/ */
 #define RANDOM_AFFILIATION_MIN_LEN (8)  /* minimum length of an affiliation */
 #define MAX_RANDOM (0x7fffffff)		/* maximum value returned by random(3) */
-#define STRLEN(s) (sizeof (s)-1)	/* length of a constant string */
 
 
 /*
@@ -1761,10 +1765,11 @@ generate_answers(char const *answers)
      */
     for (i=0; i < author_count; ++i) {
 
-	unsigned int pos;	/* position to assign a specific character within a string */
 	unsigned int head_len;	/* length of the leading part of what is being formed */
 	char const *url_lead;	/* URL lead for http:// or https:// */
 	char *handle = NULL;	/* default author handle */
+	char fqdn[MAX_HOST_LEN+DOT_DOMAIN_LEN+1];	/* pseudo-random hostname ending in.example.org */
+	unsigned int fqdn_len;	/* string length of the fqdn */
 	bool anonymous;		/* true ==> is anonymous */
 
 	/*
@@ -1787,6 +1792,16 @@ generate_answers(char const *answers)
 	fprint(answerp, "%s\n", loc[biased_random_range(0, (long)SIZEOF_LOCATION_TABLE-1)].code);
 
 	/*
+	 * form some hostname under example.org
+	 */
+	memset(fqdn, 0, MAX_HOST_LEN+DOT_DOMAIN_LEN+1);	/* clear fqdn and paranoia */
+	(void) random();		/* just for j-random fun */
+	rlen = biased_random_range(MIN_HOST_LEN, MAX_HOST_LEN+1);
+	random_alphanum_str(fqdn, rlen, rlen);				    /* load host part of fqdn */
+	strlcpy(fqdn+rlen, DOT_DOMAIN, DOT_DOMAIN_LEN+1);		    /* append the .example.org */
+	fqdn_len = strlen(fqdn);
+
+	/*
 	 * form random author email address
 	 *
 	 * 25% of the time, the author will be anonymous.
@@ -1794,11 +1809,10 @@ generate_answers(char const *answers)
 	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
 	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(RANDOM_EMAIL_MIN_LEN, MAX_EMAIL_LEN+1);
-	    random_alphanum_str(buf, rlen, rlen);			    /* form overall string */
-	    pos = biased_random_range(2, rlen-4);			    /* put the @ randomly in the middle */
-	    buf[pos] = '@';						    /* load @ */
-	    buf[rlen-3] = '.';						    /* load . */
+	    random_alphanum_str(buf, RANDOM_USER_MIN_LEN, RANDOM_USER_MAX_LEN);	/* load username */
+	    rlen = strlen(buf);
+	    buf[rlen] = '@';						    /* load @ */
+	    strlcpy(buf+rlen+1, fqdn, fqdn_len+1);			    /* append FQDN, +1 for NUL byte */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1820,7 +1834,7 @@ generate_answers(char const *answers)
 		}
 		head_len = strlen(url_lead);
 		strlcpy(buf, url_lead, head_len+1);
-		rlen = biased_random_range(head_len+RANDOM_URLPATH_MIN_LEN, MAX_URL_LEN-head_len+1);
+		rlen = biased_random_range(head_len+RANDOM_URL_PATH_MIN_LEN, MAX_URL_LEN-head_len+1);
 		random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
 	    }
 	}
@@ -1841,7 +1855,7 @@ generate_answers(char const *answers)
 	    }
 	    head_len = strlen(url_lead);
 	    strlcpy(buf, url_lead, head_len+1);
-	    rlen = biased_random_range(head_len+RANDOM_URLPATH_MIN_LEN, MAX_URL_LEN-head_len+1);
+	    rlen = biased_random_range(head_len+RANDOM_URL_PATH_MIN_LEN, MAX_URL_LEN-head_len+1);
 	    random_lower_alphanum_str(buf+head_len, rlen-head_len, rlen-head_len);   /* form overall string */
 	}
 	fprint(answerp, "%s\n", buf);
@@ -1854,12 +1868,11 @@ generate_answers(char const *answers)
 	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
 	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(RANDOM_MASTODON_MIN_LEN, MAX_MASTODON_LEN+1);
-	    random_lower_alphanum_str(buf+1, rlen-1, rlen-1);		    /* form overall string */
 	    buf[0] = '@';						    /* 1st @ */
-	    pos = biased_random_range(2, rlen-3);
-	    buf[pos] = '@';						    /* 2nd @ */
-	    buf[rlen-3] = '.';						    /* load . */
+	    random_alphanum_str(buf+1, RANDOM_USER_MIN_LEN, RANDOM_USER_MAX_LEN);	/* load username */
+	    rlen = strlen(buf);
+	    buf[rlen] = '@';						    /* 2nd @ */
+	    strlcpy(buf+rlen+1, fqdn, fqdn_len+1);			    /* append FQDN, +1 for NUL byte */
 	}
 	fprint(answerp, "%s\n", buf);
 
@@ -1871,9 +1884,8 @@ generate_answers(char const *answers)
 	memset(buf, 0, BUFSIZ+1);	/* clear buffer and paranoia */
 	(void) random();		/* just for j-random fun */
 	if (biased_random_range(0, 4) > 0) {				    /* 75% chance of not anonymous */
-	    rlen = biased_random_range(2, MAX_GITHUB_LEN+1);		    /* min length is 2: @x */
 	    buf[0] = '@';						    /* @ */
-	    random_lower_alphanum_str(buf+1, rlen-1, rlen-1);		    /* form user */
+	    random_alphanum_str(buf+1, RANDOM_USER_MIN_LEN, RANDOM_USER_MAX_LEN);	/* load username */
 	}
 	fprint(answerp, "%s\n", buf);
 

@@ -66,8 +66,8 @@
  * definitions
  */
 #define NO_SEED (-1)		    /* neither -d nor -s seed used, don't generate / use pseudo-random answers */
-#define RANDOM_OFFSET (10320)	    /* 5-digit random number to be subtracted from all seeds before calling srandom(3) */
 #define DEFAULT_SEED (21701)	    /* -d is an alias for -s DEFAULT_SEED - a nice Mersenne prime exponent */
+#define SEED_OFFSET_BIAS (-8962)    /* offset the seed argument to srandom(3) by this pseudo-randomly selected value */
 #define SEED_MASK (0x7fffffff)	    /* bit mask answer_seed with SEED_MASK before calling srandom(3) */
 #define SEED_DECIMAL_DIGITS (10)    /* decimal digits in the maximum seed value */
 
