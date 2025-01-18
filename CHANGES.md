@@ -1,6 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.12 2025-01-18
+
+Increase the `OPTIONAL_SUBMISSION_FILES` to 3 due to the additional optional
+file `try.alt.sh`.
+
+
 ## Release 2.3.11 2025-01-17
 
 Bug fix `txzchk` to check for required files in top level directory only (with
