@@ -118,8 +118,11 @@ struct tarball
     uintmax_t invalid_dot_files;	    /* number of dot files that aren't .auth.json and .info.json */
     uintmax_t named_dot;		    /* number of files called just '.' */
     uintmax_t total_files;		    /* total files in the tarball */
-    uintmax_t abnormal_files;		    /* total number of abnormal files in tarball (i.e. not regular files) */
-    uintmax_t invalid_filenames;	    /* total number of invalid filenames in tarball */
+    uintmax_t extra_filenames;              /* total number of extra files */
+    uintmax_t required_filenames;           /* total number of required files */
+    uintmax_t optional_filenames;           /* total number of optional files */
+    uintmax_t forbidden_filenames;          /* total number of forbidden files */
+    uintmax_t directories;                  /* total number of subdirectories counting the required top level directory */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
@@ -143,6 +146,7 @@ struct txz_file
     uintmax_t count;			    /* number of times _this_ file has been seen */
     bool is_file;			    /* true ==> is normal file (count size and number of files) */
     intmax_t length;			    /* size as determined by string_to_intmax2() */
+    bool dir;                               /* true ==> is a directory */
     struct txz_file *next;		    /* the next file in the txz_files list */
 };
 
@@ -169,12 +173,12 @@ struct txz_line
  * function prototypes
  */
 static void txzchk_sanity_chks(char const *tar, char const *fnamchk);
-static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tarball_path, int *dir_count,
-			   intmax_t *sum, intmax_t *count);
+static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tarball_path, intmax_t *sum,
+        intmax_t *count);
 static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name,
-	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count);
+	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count, bool dir);
 static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *tarball_path,
-	char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count);
+	char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count, bool dir);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
 static void show_tarball_info(char const *tarball_path);
 static void check_file_size(char const *tarball_path, off_t size, struct txz_file *file);
@@ -186,7 +190,7 @@ static bool has_special_bits(char const *str);
 static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dir_name, char const *tarball_path);
 static void free_txz_lines(void);
-static struct txz_file *alloc_txz_file(char const *path, intmax_t length);
+static struct txz_file *alloc_txz_file(char const *path, bool dir, intmax_t length);
 static void add_txz_file_to_list(struct txz_file *file);
 static void free_txz_files_list(void);
 

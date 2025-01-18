@@ -17,8 +17,7 @@ Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.t
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found non .auth.json and .info.json dot file .file.json
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: file "test-6//.test.json": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found non .auth.json and .info.json dot file .test.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found a total of 2 files with the name .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found a total of 2 files with the name prog.c
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found a total of 2 files with the name prog.c in the same directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found a total of 6 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found 22 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found 21 feathers stuck in the tarball

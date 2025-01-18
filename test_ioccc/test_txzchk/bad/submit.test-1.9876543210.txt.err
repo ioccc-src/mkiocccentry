@@ -11,10 +11,10 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: foun
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra1
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name prog.c
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name remarks.md
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name Makefile in the same directory
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra1 in the same directory
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra2 in the same directory
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name prog.c in the same directory
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name remarks.md in the same directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found 19 feathers stuck in the tarball
