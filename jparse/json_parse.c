@@ -1319,8 +1319,8 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
     char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
-    int xa = 0;		    /* first hex character numeric value */
-    int xb = 0;		    /* second hex character numeric value */
+    uint32_t xa = 0;        /* first hex character numeric value */
+    uint32_t xb = 0;        /* second hex character numeric value */
     char c = 0;		    /* character to decode or third hex character after \u */
     size_t i;
     int32_t bytes = 0;
@@ -1487,7 +1487,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 
 		    warn(__func__, "reached EOF trying to scan for hex bytes");
 		    return NULL;
-		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
+		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode((int32_t)xa, (int32_t)xb) < 0)) {
 		    /*
 		     * no possible surrogate pair found so proceed like there
 		     * was not another \uxxxx
@@ -1525,7 +1525,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		     * in this case we have to check if we have a valid
 		     * surrogate pair.
 		     */
-		    surrogate = surrogates_to_unicode(xa, xb);
+		    surrogate = surrogates_to_unicode((int32_t)xa, (int32_t)xb);
 		    if (surrogate < 0) {
 			if (retlen != NULL) {
 			    *retlen = 0;
@@ -1644,8 +1644,8 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
     size_t mlen = 0;	    /* length of allocated encoded string */
     char n = 0;		    /* next character beyond a \\ */
     char c = 0;		    /* character to decode or third hex character after \u */
-    int xa = 0;		    /* first hex number for \uxxxx (if surrogates) */
-    int xb = 0;		    /* second hex number for \uxxxx (if surrogates) */
+    uint32_t xa = 0;        /* first hex number for \uxxxx (if surrogates) */
+    uint32_t xb = 0;        /* second hex number for \uxxxx (if surrogates) */
     int32_t surrogate = 0;  /* for surrogate pairs */
     int scanned = 0;	    /* for sscanf() */
     size_t i;
@@ -1796,7 +1796,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 
 		    warn(__func__, "reached EOF trying to scan for hex bytes");
 		    return NULL;
-		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode(xa, xb) < 0)) {
+		} else if (scanned == 1 || (scanned == 2 && surrogates_to_unicode((int32_t)xa, (int32_t)xb) < 0)) {
 		    surrogate = xa;
 		    bytes = utf8len(ptr + i, surrogate);
 		    if (bytes <= 0) {
@@ -1814,7 +1814,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 		     * if there is a \uxxxx\uxxxx then we try for a surrogate
 		     * pair.
 		     */
-		    surrogate = surrogates_to_unicode(xa, xb);
+		    surrogate = surrogates_to_unicode((int32_t)xa, (int32_t)xb);
 		    if (surrogate < 0) {
 			if (retlen != NULL) {
 			    *retlen = 0;

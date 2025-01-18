@@ -46,7 +46,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
-    "\t-V\t\tprint version string and exit\n"
+    "\t-V\t\tprint version strings and exit\n"
     "\t-s\t\targ is a string (def: arg is a filename)\n"
     "\n"
     "\targ\t\tparse JSON for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
@@ -54,7 +54,7 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "    0\tJSON is valid\n"
     "    1\tJSON is invalid\n"
-    "    2\t-h and help string printed or -V and version string printed\n"
+    "    2\t-h and help string printed or -V and version strings printed\n"
     "    3\tcommand line error\n"
     "    >=4\tinternal error\n"
     "\n"
@@ -114,7 +114,7 @@ main(int argc, char **argv)
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version strings and exit */
 	    print("%s version: %s\n", JPARSE_BASENAME, JPARSE_VERSION);
 	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);

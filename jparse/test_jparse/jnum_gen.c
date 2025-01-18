@@ -50,10 +50,10 @@
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-q] filename\n"
     "\n"
-    "\t-h\t\tPrint help message and exit\n"
-    "\t-v level\tSet verbosity level (def level: %d)\n"
-    "\t-V\t\tPrint version string and exit\n"
-    "\t-q\t\tSet quiet mode (def: loud :-) )\n"
+    "\t-h\t\tprint help message and exit\n"
+    "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-V\t\tprint version strings and exit\n"
+    "\t-q\t\tset quiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
     "\tfilename\tfile containing JSON number test cases\n"
@@ -61,7 +61,7 @@ static const char * const usage_msg =
     "Exit codes:\n"
     "\t0\t\tall is OK\n"
     "\t1\t\tfilename does not exist or is not a readable file\n"
-    "\t2\t\t-h and help string printed or -V and version string printed\n"
+    "\t2\t\t-h and help string printed or -V and version strings printed\n"
     "\t3\t\tcommand line error\n"
     "\t>=10\t\tinternal error\n"
     "\n"
@@ -124,7 +124,7 @@ main(int argc, char *argv[])
 		not_reached();
 	    }
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version strings and exit */
 	    print("%s version: %s\n", JNUM_GEN_BASENAME, JNUM_GEN_VERSION);
 	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
