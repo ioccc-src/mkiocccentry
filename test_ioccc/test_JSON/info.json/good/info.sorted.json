@@ -17,7 +17,7 @@
     "IOCCC_contest" : "IOCCC28",
     "IOCCC_year" : 2024,
     "iocccsize_version" : "28.15 2024-06-27",
-    "chkentry_version" : "1.0.5 2025-01-13",
+    "chkentry_version" : "1.1.0 2025-01-18",
     "manifest" : [
         {
             "info_JSON" : ".info.json"
@@ -48,7 +48,7 @@
         }
     ],
     "min_timestamp" : 1716103155,
-    "mkiocccentry_version" : "1.2.1 2025-01-16",
+    "mkiocccentry_version" : "1.2.2 2025-01-18",
     "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
     "nul_warning" : false,
     "rule_2a_mismatch" : false,

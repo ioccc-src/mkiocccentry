@@ -52,7 +52,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json auth.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] auth.json info.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -61,8 +61,8 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
+    "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\n"
     "Exit codes:\n"
     "    0\t\tall is OK\n"
@@ -134,28 +134,28 @@ main(int argc, char *argv[])
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     char const *submission_dir = ".";	/* submission directory to process, or NULL ==> process files */
-    char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
-    char *info_path = NULL;		/* full path of .info.json or NULL */
+    char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char *auth_path = NULL;		/* full path of .auth.json or NULL */
-    FILE *info_stream = NULL;		/* open .info.json file stream */
+    char *info_path = NULL;		/* full path of .info.json or NULL */
     FILE *auth_stream = NULL;		/* open .auth.json file stream */
-    struct json *info_tree = NULL;	/* JSON parse tree for .info.json, or NULL ==> not parsed */
+    FILE *info_stream = NULL;		/* open .info.json file stream */
     struct json *auth_tree = NULL;	/* JSON parse tree for .auth.json, or NULL ==> not parsed */
-    bool info_valid = false;		/* .info.json is valid JSON */
+    struct json *info_tree = NULL;	/* JSON parse tree for .info.json, or NULL ==> not parsed */
     bool auth_valid = false;		/* .auth.json is valid JSON */
-    struct dyn_array *info_count_err = NULL;	/* JSON semantic count errors for .info.json */
-    struct dyn_array *info_val_err = NULL;	/* JSON semantic validation errors for .info.json */
+    bool info_valid = false;		/* .info.json is valid JSON */
     struct dyn_array *auth_count_err = NULL;	/* JSON semantic count errors for .auth.json */
     struct dyn_array *auth_val_err = NULL;	/* JSON semantic validation errors for .auth.json */
-    uintmax_t info_count_err_count = 0;	/* semantic count error count from json_sem_check() for .info.json */
-    uintmax_t info_val_err_count = 0;	/* semantic validation error count from json_sem_check() for .info.json */
-    uintmax_t info_int_err_count = 0;	/* internal error count from json_sem_check() for .info.json */
-    uintmax_t info_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .info.json */
+    struct dyn_array *info_count_err = NULL;	/* JSON semantic count errors for .info.json */
+    struct dyn_array *info_val_err = NULL;	/* JSON semantic validation errors for .info.json */
     uintmax_t auth_count_err_count = 0;	/* semantic count error count from json_sem_check() for .auth.json */
     uintmax_t auth_val_err_count = 0;	/* semantic validation count from json_sem_check() for .auth.json */
     uintmax_t auth_int_err_count = 0;	/* internal error count from json_sem_check() for .auth.json */
     uintmax_t auth_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .auth.json */
+    uintmax_t info_count_err_count = 0;	/* semantic count error count from json_sem_check() for .info.json */
+    uintmax_t info_val_err_count = 0;	/* semantic validation error count from json_sem_check() for .info.json */
+    uintmax_t info_int_err_count = 0;	/* internal error count from json_sem_check() for .info.json */
+    uintmax_t info_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .info.json */
     uintmax_t all_count_err_count = 0;	/* semantic count error count from json_sem_check() for .auth.json */
     uintmax_t all_val_err_count = 0;	/* semantic validation error count from json_sem_check() for .auth.json */
     uintmax_t all_int_err_count = 0;	/* internal error count from json_sem_check() for .auth.json */
@@ -225,16 +225,17 @@ main(int argc, char *argv[])
 	break;
     case 2:
 	submission_dir = NULL;
-	info_filename = argv[0];
-	auth_filename = argv[1];
+	auth_filename = argv[0];
+	info_filename = argv[1];
 	break;
     default:
 	usage(3, program, "wrong number of arguments");	/*ooo*/
 	not_reached();
 	break;
     }
-    if (info_filename != NULL && strcmp(info_filename, ".") == 0 &&
-        auth_filename != NULL && strcmp(auth_filename, ".") == 0 && submission_dir == NULL) {
+    if (auth_filename != NULL && strcmp(auth_filename, ".") == 0 &&
+	info_filename != NULL && strcmp(info_filename, ".") == 0 &&
+	submission_dir == NULL) {
 	vrergfB(-1, -1); /* Easter egg */
 	not_reached();
     }
@@ -243,13 +244,6 @@ main(int argc, char *argv[])
     } else {
 	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
     }
-    if (info_filename == NULL) {
-	dbg(DBG_LOW, "info_filename is NULL");
-    } else if (strcmp(info_filename, ".") == 0) {
-	dbg(DBG_LOW, "info_filename is .");
-    } else {
-	dbg(DBG_LOW, "info_filename: %s", info_filename);
-    }
     if (auth_filename == NULL) {
 	dbg(DBG_LOW, "auth_filename is NULL");
     } else if (strcmp(auth_filename, ".") == 0) {
@@ -257,21 +251,18 @@ main(int argc, char *argv[])
     } else {
 	dbg(DBG_LOW, "auth_filename: %s", auth_filename);
     }
+    if (info_filename == NULL) {
+	dbg(DBG_LOW, "info_filename is NULL");
+    } else if (strcmp(info_filename, ".") == 0) {
+	dbg(DBG_LOW, "info_filename is .");
+    } else {
+	dbg(DBG_LOW, "info_filename: %s", info_filename);
+    }
 
     /*
      * case: 1 arg - directory
      */
-    if (submission_dir != NULL && info_filename == NULL && auth_filename == NULL) {
-
-	/*
-	 * open the .info.json file under submission_dir
-	 */
-	info_filename = ".info.json";
-	info_stream = open_dir_file(submission_dir, info_filename);
-	if (info_stream == NULL) { /* paranoia */
-	    err(22, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
-	    not_reached();
-	}
+    if (submission_dir != NULL && auth_filename == NULL && info_filename == NULL) {
 
 	/*
 	 * open the .auth.json file under submission_dir
@@ -283,23 +274,20 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 
+	/*
+	 * open the .info.json file under submission_dir
+	 */
+	info_filename = ".info.json";
+	info_stream = open_dir_file(submission_dir, info_filename);
+	if (info_stream == NULL) { /* paranoia */
+	    err(24, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
+	    not_reached();
+	}
+
     /*
      * case: 2 args - info path and auth path
      */
-    } else if (submission_dir == NULL && info_filename != NULL && auth_filename != NULL) {
-
-	/*
-	 * open the .info.json file unless it is .
-	 */
-	if (strcmp(info_filename, ".") != 0) {
-	    info_stream = open_dir_file(NULL, info_filename);
-	    if (info_stream == NULL) { /* paranoia */
-		err(24, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
-		not_reached();
-	    }
-	} else {
-	    info_stream = NULL;
-	}
+    } else if (submission_dir == NULL && auth_filename != NULL && info_filename != NULL) {
 
 	/*
 	 * open the .auth.json file unless it is .
@@ -314,16 +302,24 @@ main(int argc, char *argv[])
 	    auth_stream = NULL;
 	}
 
+	/*
+	 * open the .info.json file unless it is .
+	 */
+	if (strcmp(info_filename, ".") != 0) {
+	    info_stream = open_dir_file(NULL, info_filename);
+	    if (info_stream == NULL) { /* paranoia */
+		err(26, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
+		not_reached();
+	    }
+	} else {
+	    info_stream = NULL;
+	}
+
     /*
      * case: paranoia
      */
     } else {
-	err(26, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
-	not_reached();
-    }
-    info_path = calloc_path(submission_dir, info_filename);
-    if (info_path == NULL) {
-	err(27, __func__, "info_path is NULL");
+	err(27, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
 	not_reached();
     }
     auth_path = calloc_path(submission_dir, auth_filename);
@@ -331,17 +327,10 @@ main(int argc, char *argv[])
 	err(28, __func__, "auth_path is NULL");
 	not_reached();
     }
-
-    /*
-     * parse .info.json if it is open
-     */
-    if (info_stream != NULL) {
-	info_tree = parse_json_stream(info_stream, info_path, &info_valid);
-	if (info_valid == false || info_tree == NULL) {
-	    err(4, __func__, "failed to parse JSON in .info.json file: %s", info_path); /*ooo*/
-	    not_reached();
-	}
-	dbg(DBG_LOW, "successful parse of JSON in .info.json file: %s", info_path);
+    info_path = calloc_path(submission_dir, info_filename);
+    if (info_path == NULL) {
+	err(29, __func__, "info_path is NULL");
+	not_reached();
     }
 
     /*
@@ -357,49 +346,15 @@ main(int argc, char *argv[])
     }
 
     /*
-     * check a JSON parse tree against a JSON semantic table for .info.json, if open
+     * parse .info.json if it is open
      */
     if (info_stream != NULL) {
-
-	/*
-	 * perform JSON semantic analysis on the .info.json JSON parse tree
-	 */
-	dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s", info_path);
-	info_all_err_count = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
-					  &info_count_err, &info_val_err);
-
-	/*
-	 * firewall on json_sem_check() results AND count errors for .info.json
-	 */
-	if (info_count_err == NULL) {
-	    err(29, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	info_tree = parse_json_stream(info_stream, info_path, &info_valid);
+	if (info_valid == false || info_tree == NULL) {
+	    err(4, __func__, "failed to parse JSON in .info.json file: %s", info_path); /*ooo*/
 	    not_reached();
 	}
-	if (dyn_array_tell(info_count_err) < 0) {
-	    err(30, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
-		   "for .info.json file: %s",
-		   dyn_array_tell(info_count_err), info_path);
-	    not_reached();
-	}
-	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
-	if (info_val_err == NULL) {
-	    err(31, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
-	    not_reached();
-	}
-	if (dyn_array_tell(info_val_err) < 0) {
-	    err(32, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
-		   "for .info.json file: %ss",
-		   dyn_array_tell(info_val_err), info_path);
-	    not_reached();
-	}
-	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
-	if (info_all_err_count < info_count_err_count+info_val_err_count) {
-	    err(33, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
-		   "for .info.json file: %s",
-		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
-	    not_reached();
-	}
-	info_int_err_count = info_all_err_count - (info_count_err_count+info_val_err_count);
+	dbg(DBG_LOW, "successful parse of JSON in .info.json file: %s", info_path);
     }
 
     /*
@@ -418,32 +373,78 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .auth.json
 	 */
 	if (auth_count_err == NULL) {
-	    err(34, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+	    err(30, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_count_err) < 0) {
-	    err(35, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+	    err(31, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
 	    not_reached();
 	}
 	auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
 	if (auth_val_err == NULL) {
-	    err(36, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+	    err(32, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_val_err) < 0) {
-	    err(37, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+	    err(33, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
 	    not_reached();
 	}
 	auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
 	if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-	    err(38, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+	    err(34, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
 		   "for .auth.json file: %s",
 		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
 	    not_reached();
 	}
 	auth_int_err_count = auth_all_err_count - (auth_count_err_count+auth_val_err_count);
+    }
+
+    /*
+     * check a JSON parse tree against a JSON semantic table for .info.json, if open
+     */
+    if (info_stream != NULL) {
+
+	/*
+	 * perform JSON semantic analysis on the .info.json JSON parse tree
+	 */
+	dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s", info_path);
+	info_all_err_count = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
+					  &info_count_err, &info_val_err);
+
+	/*
+	 * firewall on json_sem_check() results AND count errors for .info.json
+	 */
+	if (info_count_err == NULL) {
+	    err(35, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	    not_reached();
+	}
+	if (dyn_array_tell(info_count_err) < 0) {
+	    err(36, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+		   "for .info.json file: %s",
+		   dyn_array_tell(info_count_err), info_path);
+	    not_reached();
+	}
+	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
+	if (info_val_err == NULL) {
+	    err(37, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+	    not_reached();
+	}
+	if (dyn_array_tell(info_val_err) < 0) {
+	    err(38, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+		   "for .info.json file: %ss",
+		   dyn_array_tell(info_val_err), info_path);
+	    not_reached();
+	}
+	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
+	if (info_all_err_count < info_count_err_count+info_val_err_count) {
+	    err(39, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+		   "for .info.json file: %s",
+		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
+	    not_reached();
+	}
+	info_int_err_count = info_all_err_count - (info_count_err_count+info_val_err_count);
     }
 
     /*
@@ -453,28 +454,6 @@ main(int argc, char *argv[])
     all_val_err_count = info_val_err_count + auth_val_err_count;
     all_int_err_count = info_int_err_count + auth_int_err_count;
     all_all_err_count = info_all_err_count + auth_all_err_count;
-
-    /*
-     * report details of any .info.json semantic errors
-     */
-    if (info_all_err_count > 0) {
-	fpr(stderr, __func__, "What follows are semantic errors for .info.json file: %s\n", info_path);
-	if (info_count_err == NULL) {
-	    fpr(stderr, __func__, "info_count_err is NULL!!!\n");
-	} else {
-	    for (c=0; c < info_count_err_count; ++c) {
-		sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, c);
-		fprint_count_err(stderr, ".info.json count error ", sem_count_err, "\n");
-	    }
-	    for (c=0; c < info_val_err_count; ++c) {
-		sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, c);
-		fprint_val_err(stderr, ".info.json validation error ", sem_val_err, "\n");
-	    }
-	}
-	if (info_int_err_count > 0) {
-	    fpr(stderr, __func__, ".info.json internal errors found: %ju", info_int_err_count);
-	}
-    }
 
     /*
      * report details of any .auth.json semantic errors
@@ -499,14 +478,36 @@ main(int argc, char *argv[])
     }
 
     /*
+     * report details of any .info.json semantic errors
+     */
+    if (info_all_err_count > 0) {
+	fpr(stderr, __func__, "What follows are semantic errors for .info.json file: %s\n", info_path);
+	if (info_count_err == NULL) {
+	    fpr(stderr, __func__, "info_count_err is NULL!!!\n");
+	} else {
+	    for (c=0; c < info_count_err_count; ++c) {
+		sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, c);
+		fprint_count_err(stderr, ".info.json count error ", sem_count_err, "\n");
+	    }
+	    for (c=0; c < info_val_err_count; ++c) {
+		sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, c);
+		fprint_val_err(stderr, ".info.json validation error ", sem_val_err, "\n");
+	    }
+	}
+	if (info_int_err_count > 0) {
+	    fpr(stderr, __func__, ".info.json internal errors found: %ju", info_int_err_count);
+	}
+    }
+
+    /*
      * report on semantic count errors
      */
     if (all_count_err_count > 0) {
-	if (info_count_err_count > 0) {
-	    dbg(DBG_LOW, "count errors for .info.json: %ju", info_count_err_count);
-	}
 	if (auth_count_err_count > 0) {
 	    dbg(DBG_LOW, "count errors for .auth.json: %ju", auth_count_err_count);
+	}
+	if (info_count_err_count > 0) {
+	    dbg(DBG_LOW, "count errors for .info.json: %ju", info_count_err_count);
 	}
 	dbg(DBG_LOW, "count errors for both files: %ju", all_count_err_count);
     }
@@ -515,11 +516,11 @@ main(int argc, char *argv[])
      * report on semantic validation errors
      */
     if (all_val_err_count > 0) {
-	if (info_val_err_count > 0) {
-	    dbg(DBG_LOW, "validation errors for .info.json: %ju", info_val_err_count);
-	}
 	if (auth_val_err_count > 0) {
 	    dbg(DBG_LOW, "validation errors for .auth.json: %ju", auth_val_err_count);
+	}
+	if (info_val_err_count > 0) {
+	    dbg(DBG_LOW, "validation errors for .info.json: %ju", info_val_err_count);
 	}
 	dbg(DBG_LOW, "validation errors for both files: %ju", all_val_err_count);
     }
@@ -528,11 +529,11 @@ main(int argc, char *argv[])
      * report on internal errors
      */
     if (all_int_err_count > 0) {
-	if (info_int_err_count > 0) {
-	    dbg(DBG_LOW, "internal errors for .info.json: %ju", info_int_err_count);
-	}
 	if (auth_int_err_count > 0) {
 	    dbg(DBG_LOW, "internal errors for .auth.json: %ju", auth_int_err_count);
+	}
+	if (info_int_err_count > 0) {
+	    dbg(DBG_LOW, "internal errors for .info.json: %ju", info_int_err_count);
 	}
 	dbg(DBG_LOW, "internal errors for both files: %ju", all_int_err_count);
     }
@@ -541,11 +542,11 @@ main(int argc, char *argv[])
      * report on total error counts
      */
     if (all_all_err_count > 0) {
-	if (info_all_err_count > 0) {
-	    dbg(DBG_LOW, "total semantic errors for .info.json: %ju", info_all_err_count);
-	}
 	if (auth_all_err_count > 0) {
 	    dbg(DBG_LOW, "total semantic errors for .auth.json: %ju", auth_all_err_count);
+	}
+	if (info_all_err_count > 0) {
+	    dbg(DBG_LOW, "total semantic errors for .info.json: %ju", info_all_err_count);
 	}
 	dbg(DBG_LOW, "total semantic errors for both files: %ju", all_all_err_count);
     }
@@ -553,18 +554,18 @@ main(int argc, char *argv[])
     /*
      * summarize the JSON semantic check status
      */
-    if (info_all_err_count > 0) {
-	if (info_path == NULL) {
-	    werr(1, __func__, "JSON semantic check failed for .info.json file: ((NULL))"); /*ooo*/
-	} else {
-	    werr(1, __func__, "JSON semantic check failed for .info.json file: %s", info_path); /*ooo*/
-	}
-    }
     if (auth_all_err_count > 0) {
 	if (auth_path == NULL) {
 	    werr(1, __func__, "JSON semantic check failed for .auth.json file: ((NULL))"); /*ooo*/
 	} else {
 	    werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_path); /*ooo*/
+	}
+    }
+    if (info_all_err_count > 0) {
+	if (info_path == NULL) {
+	    werr(1, __func__, "JSON semantic check failed for .info.json file: ((NULL))"); /*ooo*/
+	} else {
+	    werr(1, __func__, "JSON semantic check failed for .info.json file: %s", info_path); /*ooo*/
 	}
     }
     if (all_all_err_count == 0) {
@@ -579,21 +580,13 @@ main(int argc, char *argv[])
      * due to complications introduced when making the lexer re-entrant. This is
      * not a problem under macOS but it is under linux.
      */
-    if (info_tree != NULL) {
-	json_tree_free(info_tree, JSON_DEFAULT_MAX_DEPTH);
-	info_tree = NULL;
-    }
     if (auth_tree != NULL) {
 	json_tree_free(auth_tree, JSON_DEFAULT_MAX_DEPTH);
 	auth_tree = NULL;
     }
-    if (info_count_err != NULL) {
-	free_count_err(info_count_err);
-	info_count_err = NULL;
-    }
-    if (info_val_err != NULL) {
-	free_val_err(info_val_err);
-	info_val_err = NULL;
+    if (info_tree != NULL) {
+	json_tree_free(info_tree, JSON_DEFAULT_MAX_DEPTH);
+	info_tree = NULL;
     }
     if (auth_count_err != NULL) {
 	free_count_err(auth_count_err);
@@ -603,13 +596,21 @@ main(int argc, char *argv[])
 	free_val_err(auth_val_err);
 	auth_val_err = NULL;
     }
-    if (info_path != NULL) {
-	free(info_path);
-	info_path = NULL;
+    if (info_count_err != NULL) {
+	free_count_err(info_count_err);
+	info_count_err = NULL;
+    }
+    if (info_val_err != NULL) {
+	free_val_err(info_val_err);
+	info_val_err = NULL;
     }
     if (auth_path != NULL) {
 	free(auth_path);
 	auth_path = NULL;
+    }
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
     }
 
     /*

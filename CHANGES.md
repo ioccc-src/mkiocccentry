@@ -35,6 +35,13 @@ changed. In other words, `json_util.c` is a jparse library version (like
 Added even more bad `txzchk` test files for those with special bits (as anything
 not marked as `-` or `d` in `ls -l`).
 
+Reversed the argument order for `chkentry(1)`.  Now the `.auth.json` arg
+comes before `.info.json`.  Now, one may do the following, assuming that
+the `topdir` has the `.auth.json` and `.info.json` files:
+
+```sh
+chkentry topdir/.*.json
+```
 
 
 ## Release 2.3.10 2025-01-16

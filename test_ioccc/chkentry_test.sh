@@ -39,7 +39,7 @@ export UNEXPECTED_SEMANTIC_ERROR=""
 export SEMANTIC_ERROR_MISSED=""
 export JSON_TREE="./test_ioccc/test_JSON"
 
-export CHKENTRY_TEST_VERSION="1.0.1 2024-03-02"
+export CHKENTRY_TEST_VERSION="1.1.0 2025-01-18"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c chkentry] [-d json_tree]
 
@@ -54,11 +54,11 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
 
 			NOTE: these subdirectories are required under json_tree:
 
-			json_tree/info.json/good/	valid JSON syntax that is a proper .info.json semantic file
-			json_tree/info.json/bad/	valid JSON syntax that has 1 or more .info.json semantic errors
-
 			json_tree/auth.json/good/	valid JSON syntax that is a proper .auth.json semantic file
 			json_tree/auth.json/bad/	valid JSON syntax that has 1 or more .auth.json semantic errors
+
+			json_tree/info.json/good/	valid JSON syntax that is a proper .info.json semantic file
+			json_tree/info.json/bad/	valid JSON syntax that has 1 or more .info.json semantic errors
 
 Exit codes:
      0   all OK
@@ -129,10 +129,10 @@ if [[ $# -ne 0 ]]; then
     echo "$USAGE" 1>&2
     exit 3
 fi
-export INFO_GOOD_TREE="$JSON_TREE/info.json/good"
-export INFO_BAD_TREE="$JSON_TREE/info.json/bad"
 export AUTH_GOOD_TREE="$JSON_TREE/auth.json/good"
 export AUTH_BAD_TREE="$JSON_TREE/auth.json/bad"
+export INFO_GOOD_TREE="$JSON_TREE/info.json/good"
+export INFO_BAD_TREE="$JSON_TREE/info.json/bad"
 
 # firewall
 #
@@ -284,17 +284,17 @@ run_auth_test()
     #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $auth_json >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $auth_json . >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- . "$auth_json" >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $auth_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$auth_json" . >> "${LOGFILE}" 2>&1
 	status="$?"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $auth_json >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $auth_json . >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- . "$auth_json" >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $auth_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$auth_json" . >> "${LOGFILE}" 2>&1
 	status="$?"
     fi
 
@@ -392,17 +392,17 @@ run_info_test()
     #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $info_json . >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $info_json >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$info_json" . >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $info_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- . "$info_json" >> "${LOGFILE}" 2>&1
 	status="$?"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $info_json . >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $info_json >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$info_json" . >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $info_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- . "$info_json" >> "${LOGFILE}" 2>&1
 	status="$?"
     fi
 

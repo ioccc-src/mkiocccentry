@@ -21,36 +21,37 @@
 .RB [\| \-J
 .IR level \|]
 .RB [\| \-q \|]
-.I info.json
 .I auth.json
+.I info.json
 .SH DESCRIPTION
 .PP
 Validates the
-.I .info.json
-and/or
 .I .auth.json
+and/or
+.I .info.json
 of an IOCCC entry.
 In the two argument form,
-.I info.JSON
-is the path of an IOCCC entry information JSON file, and
 .I auth.JSON
-is the path of an IOCCC entry author JSON file.
+is the path of an IOCCC entry author JSON file,
+and
+.I info.JSON
+is the path of an IOCCC entry information JSON file.
 If
-.B info.JSON
+.B auth.JSON
 is
 .I .
 (dot), then this file is ignored.
 If
-.B auth.JSON
+.B info.JSON
 is
 .I .
 (dot), then this file is ignored.
 In the one argument form,
 .I submission_dir
 is assumed to be a directory containing both
-.I .info.json
-and
 .I .auth.json
+and
+.I .info.json
 files.
 .PP
 As a sanity check, the
@@ -58,9 +59,9 @@ As a sanity check, the
 program executes
 .B chkentry
 after the
-.I .info.json
-and
 .I .auth.json
+and
+.I .info.json
 files have been created, once per file, testing that everything is well.
 If
 .BR mkiocccentry (1)
@@ -70,9 +71,9 @@ For a non\-zero exit code, the tool aborts because any problems detected by
 based on what
 .BR mkiocccentry (1)
 wrote into
-.I .info.json
-and/or
 .I .auth.json
+and/or
+.I .info.json
 indicates there is a serious mismatch between what
 .BR mkiocccentry (1)
 is doing and what
@@ -191,16 +192,7 @@ Run the tool on an IOCCC entry located in the directory
 .sp
 .RS
 .ft B
- ./chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666/{.info,.auth}.json
-.ft R
-.RE
-.PP
-Run the tool on just the IOCCC entry information JSON file
-.IR test/info.JSON :
-.sp
-.RS
-.ft B
- ./chkentry test/info.JSON .
+ ./chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666/{.auto,.info}.json
 .ft R
 .RE
 .PP
@@ -209,8 +201,17 @@ Run the tool on just the IOCCC entry author JSON file
 .sp
 .RS
 .ft B
- ./chkentry . test/auth.JSON
+ ./chkentry test/auth.JSON .
 .ft R
+.PP
+Run the tool on just the IOCCC entry information JSON file
+.IR test/info.JSON :
+.sp
+.RS
+.ft B
+ ./chkentry . test/info.JSON
+.ft R
+.RE
 .RE
 .SH SEE ALSO
 .PP

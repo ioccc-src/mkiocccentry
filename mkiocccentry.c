@@ -5301,10 +5301,10 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	para("",
 	    "Checking the format of .info.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, info_path);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- % .", chkentry, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, info_path);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- . %", chkentry, info_path);
     if (exit_code != 0) {
-	err(157, __func__, "%s -q -- %s . failed with exit code: %d",
+	err(157, __func__, "%s -q -- . %s failed with exit code: %d",
 			   chkentry, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5557,10 +5557,10 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	para("",
 	    "Checking the format of .auth.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, auth_path);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- . %", chkentry, auth_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, auth_path);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- % .", chkentry, auth_path);
     if (exit_code != 0) {
-	err(175, __func__, "%s -q -- . %s failed with exit code: %d",
+	err(175, __func__, "%s -q -- %s . failed with exit code: %d",
 			   chkentry, auth_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
