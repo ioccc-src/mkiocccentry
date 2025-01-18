@@ -344,7 +344,7 @@ TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 # User specific configurations - override Makefile values  #
 ############################################################
 
-# The directive below retrieves any user specific configurations from makefile.local.
+# The directive below retrieves any user specific configurations from Makefile.local.
 #
 # The - before include means it's not an error if the file does not exist.
 #
