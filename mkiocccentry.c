@@ -2613,23 +2613,30 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 
         /*
          * skip lines starting with a '.' as those are special make rules
-         *
-         * NOTE: we have to check if line != NULL first even though we know it's
-         * not NULL because we check *line and some compilers warn about this
-         * sequence. We normally could do it as a line != NULL && *line == '.'
-         * but it appears that GitHub might not understand short-circuiting
-         * logic so we have to do an extra check *sigh*
          */
-        if (line != NULL) {
-            if (*line == '.') {
-                /*
-                 * free storage
-                 */
-                if (line != NULL) {
-                    free(line);
-                    line = NULL;
-                }
-            }
+        if (line != NULL && *line == '.') {
+            /*
+             * NOTE: due to a bug or mis-feature in GitHub we cannot explicitly
+             * check for NULL line before freeing which means that if someone
+             * messed with line here it could be a problem. This is because of
+             * the dereference above.
+             *
+             * We know it is not a short-circuiting not being understood because
+             * we tried this.  It is safe to free a NULL pointer but in this
+             * repo we always check for != NULL before freeing. However since we
+             * have to check for line != NULL prior to dereferencing (though
+             * this is not strictly necessary due to the fact we're also passing
+             * it to strchr()) we cannot (because of GitHub) check for NULL
+             * before freeing it. That does mean that if someone ended up
+             * setting it to NULL it would not be a valid check any more. But
+             * since it is safe to free a NULL pointer it should not matter
+             * which makes this check even sillier.
+             */
+            /*
+             * free storage
+             */
+            free(line);
+            line = NULL;
 
             /*
              * built-in Makefile rule
