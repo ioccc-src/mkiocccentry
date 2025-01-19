@@ -43,6 +43,27 @@ the `topdir` has the `.auth.json` and `.info.json` files:
 chkentry topdir/.*.json
 ```
 
+Major updates to `txzchk(1)`. It no longer tests for total files against the
+maximum but rather extra files against the extra file maximum. As subdirectories
+are now allowed the warning for more than one file with the same name depends on
+the directory. It might be worth noting that when an identical filename is found
+more than once it increments the count but it can cause confusing output exactly
+because it is confusing (and should never happen unless someone is messing with
+their tarball or has some system error). It also now checks for optional files
+which do not count against extra files and neither do required files. In a
+function a variable was no longer used so it has been removed and in some other
+places code was no longer necessary (where it was) so said code was also
+removed. Added a new test case file in both good and bad directories. Rebuilt
+error files.
+
+Possibly some bug fixes were made during the above.
+
+Updated version of `txzchk` to `"1.1.5 2025-01-18"` and updated JSON files to
+account for this.
+
+New array in `soup/entry_util.c` which is of optional filenames (these only count
+if they're in the top level directory).
+
 
 ## Release 2.3.10 2025-01-16
 

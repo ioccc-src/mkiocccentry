@@ -54,8 +54,16 @@
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
 #define GNUMAKEFILE_FILENAME "GNUmakefile"      /* GNUmakefile takes priority over Makefile which we don't want */
 
+/*
+ * optional filenames in the top level directory
+ */
+#define TRY_SH "try.sh"                         /* try.sh for prog.c */
+#define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
+#define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
+
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
+extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
 
 /*
  * IOCCC author information

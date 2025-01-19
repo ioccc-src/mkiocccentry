@@ -98,6 +98,18 @@ char *forbidden_filenames[] =
 };
 
 /*
+ * optional files that must MAY exist in top level directory and which are not
+ * counted against extra files
+ */
+char *optional_filenames[] =
+{
+    TRY_SH,
+    PROG_ALT_C,
+    TRY_ALT_SH,
+    NULL
+};
+
+/*
  * free_auth - free auto and related sub-elements
  *
  * given:

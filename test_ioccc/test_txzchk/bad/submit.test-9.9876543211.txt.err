@@ -1,11 +1,11 @@
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found empty .info.json file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found empty remarks.md
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found empty .auth.json file
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: index.html
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: GNUmakefile
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: README.md
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: prog.orig.c
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: prog.orig
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename not allowed: prog
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found empty Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog.orig not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog.orig.c not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename README.md not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename GNUmakefile not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename index.html not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found 10 feathers stuck in the tarball

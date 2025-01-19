@@ -1,4 +1,4 @@
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: file "test-1/foo/.auth.json": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found non .auth.json and .info.json dot file .auth.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found a total of 1 invalidly named dot file
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found 2 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found a total of 2 invalidly named dot files
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found 3 feathers stuck in the tarball

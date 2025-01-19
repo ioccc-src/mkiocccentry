@@ -338,8 +338,6 @@ show_tarball_info(char const *tarball_path)
 	dbg(DBG_HIGH, "%s went above max files size %ju %ju time%s", tarball_path,
 		(uintmax_t)MAX_SUM_FILELEN, (uintmax_t)tarball.files_size_too_big,
 		SINGULAR_OR_PLURAL(tarball.files_size_too_big));
-	dbg(DBG_MED, "%s has %ju file%s", tarball_path, tarball.total_files-tarball.abnormal_files,
-		tarball.total_files-tarball.abnormal_files == 1?"":"s");
 
 	if (tarball.correct_directory < tarball.total_files) {
 	    dbg(DBG_MED, "%s has %ju incorrect director%s", tarball_path, tarball.total_files - tarball.correct_directory,
@@ -353,14 +351,18 @@ show_tarball_info(char const *tarball_path)
 	dbg(DBG_MED, "%s has %ju file%s named '.'", tarball_path, tarball.named_dot, SINGULAR_OR_PLURAL(tarball.named_dot));
 	dbg(DBG_MED, "%s has %ju file%s with at least one unsafe char", tarball_path, tarball.unsafe_chars,
 		SINGULAR_OR_PLURAL(tarball.unsafe_chars));
-	if (tarball.invalid_filenames) {
-	    dbg(DBG_MED, "%s has %ju invalidly named file%s", tarball_path, tarball.invalid_filenames,
-		    SINGULAR_OR_PLURAL(tarball.invalid_filenames));
-	}
         if (tarball.invalid_filename_lengths > 0) {
             dbg(DBG_MED, "%s has %ju oversized or undersized filename%s", tarball_path, tarball.invalid_filename_lengths,
                     SINGULAR_OR_PLURAL(tarball.invalid_filename_lengths));
         }
+        dbg(DBG_MED, "%s has %ju extra director%s", tarball_path, tarball.directories - 1, tarball.directories - 1== 1 ? "y":"ies");
+        dbg(DBG_MED, "%s has %ju extra filename%s", tarball_path, tarball.extra_filenames,
+                SINGULAR_OR_PLURAL(tarball.extra_filenames));
+        dbg(DBG_MED, "%s has %ju required filename%s", tarball_path, tarball.required_filenames,
+                SINGULAR_OR_PLURAL(tarball.required_filenames));
+        dbg(DBG_MED, "%s has %ju forbidden filename%s", tarball_path, tarball.forbidden_filenames,
+                SINGULAR_OR_PLURAL(tarball.forbidden_filenames));
+
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
 		    SINGULAR_OR_PLURAL(tarball.total_feathers));
@@ -612,7 +614,6 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 {
     bool allowed_dot_file = false;	/* true ==> basename is an allowed '.' file */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay */
-    size_t i = 0;                       /* we need this to iterate through forbidden files list */
 
     /*
      * firewall
@@ -681,13 +682,6 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
 		++tarball.named_dot;
 		warn("txzchk", "%s: found file called '.' in path %s", tarball_path, file->filename);
 	    }
-	}
-        for (i = 0; forbidden_filenames[i] != NULL; ++i) {
-	    if (!strcasecmp(file->basename, forbidden_filenames[i])) {
-                ++tarball.total_feathers;
-                ++tarball.invalid_filenames;
-	        warn(__func__, "%s: filename not allowed: %s", tarball_path, file->basename);
-            }
 	}
     }
 
@@ -783,6 +777,11 @@ check_all_txz_files(void)
 {
     struct txz_file *file;  /* to iterate through files list */
     size_t len = 0;         /* length of each filename */
+    size_t dirs = 0;        /* number of dirs in each filename */
+    size_t i = 0;           /* iterate through filenames lists */
+    bool forbidden = false; /* true ==> filename is a forbidden name */
+    bool required = false;  /* true ==> filename is required */
+    bool optional = false;  /* true ==> filename is optional file */
 
     /*
      * Now go through the files list to verify the required files are there and
@@ -796,29 +795,170 @@ check_all_txz_files(void)
 	} else if (file->filename == NULL) {
 	    err(25, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
-	}
-	if (count_dirs(file->filename) == 1 && !strcmp(file->basename, INFO_JSON_FILENAME)) {
-	    tarball.has_info_json = true;
-	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, AUTH_JSON_FILENAME)) {
-	    tarball.has_auth_json = true;
-	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, MAKEFILE_FILENAME)) {
-	    tarball.has_Makefile = true;
-	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, PROG_C_FILENAME)) {
-	    tarball.has_prog_c = true;
-	} else if (count_dirs(file->filename) == 1 && !strcmp(file->basename, REMARKS_FILENAME)) {
-	    tarball.has_remarks_md = true;
-	}
+        }
+
+        if (file->dir) {
+            /* skip directories */
+            continue;
+        }
+        /*
+         * always reset bools to false
+         */
+        forbidden = false;
+        required = false;
+        optional = false;
 
         len = strlen(file->basename);
-        if (!test_filename_len(file->basename)) {
+        if (len <= 0) {
+            warn("txzchk", "%s: filename length 0 for: %s", tarball_path, file->basename);
+            ++tarball.invalid_filename_lengths;
+            ++tarball.total_feathers;
+            continue;
+        } else if (!test_filename_len(file->basename)) {
             warn("txzchk", "%s: filename length: %ju not in range of > 0 && <= MAX_FILENAME_LEN %ju", file->basename,
                     (uintmax_t)len, (uintmax_t)MAX_FILENAME_LEN);
-            ++tarball.total_feathers;
             ++tarball.invalid_filename_lengths;
+            ++tarball.total_feathers;
+        }
+
+        /*
+         * obtain number of directories in filename to check for specific files
+         */
+        dirs = count_dirs(file->filename);
+        /*
+         * if we only have one directory we have to check for specific required
+         * files. It is not an error if it does not match as it could be the
+         * next file in the list; we simply need to know if THIS file is the one
+         * we are checking.
+         */
+
+        if (dirs <= 0) {
+            /*
+             * if 0 directories everything is invalid
+             */
+            ++tarball.forbidden_filenames;
+            /*
+             * it's also an extra filename
+             */
+            ++tarball.extra_filenames;
+        } else if (dirs == 1) {
+            if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
+                tarball.has_info_json = true;
+                required = true;
+            } else if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
+                tarball.has_auth_json = true;
+                required = true;
+            } else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
+                tarball.has_Makefile = true;
+                required = true;
+            } else if (!strcmp(file->basename, PROG_C_FILENAME)) {
+                tarball.has_prog_c = true;
+                required = true;
+            } else if (!strcmp(file->basename, REMARKS_FILENAME)) {
+                tarball.has_remarks_md = true;
+                required = true;
+            } else {
+                /*
+                 * here we know it's not one of the five required files so we
+                 * have to do other checks.
+                 */
+
+                /*
+                 * ensure the booleans are false
+                 */
+                forbidden = false;
+                required = false;
+                optional = false;
+
+                /*
+                 * in the case it's not one of the required filenames, we have
+                 * to check for forbidden filenames and also optional filenames.
+                 */
+                for (i = 0; !forbidden && forbidden_filenames[i] != NULL; ++i) {
+                    if (!strcasecmp(file->basename, forbidden_filenames[i])) {
+	                warn("txzchk", "%s: filename %s not allowed", tarball_path, file->basename);
+                        ++tarball.forbidden_filenames;
+                        ++tarball.total_feathers;
+                        forbidden = true;
+                        break;
+                    }
+                }
+                /*
+                 * we need to count optional filenames too, assuming it's not a
+                 * forbidden filename (meaning it couldn't be an optional
+                 * filename)
+                 */
+                for (i = 0; !forbidden && !optional && optional_filenames[i] != NULL; ++i) {
+                    if (!strcasecmp(file->filename, optional_filenames[i])) {
+                        optional = true;
+                        ++tarball.optional_filenames;
+                        break;
+                    }
+                }
+
+                /*
+                 * if we don't have an optional or required (which will never
+                 * occur here) filename then we have to increment the extra
+                 * filename count
+                 */
+                if (!optional && !required) {
+                    dbg(DBG_HIGH, "%s: extra filename: %s", tarball_path, file->basename);
+                    ++tarball.extra_filenames;
+                }
+            }
+
+            /*
+             * we need to make sure we record the number of required files
+             */
+            if (required) {
+                ++tarball.required_filenames;
+            }
+        } else if (dirs > 1) {
+            /*
+             * ensure the booleans are false
+             */
+            forbidden = false;
+            required = false;
+            optional = false;
+
+            if (!strcmp(file->basename, INFO_JSON_FILENAME) ||
+                    !strcmp(file->basename, AUTH_JSON_FILENAME)) {
+                    ++tarball.forbidden_filenames;
+                    ++tarball.invalid_dot_files;
+                    ++tarball.total_feathers;
+                    forbidden = true;
+            } else if (!strcmp(file->basename, README_MD_FILENAME)) {
+                ++tarball.forbidden_filenames;
+                ++tarball.total_feathers;
+                forbidden = true;
+            } else {
+                /*
+                 * we need to count optional filenames too.
+                 *
+                 * NOTE: in subdirectories one may have certain filenames not
+                 * allowed in the top level directory. Some are still forbidden,
+                 * however, like any dot file and README.md (both checked
+                 * above).
+                 */
+                for (i = 0; !forbidden && !optional && optional_filenames[i] != NULL; ++i) {
+                    if (!strcasecmp(file->filename, optional_filenames[i])) {
+                        optional = true;
+                        ++tarball.optional_filenames;
+                        break;
+                    }
+                }
+
+                /*
+                 * if not in top level directory (depth > 1) we count this as an
+                 * extra filename
+                 */
+                ++tarball.extra_filenames;
+            }
         }
 
 	if (file->count > 1) {
-	    warn("txzchk", "%s: found a total of %ju files with the name %s", tarball_path, file->count, file->basename);
+	    warn("txzchk", "%s: found a total of %ju files with the name %s in the same directory", tarball_path,
+                    file->count, file->basename);
 	    tarball.total_feathers += file->count - 1;
 	}
     }
@@ -921,6 +1061,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
  *	normal_file	- true ==> normal file, check size and number of files
  *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
  *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
+ *	dir             - true ==> is a directory
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -930,7 +1071,8 @@ check_directories(struct txz_file *file, char const *dir_name, char const *tarba
  */
 static void
 parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
-	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count)
+	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count,
+        bool dir)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */
@@ -1024,7 +1166,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
 
     /* p should now contain the filename. */
-    file = alloc_txz_file(p, length);
+    file = alloc_txz_file(p, dir, length);
     if (file == NULL) {
 	err(28, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
@@ -1120,11 +1262,11 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
 	warn("txzchk", "%s: files count <= 0: %jd", tarball_path, *count);
     }
     /* check for too many files */
-    if (*count - (intmax_t)tarball.abnormal_files > MAX_FILE_COUNT) {
+    if (*count - (intmax_t)tarball.extra_filenames > MAX_EXTRA_FILE_COUNT) {
 	++tarball.total_feathers;
 	++tarball.invalid_files_count;
 	warn("txzchk", "%s: too many files: %jd > %jd", tarball_path,
-	    *count - (intmax_t)tarball.abnormal_files, (intmax_t)MAX_FILE_COUNT);
+	    *count - (intmax_t)tarball.extra_filenames, (intmax_t)MAX_EXTRA_FILE_COUNT);
     }
 }
 
@@ -1143,6 +1285,7 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
  *	normal_file	- true ==> normal file, check size and number of files
  *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
  *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
+ *	dir             - true ==> is a directory
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -1153,7 +1296,7 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
 static void
 parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	char const *tarball_path, char **saveptr,
-		    bool normal_file, intmax_t *sum, intmax_t *count)
+		    bool normal_file, intmax_t *sum, intmax_t *count, bool dir)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */
@@ -1268,7 +1411,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
 
     /* p should now contain the filename. */
-    file = alloc_txz_file(p, length);
+    file = alloc_txz_file(p, dir, length);
     if (file == NULL) {
 	err(33, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
@@ -1305,7 +1448,6 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
  *	line_dup	-   pointer to the duplicated line
  *	dir_name	-   the dir name reported by fnamchk or NULL if it failed
  *	tarball_path	-   the tarball path
- *	dir_count	-   pointer to dir_count (from check_tarball())
  *	sum		-   corresponds to sum pointer in sum_and_count()
  *	count		-   corresponds to count pointer in sum_and_count()
  *
@@ -1314,17 +1456,17 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
  *  Function does not return on error.
  */
 static void
-parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tarball_path, int *dir_count,
-	       intmax_t *sum, intmax_t *count)
+parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tarball_path, intmax_t *sum, intmax_t *count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
     char *saveptr = NULL; /* for strtok_r() context */
     bool normal_file = false; /* normal file counts against file size and count */
+    bool dir = false;       /* if it's a directory */
 
     /*
      * firewall
      */
-    if (linep == NULL || line_dup == NULL || tarball_path == NULL || dir_count == NULL ||
+    if (linep == NULL || line_dup == NULL || tarball_path == NULL ||
 	    sum == NULL || count == NULL) {
 	err(34, __func__, "called with NULL arg(s)");
 	not_reached();
@@ -1337,9 +1479,15 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
 	warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s",
 	    tarball_path, linep);
 	++tarball.total_feathers;
-	++tarball.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
     } else {
-	normal_file = true; /* we have to count this as a normal file */
+        /*
+         * record if it's a directory or not
+         */
+        if (*linep == 'd') {
+            dir = true;
+        } else {
+            normal_file = true; /* we have to count this as a normal file */
+        }
     }
 
     /* extract each field, one at a time, to do various tests */
@@ -1373,10 +1521,10 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *ta
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_txz_line(p, linep, line_dup, dir_name, tarball_path, &saveptr, normal_file, sum, count);
+	parse_linux_txz_line(p, linep, line_dup, dir_name, tarball_path, &saveptr, normal_file, sum, count, dir);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_txz_line(p, linep, line_dup, dir_name, tarball_path, &saveptr, normal_file, sum, count);
+	parse_bsd_txz_line(p, linep, line_dup, dir_name, tarball_path, &saveptr, normal_file, sum, count, dir);
     }
 }
 
@@ -1774,7 +1922,6 @@ parse_all_txz_lines(char const *dir_name, char const *tarball_path)
 {
     struct txz_line *line = NULL;	/* for txz_lines list */
     char *line_dup = NULL;	/* strdup()d line */
-    int dir_count = 0;		/* number of directories detected */
     intmax_t sum = 0;		/* sum for sum_and_count() checks */
     intmax_t count = 0;		/* count for sum_and_count() checks */
 
@@ -1799,7 +1946,7 @@ parse_all_txz_lines(char const *dir_name, char const *tarball_path)
 	    not_reached();
 	}
 
-	parse_txz_line(line->line, line_dup, dir_name, tarball_path, &dir_count, &sum, &count);
+	parse_txz_line(line->line, line_dup, dir_name, tarball_path, &sum, &count);
 	free(line_dup);
 	line_dup = NULL;
     }
@@ -1847,6 +1994,7 @@ free_txz_lines(void)
  * given:
  *
  *	path	- file path
+ *	dir     - true ==> is a directory
  *	length	- length of file as calculated by string_to_intmax (validating
  *		  size of files will be done later)
  *
@@ -1856,7 +2004,7 @@ free_txz_lines(void)
  * This function does not return on error.
  */
 static struct txz_file *
-alloc_txz_file(char const *path, intmax_t length)
+alloc_txz_file(char const *path, bool dir, intmax_t length)
 {
     struct txz_file *file; /* the file structure */
 
@@ -1890,6 +2038,11 @@ alloc_txz_file(char const *path, intmax_t length)
 
     /* also record the length */
     file->length = length;
+
+    /*
+     * record if a directory
+     */
+    file->dir = dir;
 
     return file;
 }
@@ -1930,6 +2083,9 @@ add_txz_file_to_list(struct txz_file *txzfile)
 	    file->count++;
 	    return;
 	}
+    }
+    if (txzfile->dir) {
+        ++tarball.directories;
     }
     txzfile->count++;
     /* lazily add to list */

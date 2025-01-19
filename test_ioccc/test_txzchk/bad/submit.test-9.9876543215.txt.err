@@ -3,10 +3,10 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: foun
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty .info.json file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty remarks.md
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty .auth.json file
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename not allowed: index.html
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename not allowed: GNUmakefile
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename not allowed: README.md
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename not allowed: prog
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found special bits on line: srw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename prog not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename README.md not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename GNUmakefile not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename index.html not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found 11 feathers stuck in the tarball
