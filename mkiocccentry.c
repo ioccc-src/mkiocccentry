@@ -2602,6 +2602,70 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    *p = '\0';
 	}
 
+        /*
+         * trim off '=' as some variables can have a ':' which can confuse the
+         * checks below
+         */
+
+        p = strchr(line, '=');
+        if (p != NULL) {
+            /*
+             * trim off variable
+             */
+            *p = '\0';
+        }
+
+        /*
+         * skip lines starting with a '.' as those are special make rules
+         */
+        if (line != NULL && *line == '.') {
+            /*
+             * NOTE: due to a bug or mis-feature in GitHub's advanced security
+             * bot we cannot explicitly check for NULL line before freeing which
+             * means that if someone messed with line here it could be a
+             * problem. This is because of the dereference above.
+             *
+             * We know it is not a short-circuiting not being understood because
+             * we tried it both ways.
+             *
+             * Now the pedant would point out it is safe to free a NULL pointer
+             * but in this repo we always check for != NULL before freeing
+             * anyway. However since we have to dereference line we cannot
+             * (because of GitHub) check for NULL before freeing it. That does
+             * mean that if someone ended up setting it to NULL by mistake or
+             * for some other reason, here, and if we did not add the check back
+             * (which might or might not make GitHub complain), it would end up
+             * freeing a NULL pointer. But of course it would not be a problem
+             * if it was NULL; rather it would be a problem if it was freed or
+             * set to some other location, and then dereferenced.
+             *
+             * Of course the fact we do pass it to strchr() means we don't
+             * technically need to check for line != NULL above but here we
+             * cannot check before freeing because GitHub will issue a
+             * complaint; if we do not check for != NULL GitHub does not
+             * complain, suggesting that it simply does not know what it is
+             * doing.
+             *
+             * TL;DR: the fact we have to dereference line prevents us from
+             * checking line for != NULL due to GitHub's advanced security bot
+             * issuing a complaint about a redundant check, even though it's
+             * perfectly safe.
+             *
+             * This is why we do not check for NULL here prior to freeing,
+             * unlike the rest of the repo.
+             */
+
+            /*
+             * free storage
+             */
+            free(line);
+            line = NULL;
+
+            /*
+             * built-in Makefile rule
+             */
+            continue;
+        }
 	/*
 	 * skip line if there is no :
 	 */
@@ -3682,7 +3746,8 @@ noprompt_yes_or_no(void)
 	 */
 	warnp(__func__, "readline_dup returned NULL, assuming a no answer");
 	if (abort_on_warning) {
-	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	    err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+            not_reached();
 	}
 	dbg(DBG_HIGH, "due to readline_dup error, returning false");
 	return false;
@@ -3707,7 +3772,8 @@ noprompt_yes_or_no(void)
 	 */
 	warn(__func__, "readline_dup returned empty string, assuming a no answer");
 	if (abort_on_warning) {
-	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	    err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+            not_reached();
 	}
 	dbg(DBG_HIGH, "due to readline_dup error, returning false");
 	return false;
@@ -3721,7 +3787,7 @@ noprompt_yes_or_no(void)
 	    *p = (char)tolower(*p);
 	}
     }
-    dbg(DBG_VHIGH, "response converted into lower case is: <<%s>>", response);
+    dbg(DBG_VHIGH, "response converted into lower case is: \"%s\"", response);
 
     /*
      * check for a valid reply
@@ -3772,7 +3838,8 @@ noprompt_yes_or_no(void)
      */
     warn(__func__, "response was neither yes nor no");
     if (abort_on_warning) {
-	err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+        not_reached();
     }
 
     /*
