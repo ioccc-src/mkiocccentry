@@ -2598,6 +2598,40 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    *p = '\0';
 	}
 
+        /*
+         * trim off '=' as some variables can have a ':' which can confuse the
+         * checks below
+         */
+
+        p = strchr(line, '=');
+        if (p != NULL) {
+            /*
+             * trim off variable
+             */
+            *p = '\0';
+        }
+
+        /*
+         * skip lines starting with a '.' as those are special make rules
+         *
+         * NOTE: we have to check if line != NULL first even though we know it's
+         * not NULL because we check *line and some compilers warn about this
+         * sequence
+         */
+        if (line != NULL && *line == '.') {
+            /*
+             * free storage
+             */
+            if (line != NULL) {
+                free(line);
+                line = NULL;
+            }
+
+            /*
+             * built-in Makefile rule
+             */
+            continue;
+        }
 	/*
 	 * skip line if there is no :
 	 */
@@ -3678,7 +3712,8 @@ noprompt_yes_or_no(void)
 	 */
 	warnp(__func__, "readline_dup returned NULL, assuming a no answer");
 	if (abort_on_warning) {
-	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	    err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+            not_reached();
 	}
 	dbg(DBG_HIGH, "due to readline_dup error, returning false");
 	return false;
@@ -3703,7 +3738,8 @@ noprompt_yes_or_no(void)
 	 */
 	warn(__func__, "readline_dup returned empty string, assuming a no answer");
 	if (abort_on_warning) {
-	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	    err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+            not_reached();
 	}
 	dbg(DBG_HIGH, "due to readline_dup error, returning false");
 	return false;
@@ -3717,7 +3753,7 @@ noprompt_yes_or_no(void)
 	    *p = (char)tolower(*p);
 	}
     }
-    dbg(DBG_VHIGH, "response converted into lower case is: <<%s>>", response);
+    dbg(DBG_VHIGH, "response converted into lower case is: \"%s\"", response);
 
     /*
      * check for a valid reply
@@ -3768,7 +3804,8 @@ noprompt_yes_or_no(void)
      */
     warn(__func__, "response was neither yes nor no");
     if (abort_on_warning) {
-	err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+	err(1, __func__, "-E forcing exit on first warning"); /*ooo*/
+        not_reached();
     }
 
     /*

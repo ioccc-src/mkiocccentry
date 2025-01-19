@@ -1,6 +1,20 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.13 2025-01-19
+
+Bug fix `noprompt_yes_or_no()` in `mkiocccentry.c` (it had missing
+`not_reached()` after `err()` calls).
+
+Bug fix `inspect_Makefile()` in `mkiocccentry.c` to skip built-in Makefile rules
+(those starting with a '.') because if someone has, for instance, what we have
+here and in jparse (`.NOTPARALLEL:`) it will confuse the checker and cause the
+'all' rule to not be detected as first which puts the submitter at a big risk of
+violating rule 17.
+
+Change `MKIOCCCENTRY_VERSION` to `"1.2.3 2025-01-19"`.
+
+
 ## Release 2.3.12 2025-01-18
 
 Increase the `OPTIONAL_SUBMISSION_FILES` to 3 due to the additional optional
