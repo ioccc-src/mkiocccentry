@@ -93,7 +93,12 @@
 /*
  * definitions
  */
+#if !defined(MKIOCCCENTRY_DEV)
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
+#else
+#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
+#endif
+
 
 /*
  * usage message
@@ -101,7 +106,11 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
+#if !defined(MKIOCCCENTRY_DEV)
     "usage: %s [options] workdir prog.c Makefile remarks.md [file ...]\n"
+#else
+    "usage: %s [options] workdir topdir\n"
+#endif
     "\noptions:\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -133,10 +142,11 @@ static const char * const usage_msg3 =
     "\n"
     "\t\t\t    NOTE: Implies -y -E -A random_answers.seed and reads answers from random_answers.seed\n"
     "\t\t\t    NOTE: One cannot use -a/-A or -i with -s seed/-d.\n"
-    "\n"
-    "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your submission";
+    "\n";
 static const char * const usage_msg4 =
+    "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
+#if !defined(MKIOCCCENTRY_DEV)
+    "\tprog.c\t\tpath to the C source for your submission\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\tremarks.md\tRemarks about your submission in markdown format\n\n"
     "\t\t\t    NOTE: The following is a guide to markdown:\n"
@@ -148,7 +158,9 @@ static const char * const usage_msg4 =
     "\t\t\t        https://www.ioccc.org/markdown.html\n"
     "\n"
     "\t[file ...]\textra data files to include with your submission\n";
-
+#else
+    "\ttopdir\t\tdirectory that will be copied to the workdir for tarball creation\n";
+#endif
 static const char * const usage_msg5 =
     "\n"
     "Exit codes:\n"
@@ -193,10 +205,14 @@ main(int argc, char *argv[])
     extern char *optarg;			/* option argument */
     extern int optind;				/* argv index of the next arg */
     struct timeval tp;				/* gettimeofday time value */
-    char const *work_dir = NULL;		/* where the submission directory and tarball are formed */
+    char const *workdir = NULL;		/* where the submission directory and tarball are formed */
+#if !defined(MKIOCCCENTRY_DEV)
     char const *prog_c = NULL;			/* path to prog.c */
     char const *Makefile = NULL;		/* path to Makefile */
     char const *remarks_md = NULL;		/* path to remarks.md */
+#else
+    char const *topdir = NULL;          /* directory from which files are to be copied to the workdir */
+#endif
     char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
     char *cp = CP_PATH_0;			/* path to cp executable */
     char *ls = LS_PATH_0;			/* path to ls executable */
@@ -474,13 +490,16 @@ main(int argc, char *argv[])
     /*
      * collect required the required args
      * */
+#if !defined(MKIOCCCENTRY_DEV)
     extra_count = (argc - optind > REQUIRED_ARGS) ? argc - optind - REQUIRED_ARGS : 0;
     extra_list = argv + optind + REQUIRED_ARGS;
+#endif
     dbg(DBG_MED, "tar: %s", tar);
     dbg(DBG_MED, "cp: %s", cp);
     dbg(DBG_MED, "ls: %s", ls);
-    work_dir = argv[optind];
-    dbg(DBG_MED, "work_dir: %s", work_dir);
+    workdir = argv[optind];
+    dbg(DBG_MED, "workdir: %s", workdir);
+#if !defined(MKIOCCCENTRY_DEV)
     prog_c = argv[optind + 1];
     dbg(DBG_MED, "prog.c: %s", prog_c);
     Makefile = argv[optind + 2];
@@ -488,7 +507,13 @@ main(int argc, char *argv[])
     remarks_md = argv[optind + 3];
     dbg(DBG_MED, "remarks: %s", remarks_md);
     dbg(DBG_MED, "number of extra data file args: %d", extra_count);
-    dbg(DBG_MED, "answers file: %s", answers);
+#else
+    topdir = argv[optind + 1];
+    dbg(DBG_MED, "topdir: %s", topdir);
+#endif
+    if (answers != NULL) {
+        dbg(DBG_MED, "answers file: %s", answers);
+    }
     if (seed_used) {
 	dbg(DBG_MED, "pseudo random seed: %u", (unsigned)answer_seed);
     }
@@ -560,7 +585,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chks(&info, work_dir, tar, cp, ls, txzchk, fnamchk, chkentry);
+    mkiocccentry_sanity_chks(&info, workdir, tar, cp, ls, txzchk, fnamchk, chkentry);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -621,7 +646,7 @@ main(int argc, char *argv[])
     /*
      * create submission directory
      */
-    submission_dir = mk_submission_dir(work_dir, info.ioccc_id, info.submit_slot, &tarball_path, info.tstamp, info.test_mode);
+    submission_dir = mk_submission_dir(workdir, info.ioccc_id, info.submit_slot, &tarball_path, info.tstamp, info.test_mode);
     errno = 0;
     info.tarball = strdup(tarball_path);
     if (info.tarball == NULL) {
@@ -669,6 +694,7 @@ main(int argc, char *argv[])
 	}
     }
 
+#if !defined(MKIOCCCENTRY_DEV)
     /*
      * check prog.c
      */
@@ -714,6 +740,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("... completed extra data files check.", "", NULL);
     }
+#endif
 
     /*
      * obtain the title
@@ -913,6 +940,7 @@ main(int argc, char *argv[])
 		if (!ignore_warnings) {
 		    need_confirm = true;
 
+#if !defined(MKIOCCCENTRY_DEV)
 		    if (info.empty_override) {
 			warn_empty_prog(prog_c);
 		    }
@@ -940,6 +968,7 @@ main(int argc, char *argv[])
 		    if (info.Makefile_override) {
 			warn_Makefile(Makefile, &info);
 		    }
+#endif
 		}
 	    } while (0);
 	}
@@ -948,12 +977,12 @@ main(int argc, char *argv[])
     /*
      * form the .txz file
      */
-    form_tarball(work_dir, submission_dir, tarball_path, tar, ls, txzchk, fnamchk);
+    form_tarball(workdir, submission_dir, tarball_path, tar, ls, txzchk, fnamchk);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, submission_dir, tar, tarball_path, info.test_mode, info.submit_slot);
+    remind_user(workdir, submission_dir, tar, tarball_path, info.test_mode, info.submit_slot);
 
     /*
      * free storage
@@ -1039,7 +1068,7 @@ usage(int exitcode, char const *prog, char const *str)
  * given:
  *
  *      infop           - pointer to info structure
- *      work_dir        - where the submission directory and tarball are formed
+ *      workdir        - where the submission directory and tarball are formed
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
@@ -1050,13 +1079,13 @@ usage(int exitcode, char const *prog, char const *str)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar, char const *cp,
 	   char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry)
 {
     /*
      * firewall
      */
-    if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL ||
+    if (infop == NULL || workdir == NULL || tar == NULL || cp == NULL || ls == NULL ||
 	txzchk == NULL || fnamchk == NULL || chkentry == NULL) {
 	err(18, __func__, "called with NULL arg(s)");
 	not_reached();
@@ -1126,7 +1155,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "We cannot find the cp program.",
 	      "",
-	      "The cp program is required to copy files into a directory under work_dir.",
+	      "The cp program is required to copy files into a directory under workdir.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -c /path/to/cp ...",
@@ -1399,41 +1428,41 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     }
 
     /*
-     * work_dir must be a writable directory
+     * workdir must be a writable directory
      */
-    if (!exists(work_dir)) {
+    if (!exists(workdir)) {
 	fpara(stderr,
 	      "",
-	      "The work_dir does not exist.",
+	      "The workdir does not exist.",
 	      "",
-	      "You should either create work_dir, or use a different work_dir directory path on the command line.",
+	      "You should either create workdir, or use a different workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(37, __func__, "work_dir does not exist: %s", work_dir);
+	err(37, __func__, "workdir does not exist: %s", workdir);
 	not_reached();
     }
-    if (!is_dir(work_dir)) {
+    if (!is_dir(workdir)) {
 	fpara(stderr,
 	      "",
-	      "While work_dir exists, it is not a directory.",
+	      "While workdir exists, it is not a directory.",
 	      "",
-	      "You should move or remove work_dir and them make a new work_dir directory, or use a different",
-	      "work_dir directory path on the command line.",
+	      "You should move or remove workdir and them make a new workdir directory, or use a different",
+	      "workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(38, __func__, "work_dir is not a directory: %s", work_dir);
+	err(38, __func__, "workdir is not a directory: %s", workdir);
 	not_reached();
     }
-    if (!is_write(work_dir)) {
+    if (!is_write(workdir)) {
 	fpara(stderr,
 	      "",
-	      "While the directory work_dir exists, it is not a writable directory.",
+	      "While the directory workdir exists, it is not a writable directory.",
 	      "",
-	      "You should change the permission to make work_dir writable, or move or remove work_dir and then",
-	      "create a new writable directory, or use a different work_dir directory path on the command line.",
+	      "You should change the permission to make workdir writable, or move or remove workdir and then",
+	      "create a new writable directory, or use a different workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(39, __func__, "work_dir is not a writable directory: %s", work_dir);
+	err(39, __func__, "workdir is not a writable directory: %s", workdir);
 	not_reached();
     }
 
@@ -1811,11 +1840,11 @@ get_submit_slot(struct info *infop)
 /*
  * mk_submission_dir - make the submission directory
  *
- * Make a directory, under work_dir, from which the compressed tarball
+ * Make a directory, under workdir, from which the compressed tarball
  * will be formed.
  *
  * given:
- *      work_dir        - working directory under which the submission directory is formed
+ *      workdir        - working directory under which the submission directory is formed
  *      ioccc_id        - IOCCC submission ID (or test)
  *      submit_slot     - submit slot number
  *      tarball_path    - pointer to the allocated path to where the compressed tarball will be formed
@@ -1828,7 +1857,7 @@ get_submit_slot(struct info *infop)
  * This function does not return on error or if the submission directory cannot be formed.
  */
 static char *
-mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
+mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 	     char **tarball_path, time_t tstamp, bool test_mode)
 {
     size_t submission_dir_len;	/* length of submission directory */
@@ -1839,7 +1868,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
     /*
      * firewall
      */
-    if (work_dir == NULL || ioccc_id == NULL || tarball_path == NULL) {
+    if (workdir == NULL || ioccc_id == NULL || tarball_path == NULL) {
 	err(56, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1853,9 +1882,9 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
      * determine length of submission directory path
      */
     /*
-     * work_dir/ioccc_id-entry
+     * workdir/ioccc_id-entry
      */
-    submission_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMIT_SLOT_CHARS + 1 + 1;
+    submission_dir_len = strlen(workdir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMIT_SLOT_CHARS + 1 + 1;
     errno = 0;			/* pre-clear errno for errp() */
     submission_dir = (char *)malloc(submission_dir_len + 1);
     if (submission_dir == NULL) {
@@ -1863,7 +1892,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", work_dir, ioccc_id, submit_slot);
+    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", workdir, ioccc_id, submit_slot);
     if (ret <= 0) {
 	errp(59, __func__, "snprintf to form submission directory failed");
 	not_reached();
@@ -1881,7 +1910,7 @@ mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
 	}
 	fpara(stderr,
 	      "",
-	      "You need to move that directory, or remove it, or use a different work_dir.",
+	      "You need to move that directory, or remove it, or use a different workdir.",
 	      "",
 	      NULL);
 	err(60, __func__, "submission directory exists: %s", submission_dir);
@@ -2311,7 +2340,7 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under workdir
  *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
  *
@@ -2905,7 +2934,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under workdir
  *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
  *
@@ -3017,7 +3046,7 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *cp, c
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - the newly created submission directory (by mk_submission_dir()) under work_dir
+ *      submission_dir  - the newly created submission directory (by mk_submission_dir()) under workdir
  *      cp              - cp utility path
  *      remarks_md      - remarks_md arg: given path to author's remarks markdown file
  *
@@ -3118,7 +3147,7 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *cp,
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - newly created submission directory (by mk_submission_dir()) under work_dir
+ *      submission_dir  - newly created submission directory (by mk_submission_dir()) under workdir
  *      cp              - cp utility path
  *      count           - number of extra data files arguments
  *      args            - pointer to an array of strings starting with first extra data file
@@ -5654,7 +5683,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
  * shows the listing of the tarball contents via the txzchk tool and the fnamchk tool.
  *
  * given:
- *      work_dir        - working directory under which the submission directory is formed
+ *      workdir        - working directory under which the submission directory is formed
  *      submission_dir  - path to submission directory
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
@@ -5665,7 +5694,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
  * This function does not return on error.
  */
 static void
-form_tarball(char const *work_dir, char const *submission_dir, char const *tarball_path, char const *tar,
+form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
 	     char const *ls, char const *txzchk, char const *fnamchk)
 {
     char *basename_submission_dir;	/* basename of the submission directory */
@@ -5678,7 +5707,7 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
     /*
      * firewall
      */
-    if (work_dir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
+    if (workdir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
 	err(176, __func__, "called with NULL arg(s)");
 	not_reached();
@@ -5691,7 +5720,7 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
     dbg(DBG_MED, "verified submission directory: %s", submission_dir);
 
     /*
-     * note the current directory so we can restore it later, after the chdir(work_dir) below
+     * note the current directory so we can restore it later, after the chdir(workdir) below
      */
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
@@ -5701,12 +5730,12 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
     }
 
     /*
-     * cd into the work_dir, just above the submission_dir and where the compressed tarball will be formed
+     * cd into the workdir, just above the submission_dir and where the compressed tarball will be formed
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = chdir(work_dir);
+    ret = chdir(workdir);
     if (ret < 0) {
-	errp(178, __func__, "cannot cd %s", work_dir);
+	errp(178, __func__, "cannot cd %s", workdir);
 	not_reached();
     }
 
@@ -5825,7 +5854,7 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
  * remind_user - remind the user to upload (if not in test mode)
  *
  * given:
- *      work_dir        - working directory under which the submission directory is formed
+ *      workdir        - working directory under which the submission directory is formed
  *      submission_dir  - path to submission directory
  *      tar             - path to the tar utility
  *      tarball_path    - path of the compressed tarball to form
@@ -5834,17 +5863,17 @@ form_tarball(char const *work_dir, char const *submission_dir, char const *tarba
  *      slot_number     - slot number of submission
  */
 static void
-remind_user(char const *work_dir, char const *submission_dir, char const *tar, char const *tarball_path,
+remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
         bool test_mode, int slot_number)
 {
     int ret;			/* libc function return */
     char *submission_dir_esc;
-    char *work_dir_esc;
+    char *workdir_esc;
 
     /*
      * firewall
      */
-    if (work_dir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
+    if (workdir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
 	err(186, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5869,9 +5898,9 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
     }
     free(submission_dir_esc);
 
-    work_dir_esc = cmdprintf("%", work_dir);
-    if (work_dir_esc == NULL) {
-	err(189, __func__, "failed to cmdprintf: work_dir");
+    workdir_esc = cmdprintf("%", workdir);
+    if (workdir_esc == NULL) {
+	err(189, __func__, "failed to cmdprintf: workdir");
 	not_reached();
     }
 
@@ -5880,12 +5909,12 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
 	 "by running the following command:",
 	 "",
 	 NULL);
-    ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
+    ret = printf("    %s -Jtvf %s%s/%s\n", tar, workdir[0] == '-' ? "./" : "", workdir_esc, tarball_path);
     if (ret <= 0) {
 	errp(190, __func__, "printf #2 error");
 	not_reached();
     }
-    free(work_dir_esc);
+    free(workdir_esc);
 
     /*
      * case: test mode
@@ -5928,7 +5957,7 @@ remind_user(char const *work_dir, char const *submission_dir, char const *tar, c
 	 * inform them of the compressed tarball file
 	 */
 	show_registration_url();
-	show_submit_url(work_dir, tarball_path, slot_number);
+	show_submit_url(workdir, tarball_path, slot_number);
     }
     return;
 }
@@ -5999,28 +6028,28 @@ show_registration_url(void)
  * open.
  *
  * given:
- *	    work_dir	    - work directory
+ *	    workdir	    - work directory
  *	    tarball_path    - path to the submission tarball
  *	    submit_slot     - submit slot for submission
  *
- * NOTE: if either work_dir or tarball_path is NULL we will do nothing.
+ * NOTE: if either workdir or tarball_path is NULL we will do nothing.
  */
 static void
-show_submit_url(char const *work_dir, char const *tarball_path, int slot_number)
+show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 {
     int ret;			/* libc function return */
 
     /*
      * firewall
      */
-    if (work_dir == NULL || tarball_path == NULL) {
+    if (workdir == NULL || tarball_path == NULL) {
 	return;
     }
 
 
     ret = printf("\nWhen the contest is open (see https://www.ioccc.org/status.html),\n"
         "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
-        work_dir, tarball_path);
+        workdir, tarball_path);
     if (ret <= 0) {
 	errp(195, __func__, "printf error printing tarball path and slot number");
 	not_reached();
