@@ -93,7 +93,12 @@
 /*
  * definitions
  */
+#if !defined(MKIOCCCENTRY_DEV)
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
+#else
+#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
+#endif
+
 
 /*
  * usage message
@@ -101,7 +106,11 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
+#if !defined(MKIOCCCENTRY_DEV)
     "usage: %s [options] workdir prog.c Makefile remarks.md [file ...]\n"
+#else
+    "usage: %s [options] workdir topdir\n"
+#endif
     "\noptions:\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -133,10 +142,11 @@ static const char * const usage_msg3 =
     "\n"
     "\t\t\t    NOTE: Implies -y -E -A random_answers.seed and reads answers from random_answers.seed\n"
     "\t\t\t    NOTE: One cannot use -a/-A or -i with -s seed/-d.\n"
-    "\n"
-    "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your submission";
+    "\n";
 static const char * const usage_msg4 =
+    "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
+#if !defined(MKIOCCCENTRY_DEV)
+    "\tprog.c\t\tpath to the C source for your submission\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\tremarks.md\tRemarks about your submission in markdown format\n\n"
     "\t\t\t    NOTE: The following is a guide to markdown:\n"
@@ -148,7 +158,9 @@ static const char * const usage_msg4 =
     "\t\t\t        https://www.ioccc.org/markdown.html\n"
     "\n"
     "\t[file ...]\textra data files to include with your submission\n";
-
+#else
+    "\ttopdir\t\tdirectory that will be copied to the workdir for tarball creation\n";
+#endif
 static const char * const usage_msg5 =
     "\n"
     "Exit codes:\n"
@@ -194,9 +206,13 @@ main(int argc, char *argv[])
     extern int optind;				/* argv index of the next arg */
     struct timeval tp;				/* gettimeofday time value */
     char const *workdir = NULL;		/* where the submission directory and tarball are formed */
+#if !defined(MKIOCCCENTRY_DEV)
     char const *prog_c = NULL;			/* path to prog.c */
     char const *Makefile = NULL;		/* path to Makefile */
     char const *remarks_md = NULL;		/* path to remarks.md */
+#else
+    char const *topdir = NULL;          /* directory from which files are to be copied to the workdir */
+#endif
     char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
     char *cp = CP_PATH_0;			/* path to cp executable */
     char *ls = LS_PATH_0;			/* path to ls executable */
@@ -474,13 +490,16 @@ main(int argc, char *argv[])
     /*
      * collect required the required args
      * */
+#if !defined(MKIOCCCENTRY_DEV)
     extra_count = (argc - optind > REQUIRED_ARGS) ? argc - optind - REQUIRED_ARGS : 0;
     extra_list = argv + optind + REQUIRED_ARGS;
+#endif
     dbg(DBG_MED, "tar: %s", tar);
     dbg(DBG_MED, "cp: %s", cp);
     dbg(DBG_MED, "ls: %s", ls);
     workdir = argv[optind];
     dbg(DBG_MED, "workdir: %s", workdir);
+#if !defined(MKIOCCCENTRY_DEV)
     prog_c = argv[optind + 1];
     dbg(DBG_MED, "prog.c: %s", prog_c);
     Makefile = argv[optind + 2];
@@ -488,7 +507,13 @@ main(int argc, char *argv[])
     remarks_md = argv[optind + 3];
     dbg(DBG_MED, "remarks: %s", remarks_md);
     dbg(DBG_MED, "number of extra data file args: %d", extra_count);
-    dbg(DBG_MED, "answers file: %s", answers);
+#else
+    topdir = argv[optind + 1];
+    dbg(DBG_MED, "topdir: %s", topdir);
+#endif
+    if (answers != NULL) {
+        dbg(DBG_MED, "answers file: %s", answers);
+    }
     if (seed_used) {
 	dbg(DBG_MED, "pseudo random seed: %u", (unsigned)answer_seed);
     }
@@ -669,6 +694,7 @@ main(int argc, char *argv[])
 	}
     }
 
+#if !defined(MKIOCCCENTRY_DEV)
     /*
      * check prog.c
      */
@@ -714,6 +740,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("... completed extra data files check.", "", NULL);
     }
+#endif
 
     /*
      * obtain the title
@@ -917,6 +944,7 @@ main(int argc, char *argv[])
 		if (!ignore_warnings) {
 		    need_confirm = true;
 
+#if !defined(MKIOCCCENTRY_DEV)
 		    if (info.empty_override) {
 			warn_empty_prog(prog_c);
 		    }
@@ -944,6 +972,7 @@ main(int argc, char *argv[])
 		    if (info.Makefile_override) {
 			warn_Makefile(Makefile, &info);
 		    }
+#endif
 		}
 	    } while (0);
 	}

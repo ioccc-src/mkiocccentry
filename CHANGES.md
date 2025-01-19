@@ -14,6 +14,20 @@ violating rule 17.
 
 Change `MKIOCCCENTRY_VERSION` to `"1.2.3 2025-01-19"`.
 
+Start work on issue #1070. To not interfere with the current system and to allow
+others (namely Landon) to work on it too, it uses a macro: `MKIOCCCENTRY_DEV`.
+If this is defined it will require 2 args and it will not set the prog.c,
+remarks.md or Makefile variables as they won't exist. This means the functions
+that pass in those variables are not called either. The usage message is
+simplified for the dev version. If it is defined it will set the topdir too.
+Also changed the `work_dir` variable to `workdir` (in both modes). If
+`MKIOCCCENTRY_DEV` is used to compile the tool then `make test` **WILL** fail!
+This is because the script uses the old four mandatory arguments (and the
+optional files in some cases too).
+
+Fixed a NULL pointer dereference in `mkiocccentry`: `answers` was passed to
+dbg() even if it was NULL (none of the answers options were used).
+
 
 ## Release 2.3.12 2025-01-18
 
