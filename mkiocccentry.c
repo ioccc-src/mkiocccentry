@@ -2616,22 +2616,41 @@ inspect_Makefile(char const *Makefile, struct info *infop)
          */
         if (line != NULL && *line == '.') {
             /*
-             * NOTE: due to a bug or mis-feature in GitHub we cannot explicitly
-             * check for NULL line before freeing which means that if someone
-             * messed with line here it could be a problem. This is because of
-             * the dereference above.
+             * NOTE: due to a bug or mis-feature in GitHub's advanced security
+             * bot we cannot explicitly check for NULL line before freeing which
+             * means that if someone messed with line here it could be a
+             * problem. This is because of the dereference above.
              *
              * We know it is not a short-circuiting not being understood because
-             * we tried this.  It is safe to free a NULL pointer but in this
-             * repo we always check for != NULL before freeing. However since we
-             * have to check for line != NULL prior to dereferencing (though
-             * this is not strictly necessary due to the fact we're also passing
-             * it to strchr()) we cannot (because of GitHub) check for NULL
-             * before freeing it. That does mean that if someone ended up
-             * setting it to NULL it would not be a valid check any more. But
-             * since it is safe to free a NULL pointer it should not matter
-             * which makes this check even sillier.
+             * we tried it both ways.
+             *
+             * Now the pedant would point out it is safe to free a NULL pointer
+             * but in this repo we always check for != NULL before freeing
+             * anyway. However since we have to dereference line we cannot
+             * (because of GitHub) check for NULL before freeing it. That does
+             * mean that if someone ended up setting it to NULL by mistake or
+             * for some other reason, here, and if we did not add the check back
+             * (which might or might not make GitHub complain), it would end up
+             * freeing a NULL pointer. But of course it would not be a problem
+             * if it was NULL; rather it would be a problem if it was freed or
+             * set to some other location, and then dereferenced.
+             *
+             * Of course the fact we do pass it to strchr() means we don't
+             * technically need to check for line != NULL above but here we
+             * cannot check before freeing because GitHub will issue a
+             * complaint; if we do not check for != NULL GitHub does not
+             * complain, suggesting that it simply does not know what it is
+             * doing.
+             *
+             * TL;DR: the fact we have to dereference line prevents us from
+             * checking line for != NULL due to GitHub's advanced security bot
+             * issuing a complaint about a redundant check, even though it's
+             * perfectly safe.
+             *
+             * This is why we do not check for NULL here prior to freeing,
+             * unlike the rest of the repo.
              */
+
             /*
              * free storage
              */
