@@ -2616,15 +2616,19 @@ inspect_Makefile(char const *Makefile, struct info *infop)
          *
          * NOTE: we have to check if line != NULL first even though we know it's
          * not NULL because we check *line and some compilers warn about this
-         * sequence
+         * sequence. We normally could do it as a line != NULL && *line == '.'
+         * but it appears that GitHub might not understand short-circuiting
+         * logic so we have to do an extra check *sigh*
          */
-        if (line != NULL && *line == '.') {
-            /*
-             * free storage
-             */
-            if (line != NULL) {
-                free(line);
-                line = NULL;
+        if (line != NULL) {
+            if (*line == '.') {
+                /*
+                 * free storage
+                 */
+                if (line != NULL) {
+                    free(line);
+                    line = NULL;
+                }
             }
 
             /*
