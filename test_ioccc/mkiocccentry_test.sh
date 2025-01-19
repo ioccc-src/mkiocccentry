@@ -195,25 +195,25 @@ fi
 
 # working locations - adjust as needed
 #
-work_dir="test_ioccc/test_work"
+workdir="test_ioccc/test_work"
 src_dir="test_ioccc/test_src"
 src_src_dir="test_ioccc/test_src/test_src"
 src_src_src_src_src_dir="test_ioccc/test_src/a/b/c/d/e"
 
 # be sure the working locations exist
 #
-mkdir -p -- "${work_dir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
+mkdir -p -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${work_dir} ${src_dir} ${src_src_dir} ${src_src_src_src_src_dir}" 1>&2
+    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${workdir} ${src_dir} ${src_src_dir} ${src_src_src_src_src_dir}" 1>&2
     exit 9
 fi
 
 # firewall
 #
 # we need a working directory
-if [[ ! -d ${work_dir} ]]; then
-    echo "$0: ERROR: work_dir not found: ${work_dir}" 1>&2
+if [[ ! -d ${workdir} ]]; then
+    echo "$0: ERROR: workdir not found: ${workdir}" 1>&2
     exit 9
 fi
 # we also need the source directory
@@ -260,10 +260,10 @@ if [[ ! -x "${TAR}" ]]; then
     exit 9
 fi
 
-# clean out the work_dir area
-work_dir_esc="${work_dir}"
-test "${work_dir:0:1}" = "-" && work_dir_esc=./"${work_dir}"
-find "${work_dir_esc}" -mindepth 1 -depth -delete
+# clean out the workdir area
+workdir_esc="${workdir}"
+test "${workdir:0:1}" = "-" && workdir_esc=./"${workdir}"
+find "${workdir_esc}" -mindepth 1 -depth -delete
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -351,11 +351,11 @@ test -f "${src_dir}"/extra1 || echo "123" >"${src_dir}"/extra1
 test -f "${src_dir}"/extra2 || echo "456" >"${src_dir}"/extra2
 
 # delete the work directory for next test
-find "${work_dir_esc}" -mindepth 1 -depth -delete
+find "${workdir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/empty.c
 :> "${src_dir}"/empty.c
 # test empty prog.c, ignoring the warning about it
-./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -451,7 +451,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -542,7 +542,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -638,7 +638,7 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar,"${LONG_FILENAME}"}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar,"${LONG_FILENAME}"}
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
@@ -732,7 +732,7 @@ test -f "${src_src_dir}/foo" || touch "${src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -823,7 +823,7 @@ test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/fo
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
@@ -835,7 +835,7 @@ fi
 
 # run test using -d (which uses -s seed)
 #
-./mkiocccentry -d "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md}
+./mkiocccentry -d "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2

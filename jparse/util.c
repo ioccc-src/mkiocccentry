@@ -5395,7 +5395,7 @@ open_dir_file(char const *dir, char const *file)
     }
 
     /*
-     * note the current directory so we can restore it later, after the chdir(work_dir) below
+     * note the current directory so we can restore it later, after the chdir(workdir) below
      */
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
