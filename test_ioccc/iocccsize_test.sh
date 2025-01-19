@@ -24,7 +24,7 @@
 export DIGRAPHS=	# assume #undef DIGRAPHS
 export TRIGRAPHS=	# assume #undef TRIGRAPHS
 export LIMIT_IOCCC="./soup/limit_ioccc.sh"
-export WORK_DIR="./test_ioccc/test_iocccsize"
+export WORKDIR="./test_ioccc/test_iocccsize"
 export IOCCCSIZE="./iocccsize"
 export EXIT_CODE=0
 export IOCCCSIZE_ARGS="-v 1 --"
@@ -32,13 +32,13 @@ export V_FLAG=0
 export TOPDIR=
 export TEST_IOCCCSIZE_VERSION="1.4 2023-02-04"
 
-export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limit] [-Z topdir] [-I iocccsize_args]
+export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w workdir] [-l limit] [-Z topdir] [-I iocccsize_args]
 
     -h		    print help message and exit
     -v lvl	    set debugging level to lvl (def: 0 ==> no debugging)
     -V		    print version and exit
     -i iocccsize    path to iocccsize tool (def: test with $IOCCCSIZE)
-    -w work_dir	    working directory that is removed & rebuilt during the test (def: $WORK_DIR)
+    -w workdir	    working directory that is removed & rebuilt during the test (def: $WORKDIR)
     -l limit	    path to limit_ioccc.sh executable shell script (def: $LIMIT_IOCCC)
 		    A limit of . (dot) will disable use of an executable shell script.
     -Z topdir	    top level build directory (def: try . or ..)
@@ -70,7 +70,7 @@ while getopts 'hv:Vi:w:l:Z:I:' flag; do
 	;;
     i)	IOCCCSIZE="$OPTARG"
 	;;
-    w)	WORK_DIR="$OPTARG"
+    w)	WORKDIR="$OPTARG"
 	;;
     l)	LIMIT_IOCCC="$OPTARG"
 	;;
@@ -172,16 +172,16 @@ fi
 
 # create an empty working directory
 #
-rm -rf  "$WORK_DIR"
+rm -rf  "$WORKDIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: rm -rf $WORK_DIR failed, error code: $status" 1>&2
+    echo "$0: ERROR: rm -rf $WORKDIR failed, error code: $status" 1>&2
     exit 10
 fi
-mkdir -p "$WORK_DIR"
+mkdir -p "$WORKDIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mkdir -p $WORK_DIR failed, error code: $status" 1>&2
+    echo "$0: ERROR: mkdir -p $WORKDIR failed, error code: $status" 1>&2
     exit 11
 fi
 
@@ -224,7 +224,7 @@ get_wc()
 #
 test_size()
 {
-    declare file="$WORK_DIR/$1"	# C program file to test
+    declare file="$WORKDIR/$1"	# C program file to test
     declare expect="$2"		# expected args of test
     #
     declare expect_2a		# expected Rule 2b value
@@ -326,18 +326,18 @@ test_size()
 
 #######################################################################
 
-printf 'int x;\r\n' >"$WORK_DIR/crlf.c"
+printf 'int x;\r\n' >"$WORKDIR/crlf.c"
 test_size crlf.c "2 8 1"
 
 #######################################################################
 
 # String literal with multibyte characters (mb2).
-printf 'char str[] = "èéø";\r\n' >"${WORK_DIR}/utf8.c"
+printf 'char str[] = "èéø";\r\n' >"${WORKDIR}/utf8.c"
 test_size utf8.c "15 24 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/splitline0.c"
+cat <<EOF >"$WORKDIR/splitline0.c"
 #define FOO \\
     int a = 666;
 FOO;
@@ -346,7 +346,7 @@ test_size splitline0.c "19 36 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment0.c"
+cat <<EOF >"$WORKDIR/comment0.c"
 // comment one line "with a comment string" inside
 int x;
 EOF
@@ -354,7 +354,7 @@ test_size comment0.c "44 58 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment1.c"
+cat <<EOF >"$WORKDIR/comment1.c"
 /* comment block same line 'with a comment string' */
 int x;
 EOF
@@ -362,7 +362,7 @@ test_size comment1.c "46 61 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment2.c"
+cat <<EOF >"$WORKDIR/comment2.c"
 /*
 comment block
 multiline
@@ -373,35 +373,35 @@ test_size comment2.c "27 37 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment3.c"
+cat <<EOF >"$WORKDIR/comment3.c"
 a//foo
 EOF
 test_size comment3.c "6 7 0"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment4.c"
+cat <<EOF >"$WORKDIR/comment4.c"
 /*/ int if for /*/
 EOF
 test_size comment4.c "14 19 0"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment5.c"
+cat <<EOF >"$WORKDIR/comment5.c"
 '"' "/*" foobar "*/"
 EOF
 test_size comment5.c "17 21 0"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment6.c"
+cat <<EOF >"$WORKDIR/comment6.c"
 char str[] = "string /* with */ comment";
 EOF
 test_size comment6.c "30 42 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/comment7.c"
+cat <<EOF >"$WORKDIR/comment7.c"
 // comment with backslash newline \\
 int a = 666;
 EOF
@@ -409,28 +409,28 @@ test_size comment7.c "37 49 0"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/quote0.c"
+cat <<EOF >"$WORKDIR/quote0.c"
 char str[] = "and\"or";
 EOF
 test_size quote0.c "16 24 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/quote1.c"
+cat <<EOF >"$WORKDIR/quote1.c"
 char squote = '\\'';
 EOF
 test_size quote1.c "12 20 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/quote2.c"
+cat <<EOF >"$WORKDIR/quote2.c"
 char str[] = "'xor'";
 EOF
 test_size quote2.c "14 22 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/digraph.c"
+cat <<EOF >"$WORKDIR/digraph.c"
 char str<::> = "'xor'";
 EOF
 if [[ -z $DIGRAPHS ]]; then
@@ -441,7 +441,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/trigraph0.c"
+cat <<EOF >"$WORKDIR/trigraph0.c"
 char str??(??) = "'xor'";
 EOF
 if [[ -z $TRIGRAPHS ]]; then
@@ -453,7 +453,7 @@ fi
 #######################################################################
 
 # Example from https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C
-cat <<EOF >"$WORK_DIR/trigraph1.c"
+cat <<EOF >"$WORKDIR/trigraph1.c"
 // Will the next line be executed????????????????/
 int a = 666;
 EOF
@@ -466,7 +466,7 @@ fi
 #######################################################################
 
 # Example from https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C
-cat <<EOF >"$WORK_DIR/trigraph2.c"
+cat <<EOF >"$WORKDIR/trigraph2.c"
 /??/
 * A comment *??/
 /
@@ -479,7 +479,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/trigraph3.c"
+cat <<EOF >"$WORKDIR/trigraph3.c"
 #define FOO ??/
     int a = 666;
 FOO;
@@ -492,7 +492,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/main0.c"
+cat <<EOF >"$WORKDIR/main0.c"
 int
 main(int argc, char **argv)
 {
@@ -503,7 +503,7 @@ test_size main0.c "22 47 4"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/hello.c"
+cat <<EOF >"$WORKDIR/hello.c"
 #include <stdio.h>
 
 int
@@ -519,7 +519,7 @@ test_size hello.c "58 101 6"
 
 # Digraph for #include and curlys.  Digraphs are tokens and are not
 # translated like trigraphs.
-cat <<EOF >"$WORK_DIR/hello_digraph.c"
+cat <<EOF >"$WORKDIR/hello_digraph.c"
 %:    include <stdio.h>
 
 int
@@ -539,7 +539,7 @@ fi
 
 # Trigraph for #include and curlys.  Trigraphs are translated, unlike
 # digraphs which are tokens.
-cat <<EOF >"$WORK_DIR/hello_trigraph.c"
+cat <<EOF >"$WORKDIR/hello_trigraph.c"
 ??=    include <stdio.h>
 
 int
@@ -557,14 +557,14 @@ fi
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/include0.c"
+cat <<EOF >"$WORKDIR/include0.c"
 #  include <stdio.h>
 EOF
 test_size include0.c "10 21 1"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/include1.c"
+cat <<EOF >"$WORKDIR/include1.c"
 #  include <stdio.h>
 #/*hi*/include <ctype.h>
 EOF
@@ -572,7 +572,7 @@ test_size include1.c "26 46 2"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/curly0.c"
+cat <<EOF >"$WORKDIR/curly0.c"
 char str = "{ curly } ";
 EOF
 test_size curly0.c "12 25 1"
@@ -580,7 +580,7 @@ test_size curly0.c "12 25 1"
 #######################################################################
 
 # No spaces after curly braces in array initialiser.
-cat <<EOF >"$WORK_DIR/curly1.c"
+cat <<EOF >"$WORKDIR/curly1.c"
 #include <stdlib.h>
 
 #define STRLEN(s)		(sizeof (s)-1)
@@ -600,7 +600,7 @@ test_size curly1.c "119 192 6"
 #######################################################################
 
 # Spaces after curly braces in array initialiser.
-cat <<EOF >"$WORK_DIR/curly2.c"
+cat <<EOF >"$WORKDIR/curly2.c"
 #include <stdlib.h>
 
 #define STRLEN(s)		(sizeof (s)-1)
@@ -619,7 +619,7 @@ test_size curly2.c "113 196 6"
 
 #######################################################################
 
-cat <<EOF >"$WORK_DIR/semicolon0.c"
+cat <<EOF >"$WORKDIR/semicolon0.c"
 char str = "; xor; ";
 EOF
 test_size semicolon0.c "10 22 1"
@@ -627,7 +627,7 @@ test_size semicolon0.c "10 22 1"
 #######################################################################
 
 # Spaces after semicolons in for( ; ; ).
-cat <<EOF >"$WORK_DIR/semicolon1.c"
+cat <<EOF >"$WORKDIR/semicolon1.c"
 #include <stdio.h>
 
 int
@@ -645,7 +645,7 @@ test_size semicolon1.c "65 133 8"
 #######################################################################
 
 # No spaces after semicolons in for(;;).
-cat <<EOF >"$WORK_DIR/semicolon2.c"
+cat <<EOF >"$WORKDIR/semicolon2.c"
 #include <stdio.h>
 
 int
@@ -663,7 +663,7 @@ test_size semicolon2.c "67 127 8"
 #######################################################################
 
 # String literal with multibyte charaters (mb3).
-cat <<EOF >"${WORK_DIR}/hello-jp.c"
+cat <<EOF >"${WORKDIR}/hello-jp.c"
 #include <stdio.h>
 
 int
@@ -678,7 +678,7 @@ test_size hello-jp.c "71 113 6"
 #######################################################################
 
 # Unicode identifier using hiragana and kanji.
-cat <<EOF >"${WORK_DIR}/hello-jp2.c"
+cat <<EOF >"${WORKDIR}/hello-jp2.c"
 #include <stdio.h>
 
 int
@@ -694,7 +694,7 @@ test_size hello-jp2.c "124 176 7"
 #######################################################################
 
 # Long Unicode identifier
-cat <<EOF >"${WORK_DIR}/hello-jp3.c"
+cat <<EOF >"${WORKDIR}/hello-jp3.c"
 #include <stdio.h>
 
 int

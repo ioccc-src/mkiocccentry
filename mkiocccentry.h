@@ -155,12 +155,12 @@ static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule_2b_size(struct info *infop, char const *prog_c);
 static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c);
-static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar, char const *cp,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_submit_slot(struct info *infop);
-static char *mk_submission_dir(char const *work_dir, char const *ioccc_id, int submit_slot,
+static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(char const *Makefile, struct info *infop);
@@ -175,12 +175,12 @@ static void verify_submission_dir(char const *submission_dir, char const *ls);
 static void write_info(struct info *infop, char const *submission_dir, char const *chkentry, char const *fnamchk);
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
 static void write_auth(struct auth *authp, char const *submission_dir, char const *chkentry, char const *fnamchk);
-static void form_tarball(char const *work_dir, char const *submission_dir, char const *tarball_path, char const *tar,
+static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
-static void remind_user(char const *work_dir, char const *submission_dir, char const *tar, char const *tarball_path,
+static void remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
 	bool test_mode, int submit_slot);
 static void show_registration_url(void);
-static void show_submit_url(char const *work_dir, char const *tarball_path, int slot_number);
+static void show_submit_url(char const *workdir, char const *tarball_path, int slot_number);
 
 static long answer_seed = NO_SEED;	/* if != 0 ==> srandom argument used to seed generation of answers */
 #endif /* INCLUDE_MKIOCCCENTRY_H */

@@ -79,7 +79,7 @@ remarks](https://www.ioccc.org/faq.html#remarks)".
 
 0. If you have not already done so, register for the IOCCC and obtain your UUID username and submission password.
 
-1. Form a `work_dir` directory into which your submission's files will be
+1. Form a `workdir` directory into which your submission's files will be
 placed.
 
 2. Run the `mkiocccentry(1)` tool.
