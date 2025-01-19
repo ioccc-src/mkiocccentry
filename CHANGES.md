@@ -64,6 +64,11 @@ account for this.
 New array in `soup/entry_util.c` which is of optional filenames (these only count
 if they're in the top level directory).
 
+Bug fix `bug_report.sh` to check for `Makefile.local`, not `makefile.local`.
+This same change was done in other files that still referred to it with the
+exception of this file and .gitignore. It was done in dbg/ and dyn_array/ but
+the change needs to be done in the repos too.
+
 
 ## Release 2.3.10 2025-01-16
 

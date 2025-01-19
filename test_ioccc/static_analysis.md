@@ -24,7 +24,7 @@ which are included in the `CFLAGS` as `WARN_FLAGS`) and `CC` so that you can use
 
 
 ```sh
-cat > makefile.local << "EOF"
+cat > Makefile.local << "EOF"
 CC= clang
 WARN_FLAGS += -Weverything -Wno-error
 EOF
@@ -37,7 +37,7 @@ file to the other subdirectories or you can make a symlink e.g. something like:
 
 ```sh
 cd soup;
-ln -s ../makefile.local .
+ln -s ../Makefile.local .
 ```
 
 After this the `soup/` subdirectory will also use the modifications (we do not
@@ -47,11 +47,11 @@ Note: we throw in the option `-Wno-error` to prevent the compiler from aborting
 prematurely.
 
 Given various errors that we have chosen to ignore (see below), the
-following macOS makefile.local file is worth considering as you
+following macOS Makefile.local file is worth considering as you
 re-test these issues:
 
 ```sh
-cat > makefile.local << "EOF"
+cat > Makefile.local << "EOF"
 CC= clang
 WARN_FLAGS += -Weverything -Wno-error -Wno-padded -Wno-poison-system-directories \
 	-Wno-unreachable-code-break
@@ -82,7 +82,7 @@ and also modify the CFLAGS a bit as well:
 
 	CFLAGS+= -O0 -g -pedantic ${WARN_FLAGS} -fsanitize=address -fno-omit-frame-pointer
 
-To do this you may use the feature above with the `makefile.local`.  Note that
+To do this you may use the feature above with the `Makefile.local`.  Note that
 there might be some redundancy in your `CFLAGS` but we specify these explicitly
 as some of the flags will eventually change.
 
