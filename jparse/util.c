@@ -4974,7 +4974,7 @@ find_text_str(char const *str, char **first)
  *
  *	... loop the following over ALL files where length_str is the length of the current file ...
  *
- *	test = string_to_intmax2(length_str, &length);
+ *	test = string_to_intmax(length_str, &length);
  *	if (test == false) {
  *	    ... object to file length string not being a non-negative base 10 integer ...
  *	}

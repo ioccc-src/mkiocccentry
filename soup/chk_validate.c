@@ -3239,7 +3239,7 @@ chk_ungetc_warning(struct json const *node,
 
 
 /*
- * chk_alt_url - JSON semantic check for url
+ * chk_alt_url - JSON semantic check for alt url
  *
  * given:
  *	node	JSON parse node being checked
