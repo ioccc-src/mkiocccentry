@@ -833,10 +833,14 @@ main(int argc, char *argv[])
 	    bool error = true;
 
 	    line = readline_dup(&linep, true, NULL, answerp);
-	    if (linep != NULL) {
-		error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
-		free(linep);
-		linep = NULL;
+	    if (line != NULL) {
+		if (line != NULL) {
+		    error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
+		    free(linep);
+		    linep = NULL;
+		} else {
+		    error = false;
+		}
 	    }
 	    if (error) {
 	        errp(17, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
