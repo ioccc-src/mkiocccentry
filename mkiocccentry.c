@@ -206,11 +206,10 @@ main(int argc, char *argv[])
     extern int optind;				/* argv index of the next arg */
     struct timeval tp;				/* gettimeofday time value */
     char const *workdir = NULL;		/* where the submission directory and tarball are formed */
-#if !defined(MKIOCCCENTRY_DEV)
-    char const *prog_c = NULL;			/* path to prog.c */
-    char const *Makefile = NULL;		/* path to Makefile */
-    char const *remarks_md = NULL;		/* path to remarks.md */
-#else
+    char *prog_c = NULL;			/* path to prog.c */
+    char *Makefile = NULL;		/* path to Makefile */
+    char *remarks_md = NULL;		/* path to remarks.md */
+#if defined(MKIOCCCENTRY_DEV)
     char const *topdir = NULL;          /* directory from which files are to be copied to the workdir */
 #endif
     char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
@@ -357,10 +356,10 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    answer_seed = (long)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		warnp(__func__, "invalid -s argument, most be an integer >= 0, disabling -s seed");
+		warnp(__func__, "invalid -s argument, must be an integer >= 0, disabling -s seed");
 		answer_seed = NO_SEED;
 	    } else if (answer_seed < 0) {
-		warnp(__func__, "invalid -s argument, most be >= 0, disabling -s seed");
+		warnp(__func__, "invalid -s argument, must be >= 0, disabling -s seed");
 		answer_seed = NO_SEED;
 	    } else {
 		seed_used = true;
@@ -510,6 +509,25 @@ main(int argc, char *argv[])
 #else
     topdir = argv[optind + 1];
     dbg(DBG_MED, "topdir: %s", topdir);
+    prog_c = calloc_path(topdir, "prog.c");
+    if (prog_c == NULL) {
+        err(55, __func__, "couldn't allocate prog.c path");
+        not_reached();
+    }
+    dbg(DBG_MED, "prog.c: %s", prog_c);
+    Makefile = calloc_path(topdir, "Makefile");
+    if (Makefile == NULL) {
+        err(55, __func__, "couldn't allocate Makefile path");
+        not_reached();
+    }
+    dbg(DBG_MED, "Makefile: %s", Makefile);
+
+    remarks_md = calloc_path(topdir, "remarks.md");
+    if (Makefile == NULL) {
+        err(55, __func__, "couldn't allocate remarks.md path");
+        not_reached();
+    }
+    dbg(DBG_MED, "remarks.md: %s", remarks_md);
 #endif
     if (answers != NULL) {
         dbg(DBG_MED, "answers file: %s", answers);
@@ -694,7 +712,6 @@ main(int argc, char *argv[])
 	}
     }
 
-#if !defined(MKIOCCCENTRY_DEV)
     /*
      * check prog.c
      */
@@ -730,6 +747,7 @@ main(int argc, char *argv[])
 	para("... completed remarks.md check.", "", NULL);
     }
 
+#if !defined(MKIOCCCENTRY_DEV)
     /*
      * check, if needed, extra data files
      */
@@ -944,7 +962,6 @@ main(int argc, char *argv[])
 		if (!ignore_warnings) {
 		    need_confirm = true;
 
-#if !defined(MKIOCCCENTRY_DEV)
 		    if (info.empty_override) {
 			warn_empty_prog(prog_c);
 		    }
@@ -972,7 +989,6 @@ main(int argc, char *argv[])
 		    if (info.Makefile_override) {
 			warn_Makefile(Makefile, &info);
 		    }
-#endif
 		}
 	    } while (0);
 	}
@@ -1004,6 +1020,21 @@ main(int argc, char *argv[])
     free_auth(&auth);
     memset(&auth, 0, sizeof(auth));
 
+#if defined(MKIOCCCENTRY_DEV)
+    if (prog_c != NULL) {
+        free(prog_c);
+        prog_c = NULL;
+    }
+    if (Makefile != NULL) {
+        free(Makefile);
+        Makefile = NULL;
+    }
+
+    if (remarks_md != NULL) {
+        free(remarks_md);
+        remarks_md = NULL;
+    }
+#endif
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2

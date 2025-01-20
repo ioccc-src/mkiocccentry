@@ -17,7 +17,7 @@ the `test_ioccc/test_JSON` tree.
 
 Fixed a number of broken tests in the `test_ioccc/test_JSON` tree.
 
-Updated and sorted `.gitignore'.
+Updated and sorted `.gitignore`.
 
 Fixed debug message that incorrectly stated that was unknown.
 
@@ -26,6 +26,17 @@ to "2.3.14 2025-01-20".
 
 Changed `SOUP_VERSION` from "1.1.10 2025-01-19"
 to "1.1.11 2025-01-20".
+
+Change `mkiocccentry_test.sh` to not test `-d` as it now sets `-E` which causes
+a failure.
+
+Add to the macro `MKIOCCCENTRY_DEV` so that for now it at least will run the
+tests on `prog.c`, `Makefile` and `remarks.md` and form the tarball even though
+it's not complete (it won't ignore the right files, it doesn't do anything with
+the other files etc. but this way at least the program won't fail when working
+on the issue).
+
+Changed `MKIOCCCENTRY_VERSION` to `"1.2.4 2025-01-20"`.
 
 
 ## Release 2.3.13 2025-01-19
