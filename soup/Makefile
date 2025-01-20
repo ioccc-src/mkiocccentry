@@ -2,7 +2,7 @@
 #
 # soup - some delicious IOCCC soup recipes :-)
 #
-# Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -478,10 +478,10 @@ kitchen soup_kitchen: kitchen.sh
 	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
 
 ../test_ioccc/test_JSON/info.json/good/info.reference.json:
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../test_ioccc test_JSON
 
 ../test_ioccc/test_JSON/auth.json/good/auth.reference.json:
-	${Q} ${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
+	${Q} ${MAKE} ${MAKE_CD_Q} -C ../test_ioccc test_JSON
 
 
 ####################################
@@ -862,6 +862,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f .soup
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -f .all_ref.*
+	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
 	${E} ${RM} ${RM_V} -f Makefile.orig
 	${E} ${RM} ${RM_V} -f ${TARGETS}
 	${E} ${RM} ${RM_V} -rf ref

@@ -4,7 +4,7 @@
 #
 # For the mkiocccentry utility:
 #
-# Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021-2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,

@@ -1,0 +1,34 @@
+{
+	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+	"IOCCC_auth_version" : "%%AUTH_VERSION%%",
+	"IOCCC_contest" : "%%IOCCC_CONTEST%%",
+	"IOCCC_year" : %%IOCCC_YEAR%%,
+	"mkiocccentry_version" : "%%MKIOCCCENTRY_VERSION%%",
+	"chkentry_version" : "%%CHKENTRY_VERSION%%",
+	"fnamchk_version" : "%%FNAMCHK_VERSION%%",
+	"IOCCC_contest_id" : "%%CONTEST_ID%%",
+	"tarball" : "submit.%%CONTEST_ID%%-0.%%FORMED_TIMESTAMP%%.txz",
+	"submit_slot" : 0,
+	"author_count" : 1,
+	"test_mode" : false,
+	"authors" : [
+		{
+			"name" : null,
+			"location_code" : "AU",
+			"email" : "user0@example.com",
+			"url" : "https:\/\/host0.example.com\/index.html",
+			"alt_url" : "https:\/\/host0.example.com\/index.html",
+			"mastodon" : "@mastodon0@example.com",
+			"github" : "@github0",
+			"affiliation" : "an affiliation for #0 author",
+			"past_winning_author" : false,
+			"default_handle" : true,
+			"author_handle" : "author0_middle0_thisisaveryveryl",
+			"author_number" : 0
+		}
+	],
+	"formed_timestamp" : %%FORMED_TIMESTAMP%%,
+	"formed_timestamp_usec" : %%FORMED_TIMESTAMP_USEC%%,
+	"timestamp_epoch" : "%%TIMESTAMP_EPOCH%%",
+	"min_timestamp" : %%MIN_TIMESTAMP%%
+}

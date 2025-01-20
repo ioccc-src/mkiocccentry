@@ -1,6 +1,33 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.14 2025-01-20
+
+The `test_ioccc/test_JSON` is now built by a new tool `test_ioccc/gen_test_JSON.sh`
+via the `make test_JSON` rule in `test_ioccc/Makefile`.
+
+The `test_ioccc/gen_test_JSON.sh` tool builds `test_ioccc/test_JSON` from
+`test_ioccc/template.test_JSON` as well as `soup/limit_ioccc.h` and
+`soup/limit_ioccc.h` to change selected values of the form %%TOKEN%
+so that changes to, for example, versions will be automatically
+applied to the resulting `test_ioccc/test_JSON` tree.
+
+The `make clobber` rule in `test_ioccc/Makefile` removes
+the `test_ioccc/test_JSON` tree.
+
+Fixed a number of broken tests in the `test_ioccc/test_JSON` tree.
+
+Updated and sorted `.gitignore'.
+
+Fixed debug message that incorrectly stated that was unknown.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.3.12 2025-01-18"
+to "2.3.14 2025-01-20".
+
+Changed `SOUP_VERSION` from "1.1.10 2025-01-19"
+to "1.1.11 2025-01-20".
+
+
 ## Release 2.3.13 2025-01-19
 
 Bug fix `noprompt_yes_or_no()` in `mkiocccentry.c` (it had missing

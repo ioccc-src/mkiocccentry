@@ -147,7 +147,7 @@ lookup_location_name(char const *code, bool use_common)
     /*
      * return name or NULL
      */
-    if (p->name == NULL || p->common_name) {
+    if (p->name == NULL || p->common_name == NULL) {
 	dbg(DBG_HIGH, "code: <%s> is unknown", code);
     }
     if (use_common) {

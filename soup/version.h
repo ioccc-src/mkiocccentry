@@ -31,7 +31,7 @@
  *	@vog			Volker Diels-Grabsch
  *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -66,13 +66,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.12 2025-01-18"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.3.14 2025-01-20"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.9 2025-01-18"		/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.11 2025-01-20"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version

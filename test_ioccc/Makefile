@@ -2,7 +2,7 @@
 #
 # test_ioccc - mkiocccentry test tools
 #
-# Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -222,7 +222,7 @@ LESS_PICKY_HSRC=
 # all shell scripts
 #
 SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh txzchk_test.sh \
-	prep.sh hostchk.sh
+	prep.sh hostchk.sh gen_test_JSON.sh
 
 # all man pages that NOT built and NOT removed by make clobber
 #
@@ -419,7 +419,16 @@ fnamchk: fnamchk.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libd
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test:
+test_JSON: ../soup/limit_ioccc.h ../soup/version.h
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ./gen_test_JSON.sh template.test_JSON test_JSON
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+	${S} echo
+
+test: test_JSON
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -668,7 +677,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f test_ioccc.log chkentry_test.log txzchk_test.log
 	${E} ${RM} ${RM_V} -f Makefile.orig
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${E} ${RM} ${RM_V} -rf test_iocccsize test_src test_work
+	${E} ${RM} ${RM_V} -rf test_iocccsize test_src test_work test_JSON
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
