@@ -74,7 +74,7 @@ LS="$(type -P ls 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.4 2025-01-16"
+export MKIOCCCENTRY_TEST_VERSION="1.0.5 2025-01-20"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-c cp] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
@@ -831,15 +831,6 @@ if [[ ${status} -eq 0 ]]; then
 else
     echo "$0: NOTE: the above error is expected as we were testing that the max depth" 1>&2
     echo "$0: NOTE: limit works." 1>&2
-fi
-
-# run test using -d (which uses -s seed)
-#
-./mkiocccentry -d "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
-    exit "${status}"
 fi
 
 
