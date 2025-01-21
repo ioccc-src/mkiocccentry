@@ -1,4 +1,4 @@
-_Last updated: 30 November 2024_
+_README.md last updated: 21 January 2025
 
 # jparse -  JSON parser, library and tools written in C
 
@@ -114,8 +114,8 @@ then please open an issue in the respective repo, not here.
 
 The lexer/parser uses `flex(1)`/`bison(1)` but we determine if you have a recent
 enough version of each, and if you do not we use the backup files (the ones we
-generate when either of
-[jparse.l](https://github.com/xexyl/jparse/blob/master/jparse.l)
+generate when
+[jparse.l](https://github.com/xexyl/jparse/blob/master/jparse.l) and/or
 [jparse.y](https://github.com/xexyl/jparse/blob/master/jparse.y) are modified).
 
 To compile:
@@ -225,6 +225,7 @@ man ./man/man1/jparse.1
 man ./man/man3/jparse.3
 man ./man/man1/jstrdecode.1
 man ./man/man1/jstrencode.1
+man ./man/man8/verge.8
 ```
 
 or if you have installed everything (i.e. you ran `make install` as root or via
@@ -239,7 +240,7 @@ man jstrencode
 
 **NOTE**: the library man page does have an example but you can always look
 at [jparse_main.c](https://github.com/xexyl/jparse/blob/master/jparse_main.c)
-for a relatively simple example (the source code for `jparse(1)` itself, as
+(the source code for `jparse(1)` itself) for a relatively simple example, as
 described in the
 [jparse_utils_README.md](https://github.com/xexyl/jparse/blob/master/jparse_utils_README.md)
 file.
@@ -256,7 +257,7 @@ JSON for data files. Initially a rudimentary parser was in the works but it was
 decided that a real parser would be needed and Cody volunteered to help
 (actually he was helping before this). We decided to use `flex` and `bison` but
 we still had to write thousands of lines of code ourselves. In the end it came
-to be a solid parser, both a tool and a library, along with other useful tools.
+to be a solid JSON parser (library and tool) along with various tools.
 
 If you need or just want more details on what happened, and how it progressed,
 we suggest you check out the `CHANGES.md` file here and at the [mkiocccentry

@@ -5395,7 +5395,8 @@ open_dir_file(char const *dir, char const *file)
     }
 
     /*
-     * note the current directory so we can restore it later, after the chdir(workdir) below
+     * note the current directory so we can restore it later, after the
+     * chdir(dir) below
      */
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
@@ -5463,7 +5464,7 @@ open_dir_file(char const *dir, char const *file)
     }
 
     /*
-     * if we did a chdir to dir, chdir back to cwd
+     * if we did a chdir to dir, chdir back to previous cwd
      */
     if (dir != NULL && cwd >= 0) {
 
@@ -5539,7 +5540,7 @@ count_char(char const *str, int ch)
  *	    '?' but if anything else is passed to this function we do nothing.
  * NOTE:    this function does NOT take an exit code because it is the caller's
  *	    responsibility to do this. This is because they must call usage()
- *	    which is specific to each tool.
+ *	    (or do whatever they need to do) which is specific to tools etc.
  */
 void
 check_invalid_option(char const *prog, int ch, int opt)
