@@ -1589,7 +1589,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
 	${RM} -f .build.*
-	${RM} -f answers.txt
+	${RM} -f answers.txt random_answers.*
 	${RM} -f ${TARGETS}
 	${RM} -rf man
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log ${BUILD_LOG}
