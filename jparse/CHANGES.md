@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.9 2025-01-24
+
+Bug fixes in `sane_relative_path()` to do with return value checks. Also the
+`PATH_ERR_UNKNOWN` value (enum `path_sanity`) changed to `0` and `PATH_OK` to 1.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.1 2025-01-24"`.
+
+
 ## Release 2.2.8 2025-01-18
 
 Fix warnings about args to `%x` specifier in `sscanf(3)` being `unsigned int
