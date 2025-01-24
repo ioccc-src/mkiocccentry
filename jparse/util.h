@@ -167,8 +167,8 @@ typedef unsigned char bool;
  * for the path sanity functions
  */
 enum path_sanity {
-    PATH_ERR_UNKNOWN = -1,              /* unknown error code (default in switch) */
-    PATH_OK = 0,                        /* path (str) is a sane relative path */
+    PATH_ERR_UNKNOWN = 0,               /* unknown error code (default in switch) */
+    PATH_OK,                            /* path (str) is a sane relative path */
     PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
     PATH_ERR_PATH_EMPTY,                /* path string (str) is 0 length (empty) */
     PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */

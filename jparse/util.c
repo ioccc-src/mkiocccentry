@@ -3910,7 +3910,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
             dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju <= max %ju", __func__, dup, (uintmax_t)n, (uintmax_t)max_filename_len);
             dbg(DBG_VVVHIGH, "%s: about to call: posix_plus_safe(\"%s\", false, false, true)", __func__, dup);
             sane = posix_plus_safe(dup, false, false, true);
-            if (!sane) {
+            if (sane != PATH_OK) {
                 dbg(DBG_VVVHIGH, "%s: \"%s\" is not POSIX plus + safe chars", __func__, dup);
                 return PATH_ERR_NOT_POSIX_SAFE;
             } else {
@@ -3964,7 +3964,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
              * additional components for sanity, doing the same steps as
              * above.
              */
-            if (sane) {
+            if (sane != PATH_ERR_UNKNOWN) {
                 /*
                  * here we extract the remaining components of the path (after
                  * the first '/'), by looking for the next path separator
@@ -4021,7 +4021,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
                      */
                     dbg(DBG_VVVHIGH, "%s: about to call: posix_plus_safe(\"%s\", false, false, true)", __func__, p);
                     sane = posix_plus_safe(p, false, false, true);
-                    if (sane) {
+                    if (sane == PATH_OK) {
                         dbg(DBG_VVVHIGH, "%s: component \"%s\" is POSIX plus + safe chars", __func__, p);
                     } else {
                         dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);

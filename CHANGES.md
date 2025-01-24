@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.15 2025-01-24
+
+More work done on #1070. The function `count_files()` in `soup/entry_util.c` has
+been renamed to `collect_files()` and it now only counts files that are valid,
+checking for unsafe names, depth too deep, too long filenames and so on. If too
+many files are found (it does not consider optional files or required files yet)
+it is also an error. Nothing is added to a list yet.
+
+The mkiocccentry tool has been updated to use this function, showing debug
+output if `-v 1`. It can no longer fake the paths to `prog.c`, `Makefile` and
+`remarks.md` so it exits 0 after the call to the `collect_files()` function.
+With low debug level (1) it will show what files are collected.
+
+Updated `SOUP_VERSION` to `"1.1.12 2025-01-24"`.
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.5 2025-01-24"`.
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` to fix some
+minor issues in `sane_relative_path()`.
+
+
 ## Release 2.3.14 2025-01-20
 
 The `test_ioccc/test_JSON` is now built by a new tool `test_ioccc/gen_test_JSON.sh`

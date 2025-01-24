@@ -301,6 +301,6 @@ extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
 extern bool test_paths(char * const *args);
-extern int count_files(char * const *args);
+extern size_t collect_files(char * const *args);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

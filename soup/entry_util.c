@@ -4829,26 +4829,30 @@ test_paths(char * const *args)
 }
 
 /*
- * count_files
+ * collect_files
  *
- * Count total number of files in all args (paths)
+ * Count total number of files in topdir, checking for sane relative paths with
+ * mkiocccentry limits in mind.
  *
  * given:
  *      path    - the args
  *
  * Returns:
  *
- *      the total number of files that we accept
+ *      the total number of files that were counted, not counting directories
  *
  * NOTE: if args is NULL we return 0.
  * NOTE: if an error is encountered traversing the path(s) it is an error.
+ * NOTE: if the depth becomes too deep or if a filename length is too long or a
+ * path is not POSIX plus + safe or there are too many files it is an error.
  */
-int
-count_files(char * const *args)
+size_t
+collect_files(char * const *args)
 {
     FTS *fts = NULL;
     FTSENT *item = NULL;
-    int count = 0;
+    size_t count = 0;                   /* total number of valid files */
+    enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
 
     /*
      * firewall
@@ -4868,19 +4872,54 @@ count_files(char * const *args)
             switch (item->fts_info)
             {
                 case FTS_D:
-                case FTS_F:
                 case FTS_DP:
-                    ++count;
+                    break;
+                case FTS_F:
+                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
+                    switch (sanity) {
+                        case PATH_OK:
+                            dbg(DBG_LOW, "found valid path: %s", item->fts_path);
+                            ++count;
+                            break;
+                        case PATH_ERR_PATH_TOO_DEEP:
+                            err(153, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path,
+                                    (uintmax_t)count_dirs(item->fts_path) + 1, (uintmax_t)MAX_PATH_DEPTH);
+                            not_reached();
+                            break;
+                        case PATH_ERR_NAME_TOO_LONG:
+                            err(154, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_path, item->fts_name,
+                                    (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
+                            not_reached();
+                            break;
+                        case PATH_ERR_NOT_POSIX_SAFE:
+                            err(155, __func__, "%s: not POSIX plus + safe", item->fts_path);
+                            not_reached();
+                            break;
+                        case PATH_ERR_NOT_RELATIVE:
+                            err(156, __func__, "%s: path not relative", item->fts_path);
+                            not_reached();
+                            break;
+                        case PATH_ERR_UNKNOWN:
+                        case PATH_ERR_PATH_IS_NULL:
+                        case PATH_ERR_PATH_EMPTY:
+                        case PATH_ERR_MAX_PATH_LEN_0:
+                        case PATH_ERR_MAX_DEPTH_0:
+                        case PATH_ERR_MAX_NAME_LEN_0:
+                        default:
+                            err(157, __func__, "%s: %s", item->fts_path, path_sanity_error(sanity));
+                            not_reached();
+                            break;
+                    }
                     break;
                 case FTS_DNR: /* directory not readable */
-                    err(153, __func__, "directory not readable: %s", (char *)item->fts_path);
+                    err(158, __func__, "directory not readable: %s", item->fts_path);
                     not_reached();
                 case FTS_ERR:
                     /*
                      * fake errno
                      */
                     errno = item->fts_errno;
-                    errp(154, __func__, "encountered error reading path: %s", (char *)item->fts_path);
+                    errp(159, __func__, "encountered error reading path: %s", item->fts_path);
                     not_reached();
                     break;
                 default:
@@ -4890,6 +4929,11 @@ count_files(char * const *args)
 
         fts_close(fts);
         fts = NULL;
+    }
+
+    if (count > MAX_FILE_COUNT) {
+        err(160, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
+        not_reached();
     }
 
     return count;
