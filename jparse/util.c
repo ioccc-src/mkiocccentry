@@ -475,7 +475,7 @@ count_comps(char const *str, char comp, bool remove_all)
     /*
      * case: length is 0
      */
-    if (*copy == '\0' || len <= 0) {
+    if (len <= 0) {
         /*
          * string is empty
          */
