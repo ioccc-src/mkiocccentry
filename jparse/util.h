@@ -228,7 +228,7 @@ extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, boo
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);
 extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
-        uintmax_t max_depth);
+        uintmax_t max_depth, bool dot_slash_okay);
 extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
 extern void clearerr_or_fclose(FILE *stream);

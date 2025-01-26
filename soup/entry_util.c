@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <fts.h>
+#include <unistd.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -2859,8 +2860,13 @@ test_extra_filename(char const *str)
      * validate str
      */
 
-    /* validate that the filename is POSIX portable safe plus + chars */
-    if (sane_relative_path(str, MAX_FILENAME_LEN, MAX_PATH_LEN, MAX_PATH_DEPTH) != PATH_OK) {
+    /*
+     * validate that the filename is POSIX portable safe plus + chars
+     *
+     * NOTE: here the last arg to sane_relative_path() is false because the
+     * extra files should not be saved as "./".
+     */
+    if (sane_relative_path(str, MAX_FILENAME_LEN, MAX_PATH_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: sane_relative_path check on extra_file failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
@@ -4770,6 +4776,7 @@ test_paths(char * const *args)
 {
     FTS *fts = NULL;
     FTSENT *item = NULL;
+    char *path[] = { ".", NULL };
 
     /*
      * firewall
@@ -4778,9 +4785,17 @@ test_paths(char * const *args)
         err(148, __func__, "passed NULL args");
         not_reached();
     }
-
+    /*
+     * we have to first get to the directory specified before we can collect
+     * files
+     */
     errno = 0;      /* pre-clear errno for errp() */
-    fts = fts_open(args, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
+    if (chdir(args[0]) != 0) {
+        errp(153, __func__, "chdir(\"%s\") failed", args[0]);
+        not_reached();
+    }
+    errno = 0;      /* pre-clear errno for errp() */
+    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
     if (fts == NULL) {
         errp(149, __func__, "fts_open() for args returned NULL");
         not_reached();
@@ -4792,7 +4807,12 @@ test_paths(char * const *args)
                 case FTS_D:
                 case FTS_F:
                 case FTS_DP:
-                    if (sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
+                    /*
+                     * NOTE: here the last arg to sane_relative_path() is true
+                     * because when we traverse "." the filenames all start with
+                     * "./" (this does NOT mean that ".//" is okay).
+                     */
+                    if (sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true) != PATH_OK) {
                         warn(__func__, "%s is not a sane relative path", item->fts_path);
                         json_dbg(JSON_DBG_MED, __func__,
                                  "invalid: path not a relative or sane path");
@@ -4853,6 +4873,7 @@ collect_files(char * const *args)
     FTSENT *item = NULL;
     size_t count = 0;                   /* total number of valid files */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
+    char *path[] = { ".", NULL };
 
     /*
      * firewall
@@ -4861,8 +4882,21 @@ collect_files(char * const *args)
         return 0;
     }
 
+    /*
+     * we have to first get to the directory specified before we can collect
+     * files
+     */
     errno = 0;      /* pre-clear errno for errp() */
-    fts = fts_open(args, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
+    if (chdir(args[0]) != 0) {
+        errp(153, __func__, "chdir(\"%s\") failed", args[0]);
+        not_reached();
+    }
+    /*
+     * now that we have changed to the correct directory, we can traverse the
+     * tree.
+     */
+    errno = 0;      /* pre-clear errno for errp() */
+    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
     if (fts == NULL) {
         errp(152, __func__, "fts_open() for path returned NULL");
         not_reached();
@@ -4875,7 +4909,14 @@ collect_files(char * const *args)
                 case FTS_DP:
                     break;
                 case FTS_F:
-                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
+                    /*
+                     * NOTE: when traversing the directory "." the filenames found
+                     * under it will all start with "./". This is why the last
+                     * arg to sane_relative_path() is true: it allows the first
+                     * two characters to be "./" (this does NOT mean that ".//"
+                     * is okay).
+                     */
+                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
                     switch (sanity) {
                         case PATH_OK:
                             dbg(DBG_LOW, "found valid path: %s", item->fts_path);

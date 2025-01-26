@@ -512,12 +512,22 @@ main(int argc, char *argv[])
     if (topdir == NULL) {
         err(55, __func__, "topdir is NULL");
         not_reached();
+    } else if (!is_dir(topdir[0]) || !is_read(topdir[0])) {
+        /*
+         * NOTE: this test will very possibly be done elsewhere as will the
+         * below code that lists files.
+         *
+         * XXX - report error - XXX
+         */
+        exit(1); /*ooo*/
+    } else {
+        dbg(DBG_MED, "topdir: %s", topdir[0]);
+        /*
+         * collect files (but for now it does not add it to any list)
+         */
+        total_files = collect_files(topdir);
+        dbg(DBG_LOW, "%ju files collected", (uintmax_t)total_files);
     }
-    /*
-     * collect files (but for now it does not add it to any list)
-     */
-    total_files = collect_files(topdir);
-    dbg(DBG_LOW, "%ju files collected", (uintmax_t)total_files);
 
     /*
      * for now this is all we can do
@@ -3293,7 +3303,7 @@ check_extra_data_files(struct info *infop, char const *submission_dir, char cons
 	    not_reached();
 	}
 
-        if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH) != PATH_OK) {
+        if (sane_relative_path(base, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true) != PATH_OK) {
             fpara(stderr,
                   "",
                   "The basename of each directory and the final file in a path",

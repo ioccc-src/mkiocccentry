@@ -72,7 +72,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.12 2025-01-24"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.13 2025-01-26"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.2.5 2025-01-24"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.2.6 2025-01-26"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -104,7 +104,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.1.5 2025-01-18"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.1.6 2025-01-26"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

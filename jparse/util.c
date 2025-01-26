@@ -399,7 +399,7 @@ dir_name(char const *path, int level)
  * NOTE: if the delimiting character is '/' and the string is "foo/" then the
  * count is 1 just as if it was "foo//"; on the other hand, if the string is
  * "foo" without the delimiting character, the count is 0 as there actually is
- * not component!
+ * no component!
  */
 size_t
 count_comps(char const *str, char comp, bool remove_all)
@@ -445,27 +445,28 @@ count_comps(char const *str, char comp, bool remove_all)
     /*
      * remove any multiple trailing delimiter chars except the last one
      */
-    for (i = len - 1; i > 0; --i) {
-	if (copy[i] == comp) {
-            if ((i > 0 && copy[i-1] != comp) || !remove_all) {
-                /*
-                 * if we get here it means that there are no more successive
-                 * delimiting characters so we do not want to remove this one
-                 */
-                dbg(DBG_HIGH, "#3: string after removing trailing '%c's: %s", comp, copy);
-                break;
+    if (remove_all) {
+        for (i = len - 1; i > 0; --i) {
+            if (copy[i] == comp) {
+                if (i > 0 && copy[i-1] != comp) {
+                    /*
+                     * if we get here it means that there are no more successive
+                     * delimiting characters so we do not want to remove this one
+                     */
+                    break;
+                } else {
+                    /* trim the trailing / */
+                    copy[i] = '\0';
+                }
             } else {
-                /* trim the trailing / */
-                copy[i] = '\0';
+                /*
+                 * no more than one trailing delimiter char exist (now)
+                 */
+                break;
             }
-	} else {
-	    /*
-             * no more than one trailing delimiter char exist (now)
-             */
-	    break;
-	}
+        }
+        dbg(DBG_HIGH, "#4: string after removing trailing '%c's: %s", comp, copy);
     }
-    dbg(DBG_HIGH, "#4: string after removing trailing '%c's: %s", comp, copy);
 
     /*
      * now copy has no successive trailing delimiting characters
@@ -474,7 +475,7 @@ count_comps(char const *str, char comp, bool remove_all)
     /*
      * case: length is 0
      */
-    if (len <= 0) {
+    if (*copy == '\0' || len <= 0) {
         /*
          * string is empty
          */
@@ -530,13 +531,13 @@ count_comps(char const *str, char comp, bool remove_all)
     } else {
         while (p != NULL) {
             ++count;
-
             /*
              * we need to remove successive component chars
              */
-            while (*p == comp) {
+            while (p >= copy && *p && *p == comp) {
                 *p-- = '\0';
             }
+
             /*
              * get next last component char
              */
@@ -3675,7 +3676,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 }
 
 /*
- * sane_relative_path - test if each component of a path is posix plus safe
+ * sane_relative_path - test if each component if a path is posix plus safe
  *
  * Using posix_plus_safe() with lower_only == false, slash_ok == false and first
  * == true, for each component of the relative path, we determine if each
@@ -3687,7 +3688,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  * posix_plus_safe(str, false, false, true).
  *
  * In other words, each directory and the final file in a path must match the
- * regexp:
+ * regexp (however, see below on the dot_slash_okay boolean):
  *
  *      ^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$
  *
@@ -3695,11 +3696,17 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  * component; i.e. it must not start with a '/') and may not exceed max_depth
  * directories in the file path.
  *
+ * If dot_slash_okay is true then the first two characters MAY be "./".  This
+ * does NOT mean that "././" would be okay, however, whether it should be or
+ * not, and neither is ".//" (as removing the "./" changes it to an absolute
+ * path).
+ *
  * given:
  *	str		    - string to test
  *      max_path_len        - max path length (length of str)
  *	max_filename_len    - max length of each component of path
  *      max_depth           - max depth of subdirectory tree
+ *      dot_slash_okay      - first two characters MAY be "./"
  *
  * returns:
  *      if a relative sane path: PATH_OK, otherwise another one of the enum
@@ -3749,7 +3756,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  */
 enum path_sanity
 sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
-        uintmax_t max_depth)
+        uintmax_t max_depth, bool dot_slash_okay)
 {
     size_t len;		    /* length of str */
     size_t n;
@@ -3764,6 +3771,10 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
      */
     /*
      * the path string (str) must not be NULL
+     *
+     * NOTE: we check for length 0 later down below as we have to first check if
+     * the first two characters need to be skipped (if dot_slash_okay is true
+     * AND the first two characters are "./").
      */
     if (str == NULL) {
 	dbg(DBG_VVHIGH, "%s: str is NULL", __func__);
@@ -3789,10 +3800,46 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
         return PATH_ERR_MAX_NAME_LEN_0;
     }
 
+    /*
+     * if the max depth is <= 0 there's nothing we can do
+     */
+    if (max_depth <= (uintmax_t)0) {
+        dbg(DBG_VVHIGH, "%s: max depth %ju <= 0", __func__, (uintmax_t)max_depth);
+        return PATH_ERR_MAX_DEPTH_0;
+    }
 
     /*
-     * now that we know the max path len > 0 we can determine if the path string
-     * (str) is empty or too long
+     * debug output max values
+     */
+    dbg(DBG_VVVHIGH, "%s: max_filename_len: %ju", __func__, (uintmax_t)max_filename_len);
+    dbg(DBG_VVVHIGH, "%s: max_depth: %ju", __func__, (uintmax_t)max_depth);
+    dbg(DBG_VVVHIGH, "%s: max_path_len: %ju", __func__, (uintmax_t)max_path_len);
+    dbg(DBG_VVVHIGH, "%s: dot_slash_okay: %s", __func__, booltostr(dot_slash_okay));
+
+    /*
+     * if dot_slash_okay is true and the string starts as "./" we have to skip
+     * the first two characters. Only after this can we check for an absolute
+     * path and the length.
+     */
+    if (dot_slash_okay && !strncmp(str, "./", 2)) {
+        str += 2;
+    }
+
+    /*
+     * determine if the path is relative or not
+     *
+     * NOTE: a relative path is one that does not start with a '/'.
+     */
+    if (*str == '/') {
+        dbg(DBG_VVVVVHIGH, "%s: \"%s\" first char is '/'", __func__, str);
+        dbg(DBG_VVVHIGH, "\"%s\" is not a relative path", str);
+
+        return PATH_ERR_NOT_RELATIVE;
+    }
+
+    /*
+     * now that we know the max values are > 0 and the string is not an absolute
+     * path, we need to check for an empty string.
      */
     len = strlen(str);
     /*
@@ -3813,41 +3860,6 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
     }
 
     /*
-     * if the max depth is <= 0 there's nothing we can do
-     */
-    if (max_depth <= (uintmax_t)0) {
-        dbg(DBG_VVHIGH, "%s: max depth %ju <= 0", __func__, (uintmax_t)max_depth);
-        return PATH_ERR_MAX_DEPTH_0;
-    }
-
-    /*
-     * debug output max values
-     */
-    dbg(DBG_VVVHIGH, "%s: max_filename_len: %ju", __func__, (uintmax_t)max_filename_len);
-    dbg(DBG_VVVHIGH, "%s: max_depth: %ju", __func__, (uintmax_t)max_depth);
-    dbg(DBG_VVVHIGH, "%s: max_path_len: %ju", __func__, (uintmax_t)max_path_len);
-
-    /*
-     * determine if the path is relative or not
-     *
-     * NOTE: a relative path is one that does not start with a '/'.
-     */
-    if (*str == '/') {
-        dbg(DBG_VVVVVHIGH, "%s: \"%s\" first char is '/'", __func__, str);
-        dbg(DBG_VVVHIGH, "\"%s\" is not a relative path", str);
-
-        return PATH_ERR_NOT_RELATIVE;
-    }
-
-    /*
-     * If we get here we KNOW it's a relative path so we must extract each
-     * component and use posix_safe_plus(str, false, false, false) as well as
-     * run checks on the depth (as we extract the components) and the length of
-     * each component itself, with the max_depth and max_filename_len
-     * parameters.
-     */
-
-    /*
      * Before we can do anything else, we have to duplicate the string. If
      * this fails, it is an error because we can't do anything more.
      *
@@ -3865,6 +3877,14 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
      * show the string we're checking, if debug level high enough
      */
     dbg(DBG_VVVHIGH, "%s: parsing string: \"%s\"", __func__, dup);
+
+    /*
+     * If we get here we KNOW it's a relative path so we must extract each
+     * component and use posix_safe_plus(str, false, false, false) as well as
+     * run checks on the depth (as each path component is extracted) and the
+     * length of each component itself, with the max_depth and max_filename_len
+     * parameters.
+     */
 
     /*
      * ensure depth is set to 1 first
@@ -3926,7 +3946,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
 
         /*
          * like for the check when there is no '/' we need to check the filename
-         * length, except that the filename is the component (which could be a
+         * length, except that the filename is the component (which might be a
          * subdirectory name).
          */
         n = strlen(p);
@@ -3960,9 +3980,9 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
              */
             sane = posix_plus_safe(p, false, false, true);
             /*
-             * if the first component is sane, we have to check any
-             * additional components for sanity, doing the same steps as
-             * above.
+             * if the first component is sane (safe), we have to check any
+             * additional components for sanity (safety), doing the same steps
+             * as above.
              */
             if (sane != PATH_ERR_UNKNOWN) {
                 /*
@@ -3977,19 +3997,14 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
                     dbg(DBG_VVVHIGH, "%s: testing component \"%s\" (depth %ju)", __func__, p, (uintmax_t)depth);
 
                     /*
-                     * If the max depth is > 1 we do need to check the current
-                     * depth. The reason we check for max depth > 1 first is
-                     * because if we're here the depth will always be at least
-                     * 1. This was arbitrarily chosen, however, and it is
-                     * possible that it could be undone, if a reason occurs that
-                     * necessitates it.
+                     * Before we can do anything else we have to check the depth
                      */
                     if (depth > max_depth) {
                         /*
                          * if we have gone beyond the max depth, we won't bother
                          * to continue so just report it (if verbosity level
                          * high enough), flag the path as not sane and break out
-                         * of the loop.
+                         * of the loop (return the error code).
                          */
                         dbg(DBG_VVVHIGH, "%s: depth %ju > max depth %ju", __func__, (uintmax_t)depth, (uintmax_t)max_depth);
 
@@ -4000,7 +4015,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
 
                     /*
                      * whereas earlier in this function we checked the full
-                     * string (as there is no '/') here we check just this
+                     * string (as there was no '/') here we check just this
                      * component, just like the first component before this loop
                      */
                     n = strlen(p);
@@ -4033,7 +4048,8 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
                 /*
                  * when we get here, the first component is not safe so we don't
                  * do anything else but report, if verbosity level high enough,
-                 * that the component is not POSIX plus safe.
+                 * that the component is not POSIX plus safe, and then return
+                 * that it's not safe.
                  */
                 dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);
 
@@ -4051,7 +4067,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
     }
 
     /*
-     * return sane value
+     * return that the path is POSIX plus + safe chars only
      */
     dbg(DBG_VVVHIGH, "%s is a relative, sane path", str);
     return PATH_OK;
@@ -4074,7 +4090,7 @@ path_sanity_error(enum path_sanity sanity)
 
     switch (sanity) {
         case PATH_OK:
-            str ="path is a sane relative path";
+            str = "path is a sane relative path";
             break;
         case PATH_ERR_PATH_IS_NULL:
             str = "path string is NULL";
@@ -4268,7 +4284,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     }
 
     /*
-     * example second to last characters
+     * examine second character through the last character
      */
     for (i=1; i < len; ++i) {
 
@@ -5589,7 +5605,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.4 2025-01-18" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.5 2025-01-26" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -5760,190 +5776,235 @@ main(int argc, char **argv)
     /*
      * test the first relative path that we know is good
      */
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(186, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(186, __func__, "sane_relative_path(\"%s\", 99, 25, 4, fale): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity)); /*coo*/
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_OK", relpath);
     }
 
     /*
      * test another sane path but with components
      */
     relpath = "foo/bar";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(187, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_OK", relpath);
     }
 
     /*
      * test empty path
      */
     relpath = "";
-    sanity = sane_relative_path(relpath, 99, 25, 2);
+    sanity = sane_relative_path(relpath, 99, 25, 2, false);
     if (sanity != PATH_ERR_PATH_EMPTY) {
-        err(188, __func__, "sane_relative_path(\"%s\", 99, 25, 2): expected PATH_ERR_PATH_EMPTY, got: %s",
+        err(188, __func__, "sane_relative_path(\"%s\", 99, 25, 2, false): expected PATH_ERR_PATH_EMPTY, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 2) == PATH_ERR_PATH_EMPTY", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 2, false) == PATH_ERR_PATH_EMPTY", relpath);
     }
 
     /*
      * test path too long (path length > max_path_len)
      */
     relpath = "foo/bar/baz";
-    sanity =sane_relative_path(relpath, 2, 99, 2);
+    sanity =sane_relative_path(relpath, 2, 99, 2, false);
     if (sanity != PATH_ERR_PATH_TOO_LONG) {
-        err(189, __func__, "sane_relative_path(\"%s\", 2, 99, 2): expected PATH_ERR_PATH_TOO_LONG, got: %s",
+        err(189, __func__, "sane_relative_path(\"%s\", 2, 99, 2, false): expected PATH_ERR_PATH_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 2, 99, 2) == PATH_ERR_PATH_TOO_LONG", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 2, 99, 2, false) == PATH_ERR_PATH_TOO_LONG", relpath);
     }
 
     /*
      * test max path len <= 0
      */
     relpath = "foo/bar/baz";
-    sanity =sane_relative_path(relpath, 0, 25, 2);
+    sanity =sane_relative_path(relpath, 0, 25, 2, false);
     if (sanity != PATH_ERR_MAX_PATH_LEN_0) {
-        err(190, __func__, "sane_relative_path(\"%s\", 0, 25, 2): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
+        err(190, __func__, "sane_relative_path(\"%s\", 0, 25, 2, false): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 0, 25, 2) == PATH_ERR_MAX_PATH_LEN_0", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 0, 25, 2, false) == PATH_ERR_MAX_PATH_LEN_0", relpath);
     }
 
     /*
      * test max depth <= 0
      */
     relpath = "foo/bar/baz";
-    sanity = sane_relative_path(relpath, 99, 25, 0);
+    sanity = sane_relative_path(relpath, 99, 25, 0, false);
     if (sanity != PATH_ERR_MAX_DEPTH_0) {
-        err(191, __func__, "sane_relative_path(\"%s\", 99, 25, 0): expected PATH_ERR_MAX_DEPTH_0, got: %s",
+        err(191, __func__, "sane_relative_path(\"%s\", 99, 25, 0, false): expected PATH_ERR_MAX_DEPTH_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 0) == PATH_ERR_MAX_DEPTH_0", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 0, false) == PATH_ERR_MAX_DEPTH_0", relpath);
     }
 
     /*
      * test path starting with '/' (not relative path)
      */
     relpath = "/foo";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_RELATIVE) {
-        err(192, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_RELATIVE, got: %s",
+        err(192, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_RELATIVE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_RELATIVE", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_ERR_NOT_RELATIVE", relpath);
     }
 
     /*
      * test path with filename too long
      */
     relpath = "aequeosalinocalcalinoceraceoaluminosocupreovitriolic"; /* 52 letter word recognised by some */
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NAME_TOO_LONG) {
-        err(193, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NAME_TOO_LONG, got: %s",
+        err(193, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NAME_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NAME_TOO_LONG", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_ERR_NAME_TOO_LONG", relpath);
     }
 
     /*
      * test max name length <= 0
      */
     relpath = "foo";
-    sanity = sane_relative_path(relpath, 99, 0, 2);
+    sanity = sane_relative_path(relpath, 99, 0, 2, false);
     if (sanity != PATH_ERR_MAX_NAME_LEN_0) {
-        err(194, __func__, "sane_relative_path(\"%s\", 99, 0, 2): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
+        err(194, __func__, "sane_relative_path(\"%s\", 99, 0, 2, false): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 0, 2) == PATH_ERR_MAX_NAME_LEN_0", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 0, 2, false) == PATH_ERR_MAX_NAME_LEN_0", relpath);
     }
 
     /*
      * test a path that's too deep (depth)
      */
     relpath = "foo/bar";
-    sanity = sane_relative_path(relpath, 99, 25, 1);
+    sanity = sane_relative_path(relpath, 99, 25, 1, false);
     if (sanity != PATH_ERR_PATH_TOO_DEEP) {
-        err(195, __func__, "sane_relative_path(\"%s\", 99, 25, 1): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+        err(195, __func__, "sane_relative_path(\"%s\", 99, 25, 1, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 1) == PATH_ERR_PATH_TOO_DEEP", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 1, false) == PATH_ERR_PATH_TOO_DEEP", relpath);
     }
 
     /*
      * test invalid path component
      */
     relpath = "foo/../";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(196, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(196, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
      * test another invalid path component
      */
     relpath = "foo/./";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(197, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(197, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
      * test another invalid path component
      */
     relpath = "./foo/";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(198, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(198, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_ERR_NOT_POSIX_SAFE", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_ERR_NOT_POSIX_SAFE", relpath);
     }
 
     /*
      * test path with number in it
      */
     relpath = "foo1";
-    sanity = sane_relative_path(relpath, 99, 25, 4);
+    sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(199, __func__, "sane_relative_path(\"%s\", 99, 25, 4): expected PATH_OK, got: %s",
+        err(199, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4) == PATH_OK", relpath);
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 4, false) == PATH_OK", relpath);
     }
 
     /*
-     * now check dir_name() and base_name()
+     * test max depth
      */
-    if (name != NULL) {
-        free(name);
-        name = NULL;
+    relpath = "a/b/c/d";
+    sanity = sane_relative_path(relpath, 99, 25, 3, false);
+    if (sanity != PATH_ERR_PATH_TOO_DEEP) {
+        err(200, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 3, false) == PATH_ERR_PATH_TOO_DEEP", relpath);
+    }
+
+    /*
+     * test relative path as "./foo" being valid
+     */
+    relpath = "./foo";
+    sanity = sane_relative_path(relpath, 99, 25, 3, true);
+    if (sanity != PATH_OK) {
+        err(201, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_OK, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 3, true) == PATH_OK", relpath);
+    }
+
+    /*
+     * test relative path as "./foo" NOT being valid
+     */
+    relpath = "./foo";
+    sanity = sane_relative_path(relpath, 99, 25, 3, false);
+    if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
+        err(202, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 3, false) == PATH_ERR_NOT_POSIX_SAFE", relpath);
+    }
+
+    /*
+     * test relative path as ".//foo" NOT being valid (even with true
+     * dot_slash_okay) because it's not a relative path
+     */
+    relpath = ".//foo";
+    sanity = sane_relative_path(relpath, 99, 25, 3, true);
+    if (sanity != PATH_ERR_NOT_RELATIVE) {
+        err(203, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_ERR_NOT_RELATIVE, got: %s",
+                relpath, path_sanity_name(sanity));
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "sane_relative_path(\"%s\", 99, 25, 3, true) == PATH_ERR_NOT_RELATIVE", relpath);
     }
 
     /*
@@ -5956,10 +6017,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 0);
     if (name == NULL) {
-        err(200, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
+        err(204, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, relpath) != 0) {
-        err(201, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
+        err(205, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 0) == %s", relpath, relpath);
@@ -5971,10 +6032,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 1);
     if (name == NULL) {
-        err(202, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
+        err(206, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab/rab") != 0) {
-        err(203, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
+        err(207, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 1) == foo/bar/baz/zab/rab", relpath);
@@ -5990,10 +6051,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 2);
     if (name == NULL) {
-        err(204, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
+        err(208, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab") != 0) {
-        err(205, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
+        err(209, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 2) == foo/bar/baz/zab", relpath);
@@ -6009,10 +6070,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 3);
     if (name == NULL) {
-        err(206, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
+        err(210, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz") != 0) {
-        err(207, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
+        err(211, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 3) == foo/bar/baz", relpath);
@@ -6028,10 +6089,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 4);
     if (name == NULL) {
-        err(208, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
+        err(212, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar") != 0) {
-        err(209, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
+        err(213, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 4) == foo/bar", relpath);
@@ -6047,10 +6108,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 5);
     if (name == NULL) {
-        err(210, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
+        err(214, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(211, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
+        err(215, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 5) == foo", relpath);
@@ -6072,10 +6133,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 6);
     if (name == NULL) {
-        err(212, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
+        err(216, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(213, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
+        err(217, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 6) == foo", relpath);
@@ -6091,10 +6152,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, -1);
     if (name == NULL) {
-        err(214, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        err(218, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(215, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
+        err(219, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1) == foo", relpath);
@@ -6110,10 +6171,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = base_name(relpath);
     if (name == NULL) {
-        err(216, __func__, "base_name(\"%s\"): returned NULL", relpath);
+        err(220, __func__, "base_name(\"%s\"): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "oof") != 0) {
-        err(217, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
+        err(221, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "base_name(\"%s\") == oof", relpath);
@@ -6130,7 +6191,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(218, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(222, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6142,7 +6203,7 @@ main(int argc, char **argv)
     relpath = "foo//baz";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(219, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(223, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6154,7 +6215,7 @@ main(int argc, char **argv)
     relpath = "///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(220, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(224, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6166,7 +6227,7 @@ main(int argc, char **argv)
     relpath = "/";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(221, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(225, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6178,7 +6239,7 @@ main(int argc, char **argv)
     relpath = "foo///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(222, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(226, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6190,7 +6251,7 @@ main(int argc, char **argv)
     relpath = "";
     comps = count_dirs(relpath);
     if (comps != 0) {
-        err(223, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
+        err(227, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 0", relpath);
@@ -6202,7 +6263,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(224, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(228, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6214,7 +6275,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(225, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(229, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -6226,7 +6287,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(226, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(230, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -6238,7 +6299,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(227, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(231, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -6250,7 +6311,7 @@ main(int argc, char **argv)
     relpath = "foo//foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(228, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(232, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6262,7 +6323,7 @@ main(int argc, char **argv)
     relpath = "foo//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(229, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(233, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -6274,7 +6335,7 @@ main(int argc, char **argv)
     relpath = "foo/foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(230, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(234, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -6286,7 +6347,7 @@ main(int argc, char **argv)
     relpath = "foo/foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(231, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(235, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -6302,7 +6363,7 @@ main(int argc, char **argv)
     relpath = "foo,bar,,,";
     comps = count_comps(relpath, ',', true);
     if (comps != 2) {
-        err(232, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
+        err(236, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_comps(\"%s\", ',', true) == 2", relpath);

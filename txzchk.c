@@ -655,7 +655,7 @@ check_txz_file(char const *tarball_path, char const *dir_name, struct txz_file *
          * sane_relative_path() will still flag it as invalid as it has a '.' in
          * it.
          */
-        sanity = sane_relative_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
+        sanity = sane_relative_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false);
         if (sanity != PATH_OK) {
             ++tarball.total_feathers; /* report it once and consider it only one feather */
             ++tarball.unsafe_chars;

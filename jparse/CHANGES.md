@@ -1,5 +1,23 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.10 2025-01-26
+
+Fix memory error in `count_comps()` (in `util.c`).
+
+Updated `sane_relative_path()` to allow for the path to start with `./`. This is
+necessary in some cases (whether it should check for `././` is another matter
+entirely but in that case it is an error). A string starting with `.//` is not a
+relative path as the first two characters being skipped will make it `/`. This
+update allows for one to use `fts_open()` on `"."` which would prepend a `./` to
+every filename. This process is done if the new boolean, the last parameter to the
+function, `dot_slash_okay`, is true.
+
+Updated util test code to test these new features.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.2 2025-01-26"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.5 2025-01-26"`.
+
+
 ## Release 2.2.9 2025-01-24
 
 Bug fixes in `sane_relative_path()` to do with return value checks. Also the
