@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.16 2025-01-26
+
+More work on #1070: the check on files being found now is done from the
+directory that the user specifies. This involved an enhancement to the jparse
+function `sane_relative_path()`. That enhancement allows filenames to start with
+`./` as when walking from `.` the function prepends `./` to each filename. There
+very possibly will be a new enhancement/utility function required before the
+filenames can be written to the .info.json file but that will have to be
+determined later.
+
+A memory error was fixed in the `jparse` function `count_comps()`.
+
+Updated `SOUP_VERSION` to `"1.1.13 2025-01-26"`.
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.6 2025-01-26"`.
+Updated `TXZCHK_VERSION` to `"1.1.6 2025-01-26"`.
+
+
 ## Release 2.3.15 2025-01-24
 
 More work done on #1070. The function `count_files()` in `soup/entry_util.c` has
