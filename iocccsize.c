@@ -4,7 +4,7 @@
  *	"You are not expected to understand this" :-)
  *
  *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
- *	With IOCCC mods in 2019-2023 by chongo (Landon Curt Noll) ^oo^
+ *	With IOCCC mods in 2019-2023, 2025 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
@@ -27,17 +27,15 @@
  *
  * DESCRIPTION
  *
- *	By default,the Rule 2b count is written to stdout.
+ *	By default, the Rule 2b count is written to stdout.
  *	If the debug level is > 0, then the Rule 2a, Rule 2b,
  *	and keyword count is written to stdout instead.
  *
- *	The entry's gross size in bytes must be less than equal to 4096
- *	bytes in length.
+ *	The entry's gross size in bytes must be less than equal to the
+ *	RULE_2A_SIZE value as defined in soup/limit_ioccc.h.
  *
- *	The entry's net size in bytes must be less than equal to 2503
- *	bytes.  FYI: 2503 is largest prime that can be expressed as the sum
- *	of three different 3-decimal digit zeroless palindromic primes.
- *	(2503 = 787 + 797 + 919)  The net size is computed as follows:
+ *	The entry's net size in bytes must be less than equal to the
+ *	RULE_2B_SIZE value as defined in soup/limit_ioccc.h.
  *
  *	The size tool counts most C reserved words (keyword, secondary,
  *	and selected preprocessor keywords) as 1.  The size tool counts all
@@ -89,7 +87,7 @@ static char usage0[] =
 "\t-V\t\tprint version and exit\n"
 "\n";
 static char usage1[] =
-"\tBy default,the Rule 2b count is written to stdout.\n"
+"\tBy default, the Rule 2b count is written to stdout.\n"
 "\tIf the debug level is > 0, then the Rule 2a, Rule 2b,\n"
 "\tand keyword count is written to stdout instead.\n"
 "\n"
