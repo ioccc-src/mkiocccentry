@@ -176,7 +176,7 @@ case "$#" in
 esac
 
 
-# verify we have our crtiical include files
+# verify we have our critical include files
 #
 if [[ ! -f $LIMIT_IOCCC_H ]]; then
     echo "$0: ERROR: include file not found: $LIMIT_IOCCC_H" 1>&2
@@ -371,7 +371,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: cp -r $TEMPLATE_TREE $JSON_TREE failed, status: $status" 1>&2
     exit 1
 fi
-# substitute %%TOKE%% for TOKEN values in test_JSON tree
+# substitute %%TOKEN%% for TOKEN values in test_JSON tree
 #
 find "$JSON_TREE" -type f -name '*.json' -print0 | xargs -0 perl -p -i -e \
   "s/%%FORMED_TIMESTAMP%%/$FORMED_TIMESTAMP/g;
