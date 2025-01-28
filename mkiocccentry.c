@@ -1177,6 +1177,7 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                              * XXX - process ignored directory names and
                              * forbidden filenames - XXX
                              */
+                        continue;
                     }
 
                     /*
