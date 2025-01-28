@@ -1,6 +1,38 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.17 2025-01-28
+
+Make more progress on #1070.
+
+Rename `collect_files()` to `collect_topdir_files()`. The function now checks
+for `prog.c`, `Makefile` and `remarks.md`, running the checks on them (like in
+the old command line interface), copying them to the work directory if all is
+okay. To do this it has to record the directory that the tool was run from as
+well as the topdir (as in file descriptor of it) as it has to switch back and
+forth between the directories. For the `check_prog_c()`, `check_Makefile()` and
+`check_remarks_md()` functions the filenames have to be faked: that is they have
+to be in the form: `topdir/prog.c`, `topdir/Makefile` and `topdir/remarks.md`.
+
+For now the code also allows one to specify extra filenames as optional args.
+This will change when this issue is resolved completely as only files under
+topdir will be copied over. Doing this for now does allow for extra files to be
+copied to the submission tarball, however, which is useful for testing.
+
+No lists are yet created so we do not show the user what directories/files were
+ignored. It is very likely that some (or possibly a lot) of this code will have
+to change but it should be possible to adapt it into new functions (which will
+be necessary).
+
+Added new functions to check if a string (or a `char const *`) matches a
+mandatory filename, a forbidden filename, an optional filename or an ignored
+directory name. These functions are used in the `test_extra_filename()` function
+(which now also checks for ignored directory names).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.7 2025-01-28"`.
+Updated `SOUP_VERSION` to `"1.1.14 2025-01-28"`.
+
+
 ## Release 2.3.16 2025-01-26
 
 More work on #1070: the check on files being found now is done from the

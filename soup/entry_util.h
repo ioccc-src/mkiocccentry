@@ -61,9 +61,18 @@
 #define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
 #define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
 
+/*
+ * directory names that should be ignored
+ */
+#define CVS_DIRNAME "CVS"                       /* for CVS */
+#define GIT_DIRNAME ".git"                      /* for git */
+#define SVN_DIRNAME ".svn"                      /* for svn */
+#define RCCS_DIRNAME "RCCS"                     /* for RCCS */
+
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
 extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
+extern char *ignored_dirnames[];                /* directory names that should be ignored */
 
 /*
  * IOCCC author information
@@ -301,6 +310,11 @@ extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
 extern bool test_paths(char * const *args);
-extern size_t collect_files(char * const *args);
+extern bool is_mandatory_filename(char const *str);
+extern bool is_forbidden_filename(char const *str);
+extern bool is_optional_filename(char const *str);
+extern bool is_ignored_dirname(char const *str);
+
+
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

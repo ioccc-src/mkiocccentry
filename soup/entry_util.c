@@ -99,7 +99,7 @@ char *forbidden_filenames[] =
 };
 
 /*
- * optional files that must MAY exist in top level directory and which are not
+ * optional files that MAY exist in top level directory and which are not
  * counted against extra files
  */
 char *optional_filenames[] =
@@ -109,6 +109,20 @@ char *optional_filenames[] =
     TRY_ALT_SH,
     NULL
 };
+
+/*
+ * ignored directories that should be skipped
+ */
+char *ignored_dirnames[] =
+{
+    CVS_DIRNAME,
+    GIT_DIRNAME,
+    SVN_DIRNAME,
+    RCCS_DIRNAME,
+    NULL
+};
+
+
 
 /*
  * free_auth - free auto and related sub-elements
@@ -2846,8 +2860,6 @@ test_submit_slot(int submit_slot)
 bool
 test_extra_filename(char const *str)
 {
-    size_t i;       /* to iterate through list of filenames */
-
     /*
      * firewall
      */
@@ -2875,21 +2887,25 @@ test_extra_filename(char const *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    for (i = 0; mandatory_filenames[i] != NULL; ++i) {
-        if (!strcasecmp(str, mandatory_filenames[i])) {
-            json_dbg(JSON_DBG_MED, __func__,
-                     "invalid: extra_file matches a mandatory file: <%s>", str);
-            return false;
-        }
+    if (is_mandatory_filename(str)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: extra_file matches a mandatory file: <%s>", str);
+        return false;
     }
     /* also verify it does not match a disallowed filename */
-    for (i = 0; forbidden_filenames[i] != NULL; ++i) {
-        if (!strcasecmp(str, forbidden_filenames[i])) {
-            json_dbg(JSON_DBG_MED, __func__,
-                    "invalid: extra_file matches disallowed filename: <%s>", str);
-            return false;
-        }
+    if (is_forbidden_filename(str)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                "invalid: extra_file matches disallowed filename: <%s>", str);
+        return false;
     }
+
+    /* also verify it does not match a forbidden directory name */
+    if (is_ignored_dirname(str)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                "invalid: extra_file matches an ignored directory name: <%s>", str);
+        return false;
+    }
+
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
     return true;
 }
@@ -4791,19 +4807,17 @@ test_paths(char * const *args)
      */
     errno = 0;      /* pre-clear errno for errp() */
     if (chdir(args[0]) != 0) {
-        errp(153, __func__, "chdir(\"%s\") failed", args[0]);
+        errp(149, __func__, "chdir(\"%s\") failed", args[0]);
         not_reached();
     }
     errno = 0;      /* pre-clear errno for errp() */
     fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
     if (fts == NULL) {
-        errp(149, __func__, "fts_open() for args returned NULL");
+        errp(150, __func__, "fts_open() for args returned NULL");
         not_reached();
     } else {
-        while ((item = fts_read(fts)) != NULL)
-        {
-            switch (item->fts_info)
-            {
+        while ((item = fts_read(fts)) != NULL) {
+            switch (item->fts_info) {
                 case FTS_D:
                 case FTS_F:
                 case FTS_DP:
@@ -4822,14 +4836,14 @@ test_paths(char * const *args)
                     }
                     break;
                 case FTS_DNR: /* directory not readable */
-                    err(150, __func__, "directory not readable: %s", (char *)item->fts_path);
+                    err(151, __func__, "directory not readable: %s", (char *)item->fts_path);
                     not_reached();
                 case FTS_ERR:
                     /*
                      * fake errno
                      */
                     errno = item->fts_errno;
-                    errp(151, __func__, "encountered error reading path: %s", (char *)item->fts_path);
+                    errp(152, __func__, "encountered error reading path: %s", (char *)item->fts_path);
                     not_reached();
                     break;
                 default:
@@ -4849,133 +4863,129 @@ test_paths(char * const *args)
 }
 
 /*
- * collect_files
+ * is_mandatory_filename  - check if str is a mandatory filename
  *
- * Count total number of files in topdir, checking for sane relative paths with
- * mkiocccentry limits in mind.
+ *  given:
+ *          str      - name to check
  *
- * given:
- *      path    - the args
- *
- * Returns:
- *
- *      the total number of files that were counted, not counting directories
- *
- * NOTE: if args is NULL we return 0.
- * NOTE: if an error is encountered traversing the path(s) it is an error.
- * NOTE: if the depth becomes too deep or if a filename length is too long or a
- * path is not POSIX plus + safe or there are too many files it is an error.
+ * NOTE: if str is NULL we return false
  */
-size_t
-collect_files(char * const *args)
+bool
+is_mandatory_filename(char const *str)
 {
-    FTS *fts = NULL;
-    FTSENT *item = NULL;
-    size_t count = 0;                   /* total number of valid files */
-    enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
-    char *path[] = { ".", NULL };
+    size_t i = 0;
 
     /*
      * firewall
      */
-    if (args == NULL || args[0] == NULL) {
-        return 0;
+    if (str == NULL) {
+        warn(__func__, "str is NULL");
+        return false;
     }
 
-    /*
-     * we have to first get to the directory specified before we can collect
-     * files
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    if (chdir(args[0]) != 0) {
-        errp(153, __func__, "chdir(\"%s\") failed", args[0]);
-        not_reached();
-    }
-    /*
-     * now that we have changed to the correct directory, we can traverse the
-     * tree.
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
-    if (fts == NULL) {
-        errp(152, __func__, "fts_open() for path returned NULL");
-        not_reached();
-    } else {
-        while ((item = fts_read(fts)) != NULL)
-        {
-            switch (item->fts_info)
-            {
-                case FTS_D:
-                case FTS_DP:
-                    break;
-                case FTS_F:
-                    /*
-                     * NOTE: when traversing the directory "." the filenames found
-                     * under it will all start with "./". This is why the last
-                     * arg to sane_relative_path() is true: it allows the first
-                     * two characters to be "./" (this does NOT mean that ".//"
-                     * is okay).
-                     */
-                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-                    switch (sanity) {
-                        case PATH_OK:
-                            dbg(DBG_LOW, "found valid path: %s", item->fts_path);
-                            ++count;
-                            break;
-                        case PATH_ERR_PATH_TOO_DEEP:
-                            err(153, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path,
-                                    (uintmax_t)count_dirs(item->fts_path) + 1, (uintmax_t)MAX_PATH_DEPTH);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NAME_TOO_LONG:
-                            err(154, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_path, item->fts_name,
-                                    (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NOT_POSIX_SAFE:
-                            err(155, __func__, "%s: not POSIX plus + safe", item->fts_path);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NOT_RELATIVE:
-                            err(156, __func__, "%s: path not relative", item->fts_path);
-                            not_reached();
-                            break;
-                        case PATH_ERR_UNKNOWN:
-                        case PATH_ERR_PATH_IS_NULL:
-                        case PATH_ERR_PATH_EMPTY:
-                        case PATH_ERR_MAX_PATH_LEN_0:
-                        case PATH_ERR_MAX_DEPTH_0:
-                        case PATH_ERR_MAX_NAME_LEN_0:
-                        default:
-                            err(157, __func__, "%s: %s", item->fts_path, path_sanity_error(sanity));
-                            not_reached();
-                            break;
-                    }
-                    break;
-                case FTS_DNR: /* directory not readable */
-                    err(158, __func__, "directory not readable: %s", item->fts_path);
-                    not_reached();
-                case FTS_ERR:
-                    /*
-                     * fake errno
-                     */
-                    errno = item->fts_errno;
-                    errp(159, __func__, "encountered error reading path: %s", item->fts_path);
-                    not_reached();
-                    break;
-                default:
-                    break;
-            }
+    for (i = 0; mandatory_filenames[i] != NULL; ++i) {
+        if (!strncasecmp(mandatory_filenames[i], str, strlen(mandatory_filenames[i]))) {
+            dbg(DBG_MED, "%s is a mandatory_filename", str);
+            return true;
         }
-
-        fts_close(fts);
-        fts = NULL;
     }
 
-    if (count > MAX_FILE_COUNT) {
-        err(160, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
-        not_reached();
+    dbg(DBG_MED, "%s is not a mandatory filename", str);
+    return false;
+}
+
+/*
+ * is_forbidden_filename  - check if str is a forbidden filename
+ *
+ *  given:
+ *          str      - name to check
+ *
+ * NOTE: if str is NULL we return false
+ */
+bool
+is_forbidden_filename(char const *str)
+{
+    size_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+        warn(__func__, "str is NULL");
+        return false;
     }
 
-    return count;
+    for (i = 0; forbidden_filenames[i] != NULL; ++i) {
+        if (!strncasecmp(forbidden_filenames[i], str, strlen(forbidden_filenames[i]))) {
+            dbg(DBG_MED, "%s is a forbidden_filename", str);
+            return true;
+        }
+    }
+
+    dbg(DBG_MED, "%s is not a forbidden filename", str);
+    return false;
+}
+
+/*
+ * is_optional_filename  - check if str is a optional filename
+ *
+ *  given:
+ *          str      - name to check
+ *
+ * NOTE: if str is NULL we return false
+ */
+bool
+is_optional_filename(char const *str)
+{
+    size_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+        warn(__func__, "str is NULL");
+        return false;
+    }
+
+    for (i = 0; optional_filenames[i] != NULL; ++i) {
+        if (!strncasecmp(optional_filenames[i], str, strlen(optional_filenames[i]))) {
+            dbg(DBG_MED, "%s is an optional_filename", str);
+            return true;
+        }
+    }
+
+    dbg(DBG_MED, "%s is not an optional filename", str);
+    return false;
+}
+
+/*
+ * is_ignored_dirname  - check if str is an ignored directory name
+ *
+ *  given:
+ *          str      - name to check
+ *
+ * NOTE: if str is NULL we return false
+ */
+bool
+is_ignored_dirname(char const *str)
+{
+    size_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+        warn(__func__, "str is NULL");
+        return false;
+    }
+
+    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
+        if (!strncasecmp(ignored_dirnames[i], str, strlen(ignored_dirnames[i]))) {
+            dbg(DBG_MED, "%s is an ignored dirname", str);
+            return true;
+        }
+    }
+
+    dbg(DBG_MED, "%s is not an ignored dirname", str);
+    return false;
 }
