@@ -4884,7 +4884,7 @@ is_mandatory_filename(char const *str)
     }
 
     for (i = 0; mandatory_filenames[i] != NULL; ++i) {
-        if (!strncasecmp(mandatory_filenames[i], str, strlen(mandatory_filenames[i]))) {
+        if (!strcasecmp(mandatory_filenames[i], str)) {
             dbg(DBG_MED, "%s is a mandatory_filename", str);
             return true;
         }
@@ -4916,7 +4916,7 @@ is_forbidden_filename(char const *str)
     }
 
     for (i = 0; forbidden_filenames[i] != NULL; ++i) {
-        if (!strncasecmp(forbidden_filenames[i], str, strlen(forbidden_filenames[i]))) {
+        if (!strcasecmp(forbidden_filenames[i], str)) {
             dbg(DBG_MED, "%s is a forbidden_filename", str);
             return true;
         }
@@ -4948,7 +4948,7 @@ is_optional_filename(char const *str)
     }
 
     for (i = 0; optional_filenames[i] != NULL; ++i) {
-        if (!strncasecmp(optional_filenames[i], str, strlen(optional_filenames[i]))) {
+        if (!strcasecmp(optional_filenames[i], str)) {
             dbg(DBG_MED, "%s is an optional_filename", str);
             return true;
         }
