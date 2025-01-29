@@ -1182,7 +1182,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
     /*
      * although we could check these later we check here because the
-     * add_txz_file_to_list() function doesn't add the same file (basename) more
+     * add_txz_file_to_list() function doesn't add the same file (full path) more
      * than once: it simply increments the times it's been seen.
      */
     check_file_size(tarball_path, length, file);
@@ -2055,7 +2055,7 @@ alloc_txz_file(char const *path, bool dir, intmax_t length)
  *
  *	file		    - pointer to struct txz_file which should already have the name
  *
- * If the function finds this filename already in the list (basename!) it
+ * If the function finds this filename already in the list (full path!) it
  * increments the count and does not add it to the list; else it adds it to the
  * list with a count of 1.
  *
@@ -2079,7 +2079,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
 
     for (file = txz_files; file != NULL; file = file->next) {
 	if (!strcasecmp(file->filename, txzfile->filename)) {
-	    dbg(DBG_MED, "incrementing count of filename %s", txzfile->basename);
+	    dbg(DBG_MED, "incrementing count of filename %s", txzfile->filename);
 	    file->count++;
 	    return;
 	}
