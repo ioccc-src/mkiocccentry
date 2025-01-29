@@ -1,6 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.18 2025-01-29
+
+More work on #1070.
+
+The `collect_topdir_files()` now verifies that all three required files
+(`prog.c`, `Makefile` and `remarks.md`) are found.
+
+The `collect_topdir_files()` also only records extra files if it's not an
+optional file or a required file.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.8 2025-01-29"`.
+
+
 ## Release 2.3.17 2025-01-28
 
 Make more progress on #1070.
