@@ -24,6 +24,11 @@ have to be changed again.
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.8 2025-01-29"`.
 
+Bug fix debug output in `txzchk` when adding full filename to list (previously
+it had to do basename but now full path).
+
+Updated `TXZCHK_VERSION to "1.1.7 2025-01-29"`.
+
 
 ## Release 2.3.17 2025-01-28
 
