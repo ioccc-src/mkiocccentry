@@ -74,7 +74,7 @@ LS="$(type -P ls 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.5 2025-01-20"
+export MKIOCCCENTRY_TEST_VERSION="1.0.6 2025-01-29"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-c cp] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
@@ -200,6 +200,8 @@ src_dir="test_ioccc/test_src"
 src_src_dir="test_ioccc/test_src/test_src"
 src_src_src_src_src_dir="test_ioccc/test_src/a/b/c/d/e"
 
+# clean out test directories first
+rm -rf -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
 # be sure the working locations exist
 #
 mkdir -p -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
@@ -260,10 +262,13 @@ if [[ ! -x "${TAR}" ]]; then
     exit 9
 fi
 
+# we need this for later and to make sure it's removed now
+LONG_FILENAME="ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 # clean out the workdir area
 workdir_esc="${workdir}"
 test "${workdir:0:1}" = "-" && workdir_esc=./"${workdir}"
 find "${workdir_esc}" -mindepth 1 -depth -delete
+rm -f "${src_dir}"/"${LONG_FILENAME}"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -352,16 +357,15 @@ test -f "${src_dir}"/extra2 || echo "456" >"${src_dir}"/extra2
 
 # delete the work directory for next test
 find "${workdir_esc}" -mindepth 1 -depth -delete
-rm -f "${src_dir}"/empty.c
-:> "${src_dir}"/empty.c
+rm -f "${src_dir}"/prog.c
+:> "${src_dir}"/prog.c
 # test empty prog.c, ignoring the warning about it
-./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
-rm -f "${src_dir}"/empty.c
 
 # Form 'submissions' that are unlikely to win the IOCCC :-)
 #
@@ -451,7 +455,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -542,7 +546,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -628,17 +632,17 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 answers >>answers.txt
 
 
-# this next test must FAIL as it has too long a filename.
+#
+# this next test must FAIL as it has a filename that is too long
 #
 
 # fake a filename that's too long
 #
-LONG_FILENAME="ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar,"${LONG_FILENAME}"}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar,"${LONG_FILENAME}"}
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
@@ -726,13 +730,15 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
+# remove long filename
+rm -f "${src_dir}"/"${LONG_FILENAME}"
 # make a file in the subdirectory
 #
 test -f "${src_src_dir}/foo" || touch "${src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -817,13 +823,11 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
-# we need to remove the very long filename for this next test
-rm -f "${src_dir}/${LONG_FILENAME}"
 test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar} "${src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2

@@ -147,13 +147,13 @@
 /*
  * forward declarations
  */
-static void warn_empty_prog(char const *prog_c);
-static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
-static void warn_nul_chars(char const *prog_c);
-static void warn_trigraph(char const *prog_c);
-static void warn_wordbuf(char const *prog_c);
-static void warn_ungetc(char const *prog_c);
-static void warn_rule_2b_size(struct info *infop, char const *prog_c);
+static void warn_empty_prog(void);
+static void warn_rule_2a_size(struct info *infop, int mode, RuleCount size);
+static void warn_nul_chars(void);
+static void warn_trigraph(void);
+static void warn_wordbuf(void);
+static void warn_ungetc(void);
+static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c);
 static size_t collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir,
         char const *cp, RuleCount *size);
@@ -165,7 +165,7 @@ static int get_submit_slot(struct info *infop);
 static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
-static void warn_Makefile(char const *Makefile, struct info *infop);
+static void warn_Makefile(struct info *infop);
 static void check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md);
 static void check_extra_data_files(struct info *infop, char const *submission_dir, char const *cp, int count, char **args);

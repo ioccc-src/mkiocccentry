@@ -11,6 +11,17 @@ The `collect_topdir_files()` now verifies that all three required files
 The `collect_topdir_files()` also only records extra files if it's not an
 optional file or a required file.
 
+Removed the `MKIOCCENTRY_DEV` macro. Instead it now defaults to the new way but
+with the ability to (for now) specify extra files as additional args. This is
+not how it will remain but this change allows for easier development. The
+`mkiocccentry_test.sh` script was updated to account for this. The `warn_*()`
+functions no longer take a `char const *` of the file they are warning against
+as it's required to be the specific names so there is no need to repeat it (plus
+it's called in multiple locations and we do not always have the path).
+
+This means that `make test` can work in the new way though later the script will
+have to be changed again.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.8 2025-01-29"`.
 
 
