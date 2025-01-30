@@ -168,7 +168,6 @@ static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
 static void check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md);
-static void check_extra_data_files(struct info *infop, char const *submission_dir, char const *cp, int count, char **args);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);

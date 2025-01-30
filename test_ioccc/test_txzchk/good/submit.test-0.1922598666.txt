@@ -1,8 +1,8 @@
 drwxr-xr-x  0 501    20          0 Mar 17 04:09 test-0/
--rw-r--r--  0 501    20       1854 Mar 17 04:09 test-0/Makefile
--rw-r--r--  0 501    20          4 Mar 17 04:09 test-0/extra2
--rw-r--r--  0 501    20          0 Mar 17 04:09 test-0/prog.c
--rw-r--r--  0 501    20       2741 Mar 17 04:09 test-0/.auth.json
--rw-r--r--  0 501    20       2883 Mar 17 04:09 test-0/remarks.md
--rw-r--r--  0 501    20       1378 Mar 17 04:09 test-0/.info.json
--rw-r--r--  0 501    20          4 Mar 17 04:09 test-0/extra1
+-r--r--r--  0 501    20       1854 Mar 17 04:09 test-0/Makefile
+-r--r--r--  0 501    20          4 Mar 17 04:09 test-0/extra2
+-r--r--r--  0 501    20          0 Mar 17 04:09 test-0/prog.c
+-r--r--r--  0 501    20       2741 Mar 17 04:09 test-0/.auth.json
+-r--r--r--  0 501    20       2883 Mar 17 04:09 test-0/remarks.md
+-r--r--r--  0 501    20       1378 Mar 17 04:09 test-0/.info.json
+-r--r--r--  0 501    20          4 Mar 17 04:09 test-0/extra1

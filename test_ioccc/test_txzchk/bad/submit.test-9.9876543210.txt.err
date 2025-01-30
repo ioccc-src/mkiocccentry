@@ -1,5 +1,12 @@
+Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found empty .info.json file
+Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found empty remarks.md
+Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found empty .auth.json file
+Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found empty Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found 4 feathers stuck in the tarball
+Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543210.txt: found 11 feathers stuck in the tarball

@@ -66,7 +66,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.18 2025-01-29"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.3.19 2025-01-30"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.2.8 2025-01-29"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.2.9 2025-01-30"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -104,7 +104,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.1.7 2025-01-29"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.1.8 2025-01-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

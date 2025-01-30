@@ -1,0 +1,9 @@
+Warning: txzchk: found non-executable non-directory file test-6/foo/bar with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-6/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.9876543210.txt: found 8 feathers stuck in the tarball
