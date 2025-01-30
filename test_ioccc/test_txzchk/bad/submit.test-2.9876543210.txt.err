@@ -1,10 +1,22 @@
+Warning: txzchk: found non-executable non-directory file test-2/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-2/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-2/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-2/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-2/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/extra1
+Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/.info.json
+Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/remarks.md
+Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/.auth.json
+Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/prog.c
+Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/extra2
+Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found incorrect top level directory in filename test-0/
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found 9 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.9876543210.txt: found 21 feathers stuck in the tarball

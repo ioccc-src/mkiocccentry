@@ -1,13 +1,17 @@
 ERROR[25]: main: timestamp: 1675547786 is < 1716103155: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt failed with exit code: 25
+Warning: txzchk: found non-executable non-directory file test-5/foo/test_file with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- 1017/staff       896 2022-01-25 14:05 test-5/test
+Warning: txzchk: found non-executable non-directory file test-5/test with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: found non-numerical UID in line -rw-rw-r-- cody/staff       896 2022-01-25 14:05 test-5/Makefile
 Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- cody/staff       896 2022-01-25 14:05 test-5/Makefile
+Warning: txzchk: found non-executable non-directory file test-5/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: found non-numerical UID in line -rw-rw-r-- cody/1018       896 2022-01-25 14:05 test-5/Makefile
+Warning: txzchk: found non-executable non-directory file test-5/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: found a total of 2 files with the name Makefile in the same directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: no .info.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: no .auth.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: no prog.c found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: no remarks.md found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: found 11 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: found 15 feathers stuck in the tarball

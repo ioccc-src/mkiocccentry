@@ -1,6 +1,43 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.19 2025-01-30
+
+More work on #1070.
+
+The files (unless `try.sh` or `try.alt.sh` but see below) copied are now
+read-only (as in `-r--r--r--`) and directories are `drwxr-xr-x`) and `txzchk(1)`
+now verifies this. In order to get tests to work the copying of extra files is not
+done so technically the `try.sh` and `try.alt.sh` part is for future reference.
+To be specific, the following permissions will be set by mkiocccentry and
+verified by txzchk:
+
+- executable files MUST be either try.sh or try.alt.sh and MUST be in the top
+directory and MUST be `-r-xr-xr-x`. If any other executable file is found it is
+an error.
+- directories MUST be `drwxr-xr-x`. If any other permissions for
+directories are found it is an error.
+- other files MUST be `-r--r--r--`. This includes the three mandatory files AND
+`.info.json` AND `.auth.json`. If any other permissions for files are set it is
+an error.
+
+The test suite still checks for depths that are too deep because the
+`collect_topdir_files()` scans the entire tree. The only difference now is that
+no extra files are copied. As the `check_extra_data_files()` function would
+become obsolete when this issue is resolved it is not a big deal that the
+function is now gone, especially as the way it was called was not how it will be
+done (the `workdir` is the source of all files not just the required files).
+Because of this change the `extra_count` is set to 0. However the test files
+still can be verified and the test txzchk files are not affected by this fact.
+Thus the only change here is that extra data files are not currently copied to a
+submission directory and won't be until the rest of the `topdir` is processed.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.9 2025-01-30"`.
+Updated `TXZCHK_VERSION` to `"1.1.8 2025-01-30"`.
+
+
+
+
 ## Release 2.3.18 2025-01-29
 
 More work on #1070.

@@ -1,5 +1,14 @@
+Warning: txzchk: found non-executable non-directory file test-1/extra1/extra2/extra3 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/extra1/extra2/extra3/extra4 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: file "test-1/extra1/extra2/extra3/extra4": depth > max depth
+Warning: txzchk: found non-executable non-directory file test-1/extra1/extra2//.. with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: file "test-1/extra1/extra2//..": path component invalid
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found non .auth.json and .info.json dot file ..
+Warning: txzchk: found non-executable non-directory file test-1/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-1/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found a total of 1 invalidly named dot file
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found 3 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found 12 feathers stuck in the tarball
