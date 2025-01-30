@@ -5345,6 +5345,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     char **q;			/* extra filename array pointer */
     int exit_code;		/* exit code from shell_cmd() */
     int i;
+    int fd = -1;
 
     /*
      * firewall
@@ -5433,6 +5434,16 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     if (info_stream == NULL) {
 	errp(158, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
+    }
+
+    /*
+     * obtain file descriptor for fchmod()
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    fd = open(info_path, O_WRONLY, S_IRWXU);
+    if (fd < 0) {
+        errp(159, __func__, "failed to obtain file descriptor for: %s", info_path);
+        not_reached();
     }
 
     /*
@@ -5562,7 +5573,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
      * set read only for user, group and others
      */
     errno = 0;      /* pre-clear errno for errp() */
-    ret = chmod(info_path, S_IRUSR | S_IRGRP | S_IROTH);
+    ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
         err(164, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
         not_reached();
@@ -5692,6 +5703,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     int ret;			/* libc function return */
     int exit_code;		/* exit code from shell_cmd() */
     int i;
+    int fd = -1;
 
     /*
      * firewall
@@ -5731,6 +5743,13 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     if (auth_stream == NULL) {
 	errp(178, __func__, "failed to open for writing: %s", auth_path);
 	not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    fd = open(auth_path, O_WRONLY, S_IRWXU);
+    if (fd < 0) {
+        err(55, __func__, "failed to obtain file descriptor for: %s", auth_path);
+        not_reached();
     }
 
     /*
@@ -5833,7 +5852,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
      * set read only for user, group and others
      */
     errno = 0;      /* pre-clear errno for errp() */
-    ret = chmod(auth_path, S_IRUSR | S_IRGRP | S_IROTH);
+    ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
         err(183, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
         not_reached();
