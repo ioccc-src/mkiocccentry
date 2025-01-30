@@ -1910,7 +1910,8 @@ has_special_bits(struct txz_file *file)
          * permission too, namely read only (-r--r--r--).
          */
         if (strcmp(file->perms, "-r--r--r--") != 0) {
-            warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r--", file->filename, file->perms);
+            warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r--",
+                    file->filename, file->perms);
             return true;
         }
     }
