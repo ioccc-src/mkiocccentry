@@ -1,6 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.20 2025-01-31
+
+Updated `mkiocccentry.1` for new `mkiocccentry(1)` command line syntax along
+with some other fixes. More checks need to be done with this update, however.
+
+
 ## Release 2.3.19 2025-01-30
 
 More work on #1070.
