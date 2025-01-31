@@ -6,6 +6,12 @@
 Updated `mkiocccentry.1` for new `mkiocccentry(1)` command line syntax along
 with some other fixes. More checks need to be done with this update, however.
 
+Fix `txzchk` to use macro names for `try.sh` and `try.alt.sh`. Also add new
+count variables for files with invalid permissions and number of executable
+files. Added a good test file and a bad test file. Rebuilt error files.
+
+Updated `TXZCHK_VERSION` to `"1.1.9 2025-01-31"`.
+
 
 ## Release 2.3.19 2025-01-30
 
