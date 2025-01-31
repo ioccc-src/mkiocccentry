@@ -1,5 +1,17 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.11 2025-01-31
+
+Add new util function `path_has_component()` which takes two `char *`s: a full
+path and a name to check against. This function will allow one to check a full
+path to see if it has a specific component. This can be used along with
+`sane_relative_path()` should one need to skip specific components such as
+`.git`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.3 2025-01-31"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.6 2025-01-31"`.
+
+
 ## Release 2.2.10 2025-01-26
 
 Fix memory error in `count_comps()` (in `util.c`).
