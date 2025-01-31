@@ -362,6 +362,10 @@ show_tarball_info(char const *tarball_path)
                 SINGULAR_OR_PLURAL(tarball.required_filenames));
         dbg(DBG_MED, "%s has %ju forbidden filename%s", tarball_path, tarball.forbidden_filenames,
                 SINGULAR_OR_PLURAL(tarball.forbidden_filenames));
+        dbg(DBG_MED, "%s has %ju file%s with invalid permissions", tarball_path, tarball.invalid_perms,
+                SINGULAR_OR_PLURAL(tarball.invalid_perms));
+        dbg(DBG_MED, "%s has %ju executable file%s", tarball_path, tarball.total_exec_files,
+                SINGULAR_OR_PLURAL(tarball.total_exec_files));
 
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
@@ -1893,14 +1897,18 @@ has_special_bits(struct txz_file *file)
     if (file->isdir) {
         if (strcmp(file->perms, "drwxr-xr-x") != 0) {
 	    warn("txzchk", "directory with incorrect permissions found: %s: %s != drwxr-xr-x", file->filename, file->perms);
+            ++tarball.invalid_perms;
             return true;
         }
     } else if (file->isexec) {
-        if (count_dirs(file->filename) != 1 || (strcmp(file->basename, "try.sh") != 0 &&
-            strcmp(file->basename, "try.alt.sh") != 0)) {
-                warn("txzchk", "found executable file that is not try.sh or try.alt.sh");
+        ++tarball.total_exec_files;
+        if (count_dirs(file->filename) != 1 || (strcmp(file->basename, TRY_SH) != 0 &&
+            strcmp(file->basename, TRY_ALT_SH) != 0)) {
+                ++tarball.invalid_perms;
+                warn("txzchk", "found executable file that is not %s or %s: %s", TRY_SH, TRY_ALT_SH, file->filename);
                 return true;
         } else if (strcmp(file->perms, "-r-xr-xr-x") != 0) {
+                ++tarball.invalid_perms;
             warn("txzchk", "found valid executable %s with wrong permissions: %s != -r-xr-xr-x", file->filename, file->perms);
             return true;
         }
@@ -1912,6 +1920,7 @@ has_special_bits(struct txz_file *file)
         if (strcmp(file->perms, "-r--r--r--") != 0) {
             warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r--",
                     file->filename, file->perms);
+            ++tarball.invalid_perms;
             return true;
         }
     }

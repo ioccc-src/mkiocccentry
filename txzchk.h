@@ -123,6 +123,8 @@ struct tarball
     uintmax_t optional_filenames;           /* total number of optional files */
     uintmax_t forbidden_filenames;          /* total number of forbidden files */
     uintmax_t directories;                  /* total number of subdirectories counting the required top level directory */
+    uintmax_t invalid_perms;                /* total number of files with invalid permissions */
+    uintmax_t total_exec_files;             /* total number of executable FILES */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
