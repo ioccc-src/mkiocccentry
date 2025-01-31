@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "16 January 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "31 January 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -17,16 +17,16 @@
 .B mkiocccentry
 .RB [\| options \|]
 .I workdir
-.I prog.c
-.I Makefile
-.I remarks.md
-.RI [\| \[ file | directory
-.IR ... \|]
+.I topdir
 .SH DESCRIPTION
 .B mkiocccentry
-gathers your source file, Makefile and remarks as well as any other files and/or directories, and assuming everything is correct and valid, it will create an XZ compressed tarball.
-The tool runs
-.B iocccsize
+gathers your source file, Makefile, remarks and other files (and subdirectories) in the
+.I topdir
+and assuming everything is correct and valid, it will create an XZ compressed tarball which will be further tested by
+.BR txzchk (1).
+.BR mkiocccentry (1)
+runs
+.BR iocccsize (1)
 on your
 .I prog.c
 and it also runs tests on the
@@ -38,18 +38,49 @@ You can ignore certain warnings but some issues are errors; if invalid input or 
 .PP
 Under the
 .I workdir
-.B mkiocccentry
-will create a submission directory (based on the IOCCC contestant ID and submission slot) that the program will copy the mandatory files to the work directory in order to create the tarball.
+.BR mkiocccentry (1)
+will create a submission directory (based on the IOCCC contestant ID and submission slot) that the program will copy the mandatory files to, along with other files and directories in the
+.IR topdir ,
+plus the
+.BR mkiocccentry (1)\-generated
+files
+.B .auth.json
+and
+.BR .info.json .
+.PP
+There is a maximum depth allowed for subdirectories (4) and the basename of files and directories are restricted to POSIX plus \+ safe characters, plus a maximum name length for each directory component (38) and a maximum total pathname length (99).
+Certain directories are also skipped for you, namely, those that start with a dot (.),
+.BR .git ,
+.BR CVS ,
+.BR RCCS
+and
+.BR .svn .
+.PP
+If too many files are encountered it is an error and if the depth is too deep it is also an error.
+Otherwise, if everything is in order it will create the two JSON files,
+.BR .auth.json
+and
+.BR .info.json ,
+and run
+.BR chkentry (1)
+on each of these files.
+.PP
+Before creating the JSON files or the tarball,
+.BR mkiocccentry (1)
+will ask you for information about the submission and the author (or authors), allowing you to correct mistakes as you go along.
+Assuming everything is okay, the tarball will be created and
+.BR mkiocccentry (1)
+will execute
+.BR txzchk (1)
+on that, which runs additional checks, one of which is checking the tarball's top level directory name with
+.BR fnamchk (1).
+.PP
 If the submission directory under the work directory already exists, the program will tell you to move it or delete it; the program does
 .B NOT
 delete or move it for you.
 .PP
-One may pass in additional files or directories to be copied to the submission directory.
-Files are copied to the submission top level directory and directories are copied recursively as subdirectories.
-There is a maximum depth allowed for subdirectories and the basename of files and directories are restricted to POSIX plus \+ safe characters, plus a maximum name length.
-.PP
 Before forming the tarball,
-.B mkiocccentry
+.BR mkiocccentry (1)
 will ask you for information about your submission including the number of authors and various information about the author(s).
 Once all the information has been collected it will copy the files to the submission directory under the
 .IR workdir \|.
@@ -243,7 +274,6 @@ the file
 and then processed as if
 .BI \-i\  random_answers.seed
 had been used.
-.br
 This mode is intended as a
 .B dry run
 only, allowing a submitter to quickly check if there are
@@ -253,17 +283,16 @@ The result is for
 as the result is
 .B NOT SUITABLE
 for submitting to an open IOCCC.
-.br
-The pseudo-random answers generated via
+.sp
+The pseudo-random answers are generated via
 calls to
-.BR random (3)
-generating strings of pseudo-random lengths
-and values that conform to input requirements.
+.BR random (3),
+generating strings of pseudo-random lengths and values that conform to input requirements.
 The
 .I seed
 is supplied to
 .BR srandom (3)
-with and an offset by a constant and 31-bit mask.
+with an offset by a constant and 31-bit mask.
 The
 .I seed
 must be an non-negative integer.
@@ -370,27 +399,27 @@ Run test script:
 .PP
 Make
 .I workdir
-and then make an entry from the files
+and then make a submission tarball from the files
 .IR prog.c ,
 .I Makefile
 and
-.IR remarks.md ,
-saving your answers to the file
+.IR remarks.md 
+in topdir, saving your answers to the file
 .I answers
 for future updates:
 .sp
 .RS
 .ft B
  mkdir workdir
- ./mkiocccentry \-a answers workdir prog.c Makefile remarks.md
+ ./mkiocccentry \-a answers workdir topdir
 .ft R
 .RE
 .PP
-Use the answers file from the previous invocation to quickly update the entry with an additional file and directory added:
+Use the answers file from the previous invocation to quickly update the entry, allowing you to have a change in files (contents or number of files):
 .sp
 .RS
 .ft B
- ./mkiocccentry \-i answers workdir prog.c Makefile remarks.md data.txt subdir
+ ./mkiocccentry \-i answers workdir topdir
 .ft R
 .RE
 .PP
@@ -401,6 +430,6 @@ and
 .sp
 .RS
 .ft B
- ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk
+ ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk \.\.\.
 .ft R
 .RE
