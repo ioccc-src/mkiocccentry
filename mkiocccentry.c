@@ -3034,11 +3034,11 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 
 	    /*
 	     * free storage
+             *
+             * We can't check for != NULL because of GitHub.
 	     */
-	    if (line != NULL) {
-		free(line);
-		line = NULL;
-	    }
+            free(line);
+            line = NULL;
 
 	    /*
 	     * non-: line
@@ -3111,11 +3111,11 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 
 	/*
 	 * free storage
+         *
+         * We can't check for != NULL because of GitHub.
 	 */
-	if (line != NULL) {
-	    free(line);
-	    line = NULL;
-	}
+        free(line);
+        line = NULL;
 
     } while (!infop->first_rule_is_all || !infop->found_all_rule || !infop->found_clean_rule ||
 	     !infop->found_clobber_rule || !infop->found_try_rule);
