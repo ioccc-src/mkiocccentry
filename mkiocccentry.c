@@ -951,6 +951,36 @@ main(int argc, char *argv[])
 }
 
 /*
+ * has_ignored_dirname   - check if path has ignored dirname in it
+ *
+ * given:
+ *
+ *      path    - path to check
+ *
+ * NOTE: this function returns false if path is NULL.
+ */
+static
+bool has_ignored_dirname(char const *path)
+{
+    size_t i = 0;
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+        return false;
+    } else if (*path == '\0') {
+        return false;
+    }
+
+    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
+        if (path_has_component(path, ignored_dirnames[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+/*
  * collect_topdir_files
  *
  * Count total number of files in topdir, checking for sane relative paths with
@@ -1054,26 +1084,29 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
         not_reached();
     } else {
         while ((item = fts_read(fts)) != NULL) {
+            bool ignored = has_ignored_dirname(item->fts_path + 2);
             switch (item->fts_info) {
                 case FTS_D:
                 case FTS_DP:
-                    if (is_ignored_dirname(item->fts_path + 2)) {
-                        /*
-                         * XXX - process ignored directory name - XXX
-                         */
-                    } else {
-                        /*
-                         * NOTE: when traversing the directory "." the filenames found
-                         * under it will all start with "./". This is why the last
-                         * arg to sane_relative_path() is true: it allows the first
-                         * two characters to be "./" (this does NOT mean that ".//"
-                         * is okay and it does NOT mean that "././" is okay).
-                         */
-                        sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-                        /*
-                         * XXX - make use of the function return value - XXX
-                         */
-                        UNUSED_ARG(sanity);
+                    {
+                        if (ignored) {
+                            /*
+                             * XXX - process ignored directory name - XXX
+                             */
+                        } else {
+                            /*
+                             * NOTE: when traversing the directory "." the filenames found
+                             * under it will all start with "./". This is why the last
+                             * arg to sane_relative_path() is true: it allows the first
+                             * two characters to be "./" (this does NOT mean that ".//"
+                             * is okay and it does NOT mean that "././" is okay).
+                             */
+                            sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
+                            /*
+                             * XXX - make use of the function return value - XXX
+                             */
+                            UNUSED_ARG(sanity);
+                        }
                     }
                     break;
                 case FTS_F:
@@ -1083,11 +1116,14 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                      * XXX - later on we will have to make a dynamic array to
                      * let the user know these files are ignored
                      */
-                    if (is_ignored_dirname(item->fts_path + 2) ||
-                        is_forbidden_filename(item->fts_path + 2)) {
+                    if (ignored) {
+                        /*
+                         * XXX - process ignored directory names - XXX
+                         */
+                        continue;
+                    } else if (is_forbidden_filename(item->fts_path + 2)) {
                             /*
-                             * XXX - process ignored directory names and
-                             * forbidden filenames - XXX
+                             * XXX - process forbidden filenames - XXX
                              */
                         continue;
                     }
@@ -1242,7 +1278,7 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                             break;
                         case PATH_ERR_PATH_TOO_DEEP:
                             err(27, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
-                                    (uintmax_t)count_dirs(item->fts_path) + 1, (uintmax_t)MAX_PATH_DEPTH);
+                                    (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
                             not_reached();
                             break;
                         case PATH_ERR_NAME_TOO_LONG:
@@ -2931,7 +2967,6 @@ inspect_Makefile(char const *Makefile, struct info *infop)
          * trim off '=' as some variables can have a ':' which can confuse the
          * checks below
          */
-
         p = strchr(line, '=');
         if (p != NULL) {
             /*
@@ -2943,7 +2978,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
         /*
          * skip lines starting with a '.' as those are special make rules
          */
-        if (line != NULL && *line == '.') {
+        if (*line == '.') {
             /*
              * NOTE: due to a bug or mis-feature in GitHub's advanced security
              * bot we cannot explicitly check for NULL line before freeing which

@@ -12,6 +12,17 @@ files. Added a good test file and a bad test file. Rebuilt error files.
 
 Updated `TXZCHK_VERSION` to `"1.1.9 2025-01-31"`.
 
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function to check for ignored (or if desired forbidden) path components.
+This will be useful when traversing directories. It is currently used for this
+but ignored paths are still not processed (just skipped). (A new function was
+added to mkiocccentry.c for this too.)
+
+Fixed bug in mkiocccentry where the max depth error was reporting the wrong
+depth.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.10 2025-01-31"`.
+
 
 ## Release 2.3.19 2025-01-30
 

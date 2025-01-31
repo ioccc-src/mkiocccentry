@@ -155,6 +155,7 @@ static void warn_wordbuf(void);
 static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c);
+static bool has_ignored_dirname(char const *path);
 static size_t collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir,
         char const *cp, RuleCount *size);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar, char const *cp,

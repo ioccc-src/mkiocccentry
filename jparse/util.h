@@ -231,6 +231,7 @@ extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_l
         uintmax_t max_depth, bool dot_slash_okay);
 extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
+extern bool path_has_component(char const *path, char const *name);
 extern void clearerr_or_fclose(FILE *stream);
 extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
