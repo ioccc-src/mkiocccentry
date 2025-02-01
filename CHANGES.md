@@ -8,6 +8,8 @@ in mkiocccentry.
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.11 2025-02-01"`.
 
+Remove unused `test_paths()` from `soup/entry_util.c`.
+
 
 ## Release 2.3.20 2025-01-31
 
