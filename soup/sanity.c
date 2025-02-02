@@ -52,14 +52,12 @@ ioccc_sanity_chks(void)
 
 
 /*
- * find_utils - find tar, cp, ls, txzchk and fnamchk, chkentry utilities
+ * find_utils - find tar, ls, txzchk and fnamchk, chkentry utilities
  *
  * given:
  *
  *	tar_flag_used	    - true ==> -t tar was used
  *	tar		    - if -t tar was not used and tar != NULL set *tar to to tar path
- *	cp_flag_used	    - true ==> -c cp was used
- *	cp		    - if -c cp was not used and cp != NULL set *cp to cp path
  *	ls_flag_used	    - true ==> -l ls was used
  *	ls		    - if -l ls was not used and ls != NULL set *ls to ls path
  *	txzchk_flag_used    - true ==> -T flag used
@@ -70,12 +68,12 @@ ioccc_sanity_chks(void)
  *	chkentry	    - if -C chkentry was used and chkentry != NULL set *chkentry to path
  */
 void
-find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used,
+find_utils(bool tar_flag_used, char **tar, bool ls_flag_used,
 	   char **ls, bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
 	   bool chkentry_flag_used, char **chkentry)
 {
     /*
-     * guess where tar, cp and ls utilities are located
+     * guess where tar and ls utilities are located
      *
      * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
      * the historic location for the utility.  If the historic location of the utility
@@ -87,10 +85,6 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
     if (tar != NULL && !tar_flag_used && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
 	*tar = TAR_PATH_1;
 	dbg(DBG_MED, "tar is not in historic location: %s : will use alternate location: %s", TAR_PATH_0, *tar);
-    }
-    if (cp != NULL && !cp_flag_used && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
-	*cp = CP_PATH_1;
-	dbg(DBG_MED, "cp is not in historic location: %s : will use alternate location: %s", CP_PATH_0, *cp);
     }
     if (ls != NULL && !ls_flag_used && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
 	*ls = LS_PATH_1;

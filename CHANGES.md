@@ -1,6 +1,44 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.22 2025-02-02
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function `copyfile()`. As described in `jparse/CHANGES.md`:
+
+    Added new util function copyfile() which takes a source (char const *) and
+    dest (char const *) file (paths) (and a mode_t) and copies the source into
+    the dest, assuming that src file is a regular readable file and the dest file
+    does not exist. If the number of bytes read is not the same as the number of
+    bytes written, or if the contents of the dest file is not the same as the
+    contents of the source file (after copying) it is an error. If mode is not 0
+    it uses fchmod(2) to set the file mode.  This function does NOT create
+    directories but it can take directories as args, as long as they exist.
+
+`mkiocccentry` now uses `copyfile()` instead of `cp(1)`. Updated `find_utils()`
+to not look for `cp(1)` and removed `CP_PATH_0` and `CP_PATH_1` macros. The
+calls to `find_utils()` were updated which means `txzchk` was also updated.
+`mkiocccentry_test.sh` no longer has the `-c cp` option. Updated man pages of
+`mkiocccentry` and `mkiocccentry_test.sh`.
+
+`collect_topdir_files()` now skips descendants of ignored directory names. It
+also checks for forbidden filenames before checking the file type. The same goes
+for checking if it's a sane relative path. Prior to checking the file type, if
+it is ignored it will be processed (as necessary - not yet done) and if it's a
+forbidden filename it will also be processed (as necessary - not yet done). If
+it is not ignored and not forbidden then we check if it's a sane relative path
+and depending on the type of file (directory or regular file) we do the next
+step. There still is no list of files yet but this prevents having to go down
+directories that are to be ignored and not checking forbidden filenames (other
+than it being forbidden) etc.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.12 2025-02-02"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+Updated `TXZCHK_VERSION` to `"1.1.10 2025-02-02"`.
+Updated `SOUP_VERSION` to `"1.1.15 2025-02-02"`.
+
+
+
 ## Release 2.3.21 2025-02-01
 
 Add `O_CLOEXEC` flag to `open(2)` in `write_info()` and `write_auth()` functions
