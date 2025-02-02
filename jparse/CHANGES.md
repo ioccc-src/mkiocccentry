@@ -1,5 +1,19 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.12 2025-02-02
+
+Added new util function `copyfile()` which takes a source (`char const *`) and
+dest (`char const *`) file (paths) (and a `mode_t`) and copies the source into
+the dest, assuming that src file is a regular readable file and the dest file
+does not exist. If the number of bytes read is not the same as the number of
+bytes written, or if the contents of the dest file is not the same as the
+contents of the source file (after copying) it is an error. If `mode` is not 0
+it uses `fchmod(2)` to set the file mode.  This function does NOT create
+directories but it can take directories as args, as long as they exist.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.4 2025-02-02"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+
 ## Release 2.2.11 2025-01-31
 
 Add new util function `path_has_component()` which takes two `char *`s: a full
