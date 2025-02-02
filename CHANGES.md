@@ -21,6 +21,17 @@ calls to `find_utils()` were updated which means `txzchk` was also updated.
 `mkiocccentry_test.sh` no longer has the `-c cp` option. Updated man pages of
 `mkiocccentry` and `mkiocccentry_test.sh`.
 
+`collect_topdir_files()` now skips descendants of ignored directory names. It
+also checks for forbidden filenames before checking the file type. The same goes
+for checking if it's a sane relative path. Prior to checking the file type, if
+it is ignored it will be processed (as necessary - not yet done) and if it's a
+forbidden filename it will also be processed (as necessary - not yet done). If
+it is not ignored and not forbidden then we check if it's a sane relative path
+and depending on the type of file (directory or regular file) we do the next
+step. There still is no list of files yet but this prevents having to go down
+directories that are to be ignored and not checking forbidden filenames (other
+than it being forbidden) etc.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.12 2025-02-02"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.7 2025-02-02"`.
 Updated `TXZCHK_VERSION` to `"1.1.10 2025-02-02"`.

@@ -1076,57 +1076,44 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
     } else {
         while ((item = fts_read(fts)) != NULL) {
             bool ignored = has_ignored_dirname(item->fts_path + 2);
+            bool forbidden = is_forbidden_filename(item->fts_path + 2);
+
+            if (ignored) {
+                errno = 0;  /* pre-clear errno for errp() */
+                if (fts_set(fts, item, FTS_SKIP) != 0) {
+                    errp(55, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
+                    not_reached();
+                }
+                dbg(DBG_MED, "skipping descendants of %s", item->fts_path + 2);
+
+                /*
+                 * XXX - process ignored names - XXX
+                 */
+                continue;
+            } else if (forbidden) {
+                /*
+                 * XXX - process forbidden filenames - XXX
+                 */
+                continue;
+            }
+            /*
+             * NOTE: when traversing the directory "." the filenames found
+             * under it will all start with "./". This is why the last
+             * arg to sane_relative_path() is true: it allows the first
+             * two characters to be "./" (this does NOT mean that ".//"
+             * is okay and it does NOT mean that "././" is okay).
+             */
+            sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
             switch (item->fts_info) {
                 case FTS_D:
-                case FTS_DP:
                     {
-                        if (ignored) {
-                            /*
-                             * XXX - process ignored directory name - XXX
-                             */
-                        } else {
-                            /*
-                             * NOTE: when traversing the directory "." the filenames found
-                             * under it will all start with "./". This is why the last
-                             * arg to sane_relative_path() is true: it allows the first
-                             * two characters to be "./" (this does NOT mean that ".//"
-                             * is okay and it does NOT mean that "././" is okay).
-                             */
-                            sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-                            /*
-                             * XXX - make use of the function return value - XXX
-                             */
-                            UNUSED_ARG(sanity);
-                        }
+                        /*
+                         * XXX - make use of the function return value - XXX
+                         */
+                        UNUSED_ARG(sanity);
                     }
                     break;
                 case FTS_F:
-                    /*
-                     * first we have to skip certain directory names
-                     *
-                     * XXX - later on we will have to make a dynamic array to
-                     * let the user know these files are ignored
-                     */
-                    if (ignored) {
-                        /*
-                         * XXX - process ignored directory names - XXX
-                         */
-                        continue;
-                    } else if (is_forbidden_filename(item->fts_path + 2)) {
-                            /*
-                             * XXX - process forbidden filenames - XXX
-                             */
-                        continue;
-                    }
-
-                    /*
-                     * NOTE: when traversing the directory "." the filenames found
-                     * under it will all start with "./". This is why the last
-                     * arg to sane_relative_path() is true: it allows the first
-                     * two characters to be "./" (this does NOT mean that ".//"
-                     * is okay and it does NOT mean that "././" is okay).
-                     */
-                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
                     switch (sanity) {
                         case PATH_OK:
                             dbg(DBG_LOW, "found sane relative path: %s", item->fts_path + 2);
@@ -1134,15 +1121,15 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 /*
                                  * check prog.c
                                  */
-                                char *path = NULL; /* path for check_prog_c */
+                                char *prog_c = NULL; /* path for check_prog_c */
 
                                 /*
                                  * we have to fake the prog.c path for
                                  * check_prog_c()
                                  */
-                                path = calloc_path(args[0], "/prog.c");
-                                if (path == NULL) {
-                                    err(18, __func__, "path is NULL");
+                                prog_c = calloc_path(args[0], "/prog.c");
+                                if (prog_c == NULL) {
+                                    err(18, __func__, "prog_c is NULL");
                                     not_reached();
                                 }
                                 errno = 0;      /* pre-clear errno for errp() */
@@ -1154,13 +1141,13 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 if (!quiet) {
                                     para("", "Checking prog.c ...", NULL);
                                 }
-                                *size = check_prog_c(infop, submission_dir, path);
+                                *size = check_prog_c(infop, submission_dir, prog_c);
                                 if (!quiet) {
                                     para("... completed prog.c check.", "", NULL);
                                 }
-                                if (path != NULL) {
-                                    free(path);
-                                    path = NULL;
+                                if (prog_c != NULL) {
+                                    free(prog_c);
+                                    prog_c = NULL;
                                 }
                                 /*
                                  * now switch back to the topdir for the rest of
@@ -1181,15 +1168,15 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 /*
                                  * check Makefile
                                  */
-                                char *path = NULL; /* path for check_Makefile */
+                                char *Makefile = NULL; /* path for check_Makefile */
 
                                 /*
                                  * we have to fake the Makefile path for
                                  * check_Makefile()
                                  */
-                                path = calloc_path(args[0], "/Makefile");
-                                if (path == NULL) {
-                                    err(21, __func__, "path is NULL");
+                                Makefile = calloc_path(args[0], "/Makefile");
+                                if (Makefile == NULL) {
+                                    err(21, __func__, "Makefile is NULL");
                                     not_reached();
                                 }
                                 errno = 0;      /* pre-clear errno for errp() */
@@ -1202,7 +1189,7 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 if (!quiet) {
                                     para("Checking Makefile ...", NULL);
                                 }
-                                check_Makefile(infop, submission_dir, path);
+                                check_Makefile(infop, submission_dir, Makefile);
                                 if (!quiet) {
                                     para("... completed Makefile check.", "", NULL);
                                 }
@@ -1224,15 +1211,15 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 /*
                                  * check remarks.md
                                  */
-                                char *path = NULL; /* path for check_remarks_md() */
+                                char *remarks_md = NULL; /* path for check_remarks_md() */
 
                                 /*
                                  * we have to fake the remarks.md path for
                                  * check_remarks_md()
                                  */
-                                path = calloc_path(args[0], "/remarks.md");
-                                if (path == NULL) {
-                                    err(24, __func__, "path is NULL");
+                                remarks_md = calloc_path(args[0], "/remarks.md");
+                                if (remarks_md == NULL) {
+                                    err(24, __func__, "remarks_md is NULL");
                                     not_reached();
                                 }
                                 errno = 0;      /* pre-clear errno for errp() */
@@ -1245,7 +1232,7 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                                 if (!quiet) {
                                     para("Checking remarks.md ...", NULL);
                                 }
-                                check_remarks_md(infop, submission_dir, path);
+                                check_remarks_md(infop, submission_dir, remarks_md);
                                 if (!quiet) {
                                     para("... completed remarks.md check.", "", NULL);
                                 }
