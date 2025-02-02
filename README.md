@@ -16,8 +16,8 @@ First, a set of requirements for using the toolkit:
 * GNU Make version 3.81 or later (see IOCCC
 FAQ on "[make
 compatibility](https://www.ioccc.org/faq.html#make_compatibility)".
-* A C compiler that understands "-std=gnu17"
-* `bash` version 5.1.8 or later
+* A C compiler that understands "-std=gnu17".
+* `bash` version 5.1.8 or later.
 
 ## Compiling and using the toolkit
 
