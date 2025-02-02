@@ -19,23 +19,6 @@
 # setup
 #
 
-# attempt to fetch system specific path to the tools we need
-# get cp path
-CP="$(type -P cp 2>/dev/null)"
-# Make sure CP is set:
-#
-# It's possible that the path could not be obtained so we set it to the default
-# in this case.
-#
-# We could do it via parameter substitution but since it tries to execute the
-# command if for some reason the tool ever works without any args specified it
-# could make the script block (if we did it via parameter substitution we would
-# still have to redirect stderr to /dev/null). It would look like:
-#
-#   ${CP:=/usr/bin/CP} 2>/dev/null
-#
-# but due to the reasons cited above we must rely on the more complicated form:
-[[ -z "$CP" ]] && CP="/usr/bin/cp"
 
 # get tar path
 TAR="$(type -P tar 2>/dev/null)"
@@ -74,8 +57,8 @@ LS="$(type -P ls 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.6 2025-01-29"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-c cp] [-F fnamchk] [-Z topdir]
+export MKIOCCCENTRY_TEST_VERSION="1.0.7 2025-02-02"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
     -V              print version and exit
@@ -84,7 +67,6 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l
     -t tar	    path to tar that accepts -J option (def: $TAR)
     -T txzchk	    path to tar (def: $TXZCHK)
     -l ls	    path to ls executable (def: $LS)
-    -c cp	    path to cp executable (def: $CP)
     -F fnamchk	    path to fnamchk executable (def: $FNAMCHK)
     -Z topdir	    top level build directory (def: try . or ..)
 
@@ -103,7 +85,7 @@ export TOPDIR=
 
 # parse args
 #
-while getopts :hv:J:Vt:T:el:c:F:Z: flag; do
+while getopts :hv:J:Vt:T:el:F:Z: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -122,8 +104,6 @@ while getopts :hv:J:Vt:T:el:c:F:Z: flag; do
     T)	TXZCHK="$OPTARG";
 	;;
     l)	LS="$OPTARG";
-	;;
-    c)	CP="$OPTARG";
 	;;
     F)	FNAMCHK="$OPTARG";
 	;;
@@ -241,12 +221,6 @@ if [[ ! -x "${LS}" ]]; then
     echo "$0: ERROR: executable ls not found: $LS" 1>&2
     exit 9
 fi
-# we need cp
-if [[ ! -x "${CP}" ]]; then
-    echo "$0: ERROR: executable cp not found: $CP" 1>&2
-    exit 9
-fi
-
 # we need txzchk as well
 if [[ ! -x "${TXZCHK}" ]]; then
     echo "$0: ERROR: executable not found: $TXZCHK" 1>&2
@@ -360,7 +334,7 @@ find "${workdir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/prog.c
 :> "${src_dir}"/prog.c
 # test empty prog.c, ignoring the warning about it
-./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
+./mkiocccentry -y -q -W -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -455,7 +429,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -546,7 +520,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -642,7 +616,7 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar,"${LONG_FILENAME}"}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar,"${LONG_FILENAME}"}
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
@@ -738,7 +712,7 @@ test -f "${src_src_dir}/foo" || touch "${src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -827,7 +801,7 @@ test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/fo
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -c "$CP" -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2

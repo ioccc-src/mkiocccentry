@@ -15,7 +15,17 @@ utility function `copyfile()`. As described in `jparse/CHANGES.md`:
     it uses fchmod(2) to set the file mode.  This function does NOT create
     directories but it can take directories as args, as long as they exist.
 
-This function will replace the need for `cp(1)` in `mkiocccentry` as part of #1070.
+`mkiocccentry` now uses `copyfile()` instead of `cp(1)`. Updated `find_utils()`
+to not look for `cp(1)` and removed `CP_PATH_0` and `CP_PATH_1` macros. The
+calls to `find_utils()` were updated which means `txzchk` was also updated.
+`mkiocccentry_test.sh` no longer has the `-c cp` option. Updated man pages of
+`mkiocccentry` and `mkiocccentry_test.sh`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.12 2025-02-02"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+Updated `TXZCHK_VERSION` to `"1.1.10 2025-02-02"`.
+Updated `SOUP_VERSION` to `"1.1.15 2025-02-02"`.
+
 
 
 ## Release 2.3.21 2025-02-01
