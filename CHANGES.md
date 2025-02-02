@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.22 2025-02-02
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function `copyfile()`. As described in `jparse/CHANGES.md`:
+
+    Added new util function copyfile() which takes a source (char const *) and
+    dest (char const *) file (paths) (and a mode_t) and copies the source into
+    the dest, assuming that src file is a regular readable file and the dest file
+    does not exist. If the number of bytes read is not the same as the number of
+    bytes written, or if the contents of the dest file is not the same as the
+    contents of the source file (after copying) it is an error. If mode is not 0
+    it uses fchmod(2) to set the file mode.  This function does NOT create
+    directories but it can take directories as args, as long as they exist.
+
+This function will replace the need for `cp(1)` in `mkiocccentry` as part of #1070.
+
+
 ## Release 2.3.21 2025-02-01
 
 Add `O_CLOEXEC` flag to `open(2)` in `write_info()` and `write_auth()` functions
