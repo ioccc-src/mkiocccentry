@@ -5475,7 +5475,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
      * obtain file descriptor for fchmod()
      */
     errno = 0; /* pre-clear errno for errp() */
-    fd = open(info_path, O_WRONLY, S_IRWXU);
+    fd = open(info_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
         errp(159, __func__, "failed to obtain file descriptor for: %s", info_path);
         not_reached();
@@ -5780,7 +5780,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     }
 
     errno = 0; /* pre-clear errno for errp() */
-    fd = open(auth_path, O_WRONLY, S_IRWXU);
+    fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
         err(180, __func__, "failed to obtain file descriptor for: %s", auth_path);
         not_reached();

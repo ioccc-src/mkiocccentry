@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.21 2025-02-01
+
+Add `O_CLOEXEC` flag to `open(2)` in `write_info()` and `write_auth()` functions
+in mkiocccentry.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.11 2025-02-01"`.
+
+
 ## Release 2.3.20 2025-01-31
 
 Updated `mkiocccentry.1` for new `mkiocccentry(1)` command line syntax along
