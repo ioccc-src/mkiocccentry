@@ -309,7 +309,6 @@ extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
-extern bool test_paths(char * const *args);
 extern bool is_mandatory_filename(char const *str);
 extern bool is_forbidden_filename(char const *str);
 extern bool is_optional_filename(char const *str);
