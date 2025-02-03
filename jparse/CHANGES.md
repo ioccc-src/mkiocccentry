@@ -1,5 +1,23 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.13 2025-02-03
+
+Improve `copyfile()` function so that it can now, depending on a boolean, copy
+the stat `st_mode` of the source file to the destination file (like a true copy)
+or otherwise, if the boolean is false, set the mode specified. In the case that
+the mode is copied we do an extra sanity check to make sure that source
+`st_mode` is the same as dest `st_mode` but this is not possible when setting
+the mode to a specific value so that extra sanity test (which probably is not
+even necessary) cannot be done; the caller would have to do this (as the util
+test code actually does for all of these).
+
+Other fixes were applied like making it an error if the source file does not
+exist or is not a regular readable file rather than warning.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.5 2025-02-03"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.8 2025-02-03"`.
+
+
 ## Release 2.2.12 2025-02-02
 
 Added new util function `copyfile()` which takes a source (`char const *`) and

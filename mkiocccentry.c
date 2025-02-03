@@ -2757,7 +2757,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *prog_c)
     /*
      * copy prog.c under submission_dir
      */
-    copyfile(prog_c, path, S_IRUSR | S_IRGRP | S_IROTH);
+    copyfile(prog_c, path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
     /*
      * free path
@@ -3254,7 +3254,7 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *Makef
     /*
      * copy Makefile under submission_dir
      */
-    copyfile(Makefile, path, S_IRUSR | S_IRGRP | S_IROTH);
+    copyfile(Makefile, path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
     /*
      * free path
@@ -3366,7 +3366,7 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *rem
     /*
      * copy remarks.md under submission_dir
      */
-    copyfile(remarks_md, path, S_IRUSR | S_IRGRP | S_IROTH);
+    copyfile(remarks_md, path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
     /*
      * free path

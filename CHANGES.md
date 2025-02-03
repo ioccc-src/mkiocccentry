@@ -1,6 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.23 2025-02-03
+
+Improve function `copyfile()` (from [jparse
+repo](https://github.com/xexyl/jparse/)) so that it can either copy the mode
+from the source file to the destination file (mode as in `stat(2)`'s `st_mode`)
+OR set to a specific mode. This necessitated updating `mkiocccentry(1)`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.13 2025-02-03`.
+
+
 ## Release 2.3.22 2025-02-02
 
 Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
