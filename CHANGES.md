@@ -8,6 +8,9 @@ repo](https://github.com/xexyl/jparse/)) so that it can either copy the mode
 from the source file to the destination file (mode as in `stat(2)`'s `st_mode`)
 OR set to a specific mode. This necessitated updating `mkiocccentry(1)`.
 
+Use (in `copyfile()`) `errp()` in some cases where it was `err()` (when we had
+`errno`). Also in case of `errp()` use `strerror(errno)`.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.13 2025-02-03`.
 
 

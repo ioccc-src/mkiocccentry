@@ -14,6 +14,9 @@ test code actually does for all of these).
 Other fixes were applied like making it an error if the source file does not
 exist or is not a regular readable file rather than warning.
 
+Use (in `copyfile()`) `errp()` in some cases where it was `err()` (when we had
+`errno`). Also in case of `errp()` use `strerror(errno)`.
+
 Updated `JPARSE_UTILS_VERSION` to `"1.0.5 2025-02-03"`.
 Updated `UTIL_TEST_VERSION` to `"1.0.8 2025-02-03"`.
 

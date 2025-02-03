@@ -2801,7 +2801,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;      /* pre-clear errno for errp() */
     in_file = fopen(src, "rb");
     if (in_file == NULL) {
-        errp(166, __func__, "could not open src file for reading: %s", src);
+        errp(166, __func__, "couldn't open src file %s for reading: %s", src, strerror(errno));
         not_reached();
     }
 
@@ -2811,7 +2811,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear errno for errp() */
     infd = open(src, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (infd < 0) {
-        errp(167, __func__, "failed to obtain file descriptor for: %s", src);
+        errp(167, __func__, "failed to obtain file descriptor for %s: %s", src, strerror(errno));
         not_reached();
     }
 
@@ -2835,7 +2835,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      */
     buf = read_all(in_file, &inbytes);
     if (buf == NULL) {
-        err(169, __func__, "could not read in src file: %s", src);
+        err(169, __func__, "couldn't read in src file: %s", src);
         not_reached();
     }
 
@@ -2847,7 +2847,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(in_file);
     if (ret < 0) {
-	errp(170, __func__, "fclose error for %s", src);
+	errp(170, __func__, "fclose error for %s: %s", src, strerror(errno));
 	not_reached();
     }
 
@@ -2861,7 +2861,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
             free(buf);
             buf = NULL;
         }
-        err(171, __func__, "couldn't open dest file for writing: %s", dest);
+        errp(171, __func__, "couldn't open dest file %s for writing: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -2871,7 +2871,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear errno for errp() */
     outfd = open(dest, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (outfd < 0) {
-        errp(172, __func__, "failed to obtain file descriptor for: %s", dest);
+        errp(172, __func__, "failed to obtain file descriptor for %s: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -2896,7 +2896,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(out_file);
     if (ret < 0) {
-	errp(174, __func__, "fclose error for %s", dest);
+	errp(174, __func__, "fclose error for %s: %s", dest, strerror(errno));
 	not_reached();
     }
 
@@ -2911,7 +2911,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
             free(buf);
             buf = NULL;
         }
-        err(175, __func__, "couldn't open dest file for reading: %s", dest);
+        err(175, __func__, "couldn't open dest file for reading: %s: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -2929,7 +2929,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      */
     copy = read_all(out_file, &inbytes);
     if (copy == NULL) {
-        err(176, __func__, "could not read in dest file: %s", dest);
+        err(176, __func__, "couldn't read in dest file: %s", dest);
         not_reached();
     }
 
@@ -2941,7 +2941,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(out_file);
     if (ret < 0) {
-	errp(177, __func__, "fclose error for %s", dest);
+	errp(177, __func__, "fclose error for %s: %s", dest, strerror(errno));
 	not_reached();
     }
 
@@ -2991,7 +2991,8 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errno = 0;      /* pre-clear errno for errp() */
         ret = fchmod(outfd, in_st.st_mode);
         if (ret != 0) {
-            err(180, __func__, "fchmod(2) failed to set source file %s mode on %s", src, dest);
+            errp(180, __func__, "fchmod(2) failed to set source file %s mode %o on %s: %s", src, in_st.st_mode,
+                    dest, strerror(errno));
             not_reached();
         }
 
@@ -3009,7 +3010,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
          * we now need to verify that the modes are the same
          */
         if (in_st.st_mode != out_st.st_mode) {
-            err(182, __func__, "failed to copy st_mode from %s to %s: %o != %o", src, dest, in_st.st_mode,
+            err(182, __func__, "failed to copy st_mode %o from %s to %s: %o != %o", in_st.st_mode, src, dest, in_st.st_mode,
                     out_st.st_mode);
             not_reached();
         }
@@ -3020,7 +3021,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errno = 0;      /* pre-clear errno for errp() */
         ret = fchmod(outfd, mode);
         if (ret != 0) {
-            err(183, __func__, "fchmod(2) failed to set requested mode on %s", dest);
+            errp(183, __func__, "fchmod(2) failed to set requested mode on %s: %s", dest, strerror(errno));
             not_reached();
         }
 
@@ -3047,7 +3048,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear for errp() */
     ret = close(outfd);
     if (ret < 0) {
-        errp(184, __func__, "close(outfd) failed");
+        errp(184, __func__, "close(outfd) failed: %s", strerror(errno));
         not_reached();
     }
 
