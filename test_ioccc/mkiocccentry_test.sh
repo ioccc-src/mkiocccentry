@@ -57,7 +57,7 @@ LS="$(type -P ls 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.7 2025-02-02"
+export MKIOCCCENTRY_TEST_VERSION="1.0.8 2025-02-04"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-Z topdir]
 
     -h              print help and exit
@@ -184,7 +184,7 @@ src_src_src_src_src_dir="test_ioccc/test_src/a/b/c/d/e"
 rm -rf -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
 # be sure the working locations exist
 #
-mkdir -p -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
+mkdir -p -- "${workdir}" "${src_dir}" "${src_src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${workdir} ${src_dir} ${src_src_dir} ${src_src_src_src_src_dir}" 1>&2
@@ -616,7 +616,7 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar,"${LONG_FILENAME}"}
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
@@ -797,11 +797,20 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
+# be sure the working location exist
+#
+mkdir -p -- "${src_src_src_src_src_dir}"
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${src_src_src_src_src_dir}" 1>&2
+    exit 9
+fi
+
 test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
-./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}" "${src_dir}"/{extra1,extra2,foo,bar} "${src_dir}"
+./mkiocccentry -y -q -i answers.txt -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2

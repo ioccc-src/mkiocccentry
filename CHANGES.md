@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.24 2025-02-04
+
+`collect_topdir_files()` now creates dynamic arrays for lists of
+files/directories (ignored/skipped, added etc.), sorted after traversing the
+directory. Although it does add the `prog.c`, `Makefile` and `remarks.md` during
+the traversing of the directory it still adds those to the list of files. When
+the traversing is done it shows the user the list of files and it will prompt
+them if everything is in order (assuming the three required files were found and
+there was not an error condition). Some arrays are not shown to the user (yet?)
+and it is not yet clear if all of them will be needed either.
+
+The `mkiocccentry_test.sh` script had to be updated due how the checks on the
+maximum depth is now done.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.14 2025-02-04"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.8 2025-02-04"`.
+
 ## Release 2.3.23 2025-02-03
 
 Improve function `copyfile()` (from [jparse
