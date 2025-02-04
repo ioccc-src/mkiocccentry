@@ -1657,6 +1657,13 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
         /*
          * make the directories necessary
          */
+        #if 0
+        /*
+         * XXX - this has to be temporarily disabled because depending on how
+         * sorting goes sometimes the subdirectories are not in the right order
+         * which causes an error (ENOENT). Until there is time to work this out
+         * the making of subdirectories is disabled.
+         */
         len = dyn_array_tell(directories);
         if (len > 0) {
             /*
@@ -1687,6 +1694,7 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                 }
             }
         }
+        #endif
 
         /*
          * now we have to get to the cwd
