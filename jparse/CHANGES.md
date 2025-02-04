@@ -1,5 +1,40 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.13 2025-02-03
+
+Improve `copyfile()` function so that it can now, depending on a boolean, copy
+the stat `st_mode` of the source file to the destination file (like a true copy)
+or otherwise, if the boolean is false, set the mode specified. In the case that
+the mode is copied we do an extra sanity check to make sure that source
+`st_mode` is the same as dest `st_mode` but this is not possible when setting
+the mode to a specific value so that extra sanity test (which probably is not
+even necessary) cannot be done; the caller would have to do this (as the util
+test code actually does for all of these).
+
+Other fixes were applied like making it an error if the source file does not
+exist or is not a regular readable file rather than warning.
+
+Use (in `copyfile()`) `errp()` in some cases where it was `err()` (when we had
+`errno`). Also in case of `errp()` use `strerror(errno)`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.5 2025-02-03"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.8 2025-02-03"`.
+
+
+## Release 2.2.12 2025-02-02
+
+Added new util function `copyfile()` which takes a source (`char const *`) and
+dest (`char const *`) file (paths) (and a `mode_t`) and copies the source into
+the dest, assuming that src file is a regular readable file and the dest file
+does not exist. If the number of bytes read is not the same as the number of
+bytes written, or if the contents of the dest file is not the same as the
+contents of the source file (after copying) it is an error. If `mode` is not 0
+it uses `fchmod(2)` to set the file mode.  This function does NOT create
+directories but it can take directories as args, as long as they exist.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.4 2025-02-02"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+
 ## Release 2.2.11 2025-01-31
 
 Add new util function `path_has_component()` which takes two `char *`s: a full
