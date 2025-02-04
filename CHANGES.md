@@ -13,6 +13,7 @@ there was not an error condition). Some arrays are not shown to the user (yet?)
 and it is not yet clear if all of them will be needed either.
 
 Add symlinks to ignored files list in `collect_topdir_files()`.
+Show forbidden files list in `collect_topdir_files()`.
 
 The `mkiocccentry_test.sh` script had to be updated due how the checks on the
 maximum depth is now done.

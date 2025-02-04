@@ -1579,6 +1579,29 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
     }
 
     /*
+     * we need to show any forbidden filenames to the user
+     */
+    len = dyn_array_tell(forbidden_files);
+    if (len > 0) {
+        para("",
+                "The following is a list of forbidden filenames that have been ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(forbidden_files, char *, i);
+            if (p == NULL) {
+                err(54, __func__, "found NULL pointer in forbidden files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        /*
+         * we don't ask them to confirm is as this is only informative
+         */
+    }
+
+    /*
      * we need to show the user the list of ignored files, if any
      */
     len = dyn_array_tell(ignored_files);
