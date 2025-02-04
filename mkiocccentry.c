@@ -1133,10 +1133,10 @@ filename_cmp(void const *a, void const *b)
  * Returns:
  *      the total number of EXTRA files that were counted, not counting directories
  *
- * NOTE: if args is NULL we return 0.
+ * NOTE: if function is passed a NULL pointer we return 0.
  * NOTE: if an error is encountered traversing the path(s) it is an error.
- * NOTE: if the depth becomes too deep or if a filename length is too long or a
- * path is not POSIX plus + safe or there are too many files it is an error.
+ * NOTE: if the depth becomes too deep or if a filename length is too long or
+ *       there are too many files it is an error.
  * NOTE: if we can't get the current working directory or a change in directory
  * fails or a function returns NULL it is an error.
  * NOTE: if any of prog.c, Makefile or remarks.md do not exist it is an error.
@@ -1146,13 +1146,13 @@ static size_t
 collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir,
         RuleCount *size)
 {
-    struct dyn_array *ignored_files = NULL;
-    struct dyn_array *files_list = NULL;
-    struct dyn_array *directories = NULL;
-    struct dyn_array *ignored_dirs = NULL;
-    struct dyn_array *forbidden_files = NULL;
-    char *filename = NULL;
-    char *p = NULL;     /* temp value to print lists */
+    struct dyn_array *ignored_files = NULL;     /* ignored files */
+    struct dyn_array *files_list = NULL;        /* files to be added to tarball */
+    struct dyn_array *directories = NULL;       /* directories seen */
+    struct dyn_array *ignored_dirs = NULL;      /* ignored directories */
+    struct dyn_array *forbidden_files = NULL;   /* forbidden files */
+    char *filename = NULL;                      /* current filename (for arrays) */
+    char *p = NULL;                             /* temp value to print lists (arrays) */
     intmax_t len = 0;
     intmax_t i = 0;
     FTS *fts = NULL;
@@ -1491,6 +1491,16 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                     errno = item->fts_errno;
                     errp(48, __func__, "encountered error reading path: %s", item->fts_path + 2);
                     not_reached();
+                    break;
+                case FTS_SL:
+                case FTS_SLNONE:
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(item->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(33, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                        not_reached();
+                    }
+                    append_unique_str(ignored_files, filename);
                     break;
                 default:
                     break;
