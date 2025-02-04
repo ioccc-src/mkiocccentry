@@ -14,6 +14,8 @@ and it is not yet clear if all of them will be needed either.
 
 Add symlinks to ignored files list in `collect_topdir_files()`.
 Show forbidden files list in `collect_topdir_files()`.
+The `collect_topdir_files()` now creates directories that are required (files
+are not copied yet).
 
 The `mkiocccentry_test.sh` script had to be updated due how the checks on the
 maximum depth is now done.
