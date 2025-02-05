@@ -656,9 +656,6 @@ main(int argc, char *argv[])
 
     /*
      * scan and collect files in topdir, copying to the submission directory
-     *
-     * XXX - currently this only copies the required files prog.c, Makefile and
-     * remarks.md - XXX
      */
     collect_topdir_files(topdir, &info, submission_dir, &size);
 
