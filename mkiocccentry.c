@@ -1657,13 +1657,6 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
         /*
          * make the directories necessary
          */
-        #if 0
-        /*
-         * XXX - this has to be temporarily disabled because depending on how
-         * sorting goes sometimes the subdirectories are not in the right order
-         * which causes an error (ENOENT). Until there is time to work this out
-         * the making of subdirectories is disabled.
-         */
         len = dyn_array_tell(directories);
         if (len > 0) {
             /*
@@ -1686,15 +1679,9 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
                     not_reached();
                 }
                 /* create path */
-                errno = 0; /* pre-clear errno for errp() */
-                ret = mkdir(p, 0755);
-                if (ret < 0) {
-                    errp(64, __func__, "cannot mkdir %s with mode 0755", p);
-                    not_reached();
-                }
+                mkdirs(-1, p, 0755);
             }
         }
-        #endif
 
         /*
          * now we have to get to the cwd
@@ -5467,8 +5454,8 @@ get_author_info(struct author **author_set_p)
  * verify_submission_dir - ask user to verify the contents of the submission directory
  *
  * given:
- *      submission_dir       - path to submission directory
- *      ls              - path to ls utility
+ *      submission_dir      - path to submission directory
+ *      ls                  - path to ls utility
  *
  * This function does not return on error.
  */
@@ -5491,6 +5478,11 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 	err(163, __func__, "called with NULL arg(s)");
 	not_reached();
     }
+
+    /*
+     * XXX - we now need to use -R option in ls but this will require a change
+     * in the parsing below so for now it is not done
+     */
 
     /*
      * list the contents of the submission_dir

@@ -215,6 +215,7 @@ extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 extern void chkbyte2asciistr(void);
 extern void *read_all(FILE *stream, size_t *psize);
 extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode);
+extern int mkdirs(int dirfd, const char *str, mode_t mode);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern bool string_to_intmax(char const *str, intmax_t *ret);

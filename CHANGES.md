@@ -3,6 +3,31 @@
 
 ## Release 2.3.24 2025-02-04
 
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function `mkdirs()`. As described in `jparse/CHANGES.md`:
+
+    New util function mkdirs() (using mkdir(2)) which acts as mkdir -p with
+    specific modes (uses chmod(2) as it's not affected by the umask and also
+    because anything but permissions set with mkdir(2) is undefined). If the first
+    arg (an int) is -1 (actually < 0) it uses the current working directory to
+    start out with; but one can pass a file descriptor of the directory to start out
+    with. The mode is only set on directories that are created (i.e. no error)
+    because otherwise an already existing directory could have its mode changed.
+    Just like with mkdir(2) one must be careful with the mode. Of course if one
+    sets a mode like 0 then trying to work under it would be a problem but that's on
+    the user. If there is an error in creating a directory then it only aborts if
+    errno is not EEXIST (already exists) so that it can continue (just like
+    mkdir -p).
+
+This is used to create (sub)directory trees in submission tarballs. An XXX note
+was added to the `verify_submission_dir` as it now has to use the `-R` option to
+`ls` but this messes up the parsing of the output which will have to be
+addressed at another time.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.15 2025-02-05"`.
+
+## Release 2.3.24 2025-02-04
+
 `collect_topdir_files()` now creates dynamic arrays for lists of
 files/directories (ignored/skipped, added etc.), sorted after traversing the
 directory. Although it does add the `prog.c`, `Makefile` and `remarks.md` during
