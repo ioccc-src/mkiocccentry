@@ -19,10 +19,13 @@ utility function `mkdirs()`. As described in `jparse/CHANGES.md`:
     errno is not EEXIST (already exists) so that it can continue (just like
     mkdir -p).
 
-This is used to create (sub)directory trees in submission tarballs. An XXX note
-was added to the `verify_submission_dir` as it now has to use the `-R` option to
-`ls` but this messes up the parsing of the output which will have to be
-addressed at another time.
+This is used to create (sub)directory trees in submission tarballs.
+
+Function `verify_submission_dir()` now uses `-R` in `ls` and while there is a
+line to read it checks if it matches the correct form. When the loop is done if
+no correct line was found then it is an error (if it's < 0 from the beginning it
+is also an error). However no files are copied over to the directory yet so this
+cannot be fully tested.
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.15 2025-02-05"`.
 
