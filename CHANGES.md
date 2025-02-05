@@ -24,8 +24,21 @@ This is used to create (sub)directory trees in submission tarballs.
 Function `verify_submission_dir()` now uses `-R` in `ls` and while there is a
 line to read it checks if it matches the correct form. When the loop is done if
 no correct line was found then it is an error (if it's < 0 from the beginning it
-is also an error). However no files are copied over to the directory yet so this
-cannot be fully tested.
+is also an error).
+
+`collect_topdir_files()` now copies additional files to the submission
+directory. It requires obtaining absolute paths for the target file and the
+source files because otherwise files might not be found (this does mean we have
+to use `getcwd()` and have buffers of size `PATH_MAX+1`). There are numerous XXX
+comments added pointing out that some of this has to be changed and perhaps
+cleaned up (one such thing is that prog.c, Makefile and remarks.md will not be
+checked when traversing the topdir but processed later on with the other files -
+but there are other things that have to be done in addition to steps not yet
+implemented). So although some of this will have to be changed some of it can
+simply be moved and perhaps changed a bit (or adapted into what has to be done
+depending on the steps). Depending on the file the permissions are different
+(`try.sh` and `try.alt.sh` are the only ones allowed to be executable, for
+example).
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.15 2025-02-05"`.
 
