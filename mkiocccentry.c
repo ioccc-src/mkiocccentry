@@ -1855,7 +1855,7 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
                 if (!quiet) {
                     para("... completed remarks.md check.", "", NULL);
                 }
-            } else if (!strcasecmp(p, "try.sh") || !strcasecmp(p, "try.alt.sh")) {
+            } else if (!strcasecmp(p, TRY_SH) || !strcasecmp(p, TRY_ALT_SH)) {
                 /*
                  * try.sh and try.alt.sh must be executable (0555)
                  */
