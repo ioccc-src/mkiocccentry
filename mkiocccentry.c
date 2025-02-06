@@ -659,7 +659,7 @@ main(int argc, char *argv[])
     /*
      * scan and collect files in topdir, copying to the submission directory
      */
-    mkiocccentry(topdir, &info, submission_dir, &size, make);
+    mkiocccentry(topdir, &info, submission_dir, &size);
 
 
     /*
@@ -1047,18 +1047,11 @@ append_unique_str(struct dyn_array *tbl, char *str)
 }
 
 /*
- * filename_cmp - compare two semantic table entries
- *
- * Produce a semantic table that is in some canonical order.
- *
- * NOTE: Since the table is not very large, we do not need to
- *	 optimize lookups in this table.  It is better to reverse
- *	 sort by depth for human understanding.  This will help
- *	 put the more common nodes early in the table.
+ * filename_cmp - compare two filenames (lexicographically)
  *
  * given:
- *	a	pointer to first semantic table entry to compare
- *	b	pointer to second semantic table entry to compare
+ *	a	pointer to first filename to compare
+ *	b	pointer to second filename to compare
  *
  * returns:
  *      -1      a < b
@@ -1139,7 +1132,6 @@ filename_cmp(void const *a, void const *b)
  *      infop           - pointer to struct info
  *      submission_dir  - submission directory
  *      size            - pointer to RuleCount (for iocccsize check on prog.c)
- *      make            - path to make(1)
  *
  * Returns:
  *      the total number of EXTRA files that were counted, not counting directories
@@ -1155,7 +1147,7 @@ filename_cmp(void const *a, void const *b)
  */
 static size_t
 mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
-        RuleCount *size, char const *make)
+        RuleCount *size)
 {
     char *filename = NULL;                      /* current filename (for arrays) */
     char *fname = NULL;                         /* filename can't be freed so we need another variable */
@@ -1181,9 +1173,8 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
     /*
      * firewall
      */
-    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || size == NULL ||
-        make == NULL) {
-            return 0;
+    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || size == NULL) {
+        return 0;
     }
 
 
@@ -1205,12 +1196,12 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
 
     infop->directories = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (infop->directories == NULL) {
-        err(22, __func__, "failed to create infop->directories list array");
+        err(22, __func__, "failed to create directories list array");
         not_reached();
     }
     infop->ignored_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (infop->ignored_dirs == NULL) {
-        err(23, __func__, "failed to create ignored infop->directories list array");
+        err(23, __func__, "failed to create ignored directories list array");
         not_reached();
     }
     infop->forbidden_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
@@ -1829,32 +1820,6 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
             if (ret <= 0) {
                 errp(70, __func__, "snprintf to form target path for %s failed", fname);
                 not_reached();
-            }
-            if (!strcasecmp(p, PROG_C_FILENAME)) {
-                if (!quiet) {
-                    para("", "Checking prog.c ...", NULL);
-                }
-
-                *size = check_prog_c(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed prog.c check.", "", NULL);
-                }
-            } else if (!strcasecmp(p, MAKEFILE_FILENAME)) {
-                if (!quiet) {
-                    para("Checking Makefile ...", NULL);
-                }
-                check_Makefile(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed Makefile check.", "", NULL);
-                }
-            } else if (!strcasecmp(p, REMARKS_FILENAME)) {
-                if (!quiet) {
-                    para("Checking remarks.md ...", NULL);
-                }
-                check_remarks_md(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed remarks.md check.", "", NULL);
-                }
             } else if (!strcasecmp(p, TRY_SH) || !strcasecmp(p, TRY_ALT_SH)) {
                 /*
                  * try.sh and try.alt.sh must be executable (0555)
@@ -1923,6 +1888,7 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
      */
     return count;
 }
+
 
 /*
  * usage - print usage to stderr
