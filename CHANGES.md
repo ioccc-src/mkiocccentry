@@ -8,8 +8,8 @@ More work on #1070.
 `collect_topdir_files()` has been renamed `mkiocccentry()`.
 
 `write_info()` now writes additional files to the manifest. This means the
-dynamic arrays The dynamic arrays are in the struct info (the `extra_files`
-variable in the struct has been removed and the `extra_count` is a `size_t`).
+dynamic arrays are in the struct info (the `extra_files` variable in the struct
+has been removed and the `extra_count` is a `size_t`).
 
 The required files are now processed (checked) after traversing the topdir.
 These files are in a new array (`required_files`) and they are shown to the user
