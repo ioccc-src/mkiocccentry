@@ -204,6 +204,10 @@ free_auth(struct auth *authp)
 void
 free_info(struct info *infop)
 {
+    char *p = NULL;
+    size_t i = 0;
+    size_t len = 0;
+
     /*
      * firewall
      */
@@ -248,9 +252,6 @@ free_info(struct info *infop)
 	infop->tarball = NULL;
     }
 
-    /*
-     * free file name array
-     */
     /* NOTE: info_file is a compiled in constant */
     /* NOTE: auth_file is a compiled in constant */
 
@@ -267,33 +268,82 @@ free_info(struct info *infop)
      * free arrays
      */
     if (infop->ignored_files != NULL) {
+        len = dyn_array_tell(infop->ignored_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->ignored_files);
         infop->ignored_files = NULL;
     }
+
     if (infop->required_files != NULL) {
+        len = dyn_array_tell(infop->required_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->required_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->required_files);
         infop->required_files = NULL;
     }
+
     if (infop->extra_files != NULL) {
+        len = dyn_array_tell(infop->extra_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->extra_files);
         infop->extra_files = NULL;
     }
 
     if (infop->directories != NULL) {
+        len = dyn_array_tell(infop->directories);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->directories);
         infop->directories = NULL;
     }
+
     if (infop->ignored_dirs != NULL) {
+        len = dyn_array_tell(infop->ignored_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->ignored_dirs);
         infop->ignored_dirs = NULL;
     }
 
     if (infop->forbidden_files != NULL) {
+        len = dyn_array_tell(infop->forbidden_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->forbidden_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
         dyn_array_free(infop->forbidden_files);
         infop->forbidden_files = NULL;
     }
-
-
 
     /*
      * zeroize the info structure
