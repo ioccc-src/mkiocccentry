@@ -154,9 +154,9 @@ static void warn_trigraph(void);
 static void warn_wordbuf(void);
 static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
-static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *prog_c);
+static RuleCount check_prog_c(struct info *infop, char const *target_path, char const *prog_c);
 static bool has_ignored_dirname(char const *path);
-static size_t collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir,
+static size_t mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
         RuleCount *size);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
@@ -167,8 +167,8 @@ static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int su
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
-static void check_Makefile(struct info *infop, char const *submission_dir, char const *Makefile);
-static void check_remarks_md(struct info *infop, char const *submission_dir, char const *remarks_md);
+static void check_Makefile(struct info *infop, char const *target_path, char const *Makefile);
+static void check_remarks_md(struct info *infop, char const *target_path, char const *remarks_md);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);

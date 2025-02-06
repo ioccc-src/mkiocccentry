@@ -197,15 +197,22 @@ struct info
     bool test_mode;		/* true ==> test mode entered */
 
     /*
+     * dynamic arrays for files and directories
+     */
+    struct dyn_array *ignored_files;     /* ignored files */
+    struct dyn_array *required_files;    /* required three files */
+    struct dyn_array *extra_files;       /* extra files to be added to tarball */
+    struct dyn_array *directories;       /* directories seen */
+    struct dyn_array *ignored_dirs;      /* ignored directories */
+    struct dyn_array *forbidden_files;   /* forbidden files */
+
+
+    /*
      * file name array
      */
     char const *info_file;	/* .info.json filename */
     char const *auth_file;	/* .auth.json filename */
-    char *prog_c;		/* prog.c filename */
-    char *Makefile;		/* Makefile filename */
-    char *remarks_md;		/* remarks.md filename */
-    int extra_count;		/* number of extra files */
-    char **extra_file;		/* list of extra filenames followed by NULL */
+    size_t extra_count;		/* number of extra files */
 
     /*
      * .info.json information after the file name array

@@ -1,7 +1,44 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.3.24 2025-02-04
+## Release 2.3.26 2025-02-06
+
+More work on #1070.
+
+`collect_topdir_files()` has been renamed `mkiocccentry()`.
+
+`write_info()` now writes additional files to the manifest. This means the
+dynamic arrays The dynamic arrays are in the struct info (the `extra_files`
+variable in the struct has been removed and the `extra_count` is a `size_t`).
+
+The required files are now processed (checked) after traversing the topdir.
+These files are in a new array (`required_files`) and they are shown to the user
+prior to showing any extra files (which in this case includes files that are not
+try.sh or try.alt.sh).
+
+The `check_prog_c()`, `check_Makefile()` and `check_remarks_md()` functions had
+to change because we cannot (and this was a bug fix) know exactly where the
+files might be (or where the user runs the program from, see below).  These
+functions also no longer check the filename length of the files as we already
+know they are the correct length AND also the new path is not necessarily the
+same. Also, the `char *`s that have the filenames of `"prog.c"`, `"Makefile"`
+and `"remarks.md"` are no longer there: we simply write them directly (this was
+necessary because a problem occurred - though that was likely fixed - and
+because we no longer need it anyway as the filenames are exact [before one could
+specify a different filename and it would copy it to the right filename but now
+this is not possible]).
+
+The `free_info()` has been changed to account for the changes in the struct.
+
+A note that will have to be put in the FAQ and guidelines and anywhere else the
+`mkiocccentry` syntax is discussed is that if one runs the program from outside
+the repo directory and the tools are not installed one will have to specify the
+path to the tools with the options. But if they do have it installed it could
+run into a problem still if the user has not installed the latest version (if a
+version changes `chkentry` will complain).
+
+
+## Release 2.3.25 2025-02-05
 
 Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
 utility function `mkdirs()`. As described in `jparse/CHANGES.md`:

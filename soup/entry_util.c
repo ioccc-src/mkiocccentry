@@ -204,8 +204,6 @@ free_auth(struct auth *authp)
 void
 free_info(struct info *infop)
 {
-    int i;
-
     /*
      * firewall
      */
@@ -255,28 +253,6 @@ free_info(struct info *infop)
      */
     /* NOTE: info_file is a compiled in constant */
     /* NOTE: auth_file is a compiled in constant */
-    if (infop->prog_c != NULL) {
-	free(infop->prog_c);
-	infop->prog_c = NULL;
-    }
-    if (infop->Makefile != NULL) {
-	free(infop->Makefile);
-	infop->Makefile = NULL;
-    }
-    if (infop->remarks_md != NULL) {
-	free(infop->remarks_md);
-	infop->remarks_md = NULL;
-    }
-    if (infop->extra_file != NULL) {
-	for (i = 0; i < infop->extra_count; ++i) {
-	    if (infop->extra_file[i] != NULL) {
-		free(infop->extra_file[i]);
-		infop->extra_file[i] = NULL;
-	    }
-	}
-	free(infop->extra_file);
-	infop->extra_file = NULL;
-    }
 
     /*
      * free time values
@@ -286,6 +262,38 @@ free_info(struct info *infop)
 	free(infop->utctime);
 	infop->utctime = NULL;
     }
+
+    /*
+     * free arrays
+     */
+    if (infop->ignored_files != NULL) {
+        dyn_array_free(infop->ignored_files);
+        infop->ignored_files = NULL;
+    }
+    if (infop->required_files != NULL) {
+        dyn_array_free(infop->required_files);
+        infop->required_files = NULL;
+    }
+    if (infop->extra_files != NULL) {
+        dyn_array_free(infop->extra_files);
+        infop->extra_files = NULL;
+    }
+
+    if (infop->directories != NULL) {
+        dyn_array_free(infop->directories);
+        infop->directories = NULL;
+    }
+    if (infop->ignored_dirs != NULL) {
+        dyn_array_free(infop->ignored_dirs);
+        infop->ignored_dirs = NULL;
+    }
+
+    if (infop->forbidden_files != NULL) {
+        dyn_array_free(infop->forbidden_files);
+        infop->forbidden_files = NULL;
+    }
+
+
 
     /*
      * zeroize the info structure
