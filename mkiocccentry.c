@@ -124,7 +124,8 @@ static const char * const usage_msg1 =
     "\t-e\t\tentertainment mode\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
-    "\t-C chkentry	path to chkentry executable (def: %s)\n";
+    "\t-C chkentry	path to chkentry executable (def: %s)\n"
+    "\t-m make\t\tpath to GNU compatible make(1) (def: %s)\n";
 static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a file for easier updating of a submission\n"
     "\t-A answers\twrite answers file even if it already exists\n"
@@ -195,6 +196,7 @@ main(int argc, char *argv[])
     char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
     char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
+    char *make = MAKE_PATH_0;                   /* path to make(1) executable */
     char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
     char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
@@ -205,6 +207,7 @@ main(int argc, char *argv[])
     struct author *author_set = NULL;		/* list of authors */
     bool tar_flag_used = false;			/* true ==> -t /path/to/tar was given */
     bool ls_flag_used = false;			/* true ==> -l /path/to/ls was given */
+    bool make_flag_used = false;                /* true ==> -m /path/to/make was given */
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
@@ -220,7 +223,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:eF:C:yds:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:eF:C:yds:m:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -343,6 +346,10 @@ main(int argc, char *argv[])
 		abort_on_warning = true;
 	    }
 	    break;
+        case 'm': /* set path to make(1) */
+            make_flag_used = true;
+            make = optarg;
+            break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -359,18 +366,19 @@ main(int argc, char *argv[])
     }
 
     /*
-     * guess where tar and ls utilities are located
+     * guess where tar, ls, txzchk, fnamchk and make utilities are located
      *
-     * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
-     * the historic location for the utility.  If the historic location of the utility
-     * isn't executable, look for an executable in the alternate location.
+     * If the user did not give a -t, -c, -l and/or -m /path/to/foo path, then
+     * look at the historic location (except for make(1)) for the utility.  If
+     * the historic location of the utility isn't executable, look for an
+     * executable in the alternate location.
      *
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
     find_utils(tar_flag_used, &tar, ls_flag_used, &ls,
 	       txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
-	       chkentry_flag_used, &chkentry);
+	       chkentry_flag_used, &chkentry, make_flag_used, &make);
 
     /*
      * check that conflicting answers file options are not used together
@@ -539,7 +547,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chks(&info, workdir, tar, ls, txzchk, fnamchk, chkentry);
+    mkiocccentry_sanity_chks(&info, workdir, tar, ls, txzchk, fnamchk, chkentry, make);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -651,7 +659,7 @@ main(int argc, char *argv[])
     /*
      * scan and collect files in topdir, copying to the submission directory
      */
-    mkiocccentry(topdir, &info, submission_dir, &size);
+    mkiocccentry(topdir, &info, submission_dir, &size, make);
 
 
     /*
@@ -1131,6 +1139,7 @@ filename_cmp(void const *a, void const *b)
  *      infop           - pointer to struct info
  *      submission_dir  - submission directory
  *      size            - pointer to RuleCount (for iocccsize check on prog.c)
+ *      make            - path to make(1)
  *
  * Returns:
  *      the total number of EXTRA files that were counted, not counting directories
@@ -1146,7 +1155,7 @@ filename_cmp(void const *a, void const *b)
  */
 static size_t
 mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
-        RuleCount *size)
+        RuleCount *size, char const *make)
 {
     char *filename = NULL;                      /* current filename (for arrays) */
     char *fname = NULL;                         /* filename can't be freed so we need another variable */
@@ -1172,8 +1181,9 @@ mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
     /*
      * firewall
      */
-    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || size == NULL) {
-        return 0;
+    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || size == NULL ||
+        make == NULL) {
+            return 0;
     }
 
 
@@ -1955,7 +1965,7 @@ usage(int exitcode, char const *prog, char const *str)
 
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0, MAKE_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg4);
     fprintf_usage(exitcode, stderr, usage_msg5, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
@@ -1974,24 +1984,26 @@ usage(int exitcode, char const *prog, char const *str)
  * given:
  *
  *      infop           - pointer to info structure
- *      workdir        - where the submission directory and tarball are formed
+ *      workdir         - where the submission directory and tarball are formed
  *      tar             - path to tar that supports the -J (xz) option
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
  *	chkentry	- path to chkentry tool
+ *	make            - path to make tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
 mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
-	   char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry)
+	   char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
+           char const *make)
 {
     /*
      * firewall
      */
     if (infop == NULL || workdir == NULL || tar == NULL || ls == NULL ||
-	txzchk == NULL || fnamchk == NULL || chkentry == NULL) {
+	txzchk == NULL || fnamchk == NULL || chkentry == NULL || make == NULL) {
 	err(74, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -2275,6 +2287,64 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	err(89, __func__, "chkentry is not an executable program: %s", chkentry);
 	not_reached();
     }
+
+    /*
+     * make must be executable
+     */
+    if (!exists(make)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find the make program.",
+	      "",
+	      "A make program that supports the -J (xz) option is required to build a compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(75, __func__, "make does not exist: %s", make);
+	not_reached();
+    }
+    if (!is_file(make)) {
+	fpara(stderr,
+	      "",
+	      "The make path, while it exists, is not a regular file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(76, __func__, "make is not a regular file: %s", make);
+	not_reached();
+    }
+    if (!is_exec(make)) {
+	fpara(stderr,
+	      "",
+	      "The make path, while it is a file, is not an executable.",
+	      "",
+	      "We suggest you check the permissions on the make program, or use another path:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(77, __func__, "make is not an executable program: %s", make);
+	not_reached();
+    }
+
+
 
     /*
      * workdir must be a writable directory

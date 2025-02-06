@@ -157,9 +157,10 @@ static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *target_path, char const *prog_c);
 static bool has_ignored_dirname(char const *path);
 static size_t mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
-        RuleCount *size);
+        RuleCount *size, char const *make);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
-				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
+				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
+                                     char const *make);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_submit_slot(struct info *infop);

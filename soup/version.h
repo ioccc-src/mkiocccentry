@@ -72,7 +72,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.15 2025-02-02"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.16 2025-02-06"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -104,7 +104,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.1.10 2025-02-02"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.1.11 2025-02-06"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

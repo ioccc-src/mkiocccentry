@@ -247,10 +247,10 @@ main(int argc, char **argv)
 
     if (!read_from_text_file) {
 	find_utils(tar_flag_used, &tar, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL);
+		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
     } else {
 	find_utils(false, NULL, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL);
+		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
     }
 
     /* additional sanity checks */

@@ -30,12 +30,15 @@ this is not possible]).
 
 The `free_info()` has been changed to account for the changes in the struct.
 
-A note that will have to be put in the FAQ and guidelines and anywhere else the
-`mkiocccentry` syntax is discussed is that if one runs the program from outside
-the repo directory and the tools are not installed one will have to specify the
-path to the tools with the options. But if they do have it installed it could
-run into a problem still if the user has not installed the latest version (if a
-version changes `chkentry` will complain).
+Updated `find_utils()` to check for `make(1)` (default paths `/usr/bin/make` and
+if not that `/bin/make`). New option to `mkiocccentry` is `-m make` to do this.
+This will be needed for part of #1070.
+
+Updated `mkiocccentry(1)` or the new `-m make` option.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.16 2025-02-06"`.
+Updated `SOUP_VERSION` to `"1.1.16 2025-02-06"`.
+Updated `TXZCHK_VERSION` to `"1.1.11 2025-02-06"`.
 
 
 ## Release 2.3.25 2025-02-05

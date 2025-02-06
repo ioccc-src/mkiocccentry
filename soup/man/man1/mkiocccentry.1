@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "02 February 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "06 February 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -224,6 +224,18 @@ checks
 .I ./chkentry
 and
 .I /usr/local/bin/chkentry
+if this option is not specified.
+.TP
+.BI \-m\  make
+Set
+.B make
+path to
+.I make.
+.B mkiocccentry
+checks
+.I /usr/bin/make
+and
+.I /bin/make
 if this option is not specified.
 .TP
 .BI \-a\  answers
