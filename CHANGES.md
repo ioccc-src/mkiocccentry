@@ -1,6 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.27 2025-02-07
+
+Resolve issue #1070.
+
+The simplified command line should be complete! (Or if not complete it is just
+about complete and should be done relatively simply.) The next step will be to
+update the man page and any documentation in the website (that might have to be
+done, perhaps talking about all the steps).
+
+I renamed the `mkiocccentry()` function to `copy_topdir()` and the function that
+verifies everything is `verify_submission()` (yes this is unfortunate because of
+the `verify_submission_dir()` which actually happens after `verify_submission()`
+but it seemed like an appropriate name - and unfortunately it comes much later
+in the process so they can't be merged).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.17 2025-02-07"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.9 2025-02-07"`.
+Added `Makefile.test` in `test_ioccc` which the `mkiocccentry_test.sh` script
+uses. This is necessary because the Makefile that was used before was the top
+level Makefile here and using `make clobber` on it caused errors (because of
+missing subdirectories).
+
+Unrelated but I have removed `XXX` comments in FAQ.md as the task had been done
+(updating links after the great fork merge).
+
+
 ## Release 2.3.26 2025-02-06
 
 More work on #1070.

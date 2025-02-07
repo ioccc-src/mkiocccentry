@@ -156,8 +156,10 @@ static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *target_path, char const *prog_c);
 static bool has_ignored_dirname(char const *path);
-static size_t mkiocccentry(char * const *args, struct info *infop, char const *submission_dir,
+static size_t copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
         RuleCount *size);
+static void verify_submission(char const *submission_dir, char const *make, struct info *infop);
+static int fts_cmp(const FTSENT **a, const FTSENT **b);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
                                      char const *make);

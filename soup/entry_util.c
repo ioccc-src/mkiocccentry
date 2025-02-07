@@ -4883,7 +4883,7 @@ is_forbidden_filename(char const *str)
 
     for (i = 0; forbidden_filenames[i] != NULL; ++i) {
         if (!strcasecmp(forbidden_filenames[i], str)) {
-            dbg(DBG_MED, "%s is a forbidden_filename", str);
+            dbg(DBG_MED, "%s is a forbidden filename", str);
             return true;
         }
     }
@@ -4915,7 +4915,7 @@ is_optional_filename(char const *str)
 
     for (i = 0; optional_filenames[i] != NULL; ++i) {
         if (!strcasecmp(optional_filenames[i], str)) {
-            dbg(DBG_MED, "%s is an optional_filename", str);
+            dbg(DBG_MED, "%s is an optional filename", str);
             return true;
         }
     }
