@@ -23,6 +23,10 @@ Ask user if forbidden files list is okay (even though they are always forbidden
 it might be that the user needs such a file in the submission and they can come
 up with some other way to go about it).
 
+Move the check of `prog.c`, `Makefile` and `remarks.md` to the second step
+(during the traversing of the submission directory where the files were copied
+to).
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.17 2025-02-07"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.9 2025-02-07"`.
 Added `Makefile.test` in `test_ioccc` which the `mkiocccentry_test.sh` script

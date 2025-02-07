@@ -657,13 +657,13 @@ main(int argc, char *argv[])
     /*
      * scan and collect files in topdir, copying to the submission directory
      */
-    copy_topdir(topdir, &info, submission_dir, &size);
+    copy_topdir(topdir, &info, submission_dir);
 
     /*
      * once everything is copied over, verify everything is okay in the
      * submission directory
      */
-    verify_submission(submission_dir, make, &info);
+    verify_submission(submission_dir, make, &info, &size);
 
 
     /*
@@ -1142,7 +1142,6 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
  *      args            - the args (topdir)
  *      infop           - pointer to struct info
  *      submission_dir  - submission directory
- *      size            - pointer to RuleCount (for iocccsize check on prog.c)
  *
  * Returns:
  *      the total number of non-optional non-required files that were counted,
@@ -1159,8 +1158,7 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
  * NOTE: this function does not return on error.
  */
 static size_t
-copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
-        RuleCount *size)
+copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
 {
     char *filename = NULL;              /* current filename (for arrays) */
     char *fname = NULL;                 /* filename can't be freed so we need another variable */
@@ -1186,7 +1184,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
     /*
      * firewall
      */
-    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || size == NULL) {
+    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL) {
         err(20, __func__, "passed NULL pointer(s)");
         not_reached();
     }
@@ -1815,32 +1813,11 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
                 errp(69, __func__, "snprintf to form target path for %s failed", fname);
                 not_reached();
             }
-            if (!strcmp(p, PROG_C_FILENAME)) {
-                if (!quiet) {
-                    para("", "Checking prog.c ...", NULL);
-                }
 
-                *size = check_prog_c(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed prog.c check.", "", NULL);
-                }
-            } else if (!strcmp(p, MAKEFILE_FILENAME)) {
-                if (!quiet) {
-                    para("Checking Makefile ...", NULL);
-                }
-                check_Makefile(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed Makefile check.", "", NULL);
-                }
-            } else if (!strcmp(p, REMARKS_FILENAME)) {
-                if (!quiet) {
-                    para("Checking remarks.md ...", NULL);
-                }
-                check_remarks_md(infop, target_path, p);
-                if (!quiet) {
-                    para("... completed remarks.md check.", "", NULL);
-                }
-            }
+            /*
+             * copy file to target path
+             */
+            copyfile(fname, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
             /*
              * paranoia
@@ -1979,6 +1956,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
  *      submission_dir      - submission directory that files were copied to
  *      make                - path to make(1) (for make -f Makefile clobber)
  *      infop               - pointer to info struct
+ *      size                - pointer to RuleCount for iocccsize
  *
  * NOTE: this function does not return on NULL pointers.
  * NOTE: this function does not return on any error including if the files list
@@ -1989,7 +1967,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
  * the path as we must have it in the submission directory after copy_topdir().
  */
 static void
-verify_submission(char const *submission_dir, char const *make, struct info *infop)
+verify_submission(char const *submission_dir, char const *make, struct info *infop, RuleCount *size)
 {
     char *filename = NULL;              /* current filename (for arrays) */
     char *fname = NULL;                 /* filename can't be freed so we need another variable */
@@ -2015,7 +1993,7 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || make == NULL) {
+    if (infop == NULL || submission_dir == NULL || make == NULL || size == NULL) {
         err(77, __func__, "passed NULL args");
         not_reached();
     }
@@ -2322,6 +2300,32 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
             err(111, __func__, "found NULL pointer in required files list in submission directory, element: %ju", (uintmax_t)i);
             not_reached();
         }
+        if (!strcmp(p, PROG_C_FILENAME)) {
+            if (!quiet) {
+                para("Checking prog.c ...", NULL);
+            }
+            check_prog_c(infop, p);
+            if (!quiet) {
+                para("... completed prog.c check.", "", NULL);
+            }
+        } else if (!strcmp(p, MAKEFILE_FILENAME)) {
+            if (!quiet) {
+                para("Checking Makefile ...", NULL);
+            }
+            check_Makefile(infop, p);
+            if (!quiet) {
+                para("... completed Makefile check.", "", NULL);
+            }
+        } else if (!strcmp(p, REMARKS_FILENAME)) {
+            if (!quiet) {
+                para("Checking remarks.md ...", NULL);
+            }
+            check_remarks_md(infop, p);
+            if (!quiet) {
+                para("... completed remarks.md check.", "", NULL);
+            }
+        }
+
         if (strcmp(fname, p) != 0) {
             /*
              * we need to add this file to the missing files list
@@ -3790,40 +3794,32 @@ warn_rule_2b_size(struct info *infop)
 
 
 /*
- * check_prog_c - check prog_c arg and if OK, copy into submission_dir/prog.c
+ * check_prog_c - check prog_c arg
  *
  * Check if the prog_c argument is a readable file, and
  * if it is within the guidelines of iocccsize (or if the author overrides),
- * and if all is OK or overridden, use copyfile() to copy into submission_dir/prog.c.
+ * and if all is OK or overridden, return size.
  *
  * given:
  *      infop           - pointer to info structure
- *      target_path     - target path under workdir of prog.c
  *      prog_c          - prog_c arg: given path to prog.c
  *
  * This function does not return on error.
  */
 static RuleCount
-check_prog_c(struct info *infop, char const *target_path, char const *prog_c)
+check_prog_c(struct info *infop, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
-    size_t target_path_len;	/* length of the target_path path */
     int ret;			/* libc function return */
     RuleCount size;		/* rule_count() processing results */
 
     /*
      * firewall
      */
-    if (infop == NULL || target_path == NULL || prog_c == NULL) {
+    if (infop == NULL || prog_c == NULL) {
 	err(181, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    target_path_len = strlen(target_path);
-    if (target_path_len <= 0) {
-	err(182, __func__, "target_path arg is an empty string");
-	not_reached();
-    }
-
     /*
      * prog.c must be a readable file
      */
@@ -3967,12 +3963,6 @@ check_prog_c(struct info *infop, char const *target_path, char const *prog_c)
     } else {
 	infop->rule_2b_override = false;
     }
-
-
-    /*
-     * copy prog.c under target_path
-     */
-    copyfile(prog_c, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
     return size;
 }
@@ -4350,28 +4340,26 @@ warn_Makefile(struct info *infop)
 
 
 /*
- * check_Makefile - check Makefile arg and if OK, copy into submission_dir/Makefile
+ * check_Makefile - check Makefile arg
  *
  * Check if the Makefile argument is a readable file, and
- * if it has the proper rules (starting with all:), use copyfile() to copy into
- * submission_dir/Makefile.
+ * if it has the proper rules (starting with all:).
  *
  * given:
  *      infop           - pointer to info structure
- *      target_path     - target path under workdir to copy Makefile
  *      Makefile        - Makefile arg: given path to Makefile
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *target_path, char const *Makefile)
+check_Makefile(struct info *infop, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
 
     /*
      * firewall
      */
-    if (infop == NULL || target_path == NULL || Makefile == NULL) {
+    if (infop == NULL || Makefile == NULL) {
 	err(194, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -4425,37 +4413,30 @@ check_Makefile(struct info *infop, char const *target_path, char const *Makefile
 	infop->Makefile_override = false;
     }
 
-    /*
-     * copy Makefile under target_path
-     */
-    copyfile(Makefile, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
-
     return;
 }
 
 
 /*
- * check_remarks_md - check remarks_md arg and if OK, copy into submission_dir/Makefile
+ * check_remarks_md - check remarks_md arg
  *
- * Check if the remarks_md argument is a readable file, and
- * if it is not empty, use copyfile() to copy into submission_dir/remarks.md.
+ * Check if the remarks_md argument is a readable non-empty file
  *
  * given:
  *      infop           - pointer to info structure
- *      target_path     - the target path of the file
  *      remarks_md      - remarks_md arg: given path to author's remarks markdown file
  *
  * This function does not return on error.
  */
 static void
-check_remarks_md(struct info *infop, char const *target_path, char const *remarks_md)
+check_remarks_md(struct info *infop, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
 
     /*
      * firewall
      */
-    if (infop == NULL || target_path == NULL || remarks_md == NULL) {
+    if (infop == NULL || remarks_md == NULL) {
 	err(200, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -4497,11 +4478,6 @@ check_remarks_md(struct info *infop, char const *target_path, char const *remark
 	err(205, __func__, "remarks.md cannot be empty: %s", remarks_md);
 	not_reached();
     }
-
-    /*
-     * copy remarks.md under target_path
-     */
-    copyfile(remarks_md, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
 
     return;
 }
