@@ -19,6 +19,10 @@ in the process so they can't be merged).
 Add list of ignored symlinks to `copy_topdir()`. This is useful as otherwise the
 user might think it's a regular file and not understand why it's being ignored.
 
+Ask user if forbidden files list is okay (even though they are always forbidden
+it might be that the user needs such a file in the submission and they can come
+up with some other way to go about it).
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.17 2025-02-07"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.9 2025-02-07"`.
 Added `Makefile.test` in `test_ioccc` which the `mkiocccentry_test.sh` script

@@ -1616,9 +1616,13 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
             }
             print("%s\n", p);
         }
-        /*
-         * we don't ask them to confirm is as this is only informative
-         */
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(58, __func__, "aborting because user said forbidden files list is not OK");
+                not_reached();
+            }
+        }
     }
 
     /*
@@ -2024,6 +2028,10 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
      */
     if (infop->ignored_files == NULL) {
         err(78, __func__, "NULL ignored files list array");
+        not_reached();
+    }
+    if (infop->ignored_symlinks == NULL) {
+        err(78, __func__, "NULL ignored symlinks list array");
         not_reached();
     }
     if (infop->extra_files == NULL) {
