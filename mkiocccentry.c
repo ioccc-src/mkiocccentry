@@ -1202,8 +1202,16 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
         err(21, __func__, "failed to create ignored files list array");
         not_reached();
     }
+    /* list of ignored symlinks to show to user later on, if any symlinks are
+     * found
+     */
+    infop->ignored_symlinks = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->ignored_symlinks == NULL) {
+        err(21, __func__, "failed to create ignored symlinks list array");
+        not_reached();
+    }
     /*
-     * list of non-optional non-required files that will be copied to the
+     * list of non-required files that will be copied to the
      * submission directory (we show it to the user to verify everything is
      * correct)
      */
@@ -1518,7 +1526,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
                      * we have to ignore symlinks but it's not an error to have
                      * them as they might be useful to some submitters
                      */
-                    append_unique_str(infop->ignored_files, filename);
+                    append_unique_str(infop->ignored_symlinks, filename);
                     break;
                 default:
                     break;
@@ -1641,7 +1649,34 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
     }
 
     /*
-     * we need to show the user the list of all files
+     * we need to show the user the list of ignored files, if any
+     */
+    len = dyn_array_tell(infop->ignored_symlinks);
+    if (len > 0) {
+        para("",
+                "The following is a list of symlinks that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_symlinks, char *, i);
+            if (p == NULL) {
+                err(57, __func__, "found NULL pointer in ignored symlinks list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(58, __func__, "aborting because user said ignored symlinks list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of all files, required and otherwise
      */
     len = dyn_array_tell(infop->required_files);
     if (len <= 0) {
@@ -1667,7 +1702,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
         }
 
         /*
-         * now we have to show them the list of non-optional non-required files
+         * now we have to show them the list of non-required files
          *
          * NOTE: we only show them these files if the required files are present
          * because it's an error if those files are not so we wouldn't get here
@@ -1826,7 +1861,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir,
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->extra_files, char *, i);
             if (p == NULL) {
-                err(70, __func__, "found NULL pointer in non-optional non-required files list, element: %ju", (uintmax_t)i);
+                err(70, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             /*
@@ -2326,13 +2361,13 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
 
 
     /*
-     * we need to also verify that the non-optional non-required files list in
+     * we need to also verify that the non-required files list in
      * struct info is the same as what we found here in the submission director.
      */
     len = dyn_array_tell(infop->extra_files);
     len2 = dyn_array_tell(extra_files);
     if (len != len2) {
-        err(113, __func__, "size of non-optional non-required files in submission directory != size in topdir: %ju != %ju",
+        err(113, __func__, "size of non-required files in submission directory != size in topdir: %ju != %ju",
                 (uintmax_t)len,
                 (uintmax_t)len2);
         not_reached();
@@ -2340,17 +2375,17 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
     for (i = 0; i < len; ++i) {
         p = dyn_array_value(infop->extra_files, char *, i);
         if (p == NULL) {
-            err(114, __func__, "found NULL pointer in non-optional non-required files list, element: %ju", (uintmax_t)i);
+            err(114, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
             not_reached();
         }
         fname = dyn_array_value(extra_files, char *, i);
         if (fname == NULL) {
-            err(115, __func__, "found NULL pointer in non-optional non-required files list in submission directory, element: %ju",
+            err(115, __func__, "found NULL pointer in non-required files list in submission directory, element: %ju",
                     (uintmax_t)i);
             not_reached();
         }
         if (strcmp(fname, p) != 0) {
-            err(116, __func__, "found inconsistent filenames in non-optional non-required files list: %s != %s", fname, p);
+            err(116, __func__, "found inconsistent filenames in non-required files list: %s != %s", fname, p);
             not_reached();
         }
     }
@@ -2382,7 +2417,7 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
         }
 
         /*
-         * now we have to show them the list of non-optional non-required files,
+         * now we have to show them the list of non-required files,
          * if any.
          */
         len = dyn_array_tell(infop->extra_files);
@@ -2390,7 +2425,7 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(infop->extra_files, char *, i);
                 if (p == NULL) {
-                    err(119, __func__, "found NULL pointer in non-optional non-required files list, element: %ju", (uintmax_t)i);
+                    err(119, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
                     not_reached();
                 }
                 print("%s\n", p);

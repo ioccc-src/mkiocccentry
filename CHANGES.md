@@ -16,6 +16,9 @@ the `verify_submission_dir()` which actually happens after `verify_submission()`
 but it seemed like an appropriate name - and unfortunately it comes much later
 in the process so they can't be merged).
 
+Add list of ignored symlinks to `copy_topdir()`. This is useful as otherwise the
+user might think it's a regular file and not understand why it's being ignored.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.17 2025-02-07"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.9 2025-02-07"`.
 Added `Makefile.test` in `test_ioccc` which the `mkiocccentry_test.sh` script

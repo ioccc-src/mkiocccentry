@@ -280,6 +280,21 @@ free_info(struct info *infop)
         infop->ignored_files = NULL;
     }
 
+    if (infop->ignored_symlinks != NULL) {
+        len = dyn_array_tell(infop->ignored_symlinks);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_symlinks, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->ignored_symlinks);
+        infop->ignored_symlinks = NULL;
+    }
+
+
+
     if (infop->required_files != NULL) {
         len = dyn_array_tell(infop->required_files);
         for (i = 0; i < len; ++i) {
