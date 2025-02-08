@@ -1,6 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.28 2025-02-08
+
+Make some fixes for issue #1070.
+
+Add missing lists to present to user (before copying files) such as: directories
+to be made; unsafe files and directories to be ignored (instead of making it an
+error - it is an error only if in the submission directory). When traversing the
+submission directory create lists for directories so these can be presented to
+the user as well (if any that are in the topdir are not found in the submission
+directory).
+
+Use macros instead of raw octal modes (for `mkdir(2)`/`mkdirs()`/`copyfile()`).
+
+Various other fixes might also have been made.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.18 2025-02-08"`.
+Updated `SOUP_VERSION` to `"1.1.17 2025-02-08"`.
+
+
 ## Release 2.3.27 2025-02-07
 
 Resolve issue #1070.

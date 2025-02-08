@@ -267,6 +267,10 @@ free_info(struct info *infop)
     /*
      * free arrays
      */
+
+    /*
+     * ignored files (files that sane_relative_path() did not return PATH_OK
+     */
     if (infop->ignored_files != NULL) {
         len = dyn_array_tell(infop->ignored_files);
         for (i = 0; i < len; ++i) {
@@ -279,7 +283,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->ignored_files);
         infop->ignored_files = NULL;
     }
-
+    /*
+     * ignored symlinks (any symlinks found in topdir)
+     */
     if (infop->ignored_symlinks != NULL) {
         len = dyn_array_tell(infop->ignored_symlinks);
         for (i = 0; i < len; ++i) {
@@ -292,9 +298,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->ignored_symlinks);
         infop->ignored_symlinks = NULL;
     }
-
-
-
+    /*
+     * required files (prog.c, Makefile, remarks.md)
+     */
     if (infop->required_files != NULL) {
         len = dyn_array_tell(infop->required_files);
         for (i = 0; i < len; ++i) {
@@ -307,7 +313,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->required_files);
         infop->required_files = NULL;
     }
-
+    /*
+     * extra files (anything not a required file)
+     */
     if (infop->extra_files != NULL) {
         len = dyn_array_tell(infop->extra_files);
         for (i = 0; i < len; ++i) {
@@ -320,7 +328,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->extra_files);
         infop->extra_files = NULL;
     }
-
+    /*
+     * directories found in topdir
+     */
     if (infop->directories != NULL) {
         len = dyn_array_tell(infop->directories);
         for (i = 0; i < len; ++i) {
@@ -333,7 +343,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->directories);
         infop->directories = NULL;
     }
-
+    /*
+     * ignored directories (.git, CVS etc.)
+     */
     if (infop->ignored_dirs != NULL) {
         len = dyn_array_tell(infop->ignored_dirs);
         for (i = 0; i < len; ++i) {
@@ -346,7 +358,9 @@ free_info(struct info *infop)
         dyn_array_free(infop->ignored_dirs);
         infop->ignored_dirs = NULL;
     }
-
+    /*
+     * forbidden files (prog, prog.alt, GNUMakefile, README.md etc.)
+     */
     if (infop->forbidden_files != NULL) {
         len = dyn_array_tell(infop->forbidden_files);
         for (i = 0; i < len; ++i) {
@@ -358,6 +372,38 @@ free_info(struct info *infop)
         }
         dyn_array_free(infop->forbidden_files);
         infop->forbidden_files = NULL;
+    }
+    /*
+     * unsafe files (those that sane_relative_path() returns
+     * PATH_ERR_NOT_POSIX_SAFE)
+     */
+    if (infop->unsafe_files != NULL) {
+        len = dyn_array_tell(infop->unsafe_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->unsafe_files);
+        infop->unsafe_files = NULL;
+    }
+    /*
+     * unsafe directories (those that sane_relative_path() returns
+     * PATH_ERR_NOT_POSIX_SAFE)
+     */
+    if (infop->unsafe_dirs != NULL) {
+        len = dyn_array_tell(infop->unsafe_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->unsafe_dirs);
+        infop->unsafe_dirs = NULL;
     }
 
     /*

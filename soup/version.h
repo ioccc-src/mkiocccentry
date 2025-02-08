@@ -66,13 +66,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.27 2025-02-07"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.3.28 2025-02-08"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.16 2025-02-06"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.17 2025-02-08"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.2.17 2025-02-07"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.2.18 2025-02-08"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 

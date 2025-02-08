@@ -206,6 +206,8 @@ struct info
     struct dyn_array *directories;      /* directories seen */
     struct dyn_array *ignored_dirs;     /* ignored directories */
     struct dyn_array *forbidden_files;  /* forbidden files */
+    struct dyn_array *unsafe_files;     /* unsafe files */
+    struct dyn_array *unsafe_dirs;      /* unsafe directories */
 
 
     /*

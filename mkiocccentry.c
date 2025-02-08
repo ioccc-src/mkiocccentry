@@ -1120,23 +1120,26 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
  * point), copying files to the right locations (including running the check
  * functions on prog.c, Makefile and remarks.md) and returning the number of
  * extra files found. If this function returns the function verify_submission()
- * can be run and then if that is okay the .auth.json and .info.json files can
- * be created, checked (chkentry) and then the tarball can be created and
- * checked (txzchk).
+ * can be run (this will happen in main()) and then if everything is okay, the
+ * .auth.json and .info.json files can be created, checked (chkentry) and then
+ * the tarball can be created and checked (txzchk).
  *
- * When this function finds prog.c, Makefile or remarks.md, it uses the
- * check_prog_c, check_Makefile or check_remarks_md functions, which will copy
- * the file to the correct directory if all checks are okay. Other files will
- * also be copied, assuming they are not ignored or forbidden files.
+ * When this function finds prog.c, Makefile or remarks.md, it sets a bool (for
+ * each one) indicating it is found.
  *
  * Once traversal is over, it verifies that prog.c, Makefile and remarks.md
- * exist and it aborts if they are not found. If they do exist and the number of
- * non-optional non-required files is not too many (if there are it is an error)
- * it presents a list of files that are ignored, list of forbidden files (which
- * are also ignored) as well as the required files (that will be copied to the
- * submission directory if the user says everything is okay) and the list of
- * non-optional non-required files that will also be copied to the submission
- * directory (assuming the user says it is okay).
+ * exist and it aborts if they are not found (note that it is case-sensitive).
+ * If they do exist and the number of non-optional non-required files is not too
+ * many it presents a list of files that are ignored, directories that were
+ * skipped (and ignored), list of forbidden files (which will not be copied to
+ * the submission directory) as well as the required files (that will be copied
+ * to the submission directory if the user says everything is okay) along with a
+ * list of non-required files that will also be copied to the submission
+ * directory (assuming the user says it is okay). If too many non-required
+ * non-optional files are present it is an error as well.
+ *
+ * Assuming all is okay the files are copied to the submission directory and the
+ * function verify_submission() will be called.
  *
  * given:
  *      args            - the args (topdir)
@@ -1253,6 +1256,26 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
         not_reached();
     }
 
+    /*
+     * list of unsafe (not POSIX plus + chars) files to show to user (i.e.
+     * sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and not another
+     * error condition)
+     */
+    infop->unsafe_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->unsafe_files == NULL) {
+        err(26, __func__, "failed to create unsafe files list array");
+        not_reached();
+    }
+    /*
+     * list of unsafe (not POSIX plus + chars) directories to show to user (i.e.
+     * sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and not another
+     * error condition)
+     */
+    infop->unsafe_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->unsafe_dirs == NULL) {
+        err(26, __func__, "failed to create unsafe directories list array");
+        not_reached();
+    }
 
     /*
      * note the current directory so we can restore it later
@@ -1337,8 +1360,8 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
         not_reached();
     } else {
         while ((item = fts_read(fts)) != NULL) {
-            bool ignored = false;
-            bool forbidden = false;
+            bool ignored_dirname = false;
+            bool forbidden_filename = false;
             bool optional = false;
 
             /*
@@ -1347,8 +1370,8 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
             if (!strcmp(item->fts_path, ".")) {
                 continue;
             }
-            ignored = has_ignored_dirname(item->fts_path + 2);
-            forbidden = is_forbidden_filename(item->fts_path + 2);
+            ignored_dirname = has_ignored_dirname(item->fts_path + 2);
+            forbidden_filename = is_forbidden_filename(item->fts_path + 2);
             optional = is_optional_filename(item->fts_path + 2);
 
             /*
@@ -1374,19 +1397,27 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                         (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
                 not_reached();
             }
-            if (sanity == PATH_ERR_NOT_POSIX_SAFE) {
-                    errno = 0; /* pre-clear errno for errp() */
-                    filename = strdup(item->fts_path + 2);
-                    if (filename == NULL) {
-                        errp(38, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
-                        not_reached();
-                    }
+            if (sanity == PATH_ERR_NOT_POSIX_SAFE && !ignored_dirname) {
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(item->fts_path + 2);
+                if (filename == NULL) {
+                    errp(38, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    not_reached();
+                }
+                dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
                 if (item->fts_info == FTS_F) {
-                    append_unique_str(infop->ignored_files, filename);
+                    append_unique_str(infop->unsafe_files, filename);
                     dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
                 } else if (item->fts_info == FTS_D) {
-                    append_unique_str(infop->ignored_dirs, filename);
+                    append_unique_str(infop->unsafe_dirs, filename);
                     dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
+                }
+                if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
+                    /*
+                     * we will add symlinks to the symlinks list so we don't
+                     * skip those here
+                     */
+                    continue;
                 }
             }
             if (sanity == PATH_ERR_NOT_RELATIVE) {
@@ -1400,6 +1431,12 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                     not_reached();
             }
             if (sanity != PATH_OK) {
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(item->fts_path + 2);
+                if (filename == NULL) {
+                    errp(38, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    not_reached();
+                }
                 if (item->fts_info == FTS_D) {
                     /*
                      * we don't want to traverse below non sane-relative
@@ -1411,11 +1448,22 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                         errp(41, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
                         not_reached();
                     }
+                    append_unique_str(infop->ignored_dirs, filename);
+                    dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
+                } else if (item->fts_info == FTS_F) {
+                    append_unique_str(infop->ignored_files, filename);
+                    dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
                 }
-                continue;
+                if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
+                    /*
+                     * we will add symlinks to the symlinks list so we don't
+                     * skip those here
+                     */
+                    continue;
+                }
             }
 
-            if (ignored) {
+            if (ignored_dirname) {
                 if (item->fts_info == FTS_D) {
                     /*
                      * we don't want to traverse below ignored directories
@@ -1427,7 +1475,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                     }
                 }
                 continue;
-            } else if (forbidden) {
+            } else if (forbidden_filename) {
                 /*
                  * we have to add the path of the forbidden file to the
                  * forbidden files list
@@ -1597,6 +1645,34 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
     }
 
     /*
+     * we need to show the user the list of unsafe POSIX plus + char directory
+     * names, if any
+     */
+    len = dyn_array_tell(infop->unsafe_dirs);
+    if (len > 0) {
+        para("",
+                "The following is a list of unsafe directory names that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_dirs, char *, i);
+            if (p == NULL) {
+                err(57, __func__, "found NULL pointer in unsafe directory names list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(58, __func__, "aborting because user said unsafe directory names list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
      * we need to show any forbidden filenames to the user
      */
     len = dyn_array_tell(infop->forbidden_files);
@@ -1651,7 +1727,37 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
     }
 
     /*
-     * we need to show the user the list of ignored files, if any
+     * we need to show the user the list of unsafe POSIX plus + char files, if any
+     */
+    len = dyn_array_tell(infop->unsafe_files);
+    if (len > 0) {
+        para("",
+                "The following is a list of unsafe filenames that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_files, char *, i);
+            if (p == NULL) {
+                err(57, __func__, "found NULL pointer in unsafe filenames list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(58, __func__, "aborting because user said unsafe filenames list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+
+
+    /*
+     * we need to show the user the list of symlinks (ignored as they are not
+     * allowed), if any
      */
     len = dyn_array_tell(infop->ignored_symlinks);
     if (len > 0) {
@@ -1676,6 +1782,37 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
             }
         }
     }
+
+    /*
+     * we need to show the user the list of directories, if any
+     */
+    len = dyn_array_tell(infop->directories);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories that will be created:",
+                "",
+                NULL);
+
+        /*
+         * show directories list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p == NULL) {
+                err(60, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(62, __func__, "aborting because user said files list is not OK");
+                not_reached();
+            }
+        }
+    }
+
 
     /*
      * we need to show the user the list of all files, required and otherwise
@@ -1707,9 +1844,9 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
          * now we have to show them the list of non-required files
          *
          * NOTE: we only show them these files if the required files are present
-         * because it's an error if those files are not so we wouldn't get here
-         * anyway (and this way it makes the prompt of files list being okay
-         * easy).
+         * because it's an error if those files are not present so we wouldn't
+         * get here anyway (and this way it makes the prompt of files list being
+         * okay easy).
          */
         len = dyn_array_tell(infop->extra_files);
         if (len > 0) {
@@ -1729,6 +1866,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                 not_reached();
             }
         }
+
         /*
          * make the necessary subdirectories, if any
          */
@@ -1757,7 +1895,7 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                  * create path: -1 is from current (working) directory, p is the
                  * path and 0755 is the mode
                  */
-                mkdirs(-1, p, 0755);
+                mkdirs(-1, p, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
             }
         }
 
@@ -1884,12 +2022,12 @@ copy_topdir(char * const *args, struct info *infop, char const *submission_dir)
                 /*
                  * try.sh and try.alt.sh must be executable (0555)
                  */
-                copyfile(fname, target_path, false, 0555);
+                copyfile(fname, target_path, false, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
             } else {
                 /*
                  * other files must be mode 0444
                  */
-                copyfile(fname, target_path, false, 0444);
+                copyfile(fname, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
             }
 
             /*
@@ -1979,9 +2117,11 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
     FTS *fts = NULL;                    /* FTS stream for fts_open() */
     FTSENT *item = NULL;                /* FTSENT for each item from fts_read() */
     size_t count = 0;                   /* total number of non-optional non-required files */
-    struct dyn_array *required_files = NULL; /* to compare to info required files */
-    struct dyn_array *extra_files = NULL; /* to compare to info extra files */
+    struct dyn_array *required_files = NULL; /* required files in submission directory */
+    struct dyn_array *extra_files = NULL; /* extra files in submission directory */
     struct dyn_array *missing_files = NULL; /* missing files in submission directory */
+    struct dyn_array *directories = NULL; /* directories in submission directory */
+    struct dyn_array *missing_dirs = NULL; /* missing directories in submission directory */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
     char *path[] = { ".", NULL };   /* "." for fts_open() */
     int cwd = -1;		    /* current working directory */
@@ -2032,10 +2172,17 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
         err(83, __func__, "NULL forbidden files list array");
         not_reached();
     }
+    if (infop->unsafe_files == NULL) {
+        err(83, __func__, "NULL unsafe files list array");
+        not_reached();
+    }
+    if (infop->unsafe_dirs == NULL) {
+        err(83, __func__, "NULL unsafe dirs list array");
+        not_reached();
+    }
     /*
-     * we do have to create three arrays however, to compare with the arrays in
-     * struct info, in particular the required files, the non-optional
-     * non-required files lists as well as (only here) missing files
+     * we do have to create some additional arrays to compare with arrays in
+     * struct info, as well as to report on missing files and directories.
      */
     required_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (required_files == NULL) {
@@ -2050,6 +2197,16 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
     missing_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (missing_files == NULL) {
         err(84, __func__, "couldn't create missing files list array");
+        not_reached();
+    }
+    directories = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (directories == NULL) {
+        err(84, __func__, "couldn't create directories list array");
+        not_reached();
+    }
+    missing_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (missing_dirs == NULL) {
+        err(84, __func__, "couldn't create missing directories list array");
         not_reached();
     }
 
@@ -2107,8 +2264,8 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
         not_reached();
     } else {
         while ((item = fts_read(fts)) != NULL) {
-            bool ignored = false;
-            bool forbidden = false;
+            bool ignored_dirname = false;
+            bool forbidden_filename = false;
             bool optional = false;
 
             /*
@@ -2117,14 +2274,14 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
             if (!strcmp(item->fts_path, ".")) {
                 continue;
             }
-            ignored = has_ignored_dirname(item->fts_path + 2);
-            forbidden = is_forbidden_filename(item->fts_path + 2);
+            ignored_dirname = has_ignored_dirname(item->fts_path + 2);
+            forbidden_filename = is_forbidden_filename(item->fts_path + 2);
             optional = is_optional_filename(item->fts_path + 2);
 
-            if (ignored) {
-                err(90, __func__, "found ignored file in submission directory");
+            if (ignored_dirname) {
+                err(90, __func__, "found ignored directory in submission directory");
                 not_reached();
-            } else if (forbidden) {
+            } else if (forbidden_filename) {
                 err(91, __func__, "found forbidden file in submission directory");
                 not_reached();
             }
@@ -2170,6 +2327,19 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
                 not_reached();
             }
             switch (item->fts_info) {
+                case FTS_D:
+                    dbg(DBG_LOW, "found sane relative path: %s", item->fts_path + 2);
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(item->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(99, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                        not_reached();
+                    }
+                    /*
+                     * add to directories list
+                     */
+                    append_unique_str(directories, filename);
+                    break;
                 case FTS_F:
                     dbg(DBG_LOW, "found sane relative path: %s", item->fts_path + 2);
                     errno = 0; /* pre-clear errno for errp() */
@@ -2276,7 +2446,7 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
      */
     len = dyn_array_tell(infop->required_files);
     if (len <= 0) {
-        err(107, __func__, "list of required files is empty");
+        err(107, __func__, "list of required files list is empty");
         not_reached();
     }
     len2 = dyn_array_tell(required_files);
@@ -2300,11 +2470,14 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
             err(111, __func__, "found NULL pointer in required files list in submission directory, element: %ju", (uintmax_t)i);
             not_reached();
         }
+        /*
+         * if it's prog.c, Makefile or remarks.md we need to run the checks
+         */
         if (!strcmp(p, PROG_C_FILENAME)) {
             if (!quiet) {
                 para("Checking prog.c ...", NULL);
             }
-            check_prog_c(infop, p);
+            *size = check_prog_c(infop, p);
             if (!quiet) {
                 para("... completed prog.c check.", "", NULL);
             }
@@ -2340,18 +2513,131 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
         }
     }
 
+
+    /*
+     * we need to verify that the extra files list in struct info is the same
+     * as what we found here in the submission directory and if it's not we add
+     * it to the missing files list as well
+     */
+    len = dyn_array_tell(infop->extra_files);
+    if (len > 0) {
+        len2 = dyn_array_tell(extra_files);
+        if (len != len2) {
+            err(109, __func__, "size of extra files list in submission directory != size in topdir: %ju != %ju", (uintmax_t)len2,
+                    (uintmax_t)len);
+            not_reached();
+        }
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p == NULL) {
+                err(110, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            fname = dyn_array_value(extra_files, char *, i);
+            if (fname == NULL) {
+                err(111, __func__, "found NULL pointer in extra files list in submission directory, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+
+            if (strcmp(fname, p) != 0) {
+                /*
+                 * we need to add this file to the missing files list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(item->fts_path + 2);
+                if (filename == NULL) {
+                    errp(99, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    not_reached();
+                }
+                append_unique_str(missing_files, filename);
+            }
+        }
+    }
+
+    /*
+     * we need to verify that the directories list in struct info is the same
+     * as what we found here in the submission directory
+     */
+    len = dyn_array_tell(infop->directories);
+    if (len > 0) {
+        len2 = dyn_array_tell(directories);
+        if (len != len2) {
+            err(109, __func__, "size of directories list in submission directory != size in topdir: %ju != %ju", (uintmax_t)len2,
+                    (uintmax_t)len);
+            not_reached();
+        }
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p == NULL) {
+                err(110, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            fname = dyn_array_value(directories, char *, i);
+            if (fname == NULL) {
+                err(111, __func__, "found NULL pointer in directories list in submission directory, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+
+            /*
+             * verify they are the same in both lists
+             */
+            if (strcmp(fname, p) != 0) {
+                /*
+                 * we need to add this file to the missing directories list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(item->fts_path + 2);
+                if (filename == NULL) {
+                    errp(99, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    not_reached();
+                }
+                append_unique_str(missing_dirs, filename);
+            }
+        }
+    }
+
+    /*
+     * tell user about missing dirs
+     */
+    len = dyn_array_tell(missing_dirs);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories that exist in topdir but not in",
+                "your submission directory:",
+                "",
+                NULL);
+        /*
+         * show missing directories list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_dirs, char *, i);
+            if (p == NULL) {
+                err(118, __func__, "found NULL pointer in missing directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(120, __func__, "aborting because user said missing directories list is not OK");
+                not_reached();
+            }
+        }
+    }
+
     /*
      * tell user about missing files
      */
     len = dyn_array_tell(missing_files);
     if (len > 0) {
         para("",
-                "The following is a list of valid files that exist in topdir but not in",
+                "The following is a list of files that exist in topdir but not in",
                 "your submission directory:",
                 "",
                 NULL);
         /*
-         * show required files list
+         * show missing files list
          */
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(missing_files, char *, i);
@@ -2367,38 +2653,6 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
                 err(120, __func__, "aborting because user said missing files is not OK");
                 not_reached();
             }
-        }
-    }
-
-
-
-    /*
-     * we need to also verify that the non-required files list in
-     * struct info is the same as what we found here in the submission director.
-     */
-    len = dyn_array_tell(infop->extra_files);
-    len2 = dyn_array_tell(extra_files);
-    if (len != len2) {
-        err(113, __func__, "size of non-required files in submission directory != size in topdir: %ju != %ju",
-                (uintmax_t)len,
-                (uintmax_t)len2);
-        not_reached();
-    }
-    for (i = 0; i < len; ++i) {
-        p = dyn_array_value(infop->extra_files, char *, i);
-        if (p == NULL) {
-            err(114, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
-            not_reached();
-        }
-        fname = dyn_array_value(extra_files, char *, i);
-        if (fname == NULL) {
-            err(115, __func__, "found NULL pointer in non-required files list in submission directory, element: %ju",
-                    (uintmax_t)i);
-            not_reached();
-        }
-        if (strcmp(fname, p) != 0) {
-            err(116, __func__, "found inconsistent filenames in non-required files list: %s != %s", fname, p);
-            not_reached();
         }
     }
 
@@ -2494,8 +2748,31 @@ verify_submission(char const *submission_dir, char const *make, struct info *inf
         missing_files = NULL;
     }
 
+    if (directories != NULL) {
+        len = dyn_array_tell(directories);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(directories, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(directories);
+        directories = NULL;
+    }
 
-
+    if (missing_dirs != NULL) {
+        len = dyn_array_tell(missing_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(missing_dirs);
+        missing_dirs = NULL;
+    }
 
     /*
      * change to previous directory
@@ -3434,7 +3711,7 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
      * make the submission directory
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = mkdir(submission_dir, 0755);
+    ret = mkdir(submission_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     if (ret < 0) {
 	errp(167, __func__, "cannot mkdir %s with mode 0755", submission_dir);
 	not_reached();
@@ -3796,9 +4073,13 @@ warn_rule_2b_size(struct info *infop)
 /*
  * check_prog_c - check prog_c arg
  *
- * Check if the prog_c argument is a readable file, and
- * if it is within the guidelines of iocccsize (or if the author overrides),
- * and if all is OK or overridden, return size.
+ * Check if the prog_c argument is a readable file (if it is not it is an
+ * error). If it is a regular readable file rule_count() from iocccsize(1) will
+ * be used on it and any warnings that are flagged will be reported to the user.
+ * If the user overrides any warnings it will proceed but otherwise it is an
+ * error and the program will abort.
+ *
+ * Assuming all is okay it will report the Rule 2b size.
  *
  * given:
  *      infop           - pointer to info structure
