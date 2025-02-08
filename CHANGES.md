@@ -16,6 +16,23 @@ Use macros instead of raw octal modes (for `mkdir(2)`/`mkdirs()`/`copyfile()`).
 
 Various other fixes might also have been made.
 
+Modularise `copy_topdir()` and `verify_submission()` by splitting them into
+three functions. The first part of `copy_topdir()` is now in `scan_topdir()` and
+it does the scanning (up to the point of making sure the required files exist in
+the topdir and that there are not too many files). At the end of the function it
+will call the new `copy_topdir()` which lists everything to the user and asks
+for verification. If the user is okay with everything then directories are made
+(if necessary) and files are copied over. Then if nothing is wrong after that
+`copy_topdir()` will call `check_submission()` which makes sure everything that
+is in `topdir` exists in the submission directory and also run other tests like
+`check_prog_c()`, `check_Makefile()` and `check_remarks_md()`.  The check for
+unique strings in the lists is now case-insensitive for filesystems that do not
+distinguish case (just like we do when checking that an extra file is not the
+same name, regardless of case, as a required file, for example).  The check for
+prog.c, Makefile and remarks.md are still case-sensitive.
+
+
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.18 2025-02-08"`.
 Updated `SOUP_VERSION` to `"1.1.17 2025-02-08"`.
 
