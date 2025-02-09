@@ -1844,7 +1844,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(75, __func__, "aborting because user said files list is not OK");
+                err(75, __func__, "aborting because user said directories list is not OK");
                 not_reached();
             }
         }
