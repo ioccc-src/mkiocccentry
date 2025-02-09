@@ -1349,96 +1349,102 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
              * is okay and it does NOT mean that "././" is okay).
              */
             sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-            if (sanity == PATH_ERR_NAME_TOO_LONG) {
-                err(38, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_name + 2, item->fts_name,
-                        (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_PATH_TOO_LONG) {
-                err(39, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", item->fts_path + 2, item->fts_path,
-                        (uintmax_t)strlen(item->fts_path), (uintmax_t)MAX_FILENAME_LEN);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_PATH_TOO_DEEP) {
-                err(40, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
-                        (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_NOT_POSIX_SAFE && !ignored_dirname) {
-                errno = 0; /* pre-clear errno for errp() */
-                filename = strdup(item->fts_path + 2);
-                if (filename == NULL) {
-                    errp(41, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+            switch (sanity) {
+                case PATH_ERR_NAME_TOO_LONG:
+                    err(38, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_name + 2, item->fts_name,
+                            (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
                     not_reached();
-                }
-                dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
-                if (item->fts_info == FTS_F) {
-                    append_unique_str(infop->unsafe_files, filename);
-                } else if (item->fts_info == FTS_D) {
-                    append_unique_str(infop->unsafe_dirs, filename);
-                }
-                if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
-                    /*
-                     * we will add symlinks to the symlinks list so we don't
-                     * skip those here
-                     */
-                    continue;
-                }
-            }
-            if (sanity == PATH_ERR_NOT_RELATIVE) {
-                err(42, __func__, "%s: path not relative", item->fts_path + 2);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_UNKNOWN || sanity == PATH_ERR_PATH_IS_NULL ||
-               sanity == PATH_ERR_PATH_EMPTY || sanity == PATH_ERR_MAX_PATH_LEN_0 ||
-               sanity == PATH_ERR_MAX_DEPTH_0 || sanity == PATH_ERR_MAX_NAME_LEN_0) {
-                    err(43, __func__, "%s: %s", item->fts_path + 2, path_sanity_error(sanity));
+                    break;
+                case PATH_ERR_PATH_TOO_LONG:
+                    err(39, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", item->fts_path + 2, item->fts_path,
+                            (uintmax_t)strlen(item->fts_path), (uintmax_t)MAX_FILENAME_LEN);
                     not_reached();
-            }
-            if (sanity != PATH_OK) {
-                errno = 0; /* pre-clear errno for errp() */
-                filename = strdup(item->fts_path + 2);
-                if (filename == NULL) {
-                    errp(44, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    break;
+                case PATH_ERR_PATH_TOO_DEEP:
+                    err(40, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
+                            (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
                     not_reached();
-                }
-                if (item->fts_info == FTS_D) {
-                    /*
-                     * we don't want to traverse below non sane-relative
-                     * directories: though we might not even get here but we do
-                     * this to be safe.
-                     */
-                    errno = 0;  /* pre-clear errno for errp() */
-                    if (fts_set(fts, item, FTS_SKIP) != 0) {
-                        errp(45, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
-                        not_reached();
+                    break;
+                case PATH_ERR_NOT_POSIX_SAFE:
+                    if (!ignored_dirname) {
+                        errno = 0; /* pre-clear errno for errp() */
+                        filename = strdup(item->fts_path + 2);
+                        if (filename == NULL) {
+                            errp(41, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                            not_reached();
+                        }
+                        dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
+                        if (item->fts_info == FTS_F) {
+                            append_unique_str(infop->unsafe_files, filename);
+                        } else if (item->fts_info == FTS_D) {
+                            append_unique_str(infop->unsafe_dirs, filename);
+                        }
+                        if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
+                            /*
+                             * we will add symlinks to the symlinks list so we don't
+                             * skip those here
+                             */
+                            continue;
+                        }
+                    } else { /* ignored directory name */
+                        errno = 0; /* pre-clear errno for errp() */
+                        filename = strdup(item->fts_path + 2);
+                        if (filename == NULL) {
+                            errp(42, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                            not_reached();
+                        }
+                        if (item->fts_info == FTS_D) {
+                            /*
+                             * we don't want to traverse below ignored directories
+                             */
+                            errno = 0;  /* pre-clear errno for errp() */
+                            if (fts_set(fts, item, FTS_SKIP) != 0) {
+                                errp(43, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
+                                not_reached();
+                            }
+                            append_unique_str(infop->ignored_dirs, filename);
+                        }
+                        continue;
                     }
-                    append_unique_str(infop->ignored_dirs, filename);
-                } else if (item->fts_info == FTS_F) {
-                    append_unique_str(infop->ignored_files, filename);
-                }
-                if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
-                    /*
-                     * we will add symlinks to the symlinks list so we don't
-                     * skip those here
-                     */
-                    continue;
-                }
+                    break;
+                case PATH_ERR_NOT_RELATIVE:
+                    err(44, __func__, "%s: path not relative", item->fts_path + 2);
+                    not_reached();
+                    break;
+                case PATH_ERR_UNKNOWN:
+                case PATH_ERR_PATH_IS_NULL:
+                case PATH_ERR_PATH_EMPTY:
+                case PATH_ERR_MAX_PATH_LEN_0:
+                case PATH_ERR_MAX_DEPTH_0:
+                case PATH_ERR_MAX_NAME_LEN_0:
+                    err(45, __func__, "%s: %s", item->fts_path + 2, path_sanity_error(sanity));
+                    not_reached();
+                    break;
+                case PATH_OK:
+                default:
+                    break;
             }
-
             if (ignored_dirname) {
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(item->fts_path + 2);
+                if (filename == NULL) {
+                    errp(46, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    not_reached();
+                }
                 if (item->fts_info == FTS_D) {
                     /*
                      * we don't want to traverse below ignored directories
                      */
                     errno = 0;  /* pre-clear errno for errp() */
                     if (fts_set(fts, item, FTS_SKIP) != 0) {
-                        errp(46, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
+                        errp(47, __func__, "fts_set() failed to set FTS_SKIP for %s", item->fts_path + 2);
                         not_reached();
                     }
+                    append_unique_str(infop->ignored_dirs, filename);
                 }
                 continue;
-            } else if (forbidden_filename) {
+            }
+            if (forbidden_filename) {
                 /*
                  * we have to add the path of the forbidden file to the
                  * forbidden files list
@@ -1446,7 +1452,7 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                 errno = 0; /* pre-clear errno for errp() */
                 filename = strdup(item->fts_path + 2);
                 if (filename == NULL) {
-                    errp(47, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                    errp(48, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
                     not_reached();
                 }
 
@@ -1456,13 +1462,14 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                 append_unique_str(infop->forbidden_files, filename);
                 continue;
             }
+
             switch (item->fts_info) {
                 case FTS_D:
                     dbg(DBG_MED, "found sane relative directory name topdir: %s", item->fts_path + 2);
                     errno = 0; /* pre-clear errno for errp() */
                     filename = strdup(item->fts_path + 2);
                     if (filename == NULL) {
-                        errp(48, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                        errp(49, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
                         not_reached();
                     }
                     /*
@@ -1475,7 +1482,7 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                     errno = 0; /* pre-clear errno for errp() */
                     filename = strdup(item->fts_path + 2);
                     if (filename == NULL) {
-                        errp(49, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                        errp(50, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
                         not_reached();
                     }
                     /*
@@ -1520,14 +1527,14 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                     }
                     break;
                 case FTS_DNR: /* directory not readable */
-                    err(50, __func__, "directory not readable: %s", item->fts_path + 2);
+                    err(51, __func__, "directory not readable: %s", item->fts_path + 2);
                     not_reached();
                 case FTS_ERR:
                     /*
                      * fake errno
                      */
                     errno = item->fts_errno;
-                    errp(51, __func__, "encountered error reading path: %s", item->fts_path + 2);
+                    errp(52, __func__, "encountered error reading path: %s", item->fts_path + 2);
                     not_reached();
                     break;
                 case FTS_SL:
@@ -1535,7 +1542,7 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                     errno = 0; /* pre-clear errno for errp() */
                     filename = strdup(item->fts_path + 2);
                     if (filename == NULL) {
-                        errp(52, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
+                        errp(53, __func__, "strdup(\"%s\") failed", item->fts_path + 2);
                         not_reached();
                     }
                     /*
@@ -1560,18 +1567,18 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
      * check that there are not too many non-optional non-required files
      */
     if (count > MAX_EXTRA_FILE_COUNT) {
-        err(53, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
+        err(54, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
         not_reached();
     }
 
     dirs = dyn_array_tell(infop->directories);
     if (dirs < 0) {
-        err(54, __func__, "size of directories list < 0");
+        err(55, __func__, "size of directories list < 0");
         not_reached();
     }
     unsafe_dirs = dyn_array_tell(infop->unsafe_dirs);
     if (unsafe_dirs < 0) {
-        err(55, __func__, "size of unsafe directories list < 0");
+        err(56, __func__, "size of unsafe directories list < 0");
         not_reached();
     }
 
@@ -1590,7 +1597,7 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
      * 'extra directories' instead of 'directories'.
      */
     if (MAX_DIR_COUNT > 1 && dirs + unsafe_dirs + 1 > MAX_DIR_COUNT) {
-        err(56, __func__, "too many extra directories: %ju > %ju", (uintmax_t)(dirs + unsafe_dirs), (uintmax_t)(MAX_DIR_COUNT-1));
+        err(57, __func__, "too many extra directories: %ju > %ju", (uintmax_t)(dirs + unsafe_dirs), (uintmax_t)(MAX_DIR_COUNT-1));
         not_reached();
     }
 
@@ -1598,13 +1605,13 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
      * verify prog.c, Makefile and remarks.md have been found
      */
     if (!found_prog_c) {
-        err(57, __func__, "prog.c not found in topdir %s", args[0]);
+        err(58, __func__, "prog.c not found in topdir %s", args[0]);
         not_reached();
     } else if (!found_Makefile) {
-        err(58, __func__, "Makefile not found in topdir %s", args[0]);
+        err(59, __func__, "Makefile not found in topdir %s", args[0]);
         not_reached();
     } else if (!found_remarks_md) {
-        err(59, __func__, "remarks.md not found in topdir %s", args[0]);
+        err(60, __func__, "remarks.md not found in topdir %s", args[0]);
         not_reached();
     }
 
@@ -1659,15 +1666,15 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      * firewall
      */
     if (infop == NULL || make == NULL || submission_dir == NULL || topdir_path == NULL || submit_path == NULL || size == NULL) {
-        err(60, __func__, "passed NULL pointer(s)");
+        err(61, __func__, "passed NULL pointer(s)");
         not_reached();
     }
     if (topdir < 0) {
-        err(61, __func__, "passed invalid topdir file descriptors");
+        err(62, __func__, "passed invalid topdir file descriptors");
         not_reached();
     }
     if (cwd < 0) {
-        err(62, __func__, "passed invalid cwd file descriptors");
+        err(63, __func__, "passed invalid cwd file descriptors");
         not_reached();
     }
 
@@ -1677,7 +1684,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
     errno = 0;          /* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-        errp(63, __func__, "unable to fchdir(cwd)");
+        errp(64, __func__, "unable to fchdir(cwd)");
         not_reached();
     }
 
@@ -1694,7 +1701,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->ignored_dirs, char *, i);
             if (p == NULL) {
-                err(64, __func__, "found NULL pointer in ignored dirname list, element: %ju", (uintmax_t)i);
+                err(65, __func__, "found NULL pointer in ignored dirname list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1702,7 +1709,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(65, __func__, "aborting because user said ignored directories list is not OK");
+                err(66, __func__, "aborting because user said ignored directories list is not OK");
                 not_reached();
             }
         }
@@ -1722,7 +1729,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->unsafe_dirs, char *, i);
             if (p == NULL) {
-                err(66, __func__, "found NULL pointer in unsafe directory names list, element: %ju", (uintmax_t)i);
+                err(67, __func__, "found NULL pointer in unsafe directory names list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1730,7 +1737,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(67, __func__, "aborting because user said unsafe directory names list is not OK");
+                err(68, __func__, "aborting because user said unsafe directory names list is not OK");
                 not_reached();
             }
         }
@@ -1749,7 +1756,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->forbidden_files, char *, i);
             if (p == NULL) {
-                err(68, __func__, "found NULL pointer in forbidden files list, element: %ju", (uintmax_t)i);
+                err(69, __func__, "found NULL pointer in forbidden files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1757,7 +1764,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(69, __func__, "aborting because user said forbidden files list is not OK");
+                err(70, __func__, "aborting because user said forbidden files list is not OK");
                 not_reached();
             }
         }
@@ -1776,7 +1783,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->ignored_files, char *, i);
             if (p == NULL) {
-                err(70, __func__, "found NULL pointer in ignored files list, element: %ju", (uintmax_t)i);
+                err(71, __func__, "found NULL pointer in ignored files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1784,7 +1791,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(71, __func__, "aborting because user said ignored files list is not OK");
+                err(72, __func__, "aborting because user said ignored files list is not OK");
                 not_reached();
             }
         }
@@ -1803,7 +1810,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->unsafe_files, char *, i);
             if (p == NULL) {
-                err(72, __func__, "found NULL pointer in unsafe filenames list, element: %ju", (uintmax_t)i);
+                err(73, __func__, "found NULL pointer in unsafe filenames list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1811,7 +1818,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(73, __func__, "aborting because user said unsafe filenames list is not OK");
+                err(74, __func__, "aborting because user said unsafe filenames list is not OK");
                 not_reached();
             }
         }
@@ -1833,7 +1840,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->ignored_symlinks, char *, i);
             if (p == NULL) {
-                err(74, __func__, "found NULL pointer in ignored symlinks list, element: %ju", (uintmax_t)i);
+                err(75, __func__, "found NULL pointer in ignored symlinks list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1841,7 +1848,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(75, __func__, "aborting because user said ignored symlinks list is not OK");
+                err(76, __func__, "aborting because user said ignored symlinks list is not OK");
                 not_reached();
             }
         }
@@ -1863,7 +1870,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->directories, char *, i);
             if (p == NULL) {
-                err(76, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                err(77, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1871,7 +1878,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(77, __func__, "aborting because user said files list is not OK");
+                err(78, __func__, "aborting because user said files list is not OK");
                 not_reached();
             }
         }
@@ -1882,7 +1889,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->required_files);
     if (len <= 0) {
-        err(78, __func__, "list of required files is empty");
+        err(79, __func__, "list of required files is empty");
         not_reached();
     }
     if (len > 0) {
@@ -1897,7 +1904,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->required_files, char *, i);
             if (p == NULL) {
-                err(79, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+                err(80, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", p);
@@ -1915,7 +1922,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(infop->extra_files, char *, i);
                 if (p == NULL) {
-                    err(80, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
+                    err(81, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
                     not_reached();
                 }
                 print("%s\n", p);
@@ -1924,7 +1931,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         if (!answer_yes) {
             yorn = yes_or_no("Is this OK? [yn]");
             if (!yorn) {
-                err(81, __func__, "aborting because user said files list is not OK");
+                err(82, __func__, "aborting because user said files list is not OK");
                 not_reached();
             }
         }
@@ -1940,7 +1947,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
              */
             errno = 0;      /* pre-clear errno for errp() */
             if (chdir(submission_dir) != 0) {
-                errp(82, __func__, "chdir(\"%s\") failed", submission_dir);
+                errp(83, __func__, "chdir(\"%s\") failed", submission_dir);
                 not_reached();
             }
 
@@ -1950,7 +1957,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                  */
                 p = dyn_array_value(infop->directories, char *, i);
                 if (p == NULL) {
-                    err(83, __func__, "found NULL pointer in infop->directories list");
+                    err(84, __func__, "found NULL pointer in infop->directories list");
                     not_reached();
                 }
                 /*
@@ -1966,7 +1973,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
          */
         errno = 0;
         if (fchdir(topdir) != 0) {
-            errp(84, __func__, "cannot change to topdir");
+            errp(85, __func__, "cannot change to topdir");
             not_reached();
         }
 
@@ -1974,7 +1981,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->required_files, char *, i);
             if (p == NULL) {
-                err(85, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+                err(86, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             /*
@@ -1985,7 +1992,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
              */
             fname = calloc_path(topdir_path, p);
             if (fname == NULL) {
-                err(86, __func__, "couldn't allocate path to copy");
+                err(87, __func__, "couldn't allocate path to copy");
                 not_reached();
             }
             if (target_path != NULL) {
@@ -2000,7 +2007,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             errno = 0; /* pre-clear errno for errp() */
             target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p) + 1);
             if (target_path == NULL) {
-                errp(87, __func__, "failed to allocate target path for %s", p);
+                errp(88, __func__, "failed to allocate target path for %s", p);
                 not_reached();
             }
             /*
@@ -2010,7 +2017,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             errno = 0; /* pre-clear errno for errp() */
             ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p) + 1, "%s/%s", submit_path, p);
             if (ret <= 0) {
-                errp(88, __func__, "snprintf to form target path for %s failed", fname);
+                errp(89, __func__, "snprintf to form target path for %s failed", fname);
                 not_reached();
             }
 
@@ -2044,7 +2051,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->extra_files, char *, i);
             if (p == NULL) {
-                err(89, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
+                err(90, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
                 not_reached();
             }
             /*
@@ -2055,7 +2062,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
              */
             fname = calloc_path(topdir_path, p);
             if (fname == NULL) {
-                err(90, __func__, "couldn't allocate path to copy");
+                err(91, __func__, "couldn't allocate path to copy");
                 not_reached();
             }
             if (target_path != NULL) {
@@ -2070,7 +2077,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             errno = 0; /* pre-clear errno for errp() */
             target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p) + 1);
             if (target_path == NULL) {
-                errp(91, __func__, "failed to allocate target path for %s", p);
+                errp(92, __func__, "failed to allocate target path for %s", p);
                 not_reached();
             }
             /*
@@ -2080,7 +2087,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             errno = 0; /* pre-clear errno for errp() */
             ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p) + 1, "%s/%s", submit_path, p);
             if (ret <= 0) {
-                errp(92, __func__, "snprintf to form target path for %s failed", fname);
+                errp(93, __func__, "snprintf to form target path for %s failed", fname);
                 not_reached();
             } else if (!strcmp(p, TRY_SH) || !strcmp(p, TRY_ALT_SH)) {
                 /*
@@ -2115,7 +2122,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(cwd) != 0) {
-        errp(93, __func__, "failed to change to cwd");
+        errp(94, __func__, "failed to change to cwd");
         not_reached();
     }
 
@@ -2136,12 +2143,12 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     errno = 0; /* pre-clear errno for errp() */
     if (close(cwd) != 0) {
-        errp(94, __func__, "failed to close(cwd)");
+        errp(95, __func__, "failed to close(cwd)");
         not_reached();
     }
     errno = 0; /* pre-clear errno for errp() */
     if (close(topdir) != 0) {
-        errp(95, __func__, "failed to close(topdir)");
+        errp(96, __func__, "failed to close(topdir)");
         not_reached();
     }
 
@@ -2200,7 +2207,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * firewall
      */
     if (infop == NULL || submission_dir == NULL || make == NULL || size == NULL) {
-        err(96, __func__, "passed NULL arg(s)");
+        err(97, __func__, "passed NULL arg(s)");
         not_reached();
     }
 
@@ -2211,39 +2218,39 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * point).
      */
     if (infop->ignored_files == NULL) {
-        err(97, __func__, "NULL ignored files list array");
+        err(98, __func__, "NULL ignored files list array");
         not_reached();
     }
     if (infop->ignored_symlinks == NULL) {
-        err(98, __func__, "NULL ignored symlinks list array");
+        err(99, __func__, "NULL ignored symlinks list array");
         not_reached();
     }
     if (infop->extra_files == NULL) {
-        err(99, __func__, "NULL files list array");
+        err(100, __func__, "NULL files list array");
         not_reached();
     }
     if (infop->required_files == NULL) {
-        err(100, __func__, "NULL required files list array");
+        err(101, __func__, "NULL required files list array");
         not_reached();
     }
     if (infop->directories == NULL) {
-        err(101, __func__, "NULL directories list array");
+        err(102, __func__, "NULL directories list array");
         not_reached();
     }
     if (infop->ignored_dirs == NULL) {
-        err(102, __func__, "NULL ignored directories list array");
+        err(103, __func__, "NULL ignored directories list array");
         not_reached();
     }
     if (infop->forbidden_files == NULL) {
-        err(103, __func__, "NULL forbidden filenames list array");
+        err(104, __func__, "NULL forbidden filenames list array");
         not_reached();
     }
     if (infop->unsafe_files == NULL) {
-        err(104, __func__, "NULL unsafe filenames list array");
+        err(105, __func__, "NULL unsafe filenames list array");
         not_reached();
     }
     if (infop->unsafe_dirs == NULL) {
-        err(105, __func__, "NULL unsafe directory names list array");
+        err(106, __func__, "NULL unsafe directory names list array");
         not_reached();
     }
     /*
@@ -2252,27 +2259,27 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      */
     required_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (required_files == NULL) {
-        err(106, __func__, "couldn't create required files list array");
+        err(107, __func__, "couldn't create required files list array");
         not_reached();
     }
     extra_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (extra_files == NULL) {
-        err(107, __func__, "couldn't create extra files list array");
+        err(108, __func__, "couldn't create extra files list array");
         not_reached();
     }
     missing_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (missing_files == NULL) {
-        err(108, __func__, "couldn't create missing files list array");
+        err(109, __func__, "couldn't create missing files list array");
         not_reached();
     }
     directories = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (directories == NULL) {
-        err(109, __func__, "couldn't create directories list array");
+        err(110, __func__, "couldn't create directories list array");
         not_reached();
     }
     missing_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (missing_dirs == NULL) {
-        err(110, __func__, "couldn't create missing directories list array");
+        err(111, __func__, "couldn't create missing directories list array");
         not_reached();
     }
 
@@ -2282,7 +2289,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(111, __func__, "cannot open .");
+	errp(112, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -2291,7 +2298,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      */
     errno = 0; /* pre-clear errno for errp() */
     if (chdir(submission_dir) != 0) {
-        errp(112, __func__, "unable to change to submission directory: %s", submission_dir);
+        errp(113, __func__, "unable to change to submission directory: %s", submission_dir);
         not_reached();
     }
 
@@ -2305,7 +2312,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * an error too but that's flagged by check_Makefile()).
      */
     if (!is_read("Makefile")) {
-        err(113, __func__, "Makefile does not exist in submission directory %s", submission_dir);
+        err(114, __func__, "Makefile does not exist in submission directory %s", submission_dir);
         not_reached();
     }
     /*
@@ -2326,7 +2333,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
     errno = 0;      /* pre-clear errno for errp() */
     fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, fts_cmp);
     if (fts == NULL) {
-        errp(114, __func__, "fts_open() returned NULL for: %s", submission_dir);
+        errp(115, __func__, "fts_open() returned NULL for: %s", submission_dir);
         not_reached();
     } else {
         while ((item = fts_read(fts)) != NULL) {
@@ -2345,10 +2352,10 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
             optional = is_optional_filename(item->fts_path + 2);
 
             if (ignored_dirname) {
-                err(115, __func__, "found ignored directory in submission directory");
+                err(116, __func__, "found ignored directory in submission directory");
                 not_reached();
             } else if (forbidden_filename) {
-                err(116, __func__, "found forbidden file in submission directory");
+                err(117, __func__, "found forbidden file in submission directory");
                 not_reached();
             }
             /*
@@ -2359,38 +2366,42 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
              * is okay and it does NOT mean that "././" is okay).
              */
             sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-            if (sanity == PATH_ERR_NAME_TOO_LONG) {
-                err(117, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_name + 2, item->fts_name,
-                        (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_PATH_TOO_LONG) {
-                err(118, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", item->fts_path + 2, item->fts_path,
-                        (uintmax_t)strlen(item->fts_path), (uintmax_t)MAX_FILENAME_LEN);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_PATH_TOO_DEEP) {
-                err(119, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
-                        (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_NOT_POSIX_SAFE && strcmp(item->fts_path, ".") != 0) {
-                err(120, __func__, "%s: path not POSIX plus + safe", item->fts_path + 2);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_NOT_RELATIVE) {
-                err(121, __func__, "%s: path not relative", item->fts_path + 2);
-                not_reached();
-            }
-            if (sanity == PATH_ERR_UNKNOWN || sanity == PATH_ERR_PATH_IS_NULL ||
-               sanity == PATH_ERR_PATH_EMPTY || sanity == PATH_ERR_MAX_PATH_LEN_0 ||
-               sanity == PATH_ERR_MAX_DEPTH_0 || sanity == PATH_ERR_MAX_NAME_LEN_0) {
-                    err(122, __func__, "%s: %s", item->fts_path + 2, path_sanity_error(sanity));
+            switch (sanity) {
+                case PATH_ERR_NAME_TOO_LONG:
+                    err(118, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_name + 2, item->fts_name,
+                            (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
                     not_reached();
-            }
-            if (sanity != PATH_OK) {
-                err(123, __func__, "path %s not OK", item->fts_path + 2);
-                not_reached();
+                    break;
+                case PATH_ERR_PATH_TOO_LONG:
+                    err(119, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", item->fts_path + 2, item->fts_path,
+                            (uintmax_t)strlen(item->fts_path), (uintmax_t)MAX_FILENAME_LEN);
+                    not_reached();
+                    break;
+                case PATH_ERR_PATH_TOO_DEEP:
+                    err(120, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
+                            (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
+                    not_reached();
+                    break;
+                case PATH_ERR_NOT_POSIX_SAFE:
+                    err(121, __func__, "%s: path not POSIX plus + safe", item->fts_path + 2);
+                    not_reached();
+                    break;
+                case PATH_ERR_NOT_RELATIVE:
+                    err(122, __func__, "%s: path not relative", item->fts_path + 2);
+                    not_reached();
+                    break;
+                case PATH_ERR_UNKNOWN:
+                case PATH_ERR_PATH_IS_NULL:
+                case PATH_ERR_PATH_EMPTY:
+                case PATH_ERR_MAX_PATH_LEN_0:
+                case PATH_ERR_MAX_DEPTH_0:
+                case PATH_ERR_MAX_NAME_LEN_0:
+                    err(123, __func__, "%s: %s", item->fts_path + 2, path_sanity_error(sanity));
+                    not_reached();
+                    break;
+                case PATH_OK:
+                default:
+                    break;
             }
             switch (item->fts_info) {
                 case FTS_D:

@@ -19,6 +19,11 @@ the judges if desired but I chose 13: not only did it seem like a reasonable
 choice but it's a prime and also is a swap of the digits in the max extra file
 count (which also happens to be prime).
 
+Remove dead code from `scan_topdir()` and `check_submission()` and in the
+process make it easier to see that every condition is covered (every return
+value from `sane_relative_path()` in other words). This fix should make it
+easier to document the process of `mkiocccentry(1)`.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.19 2025-02-09"`.
 Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
 Updated `SOUP_VERSION` to `"1.1.18 2025-02-09"`.
