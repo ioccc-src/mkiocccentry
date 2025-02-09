@@ -22,7 +22,8 @@ count (which also happens to be prime).
 Remove dead code from `scan_topdir()` and `check_submission()` and in the
 process make it easier to see that every condition is covered (every return
 value from `sane_relative_path()` in other words). This fix should make it
-easier to document the process of `mkiocccentry(1)`.
+easier to document the process of `mkiocccentry(1)`. This means that the array
+`ignored_files` is no longer needed as well.
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.19 2025-02-09"`.
 Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.

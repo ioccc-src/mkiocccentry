@@ -268,22 +268,7 @@ free_info(struct info *infop)
      * free arrays
      */
 
-    /*
-     * ignored files (files that sane_relative_path() did not return PATH_OK
-     */
-    if (infop->ignored_files != NULL) {
-        len = dyn_array_tell(infop->ignored_files);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->ignored_files, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->ignored_files);
-        infop->ignored_files = NULL;
-    }
-    /*
+   /*
      * ignored symlinks (any symlinks found in topdir)
      */
     if (infop->ignored_symlinks != NULL) {
