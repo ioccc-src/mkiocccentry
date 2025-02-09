@@ -1414,10 +1414,8 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
                         not_reached();
                     }
                     append_unique_str(infop->ignored_dirs, filename);
-                    dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
                 } else if (item->fts_info == FTS_F) {
                     append_unique_str(infop->ignored_files, filename);
-                    dbg(DBG_MED, "%s: not POSIX plus + safe chars only", item->fts_path);
                 }
                 if (item->fts_info != FTS_SL && item->fts_info != FTS_SLNONE) {
                     /*
