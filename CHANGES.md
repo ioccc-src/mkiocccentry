@@ -1,6 +1,29 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.29 2025-02-09
+
+Add a limit on the number of directories in a submission so that one cannot
+abuse the fact that there was no limit on number of directories besides the
+depth of subdirectories. For `txzchk(1)` (due to how it works) it counts the
+submission directory itself (which is why it is `MAX_DIR_COUNT` and not
+`MAX_EXTRA_DIR_COUNT`) but for `mkiocccentry(1)` it does not count the
+topdir/submission directory as that would be confusing to users (it would seem
+like there is a bug as well whereas now it only would be confusing if they look
+at the macro - but since that's unlikely it is less of a problem and it's less
+confusing than in `txzchk(1)` as in the tarball you do see the submission
+directory itself). This update does require a chance in documentation.
+
+The number chosen was arbitrarily selected and certainly could be modified by
+the judges if desired but I chose 13: not only did it seem like a reasonable
+choice but it's a prime and also is a swap of the digits in the max extra file
+count (which also happens to be prime).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.19 2025-02-09"`.
+Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
+Updated `SOUP_VERSION` to `"1.1.18 2025-02-09"`.
+
+
 ## Release 2.3.28 2025-02-08
 
 Make some fixes for issue #1070.
