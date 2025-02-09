@@ -2520,8 +2520,6 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
         err(132, __func__, "too many extra directories in submission directory: %ju > %ju", (uintmax_t)(len),
                 (uintmax_t)(MAX_DIR_COUNT-1));
         not_reached();
-    } else {
-        dbg(DBG_NONE, "total of %ju extra directories in submission directory", (uintmax_t)len);
     }
 
 
