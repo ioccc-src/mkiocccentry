@@ -1576,21 +1576,11 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
     }
 
     /*
-     * verify that there are not too many directories if MAX_DIR_COUNT > 1.
-     *
-     * Why do we check only if MAX_DIR_COUNT > 1? Because at least one directory
-     * is required, the submission directory itself. But unlike in txzchk(1) we
-     * do not here count the topdir itself which is why we add 1 to the total
-     * directory count. In check_submission() this means that there will be a
-     * different check, especially considering that unsafe file and directory
-     * names are an error there (they should be shown to the user in
-     * copy_topdir() but skipped and not copied which is why it is not an
-     * immediate error). For display purposes, however, we will not show the
-     * topdir as a directory as it could be confusing. This is also why we say
-     * 'extra directories' instead of 'directories'.
+     * verify that there are not too many directories if MAX_EXTRA_DIR_COUNT > 0.
      */
-    if (MAX_DIR_COUNT > 1 && dirs + unsafe_dirs + 1 > MAX_DIR_COUNT) {
-        err(56, __func__, "too many extra directories: %ju > %ju", (uintmax_t)(dirs + unsafe_dirs), (uintmax_t)(MAX_DIR_COUNT-1));
+    if (MAX_EXTRA_DIR_COUNT > 0 && dirs + unsafe_dirs > MAX_EXTRA_DIR_COUNT) {
+        err(56, __func__, "too many extra directories: %ju > %ju", (uintmax_t)(dirs + unsafe_dirs),
+                (uintmax_t)MAX_EXTRA_DIR_COUNT);
         not_reached();
     }
 
@@ -2475,25 +2465,13 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
         not_reached();
     }
     /*
-     * verify that there are not too many directories if MAX_DIR_COUNT > 1.
-     *
-     * Why do we check only if MAX_DIR_COUNT > 1? Because at least one directory
-     * is required, the submission directory itself. But unlike in txzchk(1) we
-     * do not here count the topdir itself which is why we add 1 to the total
-     * directory count. Also, unlike in scan_topdir(), we do not have unsafe
-     * directory names because if any are found here it is an immediate error.
-     *
-     * For display purposes, however, we will not show the submission as a directory
-     * as it could be confusing. This is also why we say too many 'extra
-     * directories' as opposed to 'directories'.
+     * verify that there are not too many directories if MAX_EXTRA_DIR_COUNT > 0.
      */
-    if (MAX_DIR_COUNT > 1 && len + 1 > MAX_DIR_COUNT) {
-        err(128, __func__, "too many extra directories in submission directory: %ju > %ju", (uintmax_t)(len),
-                (uintmax_t)(MAX_DIR_COUNT-1));
+    if (MAX_EXTRA_DIR_COUNT > 0 && len > MAX_EXTRA_DIR_COUNT) {
+        err(128, __func__, "too many extra directories in submission directory: %ju > %ju", (uintmax_t)len,
+                (uintmax_t)MAX_EXTRA_DIR_COUNT);
         not_reached();
     }
-
-
 
     /*
      * verify prog.c, Makefile and remarks.md have been found in the submission

@@ -1,6 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.30 2025-02-10
+
+Change `MAX_DIR_COUNT` to `MAX_EXTRA_DIR_COUNT`.
+
+To make it much less confusing the submission directory is no longer considered
+with the maximum number of directories allowed. This required an algorithm
+change in `txzchk(1)` as well as some updates to how `mkiocccentry(1)` checks
+if there are too many extra directories.
+
+As for `txzchk(1)` the struct `txz_file` now has a `char *top_dirname` (which is
+calculated like `dir_name(path, -1);)`. In the case `fnamchk(1)` did not fail
+(i.e. `dirname` - renamed from `dir_name` is not `NULL`) and we found a
+directory (first char of the line is `d`) we get the directory name with the
+trailing `/` removed (`dir_name(path, 0);`) and compare it with the top
+directory name; if they're not the same and the `dirname` (the submission
+directory name) is the same as the top directory name then it's an extra
+directory.
+
+Added function `free_txz_file()` which takes a pointer to a pointer to a `struct
+txz_file` and is called by `free_txz_files_list()`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.20 2025-02-10"`.
+Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
+Updated `SOUP_VERSION` to `"1.1.19 2025-02-10"`.
+
+
 ## Release 2.3.29 2025-02-09
 
 Add a limit on the number of directories in a submission so that one cannot

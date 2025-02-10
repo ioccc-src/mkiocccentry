@@ -89,7 +89,7 @@
 #define MANDATORY_SUBMISSION_FILES (5)		/* number of required files in submission */
 #define OPTIONAL_SUBMISSION_FILES (3)		/* submission files, if they exist, that do NOT count towards the extra total */
 #define MAX_EXTRA_FILE_COUNT (31)		/* maximum number of files not including mandatory submission files */
-#define MAX_DIR_COUNT (13)                      /* maximum number of directories including submission directory */
+#define MAX_EXTRA_DIR_COUNT (13)                /* maximum number of EXTRA directories */
 /* maximum total file count, including mandatory files, for a submission */
 #define MAX_FILE_COUNT (MANDATORY_SUBMISSION_FILES+OPTIONAL_SUBMISSION_FILES+MAX_EXTRA_FILE_COUNT)
 /*
