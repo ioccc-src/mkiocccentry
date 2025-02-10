@@ -32,6 +32,9 @@ modularisation of these checks (new function `check_ftsent()`) plus better
 only to obtain the file descriptor in `check_submission()` when we can simply
 pass it to the function.
 
+Bug fix `test_github()`: it did not check if there was a character after the
+`@`.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.20 2025-02-10"`.
 Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
 Updated `SOUP_VERSION` to `"1.1.19 2025-02-10"`.

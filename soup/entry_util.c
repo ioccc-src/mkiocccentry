@@ -3385,7 +3385,12 @@ test_github(char const *str)
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: github: <%s> is invalid", str);
 	return false;
-
+    } else if (str[1] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account has no chars after '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "github is valid");
