@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "06 February 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "10 February 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -20,101 +20,78 @@
 .I topdir
 .SH DESCRIPTION
 .B mkiocccentry
-gathers your source file, Makefile, remarks and other files (and subdirectories) in the
+creates a tarball suitable to be submitted to the IOCCC, based on the rules and guidelines (mentioned in the
+.B NOTES
+section below).
+The
 .I topdir
-and assuming everything is correct and valid, it will create an XZ compressed tarball which will be further tested by
-.BR txzchk (1).
-.BR mkiocccentry (1)
-runs
+is the directory where the files (and if desired directories) to be added to the submission tarball, including the mandatory
+.BR prog.c ,
+.BR Makefile
+and
+.BR remarks.md
+are.
+The
+.I workdir
+is a directory where your submission directory (named based on the contestant ID, submission slot and timestamp) will be created.
+The files (and if necessary) directories will be copied to this submission directory and many checks will be done; some failed checks you may override but others are fatal errors.
+.PP
+If the mandatory files do not exist or are not regular readable files in the
+.I topdir
+it is an error.
+If
+.B remarks.md
+is empty (i.e. size 0) it is an error.
+If
+.B Makefile
+is empty (i.e. size 0) it is an error.
+.PP
+This tool uses the code from
 .BR iocccsize (1)
 on your
-.I prog.c
-and it also runs tests on the
-.IR Makefile \|,
-the
-.IR remarks.md
-and any extra files as well, to verify that everything seems in order.
-You can ignore certain warnings but some issues are errors; if invalid input or files are provided the program will let you know more about it so you can fix it.
-.PP
-Under the
-.I workdir
+.B prog.c
+file.
+The
 .BR mkiocccentry (1)
-will create a submission directory (based on the IOCCC contestant ID and submission slot) that the program will copy the mandatory files to, along with other files and directories in the
-.IR topdir ,
-plus the
-.BR mkiocccentry (1)\-generated
-files
-.B .auth.json
-and
-.BR .info.json .
+tool verifies that the
+.B Makefile
+is not of size 0 and runs a number of checks on it, in particular looking for specific rules (and insisting that the
+.B all
+rule is first); if the size is 0 it is an error but you may override the other warnings with the risk of violating the rules.
+.BR mkiocccentry (1)
+also verifies that the
+.B remarks.md
+file is not of size 0; if it is it is an error.
 .PP
-There is a maximum depth allowed for subdirectories (4) and the basename of files and directories are restricted to POSIX plus \+ safe characters, plus a maximum name length for each directory component (38) and a maximum total pathname length (99).
-Certain directories are also skipped for you, namely, those that start with a dot (.),
-.BR .git ,
-.BR CVS ,
-.BR RCCS
-and
-.BR .svn .
+Assuming the mandatory files are found, you will be presented with lists of directories/files/symlinks that will be ignored as well as directories and files to be made and copied over, giving you the chance to confirm that everything is in order.
+Assuming it is, any directories required will be made in the submission directory.
+Once this is done the files will be copied to their correct directories.
+You will then be given a chance to verify that everything is okay.
 .PP
-If too many files are encountered it is an error and if the depth is too deep it is also an error.
-Otherwise, if everything is in order it will create the two JSON files,
+Assuming it is you will be asked information about your submission and the author(s).
+Once this is done and you have confirmed the author details are correct,
+.BR mkiocccentry (1)
+will create the mandatory
+.BR .info.json
+and
+.BR chkentry (1)
+will be executed on it.
+Assuming all is okay the mandatory
 .BR .auth.json
-and
-.BR .info.json ,
-and run
+file will be created and
 .BR chkentry (1)
-on each of these files.
-.PP
-Before creating the JSON files or the tarball,
-.BR mkiocccentry (1)
-will ask you for information about the submission and the author (or authors), allowing you to correct mistakes as you go along.
-Assuming everything is okay, the tarball will be created and
-.BR mkiocccentry (1)
-will execute
+will be run on it.
+If everything goes okay you will be presented with a directory listing of the submission directory again and asked to confirm everything is well.
+If it is the submission tarball will be formed and then
 .BR txzchk (1)
-on that, which runs additional checks, one of which is checking the tarball's top level directory name with
-.BR fnamchk (1).
+(which in turn runs
+.BR fnamchk (1)
+on the tarball) will be run on it.
 .PP
-If the submission directory under the work directory already exists, the program will tell you to move it or delete it; the program does
-.B NOT
-delete or move it for you.
+There are many rules and checks done in the above process that you may find in more detail at:
+\<https://www.ioccc.org/faq.html#mkiocccentry_process\>.
 .PP
-Before forming the tarball,
-.BR mkiocccentry (1)
-will ask you for information about your submission including the number of authors and various information about the author(s).
-Once all the information has been collected it will copy the files to the submission directory under the
-.IR workdir \|.
-At this point it will create the
-.I .info.json
-and
-.I .auth.json
-files with information about the submission and information about the authors (which are for winning entries).
-.PP
-After each file is formed it will run
-.BR chkentry (1)
-on the file. If
-.BR chkentry (1)
-exits with non\-zero
-.B mkiocccentry
-will abort because any problems detected by
-.BR chkentry (1)
-based on what
-.B mkiocccentry
-wrote indicates that there is a serious mismatch between what
-.B mkiocccentry
-is doing and what
-.BR chkentry (1)
-expects.
-.PP
-After forming the tarball
-.BR txzchk (1)
-is run which verifies that the tarball is okay (\c
-.BR txzchk (1)
-in turn will call
-.BR fnamchk (1)\c
-\&).
-.PP
-Because some might want or need to update an entry there is functionality to write your answers to a file so that you can feed the program the answers quickly.
+Because some might want or need to update an entry there is functionality to write your answers to a file so that you can feed the program the answers quickly; see below.
 .SH OPTIONS
 .TP
 .B \-h
@@ -138,6 +115,16 @@ Show version and exit.
 .B \-W
 Ignore all warnings.
 When this option is specified the program warns you that you've ignored all warnings (therefore not ignoring all warnings :) ), informing you that the judges will not ignore all warnings.
+Use with
+.B EXTREME CAUTION
+as ignoring warnings may produce a submission that violates the IOCCC rules
+and/or conflicts with the IOCCC guidelines.
+.br
+See:
+.ft B
+\<https://www.ioccc.org/next/index.html\>
+.ft R
+for information on the IOCCC rules and guidelines.
 .TP
 .B \-E
 Exit 1 after the first warning.
@@ -154,7 +141,7 @@ and/or conflicts with the IOCCC guidelines.
 .br
 See:
 .ft B
-https://www.ioccc.org/next/index.html
+\<https://www.ioccc.org/next/index.html\>
 .ft R
 for information on the IOCCC rules and guidelines.
 .TP
@@ -329,9 +316,23 @@ invalid command line, invalid option or option missing an argument
 .TQ
 >= 10
 internal error
+.SH NOTES
+.PP
+The rules can be found at:
+\<https://www.ioccc.org/next/rules.html\>.
+.br
+The guidelines can be found at:
+\<https://www.ioccc.org/next/guidelines.html\>.
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
+.PP
+Make sure you're using the most recent version of all tools.
+This is important because if a tool is out of date you risk breaking the rules.
+Furthermore, if you use this tool outside the repo directory (providing a path to it), make certain to provide the program the options so that it can locate the correct version of the other tools as otherwise you will likely run into problems.
+For instance, if you have not installed the tools it would not be able to locate the tools.
+But even if you did install them if you have not installed the latest version it could be that a tool fails.
+Or if a tool does not fail it might be that you submit a tarball with a wrong version and your submission would be rejected for violating rule 17.
 .PP
 The IOCCC uses the term
 .B entry
@@ -433,3 +434,8 @@ and
  ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk \.\.\.
 .ft R
 .RE
+.SH SEE ALSO
+.BR iocccsize (1),
+.BR chkentry (1),
+.BR txzchk (1),
+.BR fnamchk (1)
