@@ -6066,7 +6066,7 @@ get_author_info(struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "URLs must begin with http:// or https:// followed by the rest of the home page URL",
+			  "URLs must begin with http:// or https:// followed by the rest of the home page URL.",
 			  "",
 			  NULL);
 		    if (abort_on_warning) {
@@ -6299,7 +6299,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for warnp() */
 		ret =
 		    fprintf(stderr,
-			    "\nSorry ( tm Canada :-) ), we limit GitHub account names to %d characters after the 1st @\n\n",
+			    "\nSorry ( tm Canada :-) ), we limit GitHub account names to %d characters after the 1st @.\n\n",
 			    MAX_GITHUB_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing GitHub user length limit");
@@ -6331,7 +6331,8 @@ get_author_info(struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "GitHub accounts must start with a @ and have no other @-signs.",
+			  "GitHub accounts must start with a @ and have no other @-signs and must have at least",
+                          "one more character.",
 			  "",
 			  NULL);
 		    if (abort_on_warning) {
