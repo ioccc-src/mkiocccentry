@@ -5001,3 +5001,34 @@ is_ignored_dirname(char const *str)
     dbg(DBG_MED, "%s is not an ignored dirname", str);
     return false;
 }
+
+/*
+ * has_ignored_dirname   - check if path has ignored dirname in it
+ *
+ * given:
+ *
+ *      path    - path to check
+ *
+ * NOTE: this function returns false if path is NULL.
+ */
+bool
+has_ignored_dirname(char const *path)
+{
+    size_t i = 0;
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+        return false;
+    } else if (*path == '\0') {
+        return false;
+    }
+
+    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
+        if (path_has_component(path, ignored_dirnames[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}

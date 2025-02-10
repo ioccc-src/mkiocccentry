@@ -24,6 +24,14 @@ txz_file` and is called by `free_txz_files_list()`.
 
 Fixed check of `len < 0` of directories in `scan_topdir()`.
 
+Important bug fixes in `mkiocccentry(1)` for issue #1070. This includes some
+file types not accounted for (including error conditions) as well as
+modularisation of these checks (new function `check_ftsent()`) plus better
+(more) comments.  Moved `has_ignored_dirname()` to `soup/entry_util.c`. In
+`copy_topdir()` there is no need to `fchdir(cwd)` only to close the descriptor
+only to obtain the file descriptor in `check_submission()` when we can simply
+pass it to the function.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.20 2025-02-10"`.
 Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
 Updated `SOUP_VERSION` to `"1.1.19 2025-02-10"`.

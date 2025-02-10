@@ -322,7 +322,7 @@ extern bool is_mandatory_filename(char const *str);
 extern bool is_forbidden_filename(char const *str);
 extern bool is_optional_filename(char const *str);
 extern bool is_ignored_dirname(char const *str);
-
+extern bool has_ignored_dirname(char const *path);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
