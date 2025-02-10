@@ -1565,15 +1565,7 @@ scan_topdir(char * const *args, struct info *infop, char const *make, char const
     }
 
     dirs = dyn_array_tell(infop->directories);
-    if (dirs < 0) {
-        err(54, __func__, "size of directories list < 0");
-        not_reached();
-    }
     unsafe_dirs = dyn_array_tell(infop->unsafe_dirs);
-    if (unsafe_dirs < 0) {
-        err(55, __func__, "size of unsafe directories list < 0");
-        not_reached();
-    }
 
     /*
      * verify that there are not too many directories if MAX_EXTRA_DIR_COUNT > 0.

@@ -1040,6 +1040,7 @@ check_all_txz_files(void)
     if (MAX_EXTRA_DIR_COUNT > 0 && tarball.directories > MAX_EXTRA_DIR_COUNT) {
         warn("txzchk", "%s: %ju extra directories > max %ju: %ju > %ju", tarball_path, (uintmax_t)tarball.directories,
                 (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)tarball.directories, (uintmax_t)MAX_EXTRA_DIR_COUNT);
+        ++tarball.directories;
         ++tarball.total_feathers;
     }
 
