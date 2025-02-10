@@ -30,4 +30,5 @@ Warning: txzchk: found non-executable non-directory file test-6/prog.c with wron
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 2 files with the name prog.c in the same directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 6 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 31 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: 2 extra directories > max 1: 2 > 1
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 32 feathers stuck in the tarball
