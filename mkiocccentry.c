@@ -6024,7 +6024,7 @@ get_author_info(struct author **author_set_p)
 		 * issue rejection message
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters\n\n", MAX_URL_LEN);
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters.\n\n", MAX_URL_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing URL length limit");
 		}
