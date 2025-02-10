@@ -1,6 +1,299 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.30 2025-02-10
+
+Change `MAX_DIR_COUNT` to `MAX_EXTRA_DIR_COUNT`.
+
+To make it much less confusing the submission directory is no longer considered
+with the maximum number of directories allowed. This required an algorithm
+change in `txzchk(1)` as well as some updates to how `mkiocccentry(1)` checks
+if there are too many extra directories.
+
+As for `txzchk(1)` the struct `txz_file` now has a `char *top_dirname` (which is
+calculated like `dir_name(path, -1);)`. In the case `fnamchk(1)` did not fail
+(i.e. `dirname` - renamed from `dir_name` is not `NULL`) and we found a
+directory (first char of the line is `d`) we get the directory name with the
+trailing `/` removed (`dir_name(path, 0);`) and compare it with the top
+directory name; if they're not the same and the `dirname` (the submission
+directory name) is the same as the top directory name then it's an extra
+directory.
+
+Added function `free_txz_file()` which takes a pointer to a pointer to a `struct
+txz_file` and is called by `free_txz_files_list()`.
+
+Fixed check of `len < 0` of directories in `scan_topdir()`.
+
+Important bug fixes in `mkiocccentry(1)` for issue #1070. This includes some
+file types not accounted for (including error conditions) as well as
+modularisation of these checks (new function `check_ftsent()`) plus better
+(more) comments.  Moved `has_ignored_dirname()` to `soup/entry_util.c`. In
+`copy_topdir()` there is no need to `fchdir(cwd)` only to close the descriptor
+only to obtain the file descriptor in `check_submission()` when we can simply
+pass it to the function.
+
+Bug fix `test_github()`: it did not check if there was a character after the
+`@`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.20 2025-02-10"`.
+Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
+Updated `SOUP_VERSION` to `"1.1.19 2025-02-10"`.
+
+
+## Release 2.3.29 2025-02-09
+
+Add a limit on the number of directories in a submission so that one cannot
+abuse the fact that there was no limit on number of directories besides the
+depth of subdirectories. For `txzchk(1)` (due to how it works) it counts the
+submission directory itself (which is why it is `MAX_DIR_COUNT` and not
+`MAX_EXTRA_DIR_COUNT`) but for `mkiocccentry(1)` it does not count the
+topdir/submission directory as that would be confusing to users (it would seem
+like there is a bug as well whereas now it only would be confusing if they look
+at the macro - but since that's unlikely it is less of a problem and it's less
+confusing than in `txzchk(1)` as in the tarball you do see the submission
+directory itself). This update does require a chance in documentation.
+
+The number chosen was arbitrarily selected and certainly could be modified by
+the judges if desired but I chose 13: not only did it seem like a reasonable
+choice but it's a prime and also is a swap of the digits in the max extra file
+count (which also happens to be prime).
+
+Remove dead code from `scan_topdir()` and `check_submission()` and in the
+process make it easier to see that every condition is covered (every return
+value from `sane_relative_path()` in other words). This fix should make it
+easier to document the process of `mkiocccentry(1)`. This means that the array
+`ignored_files` is no longer needed as well.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.19 2025-02-09"`.
+Updated `TXZCHK_VERSION` to `"1.1.12 2025-02-09"`.
+Updated `SOUP_VERSION` to `"1.1.18 2025-02-09"`.
+
+
+## Release 2.3.28 2025-02-08
+
+Make some fixes for issue #1070.
+
+Add missing lists to present to user (before copying files) such as: directories
+to be made; unsafe files and directories to be ignored (instead of making it an
+error - it is an error only if in the submission directory). When traversing the
+submission directory create lists for directories so these can be presented to
+the user as well (if any that are in the topdir are not found in the submission
+directory).
+
+Use macros instead of raw octal modes (for `mkdir(2)`/`mkdirs()`/`copyfile()`).
+
+Various other fixes might also have been made.
+
+Modularise `copy_topdir()` and `verify_submission()` by splitting them into
+three functions. The first part of `copy_topdir()` is now in `scan_topdir()` and
+it does the scanning (up to the point of making sure the required files exist in
+the topdir and that there are not too many files). At the end of the function it
+will call the new `copy_topdir()` which lists everything to the user and asks
+for verification. If the user is okay with everything then directories are made
+(if necessary) and files are copied over. Then if nothing is wrong after that
+`copy_topdir()` will call `check_submission()` which makes sure everything that
+is in `topdir` exists in the submission directory and also run other tests like
+`check_prog_c()`, `check_Makefile()` and `check_remarks_md()`.  The check for
+unique strings in the lists is now case-insensitive for filesystems that do not
+distinguish case (just like we do when checking that an extra file is not the
+same name, regardless of case, as a required file, for example).  The check for
+prog.c, Makefile and remarks.md are still case-sensitive.
+
+
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.18 2025-02-08"`.
+Updated `SOUP_VERSION` to `"1.1.17 2025-02-08"`.
+
+
+## Release 2.3.27 2025-02-07
+
+Resolve issue #1070.
+
+The simplified command line should be complete! (Or if not complete it is just
+about complete and should be done relatively simply.) The next step will be to
+update the man page and any documentation in the website (that might have to be
+done, perhaps talking about all the steps).
+
+I renamed the `mkiocccentry()` function to `copy_topdir()` and the function that
+verifies everything is `verify_submission()` (yes this is unfortunate because of
+the `verify_submission_dir()` which actually happens after `verify_submission()`
+but it seemed like an appropriate name - and unfortunately it comes much later
+in the process so they can't be merged).
+
+Add list of ignored symlinks to `copy_topdir()`. This is useful as otherwise the
+user might think it's a regular file and not understand why it's being ignored.
+
+Ask user if forbidden files list is okay (even though they are always forbidden
+it might be that the user needs such a file in the submission and they can come
+up with some other way to go about it).
+
+Move the check of `prog.c`, `Makefile` and `remarks.md` to the second step
+(during the traversing of the submission directory where the files were copied
+to).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.17 2025-02-07"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.9 2025-02-07"`.
+Added `Makefile.test` in `test_ioccc` which the `mkiocccentry_test.sh` script
+uses. This is necessary because the Makefile that was used before was the top
+level Makefile here and using `make clobber` on it caused errors (because of
+missing subdirectories).
+
+Unrelated but I have removed `XXX` comments in FAQ.md as the task had been done
+(updating links after the great fork merge).
+
+
+## Release 2.3.26 2025-02-06
+
+More work on #1070.
+
+`collect_topdir_files()` has been renamed `mkiocccentry()`.
+
+`write_info()` now writes additional files to the manifest. This means the
+dynamic arrays are in the struct info (the `extra_files` variable in the struct
+has been removed and the `extra_count` is a `size_t`).
+
+The required files are now processed (checked) after traversing the topdir.
+These files are in a new array (`required_files`) and they are shown to the user
+prior to showing any extra files (which in this case includes files that are not
+try.sh or try.alt.sh).
+
+The `check_prog_c()`, `check_Makefile()` and `check_remarks_md()` functions had
+to change because we cannot (and this was a bug fix) know exactly where the
+files might be (or where the user runs the program from, see below).  These
+functions also no longer check the filename length of the files as we already
+know they are the correct length AND also the new path is not necessarily the
+same. Also, the `char *`s that have the filenames of `"prog.c"`, `"Makefile"`
+and `"remarks.md"` are no longer there: we simply write them directly (this was
+necessary because a problem occurred - though that was likely fixed - and
+because we no longer need it anyway as the filenames are exact [before one could
+specify a different filename and it would copy it to the right filename but now
+this is not possible]).
+
+The `free_info()` has been changed to account for the changes in the struct.
+
+Updated `find_utils()` to check for `make(1)` (default paths `/usr/bin/make` and
+if not that `/bin/make`). New option to `mkiocccentry` is `-m make` to do this.
+This will be needed for part of #1070.
+
+Updated `mkiocccentry(1)` or the new `-m make` option.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.16 2025-02-06"`.
+Updated `SOUP_VERSION` to `"1.1.16 2025-02-06"`.
+Updated `TXZCHK_VERSION` to `"1.1.11 2025-02-06"`.
+
+
+## Release 2.3.25 2025-02-05
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function `mkdirs()`. As described in `jparse/CHANGES.md`:
+
+    New util function mkdirs() (using mkdir(2)) which acts as mkdir -p with
+    specific modes (uses chmod(2) as it's not affected by the umask and also
+    because anything but permissions set with mkdir(2) is undefined). If the first
+    arg (an int) is -1 (actually < 0) it uses the current working directory to
+    start out with; but one can pass a file descriptor of the directory to start out
+    with. The mode is only set on directories that are created (i.e. no error)
+    because otherwise an already existing directory could have its mode changed.
+    Just like with mkdir(2) one must be careful with the mode. Of course if one
+    sets a mode like 0 then trying to work under it would be a problem but that's on
+    the user. If there is an error in creating a directory then it only aborts if
+    errno is not EEXIST (already exists) so that it can continue (just like
+    mkdir -p).
+
+This is used to create (sub)directory trees in submission tarballs.
+
+Function `verify_submission_dir()` now uses `-R` in `ls` and while there is a
+line to read it checks if it matches the correct form. When the loop is done if
+no correct line was found then it is an error (if it's < 0 from the beginning it
+is also an error).
+
+`collect_topdir_files()` now copies additional files to the submission
+directory. It requires obtaining absolute paths for the target file and the
+source files because otherwise files might not be found (this does mean we have
+to use `getcwd()` and have buffers of size `PATH_MAX+1`). There are numerous XXX
+comments added pointing out that some of this has to be changed and perhaps
+cleaned up (one such thing is that prog.c, Makefile and remarks.md will not be
+checked when traversing the topdir but processed later on with the other files -
+but there are other things that have to be done in addition to steps not yet
+implemented). So although some of this will have to be changed some of it can
+simply be moved and perhaps changed a bit (or adapted into what has to be done
+depending on the steps). Depending on the file the permissions are different
+(`try.sh` and `try.alt.sh` are the only ones allowed to be executable, for
+example).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.15 2025-02-05"`.
+
+## Release 2.3.24 2025-02-04
+
+`collect_topdir_files()` now creates dynamic arrays for lists of
+files/directories (ignored/skipped, added etc.), sorted after traversing the
+directory. Although it does add the `prog.c`, `Makefile` and `remarks.md` during
+the traversing of the directory it still adds those to the list of files. When
+the traversing is done it shows the user the list of files and it will prompt
+them if everything is in order (assuming the three required files were found and
+there was not an error condition). Some arrays are not shown to the user (yet?)
+and it is not yet clear if all of them will be needed either.
+
+Add symlinks to ignored files list in `collect_topdir_files()`.
+Show forbidden files list in `collect_topdir_files()`.
+
+The `mkiocccentry_test.sh` script had to be updated due how the checks on the
+maximum depth is now done.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.14 2025-02-04"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.8 2025-02-04"`.
+
+## Release 2.3.23 2025-02-03
+
+Improve function `copyfile()` (from [jparse
+repo](https://github.com/xexyl/jparse/)) so that it can either copy the mode
+from the source file to the destination file (mode as in `stat(2)`'s `st_mode`)
+OR set to a specific mode. This necessitated updating `mkiocccentry(1)`.
+
+Use (in `copyfile()`) `errp()` in some cases where it was `err()` (when we had
+`errno`). Also in case of `errp()` use `strerror(errno)`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.13 2025-02-03`.
+
+
+## Release 2.3.22 2025-02-02
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility function `copyfile()`. As described in `jparse/CHANGES.md`:
+
+    Added new util function copyfile() which takes a source (char const *) and
+    dest (char const *) file (paths) (and a mode_t) and copies the source into
+    the dest, assuming that src file is a regular readable file and the dest file
+    does not exist. If the number of bytes read is not the same as the number of
+    bytes written, or if the contents of the dest file is not the same as the
+    contents of the source file (after copying) it is an error. If mode is not 0
+    it uses fchmod(2) to set the file mode.  This function does NOT create
+    directories but it can take directories as args, as long as they exist.
+
+`mkiocccentry` now uses `copyfile()` instead of `cp(1)`. Updated `find_utils()`
+to not look for `cp(1)` and removed `CP_PATH_0` and `CP_PATH_1` macros. The
+calls to `find_utils()` were updated which means `txzchk` was also updated.
+`mkiocccentry_test.sh` no longer has the `-c cp` option. Updated man pages of
+`mkiocccentry` and `mkiocccentry_test.sh`.
+
+`collect_topdir_files()` now skips descendants of ignored directory names. It
+also checks for forbidden filenames before checking the file type. The same goes
+for checking if it's a sane relative path. Prior to checking the file type, if
+it is ignored it will be processed (as necessary - not yet done) and if it's a
+forbidden filename it will also be processed (as necessary - not yet done). If
+it is not ignored and not forbidden then we check if it's a sane relative path
+and depending on the type of file (directory or regular file) we do the next
+step. There still is no list of files yet but this prevents having to go down
+directories that are to be ignored and not checking forbidden filenames (other
+than it being forbidden) etc.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.12 2025-02-02"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+Updated `TXZCHK_VERSION` to `"1.1.10 2025-02-02"`.
+Updated `SOUP_VERSION` to `"1.1.15 2025-02-02"`.
+
+
+
 ## Release 2.3.21 2025-02-01
 
 Add `O_CLOEXEC` flag to `open(2)` in `write_info()` and `write_auth()` functions

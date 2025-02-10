@@ -82,8 +82,6 @@
  */
 #define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
-#define CP_PATH_0 "/bin/cp"			    /* historic path for cp */
-#define CP_PATH_1 "/usr/bin/cp"			    /* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
 #define LS_PATH_0 "/bin/ls"			    /* historic path for ls */
 #define LS_PATH_1 "/usr/bin/ls"			    /* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
 #define FNAMCHK_PATH_0 "./test_ioccc/fnamchk"	    /* default path to fnamchk tool */
@@ -94,6 +92,8 @@
 #define CHKENTRY_PATH_1 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
 #define JPARSE_PATH_0 "./jparse/jparse"		    /* default path to jparse */
 #define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
+#define MAKE_PATH_0 "/usr/bin/make"                 /* default path to make tool */
+#define MAKE_PATH_1 "/bin/make"                     /* in case /usr/bin/make doesn't work */
 
 
 /*

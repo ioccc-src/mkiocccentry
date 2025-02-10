@@ -204,7 +204,9 @@ free_auth(struct auth *authp)
 void
 free_info(struct info *infop)
 {
-    int i;
+    char *p = NULL;
+    size_t i = 0;
+    size_t len = 0;
 
     /*
      * firewall
@@ -250,33 +252,8 @@ free_info(struct info *infop)
 	infop->tarball = NULL;
     }
 
-    /*
-     * free file name array
-     */
     /* NOTE: info_file is a compiled in constant */
     /* NOTE: auth_file is a compiled in constant */
-    if (infop->prog_c != NULL) {
-	free(infop->prog_c);
-	infop->prog_c = NULL;
-    }
-    if (infop->Makefile != NULL) {
-	free(infop->Makefile);
-	infop->Makefile = NULL;
-    }
-    if (infop->remarks_md != NULL) {
-	free(infop->remarks_md);
-	infop->remarks_md = NULL;
-    }
-    if (infop->extra_file != NULL) {
-	for (i = 0; i < infop->extra_count; ++i) {
-	    if (infop->extra_file[i] != NULL) {
-		free(infop->extra_file[i]);
-		infop->extra_file[i] = NULL;
-	    }
-	}
-	free(infop->extra_file);
-	infop->extra_file = NULL;
-    }
 
     /*
      * free time values
@@ -285,6 +262,133 @@ free_info(struct info *infop)
     if (infop->utctime != NULL) {
 	free(infop->utctime);
 	infop->utctime = NULL;
+    }
+
+    /*
+     * free arrays
+     */
+
+   /*
+     * ignored symlinks (any symlinks found in topdir)
+     */
+    if (infop->ignored_symlinks != NULL) {
+        len = dyn_array_tell(infop->ignored_symlinks);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_symlinks, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->ignored_symlinks);
+        infop->ignored_symlinks = NULL;
+    }
+    /*
+     * required files (prog.c, Makefile, remarks.md)
+     */
+    if (infop->required_files != NULL) {
+        len = dyn_array_tell(infop->required_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->required_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->required_files);
+        infop->required_files = NULL;
+    }
+    /*
+     * extra files (anything not a required file)
+     */
+    if (infop->extra_files != NULL) {
+        len = dyn_array_tell(infop->extra_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->extra_files);
+        infop->extra_files = NULL;
+    }
+    /*
+     * directories found in topdir
+     */
+    if (infop->directories != NULL) {
+        len = dyn_array_tell(infop->directories);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->directories);
+        infop->directories = NULL;
+    }
+    /*
+     * ignored directories (.git, CVS etc.)
+     */
+    if (infop->ignored_dirs != NULL) {
+        len = dyn_array_tell(infop->ignored_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->ignored_dirs);
+        infop->ignored_dirs = NULL;
+    }
+    /*
+     * forbidden files (prog, prog.alt, GNUMakefile, README.md etc.)
+     */
+    if (infop->forbidden_files != NULL) {
+        len = dyn_array_tell(infop->forbidden_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->forbidden_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->forbidden_files);
+        infop->forbidden_files = NULL;
+    }
+    /*
+     * unsafe files (those that sane_relative_path() returns
+     * PATH_ERR_NOT_POSIX_SAFE)
+     */
+    if (infop->unsafe_files != NULL) {
+        len = dyn_array_tell(infop->unsafe_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->unsafe_files);
+        infop->unsafe_files = NULL;
+    }
+    /*
+     * unsafe directories (those that sane_relative_path() returns
+     * PATH_ERR_NOT_POSIX_SAFE)
+     */
+    if (infop->unsafe_dirs != NULL) {
+        len = dyn_array_tell(infop->unsafe_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->unsafe_dirs);
+        infop->unsafe_dirs = NULL;
     }
 
     /*
@@ -3281,7 +3385,12 @@ test_github(char const *str)
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: github: <%s> is invalid", str);
 	return false;
-
+    } else if (str[1] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account has no chars after '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "github is valid");
@@ -4825,7 +4934,7 @@ is_forbidden_filename(char const *str)
 
     for (i = 0; forbidden_filenames[i] != NULL; ++i) {
         if (!strcasecmp(forbidden_filenames[i], str)) {
-            dbg(DBG_MED, "%s is a forbidden_filename", str);
+            dbg(DBG_MED, "%s is a forbidden filename", str);
             return true;
         }
     }
@@ -4857,7 +4966,7 @@ is_optional_filename(char const *str)
 
     for (i = 0; optional_filenames[i] != NULL; ++i) {
         if (!strcasecmp(optional_filenames[i], str)) {
-            dbg(DBG_MED, "%s is an optional_filename", str);
+            dbg(DBG_MED, "%s is an optional filename", str);
             return true;
         }
     }
@@ -4895,5 +5004,36 @@ is_ignored_dirname(char const *str)
     }
 
     dbg(DBG_MED, "%s is not an ignored dirname", str);
+    return false;
+}
+
+/*
+ * has_ignored_dirname   - check if path has ignored dirname in it
+ *
+ * given:
+ *
+ *      path    - path to check
+ *
+ * NOTE: this function returns false if path is NULL.
+ */
+bool
+has_ignored_dirname(char const *path)
+{
+    size_t i = 0;
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+        return false;
+    } else if (*path == '\0') {
+        return false;
+    }
+
+    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
+        if (path_has_component(path, ignored_dirnames[i])) {
+            return true;
+        }
+    }
+
     return false;
 }

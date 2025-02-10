@@ -32,7 +32,7 @@
 ####
 # See also, the following files for additional Copyright information:
 #
-# iocccsize.c iocccsize.h soup/rule_count.c dbg/* dyn_alloc/*
+# iocccsize.c iocccsize.h soup/rule_count.c jparse/* dbg/* dyn_alloc/*
 ####
 
 
@@ -235,7 +235,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c
-H_SRC= chkentry.h mkiocccentry.h txzchk.h
+H_SRC= mkiocccentry.h iocccsize.h txzchk.h chkentry.h
 
 # source files that do not conform to strict picky standards
 #
@@ -246,7 +246,7 @@ LESS_PICKY_HSRC=
 #
 SH_FILES= bug_report.sh
 
-# all man pages that NOT built and NOT removed by make clobber
+# all man pages that are NOT built and NOT removed by make clobber
 #
 MAN1_PAGES=
 MAN3_PAGES=
@@ -344,7 +344,7 @@ SH_TARGETS=
 #
 PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
 
-# directories sometimes build under macOS and removed by clobber
+# directories sometimes built under macOS and removed by clobber
 #
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
 

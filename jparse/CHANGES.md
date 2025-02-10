@@ -1,5 +1,63 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.14 2025-02-05
+
+New util function `mkdirs()` (using `mkdir(2)`) which acts as `mkdir -p` with
+specific modes (uses `chmod(2)` as it's not affected by the umask and also
+because anything but permissions set with `mkdir(2)` is undefined). If the first
+arg (an int) is `-1` (actually < 0) it uses the current working directory to
+start out with; but one can pass a file descriptor of the directory to start out
+with. The mode is only set on directories that are created (i.e. no error)
+because otherwise an already existing directory could have its mode changed.
+Just like with `mkdir(2)` one must be careful with the mode. Of course if one
+sets a mode like 0 then trying to work under it would be a problem but that's on
+the user. If there is an error in creating a directory then it only aborts if
+errno is not `EEXIST` (already exists) so that it can continue (just like `mkdir
+-p`).
+
+`make clobber` in `test_jparse/Makefile` now removes the test directories
+created by `util_test` (which creates a directory tree of `test_jparse/a/b/c`
+and `test_jparse/a`).
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.6 2025-02-05"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.9 2025-02-05`.
+
+
+## Release 2.2.13 2025-02-03
+
+Improve `copyfile()` function so that it can now, depending on a boolean, copy
+the stat `st_mode` of the source file to the destination file (like a true copy)
+or otherwise, if the boolean is false, set the mode specified. In the case that
+the mode is copied we do an extra sanity check to make sure that source
+`st_mode` is the same as dest `st_mode` but this is not possible when setting
+the mode to a specific value so that extra sanity test (which probably is not
+even necessary) cannot be done; the caller would have to do this (as the util
+test code actually does for all of these).
+
+Other fixes were applied like making it an error if the source file does not
+exist or is not a regular readable file rather than warning.
+
+Use (in `copyfile()`) `errp()` in some cases where it was `err()` (when we had
+`errno`). Also in case of `errp()` use `strerror(errno)`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.5 2025-02-03"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.8 2025-02-03"`.
+
+
+## Release 2.2.12 2025-02-02
+
+Added new util function `copyfile()` which takes a source (`char const *`) and
+dest (`char const *`) file (paths) (and a `mode_t`) and copies the source into
+the dest, assuming that src file is a regular readable file and the dest file
+does not exist. If the number of bytes read is not the same as the number of
+bytes written, or if the contents of the dest file is not the same as the
+contents of the source file (after copying) it is an error. If `mode` is not 0
+it uses `fchmod(2)` to set the file mode.  This function does NOT create
+directories but it can take directories as args, as long as they exist.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.4 2025-02-02"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.7 2025-02-02"`.
+
 ## Release 2.2.11 2025-01-31
 
 Add new util function `path_has_component()` which takes two `char *`s: a full

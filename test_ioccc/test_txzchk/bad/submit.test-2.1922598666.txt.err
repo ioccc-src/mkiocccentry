@@ -12,12 +12,4 @@ Warning: txzchk: found non-executable non-directory file test-2/.info.json with 
 Warning: txzchk: found non-executable non-directory file test-2/extra1 with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-2/.auth.json with wrong permissions: -rw-rw-r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-2/extra2 with wrong permissions: -rw-rw-r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file /test-2/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r--
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: file "/test-2/Makefile": path not a relative path
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found incorrect top level directory in filename /test-2/Makefile
-Warning: txzchk: found non-executable non-directory file test-2/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-2/remarks.md with wrong permissions: -rw-rw-r-- != -r--r--r--
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: no Makefile found
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found a total of 3 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found 21 feathers stuck in the tarball
+ERROR[57]: alloc_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: unable to strdup top dirname of filename /test-2/Makefile

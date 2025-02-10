@@ -154,12 +154,17 @@ static void warn_trigraph(void);
 static void warn_wordbuf(void);
 static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
-static RuleCount check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c);
-static bool has_ignored_dirname(char const *path);
-static size_t collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir,
-        char const *cp, RuleCount *size);
-static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar, char const *cp,
-				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry);
+static RuleCount check_prog_c(struct info *infop, char const *prog_c);
+static void check_ftsent(FTSENT *ent);
+static void scan_topdir(char * const *args, struct info *infop, char const *make, char const *submission_dir,
+        RuleCount *size);
+static void copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,
+        char *submit_path, int topdir, int cwd, RuleCount *size);
+static void check_submission(struct info *infop, char const *submission_dir, char const *make, RuleCount *size, int cwd);
+static int fts_cmp(const FTSENT **a, const FTSENT **b);
+static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
+				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
+                                     char const *make);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_submit_slot(struct info *infop);
@@ -167,8 +172,8 @@ static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int su
 			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
-static void check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile);
-static void check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md);
+static void check_Makefile(struct info *infop, char const *Makefile);
+static void check_remarks_md(struct info *infop, char const *remarks_md);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);

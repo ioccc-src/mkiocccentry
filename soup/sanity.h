@@ -39,9 +39,9 @@
  * function prototypes
  */
 extern void ioccc_sanity_chks(void); /* all *_sanity_chks() functions should call this */
-extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used,
+extern void find_utils(bool tar_flag_used, char **tar, bool ls_flag_used,
 	   char **ls, bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
-	   bool chkentry_flag_used, char **chkentry);
+	   bool chkentry_flag_used, char **chkentry, bool make_flag_used, char **make);
 
 
 

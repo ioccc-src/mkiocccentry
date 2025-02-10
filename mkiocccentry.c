@@ -74,7 +74,6 @@
 #include <stdarg.h>
 #include <getopt.h>
 #include <string.h>
-#include <strings.h>	/* strcasecmp() */
 #include <errno.h>
 #include <sys/stat.h>
 #include <ctype.h>
@@ -84,6 +83,7 @@
 #include <sys/wait.h> /* for WEXITSTATUS() */
 #include <fcntl.h> /* for open() */
 #include <fts.h>
+#include <limits.h> /* PATH_MAX */
 
 /*
  * mkiocccentry - form IOCCC entry compressed tarball
@@ -95,6 +95,7 @@
  * definitions
  */
 #define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
+#define CHUNK (39)              /* allocate CHUNK elements at a time */
 
 
 /*
@@ -117,13 +118,13 @@ static const char * const usage_msg0 =
     "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-c cp\t\tpath to cp executable (def: %s)\n"
     "\t-l ls\t\tpath to ls executable (def: %s)\n"
     "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-e\t\tentertainment mode\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
-    "\t-C chkentry	path to chkentry executable (def: %s)\n";
+    "\t-C chkentry	path to chkentry executable (def: %s)\n"
+    "\t-m make\t\tpath to GNU compatible make(1) (def: %s)\n";
 static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a file for easier updating of a submission\n"
     "\t-A answers\twrite answers file even if it already exists\n"
@@ -174,6 +175,7 @@ static bool seed_used = false;		/* true ==> -d or -s seed given */
  */
 static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
 static bool noprompt_yes_or_no(void);
+static void append_unique_str(struct dyn_array *array, char *str);
 
 int
 main(int argc, char *argv[])
@@ -188,23 +190,22 @@ main(int argc, char *argv[])
     char *remarks_md = NULL;		/* path to remarks.md */
     char **topdir = NULL;          /* directory from which files are to be copied to the workdir */
     char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
-    char *cp = CP_PATH_0;			/* path to cp executable */
     char *ls = LS_PATH_0;			/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
     char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
+    char *make = MAKE_PATH_0;                   /* path to make(1) executable */
     char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
     char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
-    int extra_count = 0;			/* number of extra files */
     struct info info;				/* data to form .info.json */
     struct auth auth;				/* data to form .auth.json */
     int author_count = 0;			/* number of authors */
     struct author *author_set = NULL;		/* list of authors */
     bool tar_flag_used = false;			/* true ==> -t /path/to/tar was given */
-    bool cp_flag_used = false;			/* true ==> -c /path/to/cp was given */
     bool ls_flag_used = false;			/* true ==> -l /path/to/ls was given */
+    bool make_flag_used = false;                /* true ==> -m /path/to/make was given */
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
@@ -220,7 +221,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:c:l:a:i:A:WT:eF:C:yds:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:eF:C:yds:m:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -261,10 +262,6 @@ main(int argc, char *argv[])
 	case 't':		/* -t /path/to/tar */
 	    tar = optarg;
 	    tar_flag_used = true;
-	    break;
-	case 'c':		/* -c /path/to/cp */
-	    cp = optarg;
-	    cp_flag_used = true;
 	    break;
 	case 'l':		/* -l /path/to/ls */
 	    ls = optarg;
@@ -347,6 +344,10 @@ main(int argc, char *argv[])
 		abort_on_warning = true;
 	    }
 	    break;
+        case 'm': /* set path to make(1) */
+            make_flag_used = true;
+            make = optarg;
+            break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -363,18 +364,19 @@ main(int argc, char *argv[])
     }
 
     /*
-     * guess where tar, cp and ls utilities are located
+     * guess where tar, ls, txzchk, fnamchk and make utilities are located
      *
-     * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
-     * the historic location for the utility.  If the historic location of the utility
-     * isn't executable, look for an executable in the alternate location.
+     * If the user did not give a -t, -c, -l and/or -m /path/to/foo path, then
+     * look at the historic location (except for make(1)) for the utility.  If
+     * the historic location of the utility isn't executable, look for an
+     * executable in the alternate location.
      *
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls,
+    find_utils(tar_flag_used, &tar, ls_flag_used, &ls,
 	       txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
-	       chkentry_flag_used, &chkentry);
+	       chkentry_flag_used, &chkentry, make_flag_used, &make);
 
     /*
      * check that conflicting answers file options are not used together
@@ -461,7 +463,6 @@ main(int argc, char *argv[])
     }
 
     dbg(DBG_MED, "tar: %s", tar);
-    dbg(DBG_MED, "cp: %s", cp);
     dbg(DBG_MED, "ls: %s", ls);
     workdir = argv[optind];
     dbg(DBG_MED, "workdir: %s", workdir);
@@ -503,11 +504,6 @@ main(int argc, char *argv[])
     dbg(DBG_HIGH, "info.usec: %jd", (intmax_t)info.usec);
 
     /*
-     * XXX - for now we have to have no extra count - XXX
-     */
-    info.extra_count = extra_count;
-
-    /*
      * Welcome
      */
     if (!quiet) {
@@ -525,8 +521,8 @@ main(int argc, char *argv[])
 	para("",
 	     "WARNING: you've chosen to answer yes to almost all prompts. If this was",
 	     "unintentional, run the program again without specifying -y. We cannot",
-	     "stress the importance of this enough! Well OK, we can over-stress most things",
-	     "but you get the point. Do not use the -y option without EXTREME caution!",
+	     "stress the importance of this enough! Well OK, we can overstress most things",
+	     "but you get the point; do not use the -y option without EXTREME caution!",
 	     "",
 	     NULL);
     }
@@ -538,8 +534,8 @@ main(int argc, char *argv[])
 	     "you any additional warnings, you should note that The Judges will NOT",
 	     "ignore warnings! If this was unintentional, run the program again",
 	     "without specifying -W. We cannot stress the importance of this enough!",
-	     "Well OK, we can over-stress most things, but you get the point.",
-	     "Do not use the -W option!",
+	     "Well OK, we can overstress most things, but you get the point; do not",
+	     "use the -W option without EXTREME caution!",
 	     "",
 	     NULL);
     }
@@ -549,7 +545,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chks(&info, workdir, tar, cp, ls, txzchk, fnamchk, chkentry);
+    mkiocccentry_sanity_chks(&info, workdir, tar, ls, txzchk, fnamchk, chkentry, make);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -659,13 +655,10 @@ main(int argc, char *argv[])
     }
 
     /*
-     * scan and collect files in topdir, copying to the submission directory
-     *
-     * XXX - currently this only copies the required files prog.c, Makefile and
-     * remarks.md - XXX
+     * scan and collect files in topdir, copying to the submission directory and
+     * then verify everything is in order.
      */
-    collect_topdir_files(topdir, &info, submission_dir, cp, &size);
-
+    scan_topdir(topdir, &info, make, submission_dir, &size);
 
     /*
      * obtain the title
@@ -950,396 +943,737 @@ main(int argc, char *argv[])
     exit(0); /*ooo*/
 }
 
+
+
 /*
- * has_ignored_dirname   - check if path has ignored dirname in it
+ * append_unique_str - append string pointer to dynamic array if not already found
+ *
+ * Given a pointer to string, we search a dynamic array of pointers to strings.
+ * If an exact match is found (i.e. the string is already in the dynamic array),
+ * it is an error because no files should be duplicated; otherwise, if no match
+ * is found, the pointer to the string is appended to the dynamic array.
  *
  * given:
+ *	array		dynamic array of pointers to strings
+ *	str		string to search array and append if not already found
  *
- *      path    - path to check
- *
- * NOTE: this function returns false if path is NULL.
+ * NOTE: This function does not return if given NULL pointers, on any error or
+ * if the string is already in the array.
  */
-static
-bool has_ignored_dirname(char const *path)
+static void
+append_unique_str(struct dyn_array *array, char *str)
 {
-    size_t i = 0;
+    intmax_t unique_len = 0;	/* number of unique function name entries */
+    char *u = NULL;		/* unique name pointer */
+    intmax_t i;
+
     /*
      * firewall
      */
-    if (path == NULL) {
-        return false;
-    } else if (*path == '\0') {
-        return false;
+    if (array == NULL) {
+	err(14, __func__, "array is NULL");
+	not_reached();
+    }
+    if (str == NULL) {
+	err(15, __func__, "str is NULL");
+	not_reached();
     }
 
-    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
-        if (path_has_component(path, ignored_dirnames[i])) {
-            return true;
-        }
+    /*
+     * search array for the string
+     *
+     * NOTE: We realize calling the function with unique strings will
+     *	     cause the execution time to grow as O(n^2).  However the
+     *	     usual number of strings in a unique function name dynamic array
+     *	     is almost certainly small.  Therefore we do not need to
+     *	     employ a more optimized dynamic array search mechanism.
+     */
+    unique_len = dyn_array_tell(array);
+    for (i=0; i < unique_len; ++i) {
+
+	/* get next string pointer */
+	u = dyn_array_value(array, char *, i);
+	if (u == NULL) {	/* paranoia */
+	    err(16, __func__, "found NULL pointer in function name dynamic array element: %ju", (uintmax_t)i);
+	    not_reached();
+	}
+
+	/* look for match */
+	if (strcasecmp(str, u) == 0) {
+	    /* str found in array */
+            err(17, __func__, "string %s already in array", str);
+            not_reached();
+	}
     }
 
-    return false;
+    /*
+     * function name is unique, append to array
+     */
+    (void) dyn_array_append_value(array, &str);
 }
+
 /*
- * collect_topdir_files
+ * fts_cmp - compare level and fts_name members in two FTSENT structs
  *
- * Count total number of files in topdir, checking for sane relative paths with
- * mkiocccentry limits in mind.
+ * given:
+ *	a	pointer to pointer to first FTSENT to compare
+ *	b	pointer to pointer to second FTSENT to compare
  *
- * XXX - currently this only deals with prog.c, Makefile and remarks.md, but it
- * also checks (for too many files) optional files (i.e. it only counts extra
- * files). However right now it also does not skip invalid files so dot files
- * would be included, although those would be rejected by txzchk. To do
- * everything, we will need lists (dyn_arrays) and also likely need more than
- * one function as a lot has to be done. For prog.c, Makefile and remarks.md we
- * do use the correct functions (see below).
+ * returns:
+ *      -1      a < b
+ *      0       a == b
+ *      1       a > b
+ */
+static int
+fts_cmp(const FTSENT **a, const FTSENT **b)
+{
+    int cmp = 0;				/* byte string comparison */
+
+    /*
+     * firewall
+     */
+    if (a == NULL || *a == NULL) {
+	err(18, __func__, "a is NULL");
+	not_reached();
+    }
+    if (b == NULL || *b == NULL) {
+	err(19, __func__, "b is NULL");
+	not_reached();
+    }
+
+    /*
+     * compare level
+     */
+    if ((*a)->fts_level < (*b)->fts_level) {
+	return 1;	/* a > b */
+    } else if ((*a)->fts_level > (*b)->fts_level) {
+	return -1;	/* a < b */
+    }
+    /* case: level matches */
+
+    /*
+     * compare name if not NULL
+     */
+    if (*(*a)->fts_name != '\0') {
+	if (*(*b)->fts_name != '\0') {
+	    cmp = strcmp((*a)->fts_name, (*b)->fts_name);
+	    if (cmp > 0) {
+		return 1;	/* a > b */
+	    } else if (cmp < 0) {
+		return -1;	/* a < b */
+	    }
+	} else {
+	    return -1;	/* a < NULL b */
+	}
+    } else if (*(*b)->fts_name != '\0') {
+	return 1;	/* NULL a > b */
+    }
+    /* case: name matches */
+
+    /*
+     * entries match
+     */
+    return 0;
+
+}
+
+/*
+ * check_ftsent     - check an FTSENT for specific file types that are errors
  *
- * When this function finds prog.c, Makefile or remarks.md, it uses the
- * check_prog_c, check_Makefile or check_remarks_md functions, which will copy
- * the file to the correct directory if all checks are okay.
+ * given:
+ *      ent     - an FTSENT * to check for specific conditions/types
+ *
+ * This function does not return on NULL pointer or if specific conditions/types
+ * are found.
+ */
+static void
+check_ftsent(FTSENT *ent)
+{
+    /*
+     * firewall
+     */
+    if (ent == NULL) {
+        /*
+         * Treebeard died :(
+         */
+        err(20, __func__, "ent is NULL");
+        not_reached();
+    }
+
+    /*
+     * specific FTSENT types are an immediate error
+     */
+    switch (ent->fts_info) {
+        case FTS_DC: /* cycle in directory tree */
+            err(21, __func__, "detected directory loop with %s", ent->fts_path + 2);
+            not_reached();
+            break;
+        case FTS_DNR: /* directory not readable */
+            err(22, __func__, "directory not readable: %s", ent->fts_path + 2);
+            not_reached();
+            break;
+        case FTS_ERR: /* some error condition */
+            /*
+             * fake errno
+             */
+            errno = ent->fts_errno;
+            errp(23, __func__, "encountered error reading path: %s", ent->fts_path + 2);
+            not_reached();
+            break;
+        case FTS_DEFAULT: /* some other file type */
+            err(24, __func__, "found invalid file type: %s", ent->fts_path + 2);
+            not_reached();
+            break;
+        case FTS_DOT: /* a filename '.' or '..' not requested in fts_open() */
+            /*
+             * NOTE: we do open '.' in fts_open() but this is an extra sanity
+             * check on files that are '.'.
+             *
+             * NOTE: this does NOT mean that we don't have to skip '.' itself!
+             */
+            err(25, __func__, "found '.' or '..' not specified: %s", ent->fts_path);
+            not_reached();
+            break;
+        case FTS_NS: /* couldn't stat file */
+            err(26, __func__, "couldn't stat %s", ent->fts_path + 2);
+            not_reached();
+            break;
+        default: /* okay */
+            /*
+             * NOTE: we don't check for symlinks because we add these to
+             * a list unless there is an error of some kind.
+             */
+            break;
+    }
+}
+
+/*
+ * scan_topdir
+ *
+ * Traverse topdir, verifying everything is in order, creating lists of files
+ * and directories to be added and ignored.
+ *
+ * If no errors are encountered during traversal, and if prog.c, Makefile and
+ * remarks.md exist and if there are not too many files (other than the required
+ * and optional files), this function will call copy_topdir().
  *
  * given:
  *      args            - the args (topdir)
  *      infop           - pointer to struct info
+ *      make            - path to make(1) for check_submission() (called from
+ *                        copy_topdir())
  *      submission_dir  - submission directory
- *      cp              - path to cp(1)
- *      size            - pointer to RuleCount (for iocccsize check on prog.c)
+ *      size            - pointer to RuleCount for iocccsize(1) (via
+ *                        check_prog_c())
  *
- * Returns:
- *      the total number of EXTRA files that were counted, not counting directories
- *
- * NOTE: if args is NULL we return 0.
- * NOTE: if an error is encountered traversing the path(s) it is an error.
- * NOTE: if the depth becomes too deep or if a filename length is too long or a
- * path is not POSIX plus + safe or there are too many files it is an error.
- * NOTE: if we can't get the current working directory or a change in directory
- * fails or a function returns NULL it is an error.
+ * NOTE: this function does not return on NULL pointers.
+ * NOTE: if an error is encountered traversing the topdir.
+ * NOTE: if the depth becomes too deep or if a filename length is too long or
+ *       if there are too many files or directories it is an error.
+ * NOTE: if we can't get a certain directory (absolute path or file descriptor)
+ *       or a change in directory fails or a function returns NULL it is an
+ *       error.
+ * NOTE: this function does not return on any other error.
  * NOTE: if any of prog.c, Makefile or remarks.md do not exist it is an error.
- * NOTE: this function does not return on error.
+ * NOTE: a sane relative path is a path that does not start with a '/' (however,
+ * see comment below about the function sane_relative_path()) and where each
+ * component of the path (between the '/' or if no '/' found then the string
+ * itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$' (w/o quotes). In
+ * other words it is POSIX plus + safe only characters and not a dot file.
+ * NOTE: if a path is already in an array and it is found again it is an error.
  */
-static size_t
-collect_topdir_files(char * const *args, struct info *infop, char const *submission_dir, char const *cp,
-        RuleCount *size)
+static void
+scan_topdir(char * const *args, struct info *infop, char const *make, char const *submission_dir, RuleCount *size)
 {
-    FTS *fts = NULL;
-    FTSENT *item = NULL;
-    size_t count = 0;                   /* total number of valid files */
+    char *filename = NULL;              /* current filename (for arrays) */
+    FTS *fts = NULL;                    /* FTS stream for fts_open() */
+    FTSENT *ent = NULL;                 /* FTSENT for each entry from fts_read() */
+    size_t count = 0;                   /* total number of non-optional non-required files */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
-    char *path[] = { ".", NULL };
+    char *path[] = { ".", NULL };   /* "." for fts_open() */
     int cwd = -1;		    /* current working directory */
-    int ret;			    /* libc function return */
     int topdir = -1;                /* topdir */
+    char topdir_path[PATH_MAX+1];   /* absolute path of topdir for copying files */
+    char submit_path[PATH_MAX+1];   /* we need the absolute path to the submission directory for copying files */
     bool found_prog_c = false;      /* if prog.c found */
     bool found_Makefile = false;    /* if Makefile found */
     bool found_remarks_md = false;  /* if remarks.md found */
+    size_t dirs = 0;                /* number of sane directories (added to unsafe_dirs to verify there aren't too many) */
+    size_t unsafe_dirs = 0;         /* number of unsafe directories (added to dirs to verify there aren't too many) */
 
     /*
      * firewall
      */
-    if (args == NULL || args[0] == NULL || infop == NULL || submission_dir == NULL || cp == NULL || size == NULL) {
-        return 0;
+    if (args == NULL || args[0] == NULL || infop == NULL || make == NULL || submission_dir == NULL || size == NULL) {
+        err(27, __func__, "passed NULL pointer(s)");
+        not_reached();
     }
 
     /*
-     * note the current directory so we can restore it later, after the
-     * chdir(topdir) below
+     * we need to create the arrays in the info struct
+     */
+
+    /*
+     * list of ignored symlinks to show to user later on, if any symlinks are
+     * found
+     */
+    infop->ignored_symlinks = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->ignored_symlinks == NULL) {
+        err(28, __func__, "failed to create ignored symlinks list array");
+        not_reached();
+    }
+    /*
+     * list of non-required files that will be copied to the
+     * submission directory (we show it to the user to verify everything is
+     * correct)
+     */
+    infop->extra_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->extra_files == NULL) {
+        err(29, __func__, "failed to create files list array");
+        not_reached();
+    }
+    /*
+     * list of required files (prog.c, Makefile and remarks.md) (this will be
+     * shown to the user too)
+     */
+    infop->required_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->required_files == NULL) {
+        err(30, __func__, "failed to create required files list array");
+        not_reached();
+    }
+    /*
+     * list of directories encountered (to make the directories in the
+     * submission directory assuming the user says everything is in order)
+     */
+    infop->directories = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->directories == NULL) {
+        err(31, __func__, "failed to create directories list array");
+        not_reached();
+    }
+    /*
+     * list of ignored directories (to show to user)
+     */
+    infop->ignored_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->ignored_dirs == NULL) {
+        err(32, __func__, "failed to create ignored directories list array");
+        not_reached();
+    }
+    /*
+     * list of forbidden files to show to user
+     */
+    infop->forbidden_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->forbidden_files == NULL) {
+        err(33, __func__, "failed to create forbidden files list array");
+        not_reached();
+    }
+    /*
+     * list of unsafe (not POSIX plus + safe chars only) filenames to show to
+     * user (i.e.  sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and not
+     * another error condition)
+     */
+    infop->unsafe_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->unsafe_files == NULL) {
+        err(34, __func__, "failed to create unsafe filenames list array");
+        not_reached();
+    }
+    /*
+     * list of unsafe (not POSIX plus + safe chars only) directory names to show
+     * to user (i.e.  sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and
+     * not another error condition)
+     */
+    infop->unsafe_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (infop->unsafe_dirs == NULL) {
+        err(35, __func__, "failed to create unsafe directories list array");
+        not_reached();
+    }
+
+    /*
+     * note the current directory so we can restore it later
      */
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(14, __func__, "cannot open .");
+	errp(36, __func__, "cannot open .");
 	not_reached();
     }
 
     /*
-     * now we have to get to the directory specified before we can collect
-     * files
+     * change to the submission directory so we can get its descriptor and
+     * absolute path for copying files in copy_topdir()
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (chdir(submission_dir) != 0) {
+        errp(37, __func__, "unable to change to submission directory");
+        not_reached();
+    }
+
+    /*
+     * get absolute path of the submission directory for copying files in
+     * copy_topdir()
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (getcwd(submit_path, PATH_MAX) == NULL) {
+        errp(38, __func__, "couldn't get absolute path of submission directory");
+        not_reached();
+    }
+
+    /*
+     * we need to move back to cwd so we can get to the topdir
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (fchdir(cwd) != 0) {
+        errp(39, __func__, "couldn't change back to original original directory");
+        not_reached();
+    }
+
+    /*
+     * now we have to get to the directory specified (the topdir) before we can
+     * scan for files and directories.
+     *
+     * NOTE: args[0] is the topdir in the mkiocccentry command line.
      */
     errno = 0;      /* pre-clear errno for errp() */
     if (chdir(args[0]) != 0) {
-        errp(15, __func__, "chdir(\"%s\") failed", args[0]);
+        errp(40, __func__, "chdir(\"%s\") failed", args[0]);
         not_reached();
     }
     /*
-     * note the topdir so we can restore it later, after the changing back to
-     * the working directory below, so that when we read more files in the tree,
-     * we are in the right location.
+     * note the topdir so we can restore it later in copy_topdir()
      */
     errno = 0;			/* pre-clear errno for errp() */
     topdir = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (topdir < 0) {
-	errp(16, __func__, "cannot open . (topdir)");
+	errp(41, __func__, "cannot open topdir");
 	not_reached();
     }
 
+    /*
+     * we now need to get the absolute path of the topdir for copying files
+     * later on
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (getcwd(topdir_path, PATH_MAX) == NULL) {
+        errp(42, __func__, "couldn't get absolute path of topdir");
+        not_reached();
+    }
 
     /*
-     * now that we have changed to the correct directory, we can traverse the
-     * tree.
+     * now that we have changed to the correct directory and gathered everything
+     * we need to scan for files and directories, we can traverse the tree.
      */
     errno = 0;      /* pre-clear errno for errp() */
-    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, NULL);
+    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, fts_cmp);
     if (fts == NULL) {
-        errp(17, __func__, "fts_open() for path returned NULL");
+        errp(43, __func__, "fts_open() returned NULL for: %s", topdir_path);
         not_reached();
     } else {
-        while ((item = fts_read(fts)) != NULL) {
-            bool ignored = has_ignored_dirname(item->fts_path + 2);
-            switch (item->fts_info) {
-                case FTS_D:
-                case FTS_DP:
-                    {
-                        if (ignored) {
-                            /*
-                             * XXX - process ignored directory name - XXX
-                             */
-                        } else {
-                            /*
-                             * NOTE: when traversing the directory "." the filenames found
-                             * under it will all start with "./". This is why the last
-                             * arg to sane_relative_path() is true: it allows the first
-                             * two characters to be "./" (this does NOT mean that ".//"
-                             * is okay and it does NOT mean that "././" is okay).
-                             */
-                            sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-                            /*
-                             * XXX - make use of the function return value - XXX
-                             */
-                            UNUSED_ARG(sanity);
-                        }
-                    }
+        while ((ent = fts_read(fts)) != NULL) {
+            bool ignored_dirname = false;
+            bool forbidden_filename = false;
+            bool optional = false;
+
+            /*
+             * skip '.'
+             */
+            if (!strcmp(ent->fts_path, ".")) {
+                continue;
+            }
+
+            /*
+             * specific FTSENT types are an immediate error
+             */
+            check_ftsent(ent);
+
+            /*
+             * here we have to do fts_path + 2 because fts_read() on "." will
+             * append every file with "./".
+             */
+            ignored_dirname = has_ignored_dirname(ent->fts_path + 2);
+            forbidden_filename = is_forbidden_filename(ent->fts_path + 2);
+            optional = is_optional_filename(ent->fts_path + 2);
+
+            /*
+             * NOTE: when traversing the directory "." the filenames found under
+             * it will all start with "./" (as noted above). This is why the
+             * last arg to sane_relative_path() is true: it allows the first two
+             * characters to be "./" (this does NOT mean that ".//" is okay and
+             * it does NOT mean that "././" is okay) (although technically we
+             * could just do fts_path + 2 but the functionality was needed
+             * anyway).
+             */
+            sanity = sane_relative_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
+            switch (sanity) {
+                case PATH_ERR_NAME_TOO_LONG: /* last component too long */
+                    err(44, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", ent->fts_name, ent->fts_name,
+                            (uintmax_t)strlen(ent->fts_name), (uintmax_t)MAX_FILENAME_LEN);
+                    not_reached();
                     break;
-                case FTS_F:
-                    /*
-                     * first we have to skip certain directory names
-                     *
-                     * XXX - later on we will have to make a dynamic array to
-                     * let the user know these files are ignored
-                     */
-                    if (ignored) {
+                case PATH_ERR_PATH_TOO_LONG: /* entire path too long */
+                    err(45, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", ent->fts_path + 2, ent->fts_path,
+                            (uintmax_t)strlen(ent->fts_path), (uintmax_t)MAX_FILENAME_LEN);
+                    not_reached();
+                    break;
+                case PATH_ERR_PATH_TOO_DEEP: /* too many subdirectories */
+                    err(46, __func__, "%s: path too deep: depth %ju > %ju", ent->fts_path + 2,
+                            (uintmax_t)count_dirs(ent->fts_path), (uintmax_t)MAX_PATH_DEPTH);
+                    not_reached();
+                    break;
+                case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
+                    if (!ignored_dirname) {
                         /*
-                         * XXX - process ignored directory names - XXX
+                         * if the component does not have an ignored directory
+                         * name then we must mark it as an unsafe filename or
+                         * directory name (the reason for this distinction is
+                         * because some of the ignored directories start with a
+                         * '.' which normally would not be allowed so they don't
+                         * need to be marked as an error unless they are copied
+                         * to the submission directory).
+                         */
+                        errno = 0; /* pre-clear errno for errp() */
+                        filename = strdup(ent->fts_path + 2);
+                        if (filename == NULL) {
+                            errp(47, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                            not_reached();
+                        }
+                        if (ent->fts_info == FTS_F) {
+                            /*
+                             * if file add to unsafe filenames list
+                             */
+                            append_unique_str(infop->unsafe_files, filename);
+                            dbg(DBG_MED, "file %s: not POSIX plus + safe chars only", filename);
+                        } else if (ent->fts_info == FTS_D) {
+                            /*
+                             * if directory add to unsafe directory names list
+                             */
+                            append_unique_str(infop->unsafe_dirs, filename);
+                            dbg(DBG_MED, "directory %s: not POSIX plus + safe chars only", filename);
+                        }
+                        if (ent->fts_info != FTS_SL && ent->fts_info != FTS_SLNONE) {
+                            /*
+                             * we will add symlinks to the symlinks list so we don't
+                             * skip those here
+                             *
+                             * NOTE: other types of files were checked in
+                             * check_ftsent().
+                             */
+                            continue;
+                        }
+                    } else { /* ignored directory name */
+                        errno = 0; /* pre-clear errno for errp() */
+                        filename = strdup(ent->fts_path + 2);
+                        if (filename == NULL) {
+                            errp(48, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                            not_reached();
+                        }
+                        if (ent->fts_info == FTS_D) {
+                            /*
+                             * we don't want to traverse below ignored directories
+                             */
+                            errno = 0;  /* pre-clear errno for errp() */
+                            if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                                errp(49, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
+                                not_reached();
+                            }
+                            append_unique_str(infop->ignored_dirs, filename);
+                        }
+                        /*
+                         * we don't need to check if this is a file because we
+                         * encounter the directories first and that means that
+                         * no file under an ignored directory name should ever
+                         * be encountered and neither should any symlink or
+                         * anything else
                          */
                         continue;
-                    } else if (is_forbidden_filename(item->fts_path + 2)) {
-                            /*
-                             * XXX - process forbidden filenames - XXX
-                             */
-                        continue;
-                    }
-
-                    /*
-                     * NOTE: when traversing the directory "." the filenames found
-                     * under it will all start with "./". This is why the last
-                     * arg to sane_relative_path() is true: it allows the first
-                     * two characters to be "./" (this does NOT mean that ".//"
-                     * is okay and it does NOT mean that "././" is okay).
-                     */
-                    sanity = sane_relative_path(item->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
-                    switch (sanity) {
-                        case PATH_OK:
-                            dbg(DBG_LOW, "found sane relative path: %s", item->fts_path + 2);
-                            if (!strcasecmp(item->fts_path + 2, PROG_C_FILENAME)) {
-                                /*
-                                 * check prog.c
-                                 */
-                                char *path = NULL; /* path for check_prog_c */
-
-                                /*
-                                 * we have to fake the prog.c path for
-                                 * check_prog_c()
-                                 */
-                                path = calloc_path(args[0], "/prog.c");
-                                if (path == NULL) {
-                                    err(18, __func__, "path is NULL");
-                                    not_reached();
-                                }
-                                errno = 0;      /* pre-clear errno for errp() */
-                                ret = fchdir(cwd);
-                                if (ret < 0) {
-                                    errp(19, __func__, "unable to fchdir(cwd)");
-                                    not_reached();
-                                }
-                                if (!quiet) {
-                                    para("", "Checking prog.c ...", NULL);
-                                }
-                                *size = check_prog_c(infop, submission_dir, cp, path);
-                                if (!quiet) {
-                                    para("... completed prog.c check.", "", NULL);
-                                }
-                                if (path != NULL) {
-                                    free(path);
-                                    path = NULL;
-                                }
-                                /*
-                                 * now switch back to the topdir for the rest of
-                                 * the files
-                                 */
-                                errno = 0;          /* pre-clear errno for errp() */
-                                ret = fchdir(topdir);
-                                if (ret < 0) {
-                                    errp(20, __func__, "unable to fchdir(topdir)");
-                                    not_reached();
-                                }
-
-                                /*
-                                 * record prog.c found
-                                 */
-                                found_prog_c = true;
-                            } else if (!strcasecmp(item->fts_path + 2, MAKEFILE_FILENAME)) {
-                                /*
-                                 * check Makefile
-                                 */
-                                char *path = NULL; /* path for check_Makefile */
-
-                                /*
-                                 * we have to fake the Makefile path for
-                                 * check_Makefile()
-                                 */
-                                path = calloc_path(args[0], "/Makefile");
-                                if (path == NULL) {
-                                    err(21, __func__, "path is NULL");
-                                    not_reached();
-                                }
-                                errno = 0;      /* pre-clear errno for errp() */
-                                ret = fchdir(cwd);
-                                if (ret < 0) {
-                                    errp(22, __func__, "unable to fchdir(cwd)");
-                                    not_reached();
-                                }
-
-                                if (!quiet) {
-                                    para("Checking Makefile ...", NULL);
-                                }
-                                check_Makefile(infop, submission_dir, cp, path);
-                                if (!quiet) {
-                                    para("... completed Makefile check.", "", NULL);
-                                }
-                                /*
-                                 * now switch back to the topdir
-                                 */
-                                errno = 0;          /* pre-clear errno for errp() */
-                                ret = fchdir(topdir);
-                                if (ret < 0) {
-                                    errp(23, __func__, "unable to fchdir(topdir)");
-                                    not_reached();
-                                }
-
-                                /*
-                                 * record Makefile found
-                                 */
-                                found_Makefile = true;
-                            } else if (!strcasecmp(item->fts_path + 2, REMARKS_FILENAME)) {
-                                /*
-                                 * check remarks.md
-                                 */
-                                char *path = NULL; /* path for check_remarks_md() */
-
-                                /*
-                                 * we have to fake the remarks.md path for
-                                 * check_remarks_md()
-                                 */
-                                path = calloc_path(args[0], "/remarks.md");
-                                if (path == NULL) {
-                                    err(24, __func__, "path is NULL");
-                                    not_reached();
-                                }
-                                errno = 0;      /* pre-clear errno for errp() */
-                                ret = fchdir(cwd);
-                                if (ret < 0) {
-                                    errp(25, __func__, "unable to fchdir(cwd)");
-                                    not_reached();
-                                }
-
-                                if (!quiet) {
-                                    para("Checking remarks.md ...", NULL);
-                                }
-                                check_remarks_md(infop, submission_dir, cp, path);
-                                if (!quiet) {
-                                    para("... completed remarks.md check.", "", NULL);
-                                }
-                                /*
-                                 * now switch back to the topdir
-                                 */
-                                errno = 0;          /* pre-clear errno for errp() */
-                                ret = fchdir(topdir);
-                                if (ret < 0) {
-                                    errp(26, __func__, "unable to fchdir(topdir)");
-                                    not_reached();
-                                }
-
-                                /*
-                                 * record remarks.md found
-                                 */
-                                found_remarks_md = true;
-                            } else if (!is_optional_filename(item->fts_path + 2)) {
-                                ++count;
-                            }
-                            break;
-                        case PATH_ERR_PATH_TOO_DEEP:
-                            err(27, __func__, "%s: path too deep: depth %ju > %ju", item->fts_path + 2,
-                                    (uintmax_t)count_dirs(item->fts_path), (uintmax_t)MAX_PATH_DEPTH);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NAME_TOO_LONG:
-                            err(28, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", item->fts_path + 2, item->fts_name,
-                                    (uintmax_t)strlen(item->fts_name), (uintmax_t)MAX_FILENAME_LEN);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NOT_POSIX_SAFE:
-                            err(29, __func__, "%s: not POSIX plus + safe chars only", item->fts_path + 2);
-                            not_reached();
-                            break;
-                        case PATH_ERR_NOT_RELATIVE:
-                            err(30, __func__, "%s: path not relative", item->fts_path + 2);
-                            not_reached();
-                            break;
-                        case PATH_ERR_UNKNOWN:
-                        case PATH_ERR_PATH_IS_NULL:
-                        case PATH_ERR_PATH_EMPTY:
-                        case PATH_ERR_MAX_PATH_LEN_0:
-                        case PATH_ERR_MAX_DEPTH_0:
-                        case PATH_ERR_MAX_NAME_LEN_0:
-                        default:
-                            err(31, __func__, "%s: %s", item->fts_path + 2, path_sanity_error(sanity));
-                            not_reached();
-                            break;
                     }
                     break;
-                case FTS_DNR: /* directory not readable */
-                    err(32, __func__, "directory not readable: %s", item->fts_path + 2);
+                case PATH_ERR_NOT_RELATIVE: /* path not relative: starts with '/' */
+                    err(50, __func__, "%s: path not relative", ent->fts_path + 2);
                     not_reached();
-                case FTS_ERR:
+                    break;
+                case PATH_ERR_UNKNOWN: /* unknown error */
+                case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
+                case PATH_ERR_PATH_EMPTY: /* path is empty (should never happen) */
+                case PATH_ERR_MAX_PATH_LEN_0: /* max path length <= 0 (should never happen) */
+                case PATH_ERR_MAX_DEPTH_0: /* max depth <= 0 (should never happen) */
+                case PATH_ERR_MAX_NAME_LEN_0: /* max name length <= 0 (should never happen) */
+                    err(51, __func__, "%s: %s", ent->fts_path + 2, path_sanity_error(sanity));
+                    not_reached();
+                    break;
+                case PATH_OK: /* sane relative path */
+                    break;
+                default: /* should never be reached */
                     /*
-                     * fake errno
+                     * something is quite wrong here
                      */
-                    errno = item->fts_errno;
-                    errp(33, __func__, "encountered error reading path: %s", item->fts_path + 2);
+                    err(52, __func__, "unknown status for %s", ent->fts_path + 2);
                     not_reached();
+                    break;
+            }
+            if (ignored_dirname) {
+                /*
+                 * if we get here it means that either the path does not have a
+                 * component starting with a '.' (like '.git') or it is an ignored
+                 * directory name (like '.git')
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(53, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+                if (ent->fts_info == FTS_D) {
+                    /*
+                     * we don't want to traverse below ignored directories
+                     */
+                    errno = 0;  /* pre-clear errno for errp() */
+                    if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                        errp(54, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    append_unique_str(infop->ignored_dirs, filename);
+                }
+                /*
+                 * again we don't need to add any other type of item as we will
+                 * see directories before files under them
+                 */
+                continue;
+            }
+            if (forbidden_filename) {
+                /*
+                 * we have to add the path of the forbidden file to the
+                 * forbidden files list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(55, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+
+                /*
+                 * add to forbidden files list if not found (if it already
+                 * exists it is an error)
+                 */
+                append_unique_str(infop->forbidden_files, filename);
+                continue;
+            }
+
+            /* we need the type of the file */
+            switch (ent->fts_info) {
+                case FTS_D: /* directory */
+                    /*
+                     * we know this is an okay path because all error conditions
+                     * have been accounted for above
+                     */
+                    dbg(DBG_MED, "found sane relative directory name topdir: %s", ent->fts_path + 2);
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(ent->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(56, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    /*
+                     * we need these for later
+                     */
+                    append_unique_str(infop->directories, filename);
+                    break;
+                case FTS_F: /* regular file */
+                    /*
+                     * we know this is an okay path because all error conditions
+                     * have been accounted for above
+                     */
+                    dbg(DBG_MED, "found sane relative filename in topdir: %s", ent->fts_path + 2);
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(ent->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(57, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    /*
+                     * Case-sensitive search for prog.c, Makefile and
+                     * remarks.md. Note however that having more than one of the
+                     * same filename but different case is an error if it's in
+                     * the same directory.
+                     */
+                    if (strcmp(filename, PROG_C_FILENAME) && strcmp(filename, MAKEFILE_FILENAME) &&
+                        strcmp(filename, REMARKS_FILENAME)) {
+                            append_unique_str(infop->extra_files, filename);
+                            dbg(DBG_MED, "found non-required file: %s", filename);
+                    } else {
+                        dbg(DBG_MED, "found required file: %s", filename);
+                        append_unique_str(infop->required_files, filename);
+                    }
+
+                    if (!strcmp(ent->fts_path + 2, PROG_C_FILENAME)) {
+                        /*
+                         * record prog.c found
+                         */
+                        found_prog_c = true;
+                        dbg(DBG_HIGH, "found prog.c in topdir");
+                    } else if (!strcmp(ent->fts_path + 2, MAKEFILE_FILENAME)) {
+                        found_Makefile = true;
+                       /*
+                         * record Makefile found
+                         */
+                        found_Makefile = true;
+                        dbg(DBG_HIGH, "found Makefile in topdir");
+                    } else if (!strcmp(ent->fts_path + 2, REMARKS_FILENAME)) {
+                        /*
+                         * record remarks.md found
+                         */
+                        found_remarks_md = true;
+                        dbg(DBG_HIGH, "found remarks.md in topdir");
+                    } else if (!optional) {
+                        /*
+                         * we need the total number of non-optional
+                         * non-required files
+                         */
+                        ++count;
+                    }
+                    break;
+                case FTS_SL: /* symlink */
+                case FTS_SLNONE: /* symlink with non-existing target */
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(ent->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(58, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    /*
+                     * we have to ignore symlinks but it's not an error to have
+                     * them as they might be useful to some submitters (they're
+                     * only an error if they are in the submission directory)
+                     */
+                    append_unique_str(infop->ignored_symlinks, filename);
                     break;
                 default:
                     break;
             }
         }
 
+        /*
+         * close down stream
+         */
         fts_close(fts);
         fts = NULL;
     }
+
     /*
-     * now switch back to the cwd
+     * check that there are not too many non-optional non-required files
      */
-    errno = 0;          /* pre-clear errno for errp() */
-    ret = fchdir(cwd);
-    if (ret < 0) {
-        errp(34, __func__, "unable to fchdir(cwd)");
+    if (count > MAX_EXTRA_FILE_COUNT) {
+        err(59, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
         not_reached();
     }
 
     /*
-     * check that there are not too many extra files
+     * verify that there are not too many directories if MAX_EXTRA_DIR_COUNT > 0.
      */
-    if (count > MAX_EXTRA_FILE_COUNT) {
-        err(35, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
+    dirs = dyn_array_tell(infop->directories);
+    unsafe_dirs = dyn_array_tell(infop->unsafe_dirs);
+    if (MAX_EXTRA_DIR_COUNT > 0 && dirs + unsafe_dirs > MAX_EXTRA_DIR_COUNT) {
+        err(60, __func__, "too many extra directories: %ju > %ju", (uintmax_t)(dirs + unsafe_dirs),
+                (uintmax_t)MAX_EXTRA_DIR_COUNT);
         not_reached();
     }
 
@@ -1347,17 +1681,1318 @@ collect_topdir_files(char * const *args, struct info *infop, char const *submiss
      * verify prog.c, Makefile and remarks.md have been found
      */
     if (!found_prog_c) {
-        err(36, __func__, "prog.c not found in topdir %s", args[0]);
+        err(61, __func__, "prog.c not found in topdir %s", args[0]);
         not_reached();
     } else if (!found_Makefile) {
-        err(37, __func__, "Makefile not found in topdir %s", args[0]);
+        err(62, __func__, "Makefile not found in topdir %s", args[0]);
         not_reached();
     } else if (!found_remarks_md) {
-        err(38, __func__, "remarks.md not found in topdir %s", args[0]);
+        err(63, __func__, "remarks.md not found in topdir %s", args[0]);
         not_reached();
     }
 
-    return count;
+    /*
+     * copy everything over (presenting user with lists first)
+     */
+    copy_topdir(infop, make, submission_dir, topdir_path, submit_path, topdir, cwd, size);
+
+    return;
+}
+
+/*
+ * copy_topdir
+ *
+ * Copy files/directories from topdir to submission directory if user says
+ * everything is okay.
+ *
+ * given:
+ *      infop           - pointer to info struct from scan_topdir()
+ *      make            - path to make(1) (for check_submission())
+ *      submission_dir  - submission directory path under workdir
+ *      topdir_path     - absolute path of topdir (from scan_topdir())
+ *      submit_path     - absolute path of submit directory under workdir (from
+ *                        scan_topdir())
+ *      topdir          - file descriptor that should correspond to topdir_path
+ *      cwd             - current working directory (from which mkiocccentry was invoked)
+ *
+ * This function takes the lists from which scan_topdir() created (as it
+ * traversed the topdir) and lists them to the user. Assuming the user agrees
+ * that everything is okay this function will copy the files to the submission
+ * directory. Assuming that goes well the check_submission() function will be
+ * called.
+ *
+ * NOTE: this function does not return on NULL pointers, invalid file
+ * descriptors (topdir < 0 or cwd < 0 - that's all we can check, at least
+ * without trying to use fchdir() which seems unnecessary), errors or if the
+ * user says something is not okay.
+ */
+static void
+copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,
+        char *submit_path, int topdir, int cwd, RuleCount *size)
+{
+    char *target_path = NULL;       /* target file path (absolute) */
+    char *fname = NULL;                 /* filename can't be freed so we need another variable */
+    char *p = NULL;                     /* temp value to print lists (arrays) */
+    intmax_t len = 0;                   /* length of arrays */
+    intmax_t i = 0;                     /* index into arrays */
+    bool yorn = false;              /* for prompts to ask user if everything is OK */
+    int ret;			    /* libc function return */
+
+    /*
+     * firewall
+     */
+    if (infop == NULL || make == NULL || submission_dir == NULL || topdir_path == NULL || submit_path == NULL || size == NULL) {
+        err(64, __func__, "passed NULL pointer(s)");
+        not_reached();
+    }
+    if (topdir < 0) {
+        err(65, __func__, "passed invalid topdir file descriptors");
+        not_reached();
+    }
+    if (cwd < 0) {
+        err(66, __func__, "passed invalid cwd file descriptors");
+        not_reached();
+    }
+
+    /*
+     * the arrays in struct info must exist from scan_topdir()
+     */
+    if (infop->ignored_symlinks == NULL) {
+        err(67, __func__, "NULL ignored symlinks list array");
+        not_reached();
+    }
+    if (infop->extra_files == NULL) {
+        err(68, __func__, "NULL files list array");
+        not_reached();
+    }
+    if (infop->required_files == NULL) {
+        err(69, __func__, "NULL required files list array");
+        not_reached();
+    }
+    if (infop->directories == NULL) {
+        err(70, __func__, "NULL directories list array");
+        not_reached();
+    }
+    if (infop->ignored_dirs == NULL) {
+        err(71, __func__, "NULL ignored directories list array");
+        not_reached();
+    }
+    if (infop->forbidden_files == NULL) {
+        err(72, __func__, "NULL forbidden filenames list array");
+        not_reached();
+    }
+    if (infop->unsafe_files == NULL) {
+        err(73, __func__, "NULL unsafe filenames list array");
+        not_reached();
+    }
+    if (infop->unsafe_dirs == NULL) {
+        err(74, __func__, "NULL unsafe directory names list array");
+        not_reached();
+    }
+
+    /*
+     * switch back to the original cwd (from scan_topdir())
+     */
+    errno = 0;          /* pre-clear errno for errp() */
+    ret = fchdir(cwd);
+    if (ret < 0) {
+        errp(75, __func__, "unable to fchdir(cwd)");
+        not_reached();
+    }
+
+    /*
+     * we need to show the user the list of ignored directories, if any
+     */
+    len = dyn_array_tell(infop->ignored_dirs);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_dirs, char *, i);
+            if (p == NULL) {
+                err(76, __func__, "found NULL pointer in ignored dirname list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(77, __func__, "aborting because user said ignored directories list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of unsafe POSIX plus + char directory
+     * names, if any
+     */
+    len = dyn_array_tell(infop->unsafe_dirs);
+    if (len > 0) {
+        para("",
+                "The following is a list of unsafe directory names that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_dirs, char *, i);
+            if (p == NULL) {
+                err(78, __func__, "found NULL pointer in unsafe directory names list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(79, __func__, "aborting because user said unsafe directory names list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show any forbidden filenames to the user
+     */
+    len = dyn_array_tell(infop->forbidden_files);
+    if (len > 0) {
+        para("",
+                "The following is a list of forbidden filenames that have been ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->forbidden_files, char *, i);
+            if (p == NULL) {
+                err(80, __func__, "found NULL pointer in forbidden files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(81, __func__, "aborting because user said forbidden files list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of unsafe POSIX plus + char only files, if any
+     */
+    len = dyn_array_tell(infop->unsafe_files);
+    if (len > 0) {
+        para("",
+                "The following is a list of unsafe filenames that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->unsafe_files, char *, i);
+            if (p == NULL) {
+                err(82, __func__, "found NULL pointer in unsafe filenames list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(83, __func__, "aborting because user said unsafe filenames list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of symlinks (ignored as they are not
+     * allowed), if any
+     */
+    len = dyn_array_tell(infop->ignored_symlinks);
+    if (len > 0) {
+        para("",
+                "The following is a list of symlinks that will be ignored:",
+                "",
+                NULL);
+
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_symlinks, char *, i);
+            if (p == NULL) {
+                err(84, __func__, "found NULL pointer in ignored symlinks list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(85, __func__, "aborting because user said ignored symlinks list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of directories, if any
+     */
+    len = dyn_array_tell(infop->directories);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories that will be created:",
+                "",
+                NULL);
+
+        /*
+         * show directories list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p == NULL) {
+                err(86, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(87, __func__, "aborting because user said directories list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * we need to show the user the list of all files, required and otherwise
+     */
+    len = dyn_array_tell(infop->required_files);
+    if (len <= 0) {
+        err(88, __func__, "list of required files is empty");
+        not_reached();
+    }
+    if (len > 0) {
+        para("",
+                "The following is a list of files that will be added to the tarball:"
+                "",
+                NULL);
+
+        /*
+         * show required files list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->required_files, char *, i);
+            if (p == NULL) {
+                err(89, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+
+        /*
+         * now we have to show them the list of non-required files
+         *
+         * NOTE: we only show them these files if the required files are present
+         * because it's an error if those files are not present (and in that
+         * case we shouldn't be here anyway)
+         */
+        len = dyn_array_tell(infop->extra_files);
+        if (len > 0) {
+            for (i = 0; i < len; ++i) {
+                p = dyn_array_value(infop->extra_files, char *, i);
+                if (p == NULL) {
+                    err(90, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
+                    not_reached();
+                }
+                print("%s\n", p);
+            }
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(91, __func__, "aborting because user said files list is not OK");
+                not_reached();
+            }
+        }
+
+        /*
+         * make the necessary subdirectories, if any
+         */
+        len = dyn_array_tell(infop->directories);
+        if (len > 0) {
+            /*
+             * we have to get to the submission dir before we can make
+             * directories
+             */
+            errno = 0;      /* pre-clear errno for errp() */
+            if (chdir(submission_dir) != 0) {
+                errp(92, __func__, "chdir(\"%s\") failed", submission_dir);
+                not_reached();
+            }
+
+            for (i = 0; i < len; ++i) {
+                /*
+                 * make the directories under the submission directory
+                 */
+                p = dyn_array_value(infop->directories, char *, i);
+                if (p == NULL) {
+                    err(93, __func__, "found NULL pointer in infop->directories list");
+                    not_reached();
+                }
+                /*
+                 * create path: -1 is from current (working) directory, p is the
+                 * path and 0755 is the mode
+                 */
+                mkdirs(-1, p, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+            }
+        }
+
+        /*
+         * now we have to get to the topdir (where the files to copy are)
+         */
+        errno = 0;
+        if (fchdir(topdir) != 0) {
+            errp(94, __func__, "cannot change to topdir");
+            not_reached();
+        }
+
+        /*
+         * copy every file to correct location
+         */
+        len = dyn_array_tell(infop->required_files);
+        if (len <= 0) {
+            err(95, __func__, "list of required files is empty");
+            not_reached();
+        }
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->required_files, char *, i);
+            if (p == NULL) {
+                err(96, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            /*
+             * we have to allocate the full path of the file under topdir.
+             * This is why we use calloc_path() with the absolute path of
+             * the topdir and the file. We need the absolute path because we
+             * cannot guarantee where the user has things in their system.
+             */
+            fname = calloc_path(topdir_path, p);
+            if (fname == NULL) {
+                err(97, __func__, "couldn't allocate path to copy");
+                not_reached();
+            }
+            if (target_path != NULL) {
+                free(target_path);
+                target_path = NULL;
+            }
+
+            /*
+             * We need the absolute target path because the topdir and work
+             * directory path can be anywhere.
+             *
+             * The target path is the absolute path of the submission
+             * directory + / + the filename
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p) + 1);
+            if (target_path == NULL) {
+                errp(98, __func__, "failed to allocate target path for %s", p);
+                not_reached();
+            }
+            /*
+             * create target path
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p) + 1, "%s/%s", submit_path, p);
+            if (ret <= 0) {
+                errp(99, __func__, "snprintf to form target path for %s failed", fname);
+                not_reached();
+            }
+
+            /*
+             * copy file to target path
+             *
+             * NOTE: required files must be read-only.
+             */
+            copyfile(fname, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
+
+            /*
+             * paranoia
+             */
+            if (target_path != NULL) {
+                free(target_path);
+                target_path = NULL;
+            }
+            if (fname != NULL) {
+                free(fname);
+                fname = NULL;
+            }
+        }
+
+
+        /*
+         * NOTE: the target path and the source path of all files must be
+         * absolute as we cannot rely on relative paths, even if we require no
+         * absolute paths in the tarball.
+         */
+        len = dyn_array_tell(infop->extra_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p == NULL) {
+                err(100, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            /*
+             * we have to allocate the full path of the file under topdir.
+             * This is why we use calloc_path() with the absolute path of
+             * the topdir and the file. We need the absolute path because we
+             * cannot guarantee where the user has things in their system.
+             */
+            fname = calloc_path(topdir_path, p);
+            if (fname == NULL) {
+                err(101, __func__, "couldn't allocate path to copy");
+                not_reached();
+            }
+            if (target_path != NULL) {
+                free(target_path);
+                target_path = NULL;
+            }
+
+            /*
+             * We need the absolute target path because the topdir and work
+             * directory path can be anywhere.
+             *
+             * The target path is the absolute path of the submission
+             * directory + / + the filename.
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p) + 1);
+            if (target_path == NULL) {
+                errp(102, __func__, "failed to allocate target path for %s", p);
+                not_reached();
+            }
+            /*
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p) + 1, "%s/%s", submit_path, p);
+            if (ret <= 0) {
+                errp(103, __func__, "snprintf to form target path for %s failed", fname);
+                not_reached();
+            } else if (!strcmp(p, TRY_SH) || !strcmp(p, TRY_ALT_SH)) {
+                /*
+                 * try.sh and try.alt.sh MUST be mode 0555
+                 */
+                copyfile(fname, target_path, false, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+            } else {
+                /*
+                 * other files MUST be mode 0444
+                 */
+                copyfile(fname, target_path, false, S_IRUSR | S_IRGRP | S_IROTH);
+            }
+
+            /*
+             * paranoia
+             */
+            if (target_path != NULL) {
+                free(target_path);
+                target_path = NULL;
+            }
+            if (fname != NULL) {
+                free(fname);
+                fname = NULL;
+            }
+        }
+    }
+
+    /*
+     * free rest of allocated memory
+     */
+    if (fname != NULL) {
+        free(fname);
+        fname = NULL;
+    }
+    if (target_path != NULL) {
+        free(target_path);
+        target_path = NULL;
+    }
+
+    /*
+     * close our temporary file descriptor
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (close(topdir) != 0) {
+        errp(104, __func__, "failed to close(topdir)");
+        not_reached();
+    }
+
+    check_submission(infop, submission_dir, make, size, cwd);
+}
+
+/*
+ * check_submission
+ *
+ * After files are copied to submission directory, run make -f Makefile clobber
+ * and verify everything is okay by checking the submission directory and (if no
+ * errors) asking the user if everything seems in order. This function will also
+ * use the check_prog_c(), check_Makefile() and check_remarks_md() functions.
+ *
+ * given:
+ *
+ *      infop               - pointer to info struct
+ *      submission_dir      - submission directory that files were copied to
+ *      make                - path to make(1) (for make -f Makefile clobber)
+ *      size                - pointer to RuleCount for iocccsize
+ *      cwd                 - original directory
+ *
+ * NOTE: this function does not return on NULL pointers.
+ * NOTE: this function does not return on error or if the user says something is
+ *       not right.
+ * NOTE: although we use make -f Makefile clobber, we do NOT want a pointer to
+ * the path to the Makefile as we must have it in the submission directory after
+ * copy_topdir().
+ * NOTE: a sane relative path is a path that does not start with a '/' (however,
+ * see comment below about the function sane_relative_path()) and where each
+ * component of the path (between the '/' or if no '/' found then the string
+ * itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$' (w/o quotes). In
+ * other words it is POSIX plus + safe only characters and not a dot file.
+ * NOTE: if a path is already in an array and it is found again it is an error.
+ */
+static void
+check_submission(struct info *infop, char const *submission_dir, char const *make, RuleCount *size, int cwd)
+{
+    char *filename = NULL;              /* current filename (for arrays) */
+    char *fname = NULL;                 /* filename can't be freed so we need another variable */
+    char *p = NULL;                     /* temp value to print lists (arrays) */
+    intmax_t len = 0;                   /* length of arrays in info struct */
+    int exit_code = 0;                  /* for make clobber */
+    intmax_t len2 = 0;                  /* length of this function's arrays */
+    intmax_t i = 0;                     /* index into arrays */
+    FTS *fts = NULL;                    /* FTS stream for fts_open() */
+    FTSENT *ent = NULL;                 /* FTSENT for each item from fts_read() */
+    size_t count = 0;                   /* total number of non-optional non-required files */
+    struct dyn_array *required_files = NULL; /* required files in submission directory */
+    struct dyn_array *extra_files = NULL; /* extra files in submission directory */
+    struct dyn_array *missing_files = NULL; /* missing files in submission directory */
+    struct dyn_array *directories = NULL; /* directories in submission directory */
+    struct dyn_array *missing_dirs = NULL; /* missing directories in submission directory */
+    enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
+    char *path[] = { ".", NULL };   /* "." for fts_open() */
+    bool found_prog_c = false;      /* if prog.c found */
+    bool found_Makefile = false;    /* if Makefile found */
+    bool found_remarks_md = false;  /* if remarks.md found */
+    bool yorn = false;              /* for prompts to ask user if everything is OK */
+
+    /*
+     * firewall
+     */
+    if (infop == NULL || submission_dir == NULL || make == NULL || size == NULL) {
+        err(105, __func__, "passed NULL arg(s)");
+        not_reached();
+    }
+    /*
+     * cwd must be >= 0
+     */
+    if (cwd < 0) {
+        err(106, __func__, "original directory file descriptor < 0");
+        not_reached();
+    }
+
+    /*
+     * now we have to switch back to the previous cwd (original directory from
+     * which mkiocccentry was executed) so that the check_submission() does not
+     * fail.
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (fchdir(cwd) != 0) {
+        errp(107, __func__, "failed to change to original directory");
+        not_reached();
+    }
+
+
+
+    /*
+     * the arrays in struct info must exist from scan_topdir() (okay to be
+     * strictly technical, we only need some of them but since the scan_topdir()
+     * function makes these and uses them we still insist they exist at this
+     * point).
+     */
+    if (infop->ignored_symlinks == NULL) {
+        err(108, __func__, "NULL ignored symlinks list array");
+        not_reached();
+    }
+    if (infop->extra_files == NULL) {
+        err(109, __func__, "NULL files list array");
+        not_reached();
+    }
+    if (infop->required_files == NULL) {
+        err(110, __func__, "NULL required files list array");
+        not_reached();
+    }
+    if (infop->directories == NULL) {
+        err(111, __func__, "NULL directories list array");
+        not_reached();
+    }
+    if (infop->ignored_dirs == NULL) {
+        err(112, __func__, "NULL ignored directories list array");
+        not_reached();
+    }
+    if (infop->forbidden_files == NULL) {
+        err(113, __func__, "NULL forbidden filenames list array");
+        not_reached();
+    }
+    if (infop->unsafe_files == NULL) {
+        err(114, __func__, "NULL unsafe filenames list array");
+        not_reached();
+    }
+    if (infop->unsafe_dirs == NULL) {
+        err(115, __func__, "NULL unsafe directory names list array");
+        not_reached();
+    }
+
+
+    /*
+     * we do have to create some additional arrays to compare with arrays in
+     * struct info, as well as to report on missing files and directories.
+     */
+    required_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (required_files == NULL) {
+        err(116, __func__, "couldn't create required files list array");
+        not_reached();
+    }
+    extra_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (extra_files == NULL) {
+        err(117, __func__, "couldn't create extra files list array");
+        not_reached();
+    }
+    missing_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (missing_files == NULL) {
+        err(118, __func__, "couldn't create missing files list array");
+        not_reached();
+    }
+    directories = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (directories == NULL) {
+        err(119, __func__, "couldn't create directories list array");
+        not_reached();
+    }
+    missing_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (missing_dirs == NULL) {
+        err(120, __func__, "couldn't create missing directories list array");
+        not_reached();
+    }
+
+    /*
+     * change to submission directory
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (chdir(submission_dir) != 0) {
+        errp(121, __func__, "unable to change to submission directory: %s", submission_dir);
+        not_reached();
+    }
+
+    /*
+     * check for existence of Makefile
+     *
+     * This is necessary only because if make clobber fails it is because the
+     * user did not have a clobber rule which although is not something wanted
+     * by the judges, one is allowed to override it. So as long as Makefile
+     * exists it is okay; otherwise it is not. (Of course if its size <= 0 it'll be
+     * an error too but that's flagged by check_Makefile()).
+     */
+    if (!is_read("Makefile")) {
+        err(122, __func__, "Makefile does not exist in submission directory %s", submission_dir);
+        not_reached();
+    }
+    /*
+     * run make clobber on Makefile
+     */
+    dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
+    exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
+    if (exit_code != 0) {
+	warn(__func__, "Note: make -f Makefile clobber failed");
+    }
+
+
+    /*
+     * now that we have changed to the submission directory and have run make
+     * clobber, we need to verify that the topdir matches what is in the
+     * submission directory. If anything is out of order it is an error.
+     */
+    errno = 0;      /* pre-clear errno for errp() */
+    fts = fts_open(path, FTS_NOCHDIR | FTS_PHYSICAL, fts_cmp);
+    if (fts == NULL) {
+        errp(123, __func__, "fts_open() returned NULL for: %s", submission_dir);
+        not_reached();
+    } else {
+        while ((ent = fts_read(fts)) != NULL) {
+            bool ignored_dirname = false;
+            bool forbidden_filename = false;
+            bool optional = false;
+
+            /*
+             * skip '.'
+             */
+            if (!strcmp(ent->fts_path, ".")) {
+                continue;
+            }
+
+            /*
+             * specific FTSENT types are an immediate error
+             */
+            check_ftsent(ent);
+
+            /*
+             * here we have to do fts_path + 2 because fts_read() on "." will
+             * append every file with "./".
+             */
+            ignored_dirname = has_ignored_dirname(ent->fts_path + 2);
+            forbidden_filename = is_forbidden_filename(ent->fts_path + 2);
+            optional = is_optional_filename(ent->fts_path + 2);
+
+            if (ignored_dirname) {
+                err(124, __func__, "found ignored directory in submission directory");
+                not_reached();
+            } else if (forbidden_filename) {
+                err(125, __func__, "found forbidden file in submission directory");
+                not_reached();
+            }
+            /*
+             * NOTE: when traversing the directory "." the filenames found under
+             * it will all start with "./" (as noted above). This is why the
+             * last arg to sane_relative_path() is true: it allows the first two
+             * characters to be "./" (this does NOT mean that ".//" is okay and
+             * it does NOT mean that "././" is okay) (although technically we
+             * could just do fts_path + 2 but the functionality was needed
+             * anyway).
+             */
+            sanity = sane_relative_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
+            switch (sanity) {
+                case PATH_ERR_NAME_TOO_LONG: /* last component too long */
+                    err(126, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", ent->fts_name, ent->fts_name,
+                            (uintmax_t)strlen(ent->fts_name), (uintmax_t)MAX_FILENAME_LEN);
+                    not_reached();
+                    break;
+                case PATH_ERR_PATH_TOO_LONG: /* entire path too long */
+                    err(128, __func__, "%s: path too long: strlen(\"%s\"): %ju > %ju", ent->fts_path + 2, ent->fts_path,
+                            (uintmax_t)strlen(ent->fts_path), (uintmax_t)MAX_FILENAME_LEN);
+                    not_reached();
+                    break;
+                case PATH_ERR_PATH_TOO_DEEP: /* too many subdirectories */
+                    err(129, __func__, "%s: path too deep: depth %ju > %ju", ent->fts_path + 2,
+                            (uintmax_t)count_dirs(ent->fts_path), (uintmax_t)MAX_PATH_DEPTH);
+                    not_reached();
+                    break;
+                case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
+                    err(130, __func__, "%s: path not POSIX plus + safe", ent->fts_path + 2);
+                    not_reached();
+                    break;
+                case PATH_ERR_NOT_RELATIVE: /* path not relative: starts with '/' */
+                    err(131, __func__, "%s: path not relative", ent->fts_path + 2);
+                    not_reached();
+                    break;
+                case PATH_ERR_UNKNOWN: /* unknown error */
+                case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
+                case PATH_ERR_PATH_EMPTY: /* path is empty (should never happen) */
+                case PATH_ERR_MAX_PATH_LEN_0: /* max path length <= 0 (should never happen) */
+                case PATH_ERR_MAX_DEPTH_0: /* max depth <= 0 (should never happen) */
+                case PATH_ERR_MAX_NAME_LEN_0: /* max name length <= 0 (should never happen) */
+                    err(132, __func__, "%s: %s", ent->fts_path + 2, path_sanity_error(sanity));
+                    not_reached();
+                    break;
+                case PATH_OK: /* sane relative path */
+                    break;
+                default: /* should never be reached */
+                    /*
+                     * something is quite wrong here
+                     */
+                    err(133, __func__, "unknown status for %s", ent->fts_path);
+                    not_reached();
+                    break;
+            }
+            /* we need the type of the FTSENT */
+            switch (ent->fts_info) {
+                case FTS_D: /* directory */
+                    /*
+                     * we know this is an okay path because all error conditions
+                     * have been accounted for above
+                     */
+                    dbg(DBG_MED, "found sane relative directory name in submission directory: %s", ent->fts_path + 2);
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(ent->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(134, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    /*
+                     * add to directories list
+                     */
+                    append_unique_str(directories, filename);
+                    break;
+                case FTS_F:
+                    dbg(DBG_MED, "found sane relative filename in submission directory: %s", ent->fts_path + 2);
+                    errno = 0; /* pre-clear errno for errp() */
+                    filename = strdup(ent->fts_path + 2);
+                    if (filename == NULL) {
+                        errp(135, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                        not_reached();
+                    }
+
+                    /*
+                     * first add the filename to the appropriate array.
+                     *
+                     *
+                     * Case-sensitive search for prog.c, Makefile and
+                     * remarks.md. Note however that having more than one of the
+                     * same filename but different case is an error if it's in
+                     * the same directory.
+                     */
+                    if (strcmp(filename, PROG_C_FILENAME) && strcmp(filename, MAKEFILE_FILENAME) &&
+                        strcmp(filename, REMARKS_FILENAME)) {
+                            append_unique_str(extra_files, filename);
+                    } else {
+                        append_unique_str(required_files, filename);
+                    }
+
+                    /*
+                     * depending on the filename we have to do different things
+                     */
+                    if (!strcmp(ent->fts_path + 2, PROG_C_FILENAME)) {
+                        /*
+                         * record prog.c found
+                         */
+                        found_prog_c = true;
+                        dbg(DBG_HIGH, "found prog.c in submission directory");
+                    } else if (!strcmp(ent->fts_path + 2, MAKEFILE_FILENAME)) {
+                        found_Makefile = true;
+                       /*
+                         * record Makefile found
+                         */
+                        found_Makefile = true;
+                        dbg(DBG_HIGH, "found Makefile in submission directory");
+                    } else if (!strcmp(ent->fts_path + 2, REMARKS_FILENAME)) {
+                        /*
+                         * record remarks.md found
+                         */
+                        found_remarks_md = true;
+                        dbg(DBG_HIGH, "found remarks.md in submission directory");
+                    } else if (!optional) {
+                        /*
+                         * we need the total number of non-optional files
+                         */
+                        ++count;
+                    }
+                    break;
+                case FTS_SL: /* symlink */
+                case FTS_SLNONE: /* symlink with non-existing target */
+                    err(136, __func__, "found symlink in submission directory");
+                    not_reached();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*
+         * close down stream
+         */
+        fts_close(fts);
+        fts = NULL;
+    }
+
+    /*
+     * check that there are not too many extra files
+     */
+    if (count > MAX_EXTRA_FILE_COUNT) {
+        err(137, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);
+        not_reached();
+    }
+    len = dyn_array_tell(directories);
+    if (len < 0) {
+        err(138, __func__, "size of directories list < 0");
+        not_reached();
+    }
+    /*
+     * verify that there are not too many directories if MAX_EXTRA_DIR_COUNT > 0.
+     */
+    if (MAX_EXTRA_DIR_COUNT > 0 && len > MAX_EXTRA_DIR_COUNT) {
+        err(139, __func__, "too many extra directories in submission directory: %ju > %ju", (uintmax_t)len,
+                (uintmax_t)MAX_EXTRA_DIR_COUNT);
+        not_reached();
+    }
+
+    /*
+     * verify prog.c, Makefile and remarks.md have been found in the submission
+     * directory
+     */
+    if (!found_prog_c) {
+        err(140, __func__, "prog.c not found in submission directory %s", submission_dir);
+        not_reached();
+    } else if (!found_Makefile) {
+        err(141, __func__, "Makefile not found in submission directory %s", submission_dir);
+        not_reached();
+    } else if (!found_remarks_md) {
+        err(142, __func__, "remarks.md not found in submission directory %s", submission_dir);
+        not_reached();
+    }
+
+    /*
+     * we need to verify that the required files list in struct info is the same
+     * as what we found here in the submission directory
+     */
+    len = dyn_array_tell(infop->required_files);
+    if (len <= 0) {
+        err(143, __func__, "list of required files list is empty");
+        not_reached();
+    }
+    len2 = dyn_array_tell(required_files);
+    if (len2 <= 0) {
+        err(144, __func__, "list of required files in submission directory is empty");
+        not_reached();
+    }
+    if (len != len2) {
+        err(145, __func__, "size of required files list in submission directory != size in topdir: %ju != %ju", (uintmax_t)len2,
+                (uintmax_t)len);
+        not_reached();
+    }
+    for (i = 0; i < len; ++i) {
+        p = dyn_array_value(infop->required_files, char *, i);
+        if (p == NULL) {
+            err(146, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+            not_reached();
+        }
+        fname = dyn_array_value(required_files, char *, i);
+        if (fname == NULL) {
+            err(147, __func__, "found NULL pointer in required files list in submission directory, element: %ju", (uintmax_t)i);
+            not_reached();
+        }
+        /*
+         * if it's prog.c, Makefile or remarks.md we need to run the checks
+         */
+        if (!strcmp(p, PROG_C_FILENAME)) {
+            if (!quiet) {
+                para("Checking prog.c ...", NULL);
+            }
+            *size = check_prog_c(infop, p);
+            if (!quiet) {
+                para("... completed prog.c check.", "", NULL);
+            }
+            dbg(DBG_HIGH, "prog.c OK");
+        } else if (!strcmp(p, MAKEFILE_FILENAME)) {
+            if (!quiet) {
+                para("Checking Makefile ...", NULL);
+            }
+            check_Makefile(infop, p);
+            if (!quiet) {
+                para("... completed Makefile check.", "", NULL);
+            }
+            dbg(DBG_HIGH, "Makefile OK");
+        } else if (!strcmp(p, REMARKS_FILENAME)) {
+            if (!quiet) {
+                para("Checking remarks.md ...", NULL);
+            }
+            check_remarks_md(infop, p);
+            if (!quiet) {
+                para("... completed remarks.md check.", "", NULL);
+            }
+            dbg(DBG_HIGH, "remarks.md OK");
+        } else if (!strcmp(p, REMARKS_FILENAME)) {
+        }
+
+        if (strcasecmp(fname, p) != 0) {
+            /*
+             * we need to add this file to the missing files list
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            filename = strdup(ent->fts_path + 2);
+            if (filename == NULL) {
+                errp(148, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                not_reached();
+            }
+            append_unique_str(missing_files, filename);
+        }
+    }
+
+
+    /*
+     * we need to verify that the extra files list in struct info is the same
+     * as what we found here in the submission directory and if it's not we add
+     * it to the missing files list as well
+     */
+    len = dyn_array_tell(infop->extra_files);
+    if (len > 0) {
+        len2 = dyn_array_tell(extra_files);
+        if (len != len2) {
+            err(149, __func__, "size of extra files list in submission directory != size in topdir: %ju != %ju", (uintmax_t)len2,
+                    (uintmax_t)len);
+            not_reached();
+        }
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p == NULL) {
+                err(150, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            fname = dyn_array_value(extra_files, char *, i);
+            if (fname == NULL) {
+                err(151, __func__, "found NULL pointer in extra files list in submission directory, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+
+            if (strcasecmp(fname, p) != 0) {
+                /*
+                 * we need to add this file to the missing files list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(152, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+                append_unique_str(missing_files, filename);
+            }
+        }
+    }
+
+    /*
+     * we need to verify that the directories list in struct info is the same
+     * as what we found here in the submission directory
+     */
+    len = dyn_array_tell(infop->directories);
+    if (len > 0) {
+        len2 = dyn_array_tell(directories);
+        if (len != len2) {
+            err(153, __func__, "size of directories list in submission directory != size in topdir: %ju != %ju", (uintmax_t)len2,
+                    (uintmax_t)len);
+            not_reached();
+        }
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->directories, char *, i);
+            if (p == NULL) {
+                err(154, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            fname = dyn_array_value(directories, char *, i);
+            if (fname == NULL) {
+                err(155, __func__, "found NULL pointer in directories list in submission directory, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+
+            /*
+             * verify they are the same in both lists
+             */
+            if (strcasecmp(fname, p) != 0) {
+                /*
+                 * we need to add this file to the missing directories list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(156, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+                append_unique_str(missing_dirs, filename);
+            }
+        }
+    }
+
+    /*
+     * tell user about missing dirs
+     */
+    len = dyn_array_tell(missing_dirs);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories that exist in topdir but not in",
+                "your submission directory:",
+                "",
+                NULL);
+        /*
+         * show missing directories list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_dirs, char *, i);
+            if (p == NULL) {
+                err(157, __func__, "found NULL pointer in missing directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(158, __func__, "aborting because user said missing directories list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * tell user about missing files
+     */
+    len = dyn_array_tell(missing_files);
+    if (len > 0) {
+        para("",
+                "The following is a list of files that exist in topdir but not in",
+                "your submission directory:",
+                "",
+                NULL);
+        /*
+         * show missing files list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_files, char *, i);
+            if (p == NULL) {
+                err(159, __func__, "found NULL pointer in missing files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(160, __func__, "aborting because user said missing files is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * show user final submission directory listing and verify it is OK
+     */
+    len = dyn_array_tell(infop->required_files);
+    if (len <= 0) {
+        err(161, __func__, "list of required files is empty");
+        not_reached();
+    }
+    if (len > 0) {
+        para("",
+                "The following is a list of files in your submission:",
+                "",
+                NULL);
+
+        /*
+         * show required files list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->required_files, char *, i);
+            if (p == NULL) {
+                err(162, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+
+        /*
+         * now we have to show them the list of non-required files,
+         * if any.
+         */
+        len = dyn_array_tell(infop->extra_files);
+        if (len > 0) {
+            for (i = 0; i < len; ++i) {
+                p = dyn_array_value(infop->extra_files, char *, i);
+                if (p == NULL) {
+                    err(163, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
+                    not_reached();
+                }
+                print("%s\n", p);
+            }
+        }
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(164, __func__, "aborting because user said files list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * free our (local to this function) arrays
+     */
+    if (required_files != NULL) {
+        len = dyn_array_tell(required_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(required_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(required_files);
+        required_files = NULL;
+    }
+
+    if (extra_files != NULL) {
+        len = dyn_array_tell(extra_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(extra_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(extra_files);
+        extra_files = NULL;
+    }
+
+    if (missing_files != NULL) {
+        len = dyn_array_tell(missing_files);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_files, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(missing_files);
+        missing_files = NULL;
+    }
+
+    if (directories != NULL) {
+        len = dyn_array_tell(directories);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(directories, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(directories);
+        directories = NULL;
+    }
+
+    if (missing_dirs != NULL) {
+        len = dyn_array_tell(missing_dirs);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(missing_dirs, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(missing_dirs);
+        missing_dirs = NULL;
+    }
+
+    /*
+     * change to previous directory
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (fchdir(cwd) != 0) {
+        errp(165, __func__, "unable to change to previous directory");
+        not_reached();
+    }
+
+    /*
+     * close our temporary file descriptors
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    if (close(cwd) != 0) {
+        errp(166, __func__, "failed to close(cwd)");
+        not_reached();
+    }
 }
 
 /*
@@ -1400,8 +3035,8 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0, MAKE_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg4);
     fprintf_usage(exitcode, stderr, usage_msg5, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
@@ -1420,26 +3055,27 @@ usage(int exitcode, char const *prog, char const *str)
  * given:
  *
  *      infop           - pointer to info structure
- *      workdir        - where the submission directory and tarball are formed
+ *      workdir         - where the submission directory and tarball are formed
  *      tar             - path to tar that supports the -J (xz) option
- *	cp		- path to the cp utility
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
  *	chkentry	- path to chkentry tool
+ *	make            - path to make tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar, char const *cp,
-	   char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry)
+mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
+	   char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
+           char const *make)
 {
     /*
      * firewall
      */
-    if (infop == NULL || workdir == NULL || tar == NULL || cp == NULL || ls == NULL ||
-	txzchk == NULL || fnamchk == NULL || chkentry == NULL) {
-	err(39, __func__, "called with NULL arg(s)");
+    if (infop == NULL || workdir == NULL || tar == NULL || ls == NULL ||
+	txzchk == NULL || fnamchk == NULL || chkentry == NULL || make == NULL) {
+	err(167, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1461,7 +3097,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(40, __func__, "tar does not exist: %s", tar);
+	err(168, __func__, "tar does not exist: %s", tar);
 	not_reached();
     }
     if (!is_file(tar)) {
@@ -1478,7 +3114,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(41, __func__, "tar is not a regular file: %s", tar);
+	err(169, __func__, "tar is not a regular file: %s", tar);
 	not_reached();
     }
     if (!is_exec(tar)) {
@@ -1495,63 +3131,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(42, __func__, "tar is not an executable program: %s", tar);
-	not_reached();
-    }
-
-    /*
-     * cp must be executable
-     */
-    if (!exists(cp)) {
-	fpara(stderr,
-	      "",
-	      "We cannot find the cp program.",
-	      "",
-	      "The cp program is required to copy files into a directory under workdir.",
-	      "Perhaps you need to use:",
-	      "",
-	      "    mkiocccentry -c /path/to/cp ...",
-	      "",
-	      "and/or install a cp program?  You can find the source for cp in core utilities:",
-	      "",
-	      "    https://www.gnu.org/software/coreutils/",
-	      "",
-	      NULL);
-	err(43, __func__, "cp does not exist: %s", cp);
-	not_reached();
-    }
-    if (!is_file(cp)) {
-	fpara(stderr,
-	      "",
-	      "The cp path, while it exists, is not a regular file.",
-	      "",
-	      "Perhaps you need to use another path:",
-	      "",
-	      "    mkiocccentry -c /path/to/cp ...",
-	      "",
-	      "and/or install a cp program?  You can find the source for cp in core utilities:",
-	      "",
-	      "    https://www.gnu.org/software/coreutils/",
-	      "",
-	      NULL);
-	err(44, __func__, "cp is not a regular file: %s", cp);
-	not_reached();
-    }
-    if (!is_exec(cp)) {
-	fpara(stderr,
-	      "",
-	      "The cp path, while it is a file, is not executable.",
-	      "",
-	      "We suggest you check the permissions on the cp program, or use another path:",
-	      "",
-	      "    mkiocccentry -c /path/to/cp ...",
-	      "",
-	      "and/or install a cp program?  You can find the source for cp in core utilities:",
-	      "",
-	      "    https://www.gnu.org/software/coreutils/",
-	      "",
-	      NULL);
-	err(45, __func__, "cp is not an executable program: %s", cp);
+	err(170, __func__, "tar is not an executable program: %s", tar);
 	not_reached();
     }
 
@@ -1573,7 +3153,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(46, __func__, "ls does not exist: %s", ls);
+	err(171, __func__, "ls does not exist: %s", ls);
 	not_reached();
     }
     if (!is_file(ls)) {
@@ -1590,7 +3170,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(47, __func__, "ls is not a regular file: %s", ls);
+	err(172, __func__, "ls is not a regular file: %s", ls);
 	not_reached();
     }
     if (!is_exec(ls)) {
@@ -1607,7 +3187,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(48, __func__, "ls is not an executable program: %s", ls);
+	err(173, __func__, "ls is not an executable program: %s", ls);
 	not_reached();
     }
 
@@ -1629,7 +3209,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(49, __func__, "txzchk does not exist: %s", txzchk);
+	err(174, __func__, "txzchk does not exist: %s", txzchk);
 	not_reached();
     }
     if (!is_file(txzchk)) {
@@ -1646,7 +3226,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(50, __func__, "txzchk is not a regular file: %s", txzchk);
+	err(175, __func__, "txzchk is not a regular file: %s", txzchk);
 	not_reached();
     }
     if (!is_exec(txzchk)) {
@@ -1663,7 +3243,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(51, __func__, "txzchk is not an executable program: %s", txzchk);
+	err(176, __func__, "txzchk is not an executable program: %s", txzchk);
 	not_reached();
     }
 
@@ -1685,7 +3265,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(52, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(177, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -1702,7 +3282,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(53, __func__, "fnamchk is not a regular file: %s", fnamchk);
+	err(178, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -1719,7 +3299,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(54, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(179, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -1741,7 +3321,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(55, __func__, "chkentry does not exist: %s", chkentry);
+	err(180, __func__, "chkentry does not exist: %s", chkentry);
 	not_reached();
     }
     if (!is_file(chkentry)) {
@@ -1758,7 +3338,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(56, __func__, "chkentry is not a regular file: %s", chkentry);
+	err(181, __func__, "chkentry is not a regular file: %s", chkentry);
 	not_reached();
     }
     if (!is_exec(chkentry)) {
@@ -1775,9 +3355,67 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(57, __func__, "chkentry is not an executable program: %s", chkentry);
+	err(182, __func__, "chkentry is not an executable program: %s", chkentry);
 	not_reached();
     }
+
+    /*
+     * make must be executable
+     */
+    if (!exists(make)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find the make program.",
+	      "",
+	      "A make program that supports the -J (xz) option is required to build a compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(183, __func__, "make does not exist: %s", make);
+	not_reached();
+    }
+    if (!is_file(make)) {
+	fpara(stderr,
+	      "",
+	      "The make path, while it exists, is not a regular file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(184, __func__, "make is not a regular file: %s", make);
+	not_reached();
+    }
+    if (!is_exec(make)) {
+	fpara(stderr,
+	      "",
+	      "The make path, while it is a file, is not an executable.",
+	      "",
+	      "We suggest you check the permissions on the make program, or use another path:",
+	      "",
+	      "    mkiocccentry -m /path/to/make ...",
+	      "",
+	      "and/or install a make program?  You can find the source for make:",
+	      "",
+	      "    https://www.gnu.org/software/make/",
+	      "",
+	      NULL);
+	err(185, __func__, "make is not an executable program: %s", make);
+	not_reached();
+    }
+
+
 
     /*
      * workdir must be a writable directory
@@ -1790,7 +3428,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "You should either create workdir, or use a different workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(58, __func__, "workdir does not exist: %s", workdir);
+	err(186, __func__, "workdir does not exist: %s", workdir);
 	not_reached();
     }
     if (!is_dir(workdir)) {
@@ -1802,7 +3440,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(59, __func__, "workdir is not a directory: %s", workdir);
+	err(187, __func__, "workdir is not a directory: %s", workdir);
 	not_reached();
     }
     if (!is_write(workdir)) {
@@ -1814,7 +3452,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *ta
 	      "create a new writable directory, or use a different workdir directory path on the command line.",
 	      "",
 	      NULL);
-	err(60, __func__, "workdir is not a writable directory: %s", workdir);
+	err(188, __func__, "workdir is not a writable directory: %s", workdir);
 	not_reached();
     }
 
@@ -1864,7 +3502,7 @@ prompt(char const *str, size_t *lenp)
      * NOTE: As noted above, lenp can be NULL.
      */
     if (str == NULL) {
-	err(61, __func__, "called with NULL str");
+	err(189, __func__, "called with NULL str");
 	not_reached();
     }
 
@@ -1877,13 +3515,13 @@ prompt(char const *str, size_t *lenp)
 	ret = fputs(str, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(62, __func__, "error printing prompt string");
+		errp(190, __func__, "error printing prompt string");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(63, __func__, "EOF while printing prompt string");
+		err(191, __func__, "EOF while printing prompt string");
 		not_reached();
 	    } else {
-		errp(64, __func__, "unexpected fputs error printing prompt string");
+		errp(192, __func__, "unexpected fputs error printing prompt string");
 		not_reached();
 	    }
 	}
@@ -1892,13 +3530,13 @@ prompt(char const *str, size_t *lenp)
 	ret = fputs(": ", stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(65, __func__, "error printing :<space>");
+		errp(193, __func__, "error printing :<space>");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(66, __func__, "EOF while writing :<space>");
+		err(194, __func__, "EOF while writing :<space>");
 		not_reached();
 	    } else {
-		errp(67, __func__, "unexpected fputs error printing :<space>");
+		errp(195, __func__, "unexpected fputs error printing :<space>");
 		not_reached();
 	    }
 	}
@@ -1907,13 +3545,13 @@ prompt(char const *str, size_t *lenp)
 	ret = fflush(stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(68, __func__, "error flushing prompt to stdout");
+		errp(196, __func__, "error flushing prompt to stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(69, __func__, "EOF while flushing prompt to stdout");
+		err(197, __func__, "EOF while flushing prompt to stdout");
 		not_reached();
 	    } else {
-		errp(70, __func__, "unexpected fflush error while flushing prompt to stdout");
+		errp(198, __func__, "unexpected fflush error while flushing prompt to stdout");
 		not_reached();
 	    }
 	}
@@ -1924,7 +3562,7 @@ prompt(char const *str, size_t *lenp)
      */
     buf = readline_dup(&linep, true, &len, input_stream);
     if (buf == NULL) {
-	err(71, __func__, "EOF while reading prompt input");
+	err(199, __func__, "EOF while reading prompt input");
 	not_reached();
     }
     dbg(DBG_VHIGH, "received a %ju byte response", (uintmax_t)len);
@@ -1980,10 +3618,10 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
      * firewall
      */
     if (testp == NULL) {
-	err(72, __func__, "called with NULL testp");
+	err(200, __func__, "called with NULL testp");
 	not_reached();
     } else if (read_answers_flag_used == NULL) {
-	err(73, __func__, "called with NULL read_answers_flag_used");
+	err(201, __func__, "called with NULL read_answers_flag_used");
 	not_reached();
     }
 
@@ -2023,7 +3661,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    malloc_ret = prompt("", &len);
 	}
 	if (*read_answers_flag_used && !seen_answers_header) {
-	    err(74, __func__, "didn't find the correct answers file header");
+	    err(202, __func__, "didn't find the correct answers file header");
 	    not_reached();
 	}
 
@@ -2120,7 +3758,7 @@ get_submit_slot(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(75, __func__, "called with NULL arg(s)");
+	err(203, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2136,7 +3774,7 @@ get_submit_slot(struct info *infop)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = printf("\nYou are allowed to submit up to %d submissions to a given IOCCC.\n", MAX_SUBMIT_SLOT + 1);
 	    if (ret <= 0) {
-		errp(76, __func__, "printf error printing number of submissions allowed");
+		errp(204, __func__, "printf error printing number of submissions allowed");
 		not_reached();
 	    }
 	    para("",
@@ -2222,12 +3860,12 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
      * firewall
      */
     if (workdir == NULL || ioccc_id == NULL || tarball_path == NULL) {
-	err(77, __func__, "called with NULL arg(s)");
+	err(205, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     test = test_submit_slot(submit_slot);
     if (test == false) {
-	err(78, __func__, "submit slot number: %d must >= 0 and <= %d", submit_slot, MAX_SUBMIT_SLOT);
+	err(206, __func__, "submit slot number: %d must >= 0 and <= %d", submit_slot, MAX_SUBMIT_SLOT);
 	not_reached();
     }
 
@@ -2241,13 +3879,13 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
     errno = 0;			/* pre-clear errno for errp() */
     submission_dir = (char *)malloc(submission_dir_len + 1);
     if (submission_dir == NULL) {
-	errp(79, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(submission_dir_len + 1));
+	errp(207, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(submission_dir_len + 1));
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", workdir, ioccc_id, submit_slot);
     if (ret <= 0) {
-	errp(80, __func__, "snprintf to form submission directory failed");
+	errp(208, __func__, "snprintf to form submission directory failed");
 	not_reached();
     }
     dbg(DBG_HIGH, "submission directory path: %s", submission_dir);
@@ -2266,7 +3904,7 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 	      "You need to move that directory, or remove it, or use a different workdir.",
 	      "",
 	      NULL);
-	err(81, __func__, "submission directory exists: %s", submission_dir);
+	err(209, __func__, "submission directory exists: %s", submission_dir);
 	not_reached();
     }
     dbg(DBG_HIGH, "submission directory path: %s", submission_dir);
@@ -2275,9 +3913,9 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
      * make the submission directory
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = mkdir(submission_dir, 0755);
+    ret = mkdir(submission_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     if (ret < 0) {
-	errp(82, __func__, "cannot mkdir %s with mode 0755", submission_dir);
+	errp(210, __func__, "cannot mkdir %s with mode 0755", submission_dir);
 	not_reached();
     }
 
@@ -2288,7 +3926,7 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
      */
     *tarball_path = form_tar_filename(ioccc_id, submit_slot, test_mode, tstamp);
     if (*tarball_path == NULL) {
-	errp(83, __func__, "failed to form compressed tarball path");
+	errp(211, __func__, "failed to form compressed tarball path");
 	not_reached();
     }
     dbg(DBG_HIGH, "compressed tarball path: %s", *tarball_path);
@@ -2333,7 +3971,7 @@ warn_empty_prog(void)
 	}
 	yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
 	if (!yorn) {
-	    err(84, __func__, "please fix your prog.c file");
+	    err(212, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that their empty prog.c is OK");
@@ -2362,7 +4000,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
      * firewall
      */
     if (infop == NULL) {
-	err(85, __func__, "called with NULL infop");
+	err(213, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -2392,7 +4030,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    }
 	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
 	    if (!yorn) {
-		err(86, __func__, "please fix your prog.c file");
+		err(214, __func__, "please fix your prog.c file");
 		not_reached();
 	    }
 	    dbg(DBG_MED, "user says that their prog.c size: %jd > Rule 2a max size: %jd is OK",
@@ -2417,7 +4055,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    }
 	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
 	    if (!yorn) {
-		err(87, __func__, "please fix your prog.c file");
+		err(215, __func__, "please fix your prog.c file");
 		not_reached();
 	    }
 	    dbg(DBG_MED, "user says that prog.c size: %jd != rule_count function size: %jd is OK",
@@ -2428,7 +4066,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
      * invalid mode
      */
     } else {
-	err(88, __func__, "invalid mode passed to function: %d", mode);
+	err(216, __func__, "invalid mode passed to function: %d", mode);
 	not_reached();
     }
     return;
@@ -2463,7 +4101,7 @@ warn_nul_chars(void)
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
 	if (!yorn) {
-	    err(89, __func__, "please fix your prog.c file");
+	    err(217, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that prog.c having NUL character(s) is OK");
@@ -2499,7 +4137,7 @@ warn_trigraph(void)
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
 	if (!yorn) {
-	    err(90, __func__, "please fix your prog.c file");
+	    err(218, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that prog.c having unknown or invalid trigraph(s) is OK");
@@ -2535,7 +4173,7 @@ warn_wordbuf(void)
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
 	if (!yorn) {
-	    err(91, __func__, "please fix your prog.c file");
+	    err(219, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that prog.c triggering a word buffer overflow is OK");
@@ -2572,7 +4210,7 @@ warn_ungetc(void)
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
 	if (!yorn) {
-	    err(92, __func__, "please fix your prog.c file");
+	    err(220, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that prog.c triggering an ungetc warning OK");
@@ -2596,7 +4234,7 @@ warn_rule_2b_size(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(93, __func__, "called with NULL infop");
+	err(221, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -2608,7 +4246,7 @@ warn_rule_2b_size(struct info *infop)
 	ret = fprintf(stderr, "\nWARNING: The prog.c size: %ju > Rule 2b maximum: %ju\n",
 		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
 	if (ret <= 0) {
-	    errp(94, __func__, "printf error printing prog.c size > Rule 2b maximum");
+	    errp(222, __func__, "printf error printing prog.c size > Rule 2b maximum");
 	    not_reached();
 	}
 
@@ -2625,7 +4263,7 @@ warn_rule_2b_size(struct info *infop)
 	}
 	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
 	if (!yorn) {
-	    err(95, __func__, "please fix your prog.c file");
+	    err(223, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that their prog.c size: %ju > Rule 2B max size: %ju is OK",
@@ -2635,54 +4273,36 @@ warn_rule_2b_size(struct info *infop)
 
 
 /*
- * check_prog_c - check prog_c arg and if OK, copy into submission_dir/prog.c
+ * check_prog_c - check prog_c arg
  *
- * Check if the prog_c argument is a readable file, and
- * if it is within the guidelines of iocccsize (or if the author overrides),
- * and if all is OK or overridden,
- * use cp to copy into submission_dir/prog.c.
+ * Check if the prog_c argument is a readable file (if it is not it is an
+ * error). If it is a regular readable file rule_count() from iocccsize(1) will
+ * be used on it and any warnings that are flagged will be reported to the user.
+ * If the user overrides any warnings it will proceed but otherwise it is an
+ * error and the program will abort.
+ *
+ * Assuming all is okay it will report the Rule 2b size.
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - newly created submission directory (by mk_submission_dir()) under workdir
- *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
  *
  * This function does not return on error.
  */
 static RuleCount
-check_prog_c(struct info *infop, char const *submission_dir, char const *cp, char const *prog_c)
+check_prog_c(struct info *infop, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
-    size_t prog_c_len;		/* length of the prog_c path */
-    size_t submission_dir_len;	/* length of the submission_dir path */
-    int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
     RuleCount size;		/* rule_count() processing results */
-    char *path = NULL;          /* complete path of submission_dir/prog.c */
 
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || cp == NULL || prog_c == NULL) {
-	err(96, __func__, "called with NULL arg(s)");
+    if (infop == NULL || prog_c == NULL) {
+	err(224, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    submission_dir_len = strlen(submission_dir);
-    if (submission_dir_len <= 0) {
-	err(97, __func__, "submission_dir arg is an empty string");
-	not_reached();
-    }
-
-    /*
-     * prog_c filename length MUST be > 0 && <= MAX_FILENAME_LEN!
-     */
-    prog_c_len = strlen(prog_c);
-    if (!test_filename_len(prog_c)) {
-	err(98, __func__, "prog_c filename length: %ju: is not > 0 && <= %ju", (uintmax_t)prog_c_len, (uintmax_t)MAX_FILENAME_LEN);
-	not_reached();
-    }
-
     /*
      * prog.c must be a readable file
      */
@@ -2692,7 +4312,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
 	      "We cannot find the prog.c file.",
 	      "",
 	      NULL);
-	err(99, __func__, "prog.c does not exist: %s", prog_c);
+	err(225, __func__, "prog.c does not exist: %s", prog_c);
 	not_reached();
     }
     if (!is_file(prog_c)) {
@@ -2701,7 +4321,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
 	      "The prog.c path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(100, __func__, "prog.c is not a regular file: %s", prog_c);
+	err(226, __func__, "prog.c is not a regular file: %s", prog_c);
 	not_reached();
     }
     if (!is_read(prog_c)) {
@@ -2710,7 +4330,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
 	      "The prog.c path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(101, __func__, "prog.c is not a readable file: %s", prog_c);
+	err(227, __func__, "prog.c is not a readable file: %s", prog_c);
 	not_reached();
     }
 
@@ -2724,7 +4344,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
     errno = 0;			/* pre-clear errno for errp() */
     prog_stream = fopen(prog_c, "r");
     if (prog_stream == NULL) {
-	errp(102, __func__, "failed to fopen: %s", prog_c);
+	errp(228, __func__, "failed to fopen: %s", prog_c);
 	not_reached();
     }
     size = rule_count(prog_stream);
@@ -2733,7 +4353,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(prog_stream);
     if (ret != 0) {
-	errp(103, __func__, "failed to fclose: %s", prog_c);
+	errp(229, __func__, "failed to fclose: %s", prog_c);
 	not_reached();
     }
 
@@ -2743,7 +4363,7 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
     infop->rule_2a_size = file_size(prog_c);
     dbg(DBG_MED, "Rule 2a size: %jd", (intmax_t)infop->rule_2a_size);
     if (infop->rule_2a_size < 0) {
-	err(104, __func__, "file_size error: %jd on prog.c: %s", (intmax_t)infop->rule_2a_size, prog_c);
+	err(230, __func__, "file_size error: %jd on prog.c: %s", (intmax_t)infop->rule_2a_size, prog_c);
 	not_reached();
     } else if (infop->rule_2a_size == 0 || infop->rule_2b_size == 0) {
 	warn_empty_prog();
@@ -2827,57 +4447,6 @@ check_prog_c(struct info *infop, char const *submission_dir, char const *cp, cha
 	infop->rule_2b_override = false;
     }
 
-    /*
-     * get full path
-     */
-    path = calloc_path(submission_dir, "prog.c");
-    if (path == NULL) {
-        err(105, __func__, "calloc_path(\"%s\", \"prog.c\") failed", submission_dir);
-        not_reached();
-    }
-
-    /*
-     * copy prog.c under submission_dir
-     */
-    dbg(DBG_HIGH, "about to perform: %s -- %s %s", cp, prog_c, path);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, prog_c, path);
-    if (exit_code != 0) {
-	err(106, __func__, "%s -- %s %s failed with exit code: %d",
-			  cp, prog_c, path, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-
-    /*
-     * set permissions
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    ret = chmod(path, S_IRUSR | S_IRGRP | S_IROTH);
-    if (ret != 0) {
-        err(107, __func__, "chmod(2) failed to set user, group and other read-only on %s", path);
-        not_reached();
-    }
-
-
-
-    /*
-     * free path
-     */
-    if (path != NULL) {
-        free(path);
-        path = NULL;
-    }
-
-
-
-    /*
-     * save prog.c filename
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    infop->prog_c = strdup("prog.c");
-    if (infop->prog_c == NULL) {
-	errp(108, __func__, "malloc #2 of %ju bytes failed", (uintmax_t)(LITLEN("prog.c") + 1));
-	not_reached();
-    }
     return size;
 }
 
@@ -2917,7 +4486,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
      * firewall
      */
     if (Makefile == NULL || infop == NULL) {
-	err(109, __func__, "called with NULL arg(s)");
+	err(231, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2927,7 +4496,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     stream = fopen(Makefile, "r");
     if (stream == NULL) {
-	errp(110, __func__, "cannot open Makefile: %s", Makefile);
+	errp(232, __func__, "cannot open Makefile: %s", Makefile);
 	not_reached();
     }
 
@@ -3126,7 +4695,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(stream);
     if (ret < 0) {
-	errp(111, __func__, "fclose error");
+	errp(233, __func__, "fclose error");
 	not_reached();
     }
 
@@ -3169,7 +4738,7 @@ warn_Makefile(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(112, __func__, "called with NULL infop");
+	err(234, __func__, "called with NULL infop");
 	not_reached();
     }
     if (need_confirm && (!answer_yes || seed_used)) {
@@ -3245,7 +4814,7 @@ warn_Makefile(struct info *infop)
 	if (!answer_yes) {
 	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
 	    if (!yorn) {
-		err(113, __func__, "Use a different Makefile or modify your Makefile");
+		err(235, __func__, "Use a different Makefile or modify your Makefile");
 		not_reached();
 	    }
 	}
@@ -3254,44 +4823,27 @@ warn_Makefile(struct info *infop)
 
 
 /*
- * check_Makefile - check Makefile arg and if OK, copy into submission_dir/Makefile
+ * check_Makefile - check Makefile arg
  *
  * Check if the Makefile argument is a readable file, and
- * if it has the proper rules (starting with all:),
- * use cp to copy into submission_dir/Makefile.
+ * if it has the proper rules (starting with all:).
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - newly created submission directory (by mk_submission_dir()) under workdir
- *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *submission_dir, char const *cp, char const *Makefile)
+check_Makefile(struct info *infop, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
-    int exit_code;		/* exit code from shell_cmd() */
-    size_t makefile_filename_len;	/* length of the Makefile path */
-    char *path = NULL;          /* full path of Makefile (submission_dir/Makefile) */
-    int ret;                    /* libc return value */
 
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || cp == NULL || Makefile == NULL) {
-	err(114, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-
-    /*
-     * Makefile filename length MUST be > 0 && <= MAX_FILENAME_LEN!
-     */
-    makefile_filename_len = strlen(Makefile);
-    if (!test_filename_len(Makefile)) {
-	err(115, __func__, "Makefile filename length: %ju: is not > 0 && <= %ju", (uintmax_t)makefile_filename_len,
-                (uintmax_t)MAX_FILENAME_LEN);
+    if (infop == NULL || Makefile == NULL) {
+	err(236, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3304,7 +4856,7 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *cp, c
 	      "We cannot find the Makefile.",
 	      "",
 	      NULL);
-	err(116, __func__, "Makefile does not exist: %s", Makefile);
+	err(237, __func__, "Makefile does not exist: %s", Makefile);
 	not_reached();
     }
     if (!is_file(Makefile)) {
@@ -3313,7 +4865,7 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *cp, c
 	       "The Makefile path, while it exists, is not a regular file.",
 	       "",
 	       NULL);
-	err(117, __func__, "Makefile is not a regular file: %s", Makefile);
+	err(238, __func__, "Makefile is not a regular file: %s", Makefile);
 	not_reached();
     }
     if (!is_read(Makefile)) {
@@ -3322,15 +4874,15 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *cp, c
 	      "The Makefile path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(118, __func__, "Makefile is not readable file: %s", Makefile);
+	err(239, __func__, "Makefile is not readable file: %s", Makefile);
 	not_reached();
     }
     filesize = file_size(Makefile);
     if (filesize < 0) {
-	err(119, __func__, "file_size error: %jd on Makefile  %s", (intmax_t)filesize, Makefile);
+	err(240, __func__, "file_size error: %jd on Makefile  %s", (intmax_t)filesize, Makefile);
 	not_reached();
     } else if (filesize == 0) {
-	err(120, __func__, "Makefile cannot be empty: %s", Makefile);
+	err(241, __func__, "Makefile cannot be empty: %s", Makefile);
 	not_reached();
     }
 
@@ -3344,99 +4896,33 @@ check_Makefile(struct info *infop, char const *submission_dir, char const *cp, c
 	infop->Makefile_override = false;
     }
 
-    /*
-     * get full path
-     */
-    path = calloc_path(submission_dir, "Makefile");
-    if (path == NULL) {
-        err(121, __func__, "calloc_path(\"%s\", \"Makefile\") failed", submission_dir);
-        not_reached();
-    }
-
-
-    /*
-     * copy Makefile under submission_dir
-     */
-    dbg(DBG_HIGH, "about to perform: %s --  %s %s", cp, Makefile, path);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, Makefile, path);
-    if (exit_code != 0) {
-	err(122, __func__, "%s --  %s %s failed with exit code: %d",
-			   cp, Makefile, path, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-
-    /*
-     * set permissions
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    ret = chmod(path, S_IRUSR | S_IRGRP | S_IROTH);
-    if (ret != 0) {
-        err(123, __func__, "chmod(2) failed to set user, group and other read-only on %s", path);
-        not_reached();
-    }
-
-    /*
-     * free path
-     */
-    if (path != NULL) {
-        free(path);
-        path = NULL;
-    }
-
-    /*
-     * save Makefile filename
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    infop->Makefile = strdup("Makefile");
-    if (infop->Makefile == NULL) {
-	errp(124, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("Makefile") + 1));
-	not_reached();
-    }
     return;
 }
 
 
 /*
- * check_remarks_md - check remarks_md arg and if OK, copy into submission_dir/Makefile
+ * check_remarks_md - check remarks_md arg
  *
- * Check if the remarks_md argument is a readable file, and
- * if it is not empty, use cp to copy into submission_dir/remarks.md.
+ * Check if the remarks_md argument is a readable non-empty file
  *
  * given:
  *      infop           - pointer to info structure
- *      submission_dir  - the newly created submission directory (by mk_submission_dir()) under workdir
- *      cp              - cp utility path
  *      remarks_md      - remarks_md arg: given path to author's remarks markdown file
  *
  * This function does not return on error.
  */
 static void
-check_remarks_md(struct info *infop, char const *submission_dir, char const *cp, char const *remarks_md)
+check_remarks_md(struct info *infop, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
-    int exit_code;		/* exit code from shell_cmd() */
-    size_t remarks_filename_len;	/* length of the remarks.md path */
-    char *path = NULL;          /* full path of file (submission_dir/remarks.md) */
-    int ret = -1;               /* libc return value */
 
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || cp == NULL || remarks_md == NULL) {
-	err(125, __func__, "called with NULL arg(s)");
+    if (infop == NULL || remarks_md == NULL) {
+	err(242, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-
-    /*
-     * remarks.md filename length MUST be > 0 && < MAX_FILENAME_LEN
-     */
-    remarks_filename_len = strlen(remarks_md);
-    if (!test_filename_len(remarks_md)) {
-	err(126, __func__, "remarks_md filename length: %ju: is not > 0 && <= %ju", (uintmax_t)remarks_filename_len,
-                (uintmax_t)MAX_FILENAME_LEN);
-	not_reached();
-    }
-
 
     /*
      * remarks_md must be a non-empty readable file
@@ -3447,7 +4933,7 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *cp,
 	       "We cannot find the remarks.md file.",
 	       "",
 	       NULL);
-	err(128, __func__, "remarks.md does not exist: %s", remarks_md);
+	err(243, __func__, "remarks.md does not exist: %s", remarks_md);
 	not_reached();
     }
     if (!is_file(remarks_md)) {
@@ -3455,7 +4941,7 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *cp,
 	      "The remarks.md path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(129, __func__, "remarks.md is not a regular file: %s", remarks_md);
+	err(244, __func__, "remarks.md is not a regular file: %s", remarks_md);
 	not_reached();
     }
     if (!is_read(remarks_md)) {
@@ -3464,64 +4950,15 @@ check_remarks_md(struct info *infop, char const *submission_dir, char const *cp,
 	      "The remarks.md path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(130, __func__, "remarks.md is not readable file: %s", remarks_md);
+	err(245, __func__, "remarks.md is not readable file: %s", remarks_md);
 	not_reached();
     }
     filesize = file_size(remarks_md);
     if (filesize < 0) {
-	err(131, __func__, "file_size error: %jd on remarks.md %s", (intmax_t)filesize, remarks_md);
+	err(246, __func__, "file_size error: %jd on remarks.md %s", (intmax_t)filesize, remarks_md);
 	not_reached();
     } else if (filesize == 0) {
-	err(132, __func__, "remarks.md cannot be empty: %s", remarks_md);
-	not_reached();
-    }
-
-    /*
-     * get full path
-     */
-    path = calloc_path(submission_dir, "remarks.md");
-    if (path == NULL) {
-        err(133, __func__, "calloc_path(\"%s\", \"remarks.md\") failed", submission_dir);
-        not_reached();
-    }
-
-    /*
-     * copy remarks.md under submission_dir
-     */
-    dbg(DBG_HIGH, "about to perform: %s -- %s %s", cp, remarks_md, path);
-    exit_code = shell_cmd(__func__, false, true, "% -- % %", cp, remarks_md, path);
-    if (exit_code != 0) {
-	err(134, __func__, "%s -- %s %s failed with exit code: %d",
-			   cp, remarks_md, path, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-
-    /*
-     * set permissions
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    ret = chmod(path, S_IRUSR | S_IRGRP | S_IROTH);
-    if (ret != 0) {
-        err(135, __func__, "chmod(2) failed to set user, group and other read-only on %s", path);
-        not_reached();
-    }
-
-
-    /*
-     * free path
-     */
-    if (path != NULL) {
-        free(path);
-        path = NULL;
-    }
-
-    /*
-     * save remarks_md filename
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    infop->remarks_md = strdup("remarks.md");
-    if (infop->remarks_md == NULL) {
-	errp(136, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("remarks.md") + 1));
+	err(247, __func__, "remarks.md cannot be empty: %s", remarks_md);
 	not_reached();
     }
 
@@ -3549,7 +4986,7 @@ yes_or_no(char const *question)
      * firewall
      */
     if (question == NULL) {
-	err(137, __func__, "called with NULL question");
+	err(248, __func__, "called with NULL question");
 	not_reached();
     }
 
@@ -3667,7 +5104,7 @@ get_title(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(138, __func__, "called with NULL infop");
+	err(249, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -3827,7 +5264,7 @@ get_abstract(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(139, __func__, "called with NULL infp");
+	err(10, __func__, "called with NULL infp");
 	not_reached();
     }
 
@@ -4090,7 +5527,7 @@ get_author_info(struct author **author_set_p)
      * firewall
      */
     if (author_set_p == NULL) {
-	err(140, __func__, "called with NULL author_set_p");
+	err(11, __func__, "called with NULL author_set_p");
 	not_reached();
     }
 
@@ -4148,7 +5585,7 @@ get_author_info(struct author **author_set_p)
     errno = 0;			/* pre-clear errno for errp() */
     author_set = (struct author *) malloc(sizeof(struct author) * (size_t)author_count);
     if (author_set == NULL) {
-	errp(141, __func__, "malloc a struct author array of length: %d failed", author_count);
+	errp(12, __func__, "malloc a struct author array of length: %d failed", author_count);
 	not_reached();
     }
 
@@ -4587,7 +6024,7 @@ get_author_info(struct author **author_set_p)
 		 * issue rejection message
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters\n\n", MAX_URL_LEN);
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters.\n\n", MAX_URL_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing URL length limit");
 		}
@@ -5024,7 +6461,7 @@ get_author_info(struct author **author_set_p)
 	     */
 	    def_handle = default_handle(author_set[i].name);
 	    if (def_handle == NULL) {
-		err(142, __func__, "default_handle() returned NULL!");
+		err(13, __func__, "default_handle() returned NULL!");
 		not_reached();
 	    }
 	    dbg(DBG_VHIGH, "default IOCCC author handle: <%s>", def_handle);
@@ -5169,7 +6606,7 @@ get_author_info(struct author **author_set_p)
 						      printf("IOCCC author handle was manually entered\n"))  <= 0 ||
 	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC author handle\n\n") :
 						        printf("IOCCC author handle: %s\n\n", author_set[i].author_handle)) <= 0) {
-	    errp(143, __func__, "error while printing author #%d information\n", i);
+	    errp(14, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
 	if (need_confirm) {
@@ -5200,8 +6637,8 @@ get_author_info(struct author **author_set_p)
  * verify_submission_dir - ask user to verify the contents of the submission directory
  *
  * given:
- *      submission_dir       - path to submission directory
- *      ls              - path to ls utility
+ *      submission_dir      - path to submission directory
+ *      ls                  - path to ls utility
  *
  * This function does not return on error.
  */
@@ -5213,15 +6650,17 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     FILE *ls_stream;		/* pipe from iocccsize -V */
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
-    int kdirsize;		/* number of kibibyte (2^10) blocks in submission directory */
+    int kdirsize = 0;		/* number of kibibyte (2^10) blocks in submission directory */
+    int size = 0;               /* incremental kibibyte per directory */
     char guard;			/* scanf guard to catch excess amount of input */
     int ret;			/* libc function return */
+    size_t i = 0;               /* number of lines read by ls */
 
     /*
      * firewall
      */
     if (submission_dir == NULL || ls == NULL) {
-	err(144, __func__, "called with NULL arg(s)");
+	err(15, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5240,10 +6679,10 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 	 "from which the xz tarball will be formed:",
 	 "",
 	 NULL);
-    dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lak .", submission_dir, ls);
-    exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lak .", submission_dir, ls);
+    dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lakR .", submission_dir, ls);
+    exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lakR .", submission_dir, ls);
     if (exit_code != 0) {
-	err(145, __func__, "cd -- %s && %s -lak . failed with exit code: %d",
+	err(16, __func__, "cd -- %s && %s -lakR . failed with exit code: %d",
 			   submission_dir, ls, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5251,35 +6690,53 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     /*
      * open pipe to the ls command
      */
-    dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lak .", submission_dir, ls);
-    ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lak .", submission_dir, ls);
+    dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lakR .", submission_dir, ls);
+    ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lakR .", submission_dir, ls);
     if (ls_stream == NULL) {
-	err(146, __func__, "popen filed for: cd -- %s && %s -lak .", submission_dir, ls);
+	err(17, __func__, "popen filed for: cd -- %s && %s -lakR .", submission_dir, ls);
 	not_reached();
     }
 
     /*
-     * read the first line - contains the total kibibyte (2^10) block line
+     * read successive lines, looking for total kibibytes (2^10) block lines
      */
-    dbg(DBG_HIGH, "reading first line from popen of ls of submission_dir: %s", submission_dir);
-    readline_len = readline(&linep, ls_stream);
-    if (readline_len < 0) {
-	err(147, __func__, "EOF while reading first line from ls: %s", ls);
-	not_reached();
-    } else {
-	dbg(DBG_HIGH, "ls first line read length: %jd buffer: %s", (intmax_t)readline_len, linep);
+    kdirsize = 0;
+    i = 0;
+    while ((readline_len = readline(&linep, ls_stream)) >= 0) {
+	dbg(DBG_HIGH, "ls line read length: %jd buffer: %s", (intmax_t)readline_len, linep);
+        /*
+         * parse k-block lines from ls
+         */
+        ret = sscanf(linep, "total %d%c", &size, &guard);
+        if (ret == 1) {
+            ++i;
+            kdirsize += size;
+        }
+        /*
+         * free storage
+         */
+        if (linep != NULL) {
+            free(linep);
+            linep = NULL;
+        }
     }
 
     /*
-     * parse k-block line from ls
+     * no line was read at all
      */
-    ret = sscanf(linep, "total %d%c", &kdirsize, &guard);
-    if (ret != 1) {
-	err(148, __func__, "failed to parse block line from ls: %s", linep);
+    if (readline_len < 0 && i == 0) {
+	err(18, __func__, "EOF while reading output of ls: %s", ls);
 	not_reached();
+    }
+    /*
+     * lines were read from ls but nothing correct was found
+     */
+    if (i == 0) {
+        err(19, __func__, "found no k-block line in ls output");
+        not_reached();
     }
     if (kdirsize <= 0) {
-	err(149, __func__, "ls k-block value: %d <= 0", kdirsize);
+	err(20, __func__, "ls k-block value: %d <= 0", kdirsize);
 	not_reached();
     }
     dbg(DBG_MED, "Directory %s size in kibibyte (1024 byte blocks): %d", submission_dir, kdirsize);
@@ -5322,7 +6779,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 		  "We suggest you remove the existing submission directory, and then",
 		  "rerun this tool with the correct set of file arguments.",
 		  NULL);
-	    err(150, __func__, "user rejected listing of submission_dir: %s", submission_dir);
+	    err(21, __func__, "user rejected listing of submission_dir: %s", submission_dir);
 	    not_reached();
 	}
     }
@@ -5374,25 +6831,25 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
+    char *p = NULL;             /* for each file in the dynamic array of the files list */
     size_t strftime_ret;	/* length of strftime() string without the trailing newline */
     size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
-    char **q;			/* extra filename array pointer */
     int exit_code;		/* exit code from shell_cmd() */
-    int i;
+    size_t i;
     int fd = -1;
 
     /*
      * firewall
      */
     if (infop == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
-	err(151, __func__, "called with NULL arg(s)");
+	err(22, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    if (infop->extra_count < 0) {
-	warn(__func__, "extra_count %d < 0", infop->extra_count);
+    if (infop->extra_files == NULL) {
+        err(23, __func__, "called with NULL files list");
+        not_reached();
     }
-
 
     /*
      * fill out time information in the info structure
@@ -5410,13 +6867,13 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(152, __func__, "cannot set TZ=UTC");
+	errp(24, __func__, "cannot set TZ=UTC");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(153, __func__, "gmtime returned NULL");
+	errp(25, __func__, "gmtime returned NULL");
 	not_reached();
     }
 
@@ -5427,7 +6884,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     infop->utctime = (char *)calloc(utctime_len + 1, sizeof(char)); /* + 1 for paranoia padding */
     if (infop->utctime == NULL) {
-	errp(154, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
+	errp(26, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -5442,7 +6899,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
-	errp(155, __func__, "strftime returned 0");
+	errp(27, __func__, "strftime returned 0");
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
@@ -5454,20 +6911,20 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(156, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(28, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/%s", submission_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
-	errp(157, __func__, "snprintf #0 error: %d", ret);
+	errp(29, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(158, __func__, "failed to open for writing: %s", info_path);
+	errp(30, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
     }
 
@@ -5477,7 +6934,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0; /* pre-clear errno for errp() */
     fd = open(info_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        errp(159, __func__, "failed to obtain file descriptor for: %s", info_path);
+        errp(31, __func__, "failed to obtain file descriptor for: %s", info_path);
         not_reached();
     }
 
@@ -5520,9 +6977,15 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
 	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {
-	errp(160, __func__, "fprintf error writing leading part of info to %s", info_path);
+	errp(32, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
+
+
+    /*
+     * get length of files list
+     */
+    infop->extra_count = dyn_array_tell(infop->extra_files);
 
     /*
      * write mandatory files to the open .info.json file
@@ -5534,32 +6997,38 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	  json_fprintf_value_string(info_stream, "            ", "auth_JSON", " : ", AUTH_JSON_FILENAME, "\n") &&
 			    fprintf(info_stream, "        },\n") > 0 &&
 			    fprintf(info_stream, "        {\n") > 0 &&
-	  json_fprintf_value_string(info_stream, "            ", "c_src", " : ", infop->prog_c, "\n") &&
+	  json_fprintf_value_string(info_stream, "            ", "c_src", " : ", "prog.c", "\n") &&
 			    fprintf(info_stream, "        },\n") > 0 &&
 			    fprintf(info_stream, "        {\n") > 0 &&
-	  json_fprintf_value_string(info_stream, "            ", "Makefile", " : ", infop->Makefile, "\n") &&
+	  json_fprintf_value_string(info_stream, "            ", "Makefile", " : ", "Makefile", "\n") &&
 			    fprintf(info_stream, "        },\n") > 0 &&
 			    fprintf(info_stream, "        {\n") > 0 &&
-	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", infop->remarks_md, "\n") &&
+	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", "remarks.md", "\n") &&
 			    fprintf(info_stream, "        }%s\n", (infop->extra_count > 0) ?  "," : "") > 0;
     if (!ret) {
-	errp(161, __func__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(33, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
 
-    /*
-     * write extra files to the open .info.json file
-     */
-    for (i=0, q=infop->extra_file; i < infop->extra_count && *q != NULL; ++i, ++q) {
-	ret =                   fprintf(info_stream, "        {\n") > 0 &&
-              json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", *q, "\n") &&
-			        fprintf(info_stream, "        }%s\n", ((i+1) < infop->extra_count) ?  "," : "") > 0;
-	if (!ret) {
-	    errp(162, __func__, "fprintf error writing extra filename[%d] to %s", i, info_path);
-	    not_reached();
-	}
+    if (infop->extra_count > 0) {
+        /*
+         * write extra files to the open .info.json file
+         */
+        for (i = 0; i < infop->extra_count; ++i) {
+            p = dyn_array_value(infop->extra_files, char *, i);
+            if (p == NULL) {
+                err(34, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            ret =                   fprintf(info_stream, "        {\n") > 0 &&
+                  json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", p, "\n") &&
+                                    fprintf(info_stream, "        }%s\n", ((i+1) < infop->extra_count) ?  "," : "") > 0;
+            if (!ret) {
+                errp(35, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)i, info_path);
+                not_reached();
+            }
+        }
     }
-
     /*
      * write trailing part of info to the open .info.json file
      */
@@ -5571,7 +7040,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_long(info_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
-	errp(163, __func__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(36, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
 
@@ -5581,7 +7050,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(164, __func__, "fclose error");
+	errp(37, __func__, "fclose error");
 	not_reached();
     }
 
@@ -5596,7 +7065,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, info_path);
     exit_code = shell_cmd(__func__, false, true, "% -q -- . %", chkentry, info_path);
     if (exit_code != 0) {
-	err(165, __func__, "%s -q -- . %s failed with exit code: %d",
+	err(38, __func__, "%s -q -- . %s failed with exit code: %d",
 			   chkentry, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5610,7 +7079,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(166, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
+        err(39, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
         not_reached();
     }
 
@@ -5643,19 +7112,19 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
      * firewall
      */
     if (authp == NULL || infop == NULL || authorp == NULL) {
-	err(167, __func__, "called with NULL arg(s)");
+	err(40, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (infop->ioccc_id == NULL) {
-	err(168, __func__, "infop->ioccc_id is NULL");
+	err(41, __func__, "infop->ioccc_id is NULL");
 	not_reached();
     }
     if (infop->tarball == NULL) {
-	err(169, __func__, "infop->tarball is NULL");
+	err(42, __func__, "infop->tarball is NULL");
 	not_reached();
     }
     if (infop->utctime == NULL) {
-	err(170, __func__, "infop->utctime is NULL");
+	err(43, __func__, "infop->utctime is NULL");
 	not_reached();
     }
     memset(authp, 0, sizeof(*authp));
@@ -5679,14 +7148,14 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->ioccc_id = strdup(infop->ioccc_id);
     if (authp->ioccc_id == NULL) {
-	errp(171, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
+	errp(44, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
     authp->submit_slot = infop->submit_slot;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
-	errp(172, __func__, "strdup() tarball path %s failed", infop->tarball);
+	errp(45, __func__, "strdup() tarball path %s failed", infop->tarball);
 	not_reached();
     }
     /* copy over test or non-test mode */
@@ -5708,7 +7177,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->utctime = strdup(infop->utctime);
     if (authp->utctime == NULL) {
-	errp(173, __func__, "strdup() utctime path %s failed", infop->utctime);
+	errp(46, __func__, "strdup() utctime path %s failed", infop->utctime);
 	not_reached();
     }
     return;
@@ -5743,14 +7212,14 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
      * firewall
      */
     if (authp == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
-	err(174, __func__, "called with NULL arg(s)");
+	err(47, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (authp->author_count <= 0) {
-	err(175, __func__, "author_count %d <= 0", authp->author_count);
+	err(48, __func__, "author_count %d <= 0", authp->author_count);
 	not_reached();
     } else if (authp->author_count > MAX_AUTHORS) {
-	err(176, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
+	err(49, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
 	not_reached();
     }
 
@@ -5762,27 +7231,27 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     auth_path = (char *)malloc(auth_path_len + 1);
     if (auth_path == NULL) {
-	errp(177, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
+	errp(50, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
-	errp(178, __func__, "snprintf #0 error: %d", ret);
+	errp(51, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
     errno = 0;			/* pre-clear errno for errp() */
     auth_stream = fopen(auth_path, "w");
     if (auth_stream == NULL) {
-	errp(179, __func__, "failed to open for writing: %s", auth_path);
+	errp(52, __func__, "failed to open for writing: %s", auth_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        err(180, __func__, "failed to obtain file descriptor for: %s", auth_path);
+        err(53, __func__, "failed to obtain file descriptor for: %s", auth_path);
         not_reached();
     }
 
@@ -5805,7 +7274,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
 	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
     if (!ret) {
-	errp(181, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
+	errp(54, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -5832,7 +7301,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
 	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
 	if (ret == false) {
-	    errp(182, __func__, "fprintf error writing author %d info to %s", i, auth_path);
+	    errp(55, __func__, "fprintf error writing author %d info to %s", i, auth_path);
 	    not_reached();
 	}
     }
@@ -5848,7 +7317,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
-	errp(183, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
+	errp(56, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -5858,7 +7327,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(auth_stream);
     if (ret < 0) {
-	errp(184, __func__, "fclose error");
+	errp(57, __func__, "fclose error");
 	not_reached();
     }
 
@@ -5874,7 +7343,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, auth_path);
     exit_code = shell_cmd(__func__, false, true, "% -q -- % .", chkentry, auth_path);
     if (exit_code != 0) {
-	err(185, __func__, "%s -q -- %s . failed with exit code: %d",
+	err(58, __func__, "%s -q -- %s . failed with exit code: %d",
 			   chkentry, auth_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5888,7 +7357,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(186, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
+        err(59, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
         not_reached();
     }
 
@@ -5898,7 +7367,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
     errno = 0; /* pre-clear for errp() */
     ret = close(fd);
     if (ret < 0) {
-        errp(187, __func__, "close(fd) failed");
+        errp(60, __func__, "close(fd) failed");
         not_reached();
     }
 
@@ -5922,7 +7391,7 @@ write_auth(struct auth *authp, char const *submission_dir, char const *chkentry,
  * shows the listing of the tarball contents via the txzchk tool and the fnamchk tool.
  *
  * given:
- *      workdir        - working directory under which the submission directory is formed
+ *      workdir         - working directory under which the submission directory is formed
  *      submission_dir  - path to submission directory
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
@@ -5948,7 +7417,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
      */
     if (workdir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
-	err(188, __func__, "called with NULL arg(s)");
+	err(61, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5964,7 +7433,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(189, __func__, "cannot open .");
+	errp(62, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -5974,7 +7443,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(workdir);
     if (ret < 0) {
-	errp(190, __func__, "cannot cd %s", workdir);
+	errp(63, __func__, "cannot cd %s", workdir);
 	not_reached();
     }
 
@@ -6002,7 +7471,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_submission_dir);
     if (exit_code != 0) {
-	err(191, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
+	err(64, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -6013,7 +7482,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(192, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(65, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -6022,7 +7491,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(193, __func__, "The compressed tarball: %s size: %ju > %jd",
+	err(66, __func__, "The compressed tarball: %s size: %ju > %jd",
 		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -6033,13 +7502,13 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-	errp(194, __func__, "cannot fchdir to the previous current directory");
+	errp(67, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = close(cwd);
     if (ret < 0) {
-	errp(195, __func__, "close of previous current directory failed");
+	errp(68, __func__, "close of previous current directory failed");
 	not_reached();
     }
 
@@ -6052,7 +7521,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         exit_code = shell_cmd(__func__, false, true, "% -e -w -v 1 -F % -- %/../%",
                                               txzchk, fnamchk, submission_dir, basename_tarball_path);
         if (exit_code != 0) {
-            err(196, __func__, "%s -e -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+            err(69, __func__, "%s -e -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             not_reached();
         }
@@ -6063,7 +7532,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         exit_code = shell_cmd(__func__, false, true, "% -w -v 1 -F % -- %/../%",
                                               txzchk, fnamchk, submission_dir, basename_tarball_path);
         if (exit_code != 0) {
-            err(197, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+            err(70, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             not_reached();
         }
@@ -6113,13 +7582,13 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
      * firewall
      */
     if (workdir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(198, __func__, "called with NULL arg(s)");
+	err(71, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     submission_dir_esc = cmdprintf("%", submission_dir);
     if (submission_dir_esc == NULL) {
-	err(199, __func__, "failed to cmdprintf: submission_dir");
+	err(72, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
@@ -6132,14 +7601,14 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
-	errp(200, __func__, "printf #0 error");
+	errp(73, __func__, "printf #0 error");
 	not_reached();
     }
     free(submission_dir_esc);
 
     workdir_esc = cmdprintf("%", workdir);
     if (workdir_esc == NULL) {
-	err(201, __func__, "failed to cmdprintf: workdir");
+	err(74, __func__, "failed to cmdprintf: workdir");
 	not_reached();
     }
 
@@ -6150,7 +7619,7 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, workdir[0] == '-' ? "./" : "", workdir_esc, tarball_path);
     if (ret <= 0) {
-	errp(202, __func__, "printf #2 error");
+	errp(75, __func__, "printf #2 error");
 	not_reached();
     }
     free(workdir_esc);
@@ -6222,7 +7691,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = printf("    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	err(203, __func__, "printf error printing IOCCC_REGISTER_URL");
+	err(76, __func__, "printf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
     para("",
@@ -6232,7 +7701,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = printf("    %s\n", IOCCC_REGISTER_FAQ_URL);
     if (ret <= 0) {
-	err(204, __func__, "printf error printing IOCCC register FAQ URL");
+	err(77, __func__, "printf error printing IOCCC register FAQ URL");
 	not_reached();
     }
     para("",
@@ -6242,7 +7711,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for warnp() */
     ret = printf("    %s\n    %s\n    %s\n", IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL, IOCCC_SUBMIT_INFO_URL);
     if (ret <= 0) {
-	err(205, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
+	err(78, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
 	not_reached();
     }
 
@@ -6253,7 +7722,7 @@ show_registration_url(void)
         NULL);
     ret = printf("    %s\n", IOCCC_STATUS_URL);
     if (ret < 0) {
-	errp(206, __func__, "printf error printing IOCCC status URL");
+	errp(79, __func__, "printf error printing IOCCC status URL");
 	not_reached();
     }
 
@@ -6290,7 +7759,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
         "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
         workdir, tarball_path);
     if (ret <= 0) {
-	errp(207, __func__, "printf error printing tarball path and slot number");
+	errp(80, __func__, "printf error printing tarball path and slot number");
 	not_reached();
     }
     para("",
@@ -6300,7 +7769,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(208, __func__, "printf error printing IOCCC submit URL");
+	errp(81, __func__, "printf error printing IOCCC submit URL");
 	not_reached();
     }
 
@@ -6311,7 +7780,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
      ret = printf("    %s\n", IOCCC_ENTER_FAQ_URL);
     if (ret < 0) {
-	errp(209, __func__, "printf error printing IOCCC enter FAQ URL");
+	errp(82, __func__, "printf error printing IOCCC enter FAQ URL");
 	not_reached();
     }
 }
