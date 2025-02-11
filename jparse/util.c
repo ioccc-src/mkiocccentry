@@ -960,7 +960,7 @@ is_open_file_stream(FILE *stream)
  *
  * Here "print function call" refers to functions such as:
  *
- *	print(3), fprintf(3), dprintf(3),
+ *	printf(3), fprintf(3), dprintf(3),
  *	vprintf(3), vfprintf(3), vdprintf(3)
  *
  * On some systems, such as macOS, the first stdio print function call
