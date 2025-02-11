@@ -40,6 +40,11 @@ not be added/made. If `need_hints` is false this is not done. This should help
 users out so that they do not have to go to the FAQ just to find out what is
 wrong.
 
+Change `mk_submission_dir()` to use `mkdir(2)` with mode 0 and then use
+`chmod(2)` with the correct modes. This should fix the issue where the directory
+made has the wrong mode due to umasks like what happened with NetBSD. (This is
+also how the `mkdirs()` function from `jparse` works.)
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.21 2025-02-11"`.
 
 
