@@ -23,6 +23,18 @@ requires more work).
 
 Fix `bug_report.sh` to check `test_ioccc/gen_test_JSON.sh`.
 
+Fix `test_ioccc/ioccc_test.sh` to have a `-m make` option for those who need to
+specify a path to a GNU `make(1)` tool. One can use this with `make test` by way
+of:
+
+```sh
+make MAKE=/path/to/gnumake test
+```
+
+for example.
+
+Fix `test_ioccc/gen_test_JSON.sh` to work for NetBSD (change in `grep` regexp).
+
 
 ## Release 2.3.30 2025-02-10
 
