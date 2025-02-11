@@ -68,6 +68,7 @@ export TOOLS="
     ./soup/vermod.sh
     ./test_ioccc/chkentry_test.sh
     ./test_ioccc/fnamchk
+    ./test_ioccc/gen_test_JSON.sh
     ./test_ioccc/hostchk.sh
     ./test_ioccc/ioccc_test.sh
     ./test_ioccc/iocccsize_test.sh
@@ -96,7 +97,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.7 2025-01-18"
+export BUG_REPORT_VERSION="1.0.8 2025-02-11"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

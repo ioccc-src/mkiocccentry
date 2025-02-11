@@ -21,6 +21,8 @@ Updated FAQ about installing the tools, giving better details on why it is
 **HIGHLY** recommend you do and also what you have to do if you do not (as it
 requires more work).
 
+Fix `bug_report.sh` to check `test_ioccc/gen_test_JSON.sh`.
+
 
 ## Release 2.3.30 2025-02-10
 
