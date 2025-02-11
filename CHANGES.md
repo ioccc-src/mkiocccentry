@@ -35,6 +35,13 @@ for example.
 
 Fix `test_ioccc/gen_test_JSON.sh` to work for NetBSD (change in `grep` regexp).
 
+Add hints to `mkiocccentry` when reporting files/directories/symlinks that will
+not be added/made. If `need_hints` is false this is not done. This should help
+users out so that they do not have to go to the FAQ just to find out what is
+wrong.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.21 2025-02-11"`.
+
 
 ## Release 2.3.30 2025-02-10
 
