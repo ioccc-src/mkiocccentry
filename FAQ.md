@@ -10,7 +10,7 @@ This is FAQ version **28.0.2 2024-10-09**.
 
 1. [How do I compile the mkiocccentry tools?](#compiling)
 
-2. [How may I install the tools if I wish to, and is it required?](#install)
+2. [How do I install the tools and is it required?](#install)
 
 3. [What can I do if my system's tar(1) does not support the correct options?](#tar)
 
@@ -83,54 +83,74 @@ your system.
 <div id="installing"></div>
 
 
-## 2.  How may I install the tools if I wish to, and is it required?
+## 2.  How do I install the tools and is it required?
 
-You do not need to install the code (see below) but it can be helpful to do so,
-so you can run the tools from any directory including your submission directory;
-that way, you do not have to specify paths.
+You do not **need** to install the code (see below) but we **HIGHLY** recommend
+that you do so. To do this first compile the tools (making sure you have pulled
+or downloaded the most recent release of the repo):
 
-If you do wish to install the toolkit, you can do:
+```sh
+make all
+```
+
+Next, run as root or via `sudo(8)`:
 
 ```sh
 make install
 ```
 
-as either root or via sudo. By default this will install with the `PREFIX` of
-`/usr/local` so the programs will be installed to `/usr/local/bin`, libraries in
-`/usr/local/lib`, man pages in `/usr/local/share/man/man[138]` etc. If you wish
-to have them elsewhere, for instance `/usr` or some other location, you can
-override the default location with the `PREFIX` variable. For instance, to
-install with the `PREFIX` of `/usr`:
+from the top level directory.
+
+### Why install?
+
+This is because otherwise you need to either run the tools from the repo
+directory itself, requiring that you pass in the paths to your `workdir` and
+`topdir`, OR that you use all the options to specify the path to the tools (see
+also below). To do that last part you would have to do something like this (for
+this assume that the tools are in `~/mkiocccentry`):
+
+```sh
+~/mkiocccentry -T ~/mkiocccentry/txzchk -F ~/mkiocccentry/test_ioccc/fnamchk -C ~/mkiocccentry/chkentry workdir topdir
+```
+
+where `workdir` is where your submission tarball will be formed and `topdir` is
+the directory where your submission files are located. As you can see that is
+much more tedious and harder to do.
+
+If on the other hand you were in the `mkiocccentry` directory itself you would
+have to specify the paths to the `workdir` and `topdir`: which would be less
+tedious, perhaps, than running the tool from outside the repo directory, but
+still not as helpful.
+
+If however you installed them you can simply do:
+
+```sh
+mkiocccentry workdir topdir
+```
+
+**IMPORTANT NOTE**: IF you do install them make sure you have installed the most
+recent version of all tools! Otherwise if you don't use the right options (say
+that you pulled the most recent version but did not install them - you installed
+an older release) the tools found will be in the install location (also if you
+do not install to the default location you would have to specify the options to
+the tools)!
+
+Now if you need to install to a directory that is NOT the default (`/usr/local`)
+you can do:
 
 
 ```sh
 make PREFIX=/usr install
 ```
 
+as either root or via `sudo(8)`.
 
-### Is installing required?
-
-No, installing the code in this repo is not necessary to use it. These tools
-were designed to be used from the top level directory of the source, or after
-installing, whichever you prefer.
-
-You can simply execute the code from the top level directly of the source, after
-compiling of course.
-
-As `.` might not be (and almost certainly should NOT be) in your `$PATH`, you
-might need to put `./` before the name of a command.
-
-For example:
+**NOTE**: if you wish to test things try:
 
 ```sh
-./mkiocccentry -h
+make all test
 ```
 
-However, it is much easier if you do run `make install` (as root or via sudo) as
-then you can just run it from your submission's directory (the one you work on
-it from) or anywhere else. On the other hand the `bug_report.sh` script needs to
-be run from the repo directory itself. Of course, you should make sure you have
-the latest version of the toolkit prior to using it!
 
 <div id="tar"></div>
 
