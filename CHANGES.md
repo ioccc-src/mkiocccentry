@@ -17,6 +17,10 @@ tool itself it now uses the directories `test_ioccc/workdir` and
 
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.10 2025-02-11"`.
 
+Updated FAQ about installing the tools, giving better details on why it is
+**HIGHLY** recommend you do and also what you have to do if you do not (as it
+requires more work).
+
 
 ## Release 2.3.30 2025-02-10
 
