@@ -45,6 +45,26 @@ Change `mk_submission_dir()` to use `mkdir(2)` with mode 0 and then use
 made has the wrong mode due to umasks like what happened with NetBSD. (This is
 also how the `mkdirs()` function from `jparse` works.)
 
+Important bug fixes in `mkiocccentry` for issue #1070, as noted below:
+
+- There was a potential invalid pointer references in multiple places in
+`check_submission()`.
+- (I think) Some checks were using the wrong variables (in `check_submission()`
+in particular, again I think).
+- If any file or directory in the submission directory does not exist in the
+topdir it is an error.
+- Extra sanity checks on the three required files (`prog.c`, `Makefile` and
+`remarks.md`).
+- Now all lists in the topdir must be the same as the submission directory even
+those that are of size 0 (like directories or extra files).
+- Added function `array_has_path()` which `append_unique_str()` uses and which
+`copy_topdir()` and `check_submission()` use. This helps identify if a name
+(path) is the same type of file. For instance if in the topdir a file called
+`foo` existed but in the submission directory `foo` was a directory it is an
+error.
+- More checks on lists of files and directories in submission directory versus
+the topdir (including for missing files and directories).
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.21 2025-02-11"`.
 
 
