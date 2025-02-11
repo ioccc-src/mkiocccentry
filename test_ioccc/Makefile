@@ -437,8 +437,8 @@ test: test_JSON
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo ./ioccc_test.sh -m${MAKE}; \
-	    ./ioccc_test.sh -m${MAKE}; \
+	    echo ./ioccc_test.sh; \
+	    ./ioccc_test.sh; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: ioccc_test.sh failed, error code: $$EXIT_CODE"; \

@@ -46,11 +46,11 @@ make test
 to help report bugs or other problems.
 If your default
 .BR make (1)
-tool path is not a GNU make program you will have to instead do:
+tool path is not a GNU make program you will have to run the tool directly:
 .sp
 .RS
 .ft B
-make MAKE=/path/to/gnumake test
+ ./test_ioccc/ioccc_test.sh -m /path/to/gnumake
 .ft R
 .RE
 .sp
@@ -207,15 +207,6 @@ Run the test script directly:
 .RS
 .ft B
 make clobber all && ./test_ioccc/ioccc_test.sh
-.ft R
-.RE
-.PP
-Run the test suite the preferred way with a different
-.BR make (1):
-.sp
-.RS
-.ft B
-make MAKE=/path/to/gnumake clobber all test
 .ft R
 .RE
 .PP
