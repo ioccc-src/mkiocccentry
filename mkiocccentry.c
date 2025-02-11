@@ -1805,11 +1805,30 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->ignored_dirs);
     if (len > 0) {
-        para("",
-                "The following is a list of directories that will be ignored:",
-                "",
-                NULL);
+        if (need_hints) {
+            para("",
+                    "We ignore certain directory names, in particular:",
+                    "",
+                    NULL);
 
+            for (i = 0; ignored_dirnames[i] != NULL; ++i) {
+                errno = 0;
+                ret = printf("\t%s\n", ignored_dirnames[i]);
+                if (ret <= 0) {
+                    errp(205, __func__, "printf error printing an ignored dirname: %s", ignored_dirnames[i]);
+                    not_reached();
+                }
+            }
+            para("",
+                    "This is so that one may use an RCS without having to worry about\n"
+                    "copying everything to another directory.",
+                    "",
+                    NULL);
+        }
+        para("",
+             "The following is a list of directories that will be ignored:",
+             "",
+             NULL);
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->ignored_dirs, char *, i);
             if (p == NULL) {
@@ -1833,6 +1852,13 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->unsafe_dirs);
     if (len > 0) {
+        if (need_hints) {
+            para("",
+                "We ignore files and directories that do not match the regexp:",
+                "",
+                "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                NULL);
+        }
         para("",
                 "The following is a list of unsafe directory names that will be ignored:",
                 "",
@@ -1860,11 +1886,30 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->forbidden_files);
     if (len > 0) {
-        para("",
-                "The following is a list of forbidden filenames that have been ignored:",
-                "",
-                NULL);
+        if (need_hints) {
+            para("",
+                    "We do not allow certain filenames, in particular:",
+                    "",
+                    NULL);
 
+            for (i = 0; forbidden_filenames[i] != NULL; ++i) {
+                errno = 0;
+                ret = printf("\t%s\n", forbidden_filenames[i]);
+                if (ret <= 0) {
+                    errp(205, __func__, "printf error printing a forbidden filename: %s", forbidden_filenames[i]);
+                    not_reached();
+                }
+            }
+            para("",
+                    "This is because winning entries use some of these files, and\n"
+                    "because GNUMakefile has a higher precedence over Makefile,\n"
+                    "which we use.",
+                    "",
+                    NULL);
+        }
+        para("The following is a list of forbidden filenames that will be ignored:",
+             "",
+             NULL);
         for (i = 0; i < len; ++i) {
             p = dyn_array_value(infop->forbidden_files, char *, i);
             if (p == NULL) {
@@ -1887,6 +1932,13 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->unsafe_files);
     if (len > 0) {
+        if (need_hints) {
+            para("",
+                "We ignore files and directories that do not match the regexp:",
+                "",
+                "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                NULL);
+        }
         para("",
                 "The following is a list of unsafe filenames that will be ignored:",
                 "",
@@ -1915,6 +1967,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      */
     len = dyn_array_tell(infop->ignored_symlinks);
     if (len > 0) {
+        if (need_hints) {
+            para("",
+                "We do not allow symlinks.",
+                NULL);
+        }
         para("",
                 "The following is a list of symlinks that will be ignored:",
                 "",
@@ -1938,7 +1995,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
     }
 
     /*
-     * we need to show the user the list of directories, if any
+     * we need to show the user the list of directories we will create, if any
      */
     len = dyn_array_tell(infop->directories);
     if (len > 0) {
@@ -2859,9 +2916,41 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
     }
 
     /*
+     * show list of directories in the directory listing and verify it is OK
+     */
+    len = dyn_array_tell(directories);
+    if (len > 0) {
+        para("",
+                "The following is a list of directories in your submission:",
+                "",
+                NULL);
+
+        /*
+         * show directories list
+         */
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(directories, char *, i);
+            if (p == NULL) {
+                err(162, __func__, "found NULL pointer in directories list, element: %ju", (uintmax_t)i);
+                not_reached();
+            }
+            print("%s\n", p);
+        }
+
+        if (!answer_yes) {
+            yorn = yes_or_no("Is this OK? [yn]");
+            if (!yorn) {
+                err(164, __func__, "aborting because user said files list is not OK");
+                not_reached();
+            }
+        }
+    }
+
+
+    /*
      * show user final submission directory listing and verify it is OK
      */
-    len = dyn_array_tell(infop->required_files);
+    len = dyn_array_tell(required_files);
     if (len <= 0) {
         err(161, __func__, "list of required files is empty");
         not_reached();
@@ -2876,7 +2965,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
          * show required files list
          */
         for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->required_files, char *, i);
+            p = dyn_array_value(required_files, char *, i);
             if (p == NULL) {
                 err(162, __func__, "found NULL pointer in required files list, element: %ju", (uintmax_t)i);
                 not_reached();
@@ -2888,10 +2977,10 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
          * now we have to show them the list of non-required files,
          * if any.
          */
-        len = dyn_array_tell(infop->extra_files);
+        len = dyn_array_tell(extra_files);
         if (len > 0) {
             for (i = 0; i < len; ++i) {
-                p = dyn_array_value(infop->extra_files, char *, i);
+                p = dyn_array_value(extra_files, char *, i);
                 if (p == NULL) {
                     err(163, __func__, "found NULL pointer in non-required files list, element: %ju", (uintmax_t)i);
                     not_reached();

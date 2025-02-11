@@ -17,10 +17,11 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="1.0.3 2024-12-31"
+export IOCCC_TEST_VERSION="1.0.4 2025-0l-11"
 
 # attempt to fetch system specific path to the tools we need
 #
+
 # get tar path
 TAR="$(type -P tar 2>/dev/null)"
 # Make sure TAR is set:
@@ -40,13 +41,33 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
+# get make path
+MAKE="$(type -P make 2>/dev/null)"
+# Make sure MAKE is set:
+#
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# could make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${MAKE:=/usr/bin/make} 2>/dev/null
+#
+# but due to the reasons cited above we must rely on the more complicated form:
+if [[ -z "$MAKE" ]]; then
+    MAKE="/usr/bin/make"
+fi
 
-export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-t tar] [-V] [-Z topdir]
+
+export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-t tar] [-m make] [-V] [-Z topdir]
 
     -h              print help and exit
     -v level        set debug level (def: 0)
     -J json_level   set json debug level (def: 0)
     -t tar	    path to tar that accepts -J option (def: $TAR)
+    -m make         path to GNU compatible make (def: $MAKE)
     -V              print version and exit
     -Z topdir	    top level build directory (def: try . or ..)
 
@@ -69,7 +90,7 @@ export TOPDIR=
 
 # parse args
 #
-while getopts :hv:J:VZ:t: flag; do
+while getopts :hv:J:VZ:t:m: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -85,6 +106,8 @@ while getopts :hv:J:VZ:t: flag; do
         ;;
     t)	TAR="$OPTARG";
 	;;
+    m)  MAKE="$OPTARG";
+        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	echo 1>&2
 	echo "$USAGE" 1>&2
@@ -411,8 +434,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/mkiocccentry_test.sh -Z $TOPDIR -t $TAR" | tee -a -- "$LOGFILE"
-test_ioccc/mkiocccentry_test.sh -Z "$TOPDIR" -t "$TAR" | tee -a -- "$LOGFILE"
+echo "test_ioccc/mkiocccentry_test.sh -m $MAKE -Z $TOPDIR -t $TAR" | tee -a -- "$LOGFILE"
+test_ioccc/mkiocccentry_test.sh -m "$MAKE" -Z "$TOPDIR" -t "$TAR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/mkiocccentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

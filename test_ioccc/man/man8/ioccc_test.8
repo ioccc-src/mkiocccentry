@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH ioccc_test.sh 8 "05 February 2023" "ioccc_test.sh" "IOCCC tools"
+.TH ioccc_test.sh 8 "11 February 2025" "ioccc_test.sh" "IOCCC tools"
 .SH NAME
 .B ioccc_test.sh
 \- perform the complete suite of tests for the mkiocccentry repo
@@ -23,6 +23,8 @@
 .RB [\| \-V \|]
 .RB [\| \-t
 .IR tar \|]
+.RB [\| \-m
+.IR make \|]
 .RB [\| \-Z
 .IR topdir \|]
 .SH DESCRIPTION
@@ -42,6 +44,16 @@ make test
 .RE
 .sp
 to help report bugs or other problems.
+If your default
+.BR make (1)
+tool path is not a GNU make program you will have to run the tool directly:
+.sp
+.RS
+.ft B
+ ./test_ioccc/ioccc_test.sh -m /path/to/gnumake
+.ft R
+.RE
+.sp
 .SH OPTIONS
 .TP
 .B \-h
@@ -72,6 +84,15 @@ command must support the
 option and the
 .B v7
 format.
+.TP
+.BI \-m\  make
+Set
+.B make
+path to
+.IR make .
+The
+.BR make (1)
+command must be GNU Make compatible.
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
@@ -186,6 +207,16 @@ Run the test script directly:
 .RS
 .ft B
 make clobber all && ./test_ioccc/ioccc_test.sh
+.ft R
+.RE
+.PP
+Run the test script directly with a different
+.BR make (1)
+path:
+.sp
+.RS
+.ft B
+make clobber all && ./test_ioccc/ioccc_test.sh -m /path/to/gnumake
 .ft R
 .RE
 .SH SEE ALSO
