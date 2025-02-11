@@ -258,12 +258,6 @@ if [[ ! -x "${TAR}" ]]; then
     exit 9
 fi
 
-# we need make(1) as well
-if [[ ! -x "${MAKE}" ]]; then
-    echo "$0: ERROR: executable not found: $MAKE" 1>&2
-    exit 9
-fi
-
 # we need this for later and to make sure it's removed now
 LONG_FILENAME="ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 # clean out the workdir area
