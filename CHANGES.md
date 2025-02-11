@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.31 2025-02-11
+
+Bug fix and improvements in `mkiocccentry_test.sh`.
+
+The script ended up repeating author information (duplicate entry) and also
+changed author handles to wrong strings (in some cases it changed it to `n`).
+This happened because the `answers()` functions (changed throughout the script
+per test) were not updated when the `-y` option was added to `mkiocccentry`
+(which I added to solve another problem).
+
+The improvement is that to make the args consistent with the `mkiocccentry(1)`
+tool itself it now uses the directories `test_ioccc/workdir` and
+`test_ioccc/topdir`: updating the script and the `.gitignore` file.
+
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.10 2025-02-11"`.
+
+
 ## Release 2.3.30 2025-02-10
 
 Change `MAX_DIR_COUNT` to `MAX_EXTRA_DIR_COUNT`.
