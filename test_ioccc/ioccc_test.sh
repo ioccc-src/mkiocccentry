@@ -344,18 +344,6 @@ elif [[ ! -x "$TAR" ]]; then
     echo "$0: ERROR: tar is not executable: $TAR" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
-# make
-if [[ ! -e "$MAKE" ]]; then
-    echo "$0: ERROR: make file not found: $MAKE" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-elif [[ ! -f "$MAKE" ]]; then
-    echo "$0: ERROR: make is not a regular file: $MAKE" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-elif [[ ! -x "$MAKE" ]]; then
-    echo "$0: ERROR: make is not executable: $MAKE" | tee -a -- "$LOGFILE"
-    EXIT_CODE="5"
-fi
-
 
 # test_txzchk
 if [[ ! -e test_ioccc/test_txzchk ]]; then
