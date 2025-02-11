@@ -677,7 +677,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f test_ioccc.log chkentry_test.log txzchk_test.log
 	${E} ${RM} ${RM_V} -f Makefile.orig
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${E} ${RM} ${RM_V} -rf test_iocccsize test_src test_work test_JSON
+	${E} ${RM} ${RM_V} -rf test_iocccsize topdir workdir test_JSON
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

@@ -76,7 +76,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.9 2025-02-07"
+export MKIOCCCENTRY_TEST_VERSION="1.0.10 2025-02-11"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -198,10 +198,10 @@ fi
 # working locations - adjust as needed
 #
 Makefile="test_ioccc/Makefile.test"
-workdir="test_ioccc/test_work"
-src_dir="test_ioccc/test_src"
-src_src_dir="test_ioccc/test_src/test_src"
-src_src_src_src_src_dir="test_ioccc/test_src/a/b/c/d/e"
+workdir="test_ioccc/workdir"
+src_dir="test_ioccc/topdir"
+src_src_dir="test_ioccc/topdir/topdir"
+src_src_src_src_src_dir="test_ioccc/topdir/a/b/c/d/e"
 
 # clean out test directories first
 rm -rf -- "${workdir}" "${src_dir}" "${src_src_dir}" "${src_src_src_src_src_dir}"
@@ -288,7 +288,6 @@ https://b.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -298,7 +297,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -311,7 +309,6 @@ http://d.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -321,7 +318,6 @@ https://f.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -331,7 +327,6 @@ https://g.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
@@ -394,7 +389,6 @@ https://i.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -404,7 +398,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -417,7 +410,6 @@ http://k.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -427,7 +419,6 @@ https://l.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -437,7 +428,6 @@ https://m.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
@@ -480,7 +470,6 @@ https://o.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -490,7 +479,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -503,7 +491,6 @@ http://p.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -513,7 +500,6 @@ https://r.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -523,7 +509,6 @@ https://t.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
@@ -571,7 +556,6 @@ https://b.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -581,7 +565,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -594,7 +577,6 @@ http://d.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -604,7 +586,6 @@ https://f.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -614,7 +595,6 @@ https://g.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
@@ -670,7 +650,6 @@ https://b.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -680,7 +659,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -693,7 +671,6 @@ http://d.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -703,7 +680,6 @@ https://f.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -713,7 +689,6 @@ https://g.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
@@ -763,7 +738,6 @@ https://b.host0.example.com/index.html
 @mastodon0@example.com
 @github0
 an affiliation for #0 author
-n
 
 author1 middle1a middle1b last1
 UK
@@ -773,7 +747,6 @@ UK
 
 
 
-n
 replaced_author1_handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
@@ -786,7 +759,6 @@ http://d.host2.example.com/index.html
 @mastodon2@example.com
 @github2
 an affiliation for #2 author
-y
 
 author3 middle3 last3
 AU
@@ -796,7 +768,6 @@ https://f.host0.example.com/index.html
 @mastodon3@example.com
 @github3
 an affiliation for #3 author
-y
 author3_last3
 @#$%^
 AU
@@ -806,7 +777,6 @@ https://g.host0.example.com/index.html
 @mastodon4@example.com
 @github4
 an affiliation for #4 author
-n
 
 ANSWERS_EOF
 EOF
