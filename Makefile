@@ -1434,10 +1434,10 @@ all.help:
 	${S} echo "make all.clone_status - git status of all clone directories"
 	${S} echo "make all.update_clone - update clone directories from all remote repos"
 	${S} echo "make all.recreate_clone - remove then clone clone directories from remote repos"
-	${S} echo "make all.update_from_clone - modify directories from clone directories"
-	${S} echo "make all.update_into_clone - modify clone directories from dbg directories"
-	${S} echo "make all.diff_dbg_clone - compare directories with clone directories"
-	${S} echo "make all.diff_clone_dbg - compare clone directories with dbg directories"
+	${S} echo "make all.update_from_clone - modify repo directories from clone directories"
+	${S} echo "make all.update_into_clone - modify clone directories from repo directories"
+	${S} echo "make all.diff_dbg_clone - compare repo directories with clone directories"
+	${S} echo "make all.diff_clone_dbg - compare clone directories with repo directories"
 	${S} echo "make all.diff_summary - summarize differnces between directories and clone directories"
 
 all.setup:
