@@ -231,7 +231,7 @@ SH_FILES= all_sem_ref.sh run_usage.sh vermod.sh \
 
 # all man pages that NOT built and NOT removed by make clobber
 #
-MAN1_PAGES= man/man1/bug_report.1 man/man1/bug_report.sh.1 man/man1/chkentry.1 man/man1/iocccsize.1 \
+MAN1_PAGES= man/man1/bug_report.1 man/man1/chkentry.1 man/man1/iocccsize.1 \
 	man/man1/mkiocccentry.1 man/man1/txzchk.1 man/man1/location.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/reset_tstamp.8 man/man8/run_usage.8 man/man8/vermod.8
