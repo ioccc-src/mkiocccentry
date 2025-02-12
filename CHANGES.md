@@ -54,6 +54,11 @@ invalid permissions but so will `mkiocccentry(1)` (and a bug fix in the
 `mkiocccentry_test.sh` now tests the optional files as well (that is
 `prog.alt.c`, `try.sh` and `try.alt.sh`).
 
+Add link to example Makefile in `warn_Makefile()`, encouraging and recommending
+its use.
+
+Cleaned up warning in `check_submission()`.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
 Updated `SOUP_VERSION` to `"1.1.20 2025-02-12"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to` "1.0.11 2025-02-12"`.

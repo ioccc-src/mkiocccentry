@@ -2530,7 +2530,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
     dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
     exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
     if (exit_code != 0) {
-	warn(__func__, "Note: make -f Makefile clobber failed");
+	warn(__func__, "make -f Makefile clobber failed");
     }
 
 
@@ -4842,6 +4842,10 @@ check_prog_c(struct info *infop, char const *prog_c)
  *      false ==> the Makefile has an issue
  *
  * This function does not return on error.
+ *
+ * This function does not return on a NULL pointer.
+ *
+ * NOTE: an error does not mean an issue was found.
  */
 static bool
 inspect_Makefile(char const *Makefile, struct info *infop)
@@ -5177,6 +5181,10 @@ warn_Makefile(struct info *infop)
 	      "",
 	      "While this program's parser may have missed finding those Makefile rules,",
 	      "chances are this file is not a proper Makefile under the IOCCC rules.",
+              "",
+              "We LIKE submissions that use and we recommend and encourage you to use the",
+              "example Makefile found here:",
+              "\n\thttps://www.ioccc.org/next/Makefile.example",
 	      "",
 	      NULL);
 
