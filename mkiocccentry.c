@@ -2521,7 +2521,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * an error too but that's flagged by check_Makefile()).
      */
     if (!is_read("Makefile")) {
-        err(145, __func__, "Makefile does not exist in submission directory %s", submission_dir);
+        err(145, __func__, "Makefile not a regular readable file in submission directory %s", submission_dir);
         not_reached();
     }
     /*
