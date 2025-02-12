@@ -32,6 +32,18 @@ filenames etc.) it now prints them in tabular form. The same could be done for
 what is in topdir (and later on submission directory) but not doing this makes
 it easier to verify everything is okay.
 
+Improve handling of questions/answers/errors.  In particular in mkiocccentry
+when getting the submission slot number, title and abstract of the submission,
+it now asks the user to confirm their input. This is useful because if they make
+a typo they would have to start all over (and in some places like with author
+details it actually does ask you to confirm).  Also if an output error (telling
+the user of invalid input) occurs it is a fatal error as otherwise the user
+might not know what is going on.  If there is a failure to write to the answers
+file it is now an error as it could lead to incorrect input (and in fact
+previously it warned the user at the end to be very careful that everything is
+okay).  Additionally improved some wording/formatting of some prompts (or extra
+details about the prompts).
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
 Updated `SOUP_VERSION` to `"1.1.20 2025-02-12"`.
 
