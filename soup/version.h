@@ -72,7 +72,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.19 2025-02-10"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.20 2025-02-12"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
