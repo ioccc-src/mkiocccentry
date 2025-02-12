@@ -76,7 +76,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.10 2025-02-11"
+export MKIOCCCENTRY_TEST_VERSION="1.0.11 2025-02-12"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -339,12 +339,15 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
-# fake some required files
+# fake some required, extra and optional files
 #
 test -f "${src_dir}"/Makefile || cat "${Makefile}" >"${src_dir}"/Makefile
 test -f "${src_dir}"/remarks.md || cat README.md >"${src_dir}"/remarks.md
 test -f "${src_dir}"/extra1 || echo "123" >"${src_dir}"/extra1
 test -f "${src_dir}"/extra2 || echo "456" >"${src_dir}"/extra2
+test -f "${src_dir}"/try.sh || touch "${src_dir}"/try.sh
+test -f "${src_dir}"/try.alt.sh || touch "${src_dir}"/try.alt.sh
+test -f "${src_dir}"/prog.alt.c || touch "${src_dir}"/prog.alt.c
 
 # delete the work directory for next test
 find "${workdir_esc}" -mindepth 1 -depth -delete
