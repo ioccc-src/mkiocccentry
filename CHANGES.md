@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.32 2025-02-12
+
+Remove outdated man pages.
+
+In particular: the man pages ending in `.sh.[0-9]` were out of date. They were
+at one point symlinks but this was undone by accident. The only man pages up to
+date in this way are the ones without the `.sh` (so for example `ioccc_test.8`
+was updated but `ioccc_test.sh.8` was not). The make uninstall rule still
+removes those files but the make install rule does not install them as they no
+longer exist.
+
+
 ## Release 2.3.31 2025-02-11
 
 Bug fix and improvements in `mkiocccentry_test.sh`.

@@ -228,9 +228,9 @@ SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh 
 #
 MAN1_PAGES= man/man1/fnamchk.1
 MAN3_PAGES=
-MAN8_PAGES= man/man8/chkentry_test.8 man/man8/ioccc_test.8 \
-	man/man8/iocccsize_test.8 man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8 \
-	man/man8/hostchk.8 man/man8/ioccc_test.sh.8 man/man8/prep.8 man/man8/prep.sh.8 man/man8/utf8_test.8
+MAN8_PAGES= man/man8/chkentry_test.8 man/man8/ioccc_test.8 man/man8/iocccsize_test.8 \
+	    man/man8/mkiocccentry_test.8 man/man8/txzchk_test.8 man/man8/hostchk.8 \
+	    man/man8/prep.8 man/man8/utf8_test.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
 
@@ -701,12 +701,14 @@ uninstall:
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/fnamchk.1
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/mkiocccentry_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.sh.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/utf8_test.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
