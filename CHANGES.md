@@ -12,6 +12,20 @@ was updated but `ioccc_test.sh.8` was not). The make uninstall rule still
 removes those files but the make install rule does not install them as they no
 longer exist.
 
+Don't warn about but make it an error if the submission directory does not have
+a file or directory that was not ignored/not copied for some reason that did
+exist in the topdir. This checks by type too: if a directory was called `foo`
+but in the submission directory it was a file it is considered a missing
+directory. This is an important check. If there is a missing file or directory
+(symlinks are an error in the submission directory so we don't check for missing
+symlinks) it means something went wrong (or perhaps the user was messing about
+with the tool which is also an issue) and this is why it is now an error. Since
+the `fts_cmp()` function I added makes sure that the files and directories are
+listed in the same order in both `scan_topdir()` and `check_submission()` the
+way checking for missing files and directories is done should be fine.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
+
 
 ## Release 2.3.31 2025-02-11
 
