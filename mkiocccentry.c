@@ -3097,7 +3097,9 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
              */
             fname = dyn_array_value(missing_dirs, char *, i);
             if (fname == NULL) {
-                err(182, __func__, "found NULL pointer in missing directories list in submission directory, element: %ju", (uintmax_t)i);
+                err(182, __func__,
+                        "found NULL pointer in missing directories list in submission directory, element: %ju",
+                        (uintmax_t)i);
                 not_reached();
             }
             print("%s\n", fname);
