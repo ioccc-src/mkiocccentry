@@ -1890,7 +1890,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
 
             for (i = 0; ignored_dirnames[i] != NULL; ++i) {
                 errno = 0;
-                ret = printf("\t%s\n", ignored_dirnames[i]);
+                ret = printf("\t%10s%s", ignored_dirnames[i], !((i+1)%3)||ignored_dirnames[i+1]==NULL?"\n":"   ");
                 if (ret <= 0) {
                     errp(87, __func__, "printf error printing an ignored dirname: %s", ignored_dirnames[i]);
                     not_reached();
@@ -1902,8 +1902,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                     "",
                     NULL);
         }
-        para("",
-             "The following is a list of directories that will be ignored:",
+        para("The following is a list of directories that will be ignored:",
              "",
              NULL);
         for (i = 0; i < len; ++i) {
@@ -1971,7 +1970,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
 
             for (i = 0; forbidden_filenames[i] != NULL; ++i) {
                 errno = 0;
-                ret = printf("\t%s\n", forbidden_filenames[i]);
+                ret = printf("\t%10s%s", forbidden_filenames[i], !((i+1)%3)||forbidden_filenames[i+1]==NULL?"\n":"   ");
                 if (ret <= 0) {
                     errp(92, __func__, "printf error printing a forbidden filename: %s", forbidden_filenames[i]);
                     not_reached();

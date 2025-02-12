@@ -24,7 +24,16 @@ the `fts_cmp()` function I added makes sure that the files and directories are
 listed in the same order in both `scan_topdir()` and `check_submission()` the
 way checking for missing files and directories is done should be fine.
 
+Add to list of ignored directories for other RCSs.
+
+When printing lists of ignored directories/files (not the ones found in the
+topdir but those that we do not allow like ignored directories, forbidden
+filenames etc.) it now prints them in tabular form. The same could be done for
+what is in topdir (and later on submission directory) but not doing this makes
+it easier to verify everything is okay.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
+Updated `SOUP_VERSION` to `"1.1.20 2025-02-12"`.
 
 
 ## Release 2.3.31 2025-02-11

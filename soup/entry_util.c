@@ -76,11 +76,11 @@
  */
 char *mandatory_filenames[] =
 {
-    INFO_JSON_FILENAME,
     AUTH_JSON_FILENAME,
+    INFO_JSON_FILENAME,
     PROG_C_FILENAME,
-    REMARKS_FILENAME,
     MAKEFILE_FILENAME,
+    REMARKS_FILENAME,
     NULL
 };
 /*
@@ -88,13 +88,13 @@ char *mandatory_filenames[] =
  */
 char *forbidden_filenames[] =
 {
+    GNUMAKEFILE_FILENAME,
     INDEX_HTML_FILENAME,
     PROG_FILENAME,
     PROG_ALT_FILENAME,
     PROG_ORIG_FILENAME,
     PROG_ORIG_C_FILENAME,
     README_MD_FILENAME,
-    GNUMAKEFILE_FILENAME,
     NULL
 };
 
@@ -104,25 +104,34 @@ char *forbidden_filenames[] =
  */
 char *optional_filenames[] =
 {
-    TRY_SH,
     PROG_ALT_C,
     TRY_ALT_SH,
+    TRY_SH,
     NULL
 };
 
 /*
- * ignored directories that should be skipped
+ * directories that should be skipped
  */
 char *ignored_dirnames[] =
 {
-    CVS_DIRNAME,
+    BAZAAR_DIRNAME,
+    CIRCLECI_DIRNAME,
+    FOSSIL_DIRNAME0,
     GIT_DIRNAME,
+    GITHUB_DIRNAME,
+    GITLAB_DIRNAME,
+    MERCURIAL_DIRNAME,
+    JETBRAIN_DIRNAME,
     SVN_DIRNAME,
+    BITKEEPER_DIRNAME,
+    CVS_DIRNAME,
     RCCS_DIRNAME,
+    FOSSIL_DIRNAME1,
+    MONOTONE_DIRNAME,
+    DARCS_DIRNAME,
     NULL
 };
-
-
 
 /*
  * free_auth - free auto and related sub-elements

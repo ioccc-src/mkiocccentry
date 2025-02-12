@@ -38,36 +38,47 @@
 /*
  * mandatory filenames in the top directory
  */
-#define INFO_JSON_FILENAME ".info.json"         /* filename of the .info.json file */
 #define AUTH_JSON_FILENAME ".auth.json"         /* filename of the .auth.json file */
+#define INFO_JSON_FILENAME ".info.json"         /* filename of the .info.json file */
 #define PROG_C_FILENAME "prog.c"                /* submission/winning entry source code filename */
-#define REMARKS_FILENAME "remarks.md"           /* remarks filename that form README.md for winning entries */
 #define MAKEFILE_FILENAME "Makefile"            /* submission/winning entry Makefile filename */
+#define REMARKS_FILENAME "remarks.md"           /* remarks filename that form README.md for winning entries */
 /*
  * forbidden filenames in the top directory
  */
+#define GNUMAKEFILE_FILENAME "GNUmakefile"      /* GNUmakefile takes priority over Makefile which we don't want */
 #define INDEX_HTML_FILENAME "index.html"        /* winning entry index.html filename */
 #define PROG_FILENAME "prog"                    /* compiled submission/winning entry code filename */
 #define PROG_ALT_FILENAME "prog.alt"            /* compiled submission/winning entry alt code filename */
 #define PROG_ORIG_FILENAME "prog.orig"          /* compiled winning entry code filename */
 #define PROG_ORIG_C_FILENAME "prog.orig.c"      /* entry source code filename */
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
-#define GNUMAKEFILE_FILENAME "GNUmakefile"      /* GNUmakefile takes priority over Makefile which we don't want */
 
 /*
  * optional filenames in the top level directory
  */
-#define TRY_SH "try.sh"                         /* try.sh for prog.c */
 #define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
 #define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
+#define TRY_SH "try.sh"                         /* try.sh for prog.c */
 
 /*
  * directory names that should be ignored
  */
-#define CVS_DIRNAME "CVS"                       /* for CVS */
+#define BAZAAR_DIRNAME ".bzr"                   /* for Bazaar */
+#define CIRCLECI_DIRNAME ".circleci"            /* CircleCI */
+#define FOSSIL_DIRNAME0 ".fslckout"             /* For Fossil */
 #define GIT_DIRNAME ".git"                      /* for git */
+#define GITHUB_DIRNAME ".github"                /* For GitHub */
+#define GITLAB_DIRNAME ".gitlab"                /* For GitLab */
+#define MERCURIAL_DIRNAME ".hg"                 /* for Mercurial */
+#define JETBRAIN_DIRNAME ".idea"                /* JetBrains IDE */
 #define SVN_DIRNAME ".svn"                      /* for svn */
+#define BITKEEPER_DIRNAME "BitKeeper"           /* For BitKeeper */
+#define CVS_DIRNAME "CVS"                       /* for CVS */
 #define RCCS_DIRNAME "RCCS"                     /* for RCCS */
+#define FOSSIL_DIRNAME1 "_FOSSIL_"              /* For Fossil */
+#define MONOTONE_DIRNAME "_MTN"                 /* For Monotone */
+#define DARCS_DIRNAME "_darcs"                  /* For Darcs */
 
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
