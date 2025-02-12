@@ -1,5 +1,30 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.15 2025-02-12
+
+New util functions to detect other file types (besides directories and regular
+files) and to check if the path's mode (as in `stat.st_mode`) is an exact mode
+(based on the file type) as well as one to return the mode of a path. The
+following functions have been added:
+
+```
+extern bool is_socket(char const *path);
+extern bool is_symlink(char const *path);
+extern bool is_chardev(char const *path);
+extern bool is_blockdev(char const *path);
+extern bool is_fifo(char const *path);
+extern bool is_mode(char const *path, mode_t mode);
+extern mode_t filemode(char const *path);
+```
+
+The util test code now uses `filemode()` and also `is_mode()` as well as
+`is_chardev()` (informative only). This completes the '`is_*()` file type
+functions and these functions were added primarily to help with `is_mode()` but
+there are other reasons besides.
+
+Update `JPARSE_UTILS_VERSION` to `"1.0.7 2025-02-12"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.10 2025-02-12"`.
+
 ## Release 2.2.14 2025-02-05
 
 New util function `mkdirs()` (using `mkdir(2)`) which acts as `mkdir -p` with

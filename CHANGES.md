@@ -44,8 +44,24 @@ previously it warned the user at the end to be very careful that everything is
 okay).  Additionally improved some wording/formatting of some prompts (or extra
 details about the prompts).
 
+Add even more sanity checks to `check_submission()` to make sure that files
+(depending on name) and directories are the correct permissions. This is done by
+new `jparse/` util functions (synced from the [jparse
+repo](https://github.com/xexyl/jparse/)). Now not only will `txzchk(1)` detect
+invalid permissions but so will `mkiocccentry(1)` (and a bug fix in the
+`mkdirs()` function was also made but not documented by mistake).
+
+`mkiocccentry_test.sh` now tests the optional files as well (that is
+`prog.alt.c`, `try.sh` and `try.alt.sh`).
+
+Add link to example Makefile in `warn_Makefile()`, encouraging and recommending
+its use.
+
+Cleaned up warning in `check_submission()`.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
 Updated `SOUP_VERSION` to `"1.1.20 2025-02-12"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to` "1.0.11 2025-02-12"`.
 
 
 ## Release 2.3.31 2025-02-11
