@@ -156,12 +156,11 @@ static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *prog_c);
 static void check_ftsent(FTSENT *ent);
-static void scan_topdir(char * const *args, struct info *infop, char const *make, char const *submission_dir,
+static void scan_topdir(char *args, struct info *infop, char const *make, char const *submission_dir,
         RuleCount *size);
 static void copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,
         char *submit_path, int topdir, int cwd, RuleCount *size);
 static void check_submission(struct info *infop, char const *submission_dir, char const *make, RuleCount *size, int cwd);
-static int fts_cmp(const FTSENT **a, const FTSENT **b);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
                                      char const *make);

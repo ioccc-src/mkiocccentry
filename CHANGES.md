@@ -1,6 +1,31 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.33 2025-02-13
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility functions (FTS related as well as at least one other). These FTS related
+ones are useful for both #1070 (which it now uses) and also the new issue #1152.
+Most importantly (at this time) is that we no longer use the `fts_open()` and
+`fts_read()` functions directly: instead it is `read_fts()` which is a wrapper
+to it but one can call it multiple times to get the next entry in the tree.
+Using this has multiple advantages which will be more fully realised once issue
+#1152 is being worked on (that includes possibly the new function
+`find_file()`, though theoretically #1070 could also use it - it just does not
+need to). The function `find_file()` returns the path from the directory
+searched so one can `fopen(3)` it if they wish.
+
+As a special feature of `read_fts()`, one can switch back to the original
+directory, depending on the args (all NULL / -1 except for the `int *cwd` which
+must be not NULL and `*cwd` must be >= 0); this is useful because the function,
+if `dir` != NULL (or `dirfd` is a valid directory FD) will change the directory.
+This can be used after `find_file()` as well as long as you make sure that `cwd`
+is not NULL and `*cwd` is a valid FD (the feature will call `close(*cwd)` so it
+is no longer valid until it is obtained again perhaps by another call to the
+function).
+
+Added `/test_ioccc/topdir` to .gitignore.
+
 ## Release 2.3.32 2025-02-12
 
 Remove outdated man pages.
@@ -74,8 +99,6 @@ list but it does start with a `.` and it's not a required filename like
 `.auth.json` or `.info.json` it is a forbidden filename (it is true that
 the function `sane_relative_path()` would pick up on this but this is
 defence in depth).
-
-
 
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
 Updated `TXZCHK_VERSION` to `"1.1.13 2025-02-12"`.

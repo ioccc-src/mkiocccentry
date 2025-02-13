@@ -20,11 +20,12 @@
 #if !defined(INCLUDE_UTIL_H)
 #    define  INCLUDE_UTIL_H
 
-
-#include <sys/types.h>
-#include <float.h> /* for long doubles */
-#include <inttypes.h> /* uintmax_t and intmax_t and perhaps SIZE_MAX */
-#include <string.h> /* for strcmp */
+#include <float.h>      /* for long doubles */
+#include <inttypes.h>   /* uintmax_t and intmax_t and perhaps SIZE_MAX */
+#include <string.h>     /* for strcmp */
+#include <sys/types.h>  /* various things */
+#include <sys/stat.h>   /* for stat(2) and others */
+#include <fts.h>        /* FTS and FTSENT */
 
 
 /*
@@ -200,8 +201,15 @@ extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern bool is_mode(char const *path, mode_t mode);
+extern bool has_mode(char const *path, mode_t mode);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
+extern int fts_cmp(const FTSENT **a, const FTSENT **b);
+extern int fts_rcmp(const FTSENT **a, const FTSENT **b);
+FTSENT *read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
+        int (*compar)(const FTSENT **, const FTSENT **));
+extern char const *find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
+        int (*compar)(const FTSENT **, const FTSENT **), int options, int count, short int depth);
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
