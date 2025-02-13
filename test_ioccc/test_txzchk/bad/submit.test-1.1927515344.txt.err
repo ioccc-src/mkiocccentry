@@ -8,5 +8,6 @@ Warning: txzchk: found non-executable non-directory file test-1/.auth.json with 
 Warning: txzchk: found non-executable non-directory file test-1/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-1/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-1/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: test-1/foo/.auth.json (basename .auth.json) is an invalid dot file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found a total of 2 invalidly named dot files
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1927515344.txt: found 11 feathers stuck in the tarball

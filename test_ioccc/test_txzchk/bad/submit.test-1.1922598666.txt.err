@@ -10,5 +10,7 @@ Warning: txzchk: found non-executable non-directory file test-1/.auth.json with 
 Warning: txzchk: found non-executable non-directory file test-1/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-1/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-1/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: test-1/extra1/extra2//.. (basename ..) is a forbidden filename
+Warning: txzchk: test-1/extra1/extra2/extra3/extra4: depth too deep: 5 > 4
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found a total of 1 invalidly named dot file
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found 12 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-1.1922598666.txt: found 14 feathers stuck in the tarball

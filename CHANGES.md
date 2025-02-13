@@ -59,7 +59,26 @@ its use.
 
 Cleaned up warning in `check_submission()`.
 
+More sanity checks in `scan_topdir()` and `check_submission()`: make sure that a
+directory name is not the same as a required or optional filename. That does not
+mean that one couldn't have a subdirectory with that name but it cannot be in
+the top level of the submission directory.
+
+Plug some holes in txzchk. This includes not checking the max depth of a
+directory (only total number of directories was checked), checking that a
+directory is not named a required/mandatory filename, certain other directory
+name checks and other such things. Rebuilt the test error files.
+
+Improved `is_forbidden_filename()`: if it's not in the forbidden filenames
+list but it does start with a `.` and it's not a required filename like
+`.auth.json` or `.info.json` it is a forbidden filename (it is true that
+the function `sane_relative_path()` would pick up on this but this is
+defence in depth).
+
+
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.22 2025-02-12"`.
+Updated `TXZCHK_VERSION` to `"1.1.13 2025-02-12"`.
 Updated `SOUP_VERSION` to `"1.1.20 2025-02-12"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to` "1.0.11 2025-02-12"`.
 

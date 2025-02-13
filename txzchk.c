@@ -381,6 +381,12 @@ show_tarball_info(char const *tarball_path)
             }
         }
 
+        dbg(DBG_MED, "%s has a total of %ju invalid directory name%s", tarball_path, (uintmax_t)tarball.invalid_dirnames,
+                SINGULAR_OR_PLURAL(tarball.invalid_dirnames));
+        dbg(DBG_MED, "%s has a total of %ju directory depth error%s", tarball_path, (uintmax_t)tarball.depth_errors,
+                SINGULAR_OR_PLURAL(tarball.depth_errors));
+        dbg(DBG_MED, "%s has a total of %ju invalid director%s", tarball_path, (uintmax_t)tarball.invalid_directories,
+                SINGULAR_OR_PLURAL(tarball.invalid_directories));
 
         dbg(DBG_MED, "%s has %ju extra filename%s", tarball_path, tarball.extra_filenames,
                 SINGULAR_OR_PLURAL(tarball.extra_filenames));
@@ -813,7 +819,6 @@ check_all_txz_files(void)
     struct txz_file *file;  /* to iterate through files list */
     size_t len = 0;         /* length of each filename */
     size_t dirs = 0;        /* number of dirs in each filename */
-    size_t i = 0;           /* iterate through filenames lists */
     bool forbidden = false; /* true ==> filename is a forbidden name */
     bool required = false;  /* true ==> filename is required */
     bool optional = false;  /* true ==> filename is optional file */
@@ -832,10 +837,6 @@ check_all_txz_files(void)
 	    not_reached();
         }
 
-        if (file->isdir) {
-            /* skip directories */
-            continue;
-        }
         /*
          * always reset bools to false
          */
@@ -856,6 +857,30 @@ check_all_txz_files(void)
             ++tarball.total_feathers;
         }
 
+	if (file->count > 1) {
+	    warn("txzchk", "%s: found a total of %ju files with the name %s in the same directory", tarball_path,
+                    file->count, file->basename);
+	    tarball.total_feathers += file->count - 1;
+	}
+
+        /*
+         * directories have specific (extra) checks
+         */
+        if (file->isdir) {
+            /*
+             * here we have to determine if it is a required or optional
+             * filename. If it is it is not allowed!
+             *
+             * NOTE: if someone wishes to put these names as a directory in a
+             * subdirectory that is perfectly fine and this is why we check the
+             * full name and not the basename.
+             */
+            if (is_mandatory_filename(file->filename) || is_optional_filename(file->filename)) {
+	        warn("txzchk", "%s: directory name %s not allowed", tarball_path, file->filename);
+                ++tarball.invalid_dirnames;
+                ++tarball.total_feathers;
+            }
+        }
         /*
          * obtain number of directories in filename to check for specific files
          */
@@ -866,17 +891,24 @@ check_all_txz_files(void)
          * next file in the list; we simply need to know if THIS file is the one
          * we are checking.
          */
-
         if (dirs <= 0) {
-            /*
-             * if 0 directories everything is invalid
-             */
-            ++tarball.forbidden_filenames;
-            /*
-             * it's also an extra filename
-             */
-            ++tarball.extra_filenames;
+            if (file->isfile) {
+                /*
+                 * if 0 directories everything is invalid
+                 */
+                ++tarball.forbidden_filenames;
+                /*
+                 * it's also an extra filename
+                 */
+                ++tarball.extra_filenames;
+            } else {
+                ++tarball.invalid_directories; /* invalid directory */
+            }
+            ++tarball.total_feathers;
         } else if (dirs == 1) {
+            /*
+             * the top level submission directory
+             */
             if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
                 tarball.has_info_json = true;
                 required = true;
@@ -902,39 +934,32 @@ check_all_txz_files(void)
                  * ensure the booleans are false
                  */
                 forbidden = false;
-                required = false;
                 optional = false;
+                required = false; /* note it cannot be required here */
 
                 /*
                  * in the case it's not one of the required filenames, we have
-                 * to check for forbidden filenames and also optional filenames.
+                 * to check for forbidden filenames
                  */
-                for (i = 0; !forbidden && forbidden_filenames[i] != NULL; ++i) {
-                    if (!strcasecmp(file->basename, forbidden_filenames[i])) {
-	                warn("txzchk", "%s: filename %s not allowed", tarball_path, file->basename);
-                        ++tarball.forbidden_filenames;
-                        ++tarball.total_feathers;
-                        forbidden = true;
-                        break;
-                    }
+                if (is_forbidden_filename(file->basename)) {
+                    warn("txzchk", "%s: filename %s (basename %s) not allowed", tarball_path, file->filename, file->basename);
+                    ++tarball.forbidden_filenames;
+                    ++tarball.total_feathers;
+                    forbidden = true;
                 }
                 /*
                  * we need to count optional filenames too, assuming it's not a
                  * forbidden filename (meaning it couldn't be an optional
                  * filename)
                  */
-                for (i = 0; !forbidden && !optional && optional_filenames[i] != NULL; ++i) {
-                    if (!strcasecmp(file->filename, optional_filenames[i])) {
-                        optional = true;
-                        ++tarball.optional_filenames;
-                        break;
-                    }
+                if (!forbidden && is_optional_filename(file->filename)) {
+                    optional = true;
+                    ++tarball.optional_filenames;
                 }
 
                 /*
-                 * if we don't have an optional or required (which will never
-                 * occur here) filename then we have to increment the extra
-                 * filename count
+                 * if we don't have an optional or required filename then we
+                 * have to increment the extra filename count
                  */
                 if (!optional && !required) {
                     dbg(DBG_HIGH, "%s: extra filename: %s", tarball_path, file->basename);
@@ -948,7 +973,7 @@ check_all_txz_files(void)
             if (required) {
                 ++tarball.required_filenames;
             }
-        } else if (dirs > 1) {
+        } else if (dirs > 1) { /* subdirectory */
             /*
              * ensure the booleans are false
              */
@@ -956,16 +981,41 @@ check_all_txz_files(void)
             required = false;
             optional = false;
 
+            /*
+             * why dirs + 1 for max depth?
+             *
+             * Because the way count_dirs() works is by the count_comps()
+             * function which considers the delimiting character (in this case
+             * '/') so that if one has a file:
+             *
+             *      foo/bar/baz
+             *
+             * it's two directories but if one has:
+             *
+             *      foo/bar/baz/
+             *
+             * it's three directories (see the comments in jparse/util.c for
+             * more details). However with the IOCCC it's a matter of
+             * depth, not the number of directories, so we have to do + 1.
+             */
+            if (dirs + 1 > MAX_PATH_DEPTH) {
+                warn("txzchk", "%s: depth too deep: %ju > %ju", file->filename, (uintmax_t)(dirs+1),
+                        (uintmax_t)MAX_PATH_DEPTH);
+                ++tarball.depth_errors;
+                ++tarball.total_feathers;
+            }
             if (!strcmp(file->basename, INFO_JSON_FILENAME) ||
-                    !strcmp(file->basename, AUTH_JSON_FILENAME)) {
+                !strcmp(file->basename, AUTH_JSON_FILENAME)) {
                     ++tarball.forbidden_filenames;
                     ++tarball.invalid_dot_files;
                     ++tarball.total_feathers;
                     forbidden = true;
-            } else if (!strcmp(file->basename, README_MD_FILENAME)) {
+                    warn("txzchk", "%s (basename %s) is an invalid dot file", file->filename, file->basename);
+            } else if (is_forbidden_filename(file->basename)) {
                 ++tarball.forbidden_filenames;
                 ++tarball.total_feathers;
                 forbidden = true;
+                warn("txzchk", "%s (basename %s) is a forbidden filename", file->filename, file->basename);
             } else {
                 /*
                  * we need to count optional filenames too.
@@ -975,12 +1025,9 @@ check_all_txz_files(void)
                  * however, like any dot file and README.md (both checked
                  * above).
                  */
-                for (i = 0; !forbidden && !optional && optional_filenames[i] != NULL; ++i) {
-                    if (!strcasecmp(file->filename, optional_filenames[i])) {
-                        optional = true;
-                        ++tarball.optional_filenames;
-                        break;
-                    }
+                if (is_optional_filename(file->filename)) {
+                    optional = true;
+                    ++tarball.optional_filenames;
                 }
 
                 /*
@@ -990,12 +1037,6 @@ check_all_txz_files(void)
                 ++tarball.extra_filenames;
             }
         }
-
-	if (file->count > 1) {
-	    warn("txzchk", "%s: found a total of %ju files with the name %s in the same directory", tarball_path,
-                    file->count, file->basename);
-	    tarball.total_feathers += file->count - 1;
-	}
     }
 
     /* determine if the required files are there */

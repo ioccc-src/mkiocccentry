@@ -8,5 +8,6 @@ Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.t
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found non .auth.json and .info.json dot file .foo
 Warning: txzchk: found non-executable non-directory file test-4/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: found non-executable non-directory file test-4/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: filename test-4/.foo (basename .foo) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found a total of 1 invalidly named dot file
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found 10 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found 11 feathers stuck in the tarball

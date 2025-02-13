@@ -4948,6 +4948,15 @@ is_forbidden_filename(char const *str)
         }
     }
 
+    /*
+     * also if it starts with '.' and it's not a required file that starts with
+     * a dot it is also forbidden
+     */
+    if (!is_mandatory_filename(str) && *str == '.') {
+        dbg(DBG_MED, "%s is a forbidden filename", str);
+        return true;
+    }
+
     dbg(DBG_MED, "%s is not a forbidden filename", str);
     return false;
 }
@@ -4983,6 +4992,7 @@ is_optional_filename(char const *str)
     dbg(DBG_MED, "%s is not an optional filename", str);
     return false;
 }
+
 
 /*
  * is_ignored_dirname  - check if str is an ignored directory name
