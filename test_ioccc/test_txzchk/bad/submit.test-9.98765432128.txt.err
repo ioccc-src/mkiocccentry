@@ -49,8 +49,8 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: fou
 Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: srw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: too many files: 39 > 31
 Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename prog not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename README.md not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename GNUmakefile not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename index.html not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename test-9/prog (basename prog) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename test-9/README.md (basename README.md) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: filename test-9/index.html (basename index.html) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.98765432128.txt: found 55 feathers stuck in the tarball

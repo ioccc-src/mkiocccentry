@@ -125,6 +125,9 @@ struct tarball
     uintmax_t directories;                  /* total number of subdirectories counting the required top level directory */
     uintmax_t invalid_perms;                /* total number of files with invalid permissions */
     uintmax_t total_exec_files;             /* total number of executable FILES */
+    uintmax_t invalid_dirnames;             /* number of invalid directory names */
+    uintmax_t invalid_directories;          /* invalid directory */
+    uintmax_t depth_errors;                 /* number of directories > max depth */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 

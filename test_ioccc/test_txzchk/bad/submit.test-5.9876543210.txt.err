@@ -17,6 +17,8 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: foun
 Warning: txzchk: found non-executable non-directory file var/tmp/test-5/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found incorrect top level directory in filename var/tmp/test-5/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found incorrect top level directory in filename var/tmp/test-5/
+Warning: txzchk: var/tmp/test-5/.auth.json (basename .auth.json) is an invalid dot file
+Warning: txzchk: var/tmp/test-5/.info.json (basename .info.json) is an invalid dot file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: no .info.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: no .auth.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: no prog.c found

@@ -27,13 +27,14 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: foun
 Warning: txzchk: found non-executable non-directory file Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found incorrect top level directory in filename Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 files with the name . in the same directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename prog not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename prog.orig not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename prog.orig.c not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename README.md not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename GNUmakefile not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename index.html not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/. (basename .) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog (basename prog) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig (basename prog.orig) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig.c (basename prog.orig.c) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/README.md (basename README.md) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/index.html (basename index.html) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: no Makefile found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found 37 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found 40 feathers stuck in the tarball

@@ -16,10 +16,10 @@ Warning: txzchk: found non-executable non-directory file test-9/prog.c with wron
 Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found empty Makefile
 Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog.orig not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename prog.orig.c not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename README.md not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename GNUmakefile not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename index.html not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/prog (basename prog) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/prog.orig (basename prog.orig) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/prog.orig.c (basename prog.orig.c) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/README.md (basename README.md) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: filename test-9/index.html (basename index.html) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543211.txt: found 24 feathers stuck in the tarball
