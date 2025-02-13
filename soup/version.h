@@ -99,7 +99,7 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "1.0.2 2024-05-15"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "1.0.3 2025-02-13"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version

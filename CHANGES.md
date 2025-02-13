@@ -26,6 +26,10 @@ function).
 
 Added `/test_ioccc/topdir` to .gitignore.
 
+Start work on issue #1152. Added ignored filenames list option.
+
+
+
 ## Release 2.3.32 2025-02-12
 
 Remove outdated man pages.

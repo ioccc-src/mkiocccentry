@@ -39,6 +39,7 @@
 /*
  * definitions
  */
+#define CHUNK (39)              /* allocate CHUNK elements at a time */
 
 
 /*
@@ -52,7 +53,7 @@ static bool quiet = false;				/* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] auth.json info.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] auth.json info.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -61,6 +62,7 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
+    "\t-i file\t\tadd file to ignore list\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\n"
@@ -126,6 +128,68 @@ usage(int exitcode, char const *prog, char const *str)
     not_reached();
 }
 
+/* append_unique_str - append string pointer to dynamic array if not already found
+ *
+ * Given a pointer to string, we search a dynamic array of pointers to strings.
+ * If an exact match is found (i.e. the string is already in the dynamic array),
+ * it is an error because no files should be duplicated; otherwise, if no match
+ * is found, the pointer to the string is appended to the dynamic array.
+ *
+ * given:
+ *	array		dynamic array of pointers to strings
+ *	str		string to search array and append if not already found
+ *
+ * NOTE: This function does not return if given NULL pointers, on any error or
+ * if the string is already in the array.
+ */
+static void
+append_unique_str(struct dyn_array *array, char *str)
+{
+    intmax_t unique_len = 0;	/* number of unique strings in the array */
+    char *u = NULL;		/* unique name pointer */
+    intmax_t i;
+
+    /*
+     * firewall
+     */
+    if (array == NULL) {
+        err(23, __func__, "array is NULL");
+        not_reached();
+    } else if (str == NULL) {
+        err(24, __func__, "str is NULL");
+        not_reached();
+    }
+
+    /*
+     * search array for the string
+     *
+     * NOTE: we realise calling the function with unique strings will cause the
+     * execution time to grow as O(n^2).  However the usual number of strings in
+     * a unique ignored path dynamic array is almost certainly small.  Therefore
+     * we do not need to employ a more optimised dynamic array search mechanism.
+     */
+    unique_len = dyn_array_tell(array);
+    for (i=0; i < unique_len; ++i) {
+
+	/* get next string pointer */
+	u = dyn_array_value(array, char *, i);
+	if (u == NULL) {	/* paranoia */
+	    err(25, __func__, "found NULL pointer in ignored filename dynamic array element: %ju", (uintmax_t)i);
+	    not_reached();
+	}
+
+	/* look for match */
+	if (strcasecmp(str, u) == 0) {
+	    /* str found in array */
+            return;
+	}
+    }
+
+    /*
+     * name is unique, append to array
+     */
+    (void) dyn_array_append_value(array, &str);
+}
 
 int
 main(int argc, char *argv[])
@@ -144,6 +208,7 @@ main(int argc, char *argv[])
     struct json *info_tree = NULL;	/* JSON parse tree for .info.json, or NULL ==> not parsed */
     bool auth_valid = false;		/* .auth.json is valid JSON */
     bool info_valid = false;		/* .info.json is valid JSON */
+    struct dyn_array *ignored_filenames = NULL;  /* files to ignore */
     struct dyn_array *auth_count_err = NULL;	/* JSON semantic count errors for .auth.json */
     struct dyn_array *auth_val_err = NULL;	/* JSON semantic validation errors for .auth.json */
     struct dyn_array *info_count_err = NULL;	/* JSON semantic count errors for .info.json */
@@ -164,12 +229,21 @@ main(int argc, char *argv[])
     struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
     uintmax_t c;			/* dynamic array index */
     int i;
+    char *p = NULL;
+    size_t j = 0;
+    size_t len = 0;
+
+    ignored_filenames = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
+    if (ignored_filenames == NULL) {
+        err(26, __func__, "failed to create ignored files list array");
+        not_reached();
+    }
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vq")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:Vqi:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -207,6 +281,9 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
+        case 'i':
+            append_unique_str(ignored_filenames, optarg);
+            break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
@@ -270,7 +347,7 @@ main(int argc, char *argv[])
 	auth_filename = ".auth.json";
 	auth_stream = open_dir_file(submission_dir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(23, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
+	    err(27, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
 	    not_reached();
 	}
 
@@ -280,7 +357,7 @@ main(int argc, char *argv[])
 	info_filename = ".info.json";
 	info_stream = open_dir_file(submission_dir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(24, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
+	    err(28, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
 	    not_reached();
 	}
 
@@ -295,7 +372,7 @@ main(int argc, char *argv[])
 	if (strcmp(auth_filename, ".") != 0) {
 	    auth_stream = open_dir_file(NULL, auth_filename);
 	    if (auth_stream == NULL) { /* paranoia */
-		err(25, __func__, "open_dir_file returned NULL for .auth.json path: %s", auth_filename);
+		err(29, __func__, "open_dir_file returned NULL for .auth.json path: %s", auth_filename);
 		not_reached();
 	    }
 	} else {
@@ -308,7 +385,7 @@ main(int argc, char *argv[])
 	if (strcmp(info_filename, ".") != 0) {
 	    info_stream = open_dir_file(NULL, info_filename);
 	    if (info_stream == NULL) { /* paranoia */
-		err(26, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
+		err(30, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
 		not_reached();
 	    }
 	} else {
@@ -319,17 +396,17 @@ main(int argc, char *argv[])
      * case: paranoia
      */
     } else {
-	err(27, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
+	err(31, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
 	not_reached();
     }
     auth_path = calloc_path(submission_dir, auth_filename);
     if (auth_path == NULL) {
-	err(28, __func__, "auth_path is NULL");
+	err(32, __func__, "auth_path is NULL");
 	not_reached();
     }
     info_path = calloc_path(submission_dir, info_filename);
     if (info_path == NULL) {
-	err(29, __func__, "info_path is NULL");
+	err(33, __func__, "info_path is NULL");
 	not_reached();
     }
 
@@ -373,27 +450,27 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .auth.json
 	 */
 	if (auth_count_err == NULL) {
-	    err(30, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+	    err(34, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_count_err) < 0) {
-	    err(31, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+	    err(35, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
 	    not_reached();
 	}
 	auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
 	if (auth_val_err == NULL) {
-	    err(32, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+	    err(36, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_val_err) < 0) {
-	    err(33, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+	    err(37, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
 	    not_reached();
 	}
 	auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
 	if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-	    err(34, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+	    err(38, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
 		   "for .auth.json file: %s",
 		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
 	    not_reached();
@@ -417,29 +494,29 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .info.json
 	 */
 	if (info_count_err == NULL) {
-	    err(35, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	    err(39, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_count_err) < 0) {
-	    err(36, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+	    err(40, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
 		   "for .info.json file: %s",
 		   dyn_array_tell(info_count_err), info_path);
 	    not_reached();
 	}
 	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
 	if (info_val_err == NULL) {
-	    err(37, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+	    err(41, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_val_err) < 0) {
-	    err(38, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+	    err(42, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
 		   "for .info.json file: %ss",
 		   dyn_array_tell(info_val_err), info_path);
 	    not_reached();
 	}
 	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
 	if (info_all_err_count < info_count_err_count+info_val_err_count) {
-	    err(39, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+	    err(43, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
 		   "for .info.json file: %s",
 		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
 	    not_reached();
@@ -612,6 +689,20 @@ main(int argc, char *argv[])
 	free(info_path);
 	info_path = NULL;
     }
+
+    if (ignored_filenames != NULL) {
+        len = dyn_array_tell(ignored_filenames);
+        for (j = 0; j < len; ++j) {
+            p = dyn_array_value(ignored_filenames, char *, j);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(ignored_filenames);
+        ignored_filenames = NULL;
+    }
+
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
