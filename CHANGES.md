@@ -1,6 +1,42 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.33 2025-02-14
+
+Fix issue #1159 - -i answers always answers yes.
+
+This is absolutely **ESSENTIAL** so that we don't have to worry about changes in
+file sets that would cause problems; if any file set (that we have to confirm is
+OK) changed the answers file would be **ENTIRELY** useless because the order of
+the answers would be different (i.e. we would need an **additional** line!). To
+be helpful if `answer_yes == true` (i.e. `-y` is used or implied) and `!quiet`)
+(i.e. `-q` not use) we will warn the user that we will answer yes to every
+question (at the beginning right after the `Welcome to mkiocccentry` message).
+We use the `print` macro from `jparse/` rather than `msg()` from `dbg` or
+`printf` with a single check because it performs many more checks which is very
+important when always answering yes (perhaps the function `pr()` that `print`
+uses should allow a string without having to have a format but that's another
+matter entirely).
+
+Improved the handling of user saying 'no' to a question: namely it suggests the
+user fix their topdir (giving the absolute path we determined earlier) and
+remove the submission directory (which is under the workdir) also giving the
+absolute path determined earlier on.
+
+Note that `mkiocccentry_test.sh` already uses `-q` so we don't need to update it
+(since it's not necessary to show this stuff for tests). The reason this issue
+was not detected earlier is because the script uses `-y`. Even so the code
+`copy_topdir()` and also `check_submission()` now do `if (!answer_yes &&
+!read_answers_flag_used)` instead of just `if (!answer_yes)` (not strictly
+necessary but this adds another layer of defence in case something goes wrong).
+
+A message was incorrect too (referred to the wrong type of file).
+
+Additionally an unnecessary arg to `get_contest_id()` was removed (it was a
+pointer to `read_answers_flag_used` but that is a global variable so it's
+unnecessary to have it in the function as we can just set read/set its value as
+necessary.
+
 ## Release 2.3.33 2025-02-13
 
 Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new

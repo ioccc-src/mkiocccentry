@@ -196,7 +196,7 @@ main(int argc, char *argv[])
     char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
     char *make = MAKE_PATH_0;                   /* path to make(1) executable */
     char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
-    FILE *answerp = NULL;			/* file pointer to the answers file */
+    FILE *answersp = NULL;			/* file pointer to the answers file */
     char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
     struct info info;				/* data to form .info.json */
@@ -279,7 +279,16 @@ main(int argc, char *argv[])
 	case 'i':		/* -i input_recorded_answers */
 	    answers = optarg;
 	    read_answers_flag_used = true;
+            /*
+             * set need_confirm to false to prevent problem where a user might
+             * have a different file set
+             */
 	    need_confirm = false;
+            /*
+             * set answer_yes to prevent problem where a user might have a
+             * different file set
+             */
+            answer_yes = true;
 	    need_hints = false;
 	    silence_prompt = true;
 	    break;
@@ -511,6 +520,22 @@ main(int argc, char *argv[])
     }
 
     /*
+     * warn (if not -q/quiet mode) user that with -i answers (or -y) we will
+     * always answer yes. This is especially important (in fact absolutely
+     * essential for -i answers) because if there was a change in file set(s)
+     * then the answers file would be entirely useless!
+     */
+    if (answer_yes && !quiet) {
+        /*
+         * we could use msg() but this performs more checks which is very
+         * important for this
+         */
+        print("%s", "Notice: we will always answer yes to questions.");
+    }
+
+
+
+    /*
      * save our version
      */
     info.mkiocccentry_ver = MKIOCCCENTRY_VERSION;
@@ -577,24 +602,24 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
-	answerp = fopen(answers, "r");
-	if (answerp == NULL) {
+	answersp = fopen(answers, "r");
+	if (answersp == NULL) {
 	    errp(10, __func__, "cannot open answers file");
 	    not_reached();
 	}
-	input_stream = answerp;
+	input_stream = answersp;
     }
     /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&info.test_mode, &read_answers_flag_used);
+    info.ioccc_id = get_contest_id(&info.test_mode);
     dbg(DBG_LOW, "Submission: IOCCC contest ID: %s", info.ioccc_id);
 
     /*
      * found the answer file header in stdin
      */
     if (read_answers_flag_used && answers == NULL) {
-	answerp = stdin;
+	answersp = stdin;
     }
 
     /*
@@ -624,13 +649,13 @@ main(int argc, char *argv[])
     if (answers_flag_used && answers != NULL && strlen(answers) > 0) {
 
 	errno = 0;			/* pre-clear errno for errp() */
-	answerp = fopen(answers, "w");
-	if (answerp == NULL) {
+	answersp = fopen(answers, "w");
+	if (answersp == NULL) {
 	    errp(12, __func__, "cannot create answers file: %s", answers);
 	    not_reached();
 	}
         errno = 0; /* pre-clear errno for errp() */
-        ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_VERSION);
+        ret = fprintf(answersp, "%s\n", MKIOCCCENTRY_ANSWERS_VERSION);
 	if (ret <= 0) {
 	    errp(13, __func__, "fprintf error printing header to the answers file");
             not_reached();
@@ -640,15 +665,15 @@ main(int argc, char *argv[])
     /*
      * write the IOCCC id and submit slot number to the answers file
      */
-    if (answerp != NULL && answers_flag_used) {
+    if (answersp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for errp() */
-        ret = fprintf(answerp, "%s\n", info.ioccc_id);
+        ret = fprintf(answersp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
 	    errp(14, __func__, "fprintf error printing IOCCC contest id to the answers file");
             not_reached();
 	}
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = fprintf(answerp, "%d\n", info.submit_slot);
+	ret = fprintf(answersp, "%d\n", info.submit_slot);
 	if (ret <= 0) {
 	    errp(15, __func__, "fprintf error printing submit slot number to the answers file");
             not_reached();
@@ -666,9 +691,9 @@ main(int argc, char *argv[])
      */
     info.title = get_title(&info);
     dbg(DBG_LOW, "Submission: title: %s", info.title);
-    if (answerp != NULL && answers_flag_used) {
+    if (answersp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = fprintf(answerp, "%s\n", info.title);
+	ret = fprintf(answersp, "%s\n", info.title);
 	if (ret <= 0) {
 	    errp(16, __func__, "fprintf error printing title to the answers file");
             not_reached();
@@ -680,9 +705,9 @@ main(int argc, char *argv[])
      */
     info.abstract = get_abstract(&info);
     dbg(DBG_LOW, "Submission: abstract: %s", info.abstract);
-    if (answerp != NULL && answers_flag_used) {
+    if (answersp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = fprintf(answerp, "%s\n", info.abstract);
+	ret = fprintf(answersp, "%s\n", info.abstract);
 	if (ret <= 0) {
 	    errp(17, __func__, "fprintf error printing abstract to the answers file");
             not_reached();
@@ -698,9 +723,9 @@ main(int argc, char *argv[])
     /*
     * if we have an answers file, record the verified author information
     */
-    if (answerp != NULL && !read_answers_flag_used) {
+    if (answersp != NULL && !read_answers_flag_used) {
 	errno = 0;			/* pre-clear errno for errp() */
-        ret = fprintf(answerp, "%d\n", author_count);
+        ret = fprintf(answersp, "%d\n", author_count);
 	if (ret <= 0) {
 	    errp(18, __func__, "fprintf error printing IOCCC author count to the answers file");
             not_reached();
@@ -711,7 +736,7 @@ main(int argc, char *argv[])
 	 */
 	for (i = 0; i < author_count; i++) {
 	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp,
+	    ret = fprintf(answersp,
 		"%s\n"	/* name */
 		"%s\n"	/* location code */
 		"%s\n"	/* email */
@@ -720,7 +745,6 @@ main(int argc, char *argv[])
 		"%s\n"	/* mastodon handle */
 		"%s\n"	/* GitHub */
 		"%s\n"	/* affiliation */
-		"%s\n"  /* past winning author */
 		"%s\n"  /* author_handle */
 		,
 		author_set[i].name,
@@ -731,7 +755,6 @@ main(int argc, char *argv[])
 		author_set[i].mastodon,
 		author_set[i].github,
 		author_set[i].affiliation,
-		author_set[i].past_winning_author?"y":"n",
 		author_set[i].author_handle);
 	    if (ret <= 0) {
 		errp(19, __func__, "fprintf error printing author info to the answers file");
@@ -772,13 +795,13 @@ main(int argc, char *argv[])
      * answers) or read the answers EOF marker and then finally closing the
      * stream.
      */
-    if (answerp != NULL) {
+    if (answersp != NULL) {
 	if (read_answers_flag_used) {
 	    char *linep = NULL;
 	    char *line;
 	    bool error = true;
 
-	    line = readline_dup(&linep, true, NULL, answerp);
+	    line = readline_dup(&linep, true, NULL, answersp);
 	    if (line != NULL) {
 		if (line != NULL) {
 		    error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
@@ -799,7 +822,7 @@ main(int argc, char *argv[])
 	    }
 	} else {
 	    errno = 0;		/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
+	    ret = fprintf(answersp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
 	        errp(21, __func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
                 not_reached();
@@ -807,13 +830,13 @@ main(int argc, char *argv[])
 	}
 	if (answers != NULL) {
 	    errno = 0;		/* pre-clear errno for errp() */
-	    ret = fclose(answerp);
+	    ret = fclose(answersp);
 	    if (ret != 0) {
 	        errp(22, __func__, "error in fclose to the answers file");
                 not_reached();
 	    }
 	}
-	answerp = NULL;
+	answersp = NULL;
     }
 
     /*
@@ -1679,7 +1702,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
  * copy_topdir
  *
  * Copy files/directories from topdir to submission directory if user says
- * everything is okay.
+ * everything is okay (the lists were created in the function scan_topdir()).
  *
  * given:
  *      infop           - pointer to info struct from scan_topdir()
@@ -1834,7 +1857,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             para("",
                     "This is so that one may use an RCS without having to worry about\n"
-                    "copying everything to another directory.",
+                    "copying everything to another directory simply to use this tool.",
                     "",
                     NULL);
         }
@@ -1849,9 +1872,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(98, __func__, "aborting because user said ignored directories list is not OK");
                 not_reached();
             }
@@ -1869,6 +1894,8 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 "We ignore files and directories that do not match the regexp:",
                 "",
                 "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                "",
+                "because they are not POSIX plus + chars only.",
                 NULL);
         }
         para("",
@@ -1884,9 +1911,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(100, __func__, "aborting because user said unsafe directory names list is not OK");
                 not_reached();
             }
@@ -1930,9 +1959,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(103, __func__, "aborting because user said forbidden files list is not OK");
                 not_reached();
             }
@@ -1949,6 +1980,8 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 "We ignore files and directories that do not match the regexp:",
                 "",
                 "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                "",
+                "because they are not POSIX plus + chars only.",
                 NULL);
         }
         para("",
@@ -1964,9 +1997,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(105, __func__, "aborting because user said unsafe filenames list is not OK");
                 not_reached();
             }
@@ -1997,9 +2032,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(107, __func__, "aborting because user said ignored symlinks list is not OK");
                 not_reached();
             }
@@ -2027,9 +2064,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             print("%s\n", p);
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(109, __func__, "aborting because user said directories list is not OK");
                 not_reached();
             }
@@ -2047,7 +2086,6 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
     if (len > 0) {
         para("",
                 "The following is a list of files that will be added to the tarball:"
-                "",
                 "",
                 NULL);
 
@@ -2081,9 +2119,11 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 print("%s\n", p);
             }
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
                 err(113, __func__, "aborting because user said files list is not OK");
                 not_reached();
             }
@@ -2299,7 +2339,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         not_reached();
     }
 
-    check_submission(infop, submission_dir, make, size, cwd);
+    check_submission(infop, submit_path, topdir_path, make, size, cwd);
 }
 
 /*
@@ -2313,7 +2353,8 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
  * given:
  *
  *      infop               - pointer to info struct
- *      submission_dir      - submission directory that files were copied to
+ *      submit_path         - absolute path of submission directory that files were copied to
+ *      topdir_path         - absolute path of topdir
  *      make                - path to make(1) (for make -f Makefile clobber)
  *      size                - pointer to RuleCount for iocccsize
  *      cwd                 - original directory
@@ -2332,7 +2373,8 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
  * NOTE: if a path is already in an array and it is found again it is an error.
  */
 static void
-check_submission(struct info *infop, char const *submission_dir, char const *make, RuleCount *size, int cwd)
+check_submission(struct info *infop, char const *submit_path, char const *topdir_path,
+        char const *make, RuleCount *size, int cwd)
 {
     char *filename = NULL;              /* current filename (for arrays) */
     char *fname = NULL;                 /* filename can't be freed so we need another variable */
@@ -2359,7 +2401,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || make == NULL || size == NULL) {
+    if (infop == NULL || submit_path == NULL || make == NULL || size == NULL) {
         err(128, __func__, "passed NULL arg(s)");
         not_reached();
     }
@@ -2456,8 +2498,8 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * change to submission directory
      */
     errno = 0; /* pre-clear errno for errp() */
-    if (chdir(submission_dir) != 0) {
-        errp(144, __func__, "unable to change to submission directory: %s", submission_dir);
+    if (chdir(submit_path) != 0) {
+        errp(144, __func__, "unable to change to submission directory: %s", submit_path);
         not_reached();
     }
 
@@ -2471,7 +2513,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * an error too but that's flagged by check_Makefile()).
      */
     if (!is_read("Makefile")) {
-        err(145, __func__, "Makefile not a regular readable file in submission directory %s", submission_dir);
+        err(145, __func__, "Makefile not a regular readable file in submission directory %s", submit_path);
         not_reached();
     }
     /*
@@ -2762,13 +2804,13 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
      * directory
      */
     if (!found_prog_c) {
-        err(171, __func__, "prog.c not found in submission directory %s", submission_dir);
+        err(171, __func__, "prog.c not found in submission directory %s", submit_path);
         not_reached();
     } else if (!found_Makefile) {
-        err(172, __func__, "Makefile not found in submission directory %s", submission_dir);
+        err(172, __func__, "Makefile not found in submission directory %s", submit_path);
         not_reached();
     } else if (!found_remarks_md) {
-        err(173, __func__, "remarks.md not found in submission directory %s", submission_dir);
+        err(173, __func__, "remarks.md not found in submission directory %s", submit_path);
         not_reached();
     }
 
@@ -3136,10 +3178,12 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
             print("%s\n", p);
         }
 
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
-                err(203, __func__, "aborting because user said files list is not OK");
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
+                err(203, __func__, "aborting because user said directories list in submission directory is not OK");
                 not_reached();
             }
         }
@@ -3187,10 +3231,12 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
                 print("%s\n", p);
             }
         }
-        if (!answer_yes) {
+        if (!answer_yes && !read_answers_flag_used) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
-                err(207, __func__, "aborting because user said files list is not OK");
+                print("we suggest you fix your %s directory,\ndelete %s and try again\n",
+                        topdir_path, submit_path);
+                err(207, __func__, "aborting because user said files list in submission directory is not OK");
                 not_reached();
             }
         }
@@ -3885,8 +3931,7 @@ prompt(char const *str, size_t *lenp)
  * *testp will be set to true, otherwise it will be set to false.
  *
  * given:
- *      infop   - pointer to info structure
- *      testp   - pointer to boolean for test mode
+ *      testp   - pointer to boolean (in struct info) for test mode
  *
  * returns:
  *      allocated contest ID string
@@ -3895,7 +3940,7 @@ prompt(char const *str, size_t *lenp)
  * This function does not return on error or if the contest ID is malformed.
  */
 static char *
-get_contest_id(bool *testp, bool *read_answers_flag_used)
+get_contest_id(bool *testp)
 {
     char *malloc_ret;		/* allocated return string */
     size_t len;			/* input string length */
@@ -3907,9 +3952,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
      */
     if (testp == NULL) {
 	err(243, __func__, "called with NULL testp");
-	not_reached();
-    } else if (read_answers_flag_used == NULL) {
-	err(244, __func__, "called with NULL read_answers_flag_used");
 	not_reached();
     }
 
@@ -3941,14 +3983,14 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	if (!seen_answers_header && !strcmp(malloc_ret, MKIOCCCENTRY_ANSWERS_VERSION)) {
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
-	    *read_answers_flag_used = true;
+	    read_answers_flag_used = true;
 	    need_confirm = false;
 	    need_hints = false;
 
 	    free(malloc_ret);
 	    malloc_ret = prompt("", &len);
 	}
-	if (*read_answers_flag_used && !seen_answers_header) {
+	if (read_answers_flag_used && !seen_answers_header) {
 	    err(245, __func__, "didn't find the correct answers file header");
 	    not_reached();
 	}
