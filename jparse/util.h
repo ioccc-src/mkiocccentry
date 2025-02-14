@@ -210,6 +210,9 @@ FTSENT *read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
         int (*compar)(const FTSENT **, const FTSENT **));
 extern char const *find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
         int (*compar)(const FTSENT **, const FTSENT **), int options, int count, short int depth);
+extern bool append_filename(struct dyn_array **array, char *str, bool unique, bool duped);
+extern struct dyn_array *find_files(struct dyn_array *filenames, char const *dir, int dirfd, int *cwd, bool base,
+        int (*compar)(const FTSENT **, const FTSENT **), int options, int count, short int depth);
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);

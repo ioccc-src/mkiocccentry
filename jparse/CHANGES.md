@@ -1,5 +1,30 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.17 2025-02-14
+
+Make a new function like `find_file()` but which is more useful: it is now
+possible to find a list of files (names in a `struct dyn_array` of `char *`s).
+The function is `find_files()` and it is almost exactly the same as
+`find_file()` but the `filename` arg is a `struct dyn_array *filename` and it
+returns a newly allocated `struct dyn_array *`.
+
+The other function is `append_filename()` which is used by `find_files()` and
+can also be used to set up the function (i.e. to create the filenames array). It
+takes a `struct dyn_array **` and if `*array` is NULL it allocates a new array
+(if `array` is NULL it is an error); otherwise it will append to the array
+that's already (hopefully) created. If it makes a new array it will use the
+chunk size of 64. It also takes two bools: `unique` which means don't add the
+filename if it's already in the array and `duped` which means that the string
+was dynamically allocated (if it's false it will be `strdup()`d first).
+
+Fix memory error in `find_file()`: return a `strdup()`d copy of the FTS entry
+rather than the entry itself as once the function closes the stream prior to
+returning.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.9 2025-02-14"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.12 2025-02-14"`.
+
+
 ## Release 2.2.16 2025-02-13
 
 New util function `read_fts()` which allows one to use `fts_open()` and
