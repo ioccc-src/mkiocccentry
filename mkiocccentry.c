@@ -555,7 +555,7 @@ main(int argc, char *argv[])
      * Else it will be overwritten.
      */
     if (answers_flag_used && !overwrite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
-	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [yn]");
+	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [Yn]");
 	if (!overwrite_answers) {
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = printf("\nTo use the answers file, try:\n\n\t./mkiocccentry -i %s [...]\n\n", answers);
@@ -1850,7 +1850,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(98, __func__, "aborting because user said ignored directories list is not OK");
                 not_reached();
@@ -1885,7 +1885,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(100, __func__, "aborting because user said unsafe directory names list is not OK");
                 not_reached();
@@ -1931,7 +1931,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(103, __func__, "aborting because user said forbidden files list is not OK");
                 not_reached();
@@ -1965,7 +1965,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(105, __func__, "aborting because user said unsafe filenames list is not OK");
                 not_reached();
@@ -1998,7 +1998,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(107, __func__, "aborting because user said ignored symlinks list is not OK");
                 not_reached();
@@ -2028,7 +2028,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             print("%s\n", p);
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(109, __func__, "aborting because user said directories list is not OK");
                 not_reached();
@@ -2047,6 +2047,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
     if (len > 0) {
         para("",
                 "The following is a list of files that will be added to the tarball:"
+                "",
                 "",
                 NULL);
 
@@ -2081,7 +2082,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(113, __func__, "aborting because user said files list is not OK");
                 not_reached();
@@ -2904,7 +2905,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
             }
             check_remarks_md(infop, fname);
             if (!quiet) {
-                para("... completed remarks.md check.", "", NULL);
+                para("... completed remarks.md check.", NULL);
             }
             dbg(DBG_HIGH, "remarks.md OK");
         } else {
@@ -3136,7 +3137,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
         }
 
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(203, __func__, "aborting because user said files list is not OK");
                 not_reached();
@@ -3187,7 +3188,7 @@ check_submission(struct info *infop, char const *submission_dir, char const *mak
             }
         }
         if (!answer_yes) {
-            yorn = yes_or_no("Is this OK? [yn]");
+            yorn = yes_or_no("\nIs this OK? [Yn]");
             if (!yorn) {
                 err(207, __func__, "aborting because user said files list is not OK");
                 not_reached();
@@ -4108,13 +4109,13 @@ get_submit_slot(struct info *infop)
              */
             if (need_confirm && !answer_yes) {
                 errno = 0;		/* pre-clear errno for errp() */
-                ret = printf("The slot number you entered is: %d\n",
+                ret = printf("\nThe slot number you entered is: %d\n",
                              submit_slot);
                 if (ret <= 0) {
                     errp(249, __func__, "fprintf error writing slot number");
                     not_reached();
                 }
-                yorn = yes_or_no("Is that slot number correct? [yn]");
+                yorn = yes_or_no("\nIs that slot number correct? [Yn]");
             }
         }
 
@@ -4294,7 +4295,7 @@ warn_empty_prog(void)
 	if (abort_on_warning) {
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
 	}
-	yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
+	yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [Yn]");
 	if (!yorn) {
 	    err(19, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -4354,7 +4355,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
 	    }
-	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [Yn]");
 	    if (!yorn) {
 		err(22, __func__, "please fix your prog.c file");
 		not_reached();
@@ -4380,7 +4381,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
 	    }
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    yorn = yes_or_no("Are you sure you want to proceed? [Yn]");
 	    if (!yorn) {
 		err(24, __func__, "please fix your prog.c file");
 		not_reached();
@@ -4428,7 +4429,7 @@ warn_nul_chars(void)
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
             not_reached();
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	yorn = yes_or_no("Are you sure you want to proceed? [Yn]");
 	if (!yorn) {
 	    err(27, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -4466,7 +4467,7 @@ warn_trigraph(void)
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
             not_reached();
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	yorn = yes_or_no("Are you sure you want to proceed? [Yn]");
 	if (!yorn) {
 	    err(29, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -4504,7 +4505,7 @@ warn_wordbuf(void)
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
             not_reached();
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	yorn = yes_or_no("Are you sure you want to proceed? [Yn]");
 	if (!yorn) {
 	    err(31, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -4543,7 +4544,7 @@ warn_ungetc(void)
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
             not_reached();
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	yorn = yes_or_no("Are you sure you want to proceed? [Yn]");
 	if (!yorn) {
 	    err(33, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -4596,7 +4597,7 @@ warn_rule_2b_size(struct info *infop)
 	if (abort_on_warning) {
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
 	}
-	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [Yn]");
 	if (!yorn) {
 	    err(36, __func__, "please fix your prog.c file");
 	    not_reached();
@@ -5155,7 +5156,7 @@ warn_Makefile(struct info *infop)
 	 * Ask if they want to submit it anyway unless -y
 	 */
 	if (!answer_yes) {
-	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
+	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [Yn]");
 	    if (!yorn) {
 		err(48, __func__, "Use a different Makefile or modify your Makefile");
 		not_reached();
@@ -5359,7 +5360,7 @@ yes_or_no(char const *question)
 	/*
 	 * check for a valid reply
 	 */
-	if (strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
+	if (response[0] == '\0' || strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
 
 	    /*
 	     * free storage
@@ -5582,13 +5583,13 @@ get_title(struct info *infop)
          */
         if (need_confirm && !answer_yes) {
             errno = 0;		/* pre-clear errno for errp() */
-            ret = printf("The title you entered is: %s\n",
+            ret = printf("\nThe title you entered is: %s\n",
                          title);
             if (ret <= 0) {
                 errp(65, __func__, "fprintf title");
                 not_reached();
             }
-            yorn = yes_or_no("Is that title correct? [yn]");
+            yorn = yes_or_no("\nIs that title correct? [Yn]");
 
             /*
              * free storage if no (re-enter location/country code)
@@ -5726,13 +5727,13 @@ get_abstract(struct info *infop)
          */
         if (need_confirm && !answer_yes) {
             errno = 0;		/* pre-clear errno for errp() */
-            ret = printf("The abstract you entered is: %s\n",
+            ret = printf("\nThe abstract you entered is: %s\n",
                          abstract);
             if (ret <= 0) {
                 errp(68, __func__, "fprintf abstract");
                 not_reached();
             }
-            yorn = yes_or_no("Is that abstract correct? [yn]");
+            yorn = yes_or_no("\nIs that abstract correct? [Yn]");
 
             /*
              * free storage if no (re-enter location/country code)
@@ -6342,13 +6343,13 @@ get_author_info(struct author **author_set_p)
 	     */
 	    if (need_confirm && !answer_yes) {
 		errno = 0;		/* pre-clear errno for errp() */
-		ret = printf("The location/country code you entered is assigned to: %s (%s)\n",
+		ret = printf("\nThe location/country code you entered is assigned to: %s (%s)\n",
 			     author_set[i].location_name, author_set[i].common_name);
 		if (ret <= 0) {
 		    errp(90, __func__, "fprintf location/country code assignment");
                     not_reached();
 		}
-		yorn = yes_or_no("Is that location/country code correct? [yn]");
+		yorn = yes_or_no("\nIs that location/country code correct? [Yn]");
 
 		/*
 		 * free storage if no (re-enter location/country code)
@@ -6380,8 +6381,8 @@ get_author_info(struct author **author_set_p)
 	     */
 	    author_set[i].email = NULL;
 	    author_set[i].email = prompt(need_hints ?
-		"Enter author email address, or press return to skip" :
-		"Enter author email address", &len);
+		"\nEnter author email address, or press return to skip" :
+		"\nEnter author email address", &len);
 	    if (len == 0) {
 		dbg(DBG_MED, "read: author[%d] email address withheld", i);
 	    } else {
@@ -6865,7 +6866,7 @@ get_author_info(struct author **author_set_p)
 	if (seed_used) {
 	    author_set[i].past_winning_author = noprompt_yes_or_no();
 	} else {
-	    author_set[i].past_winning_author = yes_or_no("Are you a past IOCCC winning author? [yn]");
+	    author_set[i].past_winning_author = yes_or_no("Are you a past IOCCC winning author? [Yn]");
 	}
 	dbg(DBG_LOW, "Submission: author[%d] Past winner: %s", i, (author_set[i].past_winning_author ? "true" : "false"));
 
@@ -7057,7 +7058,7 @@ get_author_info(struct author **author_set_p)
 	    not_reached();
 	}
 	if (need_confirm) {
-	    yorn = yes_or_no("Is that author information correct? [yn]");
+	    yorn = yes_or_no("Is that author information correct? [Yn]");
 	    if (!yorn) {
 		/*
 		 * re-enter author information
@@ -7220,7 +7221,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 	/*
 	 * ask to verify submission file list
 	 */
-	yorn = yes_or_no("\nIs the above list a correct list of files in your submission? [yn]");
+	yorn = yes_or_no("\nIs the above list a correct list of files in your submission? [Yn]");
 	if (!yorn) {
 	    fpara(stderr,
 		  "",
