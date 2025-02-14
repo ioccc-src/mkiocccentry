@@ -160,12 +160,13 @@ static void scan_topdir(char *args, struct info *infop, char const *make, char c
         RuleCount *size);
 static void copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,
         char *submit_path, int topdir, int cwd, RuleCount *size);
-static void check_submission(struct info *infop, char const *submission_dir, char const *make, RuleCount *size, int cwd);
+static void check_submission(struct info *infop, char const *submit_path, char const *topdir_path,
+        char const *make, RuleCount *size, int cwd);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
                                      char const *make);
 static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
+static char *get_contest_id(bool *testp);
 static int get_submit_slot(struct info *infop);
 static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 			  char **tarball_path, time_t tstamp, bool test_mode);
