@@ -173,7 +173,7 @@ static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
 static void check_Makefile(struct info *infop, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *remarks_md);
-static bool yes_or_no(char const *question);
+static bool yes_or_no(char const *question, bool def_answer);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct author **author_set_p);
