@@ -218,10 +218,10 @@ struct info
     struct dyn_array *forbidden_files;  /* forbidden files */
     struct dyn_array *unsafe_files;     /* unsafe files */
     struct dyn_array *unsafe_dirs;      /* unsafe directories */
-
+    struct dyn_array *ignore_paths;     /* list of paths user requested we ignore (-I foo -I bar) */
 
     /*
-     * file name array
+     * JSON stuff
      */
     char const *info_file;	/* .info.json filename */
     char const *auth_file;	/* .auth.json filename */

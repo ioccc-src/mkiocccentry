@@ -1,6 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.34 2025-02-15
+
+Added `-I path` option to `mkiocccentry(1)` to ignore a path. This option can be
+specified more than once. The path is **under** the topdir (in other words if
+you have a file `topdir/foo` and you specify `topdir` as your `topdir` and you
+wish to ignore `topdir/foo` you would use `-I foo`, not `-I topdir/foo`). This
+was added because some people have files/directories in their submission
+directory that they do not want to submit (but do want in their directory) that
+would normally be included by `mkiocccentry(1)`. This has been added to help and
+the man page but not the FAQ, guidelines or rules (yet).
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for
+improvements (and fixes) to some utility functions (renamed due to the
+improvements) (one of which is used by the new feature).
+
+Update `MKIOCCCENTRY_VERSION` to `"1.2.25 2025-02-15"`.
+
+
+
 ## Release 2.3.33 2025-02-14
 
 Fix issue #1159 - -i answers always answers yes.

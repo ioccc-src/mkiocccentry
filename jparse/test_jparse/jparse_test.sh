@@ -100,7 +100,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -s subdir		subdirectory under json_tree to find the good and bad subdirectories (def: $SUBDIR)
     -Z topdir		set path to top directory
     -k			keep temporary files on exit (def: remove temporary files before exiting)
-    -f			extra files specified must fail check, not pass (def: must $PASS_FAIL)
+    -f			extra files specified must FAIL check, not pass (def: must $PASS_FAIL)
     -L			skip the error location reporting (def: do not skip)
     -F			file args are files to test as files, not JSON documents per line (def: process as strings)
 
@@ -493,27 +493,27 @@ run_location_err_test()
     fi
 
     if [[ ! -e $jparse_err_file ]]; then
-	echo "$0: in run_location_err_test: jparse_err_file not found for test that must fail: $jparse_err_file"
+	echo "$0: in run_location_err_test: jparse_err_file not found for test that must FAIL: $jparse_err_file"
 	exit 41
     fi
     if [[ ! -f $jparse_err_file ]]; then
-	echo "$0: in run_location_err_test: jparse_err_file not a regular file for test that must fail: $jparse_err_file"
+	echo "$0: in run_location_err_test: jparse_err_file not a regular file for test that must FAIL: $jparse_err_file"
 	exit 42
     fi
     if [[ ! -r $jparse_err_file ]]; then
-	echo "$0: in run_location_err_test: jparse_err_file not readable for test that must fail: $jparse_err_file"
+	echo "$0: in run_location_err_test: jparse_err_file not readable for test that must FAIL: $jparse_err_file"
 	exit 43
     fi
     # debugging
     #
     if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_location_err_test: test must fail"
+	echo "$0: debug[9]: in run_location_err_test: test must FAIL"
 	echo "$0: debug[9]: in run_location_err_test: jparse: $JPARSE" 1>&2
 	echo "$0: debug[9]: in run_location_err_test: jparse_test_file: $jparse_test_file" 1>&2
     fi
 
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run test that must fail: $JPARSE -- $jparse_test_file >> ${LOGFILE} 2>$TMP_STDERR_FILE" 1>&2
+	echo "$0: debug[3]: about to run test that must FAIL: $JPARSE -- $jparse_test_file >> ${LOGFILE} 2>$TMP_STDERR_FILE" 1>&2
     fi
 
     "$JPARSE" -- "$jparse_test_file" 2>"$TMP_STDERR_FILE" | tee -a -- "${LOGFILE}"
@@ -608,13 +608,13 @@ run_file_test()
     #
     if [[ $status -eq 0 ]]; then
 	if [[ $pass_fail = pass ]]; then
-	    echo "$0: in test that must pass: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	    echo "$0: in test that must PASS: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    fi
 	else
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+		echo "$0: in test that must FAIL: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
@@ -628,7 +628,7 @@ run_file_test()
     else
 	if [[ $pass_fail = pass ]]; then
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+		echo "$0: in test that must PASS: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
@@ -637,7 +637,7 @@ run_file_test()
 	    EXIT_CODE=1
 	else
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
+		echo "$0: in test that must FAIL: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
 		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
@@ -684,15 +684,15 @@ run_print_test()
 
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must PASS: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: debug[3]: about to run test that must PASS: $print_test -v $dbg_level >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$print_test" -v "$dbg_level" >> "${LOGFILE}" 2>&1
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must PASS: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must pass: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: debug[3]: about to run test that must PASS: $print_test -v $dbg_level -q >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$print_test" -v "$dbg_level" -q >> "${LOGFILE}" 2>&1
     fi
     status="$?"
@@ -700,12 +700,12 @@ run_print_test()
     # examine test result
     #
     if [[ $status -eq 0 ]]; then
-	echo "$0: in test that must pass: print_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	echo "$0: in test that must PASS: print_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: print_test OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	fi
     else
-	echo "$0: in test that must pass: print_test FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	echo "$0: in test that must PASS: print_test FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	PRINT_TEST_FAILURE="1"
 	EXIT_CODE=1
     fi
@@ -728,7 +728,7 @@ run_print_test()
 #	json_dbg_level		JSON parser debug level to use in: jparse -J json_dbg_level
 #	quiet_mode		quiet mode to use in: jparse -q
 #	json_doc_string		JSON document as a string to give to jparse
-#	pass_fail		if "pass" then tests must pass, otherwise if "fail" they must fail
+#	pass_fail		if "pass" then tests must PASS, otherwise if "fail" they must FAIL
 #
 run_string_test()
 {
@@ -778,12 +778,12 @@ run_string_test()
     #
     if [[ $status -eq 0 ]]; then
 	if [[ $pass_fail = pass ]]; then
-	    echo "$0: in test that must pass: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	    echo "$0: in test that must PASS: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    fi
 	else
-	    echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    echo "$0: in test that must FAIL: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
@@ -792,14 +792,14 @@ run_string_test()
 	fi
     else
 	if [[ $pass_fail = pass ]]; then
-	    echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    echo "$0: in test that must PASS: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
 	    update_string_summary "$json_doc_string"
 	    EXIT_CODE=1
 	else
-	    echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    echo "$0: in test that must FAIL: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
 		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
@@ -914,25 +914,25 @@ fi
 #
 if [[ -n "$D_FLAG" ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jparse tests that must pass: JSON files" 1>&2 >> "${LOGFILE}"
+	echo "$0: debug[3]: about to run jparse tests that must PASS: JSON files" 1>&2 >> "${LOGFILE}"
     fi
 
-    # run tests that must pass
+    # run tests that must PASS
     while read -r file; do
 	run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" pass
     done < <(find "$JSON_GOOD_TREE" -type f -name '*.json' -print)
 
 
-    # run tests that must fail
+    # run tests that must FAIL
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jparse tests that must fail: JSON files" 1>&2 >> "${LOGFILE}"
+	echo "$0: debug[3]: about to run jparse tests that must FAIL: JSON files" 1>&2 >> "${LOGFILE}"
     fi
     while read -r file; do
 	run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
     done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
-    # run tests that must fail with correct error locations, if -L not used
+    # run tests that must FAIL with correct error locations, if -L not used
     if [[ -z "$L_FLAG" ]]; then
 	while read -r file; do
 	    run_location_err_test "$file"
