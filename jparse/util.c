@@ -1399,7 +1399,7 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
  * of the tree. You might call this a 're-entrant' (for certain definitions of
  * 're-entrant' anyway :-) ) version of fts_read().
  *
- * The compar() function is a callback which is used in fts_open()
+ * The cmp() function is a callback which is used in fts_open()
  * (user-defined) to order the way the tree is traversed. If it is NULL and the
  * we will use fts_cmp() but one may pass in their own function OR if they do
  * not wish to not write their own they can use fts_cmp() (which is unnecessary)
@@ -1410,7 +1410,7 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
  * assuming the first call did not pass in a NULL cwd). Although one certainly
  * may use cwd in the calling code we will call fchdir(*cwd) if:
  *
- *      fts == NULL, dir == NULL, dirfd < 0, compar() == NULL, options < 0 and
+ *      fts == NULL, dir == NULL, dirfd < 0, cmp() == NULL, options < 0 and
  *      cwd != NULL
  *
  * If this is the case, and assuming fchdir(*cwd) does not fail, we will close
@@ -1419,22 +1419,24 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
  * calling code.
  *
  * The options will be passed to fts_open(): make sure you use the correct
- * flags; see the man page for fts_open() for more details.
+ * flags; see the man page for fts_open() for more details. Note that we ALWAYS
+ * set FTS_NOCHDIR so the paths remain valid and we ALWAYS remove FTS_NOSTAT as
+ * we want stat(2) information.
  *
  * The dir is where we will chdir(2) to before proceeding, if dir != NULL &&
  * *fts == NULL.
  *
  * given:
  *
- *  dir     -   char * which is the path to chdir(2) to before opening path but
- *              only if != NULL && *fts == NULL
- *  dirfd   -   if dir == NULL and dirfd > 0, fchdir(2) to it, else don't change
- *              at all
- *  cwd     -   if != NULL set *cwd PRIOR to chdir(dir)
- *  options -   options to pass to fts_open()
- *  fts     -   pointer to pointer to FTS to set to return value of fts_open()
- *  compar  -   if != NULL use it for the compar() function in fts_open(), else
- *              use fts_cmp() (see also fts_rcmp())
+ *  dir         -   char * which is the path to chdir(2) to before opening path but
+ *                  only if != NULL && *fts == NULL
+ *  dirfd       -   if dir == NULL and dirfd > 0, fchdir(2) to it, else don't change
+ *                  at all
+ *  cwd         -   if != NULL set *cwd PRIOR to chdir(dir)
+ *  options     -   options to pass to fts_open()
+ *  fts         -   pointer to pointer to FTS to set to return value of fts_open()
+ *  cmp         -   if != NULL use it for the cmp() function in fts_open(), else
+ *                  use fts_cmp() (see also fts_rcmp())
  *
  * Returns:
  *  the next entry (an FTSENT *) in the tree or NULL if no other entry remains.
@@ -1449,25 +1451,47 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
  * dirfd > 0 we will try fchdir(dirfd) and if that fails it is an error.
  * Otherwise we will scan from the directory the program is already in.
  *
- * To use this function you might do something like where 'fts' is an FTS * and
- * ent is an FTSENT * and dir is "test_jparse" (w/o quotes) and dirfd is -1 and
- * cwd is NULL and options are FTS_NOCHDIR | FTS_PHYSICAL and compar() is fts_cmp
- * or NULL):
+ * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
+ * NULL and dirfd < 0 the directory the process is in.
  *
- *      ent = read_fts(dir, dirfd, cwd, options, &fts, fts_cmp);
- *      if (ent == NULL) {
+ * To use this function you might do something like this where 'fts' is an FTS *
+ * and ent is an FTSENT *. The dir is "test_jparse" (w/o quotes), dirfd is -1,
+ * cwd is a pointer to an int (which if not NULL *cwd will be set to the FD of
+ * the current working directory before changing any directory), options are
+ * FTS_NOCHDIR | FTS_PHYSICAL, cmp is fts_cmp (or NULL which is the same thing).
+ *
+ *      ent = read_fts(dir, dirfd, cwd, options, &fts, cmp);
+ *      if (ent == NULL){
  *           .. handle error
  *      } else {
  *          do {
  *              ... stuff ...
- *          } while ((ent = read_fts(dir, dirfd, cwd, options, &fts, fts_cmp)));
+ *          } while ((ent = read_fts(dir, dirfd, cwd, options, &fts, cmp)));
  *      }
  *
- * or so (san typos).
+ * or so.
+ *
+ * That will open fts_open() with the path_argv (of fts_open()) as "." searching
+ * from the directory "test_jparse" (w/o quotes) with the options specified
+ * passed to fts_open() (fts_open() is only called the first time, as long as
+ * the args are passed correctly).  Since dir != NULL it will first change to
+ * the directory ("test_jparse/") (again only the first call) and if that fails
+ * it is an error (because dirfd < 0). Otherwise it will use fts_open() with the
+ * options given (above) and the cmp is the compar() function which orders the
+ * way the entries are found/traversed.
+ *
+ * Since options is forced to be at least FTS_NOCHDIR (and thus >= 0) you do NOT
+ * need to worry about options being < 0.
+ *
+ * As a special feature we offer a way to close and restore the previous working
+ * directory. If dir, cwd, fts and cmp are all NULL and dirfd < 0 and options <
+ * 0 this will happen. The function will return NULL at this point and *cwd is
+ * no longer valid (e.g. do not try close(cwd) or fchdir(cwd) from the calling
+ * function!).
  */
 FTSENT *
 read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
-        int (*compar)(const FTSENT **, const FTSENT **))
+        int (*cmp)(const FTSENT **, const FTSENT **))
 {
     char *path[] = { ".", NULL };   /* "." for fts_open() */
     FTSENT *ent = NULL; /* next entry from fts_open() */
@@ -1476,7 +1500,7 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
      * special check to see if we need to simply change back to the original
      * directory
      */
-    if (dir == NULL && dirfd < 0 && cwd != NULL && options < 0 && fts == NULL && compar == NULL) {
+    if (dir == NULL && dirfd < 0 && cwd != NULL && options < 0 && fts == NULL && cmp == NULL) {
         if (*cwd > 0) {
             errno = 0;  /* pre-clear errno for errp() */
             if (fchdir(*cwd) != 0) {
@@ -1546,17 +1570,24 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
     }
 
     /*
-     * correct options
+     * Correct options, making sure they are > 0 and FTS_NOCHDIR is ALWAYS set
+     * so that the paths can be valid after this function ends.
+     *
+     * We also explicitly remove FTS_NOSTAT as we want stat(2) info AND we also
+     * check for it as an error condition further below.
      */
     if (options < 0) {
-        options = 0;
+        options = FTS_NOCHDIR;
+    } else {
+        options |= FTS_NOCHDIR; /* ensure FTS_NOCHDIR is set */
+        options &= ~FTS_NOSTAT; /* ensure FTS_NOSTAT is NOT set */
     }
 
     /*
-     * if *fts == NULL we need to open "." first
+     * if *fts == NULL we need to open an FTS stream "." first
      */
     if (*fts == NULL) {
-        *fts = fts_open(path, options, compar != NULL ? compar : fts_cmp);
+        *fts = fts_open(path, options, cmp != NULL ? cmp : fts_cmp);
         if (*fts == NULL) {
             errp(134, __func__, "fts_open() returned NULL for: %s", dir);
             not_reached();
@@ -1592,11 +1623,11 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
              */
             switch (ent->fts_info) {
                 case FTS_DC: /* cycle in directory tree */
-                    err(135, __func__, "detected directory loop with %s", ent->fts_path + 2);
+                    err(135, __func__, "detected directory loop with %s", ent->fts_path);
                     not_reached();
                     break;
                 case FTS_DNR: /* directory not readable */
-                    err(136, __func__, "directory not readable: %s", ent->fts_path + 2);
+                    err(136, __func__, "directory not readable: %s", ent->fts_path);
                     not_reached();
                     break;
                 case FTS_ERR: /* some error condition */
@@ -1604,7 +1635,15 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
                      * fake errno
                      */
                     errno = ent->fts_errno;
-                    errp(137, __func__, "encountered error reading path: %s", ent->fts_path + 2);
+                    errp(137, __func__, "encountered error reading path: %s", ent->fts_path);
+                    not_reached();
+                    break;
+                case FTS_NS: /* no stat(2) info available */
+                    /*
+                     * fake errno
+                     */
+                    errno = ent->fts_errno;
+                    errp(138, __func__, "no stat(2) information available for %s", ent->fts_path);
                     not_reached();
                     break;
                 default:
@@ -1638,7 +1677,7 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
              * rowans in Quickbeam's home! They were savagely treated by the
              * Orcs of Isengard and so that is why he was more 'hasty'. It might
              * be even a better pun on Tolkien's part because he was also quick
-             * to want to attack Isengard.
+             * to want to attack Isengard!
              *
              * As Tolkien was a lover of trees (dendrophile) (even saying he
              * would love to get to know a tree and want to ask it what it
@@ -1655,14 +1694,14 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
 }
 
 /*
- * find_file
+ * find_path
  *
  * Find a file by name (basename or otherwise) from directory dir or dirfd,
  * returning the path from the directory dir (or dirfd).
  *
  * This function returns a const char * if the file is found, otherwise NULL.
  *
- * If filename == NULL or *filename == '\0' (empty string) we return NULL.
+ * If path == NULL or *path == '\0' (empty string) we return NULL.
  *
  * If dir is NULL and dirfd is <= 0 it is an error. Otherwise if dir is not NULL
  * and we can chdir(dir) it will work from there; if chdir(dir) fails it will,
@@ -1676,7 +1715,7 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
  * the directory being searched (see below on options arg).
  *
  * In case one wishes to change the order of the way fts_read() (used by
- * read_fts()) scans the hierarchy they may pass a different compar() to the
+ * read_fts()) scans the hierarchy they may pass a different cmp() to the
  * function. If that is NULL we will use fts_cmp().
  *
  * If count >= 0 and base == false and depth < 0 we will count each match until
@@ -1687,89 +1726,114 @@ read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
  *
  * If options is >= 0 we pass those to read_fts(), otherwise we will only set
  * FTS_NOCHDIR (so that the path returned is okay). In all cases FTS_NOCHDIR
- * will be set.
+ * will be set and FTS_NOSTAT will be removed.
  *
  * given:
  *
- *      filename    - filename to locate
+ *      path        - path to locate
  *      dir         - dir name to start from if not NULL (used in read_fts())
  *      dirfd       - directory file descriptor to look from if >= 0 (only if
  *                    dir is NULL or chdir(dir) fails) (used in read_fts())
  *      cwd         - if not != NULL set to current working directory FD (in
  *                    read_fts())
  *      base        - true ==> basename only (i.e. fts->fts_name)
- *      compar      - callback for fts_open() (used by read_fts())
+ *      cmp         - callback for fts_open() (used by read_fts())
  *      options     - options to pass to read_fts() if >= 0, else just FTS_NOCHDIR
  *      count       - if > 0 and base == false search until count file have
  *                    been found
  *      depth       - if > 0 required depth
+ *      seedot      - true ==> don't skip '.' and '..',
+ *                    false ==> skip '.' and '..'
  *
  * NOTE: what about directory trees that have more than one type of file with
  * the same name? In that case we get the first (or count) match that IS a
  * regular readable file.
  *
+ * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
+ * NULL and dirfd < 0 the directory the process is in.
+ *
+ * NOTE: on the subject of the seedot boolean this is named as an analogue to
+ * the option FTS_SEEDOT in fts_open(). Now unless FTS_SEEDOT is enabled OR
+ * unless they are passed as path arguments to fts_open() the files/directories
+ * named '.' and '..' will be ignored. Now this function DOES in fact specify
+ * '.' as a path argument as it scans from the directory specified (or if no
+ * directory specified then the process's current working directory) due to the
+ * purpose of this function.
+ *
  * NOTE: this function returns a COPY (strdup()d) of the path so you need to
  * free it when you are done.
  */
 char const *
-find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
-        int (*compar)(const FTSENT **, const FTSENT **), int options, int count, short int depth)
+find_path(char const *path, char const *dir, int dirfd, int *cwd, bool base,
+        int (*cmp)(const FTSENT **, const FTSENT **), int options, int count,
+        short int depth, bool seedot)
 {
     FTS *fts = NULL; /* for read_fts() */
     FTSENT *ent = NULL; /* for read_fts() */
     int i = 0;      /* for count check */
-    char *path = NULL;
+    char *path_found = NULL;
 
     /*
      * firewall
      */
-    if (filename == NULL || *filename == '\0') {
-        warn(__func__, "passed NULL or empty filename");
+    if (path == NULL || *path == '\0') {
+        warn(__func__, "passed NULL or empty path");
         return NULL;
     }
 
     /*
-     * fix options
+     * Correct options, making sure they are > 0 and FTS_NOCHDIR is ALWAYS set
+     * so that the paths can be valid after this function ends.
+     *
+     * We also explicitly remove FTS_NOSTAT as we want stat(2) info AND we also
+     * check for it as an error condition further below.
      */
-    if (options <= 0) {
+    if (options < 0) {
         options = FTS_NOCHDIR;
     } else {
-        options |= FTS_NOCHDIR;
+        options |= FTS_NOCHDIR; /* ensure FTS_NOCHDIR is set */
+        options &= ~FTS_NOSTAT; /* ensure FTS_NOSTAT is NOT set */
     }
 
     /*
      * first open the stream and get the first entry
      */
-    ent = read_fts(dir, dirfd, cwd, options, &fts, compar);
+    ent = read_fts(dir, dirfd, cwd, options, &fts, cmp);
     if (ent == NULL){
         err(139, __func__, "failed to open \".\"");
         not_reached();
     } else {
         i = 0;
         do {
-            if (ent->fts_info != FTS_F) {
+            if ((depth > 0 && ent->fts_level != depth) ||
+                    (ent->fts_info != FTS_D && ent->fts_info != FTS_F && ent->fts_info != FTS_DEFAULT &&
+                    ent->fts_info != FTS_SL)) {
                 continue;
-            } else if (depth > 0 && ent->fts_level != depth) {
+            } else if (!seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, ".."))) {
                 continue;
             } else {
-                if (base && !strcmp(ent->fts_name, filename)) {
+                size_t offset = 0; /* offset from the path[0] */
+                if (ent->fts_path[0] != '\0' && ent->fts_path[1] != '\0' && ent->fts_path[2] != '\0') {
+                    offset = 2;
+                }
+                if (base && !strcmp(ent->fts_name, path)) {
                     if (count <= 0 || (count > 0 && ++i == count)) {
                         if (count > 0) {
-                            dbg(DBG_MED, "found file with count %d at depth %d: %s", count, depth, ent->fts_accpath + 2);
+                            dbg(DBG_MED, "found path with count %d at depth %d: %s", count, depth, ent->fts_path + offset);
                         } else {
-                            dbg(DBG_MED, "found file %s at depth %d", ent->fts_accpath + 2, depth);
+                            dbg(DBG_MED, "found path %s at depth %d", ent->fts_path + offset, depth);
                         }
                         /*
                          * found a match
                          */
 
                         /*
-                         * save path
+                         * save found path
                          */
                         errno = 0; /* pre-clear errno for errp() */
-                        path = strdup(ent->fts_accpath + 2);
-                        if (path == NULL) {
-                            errp(140, __func__, "failed to strdup(\"%s\")", ent->fts_path + 2);
+                        path_found = strdup(ent->fts_path + offset);
+                        if (path_found == NULL) {
+                            errp(140, __func__, "failed to strdup(\"%s\")", ent->fts_path + offset);
                             not_reached();
                         }
                         /*
@@ -1778,27 +1842,27 @@ find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
                         fts_close(fts);
                         fts = NULL;
 
-                        return path;
+                        return path_found;
                     }
-                } else if (!base && !strcmp(ent->fts_path + 2, filename)) {
+                } else if (!base && !strcmp(ent->fts_path + offset, path)) {
                     if (count <= 0 || (count > 0 && ++i == count)) {
                         /*
                          * found a match
                          */
 
                         if (count > 0) {
-                            dbg(DBG_MED, "found file with count %d at depth %d: %s", count, depth, ent->fts_accpath + 2);
+                            dbg(DBG_MED, "found path with count %d at depth %d: %s", count, depth, ent->fts_path + offset);
                         } else {
-                            dbg(DBG_MED, "found file %s at depth %d", ent->fts_accpath + 2, depth);
+                            dbg(DBG_MED, "found path %s at depth %d", ent->fts_path + offset, depth);
                         }
 
                         /*
-                         * save path
+                         * save found path
                          */
                         errno = 0; /* pre-clear errno for errp() */
-                        path = strdup(ent->fts_accpath + 2);
-                        if (path == NULL) {
-                            errp(141, __func__, "failed to strdup(\"%s\")", ent->fts_path + 2);
+                        path_found = strdup(ent->fts_path + offset);
+                        if (path_found == NULL) {
+                            errp(141, __func__, "failed to strdup(\"%s\")", ent->fts_path + offset);
                             not_reached();
                         }
 
@@ -1809,13 +1873,13 @@ find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
                         fts_close(fts);
                         fts = NULL;
 
-                        return path;
+                        return path_found;
                     }
                 } else {
-                    dbg(DBG_VVHIGH, "file %s does not match %s", ent->fts_path + 2, filename);
+                    dbg(DBG_VVHIGH, "path %s does not match %s", ent->fts_path + offset, path);
                 }
             }
-        } while ((ent = read_fts(NULL, -1, NULL, options >= 0 ? options : 0, &fts, compar)) != NULL);
+        } while ((ent = read_fts(NULL, -1, NULL, options >= 0 ? options : 0, &fts, cmp)) != NULL);
     }
 
     /*
@@ -1827,10 +1891,10 @@ find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
 }
 
 /*
- * append_filename
+ * append_path
  *
- * Given a pointer to string (a filename), we search a dynamic array of pointers
- * to strings (presumably filenames).  If an exact match is found (i.e. the
+ * Given a pointer to string (a path), we search a dynamic array of pointers
+ * to strings (presumably path(s)).  If an exact match is found (i.e. the
  * string is already in the dynamic array), nothing is done other than to return
  * false (unless unique is false) If no match is found, the pointer to the
  * string is appended to the dynamic array and we return true. If duped is false
@@ -1838,8 +1902,9 @@ find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
  * it's not already in the list).
  *
  * given:
- *	array		pointer to pointer to a struct dyn_array *
+ *	paths		pointer to pointer to a struct dyn_array * of paths
  *	str		string to search array and append if not already found
+ *	unique          don't add to array if it already exists
  *	duped           true ==> str was dynamically allocated
  *
  * returns:
@@ -1848,21 +1913,21 @@ find_file(char const *filename, char const *dir, int dirfd, int *cwd, bool base,
  *
  * NOTE: this function does not return if given a NULL string or NULL array.
  *
- * NOTE: if array != NULL && *array == NULL we will create an array with a chunk
+ * NOTE: if paths != NULL && *paths == NULL we will create an array with a chunk
  * size of 64.
  */
 bool
-append_filename(struct dyn_array **array, char *str, bool unique, bool duped)
+append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
 {
-    intmax_t unique_len = 0;	/* number of unique function name entries */
+    intmax_t unique_len = 0;	/* unique length of each string already in the array */
     char *u = NULL;		/* unique name pointer */
     intmax_t i;
 
     /*
      * firewall
      */
-    if (array == NULL) {
-	err(142, __func__, "array is NULL");
+    if (paths == NULL) {
+	err(142, __func__, "paths is NULL");
 	not_reached();
     }
     if (str == NULL) {
@@ -1870,43 +1935,43 @@ append_filename(struct dyn_array **array, char *str, bool unique, bool duped)
 	not_reached();
     }
 
-    if (*array == NULL) {
+    if (*paths == NULL) {
         /*
          * create array for user with chunk size of 64
          */
-        *array  = dyn_array_create(sizeof(char *), 64, 64, true);
-        if (*array == NULL) {
-            err(144, __func__, "failed to create filenames array");
+        *paths  = dyn_array_create(sizeof(char *), 64, 64, true);
+        if (*paths == NULL) {
+            err(144, __func__, "failed to create paths paths");
             not_reached();
         }
     }
 
     /*
-     * case: only add filename if it does not already exist
+     * case: only add paths if it does not already exist
      */
     if (unique) {
         /*
-         * search array for the string
+         * search paths array for the string
          *
          * NOTE: we realise calling the function with unique strings will
          *	 cause the execution time to grow as O(n^2).  However this is the
          *	 price to pay when one needs or wants no duplicate strings in the
          *	 array. Okay we might do a more optimised search but we don't expect
-         *	 most lists of filenames to be that big.
+         *	 most lists of paths to be that big.
          */
-        unique_len = dyn_array_tell(*array);
+        unique_len = dyn_array_tell(*paths);
         for (i=0; i < unique_len; ++i) {
 
             /* get next string pointer */
-            u = dyn_array_value(*array, char *, i);
+            u = dyn_array_value(*paths, char *, i);
             if (u == NULL) {	/* paranoia */
-                err(145, __func__, "found NULL pointer in filename dynamic array element: %ju", (uintmax_t)i);
+                err(145, __func__, "found NULL pointer in paths dynamic array element: %ju", (uintmax_t)i);
                 not_reached();
             }
 
             /* look for match */
             if (!strcmp(str, u)) {
-                /* str found in filename dynamic array, not unique */
+                /* str found in paths dynamic array, not unique */
                 return false;
             }
         }
@@ -1927,20 +1992,20 @@ append_filename(struct dyn_array **array, char *str, bool unique, bool duped)
         u = str;
     }
     /*
-     * append to array
+     * append to paths array
      */
-    (void) dyn_array_append_value(*array, &u);
+    (void) dyn_array_append_value(*paths, &u);
     return true;
 }
 
 /*
- * find_files
+ * find_paths
  *
- * Like find_file() but finds multiple files, returning the paths as a dyn_array
+ * Like find_path() but finds multiple files, returning the paths as a dyn_array
  * (of char *). The files to find are in a dyn_array which has a list of
- * filenames to find (also char *). The rest is the same as find_file().
+ * path(s) to find (also char *). The rest is the same as find_path().
  *
- * If filenames array is NULL it is an error.
+ * If paths array is NULL it is an error.
  *
  * If dir is NULL and dirfd is <= 0 it is an error. Otherwise if dir is not NULL
  * and we can chdir(dir) it will work from there; if chdir(dir) fails it will,
@@ -1949,12 +2014,12 @@ append_filename(struct dyn_array **array, char *str, bool unique, bool duped)
  *
  * Assuming that everything is in order we will use read_fts() and for each file
  * found (i.e. directories, symlinks and other types of files are ignored, just
- * like with find_file()) we will iterate through the filenames array, checking
+ * like with find_path()) we will iterate through the paths array, checking
  * if there is a match. If there is a match we will add it to the paths array
  * (that we create and return).
  *
  * In case one wishes to change the order of the way fts_read() (used by
- * read_fts()) scans the hierarchy they may pass a different compar() to the
+ * read_fts()) scans the hierarchy they may pass a different cmp() to the
  * function. If that is NULL we will use fts_cmp().
  *
  * If count >= 0 and base == false and depth < 0 we will count each match until
@@ -1965,120 +2030,149 @@ append_filename(struct dyn_array **array, char *str, bool unique, bool duped)
  *
  * If options is >= 0 we pass those to read_fts(), otherwise we will only set
  * FTS_NOCHDIR (so that the path returned is okay). In all cases FTS_NOCHDIR
- * will be set.
+ * will be set and FTS_NOSTAT will be removed.
  *
  * given:
  *
- *      filenames   - dynamic array (struct dyn_array *) of filenames (as char *s) to locate
+ *      paths       - dynamic array (struct dyn_array *) of paths (as char *s) to locate
  *      dir         - dir name to start from if not NULL (used in read_fts())
  *      dirfd       - directory file descriptor to look from if >= 0 (only if
  *                    dir is NULL or chdir(dir) fails) (used in read_fts())
  *      cwd         - if not != NULL set to current working directory FD (in
  *                    read_fts())
  *      base        - true ==> basename only (i.e. fts->fts_name)
- *      compar      - callback for fts_open() (used by read_fts())
+ *      cmp         - callback for fts_open() (used by read_fts())
  *      options     - options to pass to read_fts() if >= 0, else just FTS_NOCHDIR
  *      count       - if > 0 and base == false search until count file have
  *                    been found
  *      depth       - if > 0 required depth
+ *      seedot      - true ==> don't skip '.' and '..',
+ *                    false ==> skip '.' and '..'
  *
  * NOTE: what about directory trees that have more than one type of file with
  * the same name? In that case we get the first (or count) match that IS a
  * regular readable file.
+ *
+ * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
+ * NULL and dirfd < 0 the directory the process is in.
+ *
+ * NOTE: the strings added to the returned dyn_array are COPIES of the char * so
+ * one must free the strings before freeing the array itself.
+ *
+ * NOTE: on the subject of the seedot boolean this is named as an analogue to
+ * the option FTS_SEEDOT in fts_open(). Now unless FTS_SEEDOT is enabled OR
+ * unless they are passed as path arguments to fts_open() the files/directories
+ * named '.' and '..' will be ignored. Now this function DOES in fact specify
+ * '.' as a path argument as it scans from the directory specified (or if no
+ * directory specified then the process's current working directory) due to the
+ * purpose of this function.
  */
 struct dyn_array *
-find_files(struct dyn_array *filenames, char const *dir, int dirfd, int *cwd, bool base,
-        int (*compar)(const FTSENT **, const FTSENT **), int options, int count, short int depth)
+find_paths(struct dyn_array *paths, char const *dir, int dirfd, int *cwd, bool base,
+        int (*cmp)(const FTSENT **, const FTSENT **), int options, int count,
+        short int depth, bool seedot)
 {
     FTS *fts = NULL; /* for read_fts() */
     FTSENT *ent = NULL; /* for read_fts() */
     int i = 0;      /* for count check */
     size_t j = 0;   /* for array iteration */
     size_t len = 0; /* length of arrays */
-    struct dyn_array *paths = NULL; /* returned array */
-    char *filename = NULL;
+    struct dyn_array *paths_found = NULL; /* returned array */
+    char *path = NULL;
 
     /*
      * firewall
      */
-    if (filenames == NULL) {
-        err(147, __func__, "filenames list is NULL");
+    if (paths == NULL) {
+        err(147, __func__, "paths list is NULL");
         not_reached();
     }
 
     /*
-     * fix options
+     * Correct options, making sure they are > 0 and FTS_NOCHDIR is ALWAYS set
+     * so that the paths can be valid after this function ends.
+     *
+     * We also explicitly remove FTS_NOSTAT as we want stat(2) info AND we also
+     * check for it as an error condition further below.
      */
-    if (options <= 0) {
+    if (options < 0) {
         options = FTS_NOCHDIR;
     } else {
-        options |= FTS_NOCHDIR;
+        options |= FTS_NOCHDIR; /* ensure FTS_NOCHDIR is set */
+        options &= ~FTS_NOSTAT; /* ensure FTS_NOSTAT is NOT set */
     }
+
 
     /*
      * first open the stream and get the first entry
      */
-    ent = read_fts(dir, dirfd, cwd, options, &fts, compar);
+    ent = read_fts(dir, dirfd, cwd, options, &fts, cmp);
     if (ent == NULL){
         err(148, __func__, "failed to open \".\"");
         not_reached();
     } else {
         i = 0;
         do {
-            if (ent->fts_info != FTS_F) {
+            if ((depth > 0 && ent->fts_level != depth) ||
+                    (ent->fts_info != FTS_D && ent->fts_info != FTS_F && ent->fts_info != FTS_DEFAULT &&
+                    ent->fts_info != FTS_SL)) {
                 continue;
-            } else if (depth > 0 && ent->fts_level != depth) {
+            } else if (!seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, ".."))) {
                 continue;
             } else {
-                len = dyn_array_tell(filenames);
+                size_t offset = 0; /* offset from the path[0] */
+                if (ent->fts_path[0] != '\0' && ent->fts_path[1] != '\0' && ent->fts_path[2] != '\0') {
+                    offset = 2;
+                }
+                len = dyn_array_tell(paths);
                 for (j = 0; j < len; ++j) {
-                    filename = dyn_array_value(filenames, char *, j);
-                    if (filename == NULL) {
-                        err(149, __func__, "filenames[%ju] == NULL", j);
+                    path = dyn_array_value(paths, char *, j);
+                    if (path == NULL) {
+                        err(149, __func__, "paths[%ju] == NULL", j);
                         not_reached();
                     }
 
-                    if (base && !strcmp(ent->fts_name, filename)) {
+                    if (base && !strcmp(ent->fts_name, path)) {
                         if (count <= 0 || (count > 0 && ++i == count)) {
                             /*
                              * found a match
                              */
                             if (count > 0) {
-                                dbg(DBG_MED, "found file with count %d at depth %d: %s", count, depth, ent->fts_accpath + 2);
+                                dbg(DBG_MED, "found path with count %d at depth %d: %s", count, depth, ent->fts_path + offset);
                             } else {
-                                dbg(DBG_MED, "found file %s at depth %d", ent->fts_accpath + 2, depth);
+                                dbg(DBG_MED, "found path %s at depth %d", ent->fts_path + offset, depth);
                             }
 
                             /*
                              * append to array if it is not already there
                              */
-                            append_filename(&paths, ent->fts_accpath + 2, true, false);
+                            append_path(&paths_found, ent->fts_path + offset, true, false);
                             continue;
                         }
-                    } else if (!base && !strcmp(ent->fts_path + 2, filename)) {
+                    } else if (!base && !strcmp(ent->fts_path + offset, path)) {
                         if (count <= 0 || (count > 0 && ++i == count)) {
                             /*
                              * found a match
                              */
 
                             if (count > 0) {
-                                dbg(DBG_MED, "found file with count %d at depth %d: %s", count, depth, ent->fts_accpath + 2);
+                                dbg(DBG_MED, "found path with count %d at depth %d: %s", count, depth, ent->fts_path + offset);
                             } else {
-                                dbg(DBG_MED, "found file %s at depth %d", ent->fts_accpath + 2, depth);
+                                dbg(DBG_MED, "found path %s at depth %d", ent->fts_path + offset, depth);
                             }
 
                             /*
                              * append to array if it is not already there
                              */
-                            append_filename(&paths, ent->fts_accpath + 2, true, false);
+                            append_path(&paths_found, ent->fts_path + offset, true, false);
                             continue;
                         }
                     } else {
-                        dbg(DBG_VVHIGH, "file %s does not match %s", ent->fts_path + 2, filename);
+                        dbg(DBG_VVHIGH, "path %s does not match %s", ent->fts_path + offset, path);
                     }
                 }
             }
-        } while ((ent = read_fts(NULL, -1, NULL, options >= 0 ? options : 0, &fts, compar)) != NULL);
+        } while ((ent = read_fts(NULL, -1, NULL, options >= 0 ? options : 0, &fts, cmp)) != NULL);
     }
 
     /*
@@ -2088,13 +2182,13 @@ find_files(struct dyn_array *filenames, char const *dir, int dirfd, int *cwd, bo
     /*
      * determine if any files were found and if not free the array
      */
-    len = dyn_array_tell(paths);
-    if (dyn_array_tell(paths) == 0) {
-        dyn_array_free(paths);
-        paths = NULL;
+    len = dyn_array_tell(paths_found);
+    if (dyn_array_tell(paths_found) == 0) {
+        dyn_array_free(paths_found);
+        paths_found = NULL;
         return NULL;
     }
-    return paths;
+    return paths_found;
 }
 
 /*
@@ -5376,7 +5470,7 @@ is_e_notation_str(char const *str, size_t *retlen)
  *			  false ==> str may be in the middle, skip first char check
  *
  * returns:
- *	true ==> str is a valid POSIX portable safe + filename, AND
+ *	true ==> str is a valid POSIX portable safe + path name, AND
  *		 the case of str matches lower_only and slash_ok conditions
  *	false ==> an unsafe issue was found, or str is empty, or str is NULL
  */
@@ -5436,7 +5530,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     }
 
     /*
-     * Beyond the first character, they must be POSIX portable filename or +
+     * Beyond the first character, they must be POSIX portable path name or +
      */
     for (i=start; i < len; ++i) {
 
@@ -7475,7 +7569,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.12 2025-02-14" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.13 2025-02-15" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -7499,11 +7593,11 @@ main(int argc, char **argv)
     bool dir_exists = false;            /* true ==> directory already exists (for testing modes) */
     FTS *fts = NULL;                    /* to test read_fts() */
     FTSENT *ent = NULL;                 /* to test read_fts() */
-    char const *fname = NULL;           /* to test find_file() */
+    char const *fname = NULL;           /* to test find_path() */
     int cwd = -1;                       /* to restore after read_fts() test */
-    FILE *fp = NULL;                    /* to test find_file() */
-    struct dyn_array *paths = NULL;     /* to test find_files() */
-    struct dyn_array *files_found = NULL;   /* to test find_files() */
+    FILE *fp = NULL;                    /* to test find_path() */
+    struct dyn_array *paths = NULL;     /* to test find_paths() */
+    struct dyn_array *paths_found = NULL;   /* to test find_paths() */
     size_t len = 0; /* length of arrays */
     size_t j = 0; /* for arrays */
 
@@ -8564,15 +8658,19 @@ main(int argc, char **argv)
         not_reached();
     } else {
         do {
+            size_t offset = 0; /* offset from the path[0] */
+            if (ent->fts_path[0] != '\0' && ent->fts_path[1] != '\0' && ent->fts_path[2] != '\0') {
+                offset = 2;
+            }
             switch (ent->fts_info) {
                 case FTS_F:
-                    fdbg(stderr, DBG_VVHIGH, "%s (file)", ent->fts_path + 2);
+                    fdbg(stderr, DBG_VVHIGH, "%s (file)", ent->fts_path + offset);
                     break;
                 case FTS_D:
-                    fdbg(stderr, DBG_VVHIGH, "%s (dir)", ent->fts_path + 2);
+                    fdbg(stderr, DBG_VVHIGH, "%s (dir)", ent->fts_path + offset);
                     break;
                 case FTS_SL:
-                    fdbg(stderr, DBG_VVHIGH, "%s (symlink)", ent->fts_path + 2);
+                    fdbg(stderr, DBG_VVHIGH, "%s (symlink)", ent->fts_path + offset);
                     break;
                 case FTS_SLNONE:
                     break;
@@ -8591,7 +8689,7 @@ main(int argc, char **argv)
     /*
      * now try and find a file called "jparse_test.sh"
      */
-    fname = find_file("jparse_test.sh", NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 1, 2);
+    fname = find_path("jparse_test.sh", NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 1, 2, false);
     if (fname != NULL) {
         fdbg(stderr, DBG_MED, "full path of jparse_test.sh: %s", fname);
 
@@ -8622,7 +8720,7 @@ main(int argc, char **argv)
     /*
      * now try and find a file called "jparse_test.sh" in "test_jparse/"
      */
-    fname = find_file("jparse_test.sh", "test_jparse", -1, &cwd, false, NULL, FTS_NOCHDIR, 1, 1);
+    fname = find_path("jparse_test.sh", "test_jparse", -1, &cwd, false, NULL, FTS_NOCHDIR, 1, 1, false);
     if (fname != NULL) {
         /*
          * try and open file from (now) current directory
@@ -8657,47 +8755,71 @@ main(int argc, char **argv)
     (void) read_fts(NULL, -1, &cwd, -1, NULL, NULL);
 
     /*
-     * we need to test find_files() now
+     * we need to test find_paths() now
      */
     /*
      * append strings to the array that we wish to find
      */
-    append_filename(&paths, "util.o", true, false);
-    append_filename(&paths, "util.c", true, false);
-    append_filename(&paths, "util.h", true, false);
-    append_filename(&paths, "util_test.c", true, false);
-    append_filename(&paths, "util_test.o", true, false);
+    /* filenames
+     */
+    append_path(&paths, "util.o", true, false);
+    append_path(&paths, "util.c", true, false);
+    append_path(&paths, "util.h", true, false);
+    append_path(&paths, "util_test.c", true, false);
+    append_path(&paths, "util_test.o", true, false);
+    /*
+     * directories
+     */
+    append_path(&paths, "test_jparse", true, false);
+    /*
+     * special checks: . and ..
+     */
+    append_path(&paths, ".", true, false);
+    append_path(&paths, "..", true, false);
 
     /*
-     * test find_files()
+     * test find_paths()
      */
-    files_found = find_files(paths, NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 0);
-    if (files_found == NULL) {
-        err(106, __func__, "didn't find any files from paths array");
+    paths_found = find_paths(paths, NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 0, false);
+    if (paths_found == NULL) {
+        err(106, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
     /*
      * show what we found
      */
-    len = dyn_array_tell(files_found);
+    len = dyn_array_tell(paths_found);
     if (len > 0) {
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(107, __func__, "found NULL pointer at files_found[%ju]", (uintmax_t)j);
+                err(107, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
-            fdbg(stderr, DBG_MED, "files_found[%ju]: %s", (uintmax_t)j, name);
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                } else if (is_file(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                } else if (is_symlink(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                } else {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                }
+            }
         }
         /*
-         * free arrays
+         * free array
          */
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name != NULL) {
                 free(name);
                 name = NULL;
@@ -8707,39 +8829,53 @@ main(int argc, char **argv)
     /*
      * free array itself
      */
-    dyn_array_free(files_found);
-    files_found = NULL;
+    dyn_array_free(paths_found);
+    paths_found = NULL;
+
 
     /*
-     * test find_files() without basename
+     * test find_paths() with seedot == true
      */
-    files_found = find_files(paths, NULL, -1, &cwd, false, NULL, FTS_NOCHDIR, 0, 0);
-    if (files_found == NULL) {
-        err(108, __func__, "didn't find any files from paths array");
+    paths_found = find_paths(paths, NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 0, true);
+    if (paths_found == NULL) {
+        err(106, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
     /*
      * show what we found
      */
-    len = dyn_array_tell(files_found);
+    len = dyn_array_tell(paths_found);
     if (len > 0) {
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(109, __func__, "found NULL pointer at files_found[%ju]", (uintmax_t)j);
+                err(107, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
-            fdbg(stderr, DBG_MED, "files_found[%ju]: %s", (uintmax_t)j, name);
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                } else if (is_file(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                } else if (is_symlink(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                } else {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                }
+            }
         }
         /*
-         * free arrays
+         * free array
          */
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name != NULL) {
                 free(name);
                 name = NULL;
@@ -8749,40 +8885,54 @@ main(int argc, char **argv)
     /*
      * free array itself
      */
-    dyn_array_free(files_found);
-    files_found = NULL;
+    dyn_array_free(paths_found);
+    paths_found = NULL;
+
 
 
     /*
-     * test find_files() with basename and depth of 2
+     * test find_paths() without basename
      */
-    files_found = find_files(paths, NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 2);
-    if (files_found == NULL) {
-        err(110, __func__, "didn't find any files from paths array");
+    paths_found = find_paths(paths, NULL, -1, &cwd, false, NULL, FTS_NOCHDIR, 0, 0, false);
+    if (paths_found == NULL) {
+        err(108, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
     /*
      * show what we found
      */
-    len = dyn_array_tell(files_found);
+    len = dyn_array_tell(paths_found);
     if (len > 0) {
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(111, __func__, "found NULL pointer at files_found[%ju]", (uintmax_t)j);
+                err(109, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
-            fdbg(stderr, DBG_MED, "files_found[%ju]: %s", (uintmax_t)j, name);
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                } else if (is_file(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                } else if (is_symlink(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                } else {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                }
+            }
         }
         /*
-         * free arrays
+         * free array
          */
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name != NULL) {
                 free(name);
                 name = NULL;
@@ -8792,16 +8942,72 @@ main(int argc, char **argv)
     /*
      * free array itself
      */
-    dyn_array_free(files_found);
-    files_found = NULL;
+    dyn_array_free(paths_found);
+    paths_found = NULL;
+
 
     /*
-     * one more test of find_files() but this time from test_jparse with
+     * test find_paths() with basename and depth of 2
+     */
+    paths_found = find_paths(paths, NULL, -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 2, false);
+    if (paths_found == NULL) {
+        err(110, __func__, "didn't find any files in the paths array");
+        not_reached();
+    }
+
+    /*
+     * show what we found
+     */
+    len = dyn_array_tell(paths_found);
+    if (len > 0) {
+        for (j = 0; j < len; ++j) {
+            /* get next string pointer */
+            name = dyn_array_value(paths_found, char *, j);
+            if (name == NULL) {	/* paranoia */
+                err(111, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                not_reached();
+            }
+
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                } else if (is_file(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                } else if (is_symlink(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                } else {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                }
+            }
+        }
+        /*
+         * free array
+         */
+        for (j = 0; j < len; ++j) {
+            /* get next string pointer */
+            name = dyn_array_value(paths_found, char *, j);
+            if (name != NULL) {
+                free(name);
+                name = NULL;
+            }
+        }
+    }
+    /*
+     * free array itself
+     */
+    dyn_array_free(paths_found);
+    paths_found = NULL;
+
+    /*
+     * one more test of find_paths() but this time from test_jparse with
      * basename and at depth 1
      */
-    files_found = find_files(paths, "test_jparse", -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 1);
-    if (files_found == NULL) {
-        err(112, __func__, "didn't find any files from paths array");
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, true, NULL, FTS_NOCHDIR, 0, 1, false);
+    if (paths_found == NULL) {
+        err(112, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -8816,24 +9022,37 @@ main(int argc, char **argv)
     /*
      * show what we found
      */
-    len = dyn_array_tell(files_found);
+    len = dyn_array_tell(paths_found);
     if (len > 0) {
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(113, __func__, "found NULL pointer at files_found[%ju]", (uintmax_t)j);
+                err(113, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
-            fdbg(stderr, DBG_MED, "files_found[%ju]: %s", (uintmax_t)j, name);
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                } else if (is_file(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                } else if (is_symlink(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                } else {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                }
+            }
         }
         /*
-         * free arrays
+         * free array
          */
         for (j = 0; j < len; ++j) {
             /* get next string pointer */
-            name = dyn_array_value(files_found, char *, j);
+            name = dyn_array_value(paths_found, char *, j);
             if (name != NULL) {
                 free(name);
                 name = NULL;
@@ -8843,10 +9062,8 @@ main(int argc, char **argv)
     /*
      * free array itself
      */
-    dyn_array_free(files_found);
-    files_found = NULL;
-
-
+    dyn_array_free(paths_found);
+    paths_found = NULL;
 
 
     /*

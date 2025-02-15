@@ -1,5 +1,32 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.18 2025-02-15
+
+Renamed and improved the `find_file*()` functions to `find_path*()` (i.e.
+`find_path()` and `find_paths()`).
+
+The functions now allow you to collect path name(s) of regular files,
+directories, symlinks and others that match `FTS_DEFAULT` rather than just
+files.
+
+The functions also have a new boolean which is an analogue to the `FTS_SEEDOT`
+flag to `fts_open()`: if it's true and the files are `.` or `..` then it will
+not be skipped; otherwise if it's false they will be (we search with a
+`path_argv` of `"."` so they are seen even without the `FTS_SEEDOT` option).
+
+There was a fix with the references to `fts_path` (in particular `fts_path + 2`)
+as not all path names are long enough. The function `append_path()` was renamed
+from `append_filename()` (this is where the problem was originally discovered).
+
+Additionally the functions (the two and also `read_fts()`) now remove the option
+`FTS_NOSTAT` as this is problematic to not have `stat(2)`.
+
+The `util_test` now adds to the list of paths a couple directories.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.10 2025-02-15"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.13 2025-02-15"`.
+
+
 ## Release 2.2.17 2025-02-14
 
 Make a new function like `find_file()` but which is more useful: it is now

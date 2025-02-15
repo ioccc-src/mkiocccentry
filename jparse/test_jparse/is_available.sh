@@ -12,7 +12,7 @@
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
-# "Because even the hard working helpers sometime need a helping hand." :-)
+# "Because even the hard working helpers sometimes need a helping hand." :-)
 #
 # Share and enjoy! :-)
 

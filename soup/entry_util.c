@@ -400,6 +400,22 @@ free_info(struct info *infop)
         infop->unsafe_dirs = NULL;
     }
 
+   /*
+     * user requested ignored files
+     */
+    if (infop->ignore_paths != NULL) {
+        len = dyn_array_tell(infop->ignore_paths);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignore_paths, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->ignore_paths);
+        infop->ignore_paths = NULL;
+    }
+
     /*
      * zeroize the info structure
      */
