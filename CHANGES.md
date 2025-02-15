@@ -37,6 +37,14 @@ pointer to `read_answers_flag_used` but that is a global variable so it's
 unnecessary to have it in the function as we can just set read/set its value as
 necessary.
 
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
+utility functions that will be useful for issue #1152.
+
+Renamed `append_unique_str()` in mkiocccentry to `append_unique_filename()`.
+
+Sequenced exit codes.
+
+
 ## Release 2.3.33 2025-02-13
 
 Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new
