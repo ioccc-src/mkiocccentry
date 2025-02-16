@@ -204,17 +204,20 @@ extern bool is_mode(char const *path, mode_t mode);
 extern bool has_mode(char const *path, mode_t mode);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
+extern char *fts_path(FTSENT *ent);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_rcmp(const FTSENT **a, const FTSENT **b);
-FTSENT *read_fts(char const *dir, int dirfd,
-        int *cwd, int options, FTS **fts, int (*cmp)(const FTSENT **, const FTSENT **));
+extern bool check_fts_info(FTS *fts, FTSENT *ent);
+FTSENT *read_fts(char const *dir, int dirfd, int *cwd, int options, FTS **fts,
+        int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *),
+        bool logical);
 extern char const *find_path(char const *path, char const *dir, int dirfd, int *cwd, bool base,
-        int (*cmp)(const FTSENT **, const FTSENT **), int options, int count,
-        short int depth, bool seedot);
+        int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *),
+        int options, int count, short int depth, bool seedot, bool logical);
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped);
-extern struct dyn_array *find_paths(struct dyn_array *paths,
-        char const *dir, int dirfd, int *cwd, bool base, int (*cmp)(const FTSENT **, const FTSENT **),
-        int options, int count, short int depth, bool seedot);
+extern struct dyn_array *find_paths(struct dyn_array *paths, char const *dir, int dirfd, int *cwd, bool base,
+        int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *),
+        int options, int count, short int depth, bool seedot, bool logical);
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);

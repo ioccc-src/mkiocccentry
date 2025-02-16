@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.35 2025-02-16
+
+Multiple fixes and enhancements in some of the jparse util functions. Updated
+mkiocccentry for these fixes/enhancements. Note that `fts_open(3)` has to
+have either `FTS_PHYSICAL` or `FTS_LOGICAL` so the `read_fts()` function
+(prior to calling `fts_open(3)`) now removes both bits and then sets the
+right one based on the boolean. This is why it's no longer in the
+options to the function call - it would be removed anyway since we can't
+assume what is needed (for here we want `FTS_PHYSICAL` but in some cases
+it might not be desired and there was no way to be correct otherwise).
+
+There are other improvements and fixes as well.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.26 2025-02-16"`.
+
+
 ## Release 2.3.34 2025-02-15
 
 Added `-I path` option to `mkiocccentry(1)` to ignore a path. This option can be
