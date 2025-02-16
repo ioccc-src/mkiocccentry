@@ -155,7 +155,7 @@ static void warn_wordbuf(void);
 static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *prog_c);
-static void check_ftsent(FTSENT *ent);
+static bool check_ent(FTS *fts, FTSENT *ent);
 static void scan_topdir(char *args, struct info *infop, char const *make, char const *submission_dir,
         RuleCount *size);
 static void copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,

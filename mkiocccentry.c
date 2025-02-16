@@ -367,7 +367,7 @@ main(int argc, char *argv[])
             make_flag_used = true;
             make = optarg;
             break;
-        case 'I':
+        case 'I': /* ignore a path */
             append_path(&info.ignore_paths, optarg, true, false);
             break;
 	case ':':   /* option requires an argument */
@@ -1066,16 +1066,19 @@ append_unique_filename(struct dyn_array *array, char *str)
 }
 
 /*
- * check_ftsent     - check an FTSENT for specific file types that are errors
+ * check_ent     - check an FTSENT for specific file types that are errors
  *
  * given:
+ *      fts     - FTS stream
  *      ent     - an FTSENT * to check for specific conditions/types
  *
  * This function does not return on NULL pointer or if specific conditions/types
  * are found.
+ *
+ * This function returns true if all is okay, otherwise false.
  */
-static void
-check_ftsent(FTSENT *ent)
+static bool
+check_ent(FTS *fts, FTSENT *ent)
 {
     /*
      * firewall
@@ -1089,41 +1092,61 @@ check_ftsent(FTSENT *ent)
     }
 
     /*
-     * specific FTSENT types are an immediate error
+     * specific FTSENT types are an immediate error (or ignored)
      */
     switch (ent->fts_info) {
         case FTS_DC: /* cycle in directory tree */
-            err(28, __func__, "detected directory loop with %s", ent->fts_path + 2);
-            not_reached();
+            errno = 0; /* pre-clear errno for errp() */
+            if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                errp(144, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s",
+                        ent->fts_path);
+                not_reached();
+            } else {
+                warn(__func__, "skipping directory %s because it causes a cycle in the tree", ent->fts_path);
+                return false;
+            }
             break;
         case FTS_DNR: /* directory not readable */
-            err(29, __func__, "directory not readable: %s", ent->fts_path + 2);
+            errno = 0; /* pre-clear errno for errp() */
+            if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                errp(145, __func__, "failed to set FTS_SKIP on an unreadable directory the tree: %s", ent->fts_path);
+                not_reached();
+            } else {
+                warn(__func__, "skipping unreadable directory %s in the tree", ent->fts_path);
+                return false;
+            }
+            break;
+        case FTS_NS: /* no stat(2) info available but we requested it */
+            err(146, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
+            not_reached();
+            break;
+        case FTS_NSOK: /* stat(2) was not requested */
+            err(147, __func__, "stat(2) not requested: FTS_NOSTAT set");
             not_reached();
             break;
         case FTS_ERR: /* some error condition */
             /*
              * fake errno
              */
-            errno = ent->fts_errno;
-            errp(30, __func__, "encountered error reading path: %s", ent->fts_path + 2);
+            errno = ent->fts_errno; /* pre-clear errno for errp() */
+            errp(148, __func__, "encountered error from path %s in tree", ent->fts_path);
             not_reached();
             break;
         case FTS_DEFAULT: /* some other file type */
-            err(31, __func__, "found invalid file type: %s", ent->fts_path + 2);
+            err(31, __func__, "found invalid file type: %s", ent->fts_path);
             not_reached();
             break;
         case FTS_DOT: /* a filename '.' or '..' not requested in fts_open() */
             /*
              * NOTE: we do open '.' in fts_open() but this is an extra sanity
-             * check on files that are '.'.
+             * check on files that are '.' or just '.' (in fact given that we
+             * skip them BEFORE the call to this function if we get here there
+             * is something quite wrong!).
              *
-             * NOTE: this does NOT mean that we don't have to skip '.' itself!
+             * NOTE: this does NOT mean that we don't have to skip '.', '..' or
+             * just './'!
              */
             err(32, __func__, "found '.' or '..' not specified: %s", ent->fts_path);
-            not_reached();
-            break;
-        case FTS_NS: /* couldn't stat file */
-            err(33, __func__, "couldn't stat %s", ent->fts_path + 2);
             not_reached();
             break;
         default: /* okay */
@@ -1133,6 +1156,7 @@ check_ftsent(FTSENT *ent)
              */
             break;
     }
+    return true;
 }
 
 /*
@@ -1350,7 +1374,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      * now that we have changed to the correct directory and gathered everything
      * we need to scan for files and directories, we can traverse the tree.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_PHYSICAL, &fts, fts_cmp);
+    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false);
     if (ent == NULL){
         err(50, __func__, "failed to open \".\"");
         not_reached();
@@ -1393,9 +1417,11 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
             }
 
             /*
-             * specific FTSENT types are an immediate error
+             * specific FTSENT types are an immediate error (or ignored)
              */
-            check_ftsent(ent);
+            if (!check_ent(fts, ent)) {
+                continue;
+            }
 
             /*
              * here we have to do fts_path + 2 because fts_read() (from
@@ -1468,7 +1494,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                              * skip those here
                              *
                              * NOTE: other types of files were checked in
-                             * check_ftsent().
+                             * check_ent().
                              */
                             continue;
                         }
@@ -1684,7 +1710,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     break;
             }
         }
-        while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_PHYSICAL, &fts, fts_cmp)) != NULL);
+        while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false)) != NULL);
     }
 
     /*
@@ -2597,7 +2623,7 @@ check_submission(struct info *infop, char *submit_path, char *topdir_path,
      * clobber, we need to verify that the topdir matches what is in the
      * submission directory. If anything is out of order it is an error.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_PHYSICAL, &fts, fts_cmp);
+    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR, &fts, fts_cmp, check_ent, false);
     if (ent == NULL){
         err(147, __func__, "failed to open \".\"");
         not_reached();
@@ -2616,9 +2642,11 @@ check_submission(struct info *infop, char *submit_path, char *topdir_path,
             }
 
             /*
-             * specific FTSENT types are an immediate error
+             * specific FTSENT types are an immediate error (or ignored)
              */
-            check_ftsent(ent);
+            if (!check_ent(fts, ent)) {
+                continue;
+            }
 
             /*
              * here we have to do fts_path + 2 because fts_read() (from
@@ -2862,7 +2890,7 @@ check_submission(struct info *infop, char *submit_path, char *topdir_path,
                 default:
                     break;
             }
-        } while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_PHYSICAL, &fts, fts_cmp)) != NULL);
+        } while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false)) != NULL);
     }
 
     /*

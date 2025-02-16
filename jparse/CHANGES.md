@@ -1,5 +1,84 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.19 2025-02-16
+
+Improve and bug fix various util functions.
+
+Set `FTS_SKIP` on `FTS_DC` instead of using `err()`.
+Set `FTS_SKIP` on `FTS_DNR` instead of using `err()`.
+
+The above two (as well as the check for `FTS_ERR` and `FTS_NS`, both of which
+are errors) are done in the new function (a callback that can be passed to the
+three functions `read_fts()`, `find_path()` and `find_paths()` - if NULL it
+defaults to the `check_fts_info()`). This was made a callback as some users
+might have a different requirement (for instance the IOCCC requires that only
+files and directories are allowed so `FTS_DEFAULT` is forbidden). If (in
+`read_fts()`) this function returns false the next entry is read (if there is
+one, else it'll return NULL like before).
+
+Besides the new function pointer, there is another arg (sorry, tm Canada 🇨 :-) )
+to the functions `read_fts()`, `find_path()` and `find_paths()` which fixes a
+problem. The `fts_open()` needs either `FTS_PHYSICAL` or `FTS_LOGICAL`.  This
+new boolean is `logical`: if logical (i.e. dereference/follow a symlink, meaning
+act on the file it points to) is true then `FTS_LOGICAL` is set; otherwise
+`FTS_PHYSICAL` is set and the `FTSENT *` will refer to the symlink itself. An
+important point is that if `FTS_LOGICAL` is not set `fts_read()` will NOT detect
+broken symlinks (this is how I discovered the problem); instead it'll just call
+it a symlink. If you pass in `FTS_PHYSICAL` and/or `FTS_LOGICAL` to the options
+in the functions it (or they) will be unset prior to setting the correct one.
+The requirement that `FTS_NOCHDIR` still be in place is also there.
+
+A word about yesterday's update on why we UNSET `FTS_NOSTAT`. IF this flag IS
+set it makes the `fts_info` always be `FTS_NSOK` which means that we cannot
+determine the file type! This would make the `read_path()` functions always
+return NULL and it would also be useless for `read_fts()` too (in almost all
+cases).
+
+The new function `check_fts_info()` is:
+
+```c
+bool check_fts_info(FTS *fts, FTSENT *ent);
+```
+
+and you can use it (in a call to `read_fts()`) like:
+
+```c
+
+ent = read_fts("test_jparse", -1, &cwd, -1, &fts, fts_cmp, fn, true);
+```
+
+where `fn` is your function. Alternatively if you do:
+
+```c
+ent = read_fts("test_jparse", -1, &cwd, -1, &fts, fts_cmp, NULL, true);
+```
+
+The function `check_fts_info()` (as noted above) does certain checks on the
+`fts_info` but even so the `read_fts()` function does the checks afterwards, in
+case you override it and do not provide the right checks.
+
+The util test code now checks paths that are non-existent (or should not exist
+anyway).
+
+The util test code now checks that `FTS_NOSTAT` is indeed unset.
+
+Another new function, `fts_path()`, takes an `FTSENT *` and determines what should be
+used for `fts_path` (it depends on the length of the string). This removes the
+need of always calculating an offset; instead of that just use `fts_path(ent);`
+(obviously you can assign it to a `char *`).
+
+It is hoped that these functions should not have to change again but as the
+functions are being used more is discovered in what is necessary. Thus there
+might be another update or two. In the end these should be very useful
+functions (though some might question why this is in jparse - and the answer is
+related to the IOCCC and out of the scope of this changelog).
+
+There was a bug fix in `is_symlink()`: by an oversight it used `stat(2)` instead
+of `lstat(2)`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.11 2025-02-16"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.14 2025-02-16"`.
+
 ## Release 2.2.18 2025-02-15
 
 Renamed and improved the `find_file*()` functions to `find_path*()` (i.e.
