@@ -1,4 +1,5 @@
-*~
+# We sort the list below via: sort -d -u
+?
 .DS_Store
 /Makefile.local
 /NOTES/
