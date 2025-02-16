@@ -429,14 +429,14 @@ count_comps(char const *str, char comp, bool remove_all)
 	not_reached();
     }
 
-    dbg(DBG_VVVHIGH, "#0: count_comps(\"%s\", %c, %s)", str, comp, booltostr(remove_all));
+    dbg(DBG_VVVHIGH, "#0: count_comps(\"%s\", %c, \"%s\")", str, comp, booltostr(remove_all));
 
     /*
      * case: empty string is 0
      */
     len = strlen(copy);
     if (len <= 0) {
-	dbg(DBG_VVHIGH, "#1: count_comps(\"%s\", %c, %s): \"%s\" is an empty string", str, comp, str,
+	dbg(DBG_VVHIGH, "#1: count_comps(\"%s\", %c, \"%s\"): \"%s\" is an empty string", str, comp, str,
                 booltostr(remove_all));
 	return 0;
     }
@@ -479,7 +479,7 @@ count_comps(char const *str, char comp, bool remove_all)
         /*
          * string is empty
          */
-	dbg(DBG_VHIGH, "#5: count_comps(\"%s\", '%c', %s) == 0", str, comp, booltostr(remove_all));
+	dbg(DBG_VHIGH, "#5: count_comps(\"%s\", '%c', \"%s\") == 0", str, comp, booltostr(remove_all));
         if (copy != NULL) {
             free(copy);
             copy = NULL;
@@ -502,7 +502,7 @@ count_comps(char const *str, char comp, bool remove_all)
              * We know this because we have removed all successive component chars
              * at the end of the string.
              */
-            dbg(DBG_VHIGH, "#6: count_comps(\"%s\", '%c', %s) == 1", str, comp, booltostr(remove_all));
+            dbg(DBG_VHIGH, "#6: count_comps(\"%s\", '%c', \"%s\") == 1", str, comp, booltostr(remove_all));
             return 1;
         } else {
             /*
@@ -526,7 +526,7 @@ count_comps(char const *str, char comp, bool remove_all)
 	/*
 	 * str does not have the component, return 1
 	 */
-	dbg(DBG_VVHIGH, "#3: count_comps(\"%s\", %c, %s) == 1", str, comp, booltostr(remove_all));
+	dbg(DBG_VVHIGH, "#3: count_comps(\"%s\", %c, \"%s\") == 1", str, comp, booltostr(remove_all));
         return 0;
     } else {
         while (p != NULL) {
@@ -556,7 +556,7 @@ count_comps(char const *str, char comp, bool remove_all)
     /*
      * return the total components
      */
-    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, %s) == %ju", str, comp, booltostr(remove_all), (uintmax_t)count);
+    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, \"%s\") == %ju", str, comp, booltostr(remove_all), (uintmax_t)count);
     return count;
 }
 
@@ -6580,14 +6580,14 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      */
     if (found_unsafe == false) {
 	*posix_safe = true;
-	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
+	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"): string is NOT POSIX portable safe plus +/",
 		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper));
 
     /*
      * report POSIX portable safe plus + safe with maybe /
      */
     } else {
-	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", %s, %s, %s, %s): string is POSIX portable safe plus +/: \"%s\"",
+	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"): string is POSIX portable safe plus +/: \"%s\"",
 		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
     }
     return;
@@ -7968,13 +7968,13 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(36, __func__, "calloc_path(\"%s\", %s) returned NULL", dirname, filename);
+	errp(36, __func__, "calloc_path(\"%s\", \"%s\") returned NULL", dirname, filename);
 	not_reached();
     } else if (strcmp(buf, "foo/bar") != 0) {
 	err(37, __func__, "buf: %s != %s/%s", buf, dirname, filename);
 	not_reached();
     } else {
-	fdbg(stderr, DBG_MED, "calloc_path(\"%s\", %s): returned %s", dirname, filename, buf);
+	fdbg(stderr, DBG_MED, "calloc_path(\"%s\", \"%s\"): returned %s", dirname, filename, buf);
     }
 
     /*
@@ -7992,13 +7992,13 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(38, __func__, "calloc_path(NULL, %s) returned NULL", filename);
+	errp(38, __func__, "calloc_path(NULL, \"%s\") returned NULL", filename);
 	not_reached();
     } else if (strcmp(buf, "bar") != 0) {
 	err(39, __func__, "buf: %s != %s", buf, filename);
 	not_reached();
     } else {
-	fdbg(stderr, DBG_MED, "calloc_path(NULL, %s): returned %s", filename, buf);
+	fdbg(stderr, DBG_MED, "calloc_path(NULL, \"%s\"): returned %s", filename, buf);
     }
 
     if (buf != NULL) {
