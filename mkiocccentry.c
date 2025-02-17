@@ -1374,7 +1374,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      * now that we have changed to the correct directory and gathered everything
      * we need to scan for files and directories, we can traverse the tree.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false);
+    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent);
     if (ent == NULL){
         err(50, __func__, "failed to open \".\"");
         not_reached();
@@ -1710,7 +1710,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     break;
             }
         }
-        while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false)) != NULL);
+        while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent)) != NULL);
     }
 
     /*
@@ -2623,7 +2623,7 @@ check_submission(struct info *infop, char *submit_path, char *topdir_path,
      * clobber, we need to verify that the topdir matches what is in the
      * submission directory. If anything is out of order it is an error.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR, &fts, fts_cmp, check_ent, false);
+    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR, false, &fts, fts_cmp, check_ent);
     if (ent == NULL){
         err(147, __func__, "failed to open \".\"");
         not_reached();
@@ -2890,7 +2890,7 @@ check_submission(struct info *infop, char *submit_path, char *topdir_path,
                 default:
                     break;
             }
-        } while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, &fts, fts_cmp, check_ent, false)) != NULL);
+        } while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent)) != NULL);
     }
 
     /*

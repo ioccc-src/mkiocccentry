@@ -1,5 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.3.36 2025-02-17
+
+Various fixes and further enhancements to the `find_path*()` functions in
+jparse. One in particular will very possibly be very useful for the
+`chkentry(1)` updates but it's a useful update anyway (allows filtering file
+types by an enum of bits). These were synced from the [jparse
+repo](https://github.com/xexyl/jparse/) to `jparse/`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.27 2025-02-17"`.
+
 
 ## Release 2.3.35 2025-02-16
 

@@ -1,5 +1,102 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.20 2025-02-17
+
+A couple fixes and further enhancements with `find_path*()` functions. More use
+cases have come to mind and the function arg ordering now matches `read_fts()`
+to make it slightly less confusing (though there are still too many args they're
+necessary).
+
+It is now possible to specify file type in the `find_path*()` functions. There
+is a new enum `fts_type`. This enum is composed of bits so one can OR them
+together if they want more than one kind of file. The test code looks for some
+of these and it is an error if there ARE any of them.
+
+The enum is as follows:
+
+```c
+/*
+ * enum for the find_path() functions (bits to be ORed)
+ */
+enum fts_type
+{
+    FTS_TYPE_ANY        = 0,        /* all types of files allowed */
+    FTS_TYPE_FILE       = 1,        /* regular files type allowed */
+    FTS_TYPE_DIR        = 2,        /* directories allowed */
+    FTS_TYPE_SYMLINK    = 4,        /* symlinks allowed */
+    FTS_TYPE_SOCK       = 8,        /* sockets allowed */
+    FTS_TYPE_CHAR       = 16,       /* character devices allowed */
+    FTS_TYPE_BLOCK      = 32,       /* block devices allowed */
+    FTS_TYPE_FIFO       = 64        /* FIFO allowed */
+};
+```
+
+The new function prototypes are:
+
+```c
+FTSENT *read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
+        int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *));
+
+char const *find_path(char const *path, char *dir, int dirfd, int *cwd,
+        int options, bool logical, enum fts_type type, int count, int depth,
+        bool base, bool seedot, int (*cmp)(const FTSENT **, const FTSENT **),
+        bool(*check)(FTS *, FTSENT *));
+
+struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd,
+        int options, bool logical, enum fts_type type, int count, int depth,
+        bool base, bool seedot, int (*cmp)(const FTSENT **, const FTSENT **),
+        bool(*check)(FTS *, FTSENT *));
+```
+
+The `dir` was changed to a `char *` from a `char const *`. This is not needed
+now but there was an enhancement in mind that there is no time to do right now
+(and it does not hurt to have it non-const so it's okay to keep it this way for
+now). The reason for the reordering (in addition to the new parameter) is to
+make it match the order in `read_fts()` a bit better.
+
+If one wanted to only find directories of a given name, they would just use
+`FTS_TYPE_DIR`. But if files and directories are okay they would do
+`FTS_TYPE_DIR|FTS_TYPE_FILE` (for example). If any type is okay they can do
+`FTS_TYPE_ANY`.
+
+The functions (when checking the type) now also refer to `FTS_DP` for the case
+that `FTS_LOGICAL` is used (though it should be seen with `FTS_D` anyway).
+
+A new feature of the `find_path*()` functions is that if the string to find is
+an empty string (i.e. `*str == '\0'`) it will find any file. This is useful if
+you just need to get an entire listing (and if you need to restrict it to
+specific types you can use a type other than `FTS_TYPE_ANY`).
+
+Soon these functions should be in better use so it will be known if anything
+else has to be changed but that (at this time) seems unlikely (despite the fact
+there have been multiple enhancements already).
+
+There is a new function which simplifies the `find_paths()` function (and use of
+it) as well:
+
+```c
+void free_paths_array(struct dyn_array **paths, bool only_empty);
+```
+
+The `only_empty` boolean is useful because it is now possible to exit the loop
+early (making sure of course to close the FTS stream and setting it to NULL) and
+still return a valid array. This was actually used in more than one location in
+the function but it now is only used at the end (if one needed to add a way to
+exit early it would now allow not duplicating code). It is also used to make the
+test code simpler. It takes a `struct dyn_array **` so that we can set it to
+NULL in the caller (if needed). This makes it a lot easier. Functionally it can
+be used with any `dyn_array` of `char *` but it is named `free_paths_array()` as
+it is far more likely that there is a `free_array()` function than
+`free_paths_array()`.
+
+Relax the error to a warning if an invalid FD is passed to `read_fts()` (when
+trying to close it, that is).
+
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.12 2025-02-17"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.15 2025-02-17"`.
+
+
 ## Release 2.2.19 2025-02-16
 
 Improve and bug fix various util functions.
