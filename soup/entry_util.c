@@ -134,6 +134,15 @@ char *ignored_dirnames[] =
 };
 
 /*
+ * filenames (in top level submission directory only) that should be mode 0555
+ */
+char *executable_filenames[] =
+{
+    TRY_SH,
+    TRY_ALT_SH,
+    NULL
+};
+/*
  * free_auth - free auto and related sub-elements
  *
  * given:
@@ -4910,7 +4919,7 @@ test_wordbuf_warning(bool boolean)
  *  given:
  *          str      - name to check
  *
- * NOTE: if str is NULL we return false
+ * NOTE: if str is NULL we return false.
  */
 bool
 is_mandatory_filename(char const *str)
@@ -4942,7 +4951,7 @@ is_mandatory_filename(char const *str)
  *  given:
  *          str      - name to check
  *
- * NOTE: if str is NULL we return false
+ * NOTE: if str is NULL we return false.
  */
 bool
 is_forbidden_filename(char const *str)
@@ -4983,7 +4992,7 @@ is_forbidden_filename(char const *str)
  *  given:
  *          str      - name to check
  *
- * NOTE: if str is NULL we return false
+ * NOTE: if str is NULL we return false.
  */
 bool
 is_optional_filename(char const *str)
@@ -5016,7 +5025,7 @@ is_optional_filename(char const *str)
  *  given:
  *          str      - name to check
  *
- * NOTE: if str is NULL we return false
+ * NOTE: if str is NULL we return false.
  */
 bool
 is_ignored_dirname(char const *str)
@@ -5072,3 +5081,39 @@ has_ignored_dirname(char const *path)
 
     return false;
 }
+
+/*
+ * is_executable_filename  - check if str is a filename that should be 0555
+ *
+ *  given:
+ *          str      - name to check
+ *
+ * NOTE: if str is NULL we return false.
+ *
+ * If there is a match the file MUST be mode 0555.
+ */
+bool
+is_executable_filename(char const *str)
+{
+    size_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+        warn(__func__, "str is NULL");
+        return false;
+    }
+
+    for (i = 0; executable_filenames[i] != NULL; ++i) {
+        if (!strcasecmp(executable_filenames[i], str)) {
+            dbg(DBG_MED, "%s is an executable filename", str);
+            return true;
+        }
+    }
+
+    dbg(DBG_MED, "%s is not an executable filename", str);
+    return false;
+}
+
+

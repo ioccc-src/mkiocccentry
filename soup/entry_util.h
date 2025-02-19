@@ -55,7 +55,7 @@
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
 
 /*
- * optional filenames in the top level directory
+ * optional (and for some executable) filenames in the top level directory
  */
 #define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
 #define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
@@ -84,6 +84,7 @@ extern char *mandatory_filenames[];             /* filenames that MUST exist in 
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
 extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
 extern char *ignored_dirnames[];                /* directory names that should be ignored */
+extern char *executable_filenames[];            /* filenames that should have mode 0555 */
 
 /*
  * IOCCC author information
@@ -333,6 +334,7 @@ extern bool is_mandatory_filename(char const *str);
 extern bool is_forbidden_filename(char const *str);
 extern bool is_optional_filename(char const *str);
 extern bool is_ignored_dirname(char const *str);
+extern bool is_executable_filename(char const *str);
 extern bool has_ignored_dirname(char const *path);
 
 

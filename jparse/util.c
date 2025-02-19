@@ -241,18 +241,31 @@ base_name(char const *path)
  * returned. This is done this way as a convenience as a user might not know
  * what the actual path is.
  *
- * NOTE: if level < 0 all components only the first component is returned (i.e.
- * the first '/' in the string will be zeroed out).
+ * If the level < 0 then the first component is returned i.e. if the path is:
+ *
+ *      "/foo/bar/baz"
+ * or
+ *      "foo/bar/baz"
+ * or
+ *      "foo"
+ * or
+ *      "/foo"
+ *
+ * and level == -1 we will return: "foo".
+ *
+ * NOTE: an empty string will result in a strdup()d copy of it so you still have
+ * to free() it when you're done with it.
  */
 char *
 dir_name(char const *path, int level)
 {
-    size_t len;			/* length of path */
-    char *copy;			/* copy of path to work from and maybe return */
-    char *ret;			/* allocated string to return */
-    char *p;
-    int lvl;
-    size_t i;
+    size_t len = 0;		/* length of path (which might change at different stages) */
+    char *copy = NULL;		/* copy of path to work from and maybe return */
+    char *ret = NULL;		/* allocated string to return */
+    char *p = NULL;             /* for parsing the string with strchr() and strrchr() */
+    char *saveptr = NULL;       /* for strtok_r() when level < 0 */
+    int lvl = 0;                /* iterator through levels */
+    size_t i = 0;               /* iterator through string */
 
     /*
      * firewall
@@ -264,6 +277,10 @@ dir_name(char const *path, int level)
 
     /*
      * duplicate the path for dirname processing
+     *
+     * NOTE: we do this even if it's an empty string because the function
+     * returns a dynamically allocated copy of the string in every case (except
+     * error) so the user can safely free() the string when they're finished.
      */
     errno = 0;			/* pre-clear errno for errp() */
     copy = strdup(path);
@@ -273,82 +290,153 @@ dir_name(char const *path, int level)
     }
 
     /*
-     * case: dirname of empty string is an empty string
+     * we need the length of the string now
      */
     len = strlen(copy);
     if (len <= 0) {
-	dbg(DBG_VVHIGH, "#0: dirname of path: \"%s\" is an empty string", path);
+        /*
+         * case: path string is empty
+         */
+	dbg(DBG_VVHIGH, "#0: dir_name(\"%s\", %d): path is an empty string", path, level);
 	return copy;
     }
 
     /*
-     * remove any multiple trailing /'s
+     * remove any trailing /'s
      */
     for (i = len - 1; i > 0; --i) {
 	if (copy[i] == '/') {
-	    /* trim the trailing / */
+	    /* trim this trailing / (located at copy[i]) */
 	    copy[i] = '\0';
 	} else {
 	    /* last character (now) is not / */
 	    break;
 	}
     }
+
     /*
      * now copy has no trailing /'s, unless it is just /
      */
-    len = strlen(copy);
 
     /*
-     * case: dirname is / or level is 0
+     * get length again
      */
-    if (strcmp(copy, "/") == 0 || level == 0) {
-	/*
-	 * path is just / or level is 0, so return /
-	 */
-	dbg(DBG_VVHIGH, "#1: dirname(\"%s\", %d) == %s", path, level, copy);
-	return copy;
-    } else if (level < 0) {
-        p = strchr(copy, '/');
-        if (p != NULL) {
-            *p = '\0';
-        }
-        dbg(DBG_VVHIGH, "#2: dirname(\"%s\", %d) == %s", path, level, copy);
+    len = strlen(copy);
+    if (len <= 0) {
+        /*
+         * if length <= 0 we will return a copy of the (now) modified string
+         */
+	dbg(DBG_VVHIGH, "#1: dir_name(\"%s\", %d) is an empty string", path, level);
         return copy;
     }
 
-    /*
-     * if we get here, we have more work to do
-     */
+    if (!strcmp(copy, "/") || level == 0) {
+	/*
+	 * path is just / or level is 0, so return copy of the path (modified or
+         * not)
+	 */
+	dbg(DBG_VVHIGH, "#2: dir_name(\"%s\", %d): %s", path, level, copy);
+	return copy;
+    }
 
     /*
-     * look for the last /, removing these until the level is reached
+     * if we do not have any more '/' then the path is just a filename so we
+     * will check this prior to anything else. Thus we will first check for a
+     * '/' (we need the last one in our case so we use strrchr(3) and not
+     * strchr(3).
      */
-    lvl = 0;
     p = strrchr(copy, '/');
     if (p == NULL) {
 	/*
 	 * path is just a filename, return that filename
 	 */
-	dbg(DBG_VVHIGH, "#3: dirname(\"%s\", %d) == %s", path, level, copy);
+	dbg(DBG_VVHIGH, "#3: dir_name(\"%s\", %d): %s", path, level, copy);
 	return copy;
-    } else {
-        while (lvl < level && p != NULL) {
+    } else if (level < 0) {
+        /*
+         * We KNOW here that there is AT LEAST one '/' but if level < 0 we need
+         * to return what is BEFORE the first '/'. This is true whether or not
+         * the path is an absolute path (i.e.  starts with '/').
+         *
+         * What this means is that if the path is "/foo/bar/baz" or
+         * "foo/bar/baz" we will return "foo".
+         *
+         * NOTE: although there is no way that there is no '/' left at this
+         * point there might be more than one. Since strtok(3)/strtok_r(3) will
+         * do exactly this we will use it. However since it modifies the string
+         * we will first duplicate it (the copy).
+         */
+        errno = 0; /* pre-clear errno for errp() */
+        ret = strdup(copy);
+        if (ret == NULL) {
+            errp(105, __func__, "failed to strdup(\"%s\")", copy);
+            not_reached();
+        }
+        p = strtok_r(ret, "/", &saveptr);
+        if (p != NULL) {
             /*
-             * remove any (multiple) trailing /'s
+             * theoretically we should always get here since we already know at
+             * least one '/' still exists
              */
-            while (*p == '/') {
-                *p-- = '\0';
+
+            /*
+             * we now need to make sure to free(copy) if not NULL, prior to
+             * returning.
+             */
+            if (copy != NULL) {
+                free(copy);
+                copy = NULL;
             }
             /*
-             * get next last /
+             * now strdup(p) so we can return it
              */
-            p = strrchr(copy, '/');
+            errno = 0; /* pre-clear errno for errp() */
+            ret = strdup(p);
+            if (ret == NULL) {
+                errp(106, __func__, "strdup(\"%s\") failed", p);
+                not_reached();
+            }
+
+            dbg(DBG_MED, "#4: dir_name(\"%s\", %d): %s", path, level, ret);
+            return ret;
+        } else {
             /*
-             * increase the level so that we only remove up to level directory
-             * names
+             * free ret if not NULL (and it shouldn't be)
              */
-            ++lvl;
+            if (ret != NULL) {
+                free(ret);
+                ret = NULL;
+            }
+            dbg(DBG_MED, "#5: dir_name(\"%s\", %d): %s", path, level, copy);
+            return copy;
         }
+    }
+
+    /*
+     * if we get here, we have even more work to do: we have to remove 'level'
+     * levels from the remaining path string.
+     *
+     * NOTE: p should NOT be NULL here (in fact *p should be '/' in the copy)
+     * but if it is the copy of the path (in copy) is still sane and the while()
+     * loop below will not be entered so this is safe.
+     */
+    lvl = 0;
+    while (lvl < level && p != NULL) {
+        /*
+         * remove any (multiple) trailing /'s
+         */
+        while (*p == '/') {
+            *p-- = '\0';
+        }
+        /*
+         * get (next) last '/'
+         */
+        p = strrchr(copy, '/');
+        /*
+         * increase the level so that we only remove up to level directory
+         * names
+         */
+        ++lvl;
     }
 
     /*
@@ -357,7 +445,7 @@ dir_name(char const *path, int level)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(copy);
     if (ret == NULL) {
-	errp(105, __func__, "strdup(\"%s\") failed", copy);
+	errp(107, __func__, "strdup(\"%s\") failed", copy);
 	not_reached();
     }
 
@@ -372,7 +460,7 @@ dir_name(char const *path, int level)
     /*
      * return the dirname
      */
-    dbg(DBG_VVHIGH, "#4: dirname(\"%s\", %d) == %s", path, level, ret);
+    dbg(DBG_VVHIGH, "#6: dir_name(\"%s\", %d): %s", path, level, ret);
     return ret;
 }
 
@@ -414,7 +502,7 @@ count_comps(char const *str, char comp, bool remove_all)
      * firewall
      */
     if (str == NULL) {
-	err(106, __func__, "called with NULL str");
+	err(108, __func__, "called with NULL str");
 	not_reached();
     }
 
@@ -425,7 +513,7 @@ count_comps(char const *str, char comp, bool remove_all)
     errno = 0;			/* pre-clear errno for errp() */
     copy = strdup(str);
     if (copy == NULL) {
-	errp(107, __func__, "strdup(\"%s\") failed", str);
+	errp(109, __func__, "strdup(\"%s\") failed", str);
 	not_reached();
     }
 
@@ -581,7 +669,7 @@ count_dirs(char const *path)
      * firewall
      */
     if (path == NULL) {
-        err(108, __func__, "path is NULL");
+        err(110, __func__, "path is NULL");
         not_reached();
     }
 
@@ -615,94 +703,6 @@ exists(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(109, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-    return true;
-}
-
-
-/*
- * is_file - if a path is a file
- *
- * This function tests if a path exists and is a regular file.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a regular file,
- *      false ==> path does not exist OR is not a regular file
- */
-bool
-is_file(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(110, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a regular file
-     */
-    if (!S_ISREG(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a regular file", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a regular file", path);
-    return true;
-}
-
-/*
- * is_socket - if a path is a socket
- *
- * This function tests if a path exists and is a socket.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a socket,
- *      false ==> path does not exist OR is not a socket
- */
-bool
-is_socket(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
 	err(111, __func__, "called with NULL path");
 	not_reached();
     }
@@ -717,34 +717,44 @@ is_socket(char const *path)
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a socket
-     */
-    if (!S_ISSOCK(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a socket", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a socket", path);
     return true;
 }
 
+
 /*
- * is_symlink - if a path is a symlink
+ * type_of_file     -  determine type of file of path
  *
- * This function tests if a path exists and is a symlink.
+ * This function determines the type of file if path exists, else it returns an
+ * appropriate error.
  *
  * given:
  *      path    - the path to test
  *
  * returns:
- *      true ==> path exists and is a symlink,
- *      false ==> path does not exist OR is not a symlink
+ *      an enum file_type:
+ *          FILE_TYPE_ERR       some error occurred other than ENOENT (no such file or directory)
+ *          FILE_TYPE_ENOENT    file does not exist (errno == ENOENT)
+ *          FILE_TYPE_FILE      regular file
+ *          FILE_TYPE_DIR       directory
+ *          FILE_TYPE_SYMLINK   symlink
+ *          FILE_TYPE_SOCK      socket
+ *          FILE_TYPE_CHAR      character device
+ *          FILE_TYPE_BLOCK     block device
+ *          FILE_TYPE_FIFO      FIFO
+ *
+ * NOTE: this function does not return on a NULL path or if we cannot determine
+ * the type of file.
+ *
+ * NOTE: this function returns FILE_TYPE_ERR for any error on stat(2) (return
+ * value != 0) except for errno == ENOENT (no such file or directory) in which
+ * case we return FILE_TYPE_ENOENT. We only distinguish this type because this
+ * is usually(?) the most common reason for stat(2) to fail (okay this might not
+ * be strictly true but it is nonetheless an often enough error message when
+ * using stat(2)).
  */
-bool
-is_symlink(char const *path)
+enum file_type
+type_of_file(char const *path)
 {
-    int ret;			/* return code holder */
     struct stat buf;		/* path status */
 
     /*
@@ -756,382 +766,70 @@ is_symlink(char const *path)
     }
 
     /*
-     * test for existence of path
+     * test for existence of path, first with lstat(2)
      */
-    errno = 0;
-    ret = lstat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a symlink
-     */
-    if (!S_ISLNK(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a symlink", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a symlink", path);
-    return true;
-}
-
-/*
- * is_chardev - if a path is a character device
- *
- * This function tests if a path exists and is a character device.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a character device,
- *      false ==> path does not exist OR is not a character device
- */
-bool
-is_chardev(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(113, __func__, "called with NULL path");
-	not_reached();
+    errno = 0;  /* pre-clear errno so we can determine why it failed, if it does */
+    if (lstat(path, &buf) != 0) {
+        if (errno == ENOENT) {
+            return FILE_TYPE_ENOENT; /* no such file or directory */
+        } else {
+            warnp(__func__, "stat() failed for %s: %s", path, strerror(errno));
+            return FILE_TYPE_ERR;   /* some other error */
+        }
     }
 
     /*
-     * test for existence of path
+     * now we KNOW that the file exists. We still have to check if it's a link,
+     * however, before anything else.
      */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a character device
-     */
-    if (!S_ISCHR(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a character device", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a character device", path);
-    return true;
-}
-
-/*
- * is_blockdev - if a path is a block device
- *
- * This function tests if a path exists and is a block device.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a block device,
- *      false ==> path does not exist OR is not a block device
- */
-bool
-is_blockdev(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(114, __func__, "called with NULL path");
-	not_reached();
+    if (S_ISLNK(buf.st_mode)) {
+        /*
+         * is a symlink
+         */
+        dbg(DBG_HIGH, "path is a symlink: %s", path);
+        return FILE_TYPE_SYMLINK;
     }
 
     /*
-     * test for existence of path
+     * now we need to get 'regular' stat information
      */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
+    errno = 0; /* pre-clear errno to check for non-existence/other conditions */
+    if (stat(path, &buf) != 0) {
+        if (errno == ENOENT) {
+            return FILE_TYPE_ENOENT; /* no such file or directory */
+        } else {
+            return FILE_TYPE_ERR;
+        }
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VVHIGH, "path size: %jd: %s", (intmax_t)buf.st_size, path);
 
     /*
-     * test if path is a block device
+     * determine type of file
      */
-    if (!S_ISBLK(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a block device", path);
-	return false;
+    if (S_ISREG(buf.st_mode)) {
+	dbg(DBG_HIGH, "path is a regular file: %s", path);
+	return FILE_TYPE_FILE;
+    } else if (S_ISDIR(buf.st_mode)) {
+        dbg(DBG_HIGH, "path is a directory: %s", path);
+        return FILE_TYPE_DIR;
+    } else if (S_ISSOCK(buf.st_mode)) {
+        dbg(DBG_HIGH, "path is a socket: %s", path);
+        return FILE_TYPE_SOCK;
+    } else if (S_ISCHR(buf.st_mode)) {
+        dbg(DBG_HIGH, "path is a character device: %s", path);
+        return FILE_TYPE_CHAR;
+    } else if (S_ISBLK(buf.st_mode)) {
+        dbg(DBG_HIGH, "path is a block device: %s", path);
+        return FILE_TYPE_BLOCK;
+    } else if (S_ISFIFO(buf.st_mode)) {
+        dbg(DBG_HIGH, "path is a FIFO: %s", path);
+        return FILE_TYPE_FIFO;
     }
-    dbg(DBG_VHIGH, "path %s is a block device", path);
-    return true;
-}
-
-/*
- * is_fifo - if a path is a FIFO
- *
- * This function tests if a path exists and is a FIFO.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a FIFO
- *      false ==> path does not exist OR is not a FIFO
- */
-bool
-is_fifo(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
     /*
-     * firewall
+     * unknown type - shouldn't happen
      */
-    if (path == NULL) {
-	err(115, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a FIFO
-     */
-    if (!S_ISBLK(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a FIFO", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a FIFO", path);
-    return true;
-}
-
-/*
- * is_exec - if a path is executable or directory is searchable
- *
- * This function tests if a path exists and we have permissions to execute it.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and we have executable access,
- *      false ==> path does not exist OR is not executable OR
- *                we don't have permission to execute it
- */
-bool
-is_exec(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(116, __func__, "called with NULL path");
-	not_reached();
-     }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    if (S_ISDIR(buf.st_mode)) {
-	dbg(DBG_VHIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
-    } else {
-	dbg(DBG_VHIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
-    }
-
-    /*
-     * test if we are allowed to execute or search it
-     */
-    ret = access(path, X_OK);
-    if (ret < 0) {
-	if (S_ISDIR(buf.st_mode)) {
-	    dbg(DBG_HIGH, "cannot search directory: %s ", path);
-	} else {
-	    dbg(DBG_HIGH, "is is not executable: %s", path);
-	}
-	return false;
-    }
-    if (S_ISDIR(buf.st_mode)) {
-	dbg(DBG_VHIGH, "path %s is searchable", path);
-    } else {
-	dbg(DBG_VHIGH, "path %s is executable", path);
-    }
-    return true;
-}
-
-
-/*
- * is_dir - if a path is a directory
- *
- * This function tests if a path exists and is a directory.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and is a directory,
- *      false ==> path does not exist OR is not a directory
- */
-bool
-is_dir(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(117, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if path is a regular directory
-     */
-    if (!S_ISDIR(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a directory", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is a directory", path);
-    return true;
-}
-
-
-/*
- * is_read - if a path is readable
- *
- * This function tests if a path exists and we have permissions to read it.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and we have read access,
- *      false ==> path does not exist OR is not read OR
- *                we don't have permission to read it
- */
-bool
-is_read(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(118, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if we are allowed to execute it
-     */
-    ret = access(path, R_OK);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s is not readable", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is readable", path);
-    return true;
-}
-
-
-/*
- * is_write - if a path is writable
- *
- * This function tests if a path exists and we have permissions to write it.
- *
- * given:
- *      path    - the path to test
- *
- * returns:
- *      true ==> path exists and we have write access,
- *      false ==> path does not exist OR is not writable OR
- *                we don't have permission to write it
- */
-bool
-is_write(char const *path)
-{
-    int ret;			/* return code holder */
-    struct stat buf;		/* path status */
-
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-	err(119, __func__, "called with NULL path");
-	not_reached();
-    }
-
-    /*
-     * test for existence of path
-     */
-    errno = 0;
-    ret = stat(path, &buf);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-
-    /*
-     * test if we are allowed to execute it
-     */
-    ret = access(path, W_OK);
-    if (ret < 0) {
-	dbg(DBG_HIGH, "path %s is not writable", path);
-	return false;
-    }
-    dbg(DBG_VHIGH, "path %s is writable", path);
-    return true;
+    err(113, __func__, "path is unknown file type: %s", path);
+    not_reached();
 }
 
 /*
@@ -1164,7 +862,7 @@ is_mode(char const *path, mode_t mode)
      * firewall
      */
     if (path == NULL) {
-	err(120, __func__, "called with NULL path");
+	err(114, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -1231,7 +929,7 @@ has_mode(char const *path, mode_t mode)
      * firewall
      */
     if (path == NULL) {
-	err(121, __func__, "called with NULL path");
+	err(115, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -1257,6 +955,512 @@ has_mode(char const *path, mode_t mode)
 
     return false;
 }
+
+
+
+
+
+/*
+ * is_file - if a path is a file
+ *
+ * This function tests if a path exists and is a regular file.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a regular file,
+ *      false ==> path does not exist OR is not a regular file
+ */
+bool
+is_file(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(116, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a regular file
+     */
+    if (!S_ISREG(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a regular file", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a regular file", path);
+    return true;
+}
+
+/*
+ * is_dir - if a path is a directory
+ *
+ * This function tests if a path exists and is a directory.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a directory,
+ *      false ==> path does not exist OR is not a directory
+ */
+bool
+is_dir(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(117, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a regular directory
+     */
+    if (!S_ISDIR(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a directory", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a directory", path);
+    return true;
+}
+
+/*
+ * is_symlink - if a path is a symlink
+ *
+ * This function tests if a path exists and is a symlink.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a symlink,
+ *      false ==> path does not exist OR is not a symlink
+ */
+bool
+is_symlink(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(118, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = lstat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a symlink
+     */
+    if (!S_ISLNK(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a symlink", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a symlink", path);
+    return true;
+}
+
+/*
+ * is_socket - if a path is a socket
+ *
+ * This function tests if a path exists and is a socket.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a socket,
+ *      false ==> path does not exist OR is not a socket
+ */
+bool
+is_socket(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(119, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a socket
+     */
+    if (!S_ISSOCK(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a socket", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a socket", path);
+    return true;
+}
+
+/*
+ * is_chardev - if a path is a character device
+ *
+ * This function tests if a path exists and is a character device.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a character device,
+ *      false ==> path does not exist OR is not a character device
+ */
+bool
+is_chardev(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(120, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a character device
+     */
+    if (!S_ISCHR(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a character device", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a character device", path);
+    return true;
+}
+
+/*
+ * is_blockdev - if a path is a block device
+ *
+ * This function tests if a path exists and is a block device.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a block device,
+ *      false ==> path does not exist OR is not a block device
+ */
+bool
+is_blockdev(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(121, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a block device
+     */
+    if (!S_ISBLK(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a block device", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a block device", path);
+    return true;
+}
+
+/*
+ * is_fifo - if a path is a FIFO
+ *
+ * This function tests if a path exists and is a FIFO.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a FIFO
+ *      false ==> path does not exist OR is not a FIFO
+ */
+bool
+is_fifo(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(122, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a FIFO
+     */
+    if (!S_ISFIFO(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a FIFO", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a FIFO", path);
+    return true;
+}
+
+
+
+/*
+ * is_read - if a path is readable
+ *
+ * This function tests if a path exists and we have permissions to read it.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and we have read access,
+ *      false ==> path does not exist OR is not read OR
+ *                we don't have permission to read it
+ */
+bool
+is_read(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(123, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if we are allowed to execute it
+     */
+    ret = access(path, R_OK);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s is not readable", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is readable", path);
+    return true;
+}
+
+
+/*
+ * is_write - if a path is writable
+ *
+ * This function tests if a path exists and we have permissions to write it.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and we have write access,
+ *      false ==> path does not exist OR is not writable OR
+ *                we don't have permission to write it
+ */
+bool
+is_write(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(124, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if we are allowed to execute it
+     */
+    ret = access(path, W_OK);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s is not writable", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is writable", path);
+    return true;
+}
+
+/*
+ * is_exec - if a path is executable or directory is searchable
+ *
+ * This function tests if a path exists and we have permissions to execute it.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and we have executable access,
+ *      false ==> path does not exist OR is not executable OR
+ *                we don't have permission to execute it
+ */
+bool
+is_exec(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(125, __func__, "called with NULL path");
+	not_reached();
+     }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    if (S_ISDIR(buf.st_mode)) {
+	dbg(DBG_VHIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
+    } else {
+	dbg(DBG_VHIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
+    }
+
+    /*
+     * test if we are allowed to execute or search it
+     */
+    ret = access(path, X_OK);
+    if (ret < 0) {
+	if (S_ISDIR(buf.st_mode)) {
+	    dbg(DBG_HIGH, "cannot search directory: %s ", path);
+	} else {
+	    dbg(DBG_HIGH, "is is not executable: %s", path);
+	}
+	return false;
+    }
+    if (S_ISDIR(buf.st_mode)) {
+	dbg(DBG_VHIGH, "path %s is searchable", path);
+    } else {
+	dbg(DBG_VHIGH, "path %s is executable", path);
+    }
+    return true;
+}
+
 
 
 /*
@@ -1289,11 +1493,11 @@ fts_path(FTSENT *ent)
         /*
          * Treebeard died :(
          */
-        err(122, __func__, "ent is NULL");
+        err(126, __func__, "ent is NULL");
         not_reached();
     }
     if (ent->fts_path == NULL) {
-        err(123, __func__, "ent->fts_path == NULL");
+        err(128, __func__, "ent->fts_path == NULL");
         not_reached();
     } else if (ent->fts_path[0] == '\0' || ent->fts_path[1] == '\0' || ent->fts_path[2] == '\0') {
         /*
@@ -1333,11 +1537,11 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      * firewall
      */
     if (a == NULL || *a == NULL) {
-	err(124, __func__, "a is NULL");
+	err(129, __func__, "a is NULL");
 	not_reached();
     }
     if (b == NULL || *b == NULL) {
-	err(125, __func__, "b is NULL");
+	err(130, __func__, "b is NULL");
 	not_reached();
     }
 
@@ -1391,11 +1595,11 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
      * firewall
      */
     if (a == NULL || *a == NULL) {
-	err(126, __func__, "a is NULL");
+	err(131, __func__, "a is NULL");
 	not_reached();
     }
     if (b == NULL || *b == NULL) {
-	err(128, __func__, "b is NULL");
+	err(132, __func__, "b is NULL");
 	not_reached();
     }
 
@@ -1475,21 +1679,21 @@ check_fts_info(FTS *fts, FTSENT *ent)
      * firewall
      */
     if (fts == NULL) {
-        err(129, __func__, "fts is NULL");
+        err(133, __func__, "fts is NULL");
         not_reached();
     }
     if (ent == NULL) {
         /*
          * Treebeard died :(
          */
-        err(130, __func__, "ent is NULL");
+        err(134, __func__, "ent is NULL");
         not_reached();
     }
     switch (ent->fts_info) {
         case FTS_DC: /* cycle in directory tree */
             errno = 0; /* pre-clear errno for errp() */
             if (fts_set(fts, ent, FTS_SKIP) != 0) {
-                errp(131, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s", ent->fts_path);
+                errp(135, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s", ent->fts_path);
                 not_reached();
             } else {
                 warn(__func__, "skipping directory %s because it causes a cycle in the tree", ent->fts_path);
@@ -1499,7 +1703,7 @@ check_fts_info(FTS *fts, FTSENT *ent)
         case FTS_DNR: /* directory not readable */
             errno = 0; /* pre-clear errno for errp() */
             if (fts_set(fts, ent, FTS_SKIP) != 0) {
-                errp(132, __func__, "failed to set FTS_SKIP on an unreadable directory in the tree: %s", ent->fts_path);
+                errp(136, __func__, "failed to set FTS_SKIP on an unreadable directory in the tree: %s", ent->fts_path);
                 not_reached();
             } else {
                 warn(__func__, "skipping unreadable directory %s in the tree", ent->fts_path);
@@ -1507,11 +1711,11 @@ check_fts_info(FTS *fts, FTSENT *ent)
             return false;
             break;
         case FTS_NS: /* no stat(2) info available but we requested it */
-            err(133, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
+            err(137, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
             not_reached();
             break;
         case FTS_NSOK: /* stat(2) not requested */
-            err(134, __func__, "stat(2) info not requested for %s in tree: FTS_NOSTAT set!", ent->fts_path);
+            err(138, __func__, "stat(2) info not requested for %s in tree: FTS_NOSTAT set!", ent->fts_path);
             not_reached();
             break;
         case FTS_ERR: /* some error condition */
@@ -1519,7 +1723,7 @@ check_fts_info(FTS *fts, FTSENT *ent)
              * fake errno
              */
             errno = ent->fts_errno; /* pre-clear errno for errp() */
-            errp(135, __func__, "encountered error from path %s in tree", ent->fts_path);
+            errp(139, __func__, "encountered error from path %s in tree", ent->fts_path);
             not_reached();
             break;
         default:
@@ -1677,12 +1881,12 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
         if (*cwd > 0) {
             errno = 0;  /* pre-clear errno for errp() */
             if (fchdir(*cwd) != 0) {
-                errp(136, __func__, "failed to fchdir(%d)", *cwd);
+                errp(140, __func__, "failed to fchdir(%d)", *cwd);
                 not_reached();
             }
             errno = 0; /* pre-clear errno for errp() */
             if (close(*cwd) != 0) {
-                errp(137, __func__, "close(%d) failed", *cwd);
+                errp(141, __func__, "close(%d) failed", *cwd);
                 not_reached();
             }
             *cwd = -1;
@@ -1697,7 +1901,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
      * firewall
      */
     if (fts == NULL) {
-        err(139, __func__, "fts is NULL");
+        err(142, __func__, "fts is NULL");
         not_reached();
     }
 
@@ -1713,7 +1917,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
         errno = 0;			/* pre-clear errno for errp() */
         *cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
         if (*cwd < 0) {
-            errp(140, __func__, "cannot open .");
+            errp(143, __func__, "cannot open .");
             not_reached();
         }
     }
@@ -1728,7 +1932,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
             if (dirfd > 0) {
                 errno = 0;  /* pre-clear errno for errp() */
                 if (fchdir(dirfd) != 0) {
-                    errp(141, __func__, "both chdir(\"%s\") and fchdir(%d) failed",
+                    errp(144, __func__, "both chdir(\"%s\") and fchdir(%d) failed",
                             dir, dirfd);
                     not_reached();
                 }
@@ -1737,7 +1941,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
     } else if (dirfd > 0) {
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(dirfd) != 0) {
-            errp(142, __func__, "fchdir(%d) failed", dirfd);
+            errp(145, __func__, "fchdir(%d) failed", dirfd);
             not_reached();
         }
     }
@@ -1752,28 +1956,27 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
      * (unsetting if necessary) and then if logical is true we set FTS_LOGICAL
      * and if false we set FTS_PHYSICAL.
      */
-    if (options < 0) {
+    if (options <= 0) {
         options = FTS_NOCHDIR;
         if (logical) {
-            options |= FTS_LOGICAL;
+            SET_BIT(options, FTS_NOCHDIR | FTS_LOGICAL);
         } else {
-            options |= FTS_PHYSICAL;
+            SET_BIT(options, FTS_NOCHDIR | FTS_PHYSICAL);
         }
     } else {
-        options |= FTS_NOCHDIR; /* ensure FTS_NOCHDIR is set */
-        options &= ~FTS_NOSTAT; /* ensure FTS_NOSTAT is NOT set */
+        /*
+         * first remove FTS_NOSTAT, FTS_LOGICAL and FTS_PHYSICAL
+         */
+        REMOVE_BIT(options, FTS_NOSTAT | FTS_LOGICAL | FTS_PHYSICAL);
 
         /*
-         * first remove FTS_LOGICAL and FTS_PHYSICAL
-         */
-        options &= ~(FTS_LOGICAL|FTS_PHYSICAL);
-        /*
-         * now depending on the boolean set the right flag
+         * now ensure that both FTS_NOCHDIR and EITHER FTS_LOGICAL or
+         * FTS_PHYSICAL is set, depending on the logical bool
          */
         if (logical) {
-            options |= FTS_LOGICAL; /* dereference symlinks */
+            SET_BIT(options, FTS_NOCHDIR | FTS_LOGICAL); /* dereference symlinks */
         } else {
-            options |= FTS_PHYSICAL; /* don't follow symlinks */
+            SET_BIT(options, FTS_NOCHDIR | FTS_PHYSICAL);
         }
     }
 
@@ -1801,7 +2004,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
     if (*fts == NULL) {
         *fts = fts_open(path, options, cmp != NULL ? cmp : fts_cmp);
         if (*fts == NULL) {
-            errp(143, __func__, "fts_open() returned NULL for: %s", dir != NULL ? dir : ".");
+            errp(146, __func__, "fts_open() returned NULL for: %s", dir != NULL ? dir : ".");
             not_reached();
         }
     }
@@ -1876,7 +2079,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
                     case FTS_DC: /* cycle in directory tree */
                         errno = 0; /* pre-clear errno for errp() */
                         if (fts_set(*fts, ent, FTS_SKIP) != 0) {
-                            errp(144, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s",
+                            errp(147, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s",
                                     ent->fts_path);
                             not_reached();
                         } else {
@@ -1887,7 +2090,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
                     case FTS_DNR: /* directory not readable */
                         errno = 0; /* pre-clear errno for errp() */
                         if (fts_set(*fts, ent, FTS_SKIP) != 0) {
-                            errp(145, __func__, "failed to set FTS_SKIP on an unreadable directory the tree: %s", ent->fts_path);
+                            errp(148, __func__, "failed to set FTS_SKIP on an unreadable directory the tree: %s", ent->fts_path);
                             not_reached();
                         } else {
                             warn(__func__, "skipping unreadable directory %s in the tree", ent->fts_path);
@@ -1895,11 +2098,11 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
                         }
                         break;
                     case FTS_NS: /* no stat(2) info available but we requested it */
-                        err(146, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
+                        err(149, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
                         not_reached();
                         break;
                     case FTS_NSOK: /* stat(2) was not requested */
-                        err(147, __func__, "stat(2) not requested: FTS_NOSTAT set");
+                        err(150, __func__, "stat(2) not requested: FTS_NOSTAT set");
                         not_reached();
                         break;
                     case FTS_ERR: /* some error condition */
@@ -1907,7 +2110,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
                          * fake errno
                          */
                         errno = ent->fts_errno; /* pre-clear errno for errp() */
-                        errp(148, __func__, "encountered error from path %s in tree", ent->fts_path);
+                        errp(151, __func__, "encountered error from path %s in tree", ent->fts_path);
                         not_reached();
                         break;
                     default:
@@ -1951,7 +2154,7 @@ read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
             }
         } while (ent != NULL);
     } else {
-        err(149, __func__, "*fts is NULL when it shouldn't be");
+        err(152, __func__, "*fts is NULL when it shouldn't be");
         not_reached();
     }
     return NULL;
@@ -2073,7 +2276,7 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
      */
     ent = read_fts(dir, dirfd, cwd, options, logical, &fts, cmp, check);
     if (ent == NULL){
-        err(150, __func__, "failed to open \".\"");
+        err(153, __func__, "failed to open \".\"");
         not_reached();
     } else {
         i = 0;
@@ -2146,11 +2349,39 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
                     /*
                      * save found path
                      */
-                    errno = 0; /* pre-clear errno for errp() */
-                    path_found = strdup(p);
-                    if (path_found == NULL) {
-                        errp(151, __func__, "failed to strdup(\"%s\")", p);
-                        not_reached();
+
+                    /*
+                     * first make sure path_found is NULL
+                     */
+                    path_found = NULL;
+                    /*
+                     * depending on if dir == NULL and dirfd < 0 we will create
+                     * the full path or just a relative path
+                     */
+                    if (dir == NULL && cwd != NULL && *cwd < 0) {
+                        errno = 0; /* pre-clear errno for errp() */
+                        char *d = getcwd(NULL, 0);
+                        if (d == NULL) {
+                            errp(154, __func__, "failed to get current working directory");
+                            not_reached();
+                        }
+                        path_found = calloc_path(d, p);
+                        if (path_found == NULL) {
+                            err(155, __func__, "failed to allocate absolute path of %s", p);
+                            not_reached();
+                        }
+                        if (d != NULL) {
+                            /* free d as we no longer need it */
+                            free(d);
+                            d = NULL;
+                        }
+                    } else {
+                        errno = 0; /* pre-clear errno for errp() */
+                        path_found = strdup(p);
+                        if (path_found == NULL) {
+                            errp(156, __func__, "failed to strdup(\"%s\")", p);
+                            not_reached();
+                        }
                     }
                     /*
                      * close down stream
@@ -2178,7 +2409,7 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
                         errno = 0; /* pre-clear errno for errp() */
                         path_found = strdup(p);
                         if (path_found == NULL) {
-                            errp(152, __func__, "failed to strdup(\"%s\")", p);
+                            errp(157, __func__, "failed to strdup(\"%s\")", p);
                             not_reached();
                         }
                         /*
@@ -2207,7 +2438,7 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
                     errno = 0; /* pre-clear errno for errp() */
                     path_found = strdup(p);
                     if (path_found == NULL) {
-                        errp(153, __func__, "failed to strdup(\"%s\")", p);
+                        errp(158, __func__, "failed to strdup(\"%s\")", p);
                         not_reached();
                     }
 
@@ -2271,11 +2502,11 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
      * firewall
      */
     if (paths == NULL) {
-	err(154, __func__, "paths is NULL");
+	err(159, __func__, "paths is NULL");
 	not_reached();
     }
     if (str == NULL) {
-	err(155, __func__, "str is NULL");
+	err(160, __func__, "str is NULL");
 	not_reached();
     }
 
@@ -2285,7 +2516,7 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
          */
         *paths  = dyn_array_create(sizeof(char *), 64, 64, true);
         if (*paths == NULL) {
-            err(156, __func__, "failed to create paths paths");
+            err(161, __func__, "failed to create paths paths");
             not_reached();
         }
     }
@@ -2309,7 +2540,7 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
             /* get next string pointer */
             u = dyn_array_value(*paths, char *, i);
             if (u == NULL) {	/* paranoia */
-                err(157, __func__, "found NULL pointer in paths dynamic array element: %ju", (uintmax_t)i);
+                err(162, __func__, "found NULL pointer in paths dynamic array element: %ju", (uintmax_t)i);
                 not_reached();
             }
 
@@ -2329,7 +2560,7 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
         errno = 0; /* pre-clear errno for errp() */
         u = strdup(str);
         if (u == NULL) {
-            errp(158, __func__, "failed to strdup(\"%s\")", str);
+            errp(163, __func__, "failed to strdup(\"%s\")", str);
             not_reached();
         }
     } else {
@@ -2503,21 +2734,41 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
     size_t len = 0; /* length of arrays */
     struct dyn_array *paths_found = NULL; /* returned array */
     char *path = NULL;
+    bool abspath = false; /* true ==> we obtained current working directory */
+    char *name = NULL;
+
 
     /*
      * firewall
      */
     if (paths == NULL) {
-        err(159, __func__, "paths list is NULL");
+        err(164, __func__, "paths list is NULL");
         not_reached();
     }
 
+    /*
+     * if dirfd < 0 and dir == NULL we will get absolute path (from where we
+     * are) for each file
+     */
+    if (dir == NULL && dirfd < 0) {
+        errno = 0; /* pre-clear errno for errp() */
+        dir = getcwd(NULL, 0);
+        if (dir == NULL) {
+            errp(165, __func__, "failed to get absolute path");
+            not_reached();
+        }
+
+        /*
+         * remember before we return we must free this if abspath == true
+         */
+        abspath = true;
+    }
     /*
      * first open the stream and get the first entry
      */
     ent = read_fts(dir, dirfd, cwd, options, logical, &fts, cmp, check);
     if (ent == NULL){
-        err(160, __func__, "failed to open \".\"");
+        err(166, __func__, "failed to open \".\"");
         not_reached();
     } else {
         i = 0;
@@ -2584,7 +2835,7 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
             for (j = 0; j < len; ++j) {
                 path = dyn_array_value(paths, char *, j);
                 if (path == NULL) {
-                    err(161, __func__, "paths[%ju] == NULL", j);
+                    err(167, __func__, "paths[%ju] == NULL", j);
                     not_reached();
                 }
                 if (*path == '\0') {
@@ -2598,10 +2849,38 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
                          * found a match
                          */
 
+                        name = NULL;
                         /*
-                         * append to array if it is not already there
+                         * if abspath == true we will add the absolute path,
+                         * otherwise will will only add relative path
                          */
-                        append_path(&paths_found, p, true, false);
+                        if (abspath) {
+                            name = calloc_path(dir, p);
+                            if (name == NULL) {
+                                err(168, __func__, "failed to allocate path: %s/%s", dir, p);
+                                not_reached();
+                            } else {
+                                dbg(DBG_VVHIGH, "allocated absolute path: %s", name);
+                            }
+                            /*
+                             * false, false because it's already allocated!
+                             */
+                            append_path(&paths_found, name, false, false);
+
+                            /*
+                             * do NOT free the name as it's been added to the
+                             * paths array!
+                             */
+                        } else {
+                            /*
+                             * regular append in this case
+                             */
+                            append_path(&paths_found, p, true, false);
+                        }
+
+                        /*
+                         * continue to next entry
+                         */
                         continue;
                     }
                 } else if (base && !strcmp(ent->fts_name, path)) {
@@ -2615,10 +2894,38 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
                             dbg(DBG_MED, "found path %s at depth %d", p, depth);
                         }
 
+                        name = NULL;
                         /*
-                         * append to array if it is not already there
+                         * if abspath == true we will add the absolute path,
+                         * otherwise will will only add relative path
                          */
-                        append_path(&paths_found, p, true, false);
+                        if (abspath) {
+                            name = calloc_path(dir, p);
+                            if (name == NULL) {
+                                err(169, __func__, "failed to allocate path: %s/%s", dir, p);
+                                not_reached();
+                            } else {
+                                dbg(DBG_VVHIGH, "allocated absolute path: %s", name);
+                            }
+                            /*
+                             * false, false because it's already allocated!
+                             */
+                            append_path(&paths_found, name, false, false);
+
+                            /*
+                             * do NOT free the name as it's been added to the
+                             * paths array!
+                             */
+                        } else {
+                            /*
+                             * regular append in this case
+                             */
+                            append_path(&paths_found, p, true, false);
+                        }
+
+                        /*
+                         * continue to next entry
+                         */
                         continue;
                     }
                 } else if (!base && !strcmp(p, path)) {
@@ -2633,10 +2940,38 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
                             dbg(DBG_MED, "found path %s at depth %d", p, depth);
                         }
 
+                        name = NULL;
                         /*
-                         * append to array if it is not already there
+                         * if abspath == true we will add the absolute path,
+                         * otherwise will will only add relative path
                          */
-                        append_path(&paths_found, p, true, false);
+                        if (abspath) {
+                            name = calloc_path(dir, p);
+                            if (name == NULL) {
+                                err(170, __func__, "failed to allocate path: %s/%s", dir, p);
+                                not_reached();
+                            } else {
+                                dbg(DBG_VVHIGH, "allocated absolute path: %s", name);
+                            }
+                            /*
+                             * false, false because it's already allocated!
+                             */
+                            append_path(&paths_found, name, false, false);
+
+                            /*
+                             * do NOT free the name as it's been added to the
+                             * paths array!
+                             */
+                        } else {
+                            /*
+                             * regular append in this case
+                             */
+                            append_path(&paths_found, p, true, false);
+                        }
+
+                        /*
+                         * continue to next entry
+                         */
                         continue;
                     }
                 } else {
@@ -2656,6 +2991,10 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, int options,
      * case.
      */
     free_paths_array(&paths_found, true);
+    if (abspath){
+        free(dir);
+        dir = NULL;
+    }
     return paths_found;
 }
 
@@ -2678,7 +3017,7 @@ filemode(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(162, __func__, "called with NULL path");
+	err(171, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -3092,7 +3431,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	    if (ret < 0) {
 		/* exit or error return depending on abort_on_error */
 		if (abort_on_error) {
-		    errp(163, name, "fflush(stdin): error code: %d", ret);
+		    errp(172, name, "fflush(stdin): error code: %d", ret);
 		    not_reached();
 		} else {
 		    dbg(DBG_MED, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
@@ -3117,7 +3456,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	if (ret < 0) {
 	    /* exit or error return depending on abort_on_error */
 	    if (abort_on_error) {
-		errp(164, name, "fflush(stdout): error code: %d", ret);
+		errp(173, name, "fflush(stdout): error code: %d", ret);
 		not_reached();
 	    } else {
 		dbg(DBG_MED, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
@@ -3141,7 +3480,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	if (ret < 0) {
 	    /* exit or error return depending on abort_on_error */
 	    if (abort_on_error) {
-		errp(165, name, "fflush(stderr): error code: %d", ret);
+		errp(174, name, "fflush(stderr): error code: %d", ret);
 		not_reached();
 	    } else {
 		dbg(DBG_MED, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));
@@ -3177,7 +3516,7 @@ file_size(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(166, __func__, "called with NULL path");
+	err(175, __func__, "called with NULL path");
 	not_reached();
     }
 
@@ -3495,7 +3834,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     if (name == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    err(167, __func__, "function name is not caller name because we were called with NULL name");
+	    err(176, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL name, returning: %d < 0", EXIT_NULL_ARGS);
@@ -3505,7 +3844,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     if (format == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    err(168, name, "called with NULL format");
+	    err(177, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
@@ -3526,7 +3865,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     if (cmd == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(169, name, "calloc failed in vcmdprintf()");
+	    errp(178, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
@@ -3550,7 +3889,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     if (exit_code < 0) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(170, __func__, "error calling system(\"%s\")", cmd);
+	    errp(179, __func__, "error calling system(\"%s\")", cmd);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling system(\"%s\")", name, cmd);
@@ -3569,7 +3908,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     } else if (exit_code == 127) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(171, __func__, "execution of the shell failed for system(\"%s\")", cmd);
+	    errp(180, __func__, "execution of the shell failed for system(\"%s\")", cmd);
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(\"%s\")", name, cmd);
@@ -3646,7 +3985,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (name == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(172, __func__, "function name is not caller name because we were called with NULL name");
+	    err(181, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL name, returning NULL");
@@ -3656,7 +3995,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (format == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    err(173, name, "called with NULL format");
+	    err(182, name, "called with NULL format");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called with NULL format, returning NULL");
@@ -3677,7 +4016,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    errp(174, name, "calloc failed in vcmdprintf()");
+	    errp(183, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
@@ -3704,7 +4043,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     if (stream == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(175, name, "error calling popen(\"%s\", \"%s\")", cmd, write_mode?"w":"r");
+	    errp(184, name, "error calling popen(\"%s\", \"%s\")", cmd, write_mode?"w":"r");
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling popen(\"%s\", \"%s\"): %s", name, cmd, write_mode?"w":"r",
@@ -3781,7 +4120,7 @@ para(char const *line, ...)
      * firewall
      */
     if (stdout == NULL) {
-	err(176, __func__, "stdout is NULL");
+	err(185, __func__, "stdout is NULL");
 	not_reached();
     }
     clearerr(stdout);		/* pre-clear ferror() status */
@@ -3791,7 +4130,7 @@ para(char const *line, ...)
      */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(177, __func__, "fileno on stdout returned: %d < 0", fd);
+	errp(186, __func__, "fileno on stdout returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stdout);		/* paranoia */
@@ -3810,13 +4149,13 @@ para(char const *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(178, __func__, "error writing paragraph to a stdout");
+		errp(187, __func__, "error writing paragraph to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(179, __func__, "EOF while writing paragraph to a stdout");
+		err(188, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(180, __func__, "unexpected fputs error writing paragraph to stdout");
+		errp(189, __func__, "unexpected fputs error writing paragraph to stdout");
 		not_reached();
 	    }
 	}
@@ -3829,13 +4168,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(181, __func__, "error writing newline to stdout");
+		errp(190, __func__, "error writing newline to stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(182, __func__, "EOF while writing newline to stdout");
+		err(191, __func__, "EOF while writing newline to stdout");
 		not_reached();
 	    } else {
-		errp(183, __func__, "unexpected fputc error writing newline to stdout");
+		errp(192, __func__, "unexpected fputc error writing newline to stdout");
 		not_reached();
 	    }
 	}
@@ -3860,13 +4199,13 @@ para(char const *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(184, __func__, "error flushing stdout");
+	    errp(193, __func__, "error flushing stdout");
 	    not_reached();
 	} else if (feof(stdout)) {
-	    err(185, __func__, "EOF while flushing stdout");
+	    err(194, __func__, "EOF while flushing stdout");
 	    not_reached();
 	} else {
-	    errp(186, __func__, "unexpected fflush error while flushing stdout");
+	    errp(195, __func__, "unexpected fflush error while flushing stdout");
 	    not_reached();
 	}
     }
@@ -3909,7 +4248,7 @@ fpara(FILE * stream, char const *line, ...)
      * firewall
      */
     if (stream == NULL) {
-	err(187, __func__, "stream is NULL");
+	err(196, __func__, "stream is NULL");
 	not_reached();
     }
 
@@ -3920,7 +4259,7 @@ fpara(FILE * stream, char const *line, ...)
     errno = 0;			/* pre-clear errno for errp() */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(188, __func__, "fileno on stream returned: %d < 0", fd);
+	errp(197, __func__, "fileno on stream returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stream);		/* paranoia */
@@ -3939,13 +4278,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(189, __func__, "error writing paragraph to stream");
+		errp(198, __func__, "error writing paragraph to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(190, __func__, "EOF while writing paragraph to stream");
+		err(199, __func__, "EOF while writing paragraph to stream");
 		not_reached();
 	    } else {
-		errp(191, __func__, "unexpected fputs error writing paragraph to stream");
+		errp(200, __func__, "unexpected fputs error writing paragraph to stream");
 		not_reached();
 	    }
 	}
@@ -3958,13 +4297,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(192, __func__, "error writing newline to stream");
+		errp(201, __func__, "error writing newline to stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(193, __func__, "EOF while writing newline to stream");
+		err(202, __func__, "EOF while writing newline to stream");
 		not_reached();
 	    } else {
-		errp(194, __func__, "unexpected fputc error writing newline to stream");
+		errp(203, __func__, "unexpected fputc error writing newline to stream");
 		not_reached();
 	    }
 	}
@@ -3989,13 +4328,13 @@ fpara(FILE * stream, char const *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(195, __func__, "error flushing stream");
+	    errp(204, __func__, "error flushing stream");
 	    not_reached();
 	} else if (feof(stream)) {
-	    err(196, __func__, "EOF while flushing stream");
+	    err(205, __func__, "EOF while flushing stream");
 	    not_reached();
 	} else {
-	    errp(197, __func__, "unexpected fflush error while flushing stream");
+	    errp(206, __func__, "unexpected fflush error while flushing stream");
 	    not_reached();
 	}
     }
@@ -4189,7 +4528,7 @@ readline(char **linep, FILE * stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(198, __func__, "called with NULL arg(s)");
+	err(207, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -4204,10 +4543,10 @@ readline(char **linep, FILE * stream)
 	    dbg(DBG_VVHIGH, "EOF detected in getline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
-	    errp(199, __func__, "getline() error");
+	    errp(208, __func__, "getline() error");
 	    not_reached();
 	} else {
-	    errp(200, __func__, "unexpected getline() error");
+	    errp(209, __func__, "unexpected getline() error");
 	    not_reached();
 	}
     }
@@ -4215,7 +4554,7 @@ readline(char **linep, FILE * stream)
      * paranoia
      */
     if (*linep == NULL) {
-	err(201, __func__, "*linep is NULL after getline()");
+	err(210, __func__, "*linep is NULL after getline()");
 	not_reached();
     }
 
@@ -4271,7 +4610,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(202, __func__, "called with NULL arg(s)");
+	err(211, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -4293,7 +4632,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc((size_t)len+1+1, sizeof(char));
     if (ret == NULL) {
-	errp(203, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
+	errp(212, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
     memcpy(ret, *linep, (size_t)len);
@@ -4396,7 +4735,7 @@ read_all(FILE *stream, size_t *psize)
      * firewall
      */
     if (stream == NULL) {
-	err(204, __func__, "called with NULL stream");
+	err(213, __func__, "called with NULL stream");
 	not_reached();
     }
 
@@ -4560,18 +4899,18 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * firewall
      */
     if (src == NULL) {
-        err(205, __func__, "src path is NULL");
+        err(214, __func__, "src path is NULL");
         not_reached();
     } else if (*src == '\0') {
-        err(206, __func__, "src path is empty string");
+        err(215, __func__, "src path is empty string");
         not_reached();
     }
 
     if (dest == NULL) {
-        err(207, __func__, "dest path is NULL");
+        err(216, __func__, "dest path is NULL");
         not_reached();
     } else if (*dest == '\0') {
-        err(208, __func__, "dest path is empty string");
+        err(217, __func__, "dest path is empty string");
         not_reached();
     }
 
@@ -4579,13 +4918,13 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * verify that src file exists
      */
     if (!exists(src)) {
-        err(209, __func__, "src file does not exist: %s", src);
+        err(218, __func__, "src file does not exist: %s", src);
         not_reached();
     } else if (!is_file(src)) {
-        err(210, __func__, "src file is not a regular file: %s", src);
+        err(219, __func__, "src file is not a regular file: %s", src);
         not_reached();
     } else if (!is_read(src)) {
-        err(211, __func__, "src file is not readable: %s", src);
+        err(220, __func__, "src file is not readable: %s", src);
         not_reached();
     }
 
@@ -4593,7 +4932,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * verify dest path does NOT exist
      */
     if (exists(dest)) {
-        err(212, __func__, "dest file already exists: %s", dest);
+        err(221, __func__, "dest file already exists: %s", dest);
         not_reached();
     }
 
@@ -4603,7 +4942,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;      /* pre-clear errno for errp() */
     in_file = fopen(src, "rb");
     if (in_file == NULL) {
-        errp(213, __func__, "couldn't open src file %s for reading: %s", src, strerror(errno));
+        errp(222, __func__, "couldn't open src file %s for reading: %s", src, strerror(errno));
         not_reached();
     }
 
@@ -4613,7 +4952,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear errno for errp() */
     infd = open(src, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (infd < 0) {
-        errp(214, __func__, "failed to obtain file descriptor for %s: %s", src, strerror(errno));
+        errp(223, __func__, "failed to obtain file descriptor for %s: %s", src, strerror(errno));
         not_reached();
     }
 
@@ -4623,7 +4962,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;      /* pre-clear errno for errp() */
     ret = fstat(infd, &in_st);
     if (ret < 0) {
-	errp(215, __func__, "failed to get stat info for %s, stat returned: %s", src, strerror(errno));
+	errp(224, __func__, "failed to get stat info for %s, stat returned: %s", src, strerror(errno));
         not_reached();
     }
 
@@ -4637,7 +4976,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      */
     buf = read_all(in_file, &inbytes);
     if (buf == NULL) {
-        err(216, __func__, "couldn't read in src file: %s", src);
+        err(225, __func__, "couldn't read in src file: %s", src);
         not_reached();
     }
 
@@ -4649,7 +4988,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(in_file);
     if (ret < 0) {
-	errp(217, __func__, "fclose error for %s: %s", src, strerror(errno));
+	errp(226, __func__, "fclose error for %s: %s", src, strerror(errno));
 	not_reached();
     }
 
@@ -4663,7 +5002,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
             free(buf);
             buf = NULL;
         }
-        errp(218, __func__, "couldn't open dest file %s for writing: %s", dest, strerror(errno));
+        errp(227, __func__, "couldn't open dest file %s for writing: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -4673,7 +5012,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear errno for errp() */
     outfd = open(dest, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (outfd < 0) {
-        errp(219, __func__, "failed to obtain file descriptor for %s: %s", dest, strerror(errno));
+        errp(228, __func__, "failed to obtain file descriptor for %s: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -4684,7 +5023,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;		/* pre-clear errno for warnp() */
     outbytes = fwrite(buf, 1, inbytes, out_file);
     if (outbytes != inbytes) {
-        errp(220, __func__, "error: wrote %ju bytes out of expected %ju bytes",
+        errp(229, __func__, "error: wrote %ju bytes out of expected %ju bytes",
                     (uintmax_t)outbytes, (uintmax_t)inbytes);
         not_reached();
     } else {
@@ -4698,7 +5037,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(out_file);
     if (ret < 0) {
-	errp(221, __func__, "fclose error for %s: %s", dest, strerror(errno));
+	errp(230, __func__, "fclose error for %s: %s", dest, strerror(errno));
 	not_reached();
     }
 
@@ -4713,7 +5052,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
             free(buf);
             buf = NULL;
         }
-        err(222, __func__, "couldn't open dest file for reading: %s: %s", dest, strerror(errno));
+        err(231, __func__, "couldn't open dest file for reading: %s: %s", dest, strerror(errno));
         not_reached();
     }
 
@@ -4731,7 +5070,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      */
     copy = read_all(out_file, &inbytes);
     if (copy == NULL) {
-        err(223, __func__, "couldn't read in dest file: %s", dest);
+        err(232, __func__, "couldn't read in dest file: %s", dest);
         not_reached();
     }
 
@@ -4743,7 +5082,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(out_file);
     if (ret < 0) {
-	errp(224, __func__, "fclose error for %s: %s", dest, strerror(errno));
+	errp(233, __func__, "fclose error for %s: %s", dest, strerror(errno));
 	not_reached();
     }
 
@@ -4751,7 +5090,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * first check that the bytes read in is the same as the bytes written
      */
     if (outbytes != inbytes) {
-        err(225, __func__, "error: read %ju bytes out of expected %ju bytes",
+        err(234, __func__, "error: read %ju bytes out of expected %ju bytes",
                     (uintmax_t)inbytes, (uintmax_t)outbytes);
         not_reached();
     } else {
@@ -4764,7 +5103,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * buffer from the dest file (copy of src file)
      */
     if (memcmp(copy, buf, inbytes) != 0) {
-        err(226, __func__, "copy of src file %s is not the same as the contents of the dest file %s", src, dest);
+        err(235, __func__, "copy of src file %s is not the same as the contents of the dest file %s", src, dest);
         not_reached();
     } else {
         dbg(DBG_HIGH, "copy of src file %s is identical to dest file %s", src, dest);
@@ -4793,7 +5132,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errno = 0;      /* pre-clear errno for errp() */
         ret = fchmod(outfd, in_st.st_mode);
         if (ret != 0) {
-            errp(227, __func__, "fchmod(2) failed to set source file %s mode %o on %s: %s", src, in_st.st_mode,
+            errp(236, __func__, "fchmod(2) failed to set source file %s mode %o on %s: %s", src, in_st.st_mode,
                     dest, strerror(errno));
             not_reached();
         }
@@ -4804,7 +5143,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errno = 0;      /* pre-clear errno for errp() */
         ret = fstat(outfd, &out_st);
         if (ret != 0) {
-            errp(228, __func__, "failed to get stat info for %s, stat returned: %s", dest, strerror(errno));
+            errp(237, __func__, "failed to get stat info for %s, stat returned: %s", dest, strerror(errno));
             not_reached();
         }
 
@@ -4812,7 +5151,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
          * we now need to verify that the modes are the same
          */
         if (in_st.st_mode != out_st.st_mode) {
-            err(229, __func__, "failed to copy st_mode %o from %s to %s: %o != %o", in_st.st_mode, src, dest, in_st.st_mode,
+            err(238, __func__, "failed to copy st_mode %o from %s to %s: %o != %o", in_st.st_mode, src, dest, in_st.st_mode,
                     out_st.st_mode);
             not_reached();
         }
@@ -4823,7 +5162,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errno = 0;      /* pre-clear errno for errp() */
         ret = fchmod(outfd, mode);
         if (ret != 0) {
-            errp(230, __func__, "fchmod(2) failed to set requested mode on %s: %s", dest, strerror(errno));
+            errp(239, __func__, "fchmod(2) failed to set requested mode on %s: %s", dest, strerror(errno));
             not_reached();
         }
 
@@ -4850,7 +5189,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0; /* pre-clear for errp() */
     ret = close(outfd);
     if (ret < 0) {
-        errp(231, __func__, "close(outfd) failed: %s", strerror(errno));
+        errp(240, __func__, "close(outfd) failed: %s", strerror(errno));
         not_reached();
     }
 
@@ -4893,20 +5232,20 @@ mkdirs(int dirfd, const char *str, mode_t mode)
      * firewall
      */
     if (str == NULL) {
-        err(232, __func__, "str (path) is NULL");
+        err(241, __func__, "str (path) is NULL");
         not_reached();
     }
 
     len = strlen(str);
     if (len <= 0) {
-        err(233, __func__, "str (path) is empty");
+        err(242, __func__, "str (path) is empty");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(str);
     if (dup == NULL) {
-        errp(234, __func__, "duplicating \"%s\" failed", str);
+        errp(243, __func__, "duplicating \"%s\" failed", str);
         not_reached();
     }
 
@@ -4919,7 +5258,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-        errp(235, __func__, "cannot open .");
+        errp(244, __func__, "cannot open .");
         not_reached();
     }
 
@@ -4935,7 +5274,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(dirfd) != 0) {
-        errp(236, __func__, "failed to change to parent directory");
+        errp(245, __func__, "failed to change to parent directory");
         not_reached();
     }
 
@@ -4950,7 +5289,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
         errno = 0; /* pre-clear errno for errp() */
         if (mkdir(dup, 0) != 0) {
             if (errno != EEXIST) {
-                errp(237, __func__, "mkdir() of %s failed with: %s", dup, strerror(errno));
+                errp(246, __func__, "mkdir() of %s failed with: %s", dup, strerror(errno));
                 not_reached();
             } else {
                 /*
@@ -4958,7 +5297,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                  */
                 errno = 0; /* pre-clear errno for errp */
                 if (chmod(dup, mode) != 0) {
-                    errp(238, __func__, "chmod(\"%s\", %o) failed", dup, mode);
+                    errp(247, __func__, "chmod(\"%s\", %o) failed", dup, mode);
                     not_reached();
                 } else {
                     dbg(DBG_HIGH, "set modes %o on %s", mode, dup);
@@ -4971,7 +5310,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
              */
             errno = 0; /* pre-clear errno for errp */
             if (chmod(dup, mode) != 0) {
-                errp(239, __func__, "chmod(\"%s\", %o) failed", dup, mode);
+                errp(248, __func__, "chmod(\"%s\", %o) failed", dup, mode);
                 not_reached();
             } else {
                 dbg(DBG_HIGH, "set modes %o on %s", mode, dup);
@@ -4988,7 +5327,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
         errno = 0; /* pre-clear errno for errp() */
         if (mkdir(p, 0) != 0) {
             if (errno != EEXIST) {
-                errp(240, __func__, "mkdir() of %s failed with: %s", p, strerror(errno));
+                errp(249, __func__, "mkdir() of %s failed with: %s", p, strerror(errno));
                 not_reached();
             } else {
                 /*
@@ -4996,7 +5335,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                  */
                 errno = 0; /* pre-clear errno for errp */
                 if (chmod(dup, mode) != 0) {
-                    errp(241, __func__, "chmod(\"%s\", %o) failed", dup, mode);
+                    errp(10, __func__, "chmod(\"%s\", %o) failed", dup, mode);
                     not_reached();
                 } else {
                     dbg(DBG_HIGH, "set mode %o on %s", mode, dup);
@@ -5009,7 +5348,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
              */
             errno = 0; /* pre-clear errno for errp */
             if (chmod(dup, mode) != 0) {
-                errp(242, __func__, "chmod(\"%s\", %o) failed", dup, mode);
+                errp(11, __func__, "chmod(\"%s\", %o) failed", dup, mode);
                 not_reached();
             } else {
                 dbg(DBG_HIGH, "set mode %o on %s", mode, dup);
@@ -5021,7 +5360,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
          */
         errno = 0; /* pre-clear errno for errp() */
         if (chdir(p) != 0) {
-            errp(243, __func__, "failed to change to %s", p);
+            errp(12, __func__, "failed to change to %s", p);
             not_reached();
         }
 
@@ -5032,7 +5371,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
             errno = 0; /* pre-clear errno for errp() */
             if (mkdir(p, 0) != 0) {
                 if (errno != EEXIST) {
-                    errp(244, __func__, "mkdir() of %s failed with: %s", p, strerror(errno));
+                    errp(13, __func__, "mkdir() of %s failed with: %s", p, strerror(errno));
                     not_reached();
                 } else {
                     /*
@@ -5040,7 +5379,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                      */
                     errno = 0; /* pre-clear errno for errp */
                     if (chmod(p, mode) != 0) {
-                        errp(245, __func__, "chmod(\"%s\", %o) failed", p, mode);
+                        errp(14, __func__, "chmod(\"%s\", %o) failed", p, mode);
                         not_reached();
                     } else {
                         dbg(DBG_HIGH, "set mode %o on %s", mode, p);
@@ -5052,7 +5391,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                  */
                 errno = 0; /* pre-clear errno for errp */
                 if (chmod(p, mode) != 0) {
-                    errp(246, __func__, "chmod(\"%s\", %o) failed", p, mode);
+                    errp(15, __func__, "chmod(\"%s\", %o) failed", p, mode);
                     not_reached();
                 } else {
                     dbg(DBG_HIGH, "set mode %o on %s", mode, p);
@@ -5061,7 +5400,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
             errno = 0; /* pre-clear errno for errp() */
             dir = chdir(p);
             if (dir < 0) {
-                errp(247, __func__, "failed to open directory %s", p);
+                errp(16, __func__, "failed to open directory %s", p);
                 not_reached();
             }
         }
@@ -5072,7 +5411,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(cwd) != 0) {
-        errp(248, __func__, "failed to change back to previous directory");
+        errp(17, __func__, "failed to change back to previous directory");
         not_reached();
     }
 
@@ -5081,7 +5420,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
      */
     errno = 0; /* pre-clear errno for errp() */
     if (close(cwd) != 0) {
-        errp(249, __func__, "failed to close(cwd): %s", strerror(errno));
+        errp(18, __func__, "failed to close(cwd): %s", strerror(errno));
         not_reached();
     }
 
@@ -6240,7 +6579,7 @@ sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filena
     errno = 0; /* pre-clear errno for errp() */
     dup = strdup(str);
     if (dup == NULL) {
-        errp(10, __func__, "duplicating \"%s\" failed", str);
+        errp(19, __func__, "duplicating \"%s\" failed", str);
         not_reached();
     }
 
@@ -6579,18 +6918,18 @@ path_has_component(char const *path, char const *name)
      * firewall
      */
     if (path == NULL) {
-        err(11, __func__, "path is NULL");
+        err(20, __func__, "path is NULL");
         not_reached();
     }
     if (name == NULL) {
-        err(12, __func__, "name is NULL");
+        err(21, __func__, "name is NULL");
         not_reached();
     }
 
     errno = 0;      /* pre-clear errno for errp() */
     path_dup = strdup(path);
     if (path_dup == NULL) {
-        errp(13, __func__, "duplicating %s failed", path);
+        errp(22, __func__, "duplicating %s failed", path);
         not_reached();
     }
 
@@ -6647,7 +6986,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(14, __func__, "called with NULL arg(s)");
+	err(23, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -7736,7 +8075,7 @@ calloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(15, __func__, "filename is NULL");
+	err(24, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -7753,7 +8092,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(16, __func__, "strdup of filename failed: %s", filename);
+	    errp(25, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -7771,7 +8110,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+2, sizeof(char));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(17, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(26, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -7791,7 +8130,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(18, __func__, "snprintf returned: %zu < 0", len);
+	    errp(27, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -7800,7 +8139,7 @@ calloc_path(char const *dirname, char const *filename)
      * return malloc path
      */
     if (buf == NULL) {
-	errp(19, __func__, "function attempted to return NULL");
+	errp(28, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;
@@ -7839,7 +8178,7 @@ open_dir_file(char const *dir, char const *file)
      * firewall
      */
     if (file == NULL) {
-	err(20, __func__, "called with NULL file");
+	err(29, __func__, "called with NULL file");
 	not_reached();
     }
 
@@ -7850,7 +8189,7 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-        errp(21, __func__, "cannot open .");
+        errp(30, __func__, "cannot open .");
         not_reached();
     }
 
@@ -7863,15 +8202,15 @@ open_dir_file(char const *dir, char const *file)
 	 * check if we can search / work within the directory
 	 */
 	if (!exists(dir)) {
-	    err(22, __func__, "directory does not exist: %s", dir);
+	    err(31, __func__, "directory does not exist: %s", dir);
 	    not_reached();
 	}
 	if (!is_dir(dir)) {
-	    err(23, __func__, "is not a directory: %s", dir);
+	    err(32, __func__, "is not a directory: %s", dir);
 	    not_reached();
 	}
 	if (!is_exec(dir)) {
-	    err(24, __func__, "directory is not searchable: %s", dir);
+	    err(33, __func__, "directory is not searchable: %s", dir);
 	    not_reached();
 	}
 
@@ -7881,7 +8220,7 @@ open_dir_file(char const *dir, char const *file)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = chdir(dir);
 	if (ret < 0) {
-	    errp(25, __func__, "cannot cd %s", dir);
+	    errp(34, __func__, "cannot cd %s", dir);
 	    not_reached();
 	}
     }
@@ -7890,15 +8229,15 @@ open_dir_file(char const *dir, char const *file)
      * must be a readable file
      */
     if (!exists(file)) {
-	err(26, __func__, "file does not exist: %s", file);
+	err(35, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
-	err(27, __func__, "file is not a regular file: %s", file);
+	err(36, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
-	err(28, __func__, "file is not a readable file: %s", file);
+	err(37, __func__, "file is not a readable file: %s", file);
 	not_reached();
     }
 
@@ -7908,7 +8247,7 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;		/* pre-clear errno for errp() */
     ret_stream = fopen(file, "r");
     if (ret_stream == NULL) {
-	errp(29, __func__, "cannot open file: %s", file);
+	errp(38, __func__, "cannot open file: %s", file);
 	not_reached();
     }
 
@@ -7923,13 +8262,13 @@ open_dir_file(char const *dir, char const *file)
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = fchdir(cwd);
 	if (ret < 0) {
-	    errp(30, __func__, "cannot fchdir to the previous current directory");
+	    errp(39, __func__, "cannot fchdir to the previous current directory");
 	    not_reached();
 	}
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = close(cwd);
 	if (ret < 0) {
-	    errp(31, __func__, "close of previous current directory failed");
+	    errp(40, __func__, "close of previous current directory failed");
 	    not_reached();
 	}
     }
@@ -7961,7 +8300,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(32, __func__, "given NULL str");
+	err(41, __func__, "given NULL str");
 	not_reached();
     }
 
@@ -8038,7 +8377,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.15 2025-02-17" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.17 2025-02-19" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -8077,7 +8416,7 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, ":hv:J:Vqe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - write help, to stderr and exit 0 */
-	    fprintf_usage(33, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+	    fprintf_usage(42, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
                     JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
@@ -8123,19 +8462,19 @@ main(int argc, char **argv)
 	    break;
 	case ':':
 	    (void) fprintf(stderr, "%s: requires an argument -- %c\n\n", program, optopt);
-	    fprintf_usage(34, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+	    fprintf_usage(43, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
                     JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case '?':
 	    (void) fprintf(stderr, "%s: illegal option -- %c\n\n", program, optopt);
-	    fprintf_usage(35, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+	    fprintf_usage(44, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
                     JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	default:
 	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
-	    fprintf_usage(36, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION,
+	    fprintf_usage(45, stderr, usage, program, UTIL_TEST_VERSION, JPARSE_UTILS_VERSION,
                     JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION); /*ooo*/
 	    not_reached();
 	}
@@ -8162,10 +8501,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(37, __func__, "calloc_path(\"%s\", \"%s\") returned NULL", dirname, filename);
+	errp(46, __func__, "calloc_path(\"%s\", \"%s\") returned NULL", dirname, filename);
 	not_reached();
     } else if (strcmp(buf, "foo/bar") != 0) {
-	err(38, __func__, "buf: %s != %s/%s", buf, dirname, filename);
+	err(47, __func__, "buf: %s != %s/%s", buf, dirname, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(\"%s\", \"%s\"): returned %s", dirname, filename, buf);
@@ -8186,10 +8525,10 @@ main(int argc, char **argv)
     errno = 0; /* pre-clear errno for errp() */
     buf = calloc_path(dirname, filename);
     if (buf == NULL) {
-	errp(39, __func__, "calloc_path(NULL, \"%s\") returned NULL", filename);
+	errp(48, __func__, "calloc_path(NULL, \"%s\") returned NULL", filename);
 	not_reached();
     } else if (strcmp(buf, "bar") != 0) {
-	err(40, __func__, "buf: %s != %s", buf, filename);
+	err(49, __func__, "buf: %s != %s", buf, filename);
 	not_reached();
     } else {
 	fdbg(stderr, DBG_MED, "calloc_path(NULL, \"%s\"): returned %s", filename, buf);
@@ -8221,7 +8560,7 @@ main(int argc, char **argv)
      */
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(41, __func__, "sane_relative_path(\"%s\", 99, 25, 4, fale): expected PATH_OK, got: %s",
+        err(50, __func__, "sane_relative_path(\"%s\", 99, 25, 4, fale): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity)); /*coo*/
         not_reached();
     } else {
@@ -8234,7 +8573,7 @@ main(int argc, char **argv)
     relpath = "foo/bar";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(42, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
+        err(51, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8247,7 +8586,7 @@ main(int argc, char **argv)
     relpath = "";
     sanity = sane_relative_path(relpath, 99, 25, 2, false);
     if (sanity != PATH_ERR_PATH_EMPTY) {
-        err(43, __func__, "sane_relative_path(\"%s\", 99, 25, 2, false): expected PATH_ERR_PATH_EMPTY, got: %s",
+        err(52, __func__, "sane_relative_path(\"%s\", 99, 25, 2, false): expected PATH_ERR_PATH_EMPTY, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8260,7 +8599,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity =sane_relative_path(relpath, 2, 99, 2, false);
     if (sanity != PATH_ERR_PATH_TOO_LONG) {
-        err(44, __func__, "sane_relative_path(\"%s\", 2, 99, 2, false): expected PATH_ERR_PATH_TOO_LONG, got: %s",
+        err(53, __func__, "sane_relative_path(\"%s\", 2, 99, 2, false): expected PATH_ERR_PATH_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8273,7 +8612,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity =sane_relative_path(relpath, 0, 25, 2, false);
     if (sanity != PATH_ERR_MAX_PATH_LEN_0) {
-        err(45, __func__, "sane_relative_path(\"%s\", 0, 25, 2, false): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
+        err(54, __func__, "sane_relative_path(\"%s\", 0, 25, 2, false): expected PATH_ERR_MAX_PATH_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8286,7 +8625,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     sanity = sane_relative_path(relpath, 99, 25, 0, false);
     if (sanity != PATH_ERR_MAX_DEPTH_0) {
-        err(46, __func__, "sane_relative_path(\"%s\", 99, 25, 0, false): expected PATH_ERR_MAX_DEPTH_0, got: %s",
+        err(55, __func__, "sane_relative_path(\"%s\", 99, 25, 0, false): expected PATH_ERR_MAX_DEPTH_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8299,7 +8638,7 @@ main(int argc, char **argv)
     relpath = "/foo";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_RELATIVE) {
-        err(47, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_RELATIVE, got: %s",
+        err(56, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_RELATIVE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8312,7 +8651,7 @@ main(int argc, char **argv)
     relpath = "aequeosalinocalcalinoceraceoaluminosocupreovitriolic"; /* 52 letter word recognised by some */
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NAME_TOO_LONG) {
-        err(48, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NAME_TOO_LONG, got: %s",
+        err(57, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NAME_TOO_LONG, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8325,7 +8664,7 @@ main(int argc, char **argv)
     relpath = "foo";
     sanity = sane_relative_path(relpath, 99, 0, 2, false);
     if (sanity != PATH_ERR_MAX_NAME_LEN_0) {
-        err(49, __func__, "sane_relative_path(\"%s\", 99, 0, 2, false): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
+        err(58, __func__, "sane_relative_path(\"%s\", 99, 0, 2, false): expected PATH_ERR_MAX_NAME_LEN_0, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8338,7 +8677,7 @@ main(int argc, char **argv)
     relpath = "foo/bar";
     sanity = sane_relative_path(relpath, 99, 25, 1, false);
     if (sanity != PATH_ERR_PATH_TOO_DEEP) {
-        err(50, __func__, "sane_relative_path(\"%s\", 99, 25, 1, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+        err(59, __func__, "sane_relative_path(\"%s\", 99, 25, 1, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8351,7 +8690,7 @@ main(int argc, char **argv)
     relpath = "foo/../";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(51, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(60, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8364,7 +8703,7 @@ main(int argc, char **argv)
     relpath = "foo/./";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(52, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(61, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8377,7 +8716,7 @@ main(int argc, char **argv)
     relpath = "./foo/";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(53, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(62, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8390,7 +8729,7 @@ main(int argc, char **argv)
     relpath = "foo1";
     sanity = sane_relative_path(relpath, 99, 25, 4, false);
     if (sanity != PATH_OK) {
-        err(54, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
+        err(63, __func__, "sane_relative_path(\"%s\", 99, 25, 4, false): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8403,7 +8742,7 @@ main(int argc, char **argv)
     relpath = "a/b/c/d";
     sanity = sane_relative_path(relpath, 99, 25, 3, false);
     if (sanity != PATH_ERR_PATH_TOO_DEEP) {
-        err(55, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
+        err(64, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_PATH_TOO_DEEP, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8416,7 +8755,7 @@ main(int argc, char **argv)
     relpath = "./foo";
     sanity = sane_relative_path(relpath, 99, 25, 3, true);
     if (sanity != PATH_OK) {
-        err(56, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_OK, got: %s",
+        err(65, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_OK, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8429,7 +8768,7 @@ main(int argc, char **argv)
     relpath = "./foo";
     sanity = sane_relative_path(relpath, 99, 25, 3, false);
     if (sanity != PATH_ERR_NOT_POSIX_SAFE) {
-        err(57, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
+        err(66, __func__, "sane_relative_path(\"%s\", 99, 25, 3, false): expected PATH_ERR_NOT_POSIX_SAFE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8438,12 +8777,13 @@ main(int argc, char **argv)
 
     /*
      * test relative path as ".//foo" NOT being valid (even with true
-     * dot_slash_okay) because it's not a relative path
+     * dot_slash_okay) because it's not a relative path (according to the rules
+     * of sane_relative_path() at least)
      */
     relpath = ".//foo";
     sanity = sane_relative_path(relpath, 99, 25, 3, true);
     if (sanity != PATH_ERR_NOT_RELATIVE) {
-        err(58, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_ERR_NOT_RELATIVE, got: %s",
+        err(67, __func__, "sane_relative_path(\"%s\", 99, 25, 3, true): expected PATH_ERR_NOT_RELATIVE, got: %s",
                 relpath, path_sanity_name(sanity));
         not_reached();
     } else {
@@ -8451,34 +8791,418 @@ main(int argc, char **argv)
     }
 
     /*
-     * test remove 0 levels: this should return the original string
+     * in case we ever use name before this in some test, we free it first
      */
     if (name != NULL) {
         free(name);
         name = NULL;
     }
-    relpath = "foo/bar/baz/zab/rab/oof";
-    name = dir_name(relpath, 0);
+
+    /*
+     * NOTE: when using dir_name() with a level of < 0 we obtain the first
+     * directory only or, in the case of an empty string or a string without any
+     * '/', the original string itself.
+     */
+
+    /*
+     * test remove -1 levels of an empty string
+     */
+    relpath = "";
+    name = dir_name(relpath, -1);
     if (name == NULL) {
-        err(59, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
+        err(68, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
         not_reached();
-    } else if (strcmp(name, relpath) != 0) {
-        err(60, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
+    } else if (*name != '\0') {
+        err(69, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected an empty string", relpath, name);
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 0) == %s", relpath, relpath);
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected empty string", relpath);
     }
 
     /*
-     * first check remove one level
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "//foo" (an absolute path with more than one
+     * leading '/'): this should return "foo" itself too.
+     */
+    relpath = "//foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(70, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, relpath+2) != 0) {
+        err(71, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"%s\"", relpath, name, relpath+2);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"%s\"", relpath, relpath+2);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "//foo//foo//" (an absolute path with more than one
+     * leading '/' and additional components with // in between and at the end):
+     * this should return "foo" itself too.
+     */
+    relpath = "//foo//foo//";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(72, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "foo") != 0) {
+        err(73, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"foo\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"foo\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "/foo" (an absolute path): this should return
+     * "foo" itself too.
+     */
+    relpath = "/foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(74, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "foo") != 0) {
+        err(75, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"foo\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"foo\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "/foo//" (an absolute path with two trailing
+     * '/'s): this should return "foo" itself too.
+     */
+    relpath = "/foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(76, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "foo") != 0) {
+        err(77, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"foo\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"foo\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "///" (an absolute path of just three '/'s):
+     * this should return just "/"
+     */
+    relpath = "///";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(78, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "/") != 0) {
+        err(79, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"/\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"/\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "///." (an absolute path of just three '/'s
+     * ending with a '.'): this should return just ".".
+     */
+    relpath = "///.";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(80, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, ".") != 0) {
+        err(81, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \".\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \".\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels of "///../....//" (an invalid absolute path): this
+     * should return "..".
+     */
+    relpath = "///../....//";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(82, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "..") != 0) {
+        err(83, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"..\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"..\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+
+
+    /*
+     * test remove -1 levels (first directory) of "foo" (relative path): this
+     * should return "foo" itself.
+     */
+    relpath = "foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(84, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, relpath) != 0) {
+        err(85, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"%s\"", relpath, name, relpath);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"%s\"", relpath, relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels (first directory) of "./foo" (relative path
+     * starting with ./): this should return ".".
+     */
+    relpath = "./foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(86, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name,".") != 0) {
+        err(87, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \".\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \".\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels (first directory) of "./foo//" (relative path
+     * starting with ./ and ending with two '/'s): this should return "." too.
+     */
+    relpath = "./foo//";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(88, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, ".") != 0) {
+        err(89, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \".\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \".\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels (first directory) of ".//foo/." (relative path
+     * starting with .// and ending with two "/."): this should return "." too.
+     */
+    relpath = ".//foo/.";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(90, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, ".") != 0) {
+        err(91, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \".\"", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \".\"", relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels (first directory) of "foo": this should return
+     * "foo" itself.
+     */
+    relpath = "foo";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(92, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, relpath) != 0) {
+        err(93, __func__, "dir_name(\"%s\", -1): returned \"%s\", expected \"%s\"", relpath, name, relpath);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): got expected \"%s\"", relpath, relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+
+
+    /*
+     * test remove -1 levels (i.e. return the first directory name) of
+     * "/foo/bar/baz/zab/rab/oof" (an absolute path).
+     */
+    relpath = "/foo/bar/baz/zab/rab/oof";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(94, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "foo") != 0) {
+        err(95, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): %s", relpath, name);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove -1 levels (i.e. return the first directory name) of
+     * "foo/bar/baz/zab/rab/oof" (a relative path).
+     */
+    relpath = "foo/bar/baz/zab/rab/oof";
+    name = dir_name(relpath, -1);
+    if (name == NULL) {
+        err(96, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, "foo") != 0) {
+        err(97, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1): %s", relpath, name);
+    }
+
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * test remove 0 levels: this should return the original string
+     * ("foo/bar/baz/zab/rab/oof")
+     */
+    relpath = "foo/bar/baz/zab/rab/oof";
+    name = dir_name(relpath, 0);
+    if (name == NULL) {
+        err(98, __func__, "dir_name(\"%s\", 0): returned NULL", relpath);
+        not_reached();
+    } else if (strcmp(name, relpath) != 0) {
+        err(99, __func__, "dir_name(\"%s\", 0): returned %s, expected: %s", relpath, name, relpath);
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "dir_name(\"%s\", 0): %s", relpath, relpath);
+    }
+
+    /*
+     * free memory
+     */
+    if (name != NULL) {
+        free(name);
+        name = NULL;
+    }
+
+    /*
+     * check remove one level: this should return "foo/bar/baz/zab/rab"
      */
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 1);
     if (name == NULL) {
-        err(61, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
+        err(100, __func__, "dir_name(\"%s\", 1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab/rab") != 0) {
-        err(62, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
+        err(101, __func__, "dir_name(\"%s\", 1): returned %s, expected: foo/bar/baz/zab/rab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 1) == foo/bar/baz/zab/rab", relpath);
@@ -8494,10 +9218,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 2);
     if (name == NULL) {
-        err(63, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
+        err(102, __func__, "dir_name(\"%s\", 2): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz/zab") != 0) {
-        err(64, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
+        err(103, __func__, "dir_name(\"%s\", 2): returned %s, expected: foo/bar/baz/zab", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 2) == foo/bar/baz/zab", relpath);
@@ -8513,10 +9237,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 3);
     if (name == NULL) {
-        err(65, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
+        err(104, __func__, "dir_name(\"%s\", 3): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar/baz") != 0) {
-        err(66, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
+        err(105, __func__, "dir_name(\"%s\", 3): returned %s, expected: foo/bar/baz", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 3) == foo/bar/baz", relpath);
@@ -8532,10 +9256,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 4);
     if (name == NULL) {
-        err(67, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
+        err(106, __func__, "dir_name(\"%s\", 4): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo/bar") != 0) {
-        err(68, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
+        err(107, __func__, "dir_name(\"%s\", 4): returned %s, expected: foo/bar", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 4) == foo/bar", relpath);
@@ -8551,10 +9275,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 5);
     if (name == NULL) {
-        err(69, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
+        err(108, __func__, "dir_name(\"%s\", 5): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(70, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
+        err(109, __func__, "dir_name(\"%s\", 5): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 5) == foo", relpath);
@@ -8576,10 +9300,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, 6);
     if (name == NULL) {
-        err(71, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
+        err(110, __func__, "dir_name(\"%s\", 6): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(72, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
+        err(111, __func__, "dir_name(\"%s\", 6): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", 6) == foo", relpath);
@@ -8595,14 +9319,16 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = dir_name(relpath, -1);
     if (name == NULL) {
-        err(73, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
+        err(112, __func__, "dir_name(\"%s\", -1): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "foo") != 0) {
-        err(74, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
+        err(113, __func__, "dir_name(\"%s\", -1): returned %s, expected: foo", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "dir_name(\"%s\", -1) == foo", relpath);
     }
+
+
 
     /*
      * now we have to test the base_name() function
@@ -8614,10 +9340,10 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz/zab/rab/oof";
     name = base_name(relpath);
     if (name == NULL) {
-        err(75, __func__, "base_name(\"%s\"): returned NULL", relpath);
+        err(114, __func__, "base_name(\"%s\"): returned NULL", relpath);
         not_reached();
     } else if (strcmp(name, "oof") != 0) {
-        err(76, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
+        err(115, __func__, "base_name(\"%s\"): returned %s, expected: oof", relpath, name);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "base_name(\"%s\") == oof", relpath);
@@ -8634,7 +9360,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(77, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(116, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -8646,7 +9372,7 @@ main(int argc, char **argv)
     relpath = "foo//baz";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(78, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(117, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8658,7 +9384,7 @@ main(int argc, char **argv)
     relpath = "///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(79, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(118, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8670,7 +9396,7 @@ main(int argc, char **argv)
     relpath = "/";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(80, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(119, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8682,7 +9408,7 @@ main(int argc, char **argv)
     relpath = "foo///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(81, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(120, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8694,7 +9420,7 @@ main(int argc, char **argv)
     relpath = "";
     comps = count_dirs(relpath);
     if (comps != 0) {
-        err(82, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
+        err(121, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 0", relpath);
@@ -8706,7 +9432,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(83, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(122, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -8718,7 +9444,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(84, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(123, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -8730,7 +9456,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(85, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(124, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -8742,7 +9468,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(86, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(125, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -8754,7 +9480,7 @@ main(int argc, char **argv)
     relpath = "foo//foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(87, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(126, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8766,7 +9492,7 @@ main(int argc, char **argv)
     relpath = "foo//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(88, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(128, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -8778,7 +9504,7 @@ main(int argc, char **argv)
     relpath = "foo/foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(89, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(129, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -8790,7 +9516,7 @@ main(int argc, char **argv)
     relpath = "foo/foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(90, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(130, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -8806,7 +9532,7 @@ main(int argc, char **argv)
     relpath = "foo,bar,,,";
     comps = count_comps(relpath, ',', true);
     if (comps != 2) {
-        err(91, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
+        err(131, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_comps(\"%s\", ',', true) == 2", relpath);
@@ -8817,7 +9543,7 @@ main(int argc, char **argv)
      */
     relpath = "foo/bar/baz";
     if (!path_has_component(relpath, "baz")) {
-        err(92, __func__, "path_has_component(\"%s\", \"baz\") returned false: expected true", relpath);
+        err(132, __func__, "path_has_component(\"%s\", \"baz\") returned false: expected true", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "path_has_component(\"%s\", \"baz\") == true", relpath);
@@ -8828,7 +9554,7 @@ main(int argc, char **argv)
      */
     relpath = "foo/bar/baz";
     if (!path_has_component(relpath, "bar")) {
-        err(93, __func__, "path_has_component(\"%s\", \"bar\") returned false: expected true", relpath);
+        err(133, __func__, "path_has_component(\"%s\", \"bar\") returned false: expected true", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "path_has_component(\"%s\", \"bar\") == true", relpath);
@@ -8839,7 +9565,7 @@ main(int argc, char **argv)
      */
     relpath = "foo//bar/baz";
     if (!path_has_component(relpath, "bar")) {
-        err(94, __func__, "path_has_component(\"%s\", \"bar\") returned false: expected true", relpath);
+        err(134, __func__, "path_has_component(\"%s\", \"bar\") returned false: expected true", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "path_has_component(\"%s\", \"bar\") == true", relpath);
@@ -8850,7 +9576,7 @@ main(int argc, char **argv)
      */
     relpath = "foo//bar/baz";
     if (!path_has_component(relpath, "baz")) {
-        err(95, __func__, "path_has_component(\"%s\", \"baz\") returned false: expected true", relpath);
+        err(135, __func__, "path_has_component(\"%s\", \"baz\") returned false: expected true", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "path_has_component(\"%s\", \"baz\") == true", relpath);
@@ -8861,7 +9587,7 @@ main(int argc, char **argv)
      */
     relpath = "foo//bar/.git//";
     if (!path_has_component(relpath, ".git")) {
-        err(96, __func__, "path_has_component(\"%s\", \".git\") returned false: expected true", relpath);
+        err(136, __func__, "path_has_component(\"%s\", \".git\") returned false: expected true", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "path_has_component(\"%s\", \".git\") == true", relpath);
@@ -8871,19 +9597,19 @@ main(int argc, char **argv)
     if (relpath != NULL) {
         errno = 0;  /* pre-clear errno for errp() */
         if (stat(relpath, &in_st) != 0) {
-            errp(97, __func__, "couldn't stat file %s", relpath);
+            errp(137, __func__, "couldn't stat file %s", relpath);
             not_reached();
         }
         bytes = copyfile(relpath, "util_test.copy.c", true, 0);
         fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"util_test.copy.c\", true, 0): %ju bytes", relpath, (uintmax_t)bytes);
         errno = 0; /* pre-clear errno for errp() */
         if (stat("util_test.copy.c", &out_st) != 0) {
-            errp(98, __func__, "couldn't stat file util_test.copy.c");
+            errp(138, __func__, "couldn't stat file util_test.copy.c");
             not_reached();
         }
 
         if (!is_mode("util_test.copy.c", in_st.st_mode)) {
-            err(99, __func__, "copyfile() failed to copy st_mode of file %s", relpath);
+            err(139, __func__, "copyfile() failed to copy st_mode of file %s", relpath);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode of file %s: %o == %o", relpath,
@@ -8895,7 +9621,7 @@ main(int argc, char **argv)
          */
         errno = 0;      /* pre-clear errno for errp() */
         if (unlink("util_test.copy.c") != 0) {
-            errp(100, __func__, "unable to delete file util_test.copy.c");
+            errp(140, __func__, "unable to delete file util_test.copy.c");
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "successfully deleted copied file util_test.copy.c");
@@ -8922,12 +9648,12 @@ main(int argc, char **argv)
          */
         errno = 0;  /* pre-clear errno for errp() */
         if (stat("util_test.copy.c", &out_st) != 0) {
-            errp(101, __func__, "failed to stat util_test.copy.c");
+            errp(141, __func__, "failed to stat util_test.copy.c");
             not_reached();
         }
 
         if ((out_st.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO)) != (S_IRUSR|S_IWUSR)) {
-            err(102, __func__, "copyfile() failed to set S_IRUSR|S_IWUSR on util_test.copy.c");
+            err(142, __func__, "copyfile() failed to set S_IRUSR|S_IWUSR on util_test.copy.c");
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "copyfile() successfully set S_IRUSR|S_IWUSR on util_test.copy.c");
@@ -8937,7 +9663,7 @@ main(int argc, char **argv)
          */
         errno = 0;      /* pre-clear errno for errp() */
         if (unlink("util_test.copy.c") != 0) {
-            errp(103, __func__, "unable to delete file util_test.copy.c");
+            errp(143, __func__, "unable to delete file util_test.copy.c");
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "successfully deleted copied file util_test.copy.c");
@@ -8962,7 +9688,7 @@ main(int argc, char **argv)
      */
     errno = 0; /* pre-clear errno for errp() */
     if (stat("util.o", &in_st) != 0) {
-        errp(104, __func__, "failed to stat util.o");
+        errp(144, __func__, "failed to stat util.o");
         not_reached();
     }
     /*
@@ -8970,12 +9696,12 @@ main(int argc, char **argv)
      */
     errno = 0;  /* pre-clear errno for errp() */
     if (stat("util.copy.o", &out_st) != 0) {
-        errp(105, __func__, "failed to stat util.copy.o");
+        errp(145, __func__, "failed to stat util.copy.o");
         not_reached();
     }
 
     if (!is_mode("util.copy.o", in_st.st_mode)) {
-        err(106, __func__, "util.o st_mode != util.copy.o st_mode: %o != %o", in_st.st_mode, out_st.st_mode);
+        err(146, __func__, "util.o st_mode != util.copy.o st_mode: %o != %o", in_st.st_mode, out_st.st_mode);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode to dest file: %o == %o", in_st.st_mode, out_st.st_mode);
@@ -8985,7 +9711,7 @@ main(int argc, char **argv)
      */
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink("util.copy.o") != 0) {
-        errp(107, __func__, "unable to delete file util.copy.o");
+        errp(147, __func__, "unable to delete file util.copy.o");
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "successfully deleted copied file util_test.copy.c");
@@ -9005,10 +9731,10 @@ main(int argc, char **argv)
     dir_exists = is_dir(relpath);
     mkdirs(-1, relpath, 0755);
     if (!exists(relpath)) {
-        err(108, __func__, "%s does not exist", relpath);
+        err(148, __func__, "%s does not exist", relpath);
         not_reached();
     } else if (!is_dir(relpath)) {
-        err(109, __func__, "%s is not a directory", relpath);
+        err(149, __func__, "%s is not a directory", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "%s is a directory", relpath);
@@ -9019,7 +9745,7 @@ main(int argc, char **argv)
      */
     if (!dir_exists) {
         if (!is_mode(relpath, 0755)) {
-            err(110, __func__, "failed to set mode of %s to %o", relpath, 0755);
+            err(150, __func__, "failed to set mode of %s to %o", relpath, 0755);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "%s is mode 07555", relpath);
@@ -9037,10 +9763,10 @@ main(int argc, char **argv)
     dir_exists = is_dir(relpath);
     mkdirs(-1, relpath, 0755);
     if (!exists(relpath)) {
-        err(111, __func__, "%s does not exist", relpath);
+        err(151, __func__, "%s does not exist", relpath);
         not_reached();
     } else if (!is_dir(relpath)) {
-        err(112, __func__, "%s is not a directory", relpath);
+        err(152, __func__, "%s is not a directory", relpath);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "%s is a directory", relpath);
@@ -9051,7 +9777,7 @@ main(int argc, char **argv)
      */
     if (!dir_exists) {
         if (!is_mode(relpath, 0755)) {
-            err(113, __func__, "failed to set mode of %s to %o", relpath, 0755);
+            err(153, __func__, "failed to set mode of %s to %o", relpath, 0755);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "%s is mode 07555", relpath);
@@ -9061,7 +9787,7 @@ main(int argc, char **argv)
          * also check that has_mode() works with the 0755 mode we set
          */
         if (!has_mode(relpath, 0755)){
-            err(114, __func__, "%s does not have bits %0o set", relpath, 0755);
+            err(154, __func__, "%s does not have bits %0o set", relpath, 0755);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "%s has bits %0o in stat.st_mode",
@@ -9072,7 +9798,7 @@ main(int argc, char **argv)
          * also check specific bits
          */
         if (!has_mode(relpath, S_IRWXU)) {
-            err(115, __func__, "%s does not have bits %0o set", relpath, S_IRWXU);
+            err(155, __func__, "%s does not have bits %0o set", relpath, S_IRWXU);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "%s has bits %0o in stat.st_mode", relpath, S_IRWXU);
@@ -9082,7 +9808,7 @@ main(int argc, char **argv)
          * check bits not set
          */
         if (has_mode(relpath, S_ISUID)) {
-            err(116, __func__, "%s has set user id on execution", relpath);
+            err(156, __func__, "%s has set user id on execution", relpath);
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "%s does not have set user id on execution", relpath);
@@ -9123,13 +9849,13 @@ main(int argc, char **argv)
      */
     ent = read_fts("test_jparse", -1, &cwd, FTS_LOGICAL, true, &fts, fts_cmp, check_fts_info);
     if (ent == NULL) {
-        err(117, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
+        err(157, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
         not_reached();
     } else {
         do {
             char *p = fts_path(ent);
             if (p == NULL) {
-                err(118, __func__, "fts_path(ent) returned NULL");
+                err(158, __func__, "fts_path(ent) returned NULL");
                 not_reached();
             }
             switch (ent->fts_info) {
@@ -9138,7 +9864,7 @@ main(int argc, char **argv)
                     if (is_file(p)) {
                         fdbg(stderr, DBG_VVVHIGH, "FTS_F %s: is_file(\"%s\") == true", p, p);
                     } else {
-                        err(119, __func__, "%s reported as FTS_FILE !is_file(\"%s\")", p, p);
+                        err(159, __func__, "%s reported as FTS_FILE !is_file(\"%s\")", p, p);
                         not_reached();
                     }
                     break;
@@ -9147,7 +9873,7 @@ main(int argc, char **argv)
                     if (is_dir(p)) {
                         fdbg(stderr, DBG_VVVHIGH, "FTS_D %s: is_dir(\"%s\") == true", p, p);
                     } else {
-                        err(120, __func__, "%s reported as FTS_D !is_dir(\"%s\")", p, p);
+                        err(160, __func__, "%s reported as FTS_D !is_dir(\"%s\")", p, p);
                         not_reached();
                     }
                     break;
@@ -9156,7 +9882,7 @@ main(int argc, char **argv)
                     if (is_symlink(p)) {
                         fdbg(stderr, DBG_VVVHIGH, "FTS_D %s: is_symlink(\"%s\") == true", p, p);
                     } else {
-                        err(121, __func__, "%s reported as FTS_SL !is_symlink(\"%s\")", p, p);
+                        err(161, __func__, "%s reported as FTS_SL !is_symlink(\"%s\")", p, p);
                         not_reached();
                     }
                     break;
@@ -9164,11 +9890,11 @@ main(int argc, char **argv)
                     fdbg(stderr, DBG_VVHIGH, "%s (broken symlink)", p);
                     break;
                 case FTS_NS:
-                    err(122, __func__, "no stat(2) info available for path %s in tree", p);
+                    err(162, __func__, "no stat(2) info available for path %s in tree", p);
                     not_reached();
                     break;
                 case FTS_NSOK:
-                    err(123, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
+                    err(163, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
                     not_reached();
                     break;
             }
@@ -9198,13 +9924,13 @@ main(int argc, char **argv)
      */
     ent = read_fts("test_jparse", -1, &cwd, FTS_NOSTAT | FTS_LOGICAL, true, &fts, fts_cmp, check_fts_info);
     if (ent == NULL) {
-        err(124, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
+        err(164, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
         not_reached();
     } else {
         do {
             char *p = fts_path(ent);
             if (ent == NULL) {
-                err(125, __func__, "fts_path(ent) returned NULL");
+                err(165, __func__, "fts_path(ent) returned NULL");
                 not_reached();
             }
             switch (ent->fts_info) {
@@ -9221,11 +9947,11 @@ main(int argc, char **argv)
                     fdbg(stderr, DBG_VVHIGH,  "%s (symlink with non-existent target)", p);
                     break;
                 case FTS_NS:
-                    err(126, __func__, "no stat(2) info available");
+                    err(166, __func__, "no stat(2) info available");
                     not_reached();
                     break;
                 case FTS_NSOK:
-                    err(128, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
+                    err(167, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
                     not_reached();
                     break;
             }
@@ -9344,7 +10070,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_DIR, 0, 0, true, false, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(129, __func__, "didn't find any paths in the paths array");
+        err(168, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -9357,7 +10083,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(130, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(169, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9390,7 +10116,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, false, true, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(131, __func__, "didn't find any paths in the paths array");
+        err(170, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -9403,7 +10129,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(132, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(171, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9434,7 +10160,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, false, false, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(133, __func__, "didn't find any files in the paths array");
+        err(172, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -9447,7 +10173,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(134, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(173, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9478,7 +10204,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 2, true, false, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(135, __func__, "didn't find any files in the paths array");
+        err(174, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -9491,7 +10217,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(136, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(175, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9523,7 +10249,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_FILE, 0, 1, true, false, NULL, NULL);
     if (paths_found == NULL) {
-        err(137, __func__, "didn't find any files in the paths array");
+        err(176, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -9536,7 +10262,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(138, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(177, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9588,7 +10314,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, true, false, NULL, NULL);
     if (paths_found == NULL) {
-        err(139, __func__, "didn't find any paths in the paths array");
+        err(178, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -9609,7 +10335,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(140, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(179, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -9658,7 +10384,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_SOCK, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(141, __func__, "found unexpected socket under test_jparse/");
+        err(180, __func__, "found unexpected socket under test_jparse/");
         not_reached();
     }
 
@@ -9682,7 +10408,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_CHAR, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(142, __func__, "found unexpected character device under test_jparse/");
+        err(181, __func__, "found unexpected character device under test_jparse/");
         not_reached();
     }
 
@@ -9707,7 +10433,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_BLOCK, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(143, __func__, "found unexpected block device under test_jparse/");
+        err(182, __func__, "found unexpected block device under test_jparse/");
         not_reached();
     }
 
@@ -9732,9 +10458,59 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_FIFO, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(144, __func__, "found unexpected FIFO under test_jparse/");
+        err(183, __func__, "found unexpected FIFO under test_jparse/");
         not_reached();
     }
+
+    /*
+     * free array
+     */
+    free_paths_array(&paths_found, false);
+    paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, -1, false, NULL, NULL, NULL);
+
+
+    /*
+     * special test: verify no file types exist in the directory other than
+     * files, directories and symlinks by setting the path to "" and masking
+     * FTS_TYPE_ANY with (FTS_TYPE_FILE|FTS_TYPE_DIR|FTS_TYPE_SYMLINK).
+     */
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false,
+            FTS_TYPE_ANY & ~(FTS_TYPE_FILE|FTS_TYPE_DIR|FTS_TYPE_SYMLINK), 0, 0, true, false, NULL, NULL);
+    if (paths_found != NULL) {
+        /*
+         * first show the files
+         */
+        len = dyn_array_tell(paths_found);
+        for (j = 0; j < len; ++j) {
+            name = dyn_array_value(paths_found, char *, j);
+            if (name == NULL) {
+                err(184, __func__, "found NULL pointer in paths_found (sockets) array");
+                not_reached();
+            }
+            warn(__func__, "path is not a file, directory or symlink: %s", name);
+        }
+        /*
+         * make it an error
+         */
+        err(185, __func__, "found unexpected file type under test_jparse/");
+        not_reached();
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, -1, false, NULL, NULL, NULL);
 
     /*
      * free array
@@ -9748,14 +10524,5 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths, false);
     paths = NULL; /* paranoia */
-
-    /*
-     * restore earlier directory that might have happened with read_fts()
-     *
-     * NOTE: this will close cwd so it will no longer be valid (that does not
-     * mean it can't be reset)
-     */
-    (void) read_fts(NULL, -1, &cwd, -1, false, NULL, NULL, NULL);
-
 }
 #endif

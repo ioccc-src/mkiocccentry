@@ -6,3 +6,6 @@ drwxr-xr-x  0 501    20          0 Feb  6 00:04 test-0/
 -rw-r--r--  0 501    20        358 Feb  5 23:56 test-0/remarks.md
 -rw-r--r--  0 501    20       1231 Feb  5 23:56 test-0/.info.json
 -rw-r--r--  0 501    20          4 Feb  5 23:56 test-0/extra1
+-rw-r--r--  0 501    20          4 Feb  5 23:56 test-0/.
+-rw-r--r--  0 501    20          4 Feb  5 23:56 test-0/../f
+-rw-r--r--  0 501    20          4 Feb  5 23:56 test-0/..

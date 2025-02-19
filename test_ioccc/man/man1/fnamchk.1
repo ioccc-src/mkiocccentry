@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH fnamchk 1 "30 January 2023" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "19 February 2025" "fnamchk" "IOCCC tools"
 .SH NAME
 .B fnamchk
 \- IOCCC compressed tarball filename sanity check tool
@@ -22,20 +22,24 @@
 .BR [\| \-V \|]
 .BR [\| \-E
 .IR ext \|]
-.BR [\| \-t
-|
-.BR \-u \|]
+.BR [\| \-]
+.BR [\| \-T \|]
 .I filepath
 .SH DESCRIPTION
 .B fnamchk
 verifies that an IOCCC compressed tarball is properly named.
 .PP
 The program validates that the filename is correct, in the form of
-.B submut.contest_ID\-entry_num.timestamp.ext
+.B submit.contest_ID\-entry_num.timestamp.ext
 where
 .B contest_ID
 is either
-.B test
+.BR test
+(in which case the
+.B \-t
+option must be specified; but see the
+.B NOTES
+section for an important warning about the use of this option)
 or a valid UUID (see below),
 .B entry_number
 is an integer from
@@ -43,47 +47,76 @@ is an integer from
 through
 .B MAX_SUBMIT_SLOT
 (see
-.IR limit_ioccc.h )
+.IR soup/limit_ioccc.h )
 inclusive,
 .B timestamp
-is an integer of the number of seconds since the epoch and
+is the timestamp the tarball was formed (which, unless the
+.B \-T
+option is used, must be >= the minimum timestamp; see
+.B MIN_TIMESTAMP
+in
+.IR soup/ioccc_limit.h
+and the
+.B NOTES
+section below for an important warning about the use of this option).
 .B ext
-is either
+must be
 .B txz
-or the user supplied extension from the
+unless the user overrides this with the
 .B \-E
-option.
+option (see the
+.B NOTES
+section below for an important warning about the use of this option).
 .PP
-More specifically, the filename
+More specifically, the tarball filename, in order to be suitable for submission to the IOCCC,
 .BR MUST :
 .IP \(bu 4
 Start with "\fBsubmit\fP".
 .IP \(bu 4
 Followed by "\fB.\fP".
 .IP \(bu 4
-Followed by either "\fBtest\fP" \fIOR\fP a UUID string in the form of \fBxxxxxxxx\-xxxx\-4xxx\-axxx\-xxxxxxxxxxxx\fP where \fBx\fP is a hexadecimal digit in the range \fB[0\-9a\-f]\fP.
-And yes, there is a \fB4\fP (UUID version 4) and an \fBa\fP (UUID variant 1) in there.
+Followed by a UUID string in the form of
+.B xxxxxxxx\-xxxx\-4xxx\-Nxxx\-xxxxxxxxxxxx
+where
+.B x
+is a hexadecimal digit in the range
+.B [0\-9a\-f]
+and
+.B N
+is one of
+.BR 8 ,
+.BR 9 ,
+.BR a
+or
+.BR b ,
+and which was registered to you as a contestant.
 .IP \(bu 4
 Followed by "\fB\-\fP".
 .IP \(bu 4
-Followed by a decimal entry number from \fB0\fP through \fBMAX_SUBMIT_SLOT\fP (see \fIlimit_ioccc.h\fP) inclusive.
+Followed by a decimal entry number from 
+.B 0
+through 
+.B MAX_SUBMIT_SLOT
+(see
+.IR soup/limit_ioccc.h )
+inclusive.
 .IP \(bu 4
 Followed by "\fB.\fP".
 .IP \(bu 4
-Followed by a positive non\-zero 64\-bit decimal integer.
+Followed by a positive non\-zero 64\-bit decimal integer (that is >= the minimum timestamp).
 .IP \(bu 4
 Followed by "\fB.\fP".
 .IP \(bu 4
-Followed by "\fBtxz\fP" (or the user supplied extension from option
-.BR \-E ).
+Followed by "\fBtxz\fP".
 .PP
-NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
+NOTE: the quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
-It is indirectly invoked via the
+.BR fnamchk (1)
+is invoked by the
 .BR txzchk (1)
-utility which is called by
+tool which is called by
 .BR mkiocccentry (1)
-and it will also be directly executed by the Judges during the judging process of the contests.
+and it will also be directly executed by the judges during the judging process of the contests.
 .SH OPTIONS
 .TP
 .B \-h
@@ -101,25 +134,28 @@ Show version and exit.
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 Default:
-.BR false .
+.BR loud :-) .
 .TP
 .BI \-E\  ext
 Change extension to extension specified (without the dot!).
 This is used for
 .B TESTING
-purposes only!
+purposes only and using this option when verifying your tarball is correctly named puts you at a great risk of violating Rule 17!
 .TP
 .B \-t
 If the filename does not start with the test mode filename format, issue an error.
 In other words the filename has to start with
 .I submit.test\-
 or it's an error.
+This is also used strictly for
+.B TESTING
+purposes and using this option when verifying your tarball is correctly named puts you at a great risk of violating Rule 17!
 .TP
-.B \-u
-If the filename does not start with the normal filename format, issue an error.
-In other words if the filename starts with
-.I submit.test\-
-it is an error.
+.B \-T
+Ignore timestamp test result.
+This is also used strictly for
+.B TESTING
+purposes and using this option when verifying your submission tarball is correctly named puts you at a great risk of violating Rule 17!
 .SH EXIT STATUS
 .TP
 0
@@ -145,7 +181,36 @@ validation failed (see error message for details)
 .SH NOTES
 If there is an error in validation an appropriate error message is printed prior to exiting.
 Otherwise the program will output the name of the required directory in the tarball (this is necessary for
-.BR txzchk (1)),
+.BR txzchk (1)).
+.PP
+If the filename starts with "\fBtest\-\fP" and the option
+.B \-t
+is not used, it is an error.
+Otherwise the regular format is required, unless the
+.B \-T
+option is specified, in which case the timestamp check may fail (but nothing else may).
+The option
+.BI \-E\  ext
+is
+.B ONLY
+valid for testing purposes and the judges will not use it.
+The option
+.BI \-t
+is
+.B ONLY
+valid for testing purposes and the judges will not use it.
+The option
+.BI \-T
+is
+.B ONLY
+valid for testing purposes and the judges will not use it.
+Use of any of these option when verifying your submission tarball is properly named puts you at a great risk of violating Rule 17!
+.PP
+For the rules see:
+\<https://www.ioccc.org/next/rules.html\>.
+.br
+For the guidelines see:
+\<https://www.ioccc.org/next/guidelines.html\>.
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
@@ -166,7 +231,7 @@ which will fail because the timestamp in the filename is less than the minimum t
 .sp
 .RS
 .ft B
- ./fnamchk \-t submit.test\-0.1562145368.txz
+ fnamchk \-t submit.test\-0.1562145368.txz
 .ft R
 .RE
 .PP
@@ -176,21 +241,7 @@ which will fail because the name format is invalid:
 .sp
 .RS
 .ft B
- ./fnamchk test.tar
-.ft R
-.RE
-.PP
-Run the program on the filename
-.I submit.test.0.1662145368.txz
-with the option
-.B \-u
-which will fail because it is a test\-mode filename but the
-.B \-u
-option is specified:
-.sp
-.RS
-.ft B
- ./fnamchk \-u submit.test\-0.1662145368.txz
+ fnamchk test.tar
 .ft R
 .RE
 .PP
@@ -202,7 +253,7 @@ which will pass because it is a test\-mode file and the timestamp is not less th
 .sp
 .RS
 .ft B
- ./fnamchk \-t submit.test\-0.1662145368.txz
+ fnamchk \-t submit.test\-0.1662145368.txz
 .ft R
 .RE
 .PP
@@ -222,7 +273,7 @@ option and the timestamp is correct:
 .sp
 .RS
 .ft B
- ./fnamchk \-E txt \-t submit.test\-0.1662145368.txt
+ fnamchk \-E txt \-t submit.test\-0.1662145368.txt
 .ft R
 .RE
 .sp
@@ -230,32 +281,35 @@ The above will print "\fBtest\-0\fP".
 .PP
 Run the program on the file
 .I submit.test.0.1662145368.txz
-with the options
+with the option
 .BR \-t ,
-changing the extension to
-.I txt
-via the
-.B \-E
-option which will fail because the extension specified does not match the extension in the filename:
+to enable test mode and the option
+.BI \-E\  txt
+to change extension to
+.BR txt ,
+which will fail because the extension specified does not match the extension in the filename:
 .sp
 .RS
 .ft B
- ./fnamchk \-E txt \-t submit.test\-0.1662145368.txz
+ fnamchk \-E txt \-t submit.test\-0.1662145368.txz
 .ft R
 .RE
 .sp
-NOTE: It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
+NOTE: it would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
 .PP
 Run the program on the file
 .I submit.test.0.1662145368.txz
-without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
+without specifying test\-mode:
 .sp
 .RS
 .ft B
- ./fnamchk submit.test\-0.1662145368.txz
+ fnamchk submit.test\-0.1662145368.txz
 .ft R
 .RE
 .sp
-The above will print "\fBtest\-0\fP".
+The above will fail because the
+.BR \-t
+option was not specified.
 .SH SEE ALSO
-.BR txzchk (1)
+.BR txzchk (1),
+.BR mkiocccentry (1)

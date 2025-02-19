@@ -1,5 +1,56 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.3.37 2025-02-18
+
+Many bug fixes in various tools and a jparse function plus some enhancements in
+jparse (that will be used in `chkentry` at the very least).
+
+Logic fixes in `fnamchk`. It no longer has both a `-u` and a `-t` option.
+Instead of `-t` is used it is test mode (see below). A new option (`-T`) was
+added which says to ignore the timestamp check (results - the parsing is still
+necessary or else the next part will fail). With these changes the issue of the
+minimum timestamp being changed (for new contests or some other reason) is
+resolved (or at most one can just rebuild the error test files).  This also
+fixes a theoretical loophole in `fnamchk(1)` which is far out of scope of this
+document.
+
+`txzchk` gives `-t` to `fnamchk` if given the `-x` option. This is important
+because if a filename starts with `submit.test-` it **MUST** be in test mode. In
+the case `txzchk` test mode (`-x`) it also gives to `fnamchk` the `-T` option
+due to the timestamp change being an issue.
+
+Additionally: `mkiocccentry` now passes to `txzchk` the option `-x` if the test
+mode is active (contest ID is `"test"`).
+
+Bug fixes in `txzchk` (one indirectly by fixing a bug in the `jparse` util
+function `dir_name()` - an edge case that was missed). Files that were not sane
+relative paths (i.e. not POSIX plus + safe chars only) were also not being
+reported (it is not even clear if they were being noted as a problem).
+
+Because of the new `-T` option to `fnamchk` (which is required) as well as above
+bug fixes in `txzchk` the `txzchk` test error files had to be rebuilt.
+
+The `txzchk_test.sh` script now determines if the filename is a test filename
+(it starts with `"submit.test-"`) and if so it passes to `txzchk` the option
+`-x` which will pass to `fnamchk(1)` the `-t` option.
+
+Added a new function `is_executable_filename()` in `soup/entry_util.c` (which
+uses the new array `executable_filenames`) so that the judges can decide which
+files have to be executable (as Landon told me this might happen). The error
+messages (in `txzchk`) have also been updated to show the octal mode too.
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for
+improvements to some recent utility functions plus the bug fix to `dir_name()`.
+These new enhancements will be used in `chkentry` in a number of ways but that
+has to be explained later (or not). It might also be useful in other tools but
+that has to be determined later too.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.28 2025-02-19"`.
+Updated `FNAMCHK_VERSION` to `"1.0.4 2025-02-19"`.
+Updated `TXZCHK_VERSION` to `"1.1.14 2025-02-19"`.
+Updated `TXZCHK_TEST_VERSION` to `1.0.4 2025-02-19"`.
+
+
 ## Release 2.3.36 2025-02-17
 
 Various fixes and further enhancements to the `find_path*()` functions in
