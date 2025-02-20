@@ -261,6 +261,7 @@ extern char const *find_path(char const *path, char *dir, int dirfd, int *cwd,
         int options, bool logical, enum fts_type type, int count, int depth,
         bool base, bool seedot, int (*cmp)(const FTSENT **, const FTSENT **),
         bool(*check)(FTS *, FTSENT *));
+extern char *find_path_in_array(char *path, struct dyn_array *paths, bool empty, intmax_t *idx);
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped);
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
 extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd,

@@ -33,6 +33,13 @@ This required updating `mkiocccentry_test.sh` as well.
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.29 2025-02-20"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.12 2025-02-20"`.
 
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new util
+function which will be used with issue #1152. This function finds a path in a
+paths array.
+
+BTW: we do realise that a lot of the util functions in jparse have nothing to do
+with JSON parsing but there is a historical reason behind this.
+
 
 ## Release 2.3.37 2025-02-19
 

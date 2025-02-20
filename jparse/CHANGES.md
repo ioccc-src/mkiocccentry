@@ -1,5 +1,23 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.23 2025-02-20
+
+New util function to find a path in an array.
+
+This new function is `find_path_in_array()` which will attempt to find a path in
+a `struct dyn_array *` (presumably of paths). If `idx` (an `intmax_t *`) is not
+NULL we first set `*idx` to `-1` and then if the path is found `*idx` will be
+set to the index. The boolean `empty` allows for empty paths to match (if the
+path and the path in the paths array are both empty and was added due to the
+fact that `append_path()` also uses it and that is a special feature of the
+`find_path*()` functions). The new function will be used elsewhere. (Yes we do
+realise that a lot of the functions in util.c are not related to JSON parsing
+but there are historical reasons for this.)
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.20 2025-02-20"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.18 2025-02-20"`.
+
+
 ## Release 2.2.22 2025-02-19
 
 Fix bug in `dir_name()` with `level < 0` with many test cases added to the test
