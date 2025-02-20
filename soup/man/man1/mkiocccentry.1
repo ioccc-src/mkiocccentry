@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "19 February 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "20 February 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -120,12 +120,22 @@ Set verbosity level to
 .IR level .
 .TP
 .B \-J\  level
-Set verbosity level for the internal jparse library.
-The default JSON verbosity level is 0, which is produces no JSON debug messages.
+Set verbosity level for the internal JSON library (\c
+.BR jparse (3)).
+The default JSON verbosity level is 0, which produces no JSON debug messages.
 .TP
 .B \-q
-Quiet mode.
-Silence msg(), warn(), warnp() if verbosity level is 0.
+Quiet mode (def: loud :\-) ).
+This will also silence the functions
+.BR msg (3),
+.BR warn (3)
+and
+.BR warnp (3)
+if verbosity level is 0 (i.e. if
+.BI \-v\  0
+was used or if
+.B \-v
+was not used at all).
 .TP
 .B \-V
 Show version and exit.
@@ -196,9 +206,9 @@ path to
 .IR txzchk .
 .B mkiocccentry
 checks
-.I ./txzchk
-and
 .I /usr/local/bin/txzchk
+and
+.I ./txzchk
 if this option is not specified.
 .TP
 .B \-e
@@ -222,9 +232,9 @@ path to
 .IR fnamchk .
 .B mkiocccentry
 checks
-.I ./fnamchk
-and
 .I /usr/local/bin/fnamchk
+and
+.I ./test_ioccc/fnamchk
 if this option is not specified.
 .TP
 .BI \-C\  chkentry
@@ -234,9 +244,9 @@ path to
 .I chkentry.
 .B mkiocccentry
 checks
-.I ./chkentry
-and
 .I /usr/local/bin/chkentry
+and
+.I ./chkentry
 if this option is not specified.
 .TP
 .BI \-m\  make

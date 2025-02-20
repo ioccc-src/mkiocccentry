@@ -270,16 +270,7 @@ echo "This line in $LIMIT_IOCCC_H as it exists now, is:"
 echo
 grep '^#define MIN_TIMESTAMP' "$LIMIT_IOCCC_H"
 echo
-echo "$0: You still need to:"
-echo
-echo "    make -C soup limit_ioccc.sh"
-echo "    ./soup/vermod.sh -v 1 -n -Q $OLD_MIN_TIMESTAMP $NOW"
-echo
-echo 'If all is well, then:'
-echo
-echo "    ./soup/vermod.sh -v 1 -Q $OLD_MIN_TIMESTAMP $NOW"
-echo
-echo 'then:'
+echo 'You still need to do:'
 echo
 echo '    make clobber all test'
 echo

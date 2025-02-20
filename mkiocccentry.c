@@ -111,37 +111,37 @@ static const char * const usage_msg0 =
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-V\t\tprint version string and exit\n\n"
-    "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n"
-    "\t-E\t\texit non-zero after the first warning (def: do not)\n\n"
-    "\t\t\t    NOTE: One cannot use both -W and -E.\n\n"
-    "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n";
+    "\t-V\t\tprint version string and exit\n"
+    "\t-W\t\tignore all warnings\n"
+    "\t\t\t    NOTE: the judges will NOT use this option\n"
+    "\t-E\t\texit non-zero after the first warning (def: do not)\n"
+    "\t\t\t    NOTE: one cannot use both -W and -E.\n"
+    "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)";
 static const char * const usage_msg1 =
-    "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-l ls\t\tpath to ls executable (def: %s)\n"
-    "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
+    "\t-t tar\t\tpath to tar(1) that supports the -J (xz) option (def: %s)\n"
+    "\t-l ls\t\tpath to ls(1) (def: %s)\n"
+    "\t-T txzchk\tpath to txzchk(1) (def: %s)\n"
     "\t-e\t\tentertainment mode\n"
     "\t-f feathers\tdefine how many feathers is feathery (for -e)\n"
-    "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
+    "\t-F fnamchk\tpath to fnamchk(1) (used by txzchk) (def: %s)";
 static const char * const usage_msg2 =
-    "\t-C chkentry	path to chkentry executable (def: %s)\n"
-    "\t-m make\t\tpath to GNU compatible make(1) (def: %s)\n";
+    "\t-C chkentry\tpath to chkentry(1) (def: %s)\n"
+    "\t-m make\t\tpath to GNU compatible make(1) (def: %s)";
 static const char * const usage_msg3 =
-    "\t-a answers\twrite answers to a file for easier updating of a submission\n"
+    "\t-a answers\twrite answers to a text file for future updates to the submission\n"
     "\t-A answers\twrite answers file even if it already exists\n"
-    "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
+    "\t-i answers\tread answers from file previously written by -a|-A answers\n"
     "\t\t\t    NOTE: One cannot use both -a/-A answers and -i answers.\n"
-    "\n"
-    "\t-s seed\t\tGenerate and use pseudo-random answers, seeding with seed & 0x%08u (def: do not)\n"
+    "\t-s seed\t\tGenerate and use pseudo-random answers, seeding with\n"
+    "\t\t\t    seed & 0x%08u (def: do not)\n"
     "\t-d\t\tAlias for -s %u\n"
-    "\n"
-    "\t\t\t    NOTE: Implies -y -E -A random_answers.seed and reads answers from random_answers.seed\n"
-    "\t\t\t    NOTE: One cannot use -a/-A or -i with -s seed/-d.\n";
+    "\t\t\t    NOTE: implies -y -E -A random_answers.seed and -i random_answers.seed\n"
+    "\t\t\t    NOTE: one cannot use -a/-A or -i with -s seed/-d.\n"
+    "\t\t\t    NOTE: this is the only time -a/-A can be used with -i answers.\n";
 static const char * const usage_msg4 =
-    "\t-I path\t\tignore path (a file or directory under topdir\n"
-    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -I args\n\n"
     "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
-    "\ttopdir\t\tdirectory with required, optional and extra files to be copied to tarball\n";
+    "\ttopdir\t\tdirectory with required, optional and extra files and/or directories\n"
+    "\t\t\t    to be copied to tarball\n";
 static const char * const usage_msg5 =
     "\n"
     "Exit codes:\n"

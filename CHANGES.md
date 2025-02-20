@@ -1,6 +1,31 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 2.3.37 2025-02-18
+
+## Release 2.3.38 2025-02-20
+
+General clean-up.
+
+Removed the no longer used `vermod.sh` script (it was used to modify the
+versions of tools in the JSON files under `test_ioccc/test_JSON` but these files
+are now created at need).
+
+Since we now recommend that one install the tools (since trying to run the tools
+to create a submission tarball from the mkiocccentry directory itself is more
+burdensome and can be problematic) the man pages (in cases where it is
+necessary - and that were not missed) no longer have `./` in front of commands
+(in the examples).
+
+Also, for the same reason (we now recommend in most cases to install the tools),
+the default locations of the tools mkiocccentry (and fnamchk) uses (use) are in
+`/usr/local/bin`. Since it also checks the `./` it is okay. One must be careful
+that the right versions of the tools are used but this always went and it's in
+the documentation on the website too.
+
+Clean up some usage messages to be shorter (in some ways) especially the length
+of lines (some formatting fixes were also made).
+
+
+## Release 2.3.37 2025-02-19
 
 Many bug fixes in various tools and a jparse function plus some enhancements in
 jparse (that will be used in `chkentry` at the very least).

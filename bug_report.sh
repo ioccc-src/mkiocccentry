@@ -65,7 +65,6 @@ export TOOLS="
     ./soup/all_sem_ref.sh
     ./soup/reset_tstamp.sh
     ./soup/run_usage.sh
-    ./soup/vermod.sh
     ./test_ioccc/chkentry_test.sh
     ./test_ioccc/fnamchk
     ./test_ioccc/gen_test_JSON.sh

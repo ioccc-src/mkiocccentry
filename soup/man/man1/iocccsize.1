@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH iocccsize 1 "16 May 2024" "iocccsize" "IOCCC tools"
+.TH iocccsize 1 "20 February 2025" "iocccsize" "IOCCC tools"
 .SH NAME
 .B iocccsize
 \- IOCCC Source Size Tool
@@ -114,8 +114,8 @@ Output the Rule 2b value for prog.c:
 .sp
 .RS
 .ft B
- ./iocccsize < prog.c
- ./iocccsize prog.c
+ iocccsize < prog.c
+ iocccsize prog.c
 .ft R
 .RE
 .PP
@@ -124,8 +124,8 @@ Output the Rule 2b length, gross (Rule 2a) length, and matched keyword count:
 .sp
 .RS
 .ft B
- ./iocccsize \-v 1 < prog.c
- ./iocccsize \-v 1 prog.c
+ iocccsize \-v 1 < prog.c
+ iocccsize \-v 1 prog.c
 .ft R
 .RE
 .PP
@@ -133,7 +133,7 @@ You may also wish to try the test script in verbose mode:
 .sp
 .RS
 .ft B
- ./iocccsize_test.sh \-v 3
+ ./test_ioccc/iocccsize_test.sh \-v 3
 .ft R
 .RE
 .SH HISTORY
