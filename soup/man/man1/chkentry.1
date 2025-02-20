@@ -21,33 +21,15 @@
 .RB [\| \-J
 .IR level \|]
 .RB [\| \-q \|]
-.I auth.json
-.I info.json
+.I topdir
 .SH DESCRIPTION
 .PP
 Validates the
 .I .auth.json
 and/or
 .I .info.json
-of an IOCCC entry.
-In the two argument form,
-.I auth.JSON
-is the path of an IOCCC entry author JSON file,
-and
-.I info.JSON
-is the path of an IOCCC entry information JSON file.
-If
-.B auth.JSON
-is
-.I .
-(dot), then this file is ignored.
-If
-.B info.JSON
-is
-.I .
-(dot), then this file is ignored.
-In the one argument form,
-.I submission_dir
+of an IOCCC submission.
+.I topdir
 is assumed to be a directory containing both
 .I .auth.json
 and
@@ -62,7 +44,7 @@ after the
 .I .auth.json
 and
 .I .info.json
-files have been created, once per file, testing that everything is well.
+files have been created, testing everything is in order.
 If
 .BR mkiocccentry (1)
 sees a 0 exit status, then all is well.

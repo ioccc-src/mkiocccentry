@@ -53,6 +53,10 @@ not needed anyway. Also to help distinguish output after each mkiocccentry
 command is called it prints '--' and also it now shows the command that will be
 run (the mkiocccentry commands that is).
 
+Make `chkentry` one-arg mode only. It now needs a `topdir` as the arg. More work
+has to be done but now at least the topdir is obtained and processed.
+
+Updated `CHKENTRY_VERSION` to `"1.1.1 2025-02-20"`.
 
 ## Release 2.3.37 2025-02-19
 
