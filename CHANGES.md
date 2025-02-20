@@ -40,6 +40,12 @@ paths array.
 BTW: we do realise that a lot of the util functions in jparse have nothing to do
 with JSON parsing but there is a historical reason behind this.
 
+Change `mkiocccentry` to form `.auth.json` and then `.info.json` and then run
+`chkentry(1)` on both of the files. This will changed to running it with a
+single arg - the topdir - but this change allows it to be easier to do once
+`chkentry(1)` has been modified to do this (part of it was done - namely that
+the `topdir` arg is there and 'set' but it's not used yet).
+
 
 ## Release 2.3.37 2025-02-19
 
