@@ -786,15 +786,9 @@ main(int argc, char *argv[])
     }
 
     /*
-     * write the .info.json file
+     * form info
      */
-    if (!quiet) {
-	para("", "Forming the .info.json file ...", NULL);
-    }
-    write_info(&info, submission_dir, chkentry, fnamchk);
-    if (!quiet) {
-	para("... completed the .info.json file.", "", NULL);
-    }
+    form_info(&info);
 
     /*
      * form auth
@@ -802,14 +796,14 @@ main(int argc, char *argv[])
     form_auth(&auth, &info, author_count, author_set);
 
     /*
-     * write the .auth.json file
+     * write the .auth.json file and the .info.json file
      */
     if (!quiet) {
-	para("", "Forming the .auth.json file ...", NULL);
+	para("", "Forming the .auth.json file and .info json file ...", NULL);
     }
-    write_auth(&auth, submission_dir, chkentry, fnamchk);
+    write_json_files(&auth, &info, submission_dir, chkentry, fnamchk);
     if (!quiet) {
-	para("... completed .auth.json file.", "", NULL);
+	para("... completed .auth.json and .info.json files.", "", NULL);
     }
 
     /*
@@ -7423,48 +7417,26 @@ verify_submission_dir(char const *submission_dir, char const *ls)
 
 
 /*
- * write_info - create the .info.json file
- *
- * Form a simple JSON .info file describing the submission.
+ * form_info    - fill out certain struct info details
  *
  * given:
- *      infop           - pointer to info structure
- *      submission_dir  - path to submission directory
- *      chkentry	- path to chkentry tool
- *      fnamchk		- path to fnamchk tool
- *
- * returns:
- *	true
- *
- * This function does not return on error.
+ *      infop   - pointer to info structure
  */
 static void
-write_info(struct info *infop, char const *submission_dir, char const *chkentry, char const *fnamchk)
+form_info(struct info *infop)
 {
     struct tm *timeptr;		/* localtime return */
-    char *info_path;		/* path to .info.json file */
-    size_t info_path_len;	/* length of path to .info.json */
-    FILE *info_stream;		/* open write stream to the .info.json file */
-    char *p = NULL;             /* for each file in the dynamic array of the files list */
     size_t strftime_ret;	/* length of strftime() string without the trailing newline */
     size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
-    int exit_code;		/* exit code from shell_cmd() */
-    size_t i;
-    int fd = -1;
 
     /*
      * firewall
      */
-    if (infop == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
-	err(111, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-    if (infop->extra_files == NULL) {
-        err(112, __func__, "called with NULL files list");
+    if (infop == NULL) {
+        err(111, __func__, "passed NULL infop");
         not_reached();
     }
-
     /*
      * fill out time information in the info structure
      */
@@ -7481,13 +7453,13 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(113, __func__, "cannot set TZ=UTC");
+	errp(112, __func__, "cannot set TZ=UTC");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(114, __func__, "gmtime returned NULL");
+	errp(113, __func__, "gmtime returned NULL");
 	not_reached();
     }
 
@@ -7498,7 +7470,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     infop->utctime = (char *)calloc(utctime_len + 1, sizeof(char)); /* + 1 for paranoia padding */
     if (infop->utctime == NULL) {
-	errp(115, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
+	errp(114, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -7513,10 +7485,199 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
-	errp(116, __func__, "strftime returned 0");
+	errp(115, __func__, "strftime returned 0");
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
+}
+
+
+/*
+ * write_json_files
+ *
+ * Create the .auth.json and .info.json files and then verify them by running
+ * chkentry(1) on them.
+ *
+ * given:
+ *      authp           -   pointer to auth structure
+ *      infop           -   pointer to info structure
+ *      submission_dir  -   submission directory
+ *      chkentry        -   path to chkentry(1) tool
+ *      fnamchk         -   path to fnamchk(1) tool
+ *
+ * This function does not return if a NULL pointer is encountered, if certain
+ * variables are not in the right range or if chkentry(1) fails.
+ */
+static void
+write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry,
+        char const *fnamchk)
+{
+    char *info_path;		/* path to .info.json file */
+    size_t info_path_len;	/* length of path to .info.json */
+    FILE *info_stream;		/* open write stream to the .info.json file */
+    char *p = NULL;             /* for each file in the dynamic array of the files list */
+    int ret;			/* libc function return */
+    int i;
+    size_t j;
+    int fd = -1;
+    char *auth_path;		/* path to .auth.json file */
+    size_t auth_path_len;	/* length of path to .auth.json */
+    FILE *auth_stream;	/* open write stream to the .auth.json file */
+    int exit_code;		/* exit code from shell_cmd() */
+
+    /*
+     * firewall
+     */
+    if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
+        err(116, __func__, "called with NULL arg(s)");
+        not_reached();
+    }
+
+    /*
+     * first write .auth.json
+     */
+    if (authp->author_count <= 0) {
+	err(117, __func__, "author_count %d <= 0", authp->author_count);
+	not_reached();
+    } else if (authp->author_count > MAX_AUTHORS) {
+	err(118, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
+	not_reached();
+    }
+
+    /*
+     * open .auth.json for writing
+     */
+    auth_path_len = strlen(submission_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
+    errno = 0;			/* pre-clear errno for errp() */
+    auth_path = (char *)malloc(auth_path_len + 1);
+    if (auth_path == NULL) {
+	errp(119, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
+	not_reached();
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
+    if (ret <= 0) {
+	errp(120, __func__, "snprintf #0 error: %d", ret);
+	not_reached();
+    }
+    dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
+    errno = 0;			/* pre-clear errno for errp() */
+    auth_stream = fopen(auth_path, "w");
+    if (auth_stream == NULL) {
+	errp(121, __func__, "failed to open for writing: %s", auth_path);
+	not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
+    if (fd < 0) {
+        err(122, __func__, "failed to obtain file descriptor for: %s", auth_path);
+        not_reached();
+    }
+
+    /*
+     * write leading part of authorship to the open .auth.json file
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fprintf(auth_stream, "{\n") > 0 &&
+	json_fprintf_value_string(auth_stream, "    ", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "tarball", " : ", authp->tarball, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "submit_slot", " : ", (long)authp->submit_slot, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "author_count", " : ", (long)authp->author_count, ",\n") &&
+	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
+	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
+    if (!ret) {
+	errp(123, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
+	not_reached();
+    }
+
+    /*
+     * write author info to the open .auth.json file
+     *
+     * NOTE: We do not add location_name to the .auth.json file as location names can change over time.
+     */
+    for (i = 0; i < authp->author_count; ++i) {
+	struct author *ap = &(authp->author[i]);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(auth_stream, "        {\n") > 0 &&
+	    json_fprintf_value_string(auth_stream, "            ", "name", " : ", ap->name, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "location_code", " : ", ap->location_code, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "email", " : ", strnull(ap->email), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "url", " : ", strnull(ap->url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "github", " : ", strnull(ap->github), ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "            ", "past_winning_author", " : ", ap->past_winning_author, ",\n") &&
+	    json_fprintf_value_bool(auth_stream, "            ", "default_handle", " : ", ap->default_handle, ",\n") &&
+	    json_fprintf_value_string(auth_stream, "            ", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
+	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
+	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
+	if (ret == false) {
+	    errp(124, __func__, "fprintf error writing author %d info to %s", i, auth_path);
+	    not_reached();
+	}
+    }
+
+    /*
+     * write trailing part of authorship to the open .auth.json file
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fprintf(auth_stream, "    ],\n") > 0 &&
+	json_fprintf_value_time_t(auth_stream, "    ", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
+	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
+	fprintf(auth_stream, "}\n") > 0;
+    if (!ret) {
+	errp(125, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
+	not_reached();
+    }
+
+    /*
+     * close the file before checking it with chkentry
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fclose(auth_stream);
+    if (ret < 0) {
+	errp(126, __func__, "fclose error");
+	not_reached();
+    }
+
+    /*
+     * set read only for user, group and others
+     */
+    errno = 0;      /* pre-clear errno for errp() */
+    ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
+    if (ret != 0) {
+        err(128, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
+        not_reached();
+    }
+
+    /*
+     * close descriptor
+     */
+    errno = 0; /* pre-clear for errp() */
+    ret = close(fd);
+    if (ret < 0) {
+        errp(129, __func__, "close(fd) failed");
+        not_reached();
+    }
+
+    /*
+     * now write .info.json
+     */
+    if (infop->required_files == NULL) {
+        err(130, __func__, "called with NULL files list");
+        not_reached();
+    }
 
     /*
      * open .info.json for writing
@@ -7525,20 +7686,20 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(117, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(131, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/%s", submission_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
-	errp(118, __func__, "snprintf #0 error: %d", ret);
+	errp(132, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(119, __func__, "failed to open for writing: %s", info_path);
+	errp(133, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
     }
 
@@ -7548,7 +7709,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0; /* pre-clear errno for errp() */
     fd = open(info_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        errp(120, __func__, "failed to obtain file descriptor for: %s", info_path);
+        errp(134, __func__, "failed to obtain file descriptor for: %s", info_path);
         not_reached();
     }
 
@@ -7591,7 +7752,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
 	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {
-	errp(121, __func__, "fprintf error writing leading part of info to %s", info_path);
+	errp(135, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
 
@@ -7620,7 +7781,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", "remarks.md", "\n") &&
 			    fprintf(info_stream, "        }%s\n", (infop->extra_count > 0) ?  "," : "") > 0;
     if (!ret) {
-	errp(122, __func__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(136, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
 
@@ -7628,17 +7789,17 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
         /*
          * write extra files to the open .info.json file
          */
-        for (i = 0; i < infop->extra_count; ++i) {
-            p = dyn_array_value(infop->extra_files, char *, i);
+        for (j = 0; j < infop->extra_count; ++j) {
+            p = dyn_array_value(infop->extra_files, char *, j);
             if (p == NULL) {
-                err(123, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)i);
+                err(137, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)j);
                 not_reached();
             }
             ret =                   fprintf(info_stream, "        {\n") > 0 &&
                   json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", p, "\n") &&
-                                    fprintf(info_stream, "        }%s\n", ((i+1) < infop->extra_count) ?  "," : "") > 0;
+                                    fprintf(info_stream, "        }%s\n", ((j+1) < infop->extra_count) ?  "," : "") > 0;
             if (!ret) {
-                errp(124, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)i, info_path);
+                errp(138, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)j, info_path);
                 not_reached();
             }
         }
@@ -7654,7 +7815,7 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
 	json_fprintf_value_long(info_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
-	errp(125, __func__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(139, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
 
@@ -7664,28 +7825,10 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(126, __func__, "fclose error");
+	errp(140, __func__, "fclose error");
 	not_reached();
     }
 
-
-    /*
-     * verify .info.json
-     */
-    if (!quiet) {
-	para("",
-	    "Checking the format of .info.json ...", NULL);
-    }
-    dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, info_path);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- . %", chkentry, info_path);
-    if (exit_code != 0) {
-	err(128, __func__, "%s -q -- . %s failed with exit code: %d",
-			   chkentry, info_path, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-    if (!quiet) {
-	para("... all appears well with the .info.json file.", NULL);
-    }
 
     /*
      * set read only for user, group and others
@@ -7693,20 +7836,39 @@ write_info(struct info *infop, char const *submission_dir, char const *chkentry,
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(129, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
+        err(141, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
         not_reached();
     }
 
-
+    /*
+     * now we have to run chkentry(1) on the files
+     */
+    if (!quiet) {
+	para("",
+	    "Checking the format of .auth.json and .info.json ...", NULL);
+    }
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s %s", chkentry, auth_path, info_path);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- % %", chkentry, auth_path, info_path);
+    if (exit_code != 0) {
+	err(142, __func__, "%s -q -- %s %s failed with exit code: %d",
+			   chkentry, auth_path, info_path, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+    if (!quiet) {
+	para("... all appears well with the .auth.json and .info.json files.", NULL);
+    }
 
     /*
      * free storage
      */
+    if (auth_path != NULL) {
+	free(auth_path);
+	auth_path = NULL;
+    }
     if (info_path != NULL) {
 	free(info_path);
 	info_path = NULL;
     }
-    return;
 }
 
 
@@ -7726,19 +7888,19 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
      * firewall
      */
     if (authp == NULL || infop == NULL || authorp == NULL) {
-	err(130, __func__, "called with NULL arg(s)");
+	err(143, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (infop->ioccc_id == NULL) {
-	err(131, __func__, "infop->ioccc_id is NULL");
+	err(144, __func__, "infop->ioccc_id is NULL");
 	not_reached();
     }
     if (infop->tarball == NULL) {
-	err(132, __func__, "infop->tarball is NULL");
+	err(145, __func__, "infop->tarball is NULL");
 	not_reached();
     }
     if (infop->utctime == NULL) {
-	err(133, __func__, "infop->utctime is NULL");
+	err(146, __func__, "infop->utctime is NULL");
 	not_reached();
     }
     memset(authp, 0, sizeof(*authp));
@@ -7762,14 +7924,14 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->ioccc_id = strdup(infop->ioccc_id);
     if (authp->ioccc_id == NULL) {
-	errp(134, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
+	errp(147, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
     authp->submit_slot = infop->submit_slot;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
-	errp(135, __func__, "strdup() tarball path %s failed", infop->tarball);
+	errp(148, __func__, "strdup() tarball path %s failed", infop->tarball);
 	not_reached();
     }
     /* copy over test or non-test mode */
@@ -7791,210 +7953,12 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->utctime = strdup(infop->utctime);
     if (authp->utctime == NULL) {
-	errp(136, __func__, "strdup() utctime path %s failed", infop->utctime);
+	errp(149, __func__, "strdup() utctime path %s failed", infop->utctime);
 	not_reached();
     }
     return;
 }
 
-
-/*
- * write_auth - create the .auth.json file
- *
- * Form a simple JSON .author file describing the submission.
- *
- * given:
- *      authp           - pointer to auth structure
- *      submission_dir  - path to submission directory
- *      chkentry	- path to chkentry tool
- *      fnamchk		- path to fnamchk tool
- *
- * This function does not return on error.
- */
-static void
-write_auth(struct auth *authp, char const *submission_dir, char const *chkentry, char const *fnamchk)
-{
-    char *auth_path;		/* path to .auth.json file */
-    size_t auth_path_len;	/* length of path to .auth.json */
-    FILE *auth_stream;	/* open write stream to the .auth.json file */
-    int ret;			/* libc function return */
-    int exit_code;		/* exit code from shell_cmd() */
-    int i;
-    int fd = -1;
-
-    /*
-     * firewall
-     */
-    if (authp == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
-	err(137, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-    if (authp->author_count <= 0) {
-	err(138, __func__, "author_count %d <= 0", authp->author_count);
-	not_reached();
-    } else if (authp->author_count > MAX_AUTHORS) {
-	err(139, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
-	not_reached();
-    }
-
-
-    /*
-     * open .auth.json for writing
-     */
-    auth_path_len = strlen(submission_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
-    errno = 0;			/* pre-clear errno for errp() */
-    auth_path = (char *)malloc(auth_path_len + 1);
-    if (auth_path == NULL) {
-	errp(140, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
-	not_reached();
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
-    if (ret <= 0) {
-	errp(141, __func__, "snprintf #0 error: %d", ret);
-	not_reached();
-    }
-    dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
-    errno = 0;			/* pre-clear errno for errp() */
-    auth_stream = fopen(auth_path, "w");
-    if (auth_stream == NULL) {
-	errp(142, __func__, "failed to open for writing: %s", auth_path);
-	not_reached();
-    }
-
-    errno = 0; /* pre-clear errno for errp() */
-    fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
-    if (fd < 0) {
-        err(143, __func__, "failed to obtain file descriptor for: %s", auth_path);
-        not_reached();
-    }
-
-    /*
-     * write leading part of authorship to the open .auth.json file
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(auth_stream, "{\n") > 0 &&
-	json_fprintf_value_string(auth_stream, "    ", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(auth_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "tarball", " : ", authp->tarball, ",\n") &&
-	json_fprintf_value_long(auth_stream, "    ", "submit_slot", " : ", (long)authp->submit_slot, ",\n") &&
-	json_fprintf_value_long(auth_stream, "    ", "author_count", " : ", (long)authp->author_count, ",\n") &&
-	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
-	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
-    if (!ret) {
-	errp(144, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
-	not_reached();
-    }
-
-    /*
-     * write author info to the open .auth.json file
-     *
-     * NOTE: We do not add location_name to the .auth.json file as location names can change over time.
-     */
-    for (i = 0; i < authp->author_count; ++i) {
-	struct author *ap = &(authp->author[i]);
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(auth_stream, "        {\n") > 0 &&
-	    json_fprintf_value_string(auth_stream, "            ", "name", " : ", ap->name, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "location_code", " : ", ap->location_code, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "email", " : ", strnull(ap->email), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "url", " : ", strnull(ap->url), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "alt_url", " : ", strnull(ap->alt_url), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "github", " : ", strnull(ap->github), ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
-	    json_fprintf_value_bool(auth_stream, "            ", "past_winning_author", " : ", ap->past_winning_author, ",\n") &&
-	    json_fprintf_value_bool(auth_stream, "            ", "default_handle", " : ", ap->default_handle, ",\n") &&
-	    json_fprintf_value_string(auth_stream, "            ", "author_handle", " : ", strnull(ap->author_handle), ",\n") &&
-	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
-	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
-	if (ret == false) {
-	    errp(145, __func__, "fprintf error writing author %d info to %s", i, auth_path);
-	    not_reached();
-	}
-    }
-
-    /*
-     * write trailing part of authorship to the open .auth.json file
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(auth_stream, "    ],\n") > 0 &&
-	json_fprintf_value_time_t(auth_stream, "    ", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
-	json_fprintf_value_long(auth_stream, "    ", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
-	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
-	fprintf(auth_stream, "}\n") > 0;
-    if (!ret) {
-	errp(146, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
-	not_reached();
-    }
-
-    /*
-     * close the file before checking it with chkentry
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fclose(auth_stream);
-    if (ret < 0) {
-	errp(147, __func__, "fclose error");
-	not_reached();
-    }
-
-
-
-    /*
-     * verify .auth.json
-     */
-    if (!quiet) {
-	para("",
-	    "Checking the format of .auth.json ...", NULL);
-    }
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, auth_path);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- % .", chkentry, auth_path);
-    if (exit_code != 0) {
-	err(148, __func__, "%s -q -- %s . failed with exit code: %d",
-			   chkentry, auth_path, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-    if (!quiet) {
-	para("... all appears well with the .auth.json file.", NULL);
-    }
-
-    /*
-     * set read only for user, group and others
-     */
-    errno = 0;      /* pre-clear errno for errp() */
-    ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
-    if (ret != 0) {
-        err(149, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
-        not_reached();
-    }
-
-    /*
-     * close descriptor
-     */
-    errno = 0; /* pre-clear for errp() */
-    ret = close(fd);
-    if (ret < 0) {
-        errp(150, __func__, "close(fd) failed");
-        not_reached();
-    }
-
-
-    /*
-     * free storage
-     */
-    if (auth_path != NULL) {
-	free(auth_path);
-	auth_path = NULL;
-    }
-    return;
-}
 
 
 /*
@@ -8032,7 +7996,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
      */
     if (workdir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
-	err(151, __func__, "called with NULL arg(s)");
+	err(150, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -8048,7 +8012,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(152, __func__, "cannot open .");
+	errp(151, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -8058,7 +8022,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(workdir);
     if (ret < 0) {
-	errp(153, __func__, "cannot cd %s", workdir);
+	errp(152, __func__, "cannot cd %s", workdir);
 	not_reached();
     }
 
@@ -8086,7 +8050,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_submission_dir);
     if (exit_code != 0) {
-	err(154, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
+	err(153, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -8097,7 +8061,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(155, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(154, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -8106,7 +8070,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(156, __func__, "The compressed tarball: %s size: %ju > %jd",
+	err(155, __func__, "The compressed tarball: %s size: %ju > %jd",
 		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -8117,13 +8081,13 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-	errp(157, __func__, "cannot fchdir to the previous current directory");
+	errp(156, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = close(cwd);
     if (ret < 0) {
-	errp(158, __func__, "close of previous current directory failed");
+	errp(157, __func__, "close of previous current directory failed");
 	not_reached();
     }
 
@@ -8144,10 +8108,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(159, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(158, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(160, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(159, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8167,10 +8131,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(161, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(160, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(162, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(161, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8221,13 +8185,13 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
      * firewall
      */
     if (workdir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(163, __func__, "called with NULL arg(s)");
+	err(162, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     submission_dir_esc = cmdprintf("%", submission_dir);
     if (submission_dir_esc == NULL) {
-	err(164, __func__, "failed to cmdprintf: submission_dir");
+	err(163, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
@@ -8240,14 +8204,14 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
-	errp(165, __func__, "printf #0 error");
+	errp(164, __func__, "printf #0 error");
 	not_reached();
     }
     free(submission_dir_esc);
 
     workdir_esc = cmdprintf("%", workdir);
     if (workdir_esc == NULL) {
-	err(166, __func__, "failed to cmdprintf: workdir");
+	err(165, __func__, "failed to cmdprintf: workdir");
 	not_reached();
     }
 
@@ -8258,7 +8222,7 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, workdir[0] == '-' ? "./" : "", workdir_esc, tarball_path);
     if (ret <= 0) {
-	errp(167, __func__, "printf #2 error");
+	errp(166, __func__, "printf #2 error");
 	not_reached();
     }
     free(workdir_esc);
@@ -8330,7 +8294,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	errp(168, __func__, "printf error printing IOCCC_REGISTER_URL");
+	errp(167, __func__, "printf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
     para("",
@@ -8340,7 +8304,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_FAQ_URL);
     if (ret <= 0) {
-	errp(169, __func__, "printf error printing IOCCC register FAQ URL");
+	errp(168, __func__, "printf error printing IOCCC register FAQ URL");
 	not_reached();
     }
     para("",
@@ -8350,7 +8314,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n    %s\n    %s\n", IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL, IOCCC_SUBMIT_INFO_URL);
     if (ret <= 0) {
-	errp(170, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
+	errp(169, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
 	not_reached();
     }
 
@@ -8362,7 +8326,7 @@ show_registration_url(void)
     errno = 0;      /* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_STATUS_URL);
     if (ret < 0) {
-	errp(171, __func__, "printf error printing IOCCC status URL");
+	errp(170, __func__, "printf error printing IOCCC status URL");
 	not_reached();
     }
 
@@ -8399,7 +8363,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
         "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
         workdir, tarball_path);
     if (ret <= 0) {
-	errp(172, __func__, "printf error printing tarball path and slot number");
+	errp(171, __func__, "printf error printing tarball path and slot number");
 	not_reached();
     }
     para("",
@@ -8409,7 +8373,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(173, __func__, "printf error printing IOCCC submit URL");
+	errp(172, __func__, "printf error printing IOCCC submit URL");
 	not_reached();
     }
 
@@ -8420,7 +8384,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
      ret = printf("    %s\n", IOCCC_ENTER_FAQ_URL);
     if (ret < 0) {
-	errp(174, __func__, "printf error printing IOCCC enter FAQ URL");
+	errp(173, __func__, "printf error printing IOCCC enter FAQ URL");
 	not_reached();
     }
 }

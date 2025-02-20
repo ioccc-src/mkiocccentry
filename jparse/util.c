@@ -2520,7 +2520,7 @@ find_path_in_array(char *path, struct dyn_array *paths, bool empty, intmax_t *id
         /* get next string pointer */
         u = dyn_array_value(paths, char *, i);
         if (u == NULL) {	/* paranoia */
-            err(162, __func__, "found NULL pointer in paths[%ju]", (uintmax_t)i);
+            err(159, __func__, "found NULL pointer in paths[%ju]", (uintmax_t)i);
             not_reached();
         }
 
@@ -2577,11 +2577,11 @@ append_path(struct dyn_array **paths, char *path, bool unique, bool duped)
      * firewall
      */
     if (paths == NULL) {
-	err(159, __func__, "paths is NULL");
+	err(160, __func__, "paths is NULL");
 	not_reached();
     }
     if (path == NULL) {
-	err(160, __func__, "path is NULL");
+	err(161, __func__, "path is NULL");
 	not_reached();
     }
 
@@ -2591,7 +2591,7 @@ append_path(struct dyn_array **paths, char *path, bool unique, bool duped)
          */
         *paths  = dyn_array_create(sizeof(char *), 64, 64, true);
         if (*paths == NULL) {
-            err(161, __func__, "failed to create paths paths");
+            err(162, __func__, "failed to create paths paths");
             not_reached();
         }
     }
@@ -10156,7 +10156,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(169, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(170, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10189,7 +10189,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, false, true, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(170, __func__, "didn't find any paths in the paths array");
+        err(171, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -10202,7 +10202,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(171, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(172, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10233,7 +10233,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, false, false, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(172, __func__, "didn't find any files in the paths array");
+        err(173, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10246,7 +10246,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(173, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(174, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10277,7 +10277,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, NULL, -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 2, true, false, NULL, check_fts_info);
     if (paths_found == NULL) {
-        err(174, __func__, "didn't find any files in the paths array");
+        err(175, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10290,7 +10290,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(175, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(176, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10322,7 +10322,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_FILE, 0, 1, true, false, NULL, NULL);
     if (paths_found == NULL) {
-        err(176, __func__, "didn't find any files in the paths array");
+        err(177, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10335,7 +10335,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(177, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(178, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10387,7 +10387,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_ANY, 0, 0, true, false, NULL, NULL);
     if (paths_found == NULL) {
-        err(178, __func__, "didn't find any paths in the paths array");
+        err(179, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -10408,7 +10408,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(179, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(180, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10457,7 +10457,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_SOCK, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(180, __func__, "found unexpected socket under test_jparse/");
+        err(181, __func__, "found unexpected socket under test_jparse/");
         not_reached();
     }
 
@@ -10481,7 +10481,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_CHAR, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(181, __func__, "found unexpected character device under test_jparse/");
+        err(182, __func__, "found unexpected character device under test_jparse/");
         not_reached();
     }
 
@@ -10506,7 +10506,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_BLOCK, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(182, __func__, "found unexpected block device under test_jparse/");
+        err(183, __func__, "found unexpected block device under test_jparse/");
         not_reached();
     }
 
@@ -10531,7 +10531,7 @@ main(int argc, char **argv)
      */
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, FTS_NOCHDIR, false, FTS_TYPE_FIFO, 0, 0, true, false, NULL, NULL);
     if (paths_found != NULL) {
-        err(183, __func__, "found unexpected FIFO under test_jparse/");
+        err(184, __func__, "found unexpected FIFO under test_jparse/");
         not_reached();
     }
 
@@ -10565,7 +10565,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(184, __func__, "found NULL pointer in paths_found (sockets) array");
+                err(185, __func__, "found NULL pointer in paths_found (sockets) array");
                 not_reached();
             }
             warn(__func__, "path is not a file, directory or symlink: %s", name);
@@ -10573,7 +10573,7 @@ main(int argc, char **argv)
         /*
          * make it an error
          */
-        err(185, __func__, "found unexpected file type under test_jparse/");
+        err(186, __func__, "found unexpected file type under test_jparse/");
         not_reached();
     }
 

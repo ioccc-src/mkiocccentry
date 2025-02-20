@@ -39,6 +39,7 @@
 /*
  * definitions
  */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 #define CHUNK (39)              /* allocate CHUNK elements at a time */
 
 
@@ -127,72 +128,12 @@ usage(int exitcode, char const *prog, char const *str)
     not_reached();
 }
 
-/* append_unique_str - append string pointer to dynamic array if not already found
- *
- * Given a pointer to string, we search a dynamic array of pointers to strings.
- * If an exact match is found (i.e. the string is already in the dynamic array),
- * it is an error because no files should be duplicated; otherwise, if no match
- * is found, the pointer to the string is appended to the dynamic array.
- *
- * given:
- *	array		dynamic array of pointers to strings
- *	str		string to search array and append if not already found
- *
- * NOTE: This function does not return if given NULL pointers on any error.
- */
-static void
-append_unique_str(struct dyn_array *array, char *str)
-{
-    intmax_t unique_len = 0;	/* number of unique strings in the array */
-    char *u = NULL;		/* unique name pointer */
-    intmax_t i;
-
-    /*
-     * firewall
-     */
-    if (array == NULL) {
-        err(23, __func__, "array is NULL");
-        not_reached();
-    } else if (str == NULL) {
-        err(24, __func__, "str is NULL");
-        not_reached();
-    }
-
-    /*
-     * search array for the string
-     *
-     * NOTE: we realise calling the function with unique strings will cause the
-     * execution time to grow as O(n^2).  However the usual number of strings in
-     * a unique ignored path dynamic array is almost certainly small.  Therefore
-     * we do not need to employ a more optimised dynamic array search mechanism.
-     */
-    unique_len = dyn_array_tell(array);
-    for (i=0; i < unique_len; ++i) {
-
-	/* get next string pointer */
-	u = dyn_array_value(array, char *, i);
-	if (u == NULL) {	/* paranoia */
-	    err(25, __func__, "found NULL pointer in ignored filename dynamic array element: %ju", (uintmax_t)i);
-	    not_reached();
-	}
-
-	/* look for match */
-	if (strcasecmp(str, u) == 0) {
-	    /* str found in array */
-            return;
-	}
-    }
-
-    /*
-     * name is unique, append to array
-     */
-    (void) dyn_array_append_value(array, &str);
-}
 
 int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
+    char **topdir = NULL;               /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     char const *submission_dir = ".";	/* submission directory to process, or NULL ==> process files */
@@ -280,7 +221,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
         case 'i':
-            append_unique_str(ignored_filenames, optarg);
+            append_path(&ignored_filenames, optarg, true, false);
             break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -291,6 +232,26 @@ main(int argc, char *argv[])
 	    break;
 	}
     }
+
+    /* must have at least one arg */
+    if (argc - optind < REQUIRED_ARGS) {
+	usage(3, program, "wrong number of arguments"); /*ooo*/
+	not_reached();
+    }
+
+    /*
+     * get topdir
+     *
+     * XXX: at this time this assignment is a misnomer because the first arg is
+     * actually .auth.json. However the command line is changing so that it's a
+     * single arg, the directory where the files are to be.
+     */
+    topdir = argv + optind;
+    /*
+     * temporarily not used or even set right
+     */
+    UNUSED_ARG(topdir);
+
     argc -= optind;
     argv += optind;
     switch (argc) {
