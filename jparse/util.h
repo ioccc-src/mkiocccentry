@@ -153,6 +153,17 @@ typedef unsigned char bool;
 #define is_all_whitespace(buf, len) (find_text((buf), (len), NULL) == 0)
 #define is_all_whitespace_str(str) (is_all_whitespace((str), strlen(str)))
 
+/*
+ * useful util macros for bitvectors
+ */
+#define IS_SET(flag,bit)  ((flag) & (bit))
+#define SET_BIT(var,bit)  ((var) |= ((uintmax_t)bit))
+#define REMOVE_BIT(var,bit)  ((var) &= ~((uintmax_t)bit))
+#define TOGGLE_BIT(var,bit) ((var)) = ((var)) ^ ((uintmax_t)bit)
+
+#define LSET_BIT(var,bit)  ((var) | ((uintmax_t)bit))
+#define LREMOVE_BIT(var,bit)  ((var) & ~((uintmax_t)bit))
+#define LTOGGLE_BIT(var,bit) ((var) ^ ((uintmax_t)bit))
 
 /*
  * non-strict floating match to 1 part in MATCH_PRECISION
@@ -188,14 +199,33 @@ enum path_sanity
  */
 enum fts_type
 {
-    FTS_TYPE_ANY        = 0,        /* all types of files allowed */
     FTS_TYPE_FILE       = 1,        /* regular files type allowed */
     FTS_TYPE_DIR        = 2,        /* directories allowed */
     FTS_TYPE_SYMLINK    = 4,        /* symlinks allowed */
     FTS_TYPE_SOCK       = 8,        /* sockets allowed */
     FTS_TYPE_CHAR       = 16,       /* character devices allowed */
     FTS_TYPE_BLOCK      = 32,       /* block devices allowed */
-    FTS_TYPE_FIFO       = 64        /* FIFO allowed */
+    FTS_TYPE_FIFO       = 64,        /* FIFO allowed */
+    FTS_TYPE_ANY        = FTS_TYPE_FILE | FTS_TYPE_DIR | /* all types of files */
+                          FTS_TYPE_SYMLINK | FTS_TYPE_SOCK | /* all types of files */
+                          FTS_TYPE_CHAR | FTS_TYPE_BLOCK, /* all types of files allowed */
+};
+
+/*
+ * file_type enum - for type_of_file() function to determine type of file
+ */
+
+enum file_type
+{
+    FILE_TYPE_ERR       = -1,   /* some error other than ENOENT (no such file or directory) */
+    FILE_TYPE_ENOENT    = 0,    /* errno == ENOENT (no such file or directory) */
+    FILE_TYPE_FILE      = 1,    /* regular file */
+    FILE_TYPE_DIR       = 2,    /* directory */
+    FILE_TYPE_SYMLINK   = 3,    /* symlink */
+    FILE_TYPE_SOCK      = 4,    /* socket */
+    FILE_TYPE_CHAR      = 5,    /* character device */
+    FILE_TYPE_BLOCK     = 6,    /* block device */
+    FILE_TYPE_FIFO      = 7     /* FIFO */
 };
 
 /*
@@ -206,18 +236,19 @@ extern char *dir_name(char const *path, int level);
 extern size_t count_comps(char const *str, char comp, bool remove_all);
 extern size_t count_dirs(char const *path);
 extern bool exists(char const *path);
+extern enum file_type type_of_file(char const *path);
+extern bool is_mode(char const *path, mode_t mode);
+extern bool has_mode(char const *path, mode_t mode);
 extern bool is_file(char const *path);
-extern bool is_socket(char const *path);
+extern bool is_dir(char const *path);
 extern bool is_symlink(char const *path);
+extern bool is_socket(char const *path);
 extern bool is_chardev(char const *path);
 extern bool is_blockdev(char const *path);
 extern bool is_fifo(char const *path);
 extern bool is_exec(char const *path);
-extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
-extern bool is_mode(char const *path, mode_t mode);
-extern bool has_mode(char const *path, mode_t mode);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
 extern char *fts_path(FTSENT *ent);

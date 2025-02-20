@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "16 November 2024" "txzchk" "IOCCC tools"
+.TH txzchk 1 "19 February 2025" "txzchk" "IOCCC tools"
 .SH NAME
 .B txzchk
 \- sanity checker tool used on IOCCC compressed tarballs
@@ -48,6 +48,7 @@
 .RB [\| \-T \|]
 .RB [\| \-E
 .IR ext \|]
+.RB [\| \-x \|]
 .I tarball_path
 .SH DESCRIPTION
 .B txzchk
@@ -95,7 +96,7 @@ Entertainment (or if you prefer, Easter egg) mode.
 .TP
 .BI \-f\  feathers
 Define how many feathers is feathery :\-) (used by
-.BR \-e )
+.BR \-e ).
 .TP
 .B \-w
 Always show warnings.
@@ -153,6 +154,19 @@ This is used in conjunction with
 above for
 .B TESTING
 purposes only!
+.TP
+.B \-x
+Used when one needs to
+.BR txzchk (1)
+to pass the
+.B \-t
+option to
+.BR fnamchk (1).
+This is done for testing, both by
+.BR txzchk_test(8)
+and when the submit ID of
+.BR mkiocccentry (1)
+is "test".
 .SH EXIT STATUS
 .TP
 0
@@ -206,7 +220,7 @@ Run the program on the tarball
 .sp
 .RS
 .ft B
- ./txzchk submit.test\-1.1644094311.txz
+ txzchk submit.test\-1.1644094311.txz
 .ft R
 .RE
 .PP
@@ -219,7 +233,7 @@ and
 .sp
 .RS
 .ft B
- ./txzchk \-t /path/to/some/tar \-F ./filenamechk submit.test\-1.1644094311.txz
+ txzchk \-t /path/to/some/tar \-F ./filenamechk submit.test\-1.1644094311.txz
 .ft R
 .RE
 .PP
@@ -233,7 +247,7 @@ have to be used):
 .sp
 .RS
 .ft B
- ./txzchk \-T \-E txt submit.test\-1.1644094311.txt
+ txzchk \-T \-E txt submit.test\-1.1644094311.txt
 .ft R
 .RE
 .SH SEE ALSO
@@ -252,4 +266,4 @@ command itself.
 .br
 And don't forget the very tarry
 .BR La\ Brea\ Tar\ Pits :
-.I <https://tarpits.org>
+.IR <https://tarpits.org> !

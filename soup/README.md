@@ -170,15 +170,14 @@ man ./test_ioccc/man/man1/fnamchk.1
 
 **NOTE**: After doing a `make all`, this tool may be found as: `./test_ioccc/fnamchk`.
 
-This tool was written in 2022 by:
-
-*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
-
-with improvements for `txzchk(1)` and otherwise by:
+This tool was co-developed in 2022 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
 
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 ### `bug_report.sh`
 

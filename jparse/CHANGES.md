@@ -1,5 +1,43 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.22 2025-02-19
+
+Fix bug in `dir_name()` with `level < 0` with many test cases added to the test
+code.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.19 2025-02-19"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.17 2025-02-19"`.
+
+
+## Release 2.2.21 2025-02-18
+
+Enhance (w/o changing args) `find_path*()` functions.
+
+The enum `fts_type` now has the any type `FTS_TYPE_ANY` as not as 0 but the
+bitwise OR of all the others so that (for example) if you want to get all types
+except directories you could do `FTS_TYPE_ANY &
+~FTS_TYPE_DIR` or so (this is done in the test code).
+
+Added helper macros for setting/testing bits. In the case of the above example
+that won't be helpful but since multiple places in the code now require removing
+and setting bits it is useful.
+
+Added new function `type_of_file()` which will return an enum (`file_type`)
+based on the type of file (if `errno == ENOENT` it will be `FILE_TYPE_ENOENT`
+and if errno is something else it will just be `FILE_TYPE_ERR`, otherwise it'll
+be the type of file according to `lstat(2)` - and if not a symlink, `stat(2)`).
+
+As a helpful feature of the `find_path*()` functions: if `dir == NULL` and
+`dirfd < 0` it will return the absolute paths instead of the relative path. It
+is possible that this should be done in all cases but that is TBD another time.
+
+A bug was uncovered in a function and a `FIXME` was put in there. It will be
+looked at soonish.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.18 2025-02-18"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.16 2025-02-18"`.
+
+
 ## Release 2.2.20 2025-02-17
 
 A couple fixes and further enhancements with `find_path*()` functions. More use

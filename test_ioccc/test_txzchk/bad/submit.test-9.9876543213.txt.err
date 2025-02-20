@@ -1,22 +1,22 @@
-Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found empty .info.json file
-Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found empty remarks.md
-Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found empty .auth.json file
-Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/inventory.html with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/index.html with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/GNUmakefile with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/README.md with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/prog.orig.c with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/prog.orig with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/prog with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/inventory.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/index.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/GNUmakefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/README.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/prog.orig.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/prog.orig with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/prog with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          0 Feb  6 02:28 test-9/Makefile
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found empty Makefile
-Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: srw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: srw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: filename test-9/prog (basename prog) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: filename test-9/prog.orig (basename prog.orig) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: filename test-9/prog.orig.c (basename prog.orig.c) not allowed

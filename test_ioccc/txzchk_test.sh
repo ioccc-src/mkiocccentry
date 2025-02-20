@@ -53,7 +53,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="1.0.3 2024-07-10"
+export TXZCHK_TEST_VERSION="1.0.4 2025-02-19"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
@@ -307,10 +307,15 @@ if [[ -n "$B_FLAG" ]]; then
 	exit 3
     fi
 
-    for i in "$TXZCHK_BAD_TREE"/*.txt; do \
-	echo "$TXZCHK -v 0 -w -T -E txt -F $FNAMCHK $i 2>$i.err"; \
-	"$TXZCHK" -v 0 -w -T -E txt -F "$FNAMCHK" "$i" 2>"$i.err"; \
-    done
+    while read -r file; do
+        if [[ "$file" =~ submit.test* ]]; then
+            echo "$TXZCHK -v 0 -x -w -T -E txt -F $FNAMCHK $file 2>$file.err"; \
+            "$TXZCHK" -v 0 -x -w -T -E txt -F "$FNAMCHK" "$file" 2>"$file.err"; \
+        else
+            echo "$TXZCHK -v 0 -w -T -E txt -F $FNAMCHK $file 2>$file.err"; \
+            "$TXZCHK" -v 0 -w -T -E txt -F "$FNAMCHK" "$file" 2>"$file.err"; \
+        fi
+    done < <(find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print)
 
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: rebuilt test error files" 1>&2
@@ -470,11 +475,16 @@ run_test()
 	exit 40
     fi
 
+   test_mode=""
+   if [[ "$txzchk_test_file" =~ submit.test* ]]; then
+       test_mode="-x"
+   fi
+
     # if pass_fail is fail then there has to be an error file
     if [[ $pass_fail = fail ]]; then
 	if [[ ! -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not found for test that must fail: $txzchk_err_file"
-	    exit 41
+	    exit 42
 	fi
 	if [[ ! -f $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not a regular file for test that must fail: $txzchk_err_file"
@@ -482,16 +492,16 @@ run_test()
 	fi
 	if [[ ! -r $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not readable for test that must fail: $txzchk_err_file"
-	    exit 43
+	    exit 42
 	fi
     elif [[ $pass_fail = pass ]]; then
 	if [[ -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file exists for test that must not fail: $txzchk_err_file"
-	    exit 44
+	    exit 42
 	fi
     else
 	echo "$0: pass_fail neither 'pass' nor 'fail': $pass_fail"
-	exit 45
+	exit 42
     fi
     # debugging
     #
@@ -500,6 +510,7 @@ run_test()
 	echo "$0: debug[9]: in run_test: txzchk: $TXZCHK" 1>&2
 	echo "$0: debug[9]: in run_test: tar: $TAR" 1>&2
 	echo "$0: debug[9]: in run_test: fnamchk: $FNAMCHK" 1>&2
+	echo "$0: debug[9]: in run_test: test_mode: $test_mode" 1>&2
 	echo "$0: debug[9]: in run_test: txzchk_test_file: $txzchk_test_file" 1>&2
 	if [[ $pass_fail = fail ]]; then
 	    echo "$0: debug[9]: in run_test: txzchk_err_file: $txzchk_err_file" 1>&2
@@ -507,10 +518,18 @@ run_test()
     fi
 
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
+        if [[ -n "$test_mode" ]]; then
+    	    echo "$0: debug[5]: in run_test: about to run: $TXZCHK -x -w -v 0 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
+        else
+    	    echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
+        fi
     fi
 
-    "$TXZCHK" -w -v 0 -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
+    if [[ -n "$test_mode" ]]; then
+        "$TXZCHK" "-x" -w -v 0 -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
+    else
+        "$TXZCHK" -w -v 0 -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
+    fi
     status="$?"
 
     if [[ $V_FLAG -ge 7 ]]; then
@@ -523,7 +542,7 @@ run_test()
     # command does not match it is a fail.
     if [[ -e "$txzchk_err_file" ]]; then
 	if ! cmp -s "$txzchk_err_file" "$TMP_STDERR_FILE"; then
-	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $TXZCHK $test_mode -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    echo "$0: Warning: in run_test: expected errors: $txzchk_err_file do not match result of test: $TMP_STDERR_FILE" 1>&2
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: Warning: diff -u $txzchk_err_file $TMP_STDERR_FILE starts below" 1>&2
@@ -531,9 +550,9 @@ run_test()
 		echo "$0: Warning: diff -u $txzchk_err_file $TMP_STDERR_FILE ends above" 1>&2
 	    fi
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $TXZCHK -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    else
-		echo "$0: Warning: for more details try: $TXZCHK -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    fi
 	    echo | tee -a -- "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
@@ -548,7 +567,7 @@ run_test()
     # 'pass' but this would further complicate the script when the fact there's
     # stderr output is an error that should be addressed.
     elif [[ -s "$TMP_STDERR_FILE" ]]; then
-	echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+	echo "$0: Warning: in run_test: FAIL: $TXZCHK $test_mode -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	echo "$0: Warning: in run_test: unexpected errors found for file that should have passed:" | tee -a "$LOGFILE" 1>&2
 	echo cat "$TMP_STDERR_FILE"
 	# tee -a -- "$LOGFILE < "$TMP_STDERR_FILE"
@@ -557,7 +576,7 @@ run_test()
 	EXIT_CODE=1
     # all is okay if we get here
     elif [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2
+	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK $test_mode -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2
     fi
 
     # return
@@ -573,10 +592,10 @@ run_test()
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must pass: text files" 1>&2
 fi
+
 while read -r file; do
     run_test pass "$file"
 done < <(find "$TXZCHK_GOOD_TREE" -type f -name '*.txt' -print)
-
 
 # run tests that must fail
 #

@@ -183,7 +183,7 @@ static void write_info(struct info *infop, char const *submission_dir, char cons
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
 static void write_auth(struct auth *authp, char const *submission_dir, char const *chkentry, char const *fnamchk);
 static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
-			 char const *ls, char const *txzchk, char const *fnamchk);
+			 char const *ls, char const *txzchk, char const *fnamchk, bool test_mode);
 static void remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
 	bool test_mode, int submit_slot);
 static void show_registration_url(void);

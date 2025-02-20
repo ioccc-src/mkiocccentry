@@ -4,15 +4,22 @@ Warning: string_to_intmax: string "fred" has no digits
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: trying to parse file size in on line: <drw-r--r--  0 501    20       fred Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra1/>: token: <fred>
 Warning: string_to_intmax: number "155a" has invalid characters
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: trying to parse file size in on line: <-rw-r--r--  0 501    20       155a Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/.info.json>: token: <155a>
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/bar with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/-foo with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: file "12345678-1234-4321-abcd-1234567890ab-2/-foo": path component invalid
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/bar with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/bar
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/remarks.md
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/.auth.json
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/prog.c
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/-foo with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: file "12345678-1234-4321-abcd-1234567890ab-2/-foo" is not a sane relative path
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/-foo
 Warning: string_to_intmax: number "4.0" has invalid characters
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: trying to parse file size in on line: <-rw-r--r--  0 501    20        4.0 Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/extra2>: token: <4.0>
-Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: no .info.json found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found 14 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found 21 feathers stuck in the tarball

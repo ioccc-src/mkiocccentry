@@ -1,18 +1,18 @@
-ERROR[25]: main: timestamp: 1675547787 is < 1716103155: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: ./test_ioccc/fnamchk ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt failed with exit code: 25
-Warning: txzchk: found non-executable non-directory file curds/file with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file curds/whey/extra with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/./extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: file "test-0/./extra1": path component invalid
-Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r--
-Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file curds/file with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/file
+Warning: txzchk: found non-executable non-directory file curds/whey/extra with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/whey/extra
+Warning: txzchk: found non-executable non-directory file test-0/./extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: file "test-0/./extra1" is not a sane relative path
+Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: bogus field found after filename: bogus
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: bogus field found after filename: data
-Warning: txzchk: found non-executable non-directory file test-0/file with wrong permissions: -rw-r--r-- != -r--r--r--
+Warning: txzchk: found non-executable non-directory file test-0/file with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found 16 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found 17 feathers stuck in the tarball

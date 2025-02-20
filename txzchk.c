@@ -71,9 +71,10 @@ static char const *program = NULL;		/* our name */
 static bool read_from_text_file = false;	/* true ==> assume tarball_path refers to a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 static char const *tok_sep = " \t";		/* token separators for strtok_r */
-static bool show_warnings = false;	/* true ==> show warnings even if -q */
+static bool show_warnings = false;	        /* true ==> show warnings even if -q */
 static bool entertain = false;			/* true ==> show entertaining messages */
 static uintmax_t feathery = 3;			/* for entertain option */
+static bool test_mode = false;                  /* true ==> use -t in fnamchk */
 
 /*
  * txzchk specific structs
@@ -88,7 +89,7 @@ static struct txz_file *txz_files;		/* linked list of the files in the tarball *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-e] [-f feathers] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] tarball_path\n"
+    "usage: %s [-h] [-v level] [-q] [-e] [-f feathers] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] [-x] tarball_path\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -103,6 +104,7 @@ static const char * const usage_msg =
     "\t\t\tfilename (def: %s)\n\n"
     "\t-T\t\tassume tarball_path is a text file with tar listing (for testing different formats)\n"
     "\t-E ext\t\tchange extension to test (def: txz)\n"
+    "\t-x\t\t\tforce fnamchk -t even if -T is not used\n"
     "\n"
     "\ttarball_path\tpath to an IOCCC compressed tarball\n"
     "\n"
@@ -140,7 +142,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVF:t:TE:wef:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVF:t:TE:wef:x")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -167,21 +169,21 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 'F':   /* -F fnamchk - specify path to fnamchk tool */
+	case 'F': /* -F fnamchk - specify path to fnamchk tool */
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
-	case 't':   /* -t tar - specify path to tar (perhaps to tar and feather :-) ) */
+	case 't': /* -t tar - specify path to tar (perhaps to tar and feather :-) ) */
 	    tar = optarg;
 	    tar_flag_used = true;
 	    break;
-	case 'T':
-	    read_from_text_file = true; /* -T - text file mode - don't rely on tar: just read file as if it was a text file */
+	case 'T': /* -T - text (test) file mode - don't rely on tar: just read file as if it was a text file */
+	    read_from_text_file = true;
 	    break;
-	case 'E':   /* -E ext - specify extension (used with -T for test suite) */
+	case 'E': /* -E ext - specify extension (used with -T for test suite) */
 	    ext = optarg;
 	    break;
-	case 'w':   /* -w - always show warnings */
+	case 'w': /* -w - always show warnings */
 	    show_warnings = true;
 	    break;
 	case 'e': /* whee! */
@@ -193,9 +195,12 @@ main(int argc, char **argv)
 		not_reached();
 	    }
 	    break;
-	case ':':   /* option requires an argument */
-	case '?':   /* illegal option */
-	default:    /* anything else but should not actually happen */
+        case 'x':   /* when mkiocccentry UUID is "test" we need this */
+            test_mode = true;
+            break;
+	case ':': /* option requires an argument */
+	case '?': /* illegal option */
+	default:  /* anything else but should not actually happen */
 	    check_invalid_option(program, i, optopt);
 	    usage(3, program, ""); /*ooo*/
 	    not_reached();
@@ -210,6 +215,8 @@ main(int argc, char **argv)
     }
     tarball_path = argv[optind];
     dbg(DBG_MED, "tarball path: %s", tarball_path);
+    dbg(DBG_MED, "fnamchk test mode: %s", booltostr(test_mode));
+    dbg(DBG_MED, "entertainment mode: %s", booltostr(entertain));
 
     /* if -w used then we always show warnings from warn() */
     if (show_warnings) {
@@ -662,7 +669,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
     /*
      * identify if file is an allowed '.' file
      *
-     * NOTE: Files that are allowed to begin with '.' must also be lower case.
+     * NOTE: files that are allowed to begin with '.' must also be lower case.
      * In other words if any of the letters in INFO_JSON_FILENAME or
      * AUTH_JSON_FILENAME are upper case the file is an invalid dot file.
      *
@@ -677,6 +684,9 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
     if (count_dirs(file->filename) == 1 && (!strcmp(file->basename, INFO_JSON_FILENAME) ||
                 !strcmp(file->basename, AUTH_JSON_FILENAME))) {
 	allowed_dot_file = true;
+        dbg(DBG_VHIGH, "%s: is an allowed dot file", file->filename);
+    } else {
+        dbg(DBG_VHIGH, "%s: is not an allowed dot file", file->filename);
     }
 
     if (has_special_bits(file)) {
@@ -700,7 +710,9 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
         if (sanity != PATH_OK) {
             ++tarball.total_feathers; /* report it once and consider it only one feather */
             ++tarball.unsafe_chars;
-            warn(__func__, "%s: file \"%s\": %s", tarball_path, file->filename, path_sanity_error(sanity));
+            warn(__func__, "%s: file \"%s\" is not a sane relative path", tarball_path, file->filename);
+        } else {
+            dbg(DBG_VHIGH, "%s: file is a sane relative path: %s", tarball_path, file->filename);
         }
 
 	/*
@@ -713,7 +725,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
 	 */
 	if (*(file->basename) == '.') {
 	    ++tarball.total_feathers;
-	    warn("txzchk", "%s: found non %s and %s dot file %s",
+	    warn("txzchk", "%s: found non %s and %s dot file: %s",
 			   tarball_path, AUTH_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
 	    tarball.invalid_dot_files++;
 
@@ -727,7 +739,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
     }
 
     /* check the dirs in the path */
-    check_directories(file, dirname, tarball_path);
+    check_directory(file, dirname, tarball_path);
 }
 
 
@@ -1096,7 +1108,7 @@ check_all_txz_files(void)
 
 
 /*
- * check_directories - directory specific checks on this _file_
+ * check_directory - directory specific checks on this _file_
  *
  * given:
  *
@@ -1104,13 +1116,14 @@ check_all_txz_files(void)
  *	dirname	        - the directory expected (or NULL if fnamchk fails)
  *	tarball_path	- the tarball path
  *
- * Issues a warning for every violation specific to directories (and
- * subdirectories).
+ * Issues a warning if the expected (if fnamchk did not fail i.e. dirname !=
+ * NULL) directory name in the file is not correct (i.e. the top level directory
+ * != dirname). If fnamchk did fail it is also warned against.
  *
  * Does not return on error.
  */
 static void
-check_directories(struct txz_file *file, char const *dirname, char const *tarball_path)
+check_directory(struct txz_file *file, char const *dirname, char const *tarball_path)
 {
     /*
      * firewall
@@ -1129,6 +1142,9 @@ check_directories(struct txz_file *file, char const *dirname, char const *tarbal
 	    /* This file has the right top level directory */
 	    tarball.correct_directories++;
 	}
+    } else if (!test_mode) {
+        warn("txzchk", "%s: found incorrect top level directory in filename %s", tarball_path, file->filename);
+        ++tarball.total_feathers;
     }
 }
 
@@ -1695,13 +1711,48 @@ check_tarball(char const *tar, char const *fnamchk)
      * because if someone wants the directory name required they can just use
      * fnamchk on it directly with the appropriate options (for example -E txt
      * would tell it to expect the extension txt instead of txz).
+     *
      */
-    if (dbg_allowed(DBG_MED)) {
-	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, tarball_path);
-	exit_code = shell_cmd(__func__, false, true, "% -v 5 -E % -- %", fnamchk, ext, tarball_path);
+    if (read_from_text_file) {
+        /*
+         * In test mode (-T) we must ignore the timestamp failing. This is
+         * important because otherwise the test script (txzchk_test.sh) would
+         * fail due to the timestamp being updated.
+         *
+         * In test mode (-T) we MUST give fnamchk(1) the -T option (ignore
+         * timestamp failure) and if we were given -x we must use -t.
+         */
+        if (dbg_allowed(DBG_MED)) {
+            if (test_mode) {
+                dbg(DBG_MED, "about to execute: %s -t -T -v 3 -E %s -- %s", fnamchk, ext, tarball_path);
+                exit_code = shell_cmd(__func__, false, true, "% -T -v 3 -E % -- %", fnamchk, ext, tarball_path);
+            } else {
+                dbg(DBG_MED, "about to execute: %s -T -v 3 -E %s -- %s", fnamchk, ext, tarball_path);
+                exit_code = shell_cmd(__func__, false, true, "% -T -v 3 -E % -- %", fnamchk, ext, tarball_path);
+            }
+        } else {
+            if (test_mode) {
+                exit_code = shell_cmd(__func__, false, true, "% -t -T -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+            } else {
+                exit_code = shell_cmd(__func__, false, true, "% -T -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+            }
+        }
     } else {
-	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, tarball_path);
-	exit_code = shell_cmd(__func__, false, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+        if (dbg_allowed(DBG_MED)) {
+            if (test_mode) {
+                dbg(DBG_MED, "about to execute: %s -t -v 5 -E %s -- %s", fnamchk, ext, tarball_path);
+                exit_code = shell_cmd(__func__, false, true, "% -v 3 -E % -- %", fnamchk, ext, tarball_path);
+            } else {
+                dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, tarball_path);
+                exit_code = shell_cmd(__func__, false, true, "% -v 3 -E % -- %", fnamchk, ext, tarball_path);
+            }
+        } else {
+            if (test_mode) {
+                exit_code = shell_cmd(__func__, false, true, "% -t -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+            } else {
+                exit_code = shell_cmd(__func__, false, true, "% -E % -- % >/dev/null", fnamchk, ext, tarball_path);
+            }
+        }
     }
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", tarball_path, fnamchk, tarball_path, WEXITSTATUS(exit_code));
@@ -1724,12 +1775,50 @@ check_tarball(char const *tar, char const *fnamchk)
 
 	/*
 	 * form pipe to the fnamchk command
-	 */
-	fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
-	if (fnamchk_stream == NULL) {
-	    err(38, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
-	    not_reached();
-	}
+         *
+         * If test mode is enabled we will also pass the -T option to fnamchk: to
+         * ignore the timestamp test failing. This is important because when a new
+         * contest opens the timestamp will be updated and that means that the tests
+         * will fail!
+         */
+        if (read_from_text_file) {
+            /*
+             * In text file mode (-T) we must ignore the timestamp failing. This
+             * is important because otherwise the test script (txzchk_test.sh)
+             * would fail due to the timestamp being updated.
+             *
+             * In text file mode (-T) we MUST give fnamchk(1) the -T option (ignore
+             * timestamp failure); if we're given -x we MUST give fnamchk -t.
+             */
+            if (test_mode) {
+                fnamchk_stream = pipe_open(__func__, false, true, "% -t -T -E % -- %", fnamchk, ext, tarball_path);
+                if (fnamchk_stream == NULL) {
+                    err(38, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    not_reached();
+                }
+            } else {
+                fnamchk_stream = pipe_open(__func__, false, true, "% -T -E % -- %", fnamchk, ext, tarball_path);
+                if (fnamchk_stream == NULL) {
+                    err(39, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    not_reached();
+                }
+            }
+        } else {
+            /*
+             * In real mode (not reading from a text file) we MUST check the timestamp so
+             * we must NOT use the -T option to fnamchk. Depending on whether we
+             * were given -x or not we will give fnamchk -t (we were given -x).
+             */
+            if (test_mode) {
+                fnamchk_stream = pipe_open(__func__, false, true, "% -t -E % -- %", fnamchk, ext, tarball_path);
+            } else {
+                fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
+            }
+            if (fnamchk_stream == NULL) {
+                err(40, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                not_reached();
+            }
+        }
 
 	/*
 	 * read the output from the fnamchk command
@@ -1751,7 +1840,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dirname == NULL || *dirname == '\0') {
-	    err(39, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
+	    err(41, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
 	    not_reached();
 	}
     }
@@ -1760,7 +1849,7 @@ check_tarball(char const *tar, char const *fnamchk)
     tarball.size = file_size(tarball_path);
     /* report size if too big */
     if (tarball.size < 0) {
-	err(40, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
+	err(42, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
@@ -1780,14 +1869,14 @@ check_tarball(char const *tar, char const *fnamchk)
     dbg(DBG_MED, "txzchk: %s size in bytes: %jd", tarball_path, (intmax_t)tarball.size);
 
     /*
-     * if -T we need to open it as a text file: for test mode
+     * if txzchk -T we need to open it as a text file: for test mode
      */
     if (read_from_text_file) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	input_stream = fopen(tarball_path, "r");
 	if (input_stream == NULL)
 	{
-	    errp(41, __func__, "fopen of %s failed", tarball_path);
+	    errp(43, __func__, "fopen of %s failed", tarball_path);
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -1797,9 +1886,9 @@ check_tarball(char const *tar, char const *fnamchk)
 
     } else {
 	/*
-	 * case: -T was not specified so we have to execute tar: if we cannot
-         * get a tarball listing it is an error and we abort; else we open a
-         * pipe to read the output of the command.
+	 * case: -T was not passed to txzchk so we have to execute tar: if we
+         * cannot get a tarball listing it is an error and we abort; else we
+         * open a pipe to read the output of the command.
          */
 
 	/*
@@ -1812,7 +1901,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
 	}
 	if (exit_code != 0) {
-	    errp(42, __func__, "%s -tJvf %s failed with exit code: %d",
+	    errp(44, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1820,7 +1909,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	/* now open a pipe to tar command (tar -tJvf) to read from */
 	input_stream = pipe_open(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (input_stream == NULL) {
-	    err(43, __func__, "popen for reading failed for: %s -tJvf %s",
+	    err(45, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, tarball_path);
 	    not_reached();
 	}
@@ -1957,15 +2046,15 @@ has_special_bits(struct txz_file *file)
      * firewall
      */
     if (file == NULL) {
-	err(44, __func__, "called with NULL file");
+	err(46, __func__, "called with NULL file");
 	not_reached();
     }
     if (file->filename == NULL) {
-        err(45, __func__, "file->filename is NULL");
+        err(47, __func__, "file->filename is NULL");
         not_reached();
     }
     if (file->perms == NULL) {
-        err(46, __func__, "file->perms is NULL");
+        err(48, __func__, "file->perms is NULL");
         not_reached();
     }
 
@@ -1977,14 +2066,27 @@ has_special_bits(struct txz_file *file)
         }
     } else if (file->isexec) {
         ++tarball.total_exec_files;
-        if (count_dirs(file->filename) != 1 || (strcmp(file->basename, TRY_SH) != 0 &&
-            strcmp(file->basename, TRY_ALT_SH) != 0)) {
-                ++tarball.invalid_perms;
-                warn("txzchk", "found executable file that is not %s or %s: %s", TRY_SH, TRY_ALT_SH, file->filename);
-                return true;
+        if (count_dirs(file->filename) != 1 || (!is_executable_filename(file->basename))) {
+            ++tarball.invalid_perms;
+            warn("txzchk", "found executable file that is in the wrong directory or the wrong filename: %s", file->filename);
+            /*
+             * NOTE: the caller will increment the tarball.total_feathers so do
+             * NOT do it here.
+             */
+            return true;
         } else if (strcmp(file->perms, "-r-xr-xr-x") != 0) {
-                ++tarball.invalid_perms;
-            warn("txzchk", "found valid executable %s with wrong permissions: %s != -r-xr-xr-x", file->filename, file->perms);
+            /*
+             * we know that the directory count is 1 (submission directory
+             * itself) and we know it is supposed to be 0555 but this is not so
+             * we flag it
+             */
+            ++tarball.invalid_perms;
+            warn("txzchk", "found valid executable %s with wrong permissions: %s (0555) != -r-xr-xr-x",
+                    file->filename, file->perms);
+            /*
+             * NOTE: the caller will increment the tarball.total_feathers so do
+             * NOT do it here.
+             */
             return true;
         }
     } else {
@@ -1993,9 +2095,13 @@ has_special_bits(struct txz_file *file)
          * permission too, namely read only (-r--r--r--).
          */
         if (strcmp(file->perms, "-r--r--r--") != 0) {
-            warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r--",
+            warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r-- (0444)",
                     file->filename, file->perms);
             ++tarball.invalid_perms;
+            /*
+             * NOTE: the caller will increment the tarball.total_feathers so do
+             * NOT do it here.
+             */
             return true;
         }
     }
@@ -2004,7 +2110,6 @@ has_special_bits(struct txz_file *file)
      * all good
      */
     return false;
-
 }
 
 
@@ -2031,21 +2136,21 @@ add_txz_line(char const *str, uintmax_t line_num)
      * firewall
      */
     if (str == NULL) {
-	err(47, __func__, "passed NULL str");
+	err(49, __func__, "passed NULL str");
 	not_reached();
     }
 
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(48, __func__, "unable to allocate struct txz_line *");
+	errp(50, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	errp(49, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(51, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -2084,7 +2189,7 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
      * firewall
      */
     if (tarball_path == NULL) {
-	err(50, __func__, "passed NULL tarball_path");
+	err(52, __func__, "passed NULL tarball_path");
 	not_reached();
     }
 
@@ -2097,7 +2202,7 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
 
 	line_dup = strdup(line->line);
 	if (line_dup == NULL) {
-	    err(51, __func__, "%s: duplicating %s failed", tarball_path, line->line);
+	    err(53, __func__, "%s: duplicating %s failed", tarball_path, line->line);
 	    not_reached();
 	}
 
@@ -2172,25 +2277,25 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      * firewall
      */
     if (path == NULL) {
-	err(52, __func__, "passed NULL path");
+	err(54, __func__, "passed NULL path");
 	not_reached();
     }
     if (perms == NULL) {
-        err(53, __func__, "passed NULL perms");
+        err(55, __func__, "passed NULL perms");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(54, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
+	errp(56, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file->filename = strdup(path);
     if (!file->filename) {
-	errp(55, __func__, "%s: unable to strdup filename %s", tarball_path, path);
+	errp(57, __func__, "%s: unable to strdup filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -2199,7 +2304,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      */
     file->basename = base_name(path);
     if (file->basename == NULL || *(file->basename) == '\0') {
-	err(56, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
+	err(58, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -2208,7 +2313,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      */
     file->top_dirname = dir_name(path, -1);
     if (file->top_dirname == NULL || *(file->top_dirname) == '\0') {
-	err(57, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
+	err(59, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
 	not_reached();
     }
     if (isdir && dirname != NULL) {
@@ -2219,7 +2324,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
          */
         dir = dir_name(path, 0);
         if (dir == NULL) {
-            err(58, __func__, "error extracting full directory name of: %s", path);
+            err(60, __func__, "error extracting full directory name of: %s", path);
             not_reached();
         }
 
@@ -2288,7 +2393,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
      * firewall
      */
     if (txzfile == NULL || !txzfile->filename || !txzfile->basename) {
-	err(59, __func__, "called with NULL pointer(s)");
+	err(61, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
 
@@ -2327,7 +2432,7 @@ free_txz_file(struct txz_file **file)
      * firewall
      */
     if (file == NULL || *file == NULL) {
-        err(60, __func__, "file is NULL");
+        err(62, __func__, "file is NULL");
         not_reached();
     }
 
