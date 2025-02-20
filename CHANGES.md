@@ -46,6 +46,13 @@ single arg - the topdir - but this change allows it to be easier to do once
 `chkentry(1)` has been modified to do this (part of it was done - namely that
 the `topdir` arg is there and 'set' but it's not used yet).
 
+More fixes in `mkiocccentry_test.sh`. It no longer shows the commands of `make
+clobber` from the `mkiocccentry` function `check_submission()`. This is done by
+actually making the test Makefile have empty clobber and clean rules: they're
+not needed anyway. Also to help distinguish output after each mkiocccentry
+command is called it prints '--' and also it now shows the command that will be
+run (the mkiocccentry commands that is).
+
 
 ## Release 2.3.37 2025-02-19
 

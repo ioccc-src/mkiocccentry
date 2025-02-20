@@ -354,6 +354,7 @@ find "${workdir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/prog.c
 :> "${src_dir}"/prog.c
 # test empty prog.c, ignoring the warning about it
+echo "./mkiocccentry -y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
@@ -446,6 +447,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
@@ -534,6 +536,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
@@ -627,6 +630,7 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
@@ -720,6 +724,7 @@ test -f "${src_src_dir}/foo" || touch "${src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
@@ -815,6 +820,7 @@ test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/fo
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
