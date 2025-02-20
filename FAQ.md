@@ -110,7 +110,7 @@ also below). To do that last part you would have to do something like this (for
 this assume that the tools are in `~/mkiocccentry`):
 
 ```sh
-~/mkiocccentry -T ~/mkiocccentry/txzchk -F ~/mkiocccentry/test_ioccc/fnamchk -C ~/mkiocccentry/chkentry workdir topdir
+~/mkiocccentry/mkiocccentry -T ~/mkiocccentry/txzchk -F ~/mkiocccentry/test_ioccc/fnamchk -C ~/mkiocccentry/chkentry workdir topdir
 ```
 
 where `workdir` is where your submission tarball will be formed and `topdir` is
