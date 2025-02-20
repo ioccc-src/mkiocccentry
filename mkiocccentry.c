@@ -137,7 +137,9 @@ static const char * const usage_msg3 =
     "\t-d\t\tAlias for -s %u\n"
     "\t\t\t    NOTE: implies -y -E -A random_answers.seed and -i random_answers.seed\n"
     "\t\t\t    NOTE: one cannot use -a/-A or -i with -s seed/-d.\n"
-    "\t\t\t    NOTE: this is the only time -a/-A can be used with -i answers.\n";
+    "\t\t\t    NOTE: this is the only time -a/-A can be used with -i answers.\n"
+    "\t-I path\t\tignore path (to file or directory) under topdir\n"
+    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -I args\n";
 static const char * const usage_msg4 =
     "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
     "\ttopdir\t\tdirectory with required, optional and extra files and/or directories\n"
