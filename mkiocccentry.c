@@ -387,8 +387,9 @@ main(int argc, char *argv[])
 	    break;
 	}
     }
-    /* must have at least the required number of args */
-    if (argc - optind < REQUIRED_ARGS) {
+
+    /* must have the required number of args */
+    if (argc - optind != REQUIRED_ARGS) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
@@ -495,12 +496,17 @@ main(int argc, char *argv[])
     dbg(DBG_MED, "tar: %s", tar);
     dbg(DBG_MED, "ls: %s", ls);
     workdir = argv[optind];
-    dbg(DBG_MED, "workdir: %s", workdir);
     topdir = argv + optind + REQUIRED_ARGS - 1;
-    if (topdir == NULL) {
-        err(245, __func__, "topdir is NULL");
+    if (workdir == NULL || *workdir == '\0') {
+        err(3, __func__, "workdir is NULL or empty string");/*ooo*/
         not_reached();
     }
+    dbg(DBG_MED, "workdir: %s", workdir);
+    if (topdir == NULL || *topdir == NULL || **topdir == '\0') {
+        err(3, __func__, "topdir is NULL or empty string");/*ooo*/
+        not_reached();
+    }
+    dbg(DBG_MED, "topdir: %s", *topdir);
     if (answers != NULL) {
         dbg(DBG_MED, "answers file: %s", answers);
     }

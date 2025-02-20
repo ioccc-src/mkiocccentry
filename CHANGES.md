@@ -24,6 +24,15 @@ the documentation on the website too.
 Clean up some usage messages to be shorter (in some ways) especially the length
 of lines (some formatting fixes were also made).
 
+Bug fix in `mkiocccentry` - check for NULL or empty workdir and topdir.
+
+Change mkiocccentry arg count check to be exact as we no longer use extra args
+(though it didn't hurt to have them it might be better to be clear to the user).
+This required updating `mkiocccentry_test.sh` as well.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.29 2025-02-20"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.12 2025-02-20"`.
+
 
 ## Release 2.3.37 2025-02-19
 
