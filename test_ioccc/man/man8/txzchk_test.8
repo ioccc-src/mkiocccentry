@@ -191,15 +191,19 @@ was written by Cody Boone Ferguson after discussion with Landon Curt Noll (one o
 In order to test different tarballs and tar listing formats Cody added the text file mode early on to help in development.
 That fact coupled with the fact there is the need to test that the tool works properly is what inspired him to create this script.
 .PP
-When a new bad test file is added one has to update the error files. This can be accomplished by running:
+When a new bad test file is added or if an error file has to be modified (due to an update to
+.BR txzchk (1)
+or if a change is made to a test file) has to update the error files. This can be accomplished by running:
 .sp
 .RS
 .ft B
-    for i in ./test_txzchk/bad/*.txt; do ./txzchk \-q \-v 0 \-w \-T \-E txt "${i}" 2>"${i}".err; done
+    make rebuild_txzchk_test_errors
 .ft R
 .RE
 .PP
-which is also documented in the readme for this script.
+from the top level
+.BR mkiocccentry (1)
+directory.
 Please note that this will overwrite all of the error files so one has to be careful that the errors are actually correct: if one were to have an outdated version of
 .BR txzchk (1)
 or there's some other problem (for example, an unknown tar listing output that's not specifically being tested), for two examples, then one could inadvertently make the script think all is okay when it's not okay at all!

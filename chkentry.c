@@ -61,7 +61,6 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\n"
     "\t-i file\t\tadd file to ignore list\n"
     "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
     "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
@@ -139,8 +138,7 @@ usage(int exitcode, char const *prog, char const *str)
  *	array		dynamic array of pointers to strings
  *	str		string to search array and append if not already found
  *
- * NOTE: This function does not return if given NULL pointers, on any error or
- * if the string is already in the array.
+ * NOTE: This function does not return if given NULL pointers on any error.
  */
 static void
 append_unique_str(struct dyn_array *array, char *str)

@@ -3,7 +3,7 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * The concept of this file and the JSON parser were both co-developed in 2022
+ * The concept of this file and the JSON parser were co-developed in 2022
  * by:
  *
  *	@xexyl
@@ -84,14 +84,14 @@
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
 #define LS_PATH_0 "/bin/ls"			    /* historic path for ls */
 #define LS_PATH_1 "/usr/bin/ls"			    /* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
-#define FNAMCHK_PATH_0 "./test_ioccc/fnamchk"	    /* default path to fnamchk tool */
-#define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
-#define TXZCHK_PATH_0 "./txzchk"		    /* default path to txzchk tool */
-#define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
-#define CHKENTRY_PATH_0 "./chkentry"		    /* default path to chkentry tool */
-#define CHKENTRY_PATH_1 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
-#define JPARSE_PATH_0 "./jparse/jparse"		    /* default path to jparse */
-#define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
+#define FNAMCHK_PATH_0 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
+#define FNAMCHK_PATH_1 "./test_ioccc/fnamchk"	    /* path to fnamchk tool if not installed */
+#define TXZCHK_PATH_0 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
+#define TXZCHK_PATH_1 "./txzchk"		    /* path to txzchk tool if not installed */
+#define CHKENTRY_PATH_0 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
+#define CHKENTRY_PATH_1 "./chkentry"		    /* path to chkentry tool if not installed */
+#define JPARSE_PATH_0 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
+#define JPARSE_PATH_1 "./jparse/jparse"		    /* path to jparse if not installed */
 #define MAKE_PATH_0 "/usr/bin/make"                 /* default path to make tool */
 #define MAKE_PATH_1 "/bin/make"                     /* in case /usr/bin/make doesn't work */
 

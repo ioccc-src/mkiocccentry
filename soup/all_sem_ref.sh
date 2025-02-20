@@ -6,9 +6,6 @@
 # and .auth.json files, form *.json.c and *.json.h semantic table files
 # under a given directory.
 #
-# The concept of this file was developed by:
-#
-#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
 # The JSON parser and this tool were co-developed in 2022 by:
 #
@@ -16,6 +13,10 @@
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 # and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# The concept of this file was developed by:
+#
 #	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
 # Share and enjoy! :-)

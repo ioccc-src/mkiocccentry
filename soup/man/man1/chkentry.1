@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "19 May 2024" "chkentry" "IOCCC tools"
+.TH chkentry 1 "20 February 2025" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check JSON files in an IOCCC entry
@@ -192,7 +192,7 @@ Run the tool on an IOCCC entry located in the directory
 .sp
 .RS
 .ft B
- ./chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666/{.auto,.info}.json
+ chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666/{.auto,.info}.json
 .ft R
 .RE
 .PP
@@ -201,7 +201,7 @@ Run the tool on just the IOCCC entry author JSON file
 .sp
 .RS
 .ft B
- ./chkentry test/auth.JSON .
+ chkentry test/auth.JSON .
 .ft R
 .PP
 Run the tool on just the IOCCC entry information JSON file
@@ -209,7 +209,7 @@ Run the tool on just the IOCCC entry information JSON file
 .sp
 .RS
 .ft B
- ./chkentry . test/info.JSON
+ chkentry . test/info.JSON
 .ft R
 .RE
 .RE
