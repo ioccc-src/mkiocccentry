@@ -361,6 +361,8 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
+echo "--"
+
 # Form 'submissions' that are unlikely to win the IOCCC :-)
 #
 test -f "${src_dir}"/prog.c || {
@@ -451,6 +453,8 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
+echo "--"
+
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
 cat <<"EOF"
@@ -536,6 +540,8 @@ if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -631,6 +637,8 @@ else
     echo "$0: NOTE: length limit works." 1>&2
 fi
 
+echo "--"
+
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
 cat <<"EOF"
@@ -718,6 +726,8 @@ if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -815,6 +825,7 @@ else
     echo "$0: NOTE: limit works." 1>&2
 fi
 
+echo "--"
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
