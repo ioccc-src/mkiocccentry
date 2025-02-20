@@ -2466,6 +2466,83 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
 }
 
 /*
+ * find_path_in_array
+ *
+ * Given a pointer to string (a path), we search a dynamic array of pointers
+ * to strings (presumably path(s)).  If an exact match is found (i.e. the
+ * string is already in the dynamic array), we return the path. Otherwise we
+ * will return NULL, indicating to the caller it could not be found.
+ *
+ * given:
+ *	str		string to find in array
+ *	paths		pointer to a struct dyn_array of char * (paths)
+ *	empty           true ==> if both strings are empty it is a match
+ *	idx             if not NULL set *idx to element if found
+ *
+ * returns:
+ *	the string if it was found, otherwise NULL.
+ *
+ * NOTE: if given a NULL pointer (other than idx) or if *path == '\0' this
+ * function returns NULL.
+ *
+ * NOTE: if idx != NULL we will first set it to -1. If the string is then found
+ * in the array it will be set to the index (element). If it is NULL or nothing
+ * is found it will be either untouched or *idx will be -1. In any case if the
+ * string is not found NULL will be returned.
+ */
+char *
+find_path_in_array(char *path, struct dyn_array *paths, bool empty, intmax_t *idx)
+{
+    intmax_t len = 0;	/* length of each string already in the array */
+    char *u = NULL;	/* name pointer */
+    intmax_t i;
+
+    /*
+     * firewall
+     */
+    if (paths == NULL || path == NULL || *path == '\0') {
+        return NULL;
+    }
+
+    /*
+     * reset *idx if idx != NULL
+     */
+    if (idx != NULL) {
+        *idx = -1;
+    }
+
+    /*
+     * search paths array for the path
+     */
+    len = dyn_array_tell(paths);
+    for (i=0; i < len; ++i) {
+
+        /* get next string pointer */
+        u = dyn_array_value(paths, char *, i);
+        if (u == NULL) {	/* paranoia */
+            err(162, __func__, "found NULL pointer in paths[%ju]", (uintmax_t)i);
+            not_reached();
+        }
+
+        /* look for match */
+        if ((empty && *path == '\0' && *u == '\0') || !strcmp(path, u)) {
+            if (idx != NULL) {
+                /*
+                 * record index if requested
+                 */
+                *idx = i;
+            }
+            return u;
+        }
+    }
+
+    /*
+     * nothing found
+     */
+    return NULL;
+}
+
+/*
  * append_path
  *
  * Given a pointer to string (a path), we search a dynamic array of pointers
@@ -2478,25 +2555,23 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, int options, bool lo
  *
  * given:
  *	paths		pointer to pointer to a struct dyn_array * of paths
- *	str		string to search array and append if not already found
+ *	path		string to search array and append if not already found
  *	unique          don't add to array if it already exists
  *	duped           true ==> str was dynamically allocated
  *
  * returns:
- *	true		str was not already in dynamic array and has now been appended
- *	false		str was already in the dynamic array, table is unchanged
+ *	true		path was not already in dynamic array and has now been appended
+ *	false		path was already in the dynamic array, table is unchanged
  *
- * NOTE: this function does not return if given a NULL string or NULL array.
+ * NOTE: this function does not return if given a NULL path or NULL array.
  *
  * NOTE: if paths != NULL && *paths == NULL we will create an array with a chunk
  * size of 64.
  */
 bool
-append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
+append_path(struct dyn_array **paths, char *path, bool unique, bool duped)
 {
-    intmax_t unique_len = 0;	/* unique length of each string already in the array */
     char *u = NULL;		/* unique name pointer */
-    intmax_t i;
 
     /*
      * firewall
@@ -2505,8 +2580,8 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
 	err(159, __func__, "paths is NULL");
 	not_reached();
     }
-    if (str == NULL) {
-	err(160, __func__, "str is NULL");
+    if (path == NULL) {
+	err(160, __func__, "path is NULL");
 	not_reached();
     }
 
@@ -2522,34 +2597,12 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
     }
 
     /*
-     * case: only add paths if it does not already exist
+     * case: only add paths if it does not already exist.
+     *
+     * NOTE: we don't care about idx.
      */
-    if (unique) {
-        /*
-         * search paths array for the string
-         *
-         * NOTE: we realise calling the function with unique strings will
-         *	 cause the execution time to grow as O(n^2).  However this is the
-         *	 price to pay when one needs or wants no duplicate strings in the
-         *	 array. Okay we might do a more optimised search but we don't expect
-         *	 most lists of paths to be that big.
-         */
-        unique_len = dyn_array_tell(*paths);
-        for (i=0; i < unique_len; ++i) {
-
-            /* get next string pointer */
-            u = dyn_array_value(*paths, char *, i);
-            if (u == NULL) {	/* paranoia */
-                err(162, __func__, "found NULL pointer in paths dynamic array element: %ju", (uintmax_t)i);
-                not_reached();
-            }
-
-            /* look for match */
-            if ((*u == '\0' && *str == '\0') || !strcmp(str, u)) {
-                /* str found in paths dynamic array, not unique */
-                return false;
-            }
-        }
+    if (unique && find_path_in_array(path, *paths, true, NULL) != NULL) {
+        return false;
     }
 
     /*
@@ -2558,13 +2611,13 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
      */
     if (!duped) {
         errno = 0; /* pre-clear errno for errp() */
-        u = strdup(str);
+        u = strdup(path);
         if (u == NULL) {
-            errp(163, __func__, "failed to strdup(\"%s\")", str);
+            errp(163, __func__, "failed to strdup(\"%s\")", path);
             not_reached();
         }
     } else {
-        u = str;
+        u = path;
     }
     /*
      * append to paths array
@@ -2591,6 +2644,11 @@ append_path(struct dyn_array **paths, char *str, bool unique, bool duped)
  * length). If only_empty is false and there is at least one element in the
  * array we will leave the array untouched.
  *
+ * NOTE: the reason for the only_empty bool is it allows one to not have to work
+ * out whether or not anything was found: but if something was found the array
+ * should be returned (by the caller) and otherwise if it is empty it will
+ * return NULL (by way of this function).
+ *
  * NOTE: this function can be used for any dyn_array of char * but as we use it
  * specifically for paths and since free_array() has a high chance of being
  * found elsewhere, we use free_paths_array() as it has a lower chance of being
@@ -2611,6 +2669,10 @@ free_paths_array(struct dyn_array **paths, bool only_empty)
     } else if (*paths != NULL) {
         len = dyn_array_tell(*paths);
         if (len > 0 && !only_empty) {
+            /*
+             * we only free the array and set to NULL if the length is > 0 or we
+             * are not ignoring empty arrays
+             */
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(*paths, char *, i);
                 if (p != NULL) {
@@ -2618,10 +2680,6 @@ free_paths_array(struct dyn_array **paths, bool only_empty)
                     p = NULL;
                 }
             }
-            /*
-             * we only free the array and set to NULL if the length is > 0 or we
-             * are not ignoring empty arrays
-             */
             dyn_array_free(*paths);
             *paths = NULL;
         }
@@ -8377,7 +8435,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.17 2025-02-19" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.18 2025-02-20" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -8408,6 +8466,7 @@ main(int argc, char **argv)
     struct dyn_array *paths_found = NULL;   /* to test find_paths() */
     size_t len = 0; /* length of arrays */
     size_t j = 0; /* for arrays */
+    intmax_t idx = 0; /* for find_path_in_array() */
 
     /*
      * parse args
@@ -10072,6 +10131,20 @@ main(int argc, char **argv)
     if (paths_found == NULL) {
         err(168, __func__, "didn't find any paths in the paths array");
         not_reached();
+    }
+
+    /*
+     * look for test_jparse
+     */
+    name = find_path_in_array("test_jparse", paths, false, &idx);
+    if (name == NULL) {
+        /*
+         * "test_jparse" must exist
+         */
+        err(169, __func__, "didn't find \"test_jparse\" in paths array");
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "found test_jparse at paths[%ju]", (uintmax_t)idx);
     }
 
     /*
