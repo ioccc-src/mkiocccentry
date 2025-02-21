@@ -76,7 +76,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.12 2025-02-20"
+export MKIOCCCENTRY_TEST_VERSION="1.0.13 2025-02-21"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -633,8 +633,8 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
-if [[ ${status} -eq 0 ]]; then
-    echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
+if [[ ${status} -ne 4 ]]; then
+    echo "$0: ERROR: mkiocccentry exit code not 4: $status" 1>&2
     exit 1
 else
     echo "$0: NOTE: the above error is expected as we were testing that the filename" 1>&2
@@ -823,8 +823,8 @@ test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/fo
 echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
-if [[ ${status} -eq 0 ]]; then
-    echo "$0: ERROR: mkiocccentry zero exit code when it should be non-zero: $status" 1>&2
+if [[ ${status} -ne 4 ]]; then
+    echo "$0: ERROR: mkiocccentry zero exit code not 4: $status" 1>&2
     exit 1
 else
     echo "$0: NOTE: the above error is expected as we were testing that the max depth" 1>&2

@@ -1,5 +1,40 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.24 2025-02-21
+
+Update and add utils.
+
+Yes I am afraid that more things were thought of, particularly when using some
+of the functions. Unfortunately making the assumption of using `strcmp()` or
+`strcasecmp()` when looking for files is wrong as some file systems (like the
+default here - macOS) are case insensitive and sometimes one might or might not
+want to have better control (like the use case). Thus the functions ought to
+have an option to specify if you want to make a case-sensitive or
+case-insensitive search (if the boolean is false it means case insensitive).
+This applies to `find_path()`, `find_path_in_array()`, `find_paths()`,
+`append_path()` and the new function `array_has_path()` (which takes a `intmax_t
+*` which if not NULL will be set to either `-1` or the index in the array). Yes
+the `find_path*()` functions have **way too many** args and it would be good if
+they can be refactored but that will have to happen another time.
+
+As I needed an easier way to test the above searching I added the functions
+`touch()` and `touchat()` which are analogous to the `touch(1)` command (except
+it does not do anything if the file does already exists) and `openat(2)`. That
+means that `touchat(2)` uses `touch()` which uses `open(2)` with the flag
+`O_CREAT`. Importantly it is not like `creat(2)` which will truncate the file if
+it already exists. It takes a `mode_t mode` to set the mode.
+
+Updated .gitignore with some paths that the test code makes or copies (and now
+`make clobber` also removes those).
+
+New function `paths_in_array()` which counts the number of paths in the array
+(if not NULL) - i.e. it uses `dyn_array_tell()` but only if not NULL; if the
+array is NULL it simply returns 0.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.21 2025-02-21"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.19 2025-02-21"`.
+
+
 ## Release 2.2.23 2025-02-20
 
 New util function to find a path in an array.

@@ -7,6 +7,37 @@ Fix many debug calls in `soup/entry_util.c` at level medium to not reveal
 information about the submission. This includes GitHub handle and country code,
 amongst others.
 
+Due to what will be needed with chkentry (and also in mkiocccentry - which has
+been updated) some of the jparse util functions were updated and new ones were
+added. It cannot always be assumed that finding files should be done in a
+case-insensitive manner so there is a new boolean in those functions (and in one
+or two of the new functions). The `mkiocccentry` had a function that is based on
+one of them (`array_has_path()`).
+
+The arrays in the info struct in mkiocccentry now are freed and set to NULL IFF
+(if and only if) they are empty. This not only allows for not checking them for
+NULL (except before showing the contents) but it also allows for more checks
+that were not previously done (some were thought of in the process of this and
+the below change).
+
+Update exit codes in mkiocccentry, allocating `4` for any issue (and there are a
+lot, even more now due to more checks (as above) and `5` for when the user says
+something is not okay. Updated the man page for this though the
+guidelines/rules/FAQ and quick start guide do need to be updated as well (for
+this change possibly and other more recent changes as well). This also lets the
+`mkiocccentry_test.sh` script verify that the exact error code is encountered
+(when testing errors) and not just not 0. Besides additional testing (after code
+freeze and of course before) this should, with the exception of documentation,
+complete the `workdir topdir` model, unless something else useful or important
+is thought of (like the allocation of exit codes and the new approach to
+handling the arrays).
+
+The function `free_info()` now uses the recent function `free_paths_array()` for
+the dynamic arrays of paths.
+
+Updated `MKIOCCCENTRY_VERSION` `"1.2.30 2025-02-21"`.
+Updated `SOUP_VERSION` to `"1.1.22 2025-02-21"`
+
 
 ## Release 2.3.38 2025-02-20
 
