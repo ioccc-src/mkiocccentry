@@ -1133,7 +1133,7 @@ clobber: legacy_clobber clean
 	${Q} ${RM} ${RM_V} -f ${BUILD_LOG} jparse_test.log
 	${Q} ${RM} ${RM_V} -f Makefile.orig
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -f util_test.copy.c util.copy.o
+	${Q} ${RM} ${RM_V} -f util_test.copy.c util.copy.o foobar
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

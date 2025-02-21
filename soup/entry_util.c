@@ -222,10 +222,6 @@ free_auth(struct auth *authp)
 void
 free_info(struct info *infop)
 {
-    char *p = NULL;
-    size_t i = 0;
-    size_t len = 0;
-
     /*
      * firewall
      */
@@ -289,142 +285,50 @@ free_info(struct info *infop)
     /*
      * required files (prog.c, Makefile, remarks.md)
      */
-    if (infop->required_files != NULL) {
-        len = dyn_array_tell(infop->required_files);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->required_files, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->required_files);
-        infop->required_files = NULL;
-    }
+    free_paths_array(&infop->required_files, false);
+    infop->required_files = NULL;
     /*
      * extra files (anything not a required file)
      */
-    if (infop->extra_files != NULL) {
-        len = dyn_array_tell(infop->extra_files);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->extra_files, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->extra_files);
-        infop->extra_files = NULL;
-    }
+    free_paths_array(&infop->extra_files, false);
+    infop->extra_files = NULL;
     /*
      * directories found in topdir
      */
-    if (infop->directories != NULL) {
-        len = dyn_array_tell(infop->directories);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->directories, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->directories);
-        infop->directories = NULL;
-    }
+    free_paths_array(&infop->directories, false);
+    infop->directories = NULL;
     /*
      * ignored directories (.git, CVS etc.)
      */
-    if (infop->ignored_dirs != NULL) {
-        len = dyn_array_tell(infop->ignored_dirs);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->ignored_dirs, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->ignored_dirs);
-        infop->ignored_dirs = NULL;
-    }
+    free_paths_array(&infop->ignored_dirs, false);
+    infop->ignored_dirs = NULL;
     /*
      * forbidden files (prog, prog.alt, GNUMakefile, README.md etc.)
      */
-    if (infop->forbidden_files != NULL) {
-        len = dyn_array_tell(infop->forbidden_files);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->forbidden_files, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->forbidden_files);
-        infop->forbidden_files = NULL;
-    }
+    free_paths_array(&infop->forbidden_files, false);
+    infop->forbidden_files = NULL;
     /*
      * unsafe files (those that sane_relative_path() returns
      * PATH_ERR_NOT_POSIX_SAFE)
      */
-    if (infop->unsafe_files != NULL) {
-        len = dyn_array_tell(infop->unsafe_files);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->unsafe_files, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->unsafe_files);
-        infop->unsafe_files = NULL;
-    }
+    free_paths_array(&infop->unsafe_files, false);
+    infop->unsafe_files = NULL;
     /*
      * unsafe directories (those that sane_relative_path() returns
      * PATH_ERR_NOT_POSIX_SAFE)
      */
-    if (infop->unsafe_dirs != NULL) {
-        len = dyn_array_tell(infop->unsafe_dirs);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->unsafe_dirs, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->unsafe_dirs);
-        infop->unsafe_dirs = NULL;
-    }
-
-
+    free_paths_array(&infop->unsafe_dirs, false);
+    infop->unsafe_dirs = NULL;
     /*
      * ignored symlinks (any symlinks found in topdir)
      */
-    if (infop->ignored_symlinks != NULL) {
-        len = dyn_array_tell(infop->ignored_symlinks);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->ignored_symlinks, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->ignored_symlinks);
-        infop->ignored_symlinks = NULL;
-    }
+    free_paths_array(&infop->ignored_symlinks, false);
+    infop->ignored_symlinks = NULL;
    /*
      * user requested ignored files
      */
-    if (infop->ignore_paths != NULL) {
-        len = dyn_array_tell(infop->ignore_paths);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->ignore_paths, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->ignore_paths);
-        infop->ignore_paths = NULL;
-    }
+    free_paths_array(&infop->ignore_paths, false);
+    infop->ignore_paths = NULL;
 
     /*
      * zeroize the info structure

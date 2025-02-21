@@ -214,7 +214,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
         case 'i':
-            append_path(&ignored_filenames, optarg, true, false);
+            append_path(&ignored_filenames, optarg, true, false, false);
             break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */

@@ -259,14 +259,16 @@ FTSENT *read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS 
         int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *));
 extern char const *find_path(char const *path, char *dir, int dirfd, int *cwd,
         int options, bool logical, enum fts_type type, int count, int depth,
-        bool base, bool seedot, int (*cmp)(const FTSENT **, const FTSENT **),
+        bool base, bool seedot, bool match_case, int (*cmp)(const FTSENT **, const FTSENT **),
         bool(*check)(FTS *, FTSENT *));
-extern char *find_path_in_array(char *path, struct dyn_array *paths, bool empty, intmax_t *idx);
-extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped);
+extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *idx);
+extern uintmax_t paths_in_array(struct dyn_array *array);
+extern char *find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_t *idx);
+extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped, bool match_case);
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
 extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd,
         int options, bool logical, enum fts_type type, int count, int depth,
-        bool base, bool seedot, int (*cmp)(const FTSENT **, const FTSENT **),
+        bool base, bool seedot, bool match_case, int (*cmp)(const FTSENT **, const FTSENT **),
         bool(*check)(FTS *, FTSENT *));
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
@@ -288,6 +290,8 @@ extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 extern void chkbyte2asciistr(void);
 extern void *read_all(FILE *stream, size_t *psize);
 extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode);
+extern void touch(char const *path, mode_t mode);
+extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
