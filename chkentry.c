@@ -271,12 +271,12 @@ main(int argc, char *argv[])
 
     auth_path = calloc_path(*topdir, auth_filename);
     if (auth_path == NULL) {
-	err(32, __func__, "auth_path is NULL");
+	err(29, __func__, "auth_path is NULL");
 	not_reached();
     }
     info_path = calloc_path(*topdir, info_filename);
     if (info_path == NULL) {
-	err(33, __func__, "info_path is NULL");
+	err(30, __func__, "info_path is NULL");
 	not_reached();
     }
 
@@ -320,27 +320,27 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .auth.json
 	 */
 	if (auth_count_err == NULL) {
-	    err(34, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+	    err(31, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_count_err) < 0) {
-	    err(35, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+	    err(32, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
 	    not_reached();
 	}
 	auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
 	if (auth_val_err == NULL) {
-	    err(36, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+	    err(33, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_val_err) < 0) {
-	    err(37, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+	    err(34, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
 	    not_reached();
 	}
 	auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
 	if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-	    err(38, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+	    err(35, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
 		   "for .auth.json file: %s",
 		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
 	    not_reached();
@@ -364,29 +364,29 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .info.json
 	 */
 	if (info_count_err == NULL) {
-	    err(39, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	    err(36, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_count_err) < 0) {
-	    err(40, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+	    err(37, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
 		   "for .info.json file: %s",
 		   dyn_array_tell(info_count_err), info_path);
 	    not_reached();
 	}
 	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
 	if (info_val_err == NULL) {
-	    err(41, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+	    err(38, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_val_err) < 0) {
-	    err(42, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+	    err(39, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
 		   "for .info.json file: %ss",
 		   dyn_array_tell(info_val_err), info_path);
 	    not_reached();
 	}
 	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
 	if (info_all_err_count < info_count_err_count+info_val_err_count) {
-	    err(43, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+	    err(40, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
 		   "for .info.json file: %s",
 		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
 	    not_reached();

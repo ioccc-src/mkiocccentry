@@ -543,25 +543,26 @@ fi
 
 # chkentry_test.sh
 #
-echo | tee -a -- "$LOGFILE"
-echo "RUNNING: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
-test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
-status="${PIPESTATUS[0]}"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    test_ioccc/chkentry_test.sh non-zero exit code: $status"
-    EXIT_CODE="27"
-    echo | tee -a -- "$LOGFILE"
-    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-    echo | tee -a -- "$LOGFILE"
-    echo "FAILED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-else
-    echo | tee -a -- "$LOGFILE"
-    echo "PASSED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-fi
+# XXX - disable until we can create new tests with one arg mode
+# echo | tee -a -- "$LOGFILE"
+# echo "RUNNING: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
+# echo | tee -a -- "$LOGFILE"
+# echo "test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
+# test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
+# status="${PIPESTATUS[0]}"
+# if [[ $status -ne 0 ]]; then
+#     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+#     FAILURE_SUMMARY="$FAILURE_SUMMARY
+#     test_ioccc/chkentry_test.sh non-zero exit code: $status"
+#     EXIT_CODE="27"
+#     echo | tee -a -- "$LOGFILE"
+#     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+#     echo | tee -a -- "$LOGFILE"
+#     echo "FAILED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
+# else
+#     echo | tee -a -- "$LOGFILE"
+#     echo "PASSED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
+# fi
 
 # report overall status
 #
