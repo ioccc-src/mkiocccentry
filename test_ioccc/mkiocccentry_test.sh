@@ -354,12 +354,15 @@ find "${workdir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/prog.c
 :> "${src_dir}"/prog.c
 # test empty prog.c, ignoring the warning about it
+echo "./mkiocccentry -y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Form 'submissions' that are unlikely to win the IOCCC :-)
 #
@@ -444,12 +447,15 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -530,12 +536,15 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -621,6 +630,7 @@ test -f "${src_dir}/$LONG_FILENAME" || touch "${src_dir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
@@ -630,6 +640,8 @@ else
     echo "$0: NOTE: the above error is expected as we were testing that the filename" 1>&2
     echo "$0: NOTE: length limit works." 1>&2
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -712,12 +724,15 @@ test -f "${src_src_dir}/foo" || touch "${src_src_dir}/foo"
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
+
+echo "--"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
@@ -805,6 +820,7 @@ test -f "${src_src_src_src_src_dir}/foo" || touch "${src_src_src_src_src_dir}/fo
 
 # run the test, looking for an exit
 #
+echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${src_dir}"
 ./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${src_dir}"
 status=$?
 if [[ ${status} -eq 0 ]]; then
@@ -815,6 +831,7 @@ else
     echo "$0: NOTE: limit works." 1>&2
 fi
 
+echo "--"
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #

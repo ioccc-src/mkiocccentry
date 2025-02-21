@@ -212,18 +212,10 @@ everything: all alt
 ###############
 
 clean:
-	${RM} -f ${OBJ}
-	@-if [[ -f indent.c ]]; then \
-	    echo ${RM} -f indent.c; \
-	    ${RM} -f indent.c; \
-	fi
+	@:
 
 clobber: clean
-	${RM} -f ${TARGET} *.dSYM
-	@-if [[ -e sandwich ]]; then \
-	    ${RM} -f sandwich; \
-	    echo 'ate sandwich'; \
-	fi
+	@:
 
 
 ######################################
