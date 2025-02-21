@@ -286,21 +286,6 @@ free_info(struct info *infop)
      * free arrays
      */
 
-   /*
-     * ignored symlinks (any symlinks found in topdir)
-     */
-    if (infop->ignored_symlinks != NULL) {
-        len = dyn_array_tell(infop->ignored_symlinks);
-        for (i = 0; i < len; ++i) {
-            p = dyn_array_value(infop->ignored_symlinks, char *, i);
-            if (p != NULL) {
-                free(p);
-                p = NULL;
-            }
-        }
-        dyn_array_free(infop->ignored_symlinks);
-        infop->ignored_symlinks = NULL;
-    }
     /*
      * required files (prog.c, Makefile, remarks.md)
      */
@@ -409,6 +394,22 @@ free_info(struct info *infop)
         infop->unsafe_dirs = NULL;
     }
 
+
+    /*
+     * ignored symlinks (any symlinks found in topdir)
+     */
+    if (infop->ignored_symlinks != NULL) {
+        len = dyn_array_tell(infop->ignored_symlinks);
+        for (i = 0; i < len; ++i) {
+            p = dyn_array_value(infop->ignored_symlinks, char *, i);
+            if (p != NULL) {
+                free(p);
+                p = NULL;
+            }
+        }
+        dyn_array_free(infop->ignored_symlinks);
+        infop->ignored_symlinks = NULL;
+    }
    /*
      * user requested ignored files
      */
@@ -2179,7 +2180,7 @@ test_IOCCC_contest_id(char const *str)
     }
     if (version != UUID_VERSION) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: UUID version hex char != UUID_VERSION: %x", UUID_VERSION);
+		 "invalid: UUID version hex char != UUID_VERSION %x", UUID_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: UUID version hex char: %1x is not UUID_VERSION: %x", version, UUID_VERSION);
 	return false;
@@ -2264,9 +2265,9 @@ test_Makefile(char const *str)
      */
     if (strcmp(str, "Makefile") != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: Makefile != Makefile: %s", "Makefile");
+		 "invalid: Makefile != Makefile: %s", MAKEFILE_FILENAME);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: Makefile: %s is not Makefile: %s", str, "Makefile");
+		 "invalid: Makefile: %s is not Makefile: %s", str, MAKEFILE_FILENAME);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
@@ -2761,11 +2762,11 @@ test_c_src(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, "prog.c") != 0) {
+    if (strcmp(str, PROG_C_FILENAME) != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: c_src != prog.c: %s", "prog.c");
+		 "invalid: c_src != prog.c: %s", PROG_C_FILENAME);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
+		 "invalid: c_src: %s is not prog.c: %s", str, PROG_C_FILENAME);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
@@ -3027,12 +3028,16 @@ test_extra_filename(char const *str)
     /* verify that extra_file does not match a mandatory filename */
     if (is_mandatory_filename(str)) {
         json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: extra_file matches a mandatory file");
+        json_dbg(JSON_DBG_HIGH, __func__,
                  "invalid: extra_file matches a mandatory file: <%s>", str);
         return false;
     }
     /* also verify it does not match a disallowed filename */
     if (is_forbidden_filename(str)) {
         json_dbg(JSON_DBG_MED, __func__,
+                "invalid: extra_file matches disallowed filename");
+        json_dbg(JSON_DBG_HIGH, __func__,
                 "invalid: extra_file matches disallowed filename: <%s>", str);
         return false;
     }
@@ -3040,6 +3045,8 @@ test_extra_filename(char const *str)
     /* also verify it does not match a forbidden directory name */
     if (is_ignored_dirname(str)) {
         json_dbg(JSON_DBG_MED, __func__,
+                "invalid: extra_file matches an ignored directory name");
+        json_dbg(JSON_DBG_HIGH, __func__,
                 "invalid: extra_file matches an ignored directory name: <%s>", str);
         return false;
     }
@@ -3259,10 +3266,14 @@ test_formed_timestamp_usec(int formed_timestamp_usec)
      */
     if (formed_timestamp_usec < MIN_FORMED_TIMESTAMP_USEC) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp_usec: formed_timestamp_usec < %d", MIN_FORMED_TIMESTAMP_USEC);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: formed_timestamp_usec: %d < %d", formed_timestamp_usec, MIN_FORMED_TIMESTAMP_USEC);
 	return false;
     } else if (formed_timestamp_usec > MAX_FORMED_TIMESTAMP_USEC) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp_usec > MAX_FORMED_TIMESTAMP_USEC %d", MAX_FORMED_TIMESTAMP_USEC);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: formed_timestamp_usec: %d > MAX_FORMED_TIMESTAMP_USEC %d", formed_timestamp_usec,
                  MAX_FORMED_TIMESTAMP_USEC);
 	return false;
@@ -3400,7 +3411,7 @@ test_github(char const *str)
     length = strlen(str);
     if (length > MAX_GITHUB_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: github length %ju > max %d: <%s>", (uintmax_t)length, MAX_GITHUB_LEN, str);
+		 "invalid: github length > max %d", MAX_GITHUB_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: github: <%s> is invalid", str);
 	return false;
@@ -3550,7 +3561,9 @@ test_IOCCC_year(int IOCCC_year)
      */
     if (IOCCC_year != IOCCC_YEAR) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: IOCCC_year: %d != %d", IOCCC_year, IOCCC_YEAR);
+		 "invalid: IOCCC_year != %d", IOCCC_YEAR);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: IOCCC_year %d != %d", IOCCC_year, IOCCC_YEAR);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_year is valid");
@@ -3630,7 +3643,7 @@ test_location_code(char const *str)
     length = strlen(str);
     if (length != 2) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: location_code: length: %zu != 2", length);
+		 "invalid: location_code: length != 2");
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: location_code: <%s> length: %zu != 2", str, length);
 	return false;
@@ -3640,7 +3653,7 @@ test_location_code(char const *str)
     if (!isascii(str[0]) || !isupper(str[0]) || !isascii(str[1]) || !isupper(str[1])) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: location_code: is not 2 ASCII UPPER CASE characters");
-	json_dbg(JSON_DBG_MED, __func__,
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: location_code: <%s> is not 2 ASCII UPPER CASE characters", str);
 	return false;
     }
@@ -3650,7 +3663,7 @@ test_location_code(char const *str)
     if (location_name == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: location_code: not a known ISO 3166-1 location/country code");
-	json_dbg(JSON_DBG_MED, __func__,
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: location_code: <%s> not a known ISO 3166-1 location/country code", str);
 	return false;
     }
@@ -3726,26 +3739,36 @@ test_manifest(struct manifest *manp)
      */
     if (manp->count_info_JSON != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: found info_JSON != expected 1 valid info_JSON");
+	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: expected 1 valid info_JSON, found: %jd", manp->count_info_JSON);
         return false;
     }
     if (manp->count_auth_JSON != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: found auth_JSON != expected 1 valid auth_JSON");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: expected 1 valid auth_JSON, found: %jd", manp->count_auth_JSON);
         return false;
     }
     if (manp->count_c_src != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: found c_src != expected 1 valid c_src");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: expected 1 valid c_src, found: %jd", manp->count_c_src);
         return false;
     }
     if (manp->count_Makefile != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: found Makefile != expected 1 valid Makefile");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: expected 1 valid Makefile, found: %jd", manp->count_Makefile);
         return false;
     }
     if (manp->count_remarks != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: remarks found != expected 1 valid remarks");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: expected 1 valid remarks, found: %jd", manp->count_remarks);
         return false;
     }
@@ -3858,8 +3881,6 @@ test_min_timestamp(time_t tstamp)
     if (tstamp != MIN_TIMESTAMP) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: min_timestamp != MIN_TIMESTAMP");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: min_timestamp != MIN_TIMESTAMP");
 	if ((time_t)-1 > 0) {
 	    /* case: unsigned time_t */
 	    json_dbg(JSON_DBG_HIGH, __func__,
@@ -3953,8 +3974,8 @@ test_name(char const *str)
 	return false;
     } else if (length > MAX_NAME_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: name length %ju > max length: %ju",
-		 (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+		 "invalid: name length > max length: %ju",
+		 (uintmax_t)MAX_NAME_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: name <%s> length %ju > max length: %ju",
 		 str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
@@ -4168,10 +4189,14 @@ test_rule_2a_size(off_t rule_2a_size)
     /* test lower bound */
     if (rule_2a_size <= 0) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "warning: rule_2a_size <= 0");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "warning: rule_2a_size: %jd <= 0", (intmax_t)rule_2a_size);
     /* test upper bound */
     } else if (rule_2a_size > RULE_2A_SIZE) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "warning: rule_2a_size > %jd", (intmax_t)RULE_2A_SIZE);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "warning: rule_2a_size: %jd > %jd", (intmax_t)rule_2a_size, (intmax_t)RULE_2A_SIZE);
     } else {
 	/* rule_2a_size is valid */
@@ -4232,10 +4257,14 @@ test_rule_2b_size(size_t rule_2b_size)
     /* test lower bound */
     if (rule_2b_size <= 0) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "warning: rule_2b_size <= 0");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "warning: rule_2b_size: %ju <= 0", (uintmax_t)rule_2b_size);
     /* test upper bound */
     } else if (rule_2b_size > RULE_2B_SIZE) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "warning: rule_2b_size > %ju", (uintmax_t)RULE_2B_SIZE);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "warning: rule_2b_size: %ju > %ju", (uintmax_t)rule_2b_size, (uintmax_t)RULE_2B_SIZE);
     } else {
 	/* rule_2b_size is valid */
@@ -4347,7 +4376,7 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int submit_slot, boo
     if (strcmp(str, tar_filename) != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: invalid tar_filename");
-	json_dbg(JSON_DBG_MED, __func__,
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: tarball: <%s> != expected tarball filename: <%s>",
 		 str, tar_filename);
 	if (tar_filename != NULL) {
@@ -4473,6 +4502,8 @@ test_title(char const *str)
     length = strlen(str);
     if (length > MAX_TITLE_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title length > max %d", MAX_TITLE_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title: <%s> is invalid", str);
@@ -4481,6 +4512,8 @@ test_title(char const *str)
     /* check for valid title chars */
     if (!posix_plus_safe(str, true, false, true)) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$");
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title: <%s> is invalid", str);
@@ -4717,6 +4750,8 @@ test_alt_url(char const *str)
     length = strlen(str);
     if (length > MAX_URL_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: alt_url length > max %d: <%s>", MAX_URL_LEN, str);
+	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: alt_url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: alt_url: <%s> is invalid", str);
@@ -4826,6 +4861,8 @@ test_url(char const *str)
     length = strlen(str);
     if (length > MAX_URL_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: url length > max %d", MAX_URL_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: url: <%s> is invalid", str);
@@ -4936,12 +4973,10 @@ is_mandatory_filename(char const *str)
 
     for (i = 0; mandatory_filenames[i] != NULL; ++i) {
         if (!strcasecmp(mandatory_filenames[i], str)) {
-            dbg(DBG_MED, "%s is a mandatory_filename", str);
             return true;
         }
     }
 
-    dbg(DBG_MED, "%s is not a mandatory filename", str);
     return false;
 }
 
@@ -4968,7 +5003,6 @@ is_forbidden_filename(char const *str)
 
     for (i = 0; forbidden_filenames[i] != NULL; ++i) {
         if (!strcasecmp(forbidden_filenames[i], str)) {
-            dbg(DBG_MED, "%s is a forbidden filename", str);
             return true;
         }
     }
@@ -4978,11 +5012,9 @@ is_forbidden_filename(char const *str)
      * a dot it is also forbidden
      */
     if (!is_mandatory_filename(str) && *str == '.') {
-        dbg(DBG_MED, "%s is a forbidden filename", str);
         return true;
     }
 
-    dbg(DBG_MED, "%s is not a forbidden filename", str);
     return false;
 }
 
@@ -5009,12 +5041,10 @@ is_optional_filename(char const *str)
 
     for (i = 0; optional_filenames[i] != NULL; ++i) {
         if (!strcasecmp(optional_filenames[i], str)) {
-            dbg(DBG_MED, "%s is an optional filename", str);
             return true;
         }
     }
 
-    dbg(DBG_MED, "%s is not an optional filename", str);
     return false;
 }
 
@@ -5042,12 +5072,10 @@ is_ignored_dirname(char const *str)
 
     for (i = 0; ignored_dirnames[i] != NULL; ++i) {
         if (!strncasecmp(ignored_dirnames[i], str, strlen(ignored_dirnames[i]))) {
-            dbg(DBG_MED, "%s is an ignored dirname", str);
             return true;
         }
     }
 
-    dbg(DBG_MED, "%s is not an ignored dirname", str);
     return false;
 }
 
@@ -5107,12 +5135,10 @@ is_executable_filename(char const *str)
 
     for (i = 0; executable_filenames[i] != NULL; ++i) {
         if (!strcasecmp(executable_filenames[i], str)) {
-            dbg(DBG_MED, "%s is an executable filename", str);
             return true;
         }
     }
 
-    dbg(DBG_MED, "%s is not an executable filename", str);
     return false;
 }
 

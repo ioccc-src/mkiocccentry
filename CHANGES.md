@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.39 2025-02-21
+
+Fix many debug calls in `soup/entry_util.c` at level medium to not reveal
+information about the submission. This includes GitHub handle and country code,
+amongst others.
+
+
 ## Release 2.3.38 2025-02-20
 
 General clean-up.
