@@ -35,8 +35,13 @@ handling the arrays).
 The function `free_info()` now uses the recent function `free_paths_array()` for
 the dynamic arrays of paths.
 
+Better checks on `topdir` in `chkentry` (as in even though the pointers were
+checked for NULL they are now only done if topdir is a directory that can be
+searched).
+
 Updated `MKIOCCCENTRY_VERSION` `"1.2.30 2025-02-21"`.
 Updated `SOUP_VERSION` to `"1.1.22 2025-02-21"`
+Updated `CHKENTRY_VERSION` to `"1.1.2 2025-02-21"`.
 
 
 ## Release 2.3.38 2025-02-20
