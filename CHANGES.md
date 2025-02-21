@@ -15,12 +15,6 @@ burdensome and can be problematic) the man pages (in cases where it is
 necessary - and that were not missed) no longer have `./` in front of commands
 (in the examples).
 
-Also, for the same reason (we now recommend in most cases to install the tools),
-the default locations of the tools mkiocccentry (and fnamchk) uses (use) are in
-`/usr/local/bin`. Since it also checks the `./` it is okay. One must be careful
-that the right versions of the tools are used but this always went and it's in
-the documentation on the website too.
-
 Clean up some usage messages to be shorter (in some ways) especially the length
 of lines (some formatting fixes were also made).
 
@@ -53,6 +47,10 @@ not needed anyway. Also to help distinguish output after each mkiocccentry
 command is called it prints '--' and also it now shows the command that will be
 run (the mkiocccentry commands that is).
 
+Make `chkentry` one-arg mode only. It now needs a `topdir` as the arg. More work
+has to be done but now at least the topdir is obtained and processed.
+
+Updated `CHKENTRY_VERSION` to `"1.1.1 2025-02-20"`.
 
 ## Release 2.3.37 2025-02-19
 

@@ -128,7 +128,6 @@ usage(int exitcode, char const *prog, char const *str)
     not_reached();
 }
 
-
 int
 main(int argc, char *argv[])
 {
@@ -136,7 +135,6 @@ main(int argc, char *argv[])
     char **topdir = NULL;               /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *submission_dir = ".";	/* submission directory to process, or NULL ==> process files */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
     char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
     char *auth_path = NULL;		/* full path of .auth.json or NULL */
@@ -172,11 +170,6 @@ main(int argc, char *argv[])
     size_t j = 0;
     size_t len = 0;
 
-    ignored_filenames = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
-    if (ignored_filenames == NULL) {
-        err(26, __func__, "failed to create ignored files list array");
-        not_reached();
-    }
 
     /*
      * parse args
@@ -233,139 +226,57 @@ main(int argc, char *argv[])
 	}
     }
 
-    /* must have at least one arg */
-    if (argc - optind < REQUIRED_ARGS) {
-	usage(3, program, "wrong number of arguments"); /*ooo*/
-	not_reached();
-    }
-
-    /*
-     * get topdir
-     *
-     * XXX: at this time this assignment is a misnomer because the first arg is
-     * actually .auth.json. However the command line is changing so that it's a
-     * single arg, the directory where the files are to be.
-     */
-    topdir = argv + optind;
-    /*
-     * temporarily not used or even set right
-     */
-    UNUSED_ARG(topdir);
-
     argc -= optind;
     argv += optind;
     switch (argc) {
     case 1:
-	usage(3, program, "single argument mode is reserved for future use");	/*ooo*/
-	not_reached();
+        topdir = argv;
 	break;
     case 2:
-	submission_dir = NULL;
-	auth_filename = argv[0];
-	info_filename = argv[1];
-	break;
+        if (!strcmp(argv[0], ".") && !strcmp(argv[1], ".")) {
+            vrergfB(-1, -1); /* Easter egg */
+            not_reached();
+        }
+        /*fallthrough*/
     default:
 	usage(3, program, "wrong number of arguments");	/*ooo*/
 	not_reached();
 	break;
     }
-    if (auth_filename != NULL && strcmp(auth_filename, ".") == 0 &&
-	info_filename != NULL && strcmp(info_filename, ".") == 0 &&
-	submission_dir == NULL) {
-	vrergfB(-1, -1); /* Easter egg */
-	not_reached();
-    }
-    if (submission_dir == NULL) {
-	dbg(DBG_LOW, "submission_dir is NULL");
-    } else {
-	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
-    }
-    if (auth_filename == NULL) {
-	dbg(DBG_LOW, "auth_filename is NULL");
-    } else if (strcmp(auth_filename, ".") == 0) {
-	dbg(DBG_LOW, "auth_filename is .");
-    } else {
-	dbg(DBG_LOW, "auth_filename: %s", auth_filename);
-    }
-    if (info_filename == NULL) {
-	dbg(DBG_LOW, "info_filename is NULL");
-    } else if (strcmp(info_filename, ".") == 0) {
-	dbg(DBG_LOW, "info_filename is .");
-    } else {
-	dbg(DBG_LOW, "info_filename: %s", info_filename);
-    }
 
     /*
      * case: 1 arg - directory
      */
-    if (submission_dir != NULL && auth_filename == NULL && info_filename == NULL) {
-
+    if (topdir != NULL && *topdir != NULL) {
 	/*
-	 * open the .auth.json file under submission_dir
+	 * open the .auth.json file under topdir
 	 */
 	auth_filename = ".auth.json";
-	auth_stream = open_dir_file(submission_dir, auth_filename);
+	auth_stream = open_dir_file(*topdir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(27, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
+	    err(27, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
 	    not_reached();
 	}
 
 	/*
-	 * open the .info.json file under submission_dir
+	 * open the .info.json file under topdir
 	 */
 	info_filename = ".info.json";
-	info_stream = open_dir_file(submission_dir, info_filename);
+	info_stream = open_dir_file(*topdir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(28, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
+	    err(28, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
 	    not_reached();
 	}
-
-    /*
-     * case: 2 args - info path and auth path
-     */
-    } else if (submission_dir == NULL && auth_filename != NULL && info_filename != NULL) {
-
-	/*
-	 * open the .auth.json file unless it is .
-	 */
-	if (strcmp(auth_filename, ".") != 0) {
-	    auth_stream = open_dir_file(NULL, auth_filename);
-	    if (auth_stream == NULL) { /* paranoia */
-		err(29, __func__, "open_dir_file returned NULL for .auth.json path: %s", auth_filename);
-		not_reached();
-	    }
-	} else {
-	    auth_stream = NULL;
-	}
-
-	/*
-	 * open the .info.json file unless it is .
-	 */
-	if (strcmp(info_filename, ".") != 0) {
-	    info_stream = open_dir_file(NULL, info_filename);
-	    if (info_stream == NULL) { /* paranoia */
-		err(30, __func__, "open_dir_file returned NULL for .info.json path: %s", info_filename);
-		not_reached();
-	    }
-	} else {
-	    info_stream = NULL;
-	}
-
-    /*
-     * case: paranoia
-     */
-    } else {
-	err(31, __func__, "we should not get here; please report, making sure to use 'make bug_report'");
-	not_reached();
     }
-    auth_path = calloc_path(submission_dir, auth_filename);
+
+    auth_path = calloc_path(*topdir, auth_filename);
     if (auth_path == NULL) {
-	err(32, __func__, "auth_path is NULL");
+	err(29, __func__, "auth_path is NULL");
 	not_reached();
     }
-    info_path = calloc_path(submission_dir, info_filename);
+    info_path = calloc_path(*topdir, info_filename);
     if (info_path == NULL) {
-	err(33, __func__, "info_path is NULL");
+	err(30, __func__, "info_path is NULL");
 	not_reached();
     }
 
@@ -409,27 +320,27 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .auth.json
 	 */
 	if (auth_count_err == NULL) {
-	    err(34, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+	    err(31, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_count_err) < 0) {
-	    err(35, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+	    err(32, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
 	    not_reached();
 	}
 	auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
 	if (auth_val_err == NULL) {
-	    err(36, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+	    err(33, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(auth_val_err) < 0) {
-	    err(37, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+	    err(34, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
 		   "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
 	    not_reached();
 	}
 	auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
 	if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-	    err(38, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+	    err(35, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
 		   "for .auth.json file: %s",
 		   auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
 	    not_reached();
@@ -453,29 +364,29 @@ main(int argc, char *argv[])
 	 * firewall on json_sem_check() results AND count errors for .info.json
 	 */
 	if (info_count_err == NULL) {
-	    err(39, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+	    err(36, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_count_err) < 0) {
-	    err(40, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+	    err(37, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
 		   "for .info.json file: %s",
 		   dyn_array_tell(info_count_err), info_path);
 	    not_reached();
 	}
 	info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
 	if (info_val_err == NULL) {
-	    err(41, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+	    err(38, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
 	    not_reached();
 	}
 	if (dyn_array_tell(info_val_err) < 0) {
-	    err(42, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+	    err(39, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
 		   "for .info.json file: %ss",
 		   dyn_array_tell(info_val_err), info_path);
 	    not_reached();
 	}
 	info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
 	if (info_all_err_count < info_count_err_count+info_val_err_count) {
-	    err(43, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+	    err(40, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
 		   "for .info.json file: %s",
 		   info_all_err_count, info_count_err_count, info_val_err_count, info_path);
 	    not_reached();

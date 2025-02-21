@@ -109,7 +109,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "1.1.0 2025-01-18"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "1.1.1 2025-02-20"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.

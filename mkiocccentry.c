@@ -7843,17 +7843,17 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     }
 
     /*
-     * now we have to run chkentry(1) on the files
+     * now we have to run chkentry(1) on the directory
      */
     if (!quiet) {
 	para("",
 	    "Checking the format of .auth.json and .info.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s %s", chkentry, auth_path, info_path);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- % %", chkentry, auth_path, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s", chkentry, submission_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- %", chkentry, submission_dir);
     if (exit_code != 0) {
-	err(142, __func__, "%s -q -- %s %s failed with exit code: %d",
-			   chkentry, auth_path, info_path, WEXITSTATUS(exit_code));
+	err(142, __func__, "%s -q -- %s failed with exit code: %d",
+			   chkentry, submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
     if (!quiet) {
