@@ -1,5 +1,80 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.25 2025-02-22
+
+Significantly simplify use of FTS functions.
+
+Refactored the functions `read_fts()`, `find_path()`, `find_paths()` and added
+helper function `reset_fts()` (which takes a `struct fts *`). A **significant**
+amount of thought was put into this to make these much more useful and easier to
+use. The real gain of this, besides more modularity, is that it will not force
+users to update function calls if something has to change (with more use cases a
+problem could be discovered, for example). The number of arguments is
+**significantly** reduced.
+
+With the function `reset_fts()` one can reuse the same structure if they need to
+(it also allows one to simply initialise things to a sane value prior to using
+the functions). This does set the tree (`fts->tree`) to NULL which means that if
+one is using `read_fts()` and does not finish the `do..while` loop (thus the
+stream is not closed) then they must use `fts_close()` on the stream before
+`reset_fts()` as otherwise the stream will be lost. It was done this way quite
+deliberately: the function cannot safely check for not NULL and it is a burden
+to force the user to set the stream to NULL (the struct does not need to be
+allocated on the stack although one could if they wanted to). The `find_path()`
+and `find_paths()` functions do take care of this, whether or not they finish
+the loop.
+
+Made it possible to not get the absolute path of a found path in `find_paths()`
+even if `dir == NULL && dirfd < 0` (new boolean) (in fact the `dir` and `dirfd`
+now play no part in this). The absolute path code was also fixed by now
+obtaining it AFTER the first call to `read_fts()`. Previously it did it before
+which means that if `dir` was not NULL or `dirfd` was >=0 and either
+`chdir(dir)` or `fchdir(dirfd)` succeeded the path could be very wrong. As we
+only need the absolute path temporarily the variable is freed prior to
+returning.
+
+The `read_fts()` function is now simply:
+
+```c
+FTSENT *read_fts(char *dir, int dirfd, int *cwd, struct fts *fts);
+```
+
+The args `dir`, `dirfd` and `cwd` are the same. The new arg `fts` is a pointer
+to a new struct `fts` (see util.h) which has everything that the older versions
+had but as args to the functions.
+
+The function `find_path()` is now simply:
+
+```c
+char *find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath,
+    struct fts *fts);
+```
+
+(It now returns a `char *` not a `char const *` as it should always have done
+due to the fact one should free the returned value when they're done with it.)
+
+The args are the same as before with the addition of the `bool abspath`. The
+function still uses the `read_fts()` function; some of the `struct fts` is used
+there and the rest in the `find_path()` function itself.
+
+The function `find_paths()` is now simply:
+
+```c
+struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd,
+    bool abspath, struct fts *fts);
+```
+
+The args `dir`, `dirfd` and `cwd` are what they used to be. The new struct has
+all the parameters that used to be args (just like the other two functions). The
+boolean `abspath` functions like in `find_path()` (see note below on when the
+absolute path is obtained, below). The same rule about which function uses which
+members in the `struct fts` applies to this function too, just like with
+`find_path()`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.22 2025-02-22"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.20 2025-02-22"`.
+
+
 ## Release 2.2.24 2025-02-21
 
 Update and add utils.
@@ -30,6 +105,9 @@ Updated .gitignore with some paths that the test code makes or copies (and now
 New function `paths_in_array()` which counts the number of paths in the array
 (if not NULL) - i.e. it uses `dyn_array_tell()` but only if not NULL; if the
 array is NULL it simply returns 0.
+
+Added `data` (a `void *`) to struct `json_sem` and `json_sem_check()`. This may
+be NULL so it is the responsibility of the user to check this before using it.
 
 Updated `JPARSE_UTILS_VERSION` to `"1.0.21 2025-02-21"`.
 Updated `UTIL_TEST_VERSION` to `"1.0.19 2025-02-21"`.

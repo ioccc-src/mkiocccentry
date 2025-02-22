@@ -229,6 +229,28 @@ enum file_type
 };
 
 /*
+ * structures
+ */
+
+/*
+ * struct fts - for the FTS related functions
+ */
+struct fts
+{
+    FTS *tree;              /* tree from fts_open() */
+    int options;            /* options for fts_read() */
+    bool logical;           /* true ==> set FTS_LOGICAL, false ==> set FTS_PHYSICAL */
+    enum fts_type type;     /* types of files desired (bitwise OR) */
+    int count;              /* > 0 - if more than one match, return count-th match */
+    int depth;              /* > 0 - make sure that the FTS level matches this depth */
+    bool base;              /* true ==> basename match */
+    bool seedot;            /* true ==> analogous to FTS_SEEDOT */
+    bool match_case;        /* true ==> case-sensitive match */
+    int (*cmp)(const FTSENT **, const FTSENT **);   /* function pointer to use when traversing (NULL ==> fts_cmp()) */
+    bool(*check)(FTS *, FTSENT *);  /* function pointer to use to check an FTSENT * (NULL ==> check_fts_info()) */
+};
+
+/*
  * external function declarations
  */
 extern char *base_name(char const *path);
@@ -251,25 +273,19 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
+extern void reset_fts(struct fts *fts);
 extern char *fts_path(FTSENT *ent);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_rcmp(const FTSENT **a, const FTSENT **b);
 extern bool check_fts_info(FTS *fts, FTSENT *ent);
-FTSENT *read_fts(char *dir, int dirfd, int *cwd, int options, bool logical, FTS **fts,
-        int (*cmp)(const FTSENT **, const FTSENT **), bool(*check)(FTS *, FTSENT *));
-extern char const *find_path(char const *path, char *dir, int dirfd, int *cwd,
-        int options, bool logical, enum fts_type type, int count, int depth,
-        bool base, bool seedot, bool match_case, int (*cmp)(const FTSENT **, const FTSENT **),
-        bool(*check)(FTS *, FTSENT *));
+extern FTSENT *read_fts(char *dir, int dirfd, int *cwd, struct fts *fts);
 extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *idx);
 extern uintmax_t paths_in_array(struct dyn_array *array);
 extern char *find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_t *idx);
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped, bool match_case);
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
-extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd,
-        int options, bool logical, enum fts_type type, int count, int depth,
-        bool base, bool seedot, bool match_case, int (*cmp)(const FTSENT **, const FTSENT **),
-        bool(*check)(FTS *, FTSENT *));
+extern char *find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
+extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);

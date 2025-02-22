@@ -177,7 +177,7 @@ C_OPT= -O3
 
 # Compiler warnings
 #
-WARN_FLAGS= -pedantic -Wall -Wextra -Wformat -Wno-unused-but-set-variable -Wno-char-subscripts -Wno-sign-compare
+WARN_FLAGS= -pedantic -Wall -Wextra -Wformat -Wno-char-subscripts -Wno-sign-compare
 	    
 #WARN_FLAGS= -pedantic -Wall -Wextra -Werror
 
@@ -489,7 +489,7 @@ json_util.o: json_util.c json_util.h
 	${CC} ${CFLAGS} json_util.c -c
 
 jparse.tab.o: jparse.tab.c
-	${CC} ${CFLAGS} jparse.tab.c -c
+	${CC} ${CFLAGS} -Wno-unused-but-set-variable jparse.tab.c -c
 
 jparse_main.o: jparse_main.c version.h
 	${CC} ${CFLAGS} jparse_main.c -c
