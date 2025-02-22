@@ -1,6 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.40 2025-02-22
+
+Significantly simplify and refactor the FTS functions in jparse/util.c. A great
+deal of thought and effort was put into this and when the `topdir` is passed to
+`chk_manifest()` (which is being worked on) it will be far easier. The benefit
+of these changes, besides being much cleaner, simpler and it being modularised,
+is that if some issue is discovered or some new feature is needed (as has
+already happened numerous times) function calls do not have to be updated.
+
+`mkiocccentry` has been updated to use the simplified interface as well.
+
+A note: `jparse/` has not been fully synced because of a change in `json_sem`
+for `chkentry` that is not yet complete (this was done prior to deciding to
+rework the FTS functions). So the CHANGES.md file and the `json_sem.[ch]` files
+committed to the jparse repo are not yet here.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.31 2025-02-22"`
+
+
 ## Release 2.3.39 2025-02-21
 
 Fix many debug calls in `soup/entry_util.c` at level medium to not reveal

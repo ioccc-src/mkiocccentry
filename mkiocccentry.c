@@ -1159,7 +1159,6 @@ static void
 scan_topdir(char *args, struct info *infop, char const *make, char const *submission_dir, RuleCount *size)
 {
     char *filename = NULL;              /* current filename (for arrays) */
-    FTS *fts = NULL;                    /* FTS stream for fts_open() */
     FTSENT *ent = NULL;                 /* FTSENT for each entry from read_fts() */
     size_t count = 0;                   /* total number of non-optional non-required files */
     enum path_sanity sanity = PATH_OK;  /* assume path is okay first */
@@ -1172,6 +1171,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     bool found_remarks_md = false;      /* true ==> remarks.md found */
     size_t dirs = 0;                    /* number of sane dirnames (added to unsafe_dirs to verify there aren't too many) */
     size_t unsafe_dirs = 0;             /* number of unsafe dirnames (added to dirs to verify there aren't too many) */
+    struct fts fts;                     /* for FTS functions */
 
     /*
      * firewall
@@ -1332,10 +1332,17 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
 
     /*
+     * before we do anything else we must reset fts structure and set the
+     * variables we need
+     */
+    reset_fts(&fts);
+    fts.logical = false;
+    fts.options = FTS_NOCHDIR | FTS_NOSTAT;
+    /*
      * now that we have changed to the correct directory and gathered everything
      * we need to scan for files and directories, we can traverse the tree.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent);
+    ent = read_fts(NULL, -1, NULL, &fts);
     if (ent == NULL){
         err(49, __func__, "failed to read \".\"");
         not_reached();
@@ -1369,7 +1376,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                      * we don't want to traverse below ignored directories
                      */
                     errno = 0;  /* pre-clear errno for errp() */
-                    if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                    if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
                         errp(50, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
                         not_reached();
                     }
@@ -1380,7 +1387,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
             /*
              * specific FTSENT types are an immediate error (or ignored)
              */
-            if (!check_ent(fts, ent)) {
+            if (!check_ent(fts.tree, ent)) {
                 continue;
             }
 
@@ -1472,7 +1479,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                              * we don't want to traverse below ignored directories
                              */
                             errno = 0;  /* pre-clear errno for errp() */
-                            if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                            if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
                                 errp(53, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
                                 not_reached();
                             }
@@ -1528,7 +1535,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                      * we don't want to traverse below ignored directories
                      */
                     errno = 0;  /* pre-clear errno for errp() */
-                    if (fts_set(fts, ent, FTS_SKIP) != 0) {
+                    if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
                         errp(55, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
                         not_reached();
                     }
@@ -1672,7 +1679,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     break;
             }
         }
-        while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent)) != NULL);
+        while ((ent = read_fts(NULL, -1, NULL, &fts)) != NULL);
     }
 
     /*
@@ -2524,7 +2531,6 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     int ret = 0;                        /* libc return */
     intmax_t len2 = 0;                  /* length of this function's arrays */
     intmax_t i = 0;                     /* index into arrays */
-    FTS *fts = NULL;                    /* FTS stream for fts_open() */
     FTSENT *ent = NULL;                 /* FTSENT for each item from read_fts() */
     size_t count = 0;                   /* total number of non-optional non-required files */
     struct dyn_array *required_files = NULL; /* required files in submission directory */
@@ -2537,6 +2543,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     bool found_Makefile = false;    /* if Makefile found */
     bool found_remarks_md = false;  /* if remarks.md found */
     bool yorn = false;              /* for prompts to ask user if everything is OK */
+    struct fts fts;                 /* for FTS functions */
 
     /*
      * firewall
@@ -2643,13 +2650,20 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
 	warn(__func__, "make -f Makefile clobber failed");
     }
 
+    /*
+     * before we can do anything else we must reset the fts struct and then set
+     * our options
+     */
+    reset_fts(&fts);
+    fts.logical = false;
+    fts.options = FTS_NOCHDIR | FTS_NOSTAT;
 
     /*
      * now that we have changed to the submission directory and have run make
      * clobber, we need to verify that the topdir matches what is in the
      * submission directory. If anything is out of order it is an error.
      */
-    ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR, false, &fts, fts_cmp, check_ent);
+    ent = read_fts(NULL, -1, NULL, &fts);
     if (ent == NULL){
         err(92, __func__, "failed to open \".\"");
         not_reached();
@@ -2670,7 +2684,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
             /*
              * specific FTSENT types are an immediate error (or ignored)
              */
-            if (!check_ent(fts, ent)) {
+            if (!check_ent(fts.tree, ent)) {
                 continue;
             }
 
@@ -2931,7 +2945,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                 default:
                     break;
             }
-        } while ((ent = read_fts(NULL, -1, NULL, FTS_NOCHDIR | FTS_NOSTAT, false, &fts, fts_cmp, check_ent)) != NULL);
+        } while ((ent = read_fts(NULL, -1, NULL, &fts)) != NULL);
     }
 
     /*
