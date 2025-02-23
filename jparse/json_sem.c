@@ -2142,6 +2142,10 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  *	pval_err	pointer to dynamic array of JSON semantic validation errors
  *			    NOTE: If *pcount_err == NULL, the dynamic array will be created,
  *				  If *pcount_err != NULL, the existing dynamic array will be used.
+ *      data            a void * of extra data in case one needs it (corresponds
+ *                      with the data variable in the struct json_sem).
+ *                          NOTE: data may be NULL so it is the responsibility
+ *                          of the user of it to check for NULL before use.
  *
  * return:
  *	0 ==> JSON parse tree is semantically consistent with the JSON semantic table,
@@ -2155,7 +2159,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  */
 uintmax_t
 json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
-	       struct dyn_array **pcount_err, struct dyn_array **pval_err)
+	       struct dyn_array **pcount_err, struct dyn_array **pval_err, void *data)
 {
     struct dyn_array *count_err = NULL;		/* JSON semantic count errors */
     struct dyn_array *val_err = NULL;		/* JSON semantic validation errors */
@@ -2229,6 +2233,11 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
      *	     that jsemcgen.sh used to generate them.
      */
     json_sem_zero_count(sem);
+
+    /*
+     * data may be NULL
+     */
+    sem->data = data;
 
     /*
      * perform a semantic scan of the JSON parse tree

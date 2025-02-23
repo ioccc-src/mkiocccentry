@@ -1,6 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.41 2025-02-23
+
+Much work on issue #1152 done.
+
+Both `-w` and `-i` have been implemented. The man page has not been updated as
+the error codes need to be reconsidered now that the tool does more checks.
+Depending on the `-i path` or `-w` (or both) options different checks are now
+performed, not just semantics tests (indeed one can actually skip the JSON tests
+entirely by `-i info -i auth` but other things are still done). The
+`mkiocccentry` tool will not use either option which is the strictest mode.
+Besides error codes needing to be reviewed and the man page (and if necessary
+other documentation) being updated, unless something was missed the only thing
+left to do is to fix the test script to work with the one arg only model.
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for some
+updates that were necessary for the above to be implemented.
+
+Fixed `mkiocccentry` to check for executable filenames by the function, not by
+the filenames themselves.
+
+Added the files `soup/chk_sem_auth.c` and `soup/chk_sem_info.c` to the less
+picky variable in `soup/Makefile` as the lines are quite long now, due to the
+fact that another arg had to be given to the callback functions for the manifest
+checks update.
+
+
 ## Release 2.3.40 2025-02-22
 
 Significantly simplify and refactor the FTS functions in jparse/util.c. A great

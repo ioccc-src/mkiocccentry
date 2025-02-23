@@ -1021,7 +1021,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("struct json_sem %s[%s_LEN+1] = {\n", tbl_name, cap_tbl_name);
-    prstr("/* depth    type        min     max   count   index  name_len validate  name */\n");
+    prstr("/* depth    type        min     max   count   index  name_len validate  name    data */\n");
 
     /*
      * print each semantic table entry
@@ -1167,17 +1167,22 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		free(func_name);
 		func_name = NULL;
 	    }
-	    prstr("\" },\n");
+	    prstr("\",");
 	} else {
 	    /* print NULL for no name */
-	    prstr("\tNULL },\n");
+	    prstr("\tNULL,");
 	}
+
+	/*
+	 * print NULL (for data) and end of element
+	 */
+	prstr("\tNULL },\n");
     }
 
     /*
      * print semantic table trailer
      */
-    prstr("  { 0,\tJTYPE_UNSET,\t0,\t0,\t0,\t-1,\t0,\tNULL,\tNULL }\n");
+    prstr("  { 0,\tJTYPE_UNSET,\t0,\t0,\t0,\t-1,\t0,\tNULL,\tNULL,\tNULL }\n");
     prstr("};\n");
 
     return;

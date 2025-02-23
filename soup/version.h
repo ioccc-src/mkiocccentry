@@ -66,13 +66,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.40 2025-02-22"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.3.41 2025-02-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.22 2025-02-21"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "1.1.23 2025-02-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -82,7 +82,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.2.31 2025-02-22"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "1.2.32 2025-02-23"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -109,7 +109,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "1.1.2 2025-02-21"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "1.1.3 2025-02-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.

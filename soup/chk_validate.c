@@ -2031,12 +2031,13 @@ chk_manifest(struct json const *node,
     /*
      * validate manifest
      */
-    test = test_manifest(&man);
+    test = test_manifest(&man, sem->data);
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(147, node, depth, sem, __func__,
 				    "manifest is missing required files and/or "
-				    "has invalid/duplicate extra_file filenames");
+				    "has invalid permissions/missing and/or has "
+                                    "invalid/duplicate extra_file filenames");
 	}
 	free_manifest(&man);
 	return false;
