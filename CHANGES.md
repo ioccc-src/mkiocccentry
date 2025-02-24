@@ -1,6 +1,38 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.42 2025-02-24
+
+Disable `-g3` in Makefile as use of `-O` option (besides level 0) makes
+debugging much harder so one should not typically use both. This was done in
+`dbg` and `dyn_array` (and opened a pull request in both repos) too; I did
+`jparse/` (in the repo) a while back for the same reason as cited here.
+
+Fun facts: the repo version is: `"2.3.42 2025-02-24"` and so the last two digits
+of the version number itself and the last two digits of the date in the version
+are opposites (and thus anagrams) for [42, the Ultimate Answer to/of Life, the
+Universe and Everything](https://hitchhikers.fandom.com/wiki/42); but no matter
+how absurd it is, and no matter how obvious it was a joke and no matter how much
+[Douglas Adams explicitly said it was a
+joke](https://groups.google.com/g/alt.fan.douglas-adams/c/595nPukE-Jo/m/koaAJ3tPBtEJ?pli=1),
+people still think it's serious and people still have stated it is real and some
+[astronomers even spent years studying
+it](https://www.the-independent.com/news/yes-the-answer-to-the-universe-really-is-42-1351201.html)
+only to claim that it **really is** 42! That means that the **real**
+[Vogons](https://hitchhikers.fandom.com/wiki/Vogon) are
+[humans](https://en.wikipedia.org/wiki/Human), at least until that [hyperspace
+bypass](https://hitchhikers.fandom.com/wiki/Bypass) is formed. :-)
+
+BTW: Landon told me that: at Google Headquarters (previously SGI) at building 42
+there is a very hidden copy of The Hitchhiker's Guide to the Galaxy (H2G2) with
+drawings and other things that Douglas Adams requested Landon taunt them
+[Google] to find and he's had a lot of joy in doing so since very few have been
+able to find it (and Landon is one of the very few who know about it).
+
+Okay so there's some fun totally unrelated to the changes but it's fun so why
+not? :-)
+
+
 ## Release 2.3.41 2025-02-23
 
 Much work on issue #1152 done.
