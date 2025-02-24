@@ -214,14 +214,14 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_util.c \
+C_SRC= chk_validate.c entry_util.c \
 	location_util.c location_main.c sanity.c rule_count.c random_answers.c
 H_SRC= chk_validate.h soup.h entry_util.h foo.h limit_ioccc.h location.h \
 	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= default_handle.c foo.c location_tbl.c
+LESS_PICKY_CSRC= default_handle.c foo.c location_tbl.c chk_sem_info.c chk_sem_info.c chk_sem_auth.c 
 LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts

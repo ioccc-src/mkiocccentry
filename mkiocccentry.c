@@ -2816,7 +2816,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                      * directories MUST be mode 0755!
                      */
                     if (!is_mode(ent->fts_path + 2, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                        err(4, __func__, "directory %s must be mode 0444: %o != 0444", ent->fts_path + 2,/*ooo*/
+                        err(4, __func__, "directory %s must be mode 0755: %o != 0755", ent->fts_path + 2,/*ooo*/
                                 filemode(ent->fts_path + 2));
                         not_reached();
                     }
@@ -2872,7 +2872,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                                 err(4, __func__, "file in submission directory not in topdir: %s", filename);/*ooo*/
                                 not_reached();
                             }
-                            if (!strcmp(filename, TRY_SH) || !strcmp(filename, TRY_ALT_SH)) {
+                            if (is_executable_filename(filename)) {
                                 if (!is_mode(filename, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
                                     /*
                                      * these MUST be mode 0555!

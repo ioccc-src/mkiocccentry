@@ -40,6 +40,7 @@
 #include <sys/types.h>
 #include <fts.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -142,6 +143,9 @@ char *executable_filenames[] =
     TRY_ALT_SH,
     NULL
 };
+
+
+struct dyn_array *ignored_paths = NULL;
 /*
  * free_auth - free auto and related sub-elements
  *
@@ -3575,6 +3579,180 @@ test_location_code(char const *str)
     return true;
 }
 
+/*
+ * check_manifest_path
+ *
+ * Check that a path exists in the topdir that is reported in the manifest and
+ * that it is the correct mode, calling test_manifest_path() if we do not get
+ * MAN_PATH_OK.
+ *
+ * given:
+ *
+ *  path        -   path from find_path() to search for
+ *  name        -   name of file that was tested (passed to test_manifest_path())
+ *  mode        -   mode the path must be
+ *
+ * Return:
+ *
+ * If some other condition occurs we return MAN_PATH_ERR (this should
+ * never happen).
+ * If path is NULL we return MAN_PATH_NULL.
+ * If path is an empty string we return MAN_PATH_EMPTY.
+ * If path does not exist we return MAN_PATH_ENOENT (analogous to ENOENT).
+ * If path is wrong permissions we return MAN_PATH_EPERM (along the lines
+ * of EPERM: technically EPERM means permission denied and MAN_PATH_EPERM
+ * means wrong permissions but it is close enough).
+ * If path exists and is the right mode we return MAN_PATH_OK.
+ *
+ * NOTE: the caller is responsible for freeing the path after this function
+ * returns.
+ *
+ * NOTE: if we get anything but MAN_PATH_OK we will call test_manifest_path()
+ * and return the appropriate error enum (in which case the caller of this
+ * function should return false, after freeing path of course); otherwise we
+ * will return MAN_PATH_OK and the caller should just free(path); path = NULL
+ * and move on to the next test.
+ *
+ * BTW: we explicitly set MAN_PATH_OK to 0 to be like other functions where the
+ * return value of 0 indicates success. And although we could have the others >
+ * 0 like we chose < 0 as a lot of functions also do that, though the errno is >
+ * 0.
+ */
+enum manifest_path
+check_manifest_path(char *path, char const *name, mode_t mode)
+{
+    enum manifest_path ret = MAN_PATH_OK; /* assume all is good */
+
+    /*
+     * firewall
+     */
+    if (name == NULL || *name == '\0') {
+        err(148, __func__, "passed NULL or empty name");
+        not_reached();
+    } else if (path == NULL) {
+        ret = MAN_PATH_NULL;
+    } else if (*path == '\0') {
+        ret = MAN_PATH_EMPTY;
+    } else {
+        /*
+         * we KNOW path is not NULL and not an empty string: do the actual checks
+         * now.
+         */
+        if (!exists(path)) {
+            ret = MAN_PATH_ENOENT;
+        } else if (!is_mode(path, mode)) {
+            ret = MAN_PATH_EPERM;
+        }
+    }
+    if (ret != MAN_PATH_OK) {
+        test_manifest_path(path, name, ret, mode);
+    }
+
+    return ret;
+}
+
+/*
+ * test_manifest_path
+ *
+ * Given a path, name, enum manifest_path error and mode, we will report the
+ * correct error message and return that error code. Otherwise we will just
+ * return and do nothing.
+ *
+ * given:
+ *      path        - path found for debug message
+ *      name        - name of file for debug message (can be NULL)
+ *      error       - enum manifest_path for debug message if != MAN_PATH_OK
+ *      mode        - mode that was expected of the file
+ *
+ * Returns: the error code in error.
+ */
+void
+test_manifest_path(char *path, char const *name, enum manifest_path error, mode_t mode)
+{
+    /*
+     * firewall
+     */
+    if (name != NULL && *name == '\0') {
+        /*
+         * reset to NULL if empty string/
+         */
+        name = NULL;
+    }
+
+    /*
+     * we check for certain conditions so as to not have to repeat checks and
+     * messages
+     */
+    if (path == NULL || error == MAN_PATH_NULL) {
+        json_dbg(JSON_DBG_MED, __func__, "invalid: path supposedly found in find_path() is NULL");
+        if (name != NULL) {
+            json_dbg(JSON_DBG_HIGH, __func__, "invalid: path supposedly found in find_path() is NULL, name: %s", name);
+        }
+        return;
+    } else if (*path == '\0') {
+        json_dbg(JSON_DBG_MED, __func__, "invalid: path supposedly found in find_path() is empty string");
+        if (name != NULL) {
+            json_dbg(JSON_DBG_HIGH, __func__, "invalid: path supposedly found in find_path() is empty string, name: %s", name);
+        }
+        return;
+    }
+
+
+    /*
+     * here we have to check the other conditions
+     */
+    switch (error) {
+        /*
+         * if error == MAN_PATH_OK we return true immediately
+         */
+        case MAN_PATH_OK:
+            break;
+        case MAN_PATH_ERR:
+            if (name != NULL) {
+                json_dbg(JSON_DBG_MED, __func__, "invalid: some unexpected condition was found for: %s", name);
+                json_dbg(JSON_DBG_HIGH, __func__, "invalid: some unexpected condition for path: %s, name: %s", path, name);
+            } else {
+                json_dbg(JSON_DBG_MED, __func__, "invalid: some unexpected condition was found");
+                json_dbg(JSON_DBG_HIGH, __func__, "invalid: some unexpected condition found for: %s", path);
+            }
+            break;
+        case MAN_PATH_NULL:
+        case MAN_PATH_EMPTY:
+            /*
+             * already taken care of above (and we shouldn't even get here)
+             */
+            break;
+        case MAN_PATH_ENOENT:
+            if (name != NULL) {
+                json_dbg(JSON_DBG_MED, __func__, "invalid: path supposedly found by find_path() does not exist");
+                json_dbg(JSON_DBG_HIGH, __func__, "invalid: path supposedly found by find_path(): %s: does not exist", name);
+            } else {
+                json_dbg(JSON_DBG_MED, __func__, "invalid: path supposedly found by find_path() does not exist");
+                json_dbg(JSON_DBG_HIGH, __func__, "invalid: path supposedly found by find_path(): %s: does not exist", path);
+            }
+            break;
+        case MAN_PATH_EPERM:
+            if (name != NULL) {
+                json_dbg(JSON_DBG_MED, __func__, "invalid: path found by find_path() is not the correct mode");
+                json_dbg(JSON_DBG_HIGH, __func__,
+                        "invalid: path found by find_path() for: %s: %s is not the correct mode: %o != %o",
+                        name, path, mode, filemode(path));
+            } else {
+                json_dbg(JSON_DBG_MED, __func__, "path found by find_path() is not the correct mode");
+                json_dbg(JSON_DBG_HIGH, __func__, "path found by find_path(): %s is not the correct mode: %o != %o",
+                        path, mode, filemode(path));
+            }
+            break;
+        default:
+            /*
+             * technically this should never happen but we will return true in
+             * any case, though an argument could be made to make it an error
+             * instead
+             */
+            break;
+    }
+}
+
 
 /*
  * test_manifest - test is the manifest is complete and has unique extra files
@@ -3600,6 +3778,7 @@ test_location_code(char const *str)
  *
  * given:
  *	manp		pointer struct manifest
+ *	topdir          topdir path
  *
  * returns:
  *	true ==> manifest is complete with unique extra files
@@ -3607,7 +3786,7 @@ test_location_code(char const *str)
  *		  or NULL pointer, or some internal error
  */
 bool
-test_manifest(struct manifest *manp)
+test_manifest(struct manifest *manp, char *topdir)
 {
     intmax_t count_extra_file = -1;		/* number of extra files */
     bool test = false;			/* test_extra_filename() test result */
@@ -3615,6 +3794,10 @@ test_manifest(struct manifest *manp)
     char *extra_filename2 = NULL;	/* second filename of an extra file */
     intmax_t i;
     intmax_t j;
+    int cwd = -1;                       /* to record cwd before changing to dir */
+    struct fts fts;                     /* for FTS functions */
+    char *path = NULL;                  /* to verify files exist and are right perms etc. */
+    char *pathname = NULL;              /* path name we're currently testing */
 
     /*
      * firewall
@@ -3636,45 +3819,213 @@ test_manifest(struct manifest *manp)
 		       manp->count_extra_file, dyn_array_tell(manp->extra));
 	return false;
     }
+    if (topdir == NULL) {
+        warn(__func__, "topdir is NULL");
+        return false;
+    }
+
+    /*
+     * first reset fts struct
+     */
+    reset_fts(&fts);
+    /*
+     * Below we will have to check that the files in the manifest actually exist
+     * in the topdir. To do this we have to use the find_path() or find_paths()
+     * function. For individual files it is better to do find_path(). Now we do
+     * have to find multiple files but one at a time so it's not necessary to
+     * use find_paths() (and read_fts() we definitely don't want to use).
+     *
+     * The only thing that will have to be reset for each time we call the
+     * find_path() function is the tree itself. We don't technically need to use
+     * reset_fts() more than once but in some cases we might do that anyway.
+     */
+    fts.depth = 1; /* for these we NEED depth 1 ONLY */
+    fts.match_case = false; /* we don't require the same case */
+    fts.base = true; /* we want basename at the specific depth */
+    fts.type = FTS_TYPE_FILE; /* we only want regular files */
+
+    /*
+     * all the other options are okay at their default value for the first tests
+     */
     count_extra_file = manp->count_extra_file;
 
     /*
-     * look for required mandatory files in manifest
+     * look for required mandatory files in manifest if not ignored
      */
-    if (manp->count_info_JSON != 1) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: found info_JSON != expected 1 valid info_JSON");
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid info_JSON, found: %jd", manp->count_info_JSON);
-        return false;
+    pathname = INFO_JSON_FILENAME;
+    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+        if (manp->count_info_JSON != 1) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: found info_JSON != expected 1 valid info_JSON");
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: expected 1 valid info_JSON, found: %jd", manp->count_info_JSON);
+            return false;
+        } else {
+            /*
+             * now find the file .info.json and run tests on it
+             */
+            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            /*
+             * NOTE: we don't need to check that path == NULL or *path == '\0'
+             * because the function check_manifest_path() does this (and more) for
+             * us. This actually includes specific error messages so we actually
+             * want to pass it even if it is NULL.
+             */
+            if (check_manifest_path(path, pathname, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                /* must be 0444 */
+                free(path);
+                path = NULL;
+                return false;
+            }
+            /*
+             * go back to previous working directory
+             *
+             * NOTE: we have to do this AFTER we check for the path being okay
+             * because otherwise the file would not be found as we won't be in
+             * the right directory and we do NOT want absolute paths
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
+        }
     }
-    if (manp->count_auth_JSON != 1) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: found auth_JSON != expected 1 valid auth_JSON");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: expected 1 valid auth_JSON, found: %jd", manp->count_auth_JSON);
-        return false;
+
+    pathname = AUTH_JSON_FILENAME;
+    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+        if (manp->count_auth_JSON != 1) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: found auth_JSON != expected 1 valid auth_JSON");
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: expected 1 valid auth_JSON, found: %jd", manp->count_auth_JSON);
+            return false;
+        } else {
+            /*
+             * now find the file .auth.json and run tests on it
+             */
+            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            /*
+             * NOTE: we don't need to check that path == NULL or *path == '\0'
+             * because the function check_manifest_path() does this (and more) for
+             * us. This actually includes specific error messages so we actually
+             * want to pass it even if it is NULL.
+             */
+            if (check_manifest_path(path, pathname, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                /* must be 0444 */
+                free(path);
+                path = NULL;
+                return false;
+            }
+            /*
+             * go back to previous working directory
+             *
+             * NOTE: we have to do this AFTER we check for the path being okay
+             * because otherwise the file would not be found as we won't be in
+             * the right directory and we do NOT want absolute paths
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
+        }
     }
-    if (manp->count_c_src != 1) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: found c_src != expected 1 valid c_src");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: expected 1 valid c_src, found: %jd", manp->count_c_src);
-        return false;
+
+    pathname = PROG_C_FILENAME;
+    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+        if (manp->count_c_src != 1) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: found c_src != expected 1 valid c_src");
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: expected 1 valid c_src, found: %jd", manp->count_c_src);
+            return false;
+        } else {
+            /*
+             * now find the file prog.c and run tests on it
+             */
+            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            /*
+             * NOTE: we don't need to check that path == NULL or *path == '\0'
+             * because the function check_manifest_path() does this (and more) for
+             * us. This actually includes specific error messages so we actually
+             * want to pass it even if it is NULL.
+             */
+            if (check_manifest_path(path, pathname, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                /* must be 0444 */
+                free(path);
+                path = NULL;
+                return false;
+            }
+            /*
+             * go back to previous working directory
+             *
+             * NOTE: we have to do this AFTER we check for the path being okay
+             * because otherwise the file would not be found as we won't be in
+             * the right directory and we do NOT want absolute paths
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
+        }
     }
-    if (manp->count_Makefile != 1) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: found Makefile != expected 1 valid Makefile");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: expected 1 valid Makefile, found: %jd", manp->count_Makefile);
-        return false;
+
+    pathname = MAKEFILE_FILENAME;
+    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+        if (manp->count_Makefile != 1) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: found Makefile != expected 1 valid Makefile");
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: expected 1 valid Makefile, found: %jd", manp->count_Makefile);
+            return false;
+        } else {
+            /*
+             * now find the file Makefile and run tests on it
+             */
+            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            /*
+             * NOTE: we don't need to check that path == NULL or *path == '\0'
+             * because the function check_manifest_path() does this (and more) for
+             * us. This actually includes specific error messages so we actually
+             * want to pass it even if it is NULL.
+             */
+            if (check_manifest_path(path, pathname, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                /* must be 0444 */
+                free(path);
+                path = NULL;
+                return false;
+            }
+            /*
+             * go back to previous working directory
+             *
+             * NOTE: we have to do this AFTER we check for the path being okay
+             * because otherwise the file would not be found as we won't be in
+             * the right directory and we do NOT want absolute paths
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
+        }
     }
-    if (manp->count_remarks != 1) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: remarks found != expected 1 valid remarks");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: expected 1 valid remarks, found: %jd", manp->count_remarks);
-        return false;
+
+    pathname = REMARKS_FILENAME;
+    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+        if (manp->count_remarks != 1) {
+            json_dbg(JSON_DBG_MED, __func__,
+                     "invalid: remarks found != expected 1 valid remarks");
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: expected 1 valid remarks, found: %jd", manp->count_remarks);
+            return false;
+        } else {
+            /*
+             * now find the file Makefile and run tests on it
+             */
+            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            /*
+             * NOTE: we don't need to check that path == NULL or *path == '\0'
+             * because the function check_manifest_path() does this (and more) for
+             * us. This actually includes specific error messages so we actually
+             * want to pass it even if it is NULL.
+             */
+            if (check_manifest_path(path, pathname, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                /* must be 0444 */
+                free(path);
+                path = NULL;
+                return false;
+            }
+            /*
+             * do NOT return to previous directory because we don't need the
+             * more fine-tuned functions below
+             */
+        }
     }
 
     /*
@@ -3686,7 +4037,8 @@ test_manifest(struct manifest *manp)
     }
 
     /*
-     * verify that extra files are valid filenames and do not match a mandatory file
+     * verify that extra files are valid filenames and do not match a mandatory
+     * file and verify they have the right permissions.
      */
     for (i=0; i < count_extra_file; ++i) {
 
@@ -3695,8 +4047,14 @@ test_manifest(struct manifest *manp)
 	if (extra_filename == NULL) {
 	    json_dbg(JSON_DBG_MED, __func__,
 		     "invalid: manifest extra[%jd] is NULL", i);
-	    return false;
 	}
+
+        /*
+         * don't do any checks if this file is being ignored
+         */
+        if (array_has_path(ignored_paths, extra_filename, false, NULL)) {
+            continue;
+        }
 
 	/* validate filename for this extra file */
 	test = test_extra_filename(extra_filename);
@@ -3705,8 +4063,23 @@ test_manifest(struct manifest *manp)
 		     "invalid: manifest extra[%jd] filename is invalid", i);
 	    json_dbg(JSON_DBG_HIGH, __func__,
 		     "invalid: manifest extra[%jd] filename: <%s> is invalid", i, extra_filename);
+
 	    return false;
 	}
+        if (is_executable_filename(extra_filename)) {
+            /*
+             * must be 0555
+             */
+            if (check_manifest_path(extra_filename, extra_filename,
+                        S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != MAN_PATH_OK) {
+                return false;
+            }
+        } else {
+            if (check_manifest_path(extra_filename, extra_filename, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                return false;
+            }
+        }
+
     }
 
     /*
@@ -3714,6 +4087,7 @@ test_manifest(struct manifest *manp)
      */
     if (count_extra_file == 1) {
 	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with only 1 valid extra filename");
+
 	return true;
     }
 
@@ -3731,6 +4105,12 @@ test_manifest(struct manifest *manp)
 		     "invalid: manifest extra[i = %jd] is NULL", i);
 	    return false;
 	}
+        /*
+         * don't do any checks if the file is being ignored
+         */
+        if (array_has_path(ignored_paths, extra_filename, false, NULL)) {
+            continue;
+        }
 
 	/*
 	 * compare first extra filename with the remaining extra filenames
@@ -3744,7 +4124,6 @@ test_manifest(struct manifest *manp)
 			 "invalid: manifest extra[j = %jd] is NULL", j);
 		return false;
 	    }
-
 	    /*
 	     * compare first and second extra filenames
 	     */
@@ -3760,6 +4139,12 @@ test_manifest(struct manifest *manp)
 	}
     }
     json_dbg(JSON_DBG_MED, __func__, "manifest is complete with valid unique extra filenames");
+
+    /*
+     * switch back to previous directory
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
     return true;
 }
 

@@ -40,7 +40,7 @@
  * jrql jrt ziuole entries. Cj'u xtqzzc jrqj simple. Vod cis xtqzzc tkwtyj
  * uiftjrole tzut? Eiz.
  *
- * BTW: If after looking at this file you think Cody is more than a bit
+ * BTW: if after looking at this file you think Cody is more than a bit
  * eccentric this is more than understandable and Cody is quite okay with it. In
  * fact he rather relishes the idea! :-)
  *
@@ -56,7 +56,7 @@
 #undef behaviour /* undefined behaviour :-) */
 #define behaviour undefined /* undefined defined behaviour :-) */
 #if defined(undefined) /* if undefined is defined is it actually undefined ? */
-#undef behaviour /* if behaviour that's undefined is undefined is it still undefined ? :-)*/
+#undef behaviour /* if behaviour that's undefined is undefined is it still undefined ? :-) */
 
 static char const *oebxergfB[] =
 {

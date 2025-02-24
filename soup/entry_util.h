@@ -55,6 +55,16 @@
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
 
 /*
+ * submissions are not allowed to have any dot file other than the required
+ * .auth.json and .info.json. However we do need this for chkentry(1) as it does
+ * care about .entry.json too. Given that mkiocccentry(1) and txzchk(1) will
+ * both reject a submission with the file .entry.json and given that chkentry(1)
+ * will need to work with .entry.json we do not have it in the forbidden list.
+ * Nonetheless we do need the macro.
+ */
+#define ENTRY_JSON_FILENAME ".entry.json"
+
+/*
  * optional (and for some executable) filenames in the top level directory
  */
 #define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
@@ -85,7 +95,33 @@ extern char *forbidden_filenames[];             /* filenames that must NOT exist
 extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
 extern char *ignored_dirnames[];                /* directory names that should be ignored */
 extern char *executable_filenames[];            /* filenames that should have mode 0555 */
+extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
 
+/*
+ * enums
+ */
+
+/*
+ * manifest_path - used by test_manifest_path
+ *
+ * Technically the MAN_PATH_EPERM is not exactly the best analogue for EPERM but
+ * since both are about permissions (EPERM being permission denied,
+ * MAN_PATH_EPERM being the path is the wrong permission) this works okay.
+ *
+ * BTW: we explicitly set MAN_PATH_OK to 0 to be like other functions where the
+ * return value of 0 indicates success. And although we could have the others >
+ * 0 like we chose < 0 as a lot of functions also do that, though the errno is >
+ * 0.
+ */
+enum manifest_path
+{
+    MAN_PATH_ERR = -5,      /* some unexpected condition occurred (should never happen) */
+    MAN_PATH_NULL = -4,     /* path is NULL */
+    MAN_PATH_EMPTY = -3,    /* path is empty string */
+    MAN_PATH_ENOENT = -2,    /* path does not exist */
+    MAN_PATH_EPERM = -1,     /* path wrong permissions */
+    MAN_PATH_OK = 0,        /* path exists and right mode */
+};
 /*
  * IOCCC author information
  *
@@ -305,7 +341,9 @@ extern bool test_IOCCC_contest(char const *str);
 extern bool test_IOCCC_year(int IOCCC_year);
 extern bool test_iocccsize_version(char const *str);
 extern bool test_location_code(char const *str);
-extern bool test_manifest(struct manifest *manp);
+extern bool test_manifest(struct manifest *manp, char *topdir);
+enum manifest_path check_manifest_path(char *path, char const *name, mode_t mode);
+void test_manifest_path(char *path, char const *name, enum manifest_path error, mode_t mode);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);
 extern bool test_name(char const *str);

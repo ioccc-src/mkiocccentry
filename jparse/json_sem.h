@@ -111,6 +111,7 @@ struct json_sem
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 				/* JSON parse tree node validator, or NULL */
     char *name;			/* if type == JTYPE_MEMBER, match decoded name or NULL */
+    void *data;                 /* extra data if needed */
 };
 
 
@@ -171,7 +172,7 @@ extern void json_sem_zero_count(struct json_sem *sem);
 extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
 extern void json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err);
 extern uintmax_t json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
-				struct dyn_array **pcount_err, struct dyn_array **pval_err);
+				struct dyn_array **pcount_err, struct dyn_array **pval_err, void *data);
 extern void free_count_err(struct dyn_array *count_err);
 extern void free_val_err(struct dyn_array *val_err);
 extern void fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *sem_count_err, char const *postfix);
