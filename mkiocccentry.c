@@ -3168,7 +3168,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                      */
                     fname = dyn_array_value(extra_files, char *, i);
                     if (p == NULL) {
-                        err(99, __func__, "found NULL pointer in extra files list in submission directory, element: %ju", (uintmax_t)i);
+                        err(99, __func__, "found NULL pointer in extra files list in submission directory, element: %ju",
+                                (uintmax_t)i);
                         not_reached();
                     }
 
