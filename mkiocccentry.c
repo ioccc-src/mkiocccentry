@@ -1804,40 +1804,6 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
         not_reached();
     }
     /*
-     * extra files list is not required
-     */
-    free_paths_array(&infop->extra_files, true);
-    /*
-     * directories are not required (other than the submission directory itself
-     * which is not related to the list)
-     */
-    free_paths_array(&infop->directories, true);
-    /*
-     * ignored directories will only have items if the user had a directory in
-     * their topdir that we ignore
-     */
-    free_paths_array(&infop->ignored_dirs, true);
-    /*
-     * forbidden files need not have any items either and if it's empty we want
-     * the array to be NULL
-     */
-    free_paths_array(&infop->forbidden_files, true);
-    /*
-     * unsafe filenames list is only needed if there are unsafe filenames in the
-     * topdir
-     */
-    free_paths_array(&infop->unsafe_files, true);
-    /*
-     * like unsafe filenames, unsafe directory names list is only needed if the
-     * topdir had unsafe directory names
-     */
-    free_paths_array(&infop->unsafe_dirs, true);
-    /*
-     * symlinks are not allowed but if the list is empty we don't need it
-     */
-    free_paths_array(&infop->ignored_symlinks, true);
-
-    /*
      * some extra sanity checks on certain files
      *
      * NOTE: more will be done in check_submission_dir()
@@ -3172,70 +3138,68 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     len2 = 0;
     if (infop->extra_files != NULL) {
         len = paths_in_array(infop->extra_files);
-        if (len <= 0) {
-            err(4, __func__, "extra files list empty but not NULL");/*ooo*/
-            not_reached();
-        }
-        if (extra_files == NULL) {
-            err(4, __func__, "extra files exist in topdir but not in submission directory");/*ooo*/
-            not_reached();
-        }
-        len2 = dyn_array_tell(extra_files);
-        /*
-         * if len2 (submission directory list size) is not the same as len
-         * (topdir list size) it is an error
-         */
-        if (len != len2) {
-            err(4, __func__, "size of extra files list in submission directory != size in topdir: %ju != %ju",/*ooo*/
-                    (uintmax_t)len2, (uintmax_t)len);
-            not_reached();
-        }
         if (len > 0) {
-            for (i = 0; i < len; ++i) {
-                /*
-                 * extract the file from the topdir list
-                 */
-                p = dyn_array_value(infop->extra_files, char *, i);
-                if (p == NULL) {
-                    err(98, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
-                    not_reached();
-                }
-                /*
-                 * extract the file from the submission directory list
-                 */
-                fname = dyn_array_value(extra_files, char *, i);
-                if (p == NULL) {
-                    err(99, __func__, "found NULL pointer in extra files list in submission directory, element: %ju", (uintmax_t)i);
-                    not_reached();
-                }
-
-                /*
-                 * verify that the filename from the topdir is in the submission
-                 * directory list.
-                 *
-                 * NOTE: p is from the topdir, fname is from the submission directory.
-                 * We check the required_files list in this function because that is
-                 * what is in the submission directory. There should be no difference
-                 * between p and fname due to the fts_cmp() function but even if they
-                 * are the same we check that the name from the topdir is in the
-                 * submission directory to be absolutely certain.
-                 *
-                 * Why do we check against what is in the topdir? Because we want to
-                 * make sure that the file found in the topdir (remember it was checked
-                 * in the other functions) is here. This is not strictly necessary but
-                 * it helps to document our purpose (a tiny bit?).
-                 */
-                if (strcmp(p, fname) != 0 || !array_has_path(extra_files, p, false, NULL)) {
+            if (extra_files == NULL) {
+                err(4, __func__, "extra files exist in topdir but not in submission directory");/*ooo*/
+                not_reached();
+            }
+            len2 = dyn_array_tell(extra_files);
+            /*
+             * if len2 (submission directory list size) is not the same as len
+             * (topdir list size) it is an error
+             */
+            if (len != len2) {
+                err(4, __func__, "size of extra files list in submission directory != size in topdir: %ju != %ju",/*ooo*/
+                        (uintmax_t)len2, (uintmax_t)len);
+                not_reached();
+            }
+            if (len > 0) {
+                for (i = 0; i < len; ++i) {
                     /*
-                     * we need to add this file to the missing files list
+                     * extract the file from the topdir list
                      */
-                    errno = 0; /* pre-clear errno for errp() */
-                    filename = strdup(p);
-                    if (filename == NULL) {
-                        errp(100, __func__, "strdup(\"%s\") failed", p);
+                    p = dyn_array_value(infop->extra_files, char *, i);
+                    if (p == NULL) {
+                        err(98, __func__, "found NULL pointer in extra files list, element: %ju", (uintmax_t)i);
                         not_reached();
                     }
-                    append_unique_filename(missing_files, filename);
+                    /*
+                     * extract the file from the submission directory list
+                     */
+                    fname = dyn_array_value(extra_files, char *, i);
+                    if (p == NULL) {
+                        err(99, __func__, "found NULL pointer in extra files list in submission directory, element: %ju", (uintmax_t)i);
+                        not_reached();
+                    }
+
+                    /*
+                     * verify that the filename from the topdir is in the submission
+                     * directory list.
+                     *
+                     * NOTE: p is from the topdir, fname is from the submission directory.
+                     * We check the required_files list in this function because that is
+                     * what is in the submission directory. There should be no difference
+                     * between p and fname due to the fts_cmp() function but even if they
+                     * are the same we check that the name from the topdir is in the
+                     * submission directory to be absolutely certain.
+                     *
+                     * Why do we check against what is in the topdir? Because we want to
+                     * make sure that the file found in the topdir (remember it was checked
+                     * in the other functions) is here. This is not strictly necessary but
+                     * it helps to document our purpose (a tiny bit?).
+                     */
+                    if (strcmp(p, fname) != 0 || !array_has_path(extra_files, p, false, NULL)) {
+                        /*
+                         * we need to add this file to the missing files list
+                         */
+                        errno = 0; /* pre-clear errno for errp() */
+                        filename = strdup(p);
+                        if (filename == NULL) {
+                            errp(100, __func__, "strdup(\"%s\") failed", p);
+                            not_reached();
+                        }
+                        append_unique_filename(missing_files, filename);
+                    }
                 }
             }
         }
@@ -3277,10 +3241,6 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     len2 = 0;
     if (infop->directories != NULL) {
         len = dyn_array_tell(infop->directories);
-        if (len <= 0) {
-            err(4, __func__, "non NULL directories list in topdir is empty");/*ooo*/
-            not_reached();
-        }
         if (directories == NULL) {
             err(4, __func__, "directories list in submission directory NULL");/*ooo*/
             not_reached();
@@ -3470,19 +3430,19 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      */
 
     /* required files list */
-    free_paths_array(&required_files, true);
+    free_paths_array(&required_files, false);
     required_files = NULL; /* extra sanity */
     /* extra files list */
-    free_paths_array(&extra_files, true);
+    free_paths_array(&extra_files, false);
     extra_files = NULL; /* extra sanity*/
     /* missing files list */
-    free_paths_array(&missing_files, true);
+    free_paths_array(&missing_files, false);
     missing_files = NULL; /* extra sanity */
     /* directories list */
-    free_paths_array(&directories, true);
+    free_paths_array(&directories, false);
     directories = NULL; /* extra sanity */
     /* missing directories list */
-    free_paths_array(&missing_dirs, true);
+    free_paths_array(&missing_dirs, false);
     missing_dirs = NULL; /* extra sanity */
 
     /*
