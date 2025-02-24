@@ -44,6 +44,7 @@ random_answers.*
 /test_ioccc/fnamchk
 /test_ioccc/.hostchk.*.work/
 /test_ioccc/.local.dir.tags
+test_ioccc/slot/good/workdir/
 /test_ioccc/tags
 /test_ioccc/test_JSON/
 /test_ioccc/test_ioccc.log

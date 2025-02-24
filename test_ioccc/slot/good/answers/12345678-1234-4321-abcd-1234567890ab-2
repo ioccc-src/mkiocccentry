@@ -1,0 +1,34 @@
+MKIOCCCENTRY_ANSWERS_IOCCC28-1.0
+12345678-1234-4321-abcd-1234567890ab
+2
+title.2
+abstract for slot 2
+3
+anonymous person
+XX
+
+
+
+
+
+
+anonymous_person
+anonymous_person
+US
+user2@example.us
+http://host2.example.us/index.html
+
+@user2@example.us
+@user2
+affiliation for user 2
+first2_last2
+anon3
+SB
+user3@example.sb
+
+
+@user3@example.sb
+
+
+anon3
+ANSWERS_EOF
