@@ -1334,8 +1334,11 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     /*
      * before we do anything else we must reset fts structure and set the
      * variables we need
+     *
+     * IMPORTANT: make SURE to use memset(&fts, 0, sizeof(struct fts)) first!
      */
-    reset_fts(&fts);
+    memset(&fts, 0, sizeof(struct fts));
+    reset_fts(&fts, false); /* false means do not clear out ignored list */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
     /*
@@ -1344,7 +1347,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      */
     ent = read_fts(NULL, -1, NULL, &fts);
     if (ent == NULL){
-        err(49, __func__, "failed to read \".\"");
+        err(49, __func__, "failed to find any files in \".\"");
         not_reached();
     } else {
         do {
@@ -2653,8 +2656,10 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     /*
      * before we can do anything else we must reset the fts struct and then set
      * our options
+     * IMPORTANT: make SURE to use memset(&fts, 0, sizeof(struct fts)) first!
      */
-    reset_fts(&fts);
+    memset(&fts, 0, sizeof(struct fts));
+    reset_fts(&fts, false); /* false means do not clear out ignored list */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
 
@@ -2665,7 +2670,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      */
     ent = read_fts(NULL, -1, NULL, &fts);
     if (ent == NULL){
-        err(92, __func__, "failed to open \".\"");
+        err(92, __func__, "failed to find any files in \".\"");
         not_reached();
     } else {
         do {
@@ -3465,19 +3470,19 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      */
 
     /* required files list */
-    free_paths_array(&required_files, false);
+    free_paths_array(&required_files, true);
     required_files = NULL; /* extra sanity */
     /* extra files list */
-    free_paths_array(&extra_files, false);
+    free_paths_array(&extra_files, true);
     extra_files = NULL; /* extra sanity*/
     /* missing files list */
-    free_paths_array(&missing_files, false);
+    free_paths_array(&missing_files, true);
     missing_files = NULL; /* extra sanity */
     /* directories list */
-    free_paths_array(&directories, false);
+    free_paths_array(&directories, true);
     directories = NULL; /* extra sanity */
     /* missing directories list */
-    free_paths_array(&missing_dirs, false);
+    free_paths_array(&missing_dirs, true);
     missing_dirs = NULL; /* extra sanity */
 
     /*

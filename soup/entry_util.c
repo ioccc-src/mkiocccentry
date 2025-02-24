@@ -3826,8 +3826,13 @@ test_manifest(struct manifest *manp, char *topdir)
 
     /*
      * first reset fts struct
+     *
+     * IMPORTANT: make sure to memset(&fts, 0, sizeof(struct fts)) before the
+     * first use of reset_fts()! This is needed here AND chkentry because we do
+     * not pass a struct fts * here nor should we.
      */
-    reset_fts(&fts);
+    memset(&fts, 0, sizeof(struct fts));
+    reset_fts(&fts, false); /* false means do not clear out ignored list */
     /*
      * Below we will have to check that the files in the manifest actually exist
      * in the topdir. To do this we have to use the find_path() or find_paths()

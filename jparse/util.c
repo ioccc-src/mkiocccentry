@@ -1475,7 +1475,7 @@ is_exec(char const *path)
  * struct fts * the following variables (with the corresponding type) are set to
  * the value:
  *
- *  variable        type        value
+ *  variable        type                                        value
  *
  *      tree        (FTS *)                                     NULL
  *      options     int                                         FTS_NOCHDIR
@@ -1485,6 +1485,7 @@ is_exec(char const *path)
  *      base        bool                                        false
  *      seedot      bool                                        false
  *      match_case  bool                                        false
+ *      ignore      struct dyn_array *                          NULL if free_ignored == true
  *      cmp         int (const FTSENT **, const FTSENT **)      fts_cmp
  *      check       bool (FTS *, FTSENT *)                      check_fts_info
  *
@@ -1492,10 +1493,16 @@ is_exec(char const *path)
  *
  *      fts             - pointer to pointer struct fts to clear out (set to default values)
  *
- * NOTE: this function will do nothing on NULL fts. We will NOT do
- * fts_close(fts) because we cannot be sure the pointer is valid (it would be a
- * burden to make the user always have to set fts.tree = NULL prior to calling
- * this function).
+ * NOTE: this function will do nothing on NULL fts.
+ *
+ * IMPORTANT NOTE: you MUST call this function prior to the first use of the FTS
+ * functions. If you do not then not only are the values unpredictable but we
+ * cannot safely check for pointers later on. Additionally, you MUST NOT set
+ * fts->initialised to true! This is only for this function.This allows us to
+ * safely check the pointers.
+ *
+ * NOTE: if the array ignore != NULL and free_ignored == true we will clear the
+ * array out with free_paths_array().
  *
  * NOTE: although this function does help with clearing out the struct, one
  * still has to explicitly set the values they wish after resetting it. This is
@@ -1503,7 +1510,7 @@ is_exec(char const *path)
  * too many args.
  */
 void
-reset_fts(struct fts *fts)
+reset_fts(struct fts *fts, bool free_ignored)
 {
     /*
      * firewall
@@ -1517,6 +1524,17 @@ reset_fts(struct fts *fts)
      * reset everything
      */
 
+    /*
+     * if we've already called this once and the tree is not NULL, we will close
+     * it
+     */
+    if (fts->initialised && fts->tree != NULL) {
+        errno = 0; /* pre-clear errno for errp() */
+        if (fts_close(fts->tree) != 0) {
+            errp(128, __func__, "fts_close(fts->tree) failed");
+            not_reached();
+        }
+    }
     fts->tree = NULL; /* make sure tree is NULL */
     fts->options = FTS_NOCHDIR; /* important - although we always set this if not set */
     fts->logical = false;
@@ -1526,8 +1544,22 @@ reset_fts(struct fts *fts)
     fts->base = false;
     fts->seedot = false;
     fts->match_case = false;
+
+    /*
+     * if this struct has been initialised and it is requested to clear the
+     * array we will do so
+     */
+    if (fts->initialised && free_ignored && fts->ignore != NULL) {
+        free_paths_array(&(fts->ignore), false);
+    }
+    fts->ignore = NULL; /* paranoia */
     fts->cmp = fts_cmp;
     fts->check = check_fts_info;
+
+    /*
+     * this MUST be last!
+     */
+    fts->initialised = true;
 }
 
 /*
@@ -1549,10 +1581,16 @@ reset_fts(struct fts *fts)
  * This function does NOT strdup() it! Thus you should NOT use this after
  * closing down the stream (in the case of read_fts() you should not do it after
  * it returns NULL, assuming of course you did the do..while loop).
+ *
+ * NOTE: if the path is NULL or empty then something funny in the tree is
+ * probably happening so we will abort with an error. In other words this
+ * function will never return a NULL or empty string.
  */
 char *
 fts_path(FTSENT *ent)
 {
+    char *path = NULL;
+
     /*
      * firewall
      */
@@ -1560,24 +1598,40 @@ fts_path(FTSENT *ent)
         /*
          * Treebeard died :(
          */
-        err(128, __func__, "ent is NULL");
+        err(129, __func__, "ent is NULL");
         not_reached();
     }
-    if (ent->fts_path == NULL) {
-        err(129, __func__, "ent->fts_path == NULL");
+    if (ent->fts_path == NULL || *(ent->fts_path) == '\0') {
+        err(130, __func__, "ent->fts_path == NULL or empty string");
         not_reached();
     } else if (ent->fts_path[0] == '\0' || ent->fts_path[1] == '\0' || ent->fts_path[2] == '\0') {
         /*
          * don't do + 2 as it will either go beyond the string's end or it will
          * be an empty string
          */
-        return ent->fts_path;
+        path = ent->fts_path;
+    } else {
+        /*
+         * we can do fts_path + 2
+         */
+        path = ent->fts_path + 2;
     }
 
-    /*
-     * we can return ent_path + 2
-     */
-    return ent->fts_path + 2;
+    if (path == NULL) { /* should never happen */
+        /*
+         * Fangorn Forest burnt down :-(
+         */
+        err(131, __func__, "error: path ended up NULL for FTS entry");
+        not_reached();
+    } else if (*path == '\0') {
+        /*
+         * Fangorn Forest burnt down :-(
+         */
+        err(132, __func__, "error: path ended up as empty string for FTS entry");
+        not_reached();
+    }
+
+    return path; /* all okay */
 }
 
 /*
@@ -1604,11 +1658,11 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      * firewall
      */
     if (a == NULL || *a == NULL) {
-	err(130, __func__, "a is NULL");
+	err(133, __func__, "a is NULL");
 	not_reached();
     }
     if (b == NULL || *b == NULL) {
-	err(131, __func__, "b is NULL");
+	err(134, __func__, "b is NULL");
 	not_reached();
     }
 
@@ -1662,11 +1716,11 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
      * firewall
      */
     if (a == NULL || *a == NULL) {
-	err(132, __func__, "a is NULL");
+	err(135, __func__, "a is NULL");
 	not_reached();
     }
     if (b == NULL || *b == NULL) {
-	err(133, __func__, "b is NULL");
+	err(136, __func__, "b is NULL");
 	not_reached();
     }
 
@@ -1742,47 +1796,60 @@ fts_rcmp(const FTSENT **a, const FTSENT **b)
 bool
 check_fts_info(FTS *fts, FTSENT *ent)
 {
+    char *path = NULL;  /* fts path */
+
     /*
      * firewall
      */
     if (fts == NULL) {
-        err(134, __func__, "fts is NULL");
+        err(137, __func__, "fts is NULL");
         not_reached();
     }
     if (ent == NULL) {
         /*
          * Treebeard died :(
          */
-        err(135, __func__, "ent is NULL");
+        err(138, __func__, "ent is NULL");
         not_reached();
     }
+    path = fts_path(ent);
+    if (path == NULL || *path == '\0') {
+        /*
+         * Fangorn Forest burnt down :-(
+         *
+         * This should never happen but if it does it is an error
+         */
+        err(139, __func__, "path is NULL or empty string");
+        not_reached();
+    }
+
     switch (ent->fts_info) {
         case FTS_DC: /* cycle in directory tree */
             errno = 0; /* pre-clear errno for errp() */
             if (fts_set(fts, ent, FTS_SKIP) != 0) {
-                errp(136, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s", ent->fts_path);
+                errp(140, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s", path);
                 not_reached();
             } else {
-                warn(__func__, "skipping directory %s because it causes a cycle in the tree", ent->fts_path);
+                warn(__func__, "skipping directory %s because it causes a cycle in the tree", path);
             }
             return false;
             break;
         case FTS_DNR: /* directory not readable */
             errno = 0; /* pre-clear errno for errp() */
             if (fts_set(fts, ent, FTS_SKIP) != 0) {
-                errp(137, __func__, "failed to set FTS_SKIP on an unreadable directory in the tree: %s", ent->fts_path);
+                errp(141, __func__, "failed to set FTS_SKIP on an unreadable directory in the tree: %s", path);
                 not_reached();
             } else {
-                warn(__func__, "skipping unreadable directory %s in the tree", ent->fts_path);
+                warn(__func__, "skipping unreadable directory %s in the tree", path);
             }
             return false;
             break;
         case FTS_NS: /* no stat(2) info available but we requested it */
-            err(138, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
+            err(142, __func__, "no stat(2) info available for %s in tree", path);
             not_reached();
             break;
         case FTS_NSOK: /* stat(2) not requested */
-            err(139, __func__, "stat(2) info not requested for %s in tree: FTS_NOSTAT set!", ent->fts_path);
+            err(143, __func__, "stat(2) info not requested for %s in tree: FTS_NOSTAT set!", path);
             not_reached();
             break;
         case FTS_ERR: /* some error condition */
@@ -1790,7 +1857,7 @@ check_fts_info(FTS *fts, FTSENT *ent)
              * fake errno
              */
             errno = ent->fts_errno; /* pre-clear errno for errp() */
-            errp(140, __func__, "encountered error from path %s in tree", ent->fts_path);
+            errp(144, __func__, "encountered error from path %s in tree", path);
             not_reached();
             break;
         default:
@@ -1807,10 +1874,10 @@ check_fts_info(FTS *fts, FTSENT *ent)
 /*
  * read_fts - read first (or next) entry in a directory tree (via fts(3))
  *
- * Open an FTS * or, if fts->tree != NULL, read the next FTSENT in the tree, and
- * return it (unless specific errors occur). If the next entry is NULL (i.e. we
- * have finished traversing the tree), NULL is returned (after closing
- * fts->tree and setting it to NULL).
+ * Open an FTS * and read the first FTSENT * or, if fts->tree != NULL, read the
+ * next FTSENT in the tree, and return it (unless specific errors occur). If the
+ * next entry is NULL (i.e. we have finished traversing the tree), NULL is
+ * returned (after closing fts->tree and setting it to NULL).
  *
  * This function will not return on error. If dir == NULL then we will scan from
  * the current working directory OR if dirfd >= 0 we will try and scan from there
@@ -1818,104 +1885,142 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * tree with fts_open(). If chdir(dir) fails it is an error, unless dirfd >= 0
  * and fchdir(dirfd) does not fail.
  *
- * The function will read from the '.' AFTER the chdir(2) succeeds (we will not
- * chdir(dir) if *fts != NULL, however). See also the cwd arg below.
+ * The function will read from the '.' AFTER the chdir(2)/fchdir(2) succeeds (we
+ * will not chdir(dir) if *fts != NULL, however, so that this function can be
+ * called again until everything is processed. If you need to find a specific
+ * file it is better to use find_path(); and if you need to find a number of
+ * paths you should use find_paths() instead. These functions (via this one,
+ * read_fts()) allows ignoring certain paths, by basename or not, by
+ * case-sensitive or not and various other things. For details see those
+ * functions and the details below for the fts struct.
  *
- * If fts is NULL it is an error but if *fts is NULL we will open the stream
- * (fts_open()) and set *fts to the FTS * returned by fts_open() (if it fails it
- * is an error). Otherwise, if *fts != NULL we will read from THAT FTS *. If
- * *fts IS NULL we will first open the stream from fts_open() (assigning it to
- * *fts) and THEN if not a NULL pointer (an error) we will read the first entry
- * of the tree. You might call this a 're-entrant' (for certain definitions of
- * 're-entrant' anyway :-) ) version of fts_read().
+ * If fts is NULL it is an error but if fts->tree is NULL we will open the
+ * stream (fts_open()) and set fts->tree to the FTS * returned by fts_open() (if
+ * it fails it is an error). Otherwise, if fts->tree != NULL we will read from
+ * THAT FTS *. If fts->tree IS NULL we will first open the stream from
+ * fts_open() (assigning it to fts->tree) and THEN if not a NULL pointer (i.e.
+ * no error encountered) we will read the first entry of the tree. The next call
+ * will read the next, or if it's skipped for some reason (due to certain
+ * conditions, the struct fts asks for it to be ignored or skipped etc.), it
+ * will read the one after that, going until no more remain (at which point it
+ * would close the stream, set it to NULL and then return NULL).
  *
- * The cmp() function is a callback which is used in fts_open()
- * (user-defined) to order the way the tree is traversed. If it is NULL and the
- * we will use fts_cmp() but one may pass in their own function OR if they do
- * not wish to not write their own they can use fts_cmp() (which is unnecessary)
- * or fts_rcmp() which is the reverse order of fts_cmp().
+ * The intended purpose of this function is to use it in a do..while loop but as
+ * noted above if you need to find a specific path or paths there are better
+ * functions (they also use the fts struct). This function allows you to check
+ * by depth as well and also file type, ignoring those that are not needed or
+ * wanted.
+ *
+ * The cmp() function pointer in the struct fts is a callback which is used in
+ * fts_open() (user-defined) to order the way the tree is traversed. If it is
+ * NULL we will use fts_cmp() but one may pass in their own function, OR, if
+ * they do not wish to not write their own they can use fts_cmp() or fts_rcmp()
+ * which is the reverse order of fts_cmp().
  *
  * If cwd != NULL we will set *cwd to the file descriptor of the directory that
- * one started out as (unless *fts != NULL as that indicates we already set it,
- * assuming the first call did not pass in a NULL cwd).
+ * one started out as (unless fts->tree != NULL as that indicates we already set
+ * it, assuming the first call did not pass in a NULL cwd).
  *
- * The options will be passed to fts_open(): make sure you use the correct
- * flags; see the man page for fts_open() for more details.
- *
- * NOTE: on the options there is one that will ALWAYS be SET (FTS_NOCHDIR), one
- * that will ALWAYS be UNSET (FTS_NOSTAT) and depending on the bool logical one
- * OR another will be set: if logical (dereference/follow symlinks) we set
- * FTS_LOGICAL; otherwise we set FTS_PHYSICAL. Before setting either of those we
- * remove them both. If options < 0 we will perform the same procedure is taken,
- * ensuring that options at the least:
- *
- *      FTS_NOCHDIR | FTS_PHYSICAL
- * or
- *      FTS_NOCHDIR | FTS_LOGICAL
- *
- * but NOT:
- *
- *      FTS_NOCHDIR | FTS_PHYSICAL | FTS_LOGICAL
+ * The options in struct fts will be passed to fts_open(). There is one that
+ * will ALWAYS be SET (FTS_NOCHDIR), one that will ALWAYS be UNSET (FTS_NOSTAT).
+ * If the fts->logical is true the flag FTS_LOGICAL is set; otherwise
+ * FTS_PHYSICAL is set. If the fts->seedot is true FTS_SEEDOT Is set, otherwise
+ * it is unset.
  *
  * The reason we need FTS_NOCHDIR set is so that the path can remain valid. The
  * reason we need FTS_NOSTAT unset is because if it is set fts_info will always
  * be FTS_NSOK thus making it impossible to know the file type!
  *
  * The dir is where we will chdir(2) to before proceeding, if dir != NULL &&
- * *fts == NULL.
+ * fts->tree == NULL.
  *
  * given:
  *
  *  dir             -   char * which is the path to chdir(2) to before opening path but
  *                      only if != NULL && *fts == NULL
- *  dirfd           -   if dir == NULL and dirfd > 0, fchdir(2) to it, else don't change
- *                      at all
- *  cwd             -   if != NULL set *cwd PRIOR to chdir(dir)
- *  fts             -   pointer to pointer to FTS to set to return value of fts_open()
+ *  dirfd           -   if dir == NULL and dirfd >= 0, fchdir(dirfd) to it; if dir !=
+ *                      NULL but chdir(dir) fails and dirfd >= 0 try fchdir(2)
+ *  cwd             -   if != NULL set *cwd PRIOR to any change in directory
+ *  fts             -   struct fts * with parameters for function
  *
  * Returns:
  *  the next entry (an FTSENT *) in the tree or NULL if no other entry remains.
  *
  * NOTE: if fts_read() returns NULL then we will call fts_close(fts->tree) and
  * set fts->tree to NULL. If the user does not call it for every entry (say
- * they're looking for a specific file) then they need to do this. In that case
- * they should make sure that fts->tree != NULL!
- *
- * NOTE: dir has priority over dirfd but if chdir(dir) fails and dirfd >= 0 we
- * will try fchdir(dirfd). If that fails it is an error. If dir == NULL and
- * dirfd >= 0 we will try fchdir(dirfd) and if that fails it is an error.
- * Otherwise we will scan from the directory the program is already in.
+ * they're looking for a specific file, although in that case they really should
+ * be using find_path()) then they need to do this. In that case they should
+ * make sure that fts->tree != NULL!
  *
  * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
  * NULL and dirfd < 0 the directory the process is in.
  *
- * To use this function you might do something like this where 'fts' is a struct
- * fts * (previously cleared with reset_fts(fts) and then setting any variables to
- * the desired values); for details on the struct see the comments below. In the
- * example below: ent will be an FTSENT *. The dir is "test_jparse" (w/o
- * quotes), dirfd is -1, cwd is a pointer to an int (which if not NULL *cwd will
- * be set to the FD of the current working directory before changing any
- * directory).
+ * NOTE: the struct fts has:
  *
- * As for the values in the struct fts: We assume that the fts->options is
- * FTS_NOCHDIR (the value reset_fts() will set it to), fts->cmp is fts_cmp (or
- * NULL which is the same thing), the fts->check is the function pointer that if
- * NULL will be set to check_fts_info (or NULL which is the same thing),
- * fts->logical is false, fts->type is FTS_TYPE_ANY, fts->base is false,
- * fts->seedot is false, fts->depth is 0, fts->count is 0 and fts->match_case is
- * false. An example use:
+ *      tree        - FTS * returned by fts_open()
+ *      options     - options to pass to fts_open() (via read_fts()), see above
+ *                    on options
+ *      logical     - true ==> use FTS_LOGICAL (follow symlinks), false ==> use
+ *                    FTS_PHYSICAL (do not follow symlinks, refer to link itself)
+ *      type        - bitwise of types (enum fts_type) to allow different types
+ *                    only
+ *      count       - if > 0 and base == false search until count file have
+ *                    been found
+ *      depth       - if > 0 required depth
+ *      base        - true ==> basename only (i.e. fts->fts_name)
+ *      seedot      - true ==> don't skip '.' and '..',
+ *                    false ==> skip '.' and '..'
+ *      match_case  - true ==> use strcmp(), not strcasecmp()
+ *      ignore      - struct dyn_array * of paths to ignore (if desired, else NULL)
+ *      cmp         - callback for fts_open() (used by read_fts())
+ *      check       - pointer to function to check FTSENT * for certain conditions
+ *                    (if NULL we will use check_fts_info())
+ *      initialised - used internally by reset_fts()
+ *
+ * To use this function you might do something like this where:
+ *
+ *      dir             ==> "test_jparse" (w/o quotes)
+ *      dirfd           ==> -1
+ *      cwd             ==> pointer to int to store cwd before changing directories
+ *      fts             ==> struct fts * with parameters
+ *
+ * As for the struct fts, we'll assume that the values are:
+ *
+ *      tree            ==> FTS * (must be NULL on first pass, see below)
+ *      options         ==> FTS_NOCHDIR (done by reset_fts())
+ *      logical         ==> false (will set fts->fts_options to FTS_PHYSICAL)
+ *      type            ==> FTS_TYPE_ANY (any type of file)
+ *      depth           ==> 0 (ignore depth)
+ *      seedot          ==> false (remove FTS_SEEDOT; true could be done in options as well)
+ *      ignore          ==> NULL (don't ignore anything)
+ *      cmp             ==> fts_rcmp
+ *      check           ==> NULL (don't do any checks)
+ *
+ * We do not use the variables count or match_case as this traverses a tree and
+ * does not have a name or names to look for (except for ignored list).
+ *
+ * IMPORTANT: you MUST memset() struct fts to 0 first BEFORE calling reset_fts()
+ * and you MUST use reset_fts() before the first use of this function or
+ * find_path() or find_paths() (which actually use this function)! An example
+ * use:
  *
  *      FTSENT *ent = NULL;
  *      struct fts fts;
- *      reset_fts(&fts); // reset struct fts
+ *      int cwd = -1;
  *
- *      ent = read_fts(dir, dirfd, cwd, &fts, false, false);
+ *      // zero out fts first!
+ *      memset(&fts, 0, sizeof(struct fts)); // important!
+ *      // reset fts to sane values, including type to FTS_TYPE_ANY
+ *      reset_fts(&fts, true); // reset struct fts to a sane state
+ *      fts.cmp = rcmp_fts; // reverse ordering in traversal
+ *
+ *      ent = read_fts(dir, dirfd, &cwd, &fts);
  *      if (ent == NULL){
- *           .. handle error
+ *           .. handle error or return NULL depending on what you need
  *      } else {
  *          do {
  *              ... stuff ...
- *          } while ((ent = read_fts(dir, dirfd, cwd, &fts, false, false);
+ *          } while ((ent = read_fts(dir, dirfd, &cwd, &fts)) != NULL);
  *      }
  *
  * or so.
@@ -1926,20 +2031,32 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * as long as the args are passed correctly). Since dir != NULL it will first
  * change to the directory ("test_jparse/") (again only the first call) and if
  * that fails it is an error (because dirfd < 0). Otherwise it will use
- * fts_open() with the parameters given in fts.
+ * fts_open() with the parameters given in fts. Since we have given a pointer to
+ * the cwd (&cwd) before changing directories we store the current working
+ * directory in *cwd.
+ *
+ * If you need to ignore paths you might do this PRIOR to calling the function
+ * but AFTER doing the memset() and reset_fts():
+ *
+ *      append_path(&(fts.ignore), "foo", true, false, false); // last false means don't match case
  *
  * As a special feature we offer a way to restore and close the previous working
- * directory. If all the pointers (except cwd) are NULL and all the booleans are
- * false and *cwd > 0 we will try fchdir(*cwd) and then close(*cwd) (meaning
- * that in the calling function cwd is INVALID!).  This is useful to restore
- * the previous current working directory, assuming that &cwd was passed into
- * the function the first time.
+ * directory. If all the pointers (except cwd) are NULL and *cwd > 0 we will try
+ * fchdir(*cwd) and then close(*cwd) (meaning that in the calling function cwd
+ * is INVALID!).  This is useful to restore the previous current working
+ * directory, assuming that &cwd was passed into the function the first time.
+ *
+ * NOTE: because fts_check_info() has important checks we will call it
+ * explicitly too.
  */
 FTSENT *
 read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
 {
     char *path[] = { ".", NULL };   /* "." for fts_open() */
+    char *name = NULL; /* fts path (from fts_path()) */
     FTSENT *ent = NULL; /* next entry from fts_open() */
+    intmax_t ignored = 0;   /* > 0 ==> ignored list is not empty */
+    intmax_t i = 0;         /* iterate through ignored list */
 
     /*
      * special check to see if we need to simply change back to the original
@@ -1949,12 +2066,12 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
         if (*cwd > 0) {
             errno = 0;  /* pre-clear errno for errp() */
             if (fchdir(*cwd) != 0) {
-                errp(141, __func__, "failed to fchdir(%d)", *cwd);
+                errp(145, __func__, "failed to fchdir(%d)", *cwd);
                 not_reached();
             }
             errno = 0; /* pre-clear errno for errp() */
             if (close(*cwd) != 0) {
-                errp(142, __func__, "close(%d) failed", *cwd);
+                errp(146, __func__, "close(%d) failed", *cwd);
                 not_reached();
             }
             *cwd = -1;
@@ -1969,7 +2086,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
      * firewall
      */
     if (fts == NULL) {
-        err(143, __func__, "fts is NULL");
+        err(147, __func__, "fts is NULL");
         not_reached();
     }
 
@@ -1985,7 +2102,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
         errno = 0;			/* pre-clear errno for errp() */
         *cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
         if (*cwd < 0) {
-            errp(144, __func__, "cannot open .");
+            errp(148, __func__, "cannot open .");
             not_reached();
         }
     }
@@ -2000,7 +2117,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
             if (dirfd > 0) {
                 errno = 0;  /* pre-clear errno for errp() */
                 if (fchdir(dirfd) != 0) {
-                    errp(145, __func__, "both chdir(\"%s\") and fchdir(%d) failed",
+                    errp(149, __func__, "both chdir(\"%s\") and fchdir(%d) failed",
                             dir, dirfd);
                     not_reached();
                 }
@@ -2009,7 +2126,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
     } else if (dirfd > 0) {
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(dirfd) != 0) {
-            errp(146, __func__, "fchdir(%d) failed", dirfd);
+            errp(150, __func__, "fchdir(%d) failed", dirfd);
             not_reached();
         }
     }
@@ -2022,6 +2139,8 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
      * We also make sure that neither FTS_PHYSICAL nor FTS_LOGICAL is set
      * (unsetting if necessary) and then if logical is true we set FTS_LOGICAL
      * and if false we set FTS_PHYSICAL.
+     *
+     * If fts->seedot == true we'll set FTS_SEEDOT.
      */
     if (fts->options <= 0) {
         fts->options = FTS_NOCHDIR;
@@ -2030,40 +2149,30 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
         } else {
             SET_BIT(fts->options, FTS_NOCHDIR | FTS_PHYSICAL);
         }
+        if (fts->seedot) {
+            SET_BIT(fts->options, FTS_SEEDOT);
+        }
     } else {
         /*
-         * first remove FTS_NOSTAT, FTS_LOGICAL and FTS_PHYSICAL
+         * first remove FTS_NOSTAT, FTS_LOGICAL, FTS_PHYSICAL and FTS_SEEDOT
          */
-        REMOVE_BIT(fts->options, FTS_NOSTAT | FTS_LOGICAL | FTS_PHYSICAL);
+        REMOVE_BIT(fts->options, FTS_NOSTAT | FTS_LOGICAL | FTS_PHYSICAL | FTS_SEEDOT);
 
         /*
          * now ensure that both FTS_NOCHDIR and EITHER FTS_LOGICAL or
-         * FTS_PHYSICAL is set, depending on the logical bool
+         * FTS_PHYSICAL is set, depending on the logical bool but NOT both
          */
         if (fts->logical) {
             SET_BIT(fts->options, FTS_NOCHDIR | FTS_LOGICAL); /* dereference symlinks */
         } else {
             SET_BIT(fts->options, FTS_NOCHDIR | FTS_PHYSICAL);
         }
-    }
-
-    /*
-     * make sure check != NULL.
-     *
-     * We will use check_fts_info() if check == NULL because it does check for
-     * error and problematic conditions (although as an extra sanity check we
-     * also check them below). The reason we have the ability to override this
-     * is in some cases (like mkiocccentry) we need to have different checks
-     * than what we have here (for instance we do not want anything of
-     * fts_info == FTS_DEFAULT in mkiocccentry). By having error/problematic
-     * checks in this function we can still avoid them even if the user
-     * overrides the check function.
-     */
-    if (fts->check == NULL) {
         /*
-         * set check to check_fts_info()!
+         * then if fts->seedot is true, set FTS_SEEDOT
          */
-        fts->check = check_fts_info;
+        if (fts->seedot) {
+            SET_BIT(fts->options, FTS_SEEDOT);
+        }
     }
 
     /*
@@ -2072,22 +2181,18 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
     if (fts->cmp == NULL) {
         fts->cmp = fts_cmp;
     }
-    /*
-     * make sure fts->check is set
-     */
-    if (fts->check == NULL) {
-        fts->check = check_fts_info;
-    }
 
      /* if fts->tree == NULL we need to open an FTS stream "." first
      */
     if (fts->tree == NULL) {
         fts->tree = fts_open(path, fts->options, fts->cmp);
         if (fts->tree == NULL) {
-            errp(147, __func__, "fts_open() returned NULL for: %s", dir != NULL ? dir : ".");
+            errp(151, __func__, "fts_open() returned NULL for: %s", dir != NULL ? dir : ".");
             not_reached();
         }
     }
+
+    ignored = paths_in_array(fts->ignore);
     /*
      * extra sanity check
      */
@@ -2120,29 +2225,35 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                  * NULL will be returned below
                  */
             } else {
+                name = fts_path(ent);
+                if (name == NULL || *name == '\0') {
+                    /*
+                     * this should not really happen unless something odd is
+                     * going on but in case there is something odd going on we
+                     * will skip the entry
+                     */
+                    warn(__func__, "ent has NULL path, skipping");
+                    continue;
+                }
                 /*
                  * check for specific conditions that are either errors or are
-                 * problematic conditions. If check was NULL we will call
-                 * check_fts_info() (because check will be set to check_fts_info()
-                 * if check is NULL at the beginning of this function). This way the
-                 * user can override checks add specific. We do in the default check
-                 * function and here check for FTS_DNR (unreadable directory) and
-                 * FTS_DC (directory causes cycle in tree) and set FTS_SKIP on it so
-                 * that we don't descend into it and we do check for FTS_ERR (that
-                 * is a fatal error) but in some cases one might need to check for
-                 * FTS_DEFAULT where we don't as it is perfectly valid to have it.
-                 * We also check for FTS_NS because we set FTS_NOSTAT as otherwise
-                 * the fts_info will be set to FTS_NSOK which means we can't
-                 * determine the file type! That is also why we check for
-                 * FTS_NSOK as this should never happen.
-                 *
-                 * Yes we know that check != NULL but we check check to see if
-                 * it's NULL even though we do not need to check check for NULL :-)
+                 * problematic conditions. If check was NULL we will only call
+                 * check_fts_info() but if check != NULL we will call that after
+                 * check_fts_info(). The reason we always call check_fts_info()
+                 * is because it checks for error conditions that should be
+                 * handled.
                  */
-                if (fts->check != NULL) {
+                if (!check_fts_info(fts->tree, ent)) {
+                    continue;
+                }
+                /*
+                 * now if fts->check != NULL and it is not check_fts_info we
+                 * will use this too
+                 */
+                if (fts->check != NULL && fts->check != check_fts_info) {
                     /*
                      * NOTE: although fts->check(ent) works we use
-                     * ((*fts->check))(ent) to make it clearer that it is a
+                     * (*(fts->check))(ent) to make it clearer that it is a
                      * pointer to a function (okay, so every function is a
                      * pointer but the point is that check is a pointer to a
                      * function passed in if one needs to have specific checks).
@@ -2155,50 +2266,127 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                         continue;
                     }
                 }
-                switch (ent->fts_info) {
-                    case FTS_DC: /* cycle in directory tree */
-                        errno = 0; /* pre-clear errno for errp() */
-                        if (fts_set(fts->tree, ent, FTS_SKIP) != 0) {
-                            errp(148, __func__, "failed to set FTS_SKIP on a directory that causes a cycle in the tree: %s",
-                                    ent->fts_path);
-                            not_reached();
-                        } else {
-                            warn(__func__, "skipping directory %s because it causes a cycle in the tree", ent->fts_path);
-                            continue;
-                        }
-                        break;
-                    case FTS_DNR: /* directory not readable */
-                        errno = 0; /* pre-clear errno for errp() */
-                        if (fts_set(fts->tree, ent, FTS_SKIP) != 0) {
-                            errp(149, __func__, "failed to set FTS_SKIP on an unreadable directory the tree: %s", ent->fts_path);
-                            not_reached();
-                        } else {
-                            warn(__func__, "skipping unreadable directory %s in the tree", ent->fts_path);
-                            continue;
-                        }
-                        break;
-                    case FTS_NS: /* no stat(2) info available but we requested it */
-                        err(150, __func__, "no stat(2) info available for %s in tree", ent->fts_path);
-                        not_reached();
-                        break;
-                    case FTS_NSOK: /* stat(2) was not requested */
-                        err(151, __func__, "stat(2) not requested: FTS_NOSTAT set");
-                        not_reached();
-                        break;
-                    case FTS_ERR: /* some error condition */
-                        /*
-                         * fake errno
-                         */
-                        errno = ent->fts_errno; /* pre-clear errno for errp() */
-                        errp(152, __func__, "encountered error from path %s in tree", ent->fts_path);
-                        not_reached();
-                        break;
-                    default:
-                        /* if the caller needs to check other conditions they can do
-                         * that themselves in their check function.
-                         */
-                        break;
+                /*
+                 * first check depth
+                 */
+                if (fts->depth > 0 && ent->fts_level != fts->depth) {
+                    continue;
+                /*
+                 * case: we do not want to see '.' or '..' or './' and that is
+                 * what the path is
+                 */
+                } else if (!fts->seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, "..") ||
+                           !strcmp(ent->fts_name, "./"))) {
+                    continue;
                 }
+
+                /*
+                 * if we get here then we can check the file type against the
+                 * fts_type enum specified
+                 */
+                if (fts->type != FTS_TYPE_ANY) {
+                    switch (ent->fts_info) {
+                        case FTS_D: /* check if directory type is desired */
+                        case FTS_DP: /* check if directory type is desired */
+                            if (!(fts->type & FTS_TYPE_DIR)) {
+                                /*
+                                 * NOTE: we don't set it so that we skip the
+                                 * directory because there could be files under
+                                 * it
+                                 */
+                                continue;
+                            }
+                            break;
+                        case FTS_F: /* check if regular file is desired */
+                            if (!(fts->type & FTS_TYPE_FILE)) {
+                                continue;
+                            }
+                            break;
+                        case FTS_SL: /* check if symlink is desired */
+                            if (!(fts->type & FTS_TYPE_SYMLINK)) {
+                                continue;
+                            }
+                            break;
+                        case FTS_DEFAULT: /* other kinds of files */
+                            {
+                                /*
+                                 * here we have to do more checks than the other cases
+                                 * above
+                                 */
+
+                                /*
+                                 * get file first. This is useful so we don't have to repeatedly
+                                 * call lstat(2)/stat(2) in the case of FTS_DEFAULT.
+                                 */
+                                enum file_type type = type_of_file(ent->fts_path);
+                                if ((!(fts->type & FTS_TYPE_SOCK) && type == FILE_TYPE_SOCK) ||
+                                    (!(fts->type & FTS_TYPE_CHAR) && type == FILE_TYPE_CHAR) ||
+                                    (!(fts->type & FTS_TYPE_BLOCK) && type == FILE_TYPE_BLOCK) ||
+                                    (!(fts->type & FTS_TYPE_FIFO) && type == FILE_TYPE_FIFO)) {
+                                        continue;
+                                }
+                            }
+                            break;
+                        default:
+                            /*
+                             * errors were checked in check_fts_info() so this probably
+                             * shouldn't even happen but we'll ignore it if it does
+                             */
+                            break;
+                    }
+                }
+
+                /*
+                 * now if the ignored list is > 0 in size we have to check for
+                 * matches and if it is a match we will skip it
+                 */
+                if (ignored > 0) {
+                    bool skip = false;
+                    for (i = 0; i < ignored; ++i) {
+                        char *u = NULL;
+                        /* get next string pointer */
+                        u = dyn_array_value(fts->ignore, char *, i);
+                        if (u == NULL) {	/* paranoia */
+                            err(152, __func__, "found NULL pointer in fts->ignore[%ju]", (uintmax_t)i);
+                            not_reached();
+                        }
+                        if (fts->base && ((fts->match_case && !strcmp(ent->fts_name, u)) ||
+                           (!fts->match_case && !strcasecmp(ent->fts_name, u)))) {
+                            /*
+                             * if this is a directory we will not descend into
+                             * it
+                             */
+                            if (ent->fts_info == FTS_D || ent->fts_info == FTS_DP) {
+                                errno = 0; /* pre-clear errno for warnp() */
+                                if (fts_set(fts->tree, ent, FTS_SKIP) != 0) {
+                                    warnp(__func__, "failed to set FTS_SKIP on an ignored directory in the tree: %s", u);
+                                }
+                            }
+                            dbg(DBG_HIGH, "ignoring name: %s", ent->fts_name);
+                            skip = true;
+                            break;
+                        } else if (!fts->base && ((fts->match_case && !strcmp(u, ent->fts_path)) ||
+                                  (!fts->match_case && !strcasecmp(u, ent->fts_path)))) {
+                            /*
+                             * if this is a directory we will not descend into
+                             * it
+                             */
+                            if (ent->fts_info == FTS_D || ent->fts_info == FTS_DP) {
+                                errno = 0; /* pre-clear errno for warnp() */
+                                if (fts_set(fts->tree, ent, FTS_SKIP) != 0) {
+                                    warnp(__func__, "failed to set FTS_SKIP on an ignored directory in the tree: %s", u);
+                                }
+                            }
+                            dbg(DBG_HIGH, "ignoring path: %s", ent->fts_path);
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (skip) {
+                        continue;
+                    }
+                }
+
                 /*
                  * Return the next Ent, whether it's Treebeard, Quickbeam or any
                  * other one. :-)
@@ -2247,36 +2435,21 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
  * current working directory of the processes.
  *
  * We use the read_fts() function to find a match based on the name and various
- * parameters in the struct fts.
+ * parameters in the struct fts along with the path name.
  *
- * If the depth is wrong (fts->depth) or the count is wrong (fts->count) or the
- * file type is wrong (the fts->type bits) it is skipped. Otherwise if a match
- * is found the path will be copied and returned. If the abspath is true and we
- * did obtain the absolute path then the absolute path will be returned instead.
+ * If the abspath is true and we did obtain the absolute path then the absolute
+ * path will be added to the array; otherwise the path relative to where the
+ * process is at the time (prior to changing directory!).
  *
- * In case one wishes to change the order of the way fts_read() (used by
- * read_fts()) scans the hierarchy they may pass a different cmp() to the
- * function in the fts struct (fts->cmp). If that is NULL we will use fts_cmp().
+ * If fts->depth > 0 and the depth is not the same the path is skipped (again
+ * via read_fts()).
  *
- * NOTE: on the FTS options (fts->options) there is one that will ALWAYS be SET
- * (FTS_NOCHDIR), one that will ALWAYS be UNSET (FTS_NOSTAT) and depending on
- * the bool logical one OR another will be set: if logical (fts->logical) it
- * will set FTS_LOGICAL (dereference/follow symlinks); otherwise FTS_PHYSICAL.
- * Before setting either of those we remove them both. If options < 0 we will
- * perform the same procedure, ensuring that options at the least:
+ * If you want specific types of files you can use the fts->type bits:
+ * FTS_TYPE_ANY is any kind of file. You can OR and if you wish you can AND the
+ * values with a mask to get whatever you need. If the type is not requested
+ * read_fts() will skip said file.
  *
- *      FTS_NOCHDIR | FTS_PHYSICAL
- * or
- *      FTS_NOCHDIR | FTS_LOGICAL
- *
- * but NOT:
- *
- *      FTS_NOCHDIR | FTS_PHYSICAL | FTS_LOGICAL
- *
- * This is all done in read_fts(). The reason we need FTS_NOCHDIR set is so that
- * the path can remain valid. The reason we need FTS_NOSTAT unset is because if
- * it is set fts_info will always be FTS_NSOK thus making it impossible to know
- * the file type!
+ * For more information see the comments above the read_fts() function.
  *
  * given:
  *
@@ -2286,44 +2459,24 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
  *                    dir is NULL or chdir(dir) fails) (used in read_fts())
  *      cwd         - if not != NULL set to current working directory FD (in
  *                    read_fts())
- *      abspath     - true ==> get absolute path of matches (but see important
- *                    note below)
+ *      abspath     - true ==> get absolute path of matches
  *      fts         - struct fts * with parameters for read_fts() and this
  *                    function.
  *
- * NOTE: the struct fts has:
- *
- *      tree        - FTS * returned by fts_open()
- *      options     - options to pass to fts_open() (via read_fts()), see above
- *                    on options
- *      logical     - true ==> use FTS_LOGICAL (follow symlinks), false ==> use
- *                    FTS_PHYSICAL (do not follow symlinks, refer to link itself)
- *      type        - bitwise of types (enum fts_type) to allow different types
- *                    only
- *      count       - if > 0 and base == false search until count file have
- *                    been found
- *      depth       - if > 0 required depth
- *      base        - true ==> basename only (i.e. fts->fts_name)
- *      seedot      - true ==> don't skip '.' and '..',
- *                    false ==> skip '.' and '..'
- *      match_case  - true ==> use strcmp(), not strcasecmp()
- *      cmp         - callback for fts_open() (used by read_fts())
- *      check       - pointer to function to check FTSENT * for certain conditions
- *                    (if NULL we will use check_fts_info())
- *
- * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
- * NULL and dirfd < 0 the directory the process is in.
+ * For details on the struct fts see the comments above read_fts().
  *
  * NOTE: this function returns a COPY (strdup()d) of the path so you need to
  * free it when you are done.
  *
- * NOTE: if dir is an absolute path or a path not under the current working
- * directory and abspath is true it is possible that when read_fts() changes the
- * directory the absolute path obtained in this function will no longer be
- * correct. Thus if you do use abspath == true and you specify a directory it
- * can cause incorrect results.
- *
  * This function does not return on a NULL path or NULL fts.
+ *
+ * IMPORTANT: make SURE that before you pass fts you have zeroed it out with
+ * memset() (it does not need to be allocated; instead pass a pointer to it) and
+ * then use reset_fts()!  That is:
+ *
+ *      struct fts fts;
+ *      memset(&fts, 0, sizeof(struct fts));
+ *      reset_fts(&fts, true);
  */
 char *
 find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts)
@@ -2357,10 +2510,7 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
      * first open the stream and get the first entry
      */
     ent = read_fts(dir, dirfd, cwd, fts);
-    if (ent == NULL){
-        err(156, __func__, "failed to open \".\"");
-        not_reached();
-    } else {
+    if (ent != NULL) {
         i = 0;
         /*
          * if abspath is true get absolute path of where we are
@@ -2369,7 +2519,7 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
             errno = 0; /* pre-clear errno for errp() */
             dirname = getcwd(NULL, 0);
             if (dirname == NULL) {
-                errp(157, __func__, "failed to get absolute path");
+                errp(156, __func__, "failed to get absolute path");
                 not_reached();
             }
         } else {
@@ -2378,58 +2528,9 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
 
         do {
             char *p = fts_path(ent);
-            /*
-             * first check depth
-             */
-            if ((fts->depth > 0 && ent->fts_level != fts->depth) ||
-                (ent->fts_info != FTS_D && ent->fts_info != FTS_DP && ent->fts_info != FTS_F && ent->fts_info != FTS_DEFAULT &&
-                ent->fts_info != FTS_SL)) {
-                    continue;
-            } else if (!fts->seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, ".."))) {
-                continue;
-            }
-
-            /*
-             * if we get here then we can check the file type against the
-             * fts_type enum specified
-             */
-            if (fts->type != FTS_TYPE_ANY) {
-                switch (ent->fts_info) {
-                    case FTS_D: /* check if directory type is desired */
-                    case FTS_DP: /* check if directory type is desired */
-                        if (!(fts->type & FTS_TYPE_DIR)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_F: /* check if regular file is desired */
-                        if (!(fts->type & FTS_TYPE_FILE)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_SL: /* check if symlink is desired */
-                        if (!(fts->type & FTS_TYPE_SYMLINK)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_DEFAULT:
-                        /*
-                         * here we have to do more checks than the other cases
-                         * above
-                         */
-                        if ((!(fts->type & FTS_TYPE_SOCK) && is_socket(p)) ||
-                            (!(fts->type & FTS_TYPE_CHAR) && is_chardev(p)) ||
-                            (!(fts->type & FTS_TYPE_BLOCK) && is_blockdev(p)) ||
-                            (!(fts->type & FTS_TYPE_FIFO) && is_fifo(p))) {
-                                continue;
-                        }
-                        break;
-                    default:
-                        /*
-                         * errors were checked in read_fts() so this probably
-                         * shouldn't even happen but we'll ignore it if it does
-                         */
-                        break;
-                }
+            if (p == NULL) {
+                err(157, __func__, "fts_path(ent) returned NULL");
+                not_reached();
             }
             if (*path == '\0') {
                 if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
@@ -2477,9 +2578,8 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
 
                     return path_found;
                 }
-            } else
-                if (fts->base && ((fts->match_case && !strcmp(ent->fts_name, path)) ||
-                            (!fts->match_case && !strcasecmp(ent->fts_name, path)))) {
+            } else if (fts->base && ((fts->match_case && !strcmp(ent->fts_name, path)) ||
+                (!fts->match_case && !strcasecmp(ent->fts_name, path)))) {
                     if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
                         if (fts->count > 0) {
                             dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
@@ -2522,55 +2622,55 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
                         return path_found;
                 }
             } else if (!fts->base && ((fts->match_case && !strcmp(p, path)) ||
-                        (!fts->match_case && !strcasecmp(p, path)))) {
-                if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
-                    /*
-                     * found a match
-                     */
+                (!fts->match_case && !strcasecmp(p, path)))) {
+                    if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
+                        /*
+                         * found a match
+                         */
 
-                    if (fts->count > 0) {
-                        dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
-                    } else {
-                        dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
-                    }
-
-                    /*
-                     * save found path
-                     */
-                    /*
-                     * depending on if abspath is true, construct either an
-                     * absolute path or relative path
-                     */
-                    if (abspath && dirname != NULL) {
-                        path_found = calloc_path(dirname, p);
-                        if (path_found == NULL) {
-                            err(162, __func__, "failed to allocate absolute path of %s", p);
-                            not_reached();
+                        if (fts->count > 0) {
+                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                        } else {
+                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
                         }
-                        if (dirname != NULL) {
-                            /* free d as we no longer need it */
-                            free(dirname);
-                            dirname = NULL;
-                        }
-                    } else {
-                        errno = 0; /* pre-clear errno for errp() */
-                        path_found = strdup(p);
-                        if (path_found == NULL) {
-                            errp(163, __func__, "failed to strdup(\"%s\")", p);
-                            not_reached();
-                        }
-                    }
 
-                    /*
-                     * close down stream
-                     */
-                    fts_close(fts->tree);
-                    fts->tree = NULL;
+                        /*
+                         * save found path
+                         */
+                        /*
+                         * depending on if abspath is true, construct either an
+                         * absolute path or relative path
+                         */
+                        if (abspath && dirname != NULL) {
+                            path_found = calloc_path(dirname, p);
+                            if (path_found == NULL) {
+                                err(162, __func__, "failed to allocate absolute path of %s", p);
+                                not_reached();
+                            }
+                            if (dirname != NULL) {
+                                /* free d as we no longer need it */
+                                free(dirname);
+                                dirname = NULL;
+                            }
+                        } else {
+                            errno = 0; /* pre-clear errno for errp() */
+                            path_found = strdup(p);
+                            if (path_found == NULL) {
+                                errp(163, __func__, "failed to strdup(\"%s\")", p);
+                                not_reached();
+                            }
+                        }
 
-                    return path_found;
-                } else {
-                    dbg(DBG_VVHIGH, "path %s does not match %s", p, path);
+                        /*
+                         * close down stream
+                         */
+                        fts_close(fts->tree);
+                        fts->tree = NULL;
+
+                        return path_found;
                 }
+            } else {
+                dbg(DBG_VVHIGH, "path %s does not match %s", p, path);
             }
         } while ((ent = read_fts(NULL, -1, NULL, fts)) != NULL);
     }
@@ -2613,6 +2713,7 @@ paths_in_array(struct dyn_array *array)
  *
  *      array       - array to search
  *      path        - path to find in array
+ *      fts         - struct fts * with parameters
  *      match_case  - true ==> use strcmp(), not strcasecmp()
  *
  * NOTE: this function will return false on a NULL array, an empty array or a
@@ -2880,41 +2981,22 @@ free_paths_array(struct dyn_array **paths, bool only_empty)
  * find_paths
  *
  * Like find_path() but finds multiple paths, returning the paths as a dyn_array
- * (of char *). The paths to find are in a dyn_array which has a list of
- * path(s) to find (also char *). The rest is the same as find_path().
+ * (of char *). The paths to find are in a dyn_array which has a list of path(s)
+ * to find (also char *). The rest is the same as find_path() and this also uses
+ * read_fts().
  *
- * If paths array is NULL it is an error.
+ * If paths array is NULL or fts is NULL it is an error.
  *
  * Assuming that everything is in order we will use read_fts(), iterating
- * through the paths array to find matches. If the depth is wrong (fts->depth)
- * or the count is wrong (fts->count) or the file type is wrong (the fts->type
- * bits) it is skipped. Otherwise if a match is found the path will be added to
- * the list. If the abspath is true and we did obtain the absolute path then the
- * absolute path will be added to the array.
+ * through the paths array to find matches, just like find_path() except that
+ * that we scan until there is nothing else left to scan (or an error occurs).
  *
- * In case one wishes to change the order of the way fts_read() (used by
- * read_fts()) scans the hierarchy they may pass a different cmp() to the
- * function in the fts struct. If that is NULL we will use fts_cmp().
+ * If the abspath is true and we did obtain the absolute path then the absolute
+ * path will be added to the array; otherwise the path relative to where the
+ * process is at the time (prior to changing directory!).
  *
- * NOTE: on the FTS options (fts->options) there is one that will ALWAYS be SET
- * (FTS_NOCHDIR), one that will ALWAYS be UNSET (FTS_NOSTAT) and depending on
- * the bool logical one OR another will be set: if logical (fts->logical) it
- * will set FTS_LOGICAL (dereference/follow symlinks); otherwise FTS_PHYSICAL.
- * Before setting either of those we remove them both. If options < 0 we will
- * perform the same procedure, ensuring that options at the least:
- *
- *      FTS_NOCHDIR | FTS_PHYSICAL
- * or
- *      FTS_NOCHDIR | FTS_LOGICAL
- *
- * but NOT:
- *
- *      FTS_NOCHDIR | FTS_PHYSICAL | FTS_LOGICAL
- *
- * This is all done in read_fts(). The reason we need FTS_NOCHDIR set is so that
- * the path can remain valid. The reason we need FTS_NOSTAT unset is because if
- * it is set fts_info will always be FTS_NSOK thus making it impossible to know
- * the file type!
+ * For more information see the comments above the read_fts() function and the
+ * find_path() function.
  *
  * given:
  *
@@ -2928,25 +3010,12 @@ free_paths_array(struct dyn_array **paths, bool only_empty)
  *      fts         - struct fts * with parameters for read_fts() and this
  *                    function.
  *
- * NOTE: the struct fts has:
+ * NOTE: before first use you MUST memset() the struct to 0 and then call
+ * reset_fts(&fts, true). In other words you must do something like:
  *
- *      tree        - FTS * returned by fts_open()
- *      options     - options to pass to fts_open() (via read_fts()), see above
- *                    on options
- *      logical     - true ==> use FTS_LOGICAL (follow symlinks), false ==> use
- *                    FTS_PHYSICAL (do not follow symlinks, refer to link itself)
- *      type        - bitwise of types (enum fts_type) to allow different types
- *                    only
- *      count       - if > 0 and base == false search until count file have
- *                    been found
- *      depth       - if > 0 required depth
- *      base        - true ==> basename only (i.e. fts->fts_name)
- *      seedot      - true ==> don't skip '.' and '..',
- *                    false ==> skip '.' and '..'
- *      match_case  - true ==> use strcmp(), not strcasecmp()
- *      cmp         - callback for fts_open() (used by read_fts())
- *      check       - pointer to function to check FTSENT * for certain conditions
- *                    (if NULL we will use check_fts_info())
+ *      struct fts fts;
+ *      memset(&fts, 0, sizeof(struct fts));
+ *      reset_fts(&fts, true);
  *
  * NOTE: paths are searched from the directory in dir (or dirfd) or if dir ==
  * NULL and dirfd < 0 the directory the process is in.
@@ -2958,7 +3027,13 @@ free_paths_array(struct dyn_array **paths, bool only_empty)
  *      free_paths_array(&array, true); // free everything only if empty
  *      free_paths_array(&array, false); // free array even if empty
  *
- * This function does not return on a NULL paths array or NULL fts.
+ * IMPORTANT: make SURE that before you pass fts you have zeroed it out with
+ * memset() (it does not need to be allocated; instead pass a pointer to it) and
+ * then use reset_fts()!  That is:
+ *
+ *      struct fts fts;
+ *      memset(&fts, 0, sizeof(struct fts));
+ *      reset_fts(&fts, true);
  */
 struct dyn_array *
 find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts)
@@ -2997,10 +3072,7 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
      * first open the stream and get the first entry
      */
     ent = read_fts(dir, dirfd, cwd, fts);
-    if (ent == NULL){
-        err(171, __func__, "failed to open \".\"");
-        not_reached();
-    } else {
+    if (ent != NULL) {
         i = 0;
         /*
          * if abspath is true get absolute path of where we are after read_fts()
@@ -3010,7 +3082,7 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
             errno = 0; /* pre-clear errno for errp() */
             dirname = getcwd(NULL, 0);
             if (dirname == NULL) {
-                errp(172, __func__, "failed to get absolute path");
+                errp(171, __func__, "failed to get absolute path");
                 not_reached();
             }
         } else {
@@ -3019,63 +3091,11 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
 
         do {
             char *p = fts_path(ent);
-            /*
-             * first check depth
-             */
-            if ((fts->depth > 0 && ent->fts_level != fts->depth) ||
-                (ent->fts_info != FTS_D && ent->fts_info != FTS_DP && ent->fts_info != FTS_F && ent->fts_info != FTS_DEFAULT &&
-                ent->fts_info != FTS_SL)) {
-                    continue;
-            /*
-             * case we do not want to see '.' or '..' or './' and that is
-             * what the path is
-             */
-            } else if (!fts->seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, ".."))) {
-                continue;
+            if (p == NULL) {
+                err(172, __func__, "fts_path(ent) returned NULL");
+                not_reached();
             }
 
-            /*
-             * if we get here then we can check the file type against the
-             * fts_type enum specified
-             */
-            if (fts->type != FTS_TYPE_ANY) {
-                switch (ent->fts_info) {
-                    case FTS_D: /* check if directory type is desired */
-                    case FTS_DP: /* check if directory type is desired */
-                        if (!(fts->type & FTS_TYPE_DIR)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_F: /* check if regular file is desired */
-                        if (!(fts->type & FTS_TYPE_FILE)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_SL: /* check if symlink is desired */
-                        if (!(fts->type & FTS_TYPE_SYMLINK)) {
-                            continue;
-                        }
-                        break;
-                    case FTS_DEFAULT:
-                        /*
-                         * here we have to do more checks than the other cases
-                         * above
-                         */
-                        if ((!(fts->type & FTS_TYPE_SOCK) && is_socket(p)) ||
-                            (!(fts->type & FTS_TYPE_CHAR) && is_chardev(p)) ||
-                            (!(fts->type & FTS_TYPE_BLOCK) && is_blockdev(p)) ||
-                            (!(fts->type & FTS_TYPE_FIFO) && is_fifo(p))) {
-                                continue;
-                        }
-                        break;
-                    default:
-                        /*
-                         * errors were checked in read_fts() so this probably
-                         * shouldn't even happen but we'll ignore it if it does
-                         */
-                        break;
-                }
-            }
             len = paths_in_array(paths);
             for (j = 0; j < len; ++j) {
                 path = dyn_array_value(paths, char *, j);
@@ -8779,7 +8799,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.20 2025-02-22" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.21 2025-02-24" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -8885,8 +8905,14 @@ main(int argc, char **argv)
 
     /*
      * before we do anything else reset fts!
+     *
+     * NOTE: on first use this will not touch any pointers and ONLY set them to
+     * NULL so this MUST be called prior to using the FTS functions!
+     *
+     * NOTE: make SURE you call memset(&fts, 0, sizeof(struct fts)) first!
      */
-    reset_fts(&fts);
+    memset(&fts, 0, sizeof(struct fts));
+    reset_fts(&fts, true); /* false means free ignored list, if not NULL and initialised (which it isn't here) */
 
     /*
      * report on dbg state, if debugging
@@ -10254,6 +10280,7 @@ main(int argc, char **argv)
      *
      * We use logical == true so that broken symlinks can be detected.
      */
+    fts.logical = true;
     ent = read_fts("test_jparse", -1, &cwd, &fts);
     if (ent == NULL) {
         err(171, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
@@ -10317,6 +10344,89 @@ main(int argc, char **argv)
     (void) read_fts(NULL, -1, &cwd, NULL);
 
     /*
+     * test read_fts() only finding directories
+     */
+    /*
+     * reset fts
+     */
+    reset_fts(&fts, true); /* free ignored list here */
+    fts.type = FTS_TYPE_DIR;
+    ent = read_fts("test_jparse", -1, &cwd, &fts);
+    if (ent == NULL) {
+        err(178, __func__, "read_fts() returned a NULL pointer on \"test_jparse\" for directories");
+        not_reached();
+    } else {
+        do {
+            char *p = fts_path(ent);
+            if (p == NULL) {
+                err(179, __func__, "fts_path(ent) returned NULL");
+                not_reached();
+            }
+            if (ent->fts_info != FTS_D && ent->fts_info != FTS_DP) {
+                err(180, __func__, "%s is not a directory", p);
+                not_reached();
+            } else {
+                fdbg(stderr, DBG_MED, "%s is a directory", p);
+            }
+        } while ((ent = read_fts(NULL, -1, &cwd, &fts)) != NULL);
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+    /*
+     * test read_fts() only finding directories but ignoring good, bad and
+     * bad_loc
+     */
+
+    /*
+     * reset fts
+     */
+    reset_fts(&fts, false);
+    fts.type = FTS_TYPE_DIR;
+    fts.base = true; /* important */
+    append_path(&(fts.ignore), "test_jparse/test_JSON/good", true, false, true);
+    append_path(&(fts.ignore), "test_jparse/test_JSON/bad", true, false, true);
+    append_path(&(fts.ignore), "test_jparse/test_JSON/bad_loc", true, false, true);
+    ent = read_fts("test_jparse", -1, &cwd, &fts);
+    if (ent == NULL) {
+        err(181, __func__, "read_fts() returned a NULL pointer on \"test_jparse\" for directories");
+        not_reached();
+    } else {
+        do {
+            char *p = fts_path(ent);
+            if (p == NULL) {
+                err(182, __func__, "fts_path(ent) returned NULL");
+                not_reached();
+            }
+            if (ent->fts_info != FTS_D && ent->fts_info != FTS_DP) {
+                err(183, __func__, "%s is not a directory", p);
+                not_reached();
+            } else if (!strcmp(p, "good") || !strcmp(p, "bad") || !strcmp(p, "bad_loc")) {
+                err(184, __func__, "found directory meant to be ignored: %s", p);
+                not_reached();
+            } else {
+                fdbg(stderr, DBG_MED, "%s is a non-ignored directory", p);
+            }
+        } while ((ent = read_fts(NULL, -1, &cwd, &fts)) != NULL);
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+
+
+    /*
      * test that FTS_NOSTAT is correctly unset in read_fts() even if we set it
      *
      * NOTE: we will only show path names if debug level is very very high
@@ -10329,7 +10439,7 @@ main(int argc, char **argv)
      *
      * We use logical == true so that broken symlinks can be detected.
      */
-    reset_fts(&fts);
+    reset_fts(&fts, false);
     fts.options = FTS_NOSTAT | FTS_LOGICAL;
     fts.logical = true;
 
@@ -10338,13 +10448,13 @@ main(int argc, char **argv)
      */
     ent = read_fts("test_jparse", -1, &cwd, &fts);
     if (ent == NULL) {
-        err(178, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
+        err(185, __func__, "read_fts() returned a NULL pointer on \"test_jparse\"");
         not_reached();
     } else {
         do {
             char *p = fts_path(ent);
             if (ent == NULL) {
-                err(179, __func__, "fts_path(ent) returned NULL");
+                err(186, __func__, "fts_path(ent) returned NULL");
                 not_reached();
             }
             switch (ent->fts_info) {
@@ -10361,11 +10471,11 @@ main(int argc, char **argv)
                     fdbg(stderr, DBG_VVHIGH,  "%s (symlink with non-existent target)", p);
                     break;
                 case FTS_NS:
-                    err(180, __func__, "no stat(2) info available");
+                    err(187, __func__, "no stat(2) info available");
                     not_reached();
                     break;
                 case FTS_NSOK:
-                    err(181, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
+                    err(188, __func__, "encountered FTS_NSOK for path %s in tree: FTS_NOSTAT set!", p);
                     not_reached();
                     break;
             }
@@ -10383,7 +10493,7 @@ main(int argc, char **argv)
     /*
      * reset fts again
      */
-    reset_fts(&fts);
+    reset_fts(&fts, false);
     fts.options = FTS_NOCHDIR; /* redundant */
     fts.logical = false;
     fts.type = FTS_TYPE_FILE;
@@ -10424,7 +10534,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, false);
     fts.options = FTS_NOCHDIR; /* redundant */
     fts.type = FTS_TYPE_FILE;
     fts.count = 1;
@@ -10470,6 +10580,106 @@ main(int argc, char **argv)
     (void) read_fts(NULL, -1, &cwd, NULL);
 
     /*
+     * reset fts
+     */
+    reset_fts(&fts, false);
+    fts.options = FTS_NOCHDIR; /* redundant */
+    fts.type = FTS_TYPE_DIR;
+    fts.count = 0;
+    fts.depth = 0;
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    /*
+     * now try and find a directory called "bad" under the parent directory of
+     * "test_jparse". Since it is in the ignored list and the depth is 0 and the
+     * fts.base is true this should NOT return NULL.
+     */
+    fname = find_path("bad", NULL, -1, &cwd, false, &fts);
+    if (fname == NULL) {
+        err(189, __func__, "unable to find directory \"bad\"");
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "successfully ignored directories in ignore list");
+    }
+
+    /*
+     * reset fts
+     */
+    reset_fts(&fts, false);
+    fts.options = FTS_NOCHDIR; /* redundant */
+    fts.type = FTS_TYPE_DIR;
+    fts.count = 0;
+    fts.depth = 0;
+    fts.base = false;
+    fts.seedot = false;
+    fts.match_case = true;
+    /*
+     * now try and find a directory called "bad" under the parent directory of
+     * "test_jparse". Since it is in the ignored list and the depth is 0 and the
+     * fts.base is false this SHOULD return NULL.
+     */
+    fname = find_path("bad", NULL, -1, &cwd, false, &fts);
+    if (fname != NULL) {
+        err(190, __func__, "found ignored directory \"bad\"");
+        not_reached();
+    } else {
+        fdbg(stderr, DBG_MED, "successfully ignored directories in ignore list");
+    }
+
+
+
+    /*
+     * look for a file called "bad" which should fail because we are ignoring it
+     */
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    fts.depth = 0;
+    fname = find_path("bad", "test_jparse", -1, &cwd, false, &fts);
+    if (paths_found != NULL) {
+        err(191, __func__, "found paths when none should have been found");
+        not_reached();
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+    /*
+     * look for a file called "test_jparse" which should succeed because it's
+     * not in the ignored list
+     */
+    /*
+     * reset fts
+     */
+    fts.base = false;
+    fts.seedot = false;
+    fts.depth = 0;
+    fts.count = 0;
+    fts.match_case = true;
+    fname = find_path("test_jparse", NULL, -1, &cwd, false, &fts);
+    if (paths_found != NULL) {
+        err(192, __func__, "found paths when none should have been found");
+        not_reached();
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+    /*
      * we need to test find_paths() now
      */
     /*
@@ -10503,7 +10713,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, false);
     fts.type = FTS_TYPE_ANY;
     fts.logical = false;
     fts.options = FTS_LOGICAL; /* it will be set to FTS_NOCHDIR | FTS_PHYSICAL */
@@ -10512,7 +10722,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(182, __func__, "didn't find any paths in the paths array");
+        err(193, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -10524,7 +10734,7 @@ main(int argc, char **argv)
         /*
          * "test_jparse" must exist
          */
-        err(183, __func__, "didn't find \"test_jparse\" in paths array");
+        err(194, __func__, "didn't find \"test_jparse\" in paths array");
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "found test_jparse at paths[%ju]", (uintmax_t)idx);
@@ -10539,7 +10749,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(184, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(195, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10565,6 +10775,53 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths_found, false);
     paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+
+    /*
+     * reset fts but this time without basename. This should make it so that the
+     * directories in the ignored list are not actually ignored.
+     */
+    reset_fts(&fts, false);
+    fts.options = FTS_NOCHDIR; /* redundant */
+    fts.type = FTS_TYPE_DIR;
+    fts.count = 0;
+    fts.depth = 0;
+    fts.base = false;
+    fts.seedot = false;
+    fts.match_case = true;
+    paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
+    if (paths_found == NULL) {
+        err(196, __func__, "didn't find any paths in the paths array");
+        not_reached();
+    } else {
+        /*
+         * make sure that the paths in the ignored list are actually correct
+         */
+        len = paths_in_array(paths_found);
+        for (j = 0; j < len; ++j) {
+            char *u = dyn_array_value(paths_found, char *, j);
+            if (u == NULL) {
+                err(197, __func__, "NULL found in paths_found[%ju]", (uintmax_t)j);
+                not_reached();
+            }
+        }
+    }
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
 
 
     /*
@@ -10573,7 +10830,8 @@ main(int argc, char **argv)
     /*
      * reset fts again
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
+    fts.type = FTS_TYPE_ANY;
     fts.options = 0; /* will be set to FTS_NOCHDIR */
     fts.logical = false;
     fts.base = false;
@@ -10581,7 +10839,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(185, __func__, "didn't find any paths in the paths array");
+        err(198, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -10594,7 +10852,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(186, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(199, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10619,6 +10877,16 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths_found, false);
     paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+
 
     /*
      * test find_paths() without basename, seedot and match_case
@@ -10626,14 +10894,14 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.logical = false;
     fts.base = false;
     fts.seedot = false;
     fts.match_case = false;
     paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(187, __func__, "didn't find any files in the paths array");
+        err(200, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10646,7 +10914,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(188, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(201, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10671,6 +10939,15 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths_found, false);
     paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
 
     /*
      * test find_paths() with basename and depth of 2 and match_case
@@ -10678,14 +10955,14 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.logical = false;
     fts.base = true;
     fts.depth = 2;
     fts.match_case = true;
     paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(189, __func__, "didn't find any files in the paths array");
+        err(202, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10698,7 +10975,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(190, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(203, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10723,6 +11000,15 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths_found, false);
     paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
 
     /*
      * test find_paths() but this time from test_jparse with basename and at
@@ -10731,7 +11017,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.depth = 1;
     fts.check = NULL;
     fts.logical = false;
@@ -10740,7 +11026,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(191, __func__, "didn't find any files in the paths array");
+        err(204, __func__, "didn't find any files in the paths array");
         not_reached();
     }
 
@@ -10753,7 +11039,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(192, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(205, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10795,13 +11081,60 @@ main(int argc, char **argv)
     paths = NULL;
 
     /*
+     * special test: only add "bad". Then make sure that this is in the ignored
+     * list. Then try and find this path. It should return NULL.
+     */
+    append_path(&paths, "bad", true, false, true);
+
+    /*
+     * test find_paths() looking for every file called bad; this should fail.
+     */
+
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
+    if (paths_found != NULL) {
+        err(206, __func__, "found paths when none should have been found");
+        not_reached();
+    }
+
+    /*
+     * test find_paths() looking for every file called util.c; this should
+     * succeed because it's not in the ignore list.
+     */
+    append_path(&paths, "util.c", true, false, true);
+
+    /*
+     * free paths found
+     */
+    free_paths_array(&paths_found, false);
+    paths_found = NULL;
+
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    paths_found = find_paths(paths, NULL, -1, &cwd, false, &fts);
+    if (paths_found == NULL) {
+        err(207, __func__, "unable to find any path in the directory");
+        not_reached();
+    }
+
+
+    /*
      * special test: this time we will look for every single file by making
      * an empty path string and FTS_TYPE_ANY
      */
     append_path(&paths, "", true, false, false);
 
     /*
-     * test find_paths() looking for every file under test_jparse/!
+     * test find_paths() looking for every file under test_jparse/
      */
     /*
      * reset fts
@@ -10811,7 +11144,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(193, __func__, "didn't find any paths in the paths array");
+        err(208, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -10832,7 +11165,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(194, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -10882,6 +11215,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_SOCK;
     fts.logical = false;
     fts.base = true;
@@ -10889,7 +11223,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(195, __func__, "found unexpected socket under test_jparse/");
+        err(210, __func__, "found unexpected socket under test_jparse/");
         not_reached();
     }
 
@@ -10914,14 +11248,14 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_CHAR;
     fts.base = true;
     fts.seedot = false;
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(196, __func__, "found unexpected character device under test_jparse/");
+        err(211, __func__, "found unexpected character device under test_jparse/");
         not_reached();
     }
 
@@ -10947,14 +11281,14 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_BLOCK;
     fts.base = true;
     fts.seedot = false;
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(197, __func__, "found unexpected block device under test_jparse/");
+        err(212, __func__, "found unexpected block device under test_jparse/");
         not_reached();
     }
 
@@ -10974,14 +11308,14 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_FIFO;
     fts.base = true;
     fts.seedot = false;
     fts.match_case = false;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(198, __func__, "found unexpected FIFO under test_jparse/");
+        err(213, __func__, "found unexpected FIFO under test_jparse/");
         not_reached();
     }
 
@@ -11021,7 +11355,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(199, __func__, "found NULL pointer in paths_found (not file, directory or symlink) array");
+                err(214, __func__, "found NULL pointer in paths_found (not file, directory or symlink) array");
                 not_reached();
             }
             warn(__func__, "path is not a file, directory or symlink: %s", name);
@@ -11029,7 +11363,7 @@ main(int argc, char **argv)
         /*
          * make it an error
          */
-        err(200, __func__, "found unexpected file type under test_jparse/");
+        err(215, __func__, "found unexpected file type under test_jparse/");
         not_reached();
     }
 
@@ -11069,7 +11403,7 @@ main(int argc, char **argv)
     relpath = "foobar";
     touch(relpath, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (!exists(relpath)) {
-        err(201, __func__, "file %s does not exist after touch()", relpath);
+        err(216, __func__, "file %s does not exist after touch()", relpath);
         not_reached();
     }
 
@@ -11079,7 +11413,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_ANY; /* actual default */
     fts.base = true;
     fts.seedot = false;
@@ -11093,17 +11427,17 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(202, __func__, "found NULL pointer in paths_found (any) array");
+                err(217, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             if (strcmp(relpath, name) != 0) {
-                err(203, __func__, "found non-matching file in list: %s != %s", name, relpath);
+                err(218, __func__, "found non-matching file in list: %s != %s", name, relpath);
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found file %s as case-sensitive search", name);
         }
     } else {
-        err(204, __func__, "couldn't find any file called \"%s\" as case-sensitive search", relpath);
+        err(219, __func__, "couldn't find any file called \"%s\" as case-sensitive search", relpath);
         not_reached();
     }
 
@@ -11128,7 +11462,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_ANY;
     fts.base = true;
     fts.seedot = false;
@@ -11142,18 +11476,18 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(205, __func__, "found NULL pointer in paths_found (any) array");
+                err(220, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             if (strcasecmp(relpath, name) != 0) {
-                err(206, __func__, "found non-matching file in list: %s != %s", name, relpath);
+                err(221, __func__, "found non-matching file in list: %s != %s", name, relpath);
                 not_reached();
             }
 
             fdbg(stderr, DBG_MED, "found %s by case-insensitive search", name);
         }
     } else {
-        err(207, __func__, "couldn't find any file called \"%s\" by case-insensitive search", relpath);
+        err(222, __func__, "couldn't find any file called \"%s\" by case-insensitive search", relpath);
         not_reached();
     }
 
@@ -11163,7 +11497,7 @@ main(int argc, char **argv)
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {
         if (errno != ENOENT) {
-            errp(208, __func__, "unable to delete file %s", relpath);
+            errp(223, __func__, "unable to delete file %s", relpath);
             not_reached();
         }
     } else {
@@ -11205,7 +11539,7 @@ main(int argc, char **argv)
      * make sure it exists
      */
     if (!exists(relpath)) {
-        err(209, __func__, "file %s does not exist", relpath);
+        err(224, __func__, "file %s does not exist", relpath);
         not_reached();
     }
 
@@ -11229,7 +11563,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_ANY; /* actual default */
     fts.base = true;
     fts.seedot = false;
@@ -11243,7 +11577,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(210, __func__, "found NULL pointer in paths_found (any) array");
+                err(225, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found file %s as case-sensitive search", name);
@@ -11278,7 +11612,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_ANY;
     fts.base = true;
     fts.seedot = false;
@@ -11292,11 +11626,11 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(211, __func__, "found NULL pointer in paths_found array");
+                err(226, __func__, "found NULL pointer in paths_found array");
                 not_reached();
             }
             if (strcasecmp(relpath, name) != 0) {
-                err(212, __func__, "found non-matching file: %s != %s", name, relpath);
+                err(227, __func__, "found non-matching file: %s != %s", name, relpath);
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found %s by case-insensitive search", name);
@@ -11305,7 +11639,7 @@ main(int argc, char **argv)
         /*
          * as it is a case-insensitive it should always succeed
          */
-        err(213, __func__, "couldn't find any file called %s by case-insensitive search", relpath);
+        err(228, __func__, "couldn't find any file called %s by case-insensitive search", relpath);
         not_reached();
     }
 
@@ -11324,7 +11658,7 @@ main(int argc, char **argv)
     /*
      * reset fts
      */
-    reset_fts(&fts);
+    reset_fts(&fts, true);
     fts.type = FTS_TYPE_ANY;
     fts.base = true;
     fts.seedot = false;
@@ -11335,7 +11669,7 @@ main(int argc, char **argv)
         free(fname);
         fname = NULL;
     } else {
-        err(214, __func__, "couldn't find %s in tree", relpath);
+        err(229, __func__, "couldn't find %s in tree", relpath);
         not_reached();
     }
 
@@ -11346,7 +11680,7 @@ main(int argc, char **argv)
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {
         if (errno != ENOENT) {
-            errp(215, __func__, "unable to delete file %s", relpath);
+            errp(230, __func__, "unable to delete file %s", relpath);
             not_reached();
         }
     } else {
@@ -11364,6 +11698,11 @@ main(int argc, char **argv)
      */
     free_paths_array(&paths, false);
     paths = NULL; /* paranoia */
+
+    /*
+     * clear out fts
+     */
+    reset_fts(&fts, true);
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
