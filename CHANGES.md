@@ -32,6 +32,24 @@ able to find it (and Landon is one of the very few who know about it).
 Okay so there's some fun totally unrelated to the changes but it's fun so why
 not? :-)
 
+Fix bug in `mkiocccentry` where a submission topdir which only had the three
+required files would abort with an error (due to list being not NULL but empty
+due to a typo).
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for some
+upcoming fixes to `chkentry` (I thought of a loophole in a new option that was
+being finalised and more was discovered after this).
+
+`chkentry` has had a partial fix but more needs to be done (for the loophole I
+thought of with the `-w` option). Unfortunately the other things took more time
+than I hoped and I cannot get it in today - and fixes and improvements to the
+FTS functions requires a minor update to chkentry (both in `chkentry.c` and
+`soup/entry_util.c`)  minor change or else it will not compile and also will
+likely segfault.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.33 2025-02-34"`.
+Updated `CHKENTRY_VERSION` to `"1.1.4 2025-02-24"`.
+
 
 ## Release 2.3.41 2025-02-23
 

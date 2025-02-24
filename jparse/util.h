@@ -246,8 +246,10 @@ struct fts
     bool base;              /* true ==> basename match */
     bool seedot;            /* true ==> analogous to FTS_SEEDOT */
     bool match_case;        /* true ==> case-sensitive match */
+    struct dyn_array *ignore;   /* paths to ignore */
     int (*cmp)(const FTSENT **, const FTSENT **);   /* function pointer to use when traversing (NULL ==> fts_cmp()) */
     bool(*check)(FTS *, FTSENT *);  /* function pointer to use to check an FTSENT * (NULL ==> check_fts_info()) */
+    bool initialised;       /* internal use: after first call we can safely check pointers */
 };
 
 /*
@@ -273,7 +275,7 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
-extern void reset_fts(struct fts *fts);
+extern void reset_fts(struct fts *fts, bool free_ignored);
 extern char *fts_path(FTSENT *ent);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_rcmp(const FTSENT **a, const FTSENT **b);

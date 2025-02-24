@@ -83,7 +83,9 @@ static const char * const usage_msg =
     "    1\t\tJSON files(s) are valid JSON but one or more semantic checks failed\n"
     "    2\t\t-h and help string printed or -V and version string printed\n"
     "    3\t\tcommand line error\n"
-    "    4\t\tfile(s) not valid JSON; no semantic checks were performed\n"
+    "    4\t\tJSON file(s) not valid JSON; no semantic checks were performed\n"
+    "    5\t\tmissing files and/or files that must not exist actually exist\n"
+    "    6\t\tone or more of the types of tests failed\n"
     "    >=10\tinternal error\n"
     "\n"
     "%s version: %s\n"
@@ -226,6 +228,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_auth = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
 
             /*
@@ -239,6 +248,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_info = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             /*
              * we also need to record if .entry.json is here
@@ -251,6 +267,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_entry = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             /*
              * remarks.md
@@ -263,6 +286,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_remarks_md = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             /*
              * README.md
@@ -275,6 +305,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_README_md = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             /*
              * prog
@@ -287,6 +324,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_prog = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             /*
              * prog.c
@@ -299,6 +343,13 @@ add_ignore_path(char *path)
                      return;
                 }
                 ignore_prog_c = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             else if (!strcmp(path, MAKEFILE_FILENAME)) {
                 if (ignore_Makefile) {
@@ -308,6 +359,13 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_Makefile = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
             else if (!strcmp(path, "index")) {
                 if (ignore_index) {
@@ -317,10 +375,20 @@ add_ignore_path(char *path)
                     return;
                 }
                 ignore_index = true;
+                /* we can append the file now */
+                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * return as we don't need to check the file below as we have a
+                 * match
+                 */
+                return;
             }
 
-            /* we can append the file now */
-            append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+            /*
+             * we should not get here but we will warn if we do as it indicates
+             * a check is missing here
+             */
+            warn(__func__, "found match in filename but unhandlde");
             return;
         }
     }
@@ -591,11 +659,15 @@ main(int argc, char *argv[])
         }
         /*
          * specific checks require the FTS API
+         *
+         * IMPORTANT: make SURE to memset(&fts, 0, sizeof(struct fts)) first!
          */
-        reset_fts(&fts);
+        memset(&fts, 0,sizeof(struct fts));
+        reset_fts(&fts, false); /* false means do not clear out ignored list */
         fts.depth = 1; /* we need depth 1 only */
         fts.match_case = true; /* we must need to match case */
         fts.type = FTS_TYPE_FILE; /* regular files only */
+
         if (winning_entry_mode) {
             /*
              * make sure .entry.json exists unless -i entry
@@ -603,7 +675,7 @@ main(int argc, char *argv[])
             if (!ignore_entry) {
                 path = find_path(ENTRY_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
                 if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -w used and -i entry not used", ENTRY_JSON_FILENAME);
+                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i entry NOT used: %s", ENTRY_JSON_FILENAME);
                     ++all_extra_err_count;
                 } else {
                     /*
@@ -628,7 +700,7 @@ main(int argc, char *argv[])
             if (!ignore_auth) {
                 path = find_path(AUTH_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
                 if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -w used and -i auth not used", AUTH_JSON_FILENAME);
+                    dbg(DBG_LOW, "file EXISTS and -w USED and -i auth NOT used: %s", AUTH_JSON_FILENAME);
                     ++all_extra_err_count;
                     free(path);
                     path = NULL;
@@ -648,7 +720,7 @@ main(int argc, char *argv[])
                  */
                 path = find_path(INFO_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
                 if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -w used and -i info not used", INFO_JSON_FILENAME);
+                    dbg(DBG_LOW, "file EXISTS and -w USED and -i info NOT used: %s", INFO_JSON_FILENAME);
                     ++all_extra_err_count;
                     free(path);
                     path = NULL;
@@ -668,7 +740,7 @@ main(int argc, char *argv[])
                  */
                 path = find_path(README_MD_FILENAME, *topdir, -1, &cwd, false, &fts);
                 if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -w used and -i README not used", README_MD_FILENAME);
+                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i README NOT used: %s", README_MD_FILENAME);
                     ++all_extra_err_count;
                 } else {
                     /*
@@ -695,7 +767,7 @@ main(int argc, char *argv[])
                  */
                 path = find_path(INDEX_HTML_FILENAME, *topdir, -1, &cwd, false, &fts);
                 if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -w used and -i index not used", INDEX_HTML_FILENAME);
+                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i index NOT used: %s", INDEX_HTML_FILENAME);
                     ++all_extra_err_count;
                 } else {
                     /*
@@ -1041,18 +1113,30 @@ main(int argc, char *argv[])
         }
 
         /*
+         * before we continue, to be on the safe side, we will fchdir(2) to the
+         * original directory. We might be able to determine where we are but
+         * depending on the options and what or what not failed above, we cannot
+         * be sure where we are.
+         */
+        errno = 0; /* pre-clear errno for errp() */
+        if (fchdir(cwd2) != 0) {
+            errp(43, __func__, "failed to change back to original directory");
+            not_reached();
+        }
+
+        /*
          * open the .auth.json file under topdir if !ignore_auth && -w not used
          */
         if (!ignore_auth && !winning_entry_mode) {
             auth_filename = ".auth.json";
             auth_stream = open_dir_file(*topdir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(43, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
+                err(44, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
                 not_reached();
             }
             auth_path = calloc_path(*topdir, auth_filename);
             if (auth_path == NULL) {
-                err(44, __func__, "auth_path is NULL");
+                err(45, __func__, "auth_path is NULL");
                 not_reached();
             }
         }
@@ -1064,12 +1148,12 @@ main(int argc, char *argv[])
             info_filename = ".info.json";
             info_stream = open_dir_file(*topdir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(45, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
+                err(46, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
                 not_reached();
             }
             info_path = calloc_path(*topdir, info_filename);
             if (info_path == NULL) {
-                err(46, __func__, "info_path is NULL");
+                err(47, __func__, "info_path is NULL");
                 not_reached();
             }
         }
@@ -1114,27 +1198,27 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .auth.json
              */
             if (auth_count_err == NULL) {
-                err(47, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+                err(48, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_count_err) < 0) {
-                err(48, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+                err(49, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
                 not_reached();
             }
             auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
             if (auth_val_err == NULL) {
-                err(49, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+                err(50, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_val_err) < 0) {
-                err(50, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+                err(51, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
                 not_reached();
             }
             auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
             if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-                err(51, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+                err(52, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
                        "for .auth.json file: %s",
                        auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
                 not_reached();
@@ -1158,29 +1242,29 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .info.json
              */
             if (info_count_err == NULL) {
-                err(52, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+                err(53, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_count_err) < 0) {
-                err(53, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+                err(54, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
                        "for .info.json file: %s",
                        dyn_array_tell(info_count_err), info_path);
                 not_reached();
             }
             info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
             if (info_val_err == NULL) {
-                err(54, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+                err(55, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_val_err) < 0) {
-                err(55, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+                err(56, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
                        "for .info.json file: %ss",
                        dyn_array_tell(info_val_err), info_path);
                 not_reached();
             }
             info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
             if (info_all_err_count < info_count_err_count+info_val_err_count) {
-                err(56, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+                err(57, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
                        "for .info.json file: %s",
                        info_all_err_count, info_count_err_count, info_val_err_count, info_path);
                 not_reached();
@@ -1313,92 +1397,6 @@ main(int argc, char *argv[])
             dbg(DBG_LOW, "JSON semantic check OK");
         }
         /*
-         * before we continue, to be on the safe side, we will fchdir(2) to the
-         * original directory. We might be able to determine where we are but
-         * depending on the options and what or what not failed above, we cannot
-         * be sure where we are.
-         */
-        errno = 0; /* pre-clear errno for errp() */
-        if (fchdir(cwd2) != 0) {
-            errp(57, __func__, "failed to change back to original directory");
-            not_reached();
-        }
-
-        if (paths_in_array(ignored_paths) > 0) {
-            /*
-             * specific checks require the FTS API
-             */
-            reset_fts(&fts);
-            fts.depth = 1; /* we need depth 1 only */
-            fts.match_case = true; /* we must need to match case */
-            /*
-             * if the ignored_paths has .entry.json in it then the file
-             * MUST exist
-             */
-            if (array_has_path(ignored_paths, ENTRY_JSON_FILENAME, true, NULL)) {
-                /*
-                 * make sure .entry.json exists
-                 */
-                path = find_path(ENTRY_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i entry used", ENTRY_JSON_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    free(path);
-                    path = NULL;
-                }
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * if the ignored_paths has README.md in it then the file
-             * MUST exist
-             */
-            if (array_has_path(ignored_paths, README_MD_FILENAME, true, NULL)) {
-                /*
-                 * make sure README.md exists
-                 */
-                path = find_path(README_MD_FILENAME, *topdir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i README used", README_MD_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    free(path);
-                    path = NULL;
-                }
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * if the ignored_paths has index.html in it then the file
-             * MUST exist
-             */
-            if (array_has_path(ignored_paths, INDEX_HTML_FILENAME, true, NULL)) {
-                /*
-                 * make sure index.html exists
-                 */
-                path = find_path(INDEX_HTML_FILENAME, *topdir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i index used", INDEX_HTML_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    free(path);
-                    path = NULL;
-                }
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-        }
-        /*
          * cleanup - except for info_stream and auth_stream.
          *
          * We don't try closing info_stream or auth_stream because the json parser
@@ -1470,13 +1468,14 @@ main(int argc, char *argv[])
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
      *
      */
-    if (all_all_err_count > 0) {
-	err(1, __func__, "JSON semantic check or file checks failed"); /*ooo*/
-	not_reached();
-    }
-    if (all_extra_err_count > 0) {
-        err(1, __func__, "missing files or files that should not exist found in topdir");/*ooo*/
-        not_reached();
+    if (all_all_err_count > 0 || all_extra_err_count > 0) {
+        if (all_all_err_count > 0 && all_extra_err_count == 0) {
+            err(1, __func__, "JSON semantic check or file checks failed"); /*ooo*/
+            not_reached();
+        } else if (all_extra_err_count > 0 && all_all_err_count == 0) {
+            err(5, __func__, "missing files or files that must not exist actually exist");/*ooo*/
+            not_reached();
+        }
     }
     exit(0); /*ooo*/
 }
