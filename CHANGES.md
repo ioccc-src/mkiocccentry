@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.43 2025-02-25
+
+Improve `mkiocccentry_test.sh` - add only required files test.
+
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.14 2025-02-25"`.
+
+
 ## Release 2.3.42 2025-02-24
 
 Disable `-g3` in Makefile as use of `-O` option (besides level 0) makes
