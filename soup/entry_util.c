@@ -297,7 +297,7 @@ free_info(struct info *infop)
     free_paths_array(&infop->extra_files, false);
     infop->extra_files = NULL;
     /*
-     * directories found in topdir
+     * directories found in etopdir
      */
     free_paths_array(&infop->directories, false);
     infop->directories = NULL;
@@ -3582,9 +3582,9 @@ test_location_code(char const *str)
 /*
  * check_manifest_path
  *
- * Check that a path exists in the topdir that is reported in the manifest and
- * that it is the correct mode, calling test_manifest_path() if we do not get
- * MAN_PATH_OK.
+ * Check that a path exists in the submission directory that is reported in the
+ * manifest and that it is the correct mode (permission), calling
+ * test_manifest_path() if we do not get MAN_PATH_OK.
  *
  * given:
  *
@@ -3774,11 +3774,15 @@ test_manifest_path(char *path, char const *name, enum manifest_path error, mode_
  *
  * provided that those extra filenames do NOT match one of the above
  * mentioned mandatory files AND that the extra filename is POSIX portable
- * safe plus + chars.
+ * safe plus + chars AND they are not duplicated either AND any other check in
+ * test_extra_filename().
+ *
+ * If any file in the manifest does not exist in the submission directory, it is
+ * an error.
  *
  * given:
- *	manp		pointer struct manifest
- *	topdir          topdir path
+ *	manp		    pointer struct manifest
+ *	submission_dir      submission directory path
  *
  * returns:
  *	true ==> manifest is complete with unique extra files
@@ -3786,7 +3790,7 @@ test_manifest_path(char *path, char const *name, enum manifest_path error, mode_
  *		  or NULL pointer, or some internal error
  */
 bool
-test_manifest(struct manifest *manp, char *topdir)
+test_manifest(struct manifest *manp, char *submission_dir)
 {
     intmax_t count_extra_file = -1;		/* number of extra files */
     bool test = false;			/* test_extra_filename() test result */
@@ -3819,8 +3823,8 @@ test_manifest(struct manifest *manp, char *topdir)
 		       manp->count_extra_file, dyn_array_tell(manp->extra));
 	return false;
     }
-    if (topdir == NULL) {
-        warn(__func__, "topdir is NULL");
+    if (submission_dir == NULL) {
+        warn(__func__, "submission_dir is NULL");
         return false;
     }
 
@@ -3835,10 +3839,11 @@ test_manifest(struct manifest *manp, char *topdir)
     reset_fts(&fts, false); /* false means do not clear out ignored list */
     /*
      * Below we will have to check that the files in the manifest actually exist
-     * in the topdir. To do this we have to use the find_path() or find_paths()
-     * function. For individual files it is better to do find_path(). Now we do
-     * have to find multiple files but one at a time so it's not necessary to
-     * use find_paths() (and read_fts() we definitely don't want to use).
+     * in the submission directory. To do this we have to use the find_path() or
+     * find_paths() function. For individual files it is better to do
+     * find_path(). Now we do have to find multiple files but one at a time so
+     * it's not necessary to use find_paths() (and read_fts() we definitely
+     * don't want to use).
      *
      * The only thing that will have to be reset for each time we call the
      * find_path() function is the tree itself. We don't technically need to use
@@ -3869,7 +3874,7 @@ test_manifest(struct manifest *manp, char *topdir)
             /*
              * now find the file .info.json and run tests on it
              */
-            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            path = find_path(pathname, submission_dir, -1, &cwd, false, &fts);
             /*
              * NOTE: we don't need to check that path == NULL or *path == '\0'
              * because the function check_manifest_path() does this (and more) for
@@ -3905,7 +3910,7 @@ test_manifest(struct manifest *manp, char *topdir)
             /*
              * now find the file .auth.json and run tests on it
              */
-            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            path = find_path(pathname, submission_dir, -1, &cwd, false, &fts);
             /*
              * NOTE: we don't need to check that path == NULL or *path == '\0'
              * because the function check_manifest_path() does this (and more) for
@@ -3941,7 +3946,7 @@ test_manifest(struct manifest *manp, char *topdir)
             /*
              * now find the file prog.c and run tests on it
              */
-            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            path = find_path(pathname, submission_dir, -1, &cwd, false, &fts);
             /*
              * NOTE: we don't need to check that path == NULL or *path == '\0'
              * because the function check_manifest_path() does this (and more) for
@@ -3977,7 +3982,7 @@ test_manifest(struct manifest *manp, char *topdir)
             /*
              * now find the file Makefile and run tests on it
              */
-            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            path = find_path(pathname, submission_dir, -1, &cwd, false, &fts);
             /*
              * NOTE: we don't need to check that path == NULL or *path == '\0'
              * because the function check_manifest_path() does this (and more) for
@@ -4013,7 +4018,7 @@ test_manifest(struct manifest *manp, char *topdir)
             /*
              * now find the file Makefile and run tests on it
              */
-            path = find_path(pathname, topdir, -1, &cwd, false, &fts);
+            path = find_path(pathname, submission_dir, -1, &cwd, false, &fts);
             /*
              * NOTE: we don't need to check that path == NULL or *path == '\0'
              * because the function check_manifest_path() does this (and more) for
@@ -4084,7 +4089,6 @@ test_manifest(struct manifest *manp, char *topdir)
                 return false;
             }
         }
-
     }
 
     /*
