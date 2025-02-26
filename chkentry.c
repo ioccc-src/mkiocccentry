@@ -65,7 +65,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] auth.json info.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] topdir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -75,17 +75,12 @@ static const char * const usage_msg =
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-i file\t\tadd file to ignore list\n"
     "\t-w\t\twinning entry checks\n"
-    "\tauth.json\tcheck auth.json file, . ==> skip IOCCC .auth.json style check\n"
-    "\tinfo.json\tcheck info.json file, . ==> skip IOCCC .info.json style check\n"
     "\n"
     "Exit codes:\n"
     "    0\t\tall is OK\n"
-    "    1\t\tJSON files(s) are valid JSON but one or more semantic checks failed\n"
+    "    1\t\ta JSON file is not valid JSON, a semantics test failed or some other test failed\n"
     "    2\t\t-h and help string printed or -V and version string printed\n"
     "    3\t\tcommand line error\n"
-    "    4\t\tJSON file(s) not valid JSON; no semantic checks were performed\n"
-    "    5\t\tmissing files and/or files that must not exist actually exist\n"
-    "    6\t\tone or more of the types of tests failed\n"
     "    >=10\tinternal error\n"
     "\n"
     "%s version: %s\n"
@@ -118,7 +113,7 @@ char *abbrevs[][2] =
  * functions
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static void add_ignore_path(char *path);
+static void add_ignore_path(char *path, struct fts *fts);
 
 /*
  * usage - print usage to stderr
@@ -173,6 +168,7 @@ usage(int exitcode, char const *prog, char const *str)
  * given:
  *
  *      path    - path to add to ignore list
+ *      fts     - struct fts * from main
  *
  * NOTE: for some paths abbreviations are allowed. However as it is impossible
  * to know all the possible paths in a submission/entry, in those cases it must
@@ -203,18 +199,28 @@ usage(int exitcode, char const *prog, char const *str)
  *      chkentry -i foo -i foo topdir
  *
  * the ignored list would only have the path 'foo' once.
+ *
+ * NOTE: this function will not return on a NULL fts (although if path is NULL
+ * or empty it'll return before that check).
  */
 static void
-add_ignore_path(char *path)
+add_ignore_path(char *path, struct fts *fts)
 {
     size_t i = 0;
 
+    /*
+     * firewall
+     */
     if (path == NULL || *path == '\0') {
         /*
          * ignore NULL path or empty string
          */
         return;
+    } else if (fts == NULL) {
+        err(55, __func__, "fts is NULL");
+        not_reached();
     }
+
     for (i = 0; abbrevs[i][0] != NULL; ++i) {
         if (!strcmp(abbrevs[i][0], path)) {
             /*
@@ -230,6 +236,11 @@ add_ignore_path(char *path)
                 ignore_auth = true;
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
                 /*
                  * return as we don't need to check the file below as we have a
                  * match
@@ -251,6 +262,12 @@ add_ignore_path(char *path)
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
                 /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
+                /*
                  * return as we don't need to check the file below as we have a
                  * match
                  */
@@ -269,6 +286,12 @@ add_ignore_path(char *path)
                 ignore_entry = true;
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
                 /*
                  * return as we don't need to check the file below as we have a
                  * match
@@ -289,6 +312,12 @@ add_ignore_path(char *path)
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
                 /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
+                /*
                  * return as we don't need to check the file below as we have a
                  * match
                  */
@@ -307,6 +336,12 @@ add_ignore_path(char *path)
                 ignore_README_md = true;
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
                 /*
                  * return as we don't need to check the file below as we have a
                  * match
@@ -327,6 +362,12 @@ add_ignore_path(char *path)
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
                 /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
+                /*
                  * return as we don't need to check the file below as we have a
                  * match
                  */
@@ -346,6 +387,12 @@ add_ignore_path(char *path)
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
                 /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
+                /*
                  * return as we don't need to check the file below as we have a
                  * match
                  */
@@ -361,6 +408,12 @@ add_ignore_path(char *path)
                 ignore_Makefile = true;
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
+                /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
                 /*
                  * return as we don't need to check the file below as we have a
                  * match
@@ -378,6 +431,12 @@ add_ignore_path(char *path)
                 /* we can append the file now */
                 append_path(&ignored_paths, abbrevs[i][1], true, false, false);
                 /*
+                 * we also have to append it to the fts->ignore list for later
+                 * on
+                 */
+                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
+
+                /*
                  * return as we don't need to check the file below as we have a
                  * match
                  */
@@ -388,7 +447,7 @@ add_ignore_path(char *path)
              * we should not get here but we will warn if we do as it indicates
              * a check is missing here
              */
-            warn(__func__, "found match in filename but unhandlde");
+            warn(__func__, "found match in filename but unhandled");
             return;
         }
     }
@@ -508,6 +567,10 @@ add_ignore_path(char *path)
      * this will not add the path if it is already there
      */
     append_path(&ignored_paths, path, true, false, false);
+    /*
+     * we have to add it to fts->ignore list too
+     */
+    append_path(&(fts->ignore), path, true, false, false);
 }
 
 int
@@ -547,13 +610,27 @@ main(int argc, char *argv[])
     struct json_sem_count_err *sem_count_err = NULL;	/* semantic count error to print */
     struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
     char *path = NULL;                  /* specific checks depending on the option (like -i entry/-i .entry.json) */
-    uintmax_t c;			/* dynamic array index */
+    uintmax_t c = 0;			/* dynamic array index */
+    uintmax_t len = 0;                  /* dynamic array length */
     int cwd = -1;                       /* for when we have to use find_path() */
     int cwd2 = -1;                      /* cwd of program when we start */
     struct fts fts;                     /* for when we have to use find_path() */
     int i;
     bool winning_entry_mode = false;    /* true ==> -w used, do other checks */
+    struct dyn_array *paths = NULL;     /* paths to find for find_paths() */
+    struct dyn_array *found = NULL;     /* paths found by find_paths() */
 
+
+
+    /*
+     * we MUST take care of this first before we parse args because not only
+     * do specific checks require the FTS API but one of the options does too
+     * (-i path).
+     *
+     * IMPORTANT: make SURE to memset(&fts, 0, sizeof(struct fts)) first!
+     */
+    memset(&fts, 0,sizeof(struct fts));
+    reset_fts(&fts, false); /* false means do not clear out ignored list (which is empty at this point) */
 
     /*
      * parse args
@@ -598,7 +675,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
         case 'i':
-            add_ignore_path(optarg);
+            add_ignore_path(optarg, &fts);
             break;
         case 'w':
             winning_entry_mode = true;
@@ -636,15 +713,15 @@ main(int argc, char *argv[])
 	 * check if we can search / work within the directory
 	 */
 	if (!exists(*topdir)) {
-	    err(39, __func__, "directory does not exist: %s", *topdir);
+	    err(56, __func__, "directory does not exist: %s", *topdir);
 	    not_reached();
 	}
 	if (!is_dir(*topdir)) {
-	    err(40, __func__, "is not a directory: %s", *topdir);
+	    err(57, __func__, "is not a directory: %s", *topdir);
 	    not_reached();
 	}
 	if (!is_exec(*topdir)) {
-	    err(41, __func__, "directory is not searchable: %s", *topdir);
+	    err(58, __func__, "directory is not searchable: %s", *topdir);
 	    not_reached();
 	}
 
@@ -654,16 +731,9 @@ main(int argc, char *argv[])
         errno = 0;			/* pre-clear errno for errp() */
         cwd2 = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
         if (cwd2 < 0) {
-            errp(42, __func__, "cannot open .");
+            errp(59, __func__, "cannot open .");
             not_reached();
         }
-        /*
-         * specific checks require the FTS API
-         *
-         * IMPORTANT: make SURE to memset(&fts, 0, sizeof(struct fts)) first!
-         */
-        memset(&fts, 0,sizeof(struct fts));
-        reset_fts(&fts, false); /* false means do not clear out ignored list */
         fts.depth = 1; /* we need depth 1 only */
         fts.match_case = true; /* we must need to match case */
         fts.type = FTS_TYPE_FILE; /* regular files only */
@@ -681,7 +751,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -746,7 +817,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -773,7 +845,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -801,7 +874,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -828,7 +902,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -873,6 +948,79 @@ main(int argc, char *argv[])
                     ++all_extra_err_count;
                     free(path);
                     path = NULL;
+                }
+
+                /*
+                 * move back to previous directory
+                 */
+                (void) read_fts(NULL, -1, &cwd, NULL);
+            }
+
+            /*
+             * now for the FTS find_paths() function: we need to find all files
+             * that are NOT ignored (this is why there are two ignore lists)
+             */
+            append_path(&paths, "", true, false, false);
+            /*
+             * find paths
+             *
+             * NOTE: an empty string means find all files not ignored. And since the
+             * list of paths to ignore is already in the fts->ignore list we
+             * don't need to do anything special.
+             */
+            found = find_paths(paths, *topdir, -1, &cwd, false, &fts);
+            if (found != NULL) {
+                /*
+                 * case: files were found, check that they are both allowed and
+                 * the right permissions.
+                 *
+                 * NOTE: we don't need to check anything if no files are found
+                 * because the requirements were checked above specially.
+                 */
+                char *u = NULL;
+                len = paths_in_array(found);
+                for (c = 0; c < len; ++c) {
+                    u = dyn_array_value(found, char *, c);
+                    if (u == NULL) {
+                        err(60, __func__, "NULL pointer in ignore list");
+                        not_reached();
+                    }
+                    /*
+                     * now we have to determine what file this is
+                     *
+                     * Since we already tested specific files we only have to
+                     * test files that have not been tested.
+                     */
+                    if (!strcmp(u, AUTH_JSON_FILENAME) || !strcmp(u, INFO_JSON_FILENAME) || !strcmp(u, REMARKS_FILENAME) ||
+                        !strcmp(u, MAKEFILE_FILENAME) || !strcmp(u, PROG_C_FILENAME) || !strcmp(u, PROG_FILENAME) ||
+                        !strcmp(u, ENTRY_JSON_FILENAME) || !strcmp(u, README_MD_FILENAME) || !strcmp(u, INDEX_HTML_FILENAME)) {
+                            /*
+                             * these we already tested, skip
+                             */
+                            continue;
+                    } else {
+                        /*
+                         * not one of the specific filenames so we have to do
+                         * other tests, specifically verifying it is a sane
+                         * relative path and that the permissions are correct
+                         * based on the filename.
+                         */
+                        if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
+                            werr(1, __func__, "%s: not a sane relative path", u);/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_executable_filename(u)) {
+                            if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                                werr(1, __func__, "%s: permissions: %o != 0555", u, filemode(u));/*ooo*/
+                                ++all_extra_err_count;
+                            }
+                        } else {
+                            if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                                werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                                ++all_extra_err_count;
+                            }
+                        }
+                    }
                 }
 
                 /*
@@ -929,7 +1077,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -956,7 +1105,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -1024,7 +1174,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -1051,7 +1202,8 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
@@ -1098,11 +1250,84 @@ main(int argc, char *argv[])
                     /*
                      * now check the permissions are correct
                      */
-                    if (check_manifest_path(path, path, S_IRUSR | S_IRGRP | S_IROTH) != MAN_PATH_OK) {
+                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
+                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
                         ++all_extra_err_count;
                     }
                     free(path);
                     path = NULL;
+                }
+
+                /*
+                 * move back to previous directory
+                 */
+                (void) read_fts(NULL, -1, &cwd, NULL);
+            }
+            /*
+             * now for the FTS find_paths() function: we need to find all files
+             * that are NOT ignored (this is why there are two ignore lists)
+             */
+            append_path(&paths, "", true, false, false);
+            /*
+             * find paths
+             *
+             * NOTE: an empty string means find all files not ignored. And since the
+             * list of paths to ignore is already in the fts->ignore list we
+             * don't need to do anything special.
+             */
+            found = find_paths(paths, *topdir, -1, &cwd, false, &fts);
+            if (found != NULL) {
+                /*
+                 * case: files were found, check that they are both allowed and
+                 * the right permissions.
+                 *
+                 * NOTE: we don't need to check anything if no files are found
+                 * because the requirements were checked above specially.
+                 */
+                char *u = NULL;
+                len = paths_in_array(found);
+                for (c = 0; c < len; ++c) {
+                    u = dyn_array_value(found, char *, c);
+                    if (u == NULL) {
+                        err(61, __func__, "NULL pointer in ignore list");
+                        not_reached();
+                    }
+                    /*
+                     * now we have to determine what file this is
+                     *
+                     * Since we already tested specific files we only have to
+                     * test files that have not been tested.
+                     */
+                    if (!strcmp(u, AUTH_JSON_FILENAME) || !strcmp(u, INFO_JSON_FILENAME) || !strcmp(u, REMARKS_FILENAME) ||
+                        !strcmp(u, MAKEFILE_FILENAME) || !strcmp(u, PROG_C_FILENAME) || !strcmp(u, PROG_FILENAME) ||
+                        !strcmp(u, ENTRY_JSON_FILENAME) || !strcmp(u, README_MD_FILENAME) || !strcmp(u, INDEX_HTML_FILENAME)) {
+                            /*
+                             * these we already tested, skip
+                             */
+                            continue;
+                    } else {
+                        /*
+                         * not one of the specific filenames so we have to do
+                         * other tests, specifically verifying it is a sane
+                         * relative path and that the permissions are correct
+                         * based on the filename.
+                         */
+                        if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
+                            werr(1, __func__, "%s: not a sane relative path", u);/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_executable_filename(u)) {
+                            if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                                werr(1, __func__, "%s: permissions: %o != 0555", u, filemode(u));/*ooo*/
+                                ++all_extra_err_count;
+                            }
+                        } else {
+                            if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                                werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                                ++all_extra_err_count;
+                            }
+                        }
+                    }
                 }
 
                 /*
@@ -1120,7 +1345,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(43, __func__, "failed to change back to original directory");
+            errp(62, __func__, "failed to change back to original directory");
             not_reached();
         }
 
@@ -1131,12 +1356,12 @@ main(int argc, char *argv[])
             auth_filename = ".auth.json";
             auth_stream = open_dir_file(*topdir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(44, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
+                err(63, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
                 not_reached();
             }
             auth_path = calloc_path(*topdir, auth_filename);
             if (auth_path == NULL) {
-                err(45, __func__, "auth_path is NULL");
+                err(64, __func__, "auth_path is NULL");
                 not_reached();
             }
         }
@@ -1148,12 +1373,12 @@ main(int argc, char *argv[])
             info_filename = ".info.json";
             info_stream = open_dir_file(*topdir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(46, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
+                err(65, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
                 not_reached();
             }
             info_path = calloc_path(*topdir, info_filename);
             if (info_path == NULL) {
-                err(47, __func__, "info_path is NULL");
+                err(66, __func__, "info_path is NULL");
                 not_reached();
             }
         }
@@ -1198,27 +1423,27 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .auth.json
              */
             if (auth_count_err == NULL) {
-                err(48, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+                err(67, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_count_err) < 0) {
-                err(49, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+                err(68, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
                 not_reached();
             }
             auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
             if (auth_val_err == NULL) {
-                err(50, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+                err(69, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_val_err) < 0) {
-                err(51, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+                err(70, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
                 not_reached();
             }
             auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
             if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-                err(52, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+                err(71, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
                        "for .auth.json file: %s",
                        auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
                 not_reached();
@@ -1242,29 +1467,29 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .info.json
              */
             if (info_count_err == NULL) {
-                err(53, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+                err(72, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_count_err) < 0) {
-                err(54, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+                err(73, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
                        "for .info.json file: %s",
                        dyn_array_tell(info_count_err), info_path);
                 not_reached();
             }
             info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
             if (info_val_err == NULL) {
-                err(55, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+                err(74, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_val_err) < 0) {
-                err(56, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+                err(75, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
                        "for .info.json file: %ss",
                        dyn_array_tell(info_val_err), info_path);
                 not_reached();
             }
             info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
             if (info_all_err_count < info_count_err_count+info_val_err_count) {
-                err(57, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+                err(76, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
                        "for .info.json file: %s",
                        info_all_err_count, info_count_err_count, info_val_err_count, info_path);
                 not_reached();
@@ -1446,7 +1671,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(58, __func__, "failed to change back to previous directory");
+            errp(77, __func__, "failed to change back to previous directory");
             not_reached();
         }
         /*
@@ -1457,25 +1682,37 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp */
         if (close(cwd2) != 0) {
-            errp(59, __func__, "failed to close original directory FD");
+            errp(78, __func__, "failed to close original directory FD");
             not_reached();
         }
+        /*
+         * free the array in fts if not NULL and reset to 0
+         */
+        reset_fts(&fts, true);
+        /*
+         * now free the global ignored list as well
+         */
+        free_paths_array(&ignored_paths, false);
+        ignored_paths = NULL; /* paranoia */
+        /*
+         * free the paths and fund paths arrays too
+         */
+        free_paths_array(&paths, false);
+        paths = NULL; /* paranoia */
+        free_paths_array(&found, false);
+        found = NULL; /* paranoia */
     } else {
 	usage(3, program, "invalid command line");/*ooo*/
     }
+
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
      *
      */
     if (all_all_err_count > 0 || all_extra_err_count > 0) {
-        if (all_all_err_count > 0 && all_extra_err_count == 0) {
-            err(1, __func__, "JSON semantic check or file checks failed"); /*ooo*/
-            not_reached();
-        } else if (all_extra_err_count > 0 && all_all_err_count == 0) {
-            err(5, __func__, "missing files or files that must not exist actually exist");/*ooo*/
-            not_reached();
-        }
+        err(1, __func__, "one or more tests failed");/*ooo*/
+        not_reached();
     }
     exit(0); /*ooo*/
 }

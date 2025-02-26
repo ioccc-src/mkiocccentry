@@ -7,6 +7,11 @@ Improve `mkiocccentry_test.sh` - add only required files test.
 
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"1.0.14 2025-02-25"`.
 
+Plug a loophole in `chkentry(1)` and make it do even more tests that were
+missing/not previously thought of.
+
+Updated `CHKENTRY_VERSION` to `"1.1.5 2025-02-25"`.
+
 
 ## Release 2.3.42 2025-02-24
 
