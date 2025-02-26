@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.44 2025-02-26
+
+Remove unused arg in `write_json_files()`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.34 2025-02-26"`.
+
+
 ## Release 2.3.43 2025-02-25
 
 Improve `mkiocccentry_test.sh` - add only required files test.
@@ -59,8 +66,12 @@ FTS functions requires a minor update to chkentry (both in `chkentry.c` and
 `soup/entry_util.c`)  minor change or else it will not compile and also will
 likely segfault.
 
-Updated `MKIOCCCENTRY_VERSION` to `"1.2.33 2025-02-34"`.
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.33 2025-02-24"`.
 Updated `CHKENTRY_VERSION` to `"1.1.4 2025-02-24"`.
+
+**NOTE**: the `MKIOCCCENTRY_VERSION` in this commit was by accident `"1.2.33
+2025-02-34"` but we have retroactively fixed it. Thus if you check out this
+specific commit you would see that the version is a mismatch here.
 
 
 ## Release 2.3.41 2025-02-23

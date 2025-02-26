@@ -179,8 +179,7 @@ static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct author **author_set_p);
 static void verify_submission_dir(char const *submission_dir, char const *ls);
-static void write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry,
-        char const *fnamchk);
+static void write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry);
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
 static void form_info(struct info *infop);
 static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
