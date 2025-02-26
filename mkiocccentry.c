@@ -805,7 +805,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .auth.json file and .info json file ...", NULL);
     }
-    write_json_files(&auth, &info, submission_dir, chkentry, fnamchk);
+    write_json_files(&auth, &info, submission_dir, chkentry);
     if (!quiet) {
 	para("... completed .auth.json and .info.json files.", "", NULL);
     }
@@ -7530,21 +7530,19 @@ form_info(struct info *infop)
  * write_json_files
  *
  * Create the .auth.json and .info.json files and then verify them by running
- * chkentry(1) on them.
+ * chkentry(1) on the submission directory.
  *
  * given:
  *      authp           -   pointer to auth structure
  *      infop           -   pointer to info structure
  *      submission_dir  -   submission directory
  *      chkentry        -   path to chkentry(1) tool
- *      fnamchk         -   path to fnamchk(1) tool
  *
  * This function does not return if a NULL pointer is encountered, if certain
  * variables are not in the right range or if chkentry(1) fails.
  */
 static void
-write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry,
-        char const *fnamchk)
+write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry)
 {
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
@@ -7562,7 +7560,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     /*
      * firewall
      */
-    if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL || fnamchk == NULL) {
+    if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL) {
         err(20, __func__, "called with NULL arg(s)");
         not_reached();
     }
@@ -7883,7 +7881,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      */
     if (!quiet) {
 	para("",
-	    "Checking the format of .auth.json and .info.json ...", NULL);
+	    "Checking your submission directory for various issues ...", NULL);
     }
     dbg(DBG_HIGH, "about to perform: %s -q -- %s", chkentry, submission_dir);
     exit_code = shell_cmd(__func__, false, true, "% -q -- %", chkentry, submission_dir);
@@ -7893,7 +7891,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	not_reached();
     }
     if (!quiet) {
-	para("... all appears well with the .auth.json and .info.json files.", NULL);
+	para("... all appears well with your submission directory.", NULL);
     }
 
     /*
