@@ -65,7 +65,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] topdir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] submission_dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -174,21 +174,22 @@ usage(int exitcode, char const *prog, char const *str)
  * to know all the possible paths in a submission/entry, in those cases it must
  * be the exact path.
  *
- * NOTE: these paths are from UNDER the topdir. So if one has the file:
+ * NOTE: these paths are from UNDER the submission directory. So if one has the
+ * file:
  *
- *      topdir/foo/bar/baz
+ *      submission_dir/foo/bar/baz
  *
  * and they run the command:
  *
- *      chkentry topdir
+ *      chkentry submission_dir
  *
  * and want to ignore the path baz they should NOT do:
  *
- *      chkentry -i topdir/foo/bar/baz topdir
+ *      chkentry -i submission_dir/foo/bar/baz submission_dir
  *
  * Rather they should do:
  *
- *      chkentry -i foo/bar/baz topdir
+ *      chkentry -i foo/bar/baz submission_dir
  *
  * NOTE: this function uses the static char *abbrevs[][2]  to find abbreviations.
  * In the case nothing is found then the path will be added to the list as is.
@@ -196,7 +197,7 @@ usage(int exitcode, char const *prog, char const *str)
  * NOTE: this function will not add a path to the array more than once so if you
  * were to do:
  *
- *      chkentry -i foo -i foo topdir
+ *      chkentry -i foo -i foo submission_dir
  *
  * the ignored list would only have the path 'foo' once.
  *
@@ -577,7 +578,7 @@ int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
-    char **topdir = NULL;               /* directory from which files are to be checked */
+    char **submission_dir = NULL;       /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
@@ -694,7 +695,7 @@ main(int argc, char *argv[])
     argv += optind;
     switch (argc) {
     case 1:
-        topdir = argv;
+        submission_dir = argv;
 	break;
     case 2:
         if (!strcmp(argv[0], ".") && !strcmp(argv[1], ".")) {
@@ -708,20 +709,20 @@ main(int argc, char *argv[])
 	break;
     }
 
-    if (topdir != NULL && *topdir != NULL) {
+    if (submission_dir != NULL && *submission_dir != NULL) {
 	/*
 	 * check if we can search / work within the directory
 	 */
-	if (!exists(*topdir)) {
-	    err(56, __func__, "directory does not exist: %s", *topdir);
+	if (!exists(*submission_dir)) {
+	    err(56, __func__, "directory does not exist: %s", *submission_dir);
 	    not_reached();
 	}
-	if (!is_dir(*topdir)) {
-	    err(57, __func__, "is not a directory: %s", *topdir);
+	if (!is_dir(*submission_dir)) {
+	    err(57, __func__, "is not a directory: %s", *submission_dir);
 	    not_reached();
 	}
-	if (!is_exec(*topdir)) {
-	    err(58, __func__, "directory is not searchable: %s", *topdir);
+	if (!is_exec(*submission_dir)) {
+	    err(58, __func__, "directory is not searchable: %s", *submission_dir);
 	    not_reached();
 	}
 
@@ -743,7 +744,7 @@ main(int argc, char *argv[])
              * make sure .entry.json exists unless -i entry
              */
             if (!ignore_entry) {
-                path = find_path(ENTRY_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(ENTRY_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "file does NOT exist and -w USED and -i entry NOT used: %s", ENTRY_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -769,7 +770,7 @@ main(int argc, char *argv[])
              * unless -i auth .auth.json must NOT exist
              */
             if (!ignore_auth) {
-                path = find_path(AUTH_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(AUTH_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "file EXISTS and -w USED and -i auth NOT used: %s", AUTH_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -789,7 +790,7 @@ main(int argc, char *argv[])
                 /*
                  * .info.json
                  */
-                path = find_path(INFO_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(INFO_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "file EXISTS and -w USED and -i info NOT used: %s", INFO_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -809,7 +810,7 @@ main(int argc, char *argv[])
                 /*
                  * README.md
                  */
-                path = find_path(README_MD_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(README_MD_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "file does NOT exist and -w USED and -i README NOT used: %s", README_MD_FILENAME);
                     ++all_extra_err_count;
@@ -837,7 +838,7 @@ main(int argc, char *argv[])
                 /*
                  * index.html
                  */
-                path = find_path(INDEX_HTML_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(INDEX_HTML_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "file does NOT exist and -w USED and -i index NOT used: %s", INDEX_HTML_FILENAME);
                     ++all_extra_err_count;
@@ -866,7 +867,7 @@ main(int argc, char *argv[])
                 /*
                  * Makefile
                  */
-                path = find_path(MAKEFILE_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(MAKEFILE_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -w used and -i Makefile not used", MAKEFILE_FILENAME);
                     ++all_extra_err_count;
@@ -894,7 +895,7 @@ main(int argc, char *argv[])
                 /*
                  * prog.c
                  */
-                path = find_path(PROG_C_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(PROG_C_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -w used and -i prog.c not used", PROG_C_FILENAME);
                     ++all_extra_err_count;
@@ -922,7 +923,7 @@ main(int argc, char *argv[])
                 /*
                  * prog
                  */
-                path = find_path(PROG_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(PROG_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -w used and -i prog not used", PROG_FILENAME);
                     ++all_extra_err_count;
@@ -942,7 +943,7 @@ main(int argc, char *argv[])
                 /*
                  * remarks.md
                  */
-                path = find_path(REMARKS_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(REMARKS_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -w used and -i remarks not used", REMARKS_FILENAME);
                     ++all_extra_err_count;
@@ -968,7 +969,7 @@ main(int argc, char *argv[])
              * list of paths to ignore is already in the fts->ignore list we
              * don't need to do anything special.
              */
-            found = find_paths(paths, *topdir, -1, &cwd, false, &fts);
+            found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
             if (found != NULL) {
                 /*
                  * case: files were found, check that they are both allowed and
@@ -1051,7 +1052,7 @@ main(int argc, char *argv[])
              * make sure .entry.json does NOT exist unless -i entry
              */
             if (!ignore_entry) {
-                path = find_path(ENTRY_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(ENTRY_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -w and -i entry not used and ", ENTRY_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -1069,7 +1070,7 @@ main(int argc, char *argv[])
              * unless -i auth .auth.json MUST exist
              */
             if (!ignore_auth) {
-                path = find_path(AUTH_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(AUTH_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -i auth not used", AUTH_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -1097,7 +1098,7 @@ main(int argc, char *argv[])
                 /*
                  * .info.json
                  */
-                path = find_path(INFO_JSON_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(INFO_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -i info not used", INFO_JSON_FILENAME);
                     ++all_extra_err_count;
@@ -1125,7 +1126,7 @@ main(int argc, char *argv[])
                 /*
                  * README.md
                  */
-                path = find_path(README_MD_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(README_MD_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -i README not used", README_MD_FILENAME);
                     ++all_extra_err_count;
@@ -1145,7 +1146,7 @@ main(int argc, char *argv[])
                 /*
                  * index.html
                  */
-                path = find_path(INDEX_HTML_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(INDEX_HTML_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -i index not used", INDEX_HTML_FILENAME);
                     ++all_extra_err_count;
@@ -1166,7 +1167,7 @@ main(int argc, char *argv[])
                 /*
                  * Makefile
                  */
-                path = find_path(MAKEFILE_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(MAKEFILE_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -i Makefile not used", MAKEFILE_FILENAME);
                     ++all_extra_err_count;
@@ -1194,7 +1195,7 @@ main(int argc, char *argv[])
                 /*
                  * prog.c
                  */
-                path = find_path(PROG_C_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(PROG_C_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -i prog.c not used", PROG_C_FILENAME);
                     ++all_extra_err_count;
@@ -1222,7 +1223,7 @@ main(int argc, char *argv[])
                 /*
                  * prog
                  */
-                path = find_path(PROG_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(PROG_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path != NULL) {
                     dbg(DBG_LOW, "%s exists and -i prog not used", PROG_FILENAME);
                     ++all_extra_err_count;
@@ -1242,7 +1243,7 @@ main(int argc, char *argv[])
                 /*
                  * remarks.md
                  */
-                path = find_path(REMARKS_FILENAME, *topdir, -1, &cwd, false, &fts);
+                path = find_path(REMARKS_FILENAME, *submission_dir, -1, &cwd, false, &fts);
                 if (path == NULL) {
                     dbg(DBG_LOW, "%s does not exist and -i remarks not used", REMARKS_FILENAME);
                     ++all_extra_err_count;
@@ -1275,7 +1276,7 @@ main(int argc, char *argv[])
              * list of paths to ignore is already in the fts->ignore list we
              * don't need to do anything special.
              */
-            found = find_paths(paths, *topdir, -1, &cwd, false, &fts);
+            found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
             if (found != NULL) {
                 /*
                  * case: files were found, check that they are both allowed and
@@ -1350,16 +1351,16 @@ main(int argc, char *argv[])
         }
 
         /*
-         * open the .auth.json file under topdir if !ignore_auth && -w not used
+         * open the .auth.json file under submission_dir if !ignore_auth && -w not used
          */
         if (!ignore_auth && !winning_entry_mode) {
             auth_filename = ".auth.json";
-            auth_stream = open_dir_file(*topdir, auth_filename);
+            auth_stream = open_dir_file(*submission_dir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(63, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *topdir, auth_filename);
+                err(63, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
                 not_reached();
             }
-            auth_path = calloc_path(*topdir, auth_filename);
+            auth_path = calloc_path(*submission_dir, auth_filename);
             if (auth_path == NULL) {
                 err(64, __func__, "auth_path is NULL");
                 not_reached();
@@ -1367,16 +1368,16 @@ main(int argc, char *argv[])
         }
 
         /*
-         * open the .info.json file under topdir if !ignore_info and -w not used
+         * open the .info.json file under submission_dir if !ignore_info and -w not used
          */
         if (!ignore_info && !winning_entry_mode) {
             info_filename = ".info.json";
-            info_stream = open_dir_file(*topdir, info_filename);
+            info_stream = open_dir_file(*submission_dir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(65, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *topdir, info_filename);
+                err(65, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
                 not_reached();
             }
-            info_path = calloc_path(*topdir, info_filename);
+            info_path = calloc_path(*submission_dir, info_filename);
             if (info_path == NULL) {
                 err(66, __func__, "info_path is NULL");
                 not_reached();
@@ -1461,7 +1462,7 @@ main(int argc, char *argv[])
              */
             dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s", info_path);
             info_all_err_count = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
-                                              &info_count_err, &info_val_err, *topdir);
+                                              &info_count_err, &info_val_err, *submission_dir);
 
             /*
              * firewall on json_sem_check() results AND count errors for .info.json

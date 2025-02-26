@@ -341,7 +341,7 @@ extern bool test_IOCCC_contest(char const *str);
 extern bool test_IOCCC_year(int IOCCC_year);
 extern bool test_iocccsize_version(char const *str);
 extern bool test_location_code(char const *str);
-extern bool test_manifest(struct manifest *manp, char *topdir);
+extern bool test_manifest(struct manifest *manp, char *submission_dir);
 enum manifest_path check_manifest_path(char *path, char const *name, mode_t mode);
 void test_manifest_path(char *path, char const *name, enum manifest_path error, mode_t mode);
 extern bool test_min_timestamp(time_t tstamp);
