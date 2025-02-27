@@ -242,7 +242,9 @@ struct fts
     bool logical;           /* true ==> set FTS_LOGICAL, false ==> set FTS_PHYSICAL */
     enum fts_type type;     /* types of files desired (bitwise OR) */
     int count;              /* > 0 - if more than one match, return count-th match */
-    int depth;              /* > 0 - make sure that the FTS level matches this depth */
+    int depth;              /* > 0 - make sure that the FTS level matches this depth exactly */
+    int min_depth;          /* > 0 - depth of path must be >= this value if depth <= 0 */
+    int max_depth;          /* > 0 - depth of path must be <= this value if depth <= 0 */
     bool base;              /* true ==> basename match */
     bool seedot;            /* true ==> analogous to FTS_SEEDOT */
     bool match_case;        /* true ==> case-sensitive match */

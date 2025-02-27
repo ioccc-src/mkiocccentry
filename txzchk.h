@@ -1,13 +1,35 @@
 /*
- * txzchk - IOCCC tarball validation tool
+ * txzchk - IOCCC submission tarball validation tool
  *
- * txzchk verifies that the tarball does not have any feathers stuck in it (i.e.
- * the tarball conforms to the IOCCC tarball rules). Invoked by mkiocccentry;
- * txzchk in turn uses fnamchk to make sure that the tarball was correctly named
- * and formed. In other words txzchk makes sure that the mkiocccentry tool was
- * used and there was no screwing around with the resultant tarball.
+ * txzchk verifies that IOCCC submission tarballs conform to the IOCCC rules (no
+ * feathers stuck in the tarballs :-) ).
  *
- * Written in 2022 by:
+ * txzchk is invoked by mkiocccentry; txzchk in turn uses fnamchk to make
+ * sure that the tarball was correctly named and formed. In other words txzchk
+ * makes sure that the mkiocccentry tool was used and there was no screwing
+ * around with the resultant tarball.
+ *
+ * Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * CODY BOONE FERGUSON DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT
+ * SHALL CODY BOONE FERGUSON BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+ * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+ * OF THIS SOFTWARE.
+ *
+ * This tool was written in 2022-2025 by Cody Boone Ferguson:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -33,6 +55,10 @@
  *	nevertheless none were harmed. :-) More importantly, no tar pits -
  *	including the La Brea Tar Pits - were disturbed in the making of this
  *	tool. :-)
+ *
+ * Share and enjoy! :-)
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+
  */
 
 

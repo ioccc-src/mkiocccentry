@@ -1,5 +1,29 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.29 2025-02-27
+
+The script `jparse_bug_report.sh` actually can have the script in the `TOOLS`
+variable as it will not actually cause an infinite loop as it only gets the
+version of the tool - which is quite useful to know that the user is using the
+most recent version of the script.
+
+
+## Release 2.2.28 2025-02-26
+
+Finish 'depth' check concept in `struct fts`.
+
+Add to `struct fts` a `min_depth` and `max_depth` to complete the concept of the
+depth checks. This will only be used if depth <= 0 and only was added because in
+some cases it can be useful, kind of like `find -mindepth` and `find -maxdepth`
+can be (although there are slightly different semantics as we only want to have
+the checks if > 0 and if depth == 0 too). If someone supplies a bogus range, for
+instance a `min_depth > max_depth` then they will not get anything because what
+they asked cannot be fulfilled. The util test code tests this.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.25 2025-02-26"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.23 2025-02-26"`.
+
+
 ## Release 2.2.27 2025-02-24
 
 Enhance and make more sane the FTS functions even more.

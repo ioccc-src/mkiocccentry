@@ -1,22 +1,28 @@
 /*
  * version - official IOCCC toolkit versions
  *
- * Make an IOCCC compressed tarball for an IOCCC entry.
+ * "Because even printf has a return value worth paying attention to." :-)
+ *
+ * Make an IOCCC compressed tarball for an IOCCC submission.
  *
  * We will form the IOCCC entry compressed tarball "by hand" in C.
  * Not in some high level language, but standard vanilla (with a healthy
- * overdose of chocolate :-) ) C.  Why? Because this is an obfuscated C contest.
- * But then why isn't this code obfuscated?  Because the IOCCC judges prefer to
- * write in robust unobfuscated code.  Besides, the IOCCC was started as an
- * ironic commentary on the Bourne shell source and finger daemon source.
+ * overdose of chocolate :-) ) C.  Why?  Because this is an obfuscated C
+ * contest.  But then why isn't this code obfuscated?  Because the IOCCC judges
+ * prefer to write in robust unobfuscated code.  Besides, the IOCCC was started
+ * as an ironic commentary on the Bourne shell source and finger daemon source.
  * Moreover, irony is well baked-in to the IOCCC.  :-)
  *
- * If you do find a problem with this code, please let the judges know.
- * To contact the judges please see:
+ * OK, we do make use of shell scripts to help build and test
+ * this repo: but who doesn't use a bit of shell scripting now and then?  :-)
+ * Nevertheless, the core of building your IOCCC entry compressed tarball,
+ * the code that you, the IOCCC contestant will use, is all written in
+ * C because this is the IOCCC.
  *
- *      https://www.ioccc.org/contact.html
+ * If you do find a problem with this code, please let the us know by opening an
+ * issue at the GitHub issues page:
  *
- * "Because even printf has a return value worth paying attention to." :-)
+ *      https://github.com/ioccc-src/mkiocccentry/issues
  *
  * Many thanks are due to a number of people who provided important
  * and valuable testing, suggestions, issue reports and GitHub pull
@@ -24,14 +30,14 @@
  * would not work very well!
  *
  * Among the GitHub users we wish to thank include these fine developers
- * in alphabetical GitHub @user order:
+ * in alphabetical GitHub username order:
  *
  *	@ilyakurdyukov		Ilya Kurdyukov
  *	@SirWumpus		Anthony Howe
  *	@vog			Volker Diels-Grabsch
- *	@xexyl			Cody Boone Ferguson
  *
- * Copyright (c) 2021-2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -43,17 +49,28 @@
  *       source works derived from this source
  *       binaries derived from this source or from derived source
  *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
+ * THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+ * AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+ * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ * Most of these tool were co-developed in 2021-2025 by Cody Boone Ferguson and
+ * Landon Curt Noll:
+ *
+ *  @xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * and a few tools were developed by Cody and others by Landon.
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Share and enjoy! :-)
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
@@ -66,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.44 2025-02-26"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.3.45 2025-02-27"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*

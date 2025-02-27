@@ -224,15 +224,14 @@ substring and with the `-a` option one can list all codes that match, though the
 option is less useful without `-n` and is only checked for with at least one arg
 specified.
 
-This tool was developed in 2023 by:
-
-*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
-
-with improvements (`-a` and `-s` options via new re-entrant functions) by:
+This tool was co-developed in 2023 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
 
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 For more information and examples, try:
 
@@ -246,7 +245,7 @@ man ./soup/man/man1/location.1
 ### `jparse`: JSON parser
 
 The mkiocccentry toolkit creates and validates JSON files. The JSON parser
-`jparse`, which is cloned into this repo, was co-developed in 2022 by:
+`jparse`, which is cloned into this repo, was co-developed in 2022-2025 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))
@@ -260,7 +259,9 @@ See the [jparse repo](https://github.com/xexyl/jparse/) for the original.
 **NOTE**: you do **NOT** need a copy of this repo installed in order to use this
 toolkit as we have a clone of it here. It is even possible that there are
 divergences as once this repo is in a code freeze state, unless a critical bug
-is fixed, any changes in the repo will not be synced to this repo.
+is fixed, any changes in the repo will not be synced to this repo. In fact, even
+if you do install the code from that repo, compiling the code in this repo will
+**NOT** use that copy!
 
 You do **NOT** need to install this in order to compile this toolkit!
 
