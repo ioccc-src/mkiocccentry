@@ -76,7 +76,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="1.0.14 2025-02-25"
+export MKIOCCCENTRY_TEST_VERSION="1.0.15 2025-02-26"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -348,8 +348,8 @@ test -f "${topdir}"/prog.c || echo "int main(){}" >"${topdir}"/prog.c
 # delete the work directory for next test
 find "${workdir_esc}" -mindepth 1 -depth -delete
 # test empty prog.c, ignoring the warning about it
-echo "./mkiocccentry -y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -446,8 +446,8 @@ test -f "${topdir}"/prog.alt.c || touch "${topdir}"/prog.alt.c
 rm -f "${topdir}"/prog.c
 :> "${topdir}"/prog.c
 # test empty prog.c, ignoring the warning about it
-echo "./mkiocccentry -y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -540,8 +540,8 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -630,8 +630,8 @@ test -f "${topdir}"/bar || cat CODE_OF_CONDUCT.md >"${topdir}"/bar
 
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -724,8 +724,8 @@ test -f "${topdir}/$LONG_FILENAME" || touch "${topdir}/$LONG_FILENAME"
 
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 4 ]]; then
     echo "$0: ERROR: mkiocccentry exit code not 4: $status" 1>&2
@@ -819,8 +819,8 @@ test -f "${topdir_topdir}/foo" || touch "${topdir_topdir}/foo"
 
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
@@ -916,8 +916,8 @@ test -f "${topdir_topdir_topdir_topdir_topdir}/foo" || touch "${topdir_topdir_to
 
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
 status=$?
 if [[ ${status} -ne 4 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code not 4: $status" 1>&2

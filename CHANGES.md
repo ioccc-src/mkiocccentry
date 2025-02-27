@@ -19,6 +19,16 @@ tool - which is quite useful to know that the user is using the most recent
 version of the script. This was also done in `jparse/` but that doesn't matter
 here; it's only mentioned due to the sync.
 
+Enhance `mkiocccentry` prompting with `-i answers` used. Instead of always
+answering yes even when an issue is found, unless the new option `-Y` is used,
+give the user a chance to confirm things are okay (in particular, it allows one
+to answer no to a question; it does not prompt you for everything as that would
+defeat the purpose of the answers file). The use of `-Y` is highly discouraged
+unless you are **certain** you're good to go and it is mostly used for
+`mkiocccentry_test.sh` which needs to be non-interactive.
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.35 2025-02-27"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to` "1.0.15 2025-02-26"`.
 
 
 ## Release 2.3.44 2025-02-26
