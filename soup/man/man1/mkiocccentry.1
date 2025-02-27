@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "21 February 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "27 February 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -172,6 +172,11 @@ See:
 \<https://www.ioccc.org/next/index.html\>
 .ft R
 for information on the IOCCC rules and guidelines.
+.TP
+.B \-Y
+Force answer yes to questions even when you would otherwise be prompted.
+This is mostly for the test-suite and in particular for the reading of answers from a file.
+That is because when scanning the topdir and making directories and copying files from the topdir to the submission directory and checking that the directory ended up okay, we do prompt the user again.
 .TP
 .BI \-t\  tar
 Set path to

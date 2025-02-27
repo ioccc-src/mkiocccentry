@@ -125,7 +125,8 @@ static const char * const usage_msg0 =
     "\t\t\t    NOTE: the judges will NOT use this option\n"
     "\t-E\t\texit non-zero after the first warning (def: do not)\n"
     "\t\t\t    NOTE: one cannot use both -W and -E.\n"
-    "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)";
+    "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n"
+    "\t-Y\t\tforce answer yes even when using -i answers";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar(1) that supports the -J (xz) option (def: %s)\n"
     "\t-l ls\t\tpath to ls(1) (def: %s)\n"
@@ -184,6 +185,10 @@ static uintmax_t feathery = 3;		/* for entertain option of txzchk (-e) */
 static bool silence_prompt = false;	/* true ==> do not display prompts */
 static bool read_answers_flag_used = false;	/* true ==> -i read answers from answers file */
 static bool seed_used = false;		/* true ==> -d or -s seed given */
+static bool copying_topdir = false;    /* true ==> copying topdir and checking submission dir */
+static bool saved_answer_yes = false;   /* set to answer_yes before modifying it for scanning/copying topdir */
+static bool saved_silence_prompt = false;   /* set to silence_prompt before modifying it for scanning/copying topdir */
+static bool force_yes = false;          /* force -y even when scanning/copying/verifying in -i answers mode */
 
 /*
  * forward declarations
@@ -245,7 +250,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yds:m:I:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yYds:m:I:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -301,20 +306,21 @@ main(int argc, char *argv[])
 	    answers_flag_used = true;
 	    break;
 	case 'i':		/* -i input_recorded_answers */
-	    answers = optarg;
-	    read_answers_flag_used = true;
-            /*
-             * set need_confirm to false to prevent problem where a user might
-             * have a different file set
-             */
-	    need_confirm = false;
-            /*
-             * set answer_yes to prevent problem where a user might have a
-             * different file set
-             */
+            read_answers_flag_used = true;
+             /*
+              * set need_confirm to false to prevent problem where a user might
+              * have a different file set
+              */
+            need_confirm = false;
+             /*
+              * set answer_yes to prevent problem where a user might have a
+              * different file set
+              */
             answer_yes = true;
-	    need_hints = false;
-	    silence_prompt = true;
+            need_hints = false;
+            silence_prompt = true;
+	    answers = optarg;
+            answer_yes = true;
 	    break;
 	case 'W':		/* -W ignores all warnings (this does NOT the judges will! :) ) */
 	    ignore_warnings = true;
@@ -347,6 +353,11 @@ main(int argc, char *argv[])
 	    answer_yes = true;
 	    need_confirm = false;
 	    break;
+        case 'Y': /* force yes even when we would normally temporarily undo it */
+            force_yes = true;
+            answer_yes = true;
+            need_confirm = false;
+            break;
 	case 'd':		/* alias for -s DEFAULT_SEED */
 	    answer_seed = DEFAULT_SEED;
 	    seed_used = true;
@@ -358,6 +369,7 @@ main(int argc, char *argv[])
 	    silence_prompt = true;
 	    /* set -E boolean */
 	    abort_on_warning = true;
+            force_yes = true;
 	    break;
 	case 's':		/* set seed as seed & SEED_MASK */
 	    /*
@@ -381,6 +393,7 @@ main(int argc, char *argv[])
 		silence_prompt = true;
 		/* set -E boolean */
 		abort_on_warning = true;
+                force_yes = true;
 	    }
 	    break;
         case 'm': /* set path to make(1) */
@@ -643,6 +656,7 @@ main(int argc, char *argv[])
 	}
 	input_stream = answersp;
     }
+
     /*
      * obtain the IOCCC contest ID
      */
@@ -1189,6 +1203,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
         err(33, __func__, "passed NULL pointer(s)");
         not_reached();
     }
+
 
     /*
      * list of required files (prog.c, Makefile and remarks.md) (this will be
@@ -1803,13 +1818,29 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
      * files list is empty (though in theory if that did happen we should never
      * get here).
      */
-
     /*
-     * free arrays IFF (if and only if) they are empty
+     * If -Y is not used and -i answers is used we need to temporarily disable
+     * the -y so that the user can verify different file sets (if something
+     * changes for example). Normally we don't need to do this as it would
+     * happen anyway but with -i answers it is disabled as it forces -y. If one
+     * is SURE they are okay they can use -Y instead and they won't be bothered
+     * even in this and the next function (check_submission_dir()).
+     *
+     * NOTE: we will undo these at the end of check_submission_dir().
+     *
+     * NOTE: we will always save the current status of the silence_prompt and
+     * answer_yes booleans.
      */
-    free_paths_array(&infop->required_files, true);
-    if (infop->required_files == NULL) {
-        err(4, __func__, "NULL required files list array");/*ooo*/
+    copying_topdir = true;
+    saved_silence_prompt = silence_prompt;
+    saved_answer_yes = answer_yes;
+    if (!force_yes) {
+        answer_yes = false;
+        silence_prompt = false;
+    }
+
+    if (paths_in_array(infop->required_files) <= 0) {
+        err(4, __func__, "required files list array is empty");/*ooo*/
         not_reached();
     }
     /*
@@ -1933,7 +1964,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you delete %s and try again\nwith the correct options used\n",
@@ -1981,7 +2012,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2022,7 +2053,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2072,7 +2103,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2112,7 +2143,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2149,7 +2180,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2183,7 +2214,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 }
                 print("%s\n", p);
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -2243,7 +2274,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                     print("%s\n", p);
                 }
             }
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -3362,7 +3393,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                 print("%s\n", p);
             }
 
-            if (!answer_yes && !read_answers_flag_used) {
+            if (!answer_yes) {
                 yorn = yes_or_no("\nIs this OK? [Yn]", true);
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -3421,7 +3452,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                 }
             }
         }
-        if (!answer_yes && !read_answers_flag_used) {
+        if (!answer_yes) {
             yorn = yes_or_no("\nIs this OK? [Yn]", true);
             if (!yorn) {
                 print("we suggest you fix your %s directory,\ndelete %s and try again\n",
@@ -3484,6 +3515,12 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
         errp(114, __func__, "failed to close(cwd)");
         not_reached();
     }
+    /*
+     * undo special checks for -i answers
+     */
+    copying_topdir = false;
+    silence_prompt = saved_silence_prompt;
+    answer_yes = saved_answer_yes;
 }
 
 /*
@@ -3986,6 +4023,7 @@ prompt(char const *str, size_t *lenp)
     int ret;			/* libc function return value */
     size_t len;			/* length of input */
     char *buf;			/* allocated input string */
+    FILE *stream = NULL;        /* input_stream or stdin depending on options used */
 
     /*
      * firewall
@@ -3996,6 +4034,13 @@ prompt(char const *str, size_t *lenp)
 	err(138, __func__, "called with NULL str");
 	not_reached();
     }
+
+    if (copying_topdir) {
+        stream = stdin;
+    } else {
+        stream = input_stream;
+    }
+
 
     /*
      * prompt + :<space> if silence_prompt is false
@@ -4051,7 +4096,7 @@ prompt(char const *str, size_t *lenp)
     /*
      * read user input - return input length
      */
-    buf = readline_dup(&linep, true, &len, input_stream);
+    buf = readline_dup(&linep, true, &len, stream);
     if (buf == NULL) {
 	err(148, __func__, "EOF while reading prompt input");
 	not_reached();
@@ -5970,7 +6015,7 @@ get_abstract(struct info *infop)
  *      true ==> input is yes in some form,
  *      false ==> input is not yes or there was a read error.
  *
- * NOTE: The -y (answer_yes) as no impact on this function as
+ * NOTE: The -y (answer_yes) has no impact on this function as
  *	 the yes or no input will be read regardless.
  */
 static bool
@@ -5980,12 +6025,18 @@ noprompt_yes_or_no(void)
     size_t len;			/* length of input */
     char *response;		/* yes or no response */
     char *p;
+    FILE *stream = NULL;        /* we need this so we can prompt users with -i answers */
 
+    if (read_answers_flag_used && !answer_yes) {
+        stream = stdin;
+    } else {
+        stream = input_stream;
+    }
     /*
      * read user input - return input length
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    response = readline_dup(&linep, true, &len, input_stream);
+    response = readline_dup(&linep, true, &len, stream);
     if (response == NULL) {
 
 	/*
@@ -7402,16 +7453,14 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     ls_stream = NULL;
 
     /*
-     * if either -d or -s seed are used, temporarily turn on prompting
+     * we make sure that unless -Y is used the user always has a chance to look
+     * at the final directory output
      */
-    if (seed_used) {
-	silence_prompt = false;
-
-    /*
-     * however, if -i input_recorded_answers is used, force prompting
-     */
-    } else if (read_answers_flag_used) {
-	silence_prompt = false;
+    saved_silence_prompt = silence_prompt;
+    saved_answer_yes = answer_yes;
+    if (!force_yes) {
+        answer_yes = false;
+        silence_prompt = false;
     }
 
     /*
@@ -7430,23 +7479,13 @@ verify_submission_dir(char const *submission_dir, char const *ls)
                   "not the topdir where your submission files are) and then rerun this tool",
                   "again.",
 		  NULL);
-	    err(14, __func__, "user rejected listing of submission directory: %s", submission_dir);
+	    err(5, __func__, "user rejected listing of submission directory: %s", submission_dir);/*ooo*/
 	    not_reached();
 	}
     }
 
-    /*
-     * if either -d or -s seed are used, silence prompting again
-     */
-    if (seed_used) {
-	silence_prompt = true;
-
-    /*
-     * and of input_recorded_answers was used, silence prompting and turn back on -y
-     */
-    } else if (read_answers_flag_used) {
-	silence_prompt = true;
-    }
+    silence_prompt = saved_silence_prompt;
+    answer_yes = saved_answer_yes;
 
     /*
      * free storage
