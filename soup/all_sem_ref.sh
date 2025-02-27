@@ -6,7 +6,6 @@
 # and .auth.json files, form *.json.c and *.json.h semantic table files
 # under a given directory.
 #
-#
 # The JSON parser and this tool were co-developed in 2022 by:
 #
 #	@xexyl

@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.44 2025-02-27
+
+Prepare for code freeze (28 February 2025) with some final changes, some
+important (and useful) and some not that important (but done to be complete).
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` before code
+freeze (28 February 2025).
+
+Updated copyright messages, some missing, some updated (based on brief
+discussions a while back and more recently, recent updates to code and perhaps
+other things) to many files.
+
+The script `bug_report.sh` actually can have the script in the TOOLS variable as
+it will not actually cause an infinite loop as it only gets the version of the
+tool - which is quite useful to know that the user is using the most recent
+version of the script. This was also done in `jparse/` but that doesn't matter
+here; it's only mentioned due to the sync.
+
+
+
 ## Release 2.3.44 2025-02-26
 
 Remove unused arg in `write_json_files()`.

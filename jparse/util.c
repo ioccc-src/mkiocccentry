@@ -1482,6 +1482,8 @@ is_exec(char const *path)
  *      logical     bool                                        false
  *      count       int                                         0
  *      depth       int                                         0
+ *      min_depth   int                                         0
+ *      max_depth   int                                         0
  *      base        bool                                        false
  *      seedot      bool                                        false
  *      match_case  bool                                        false
@@ -1541,6 +1543,8 @@ reset_fts(struct fts *fts, bool free_ignored)
     fts->type = FTS_TYPE_ANY; /* default to any type to not make any assumption */
     fts->count = 0;
     fts->depth = 0;
+    fts->min_depth = 0;
+    fts->max_depth = 0;
     fts->base = false;
     fts->seedot = false;
     fts->match_case = false;
@@ -1908,8 +1912,8 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * The intended purpose of this function is to use it in a do..while loop but as
  * noted above if you need to find a specific path or paths there are better
  * functions (they also use the fts struct). This function allows you to check
- * by depth as well and also file type, ignoring those that are not needed or
- * wanted.
+ * by depth (exact or min and/or max)  as well and also file type, ignoring
+ * those that are not needed or wanted.
  *
  * The cmp() function pointer in the struct fts is a callback which is used in
  * fts_open() (user-defined) to order the way the tree is traversed. If it is
@@ -1967,6 +1971,8 @@ check_fts_info(FTS *fts, FTSENT *ent)
  *      count       - if > 0 and base == false search until count file have
  *                    been found
  *      depth       - if > 0 required depth
+ *      min_depth   - if > 0 the path depth must be >= this value (if depth <= 0)
+ *      max_depth   - if > 0 the path depth must be <= this value (if depth <= 0)
  *      base        - true ==> basename only (i.e. fts->fts_name)
  *      seedot      - true ==> don't skip '.' and '..',
  *                    false ==> skip '.' and '..'
@@ -1991,6 +1997,8 @@ check_fts_info(FTS *fts, FTSENT *ent)
  *      logical         ==> false (will set fts->fts_options to FTS_PHYSICAL)
  *      type            ==> FTS_TYPE_ANY (any type of file)
  *      depth           ==> 0 (ignore depth)
+ *      min_depth       ==> 0 (no min depth)
+ *      max_depth       ==> 0 (no max depth)
  *      seedot          ==> false (remove FTS_SEEDOT; true could be done in options as well)
  *      ignore          ==> NULL (don't ignore anything)
  *      cmp             ==> fts_rcmp
@@ -2001,8 +2009,8 @@ check_fts_info(FTS *fts, FTSENT *ent)
  *
  * IMPORTANT: you MUST memset() struct fts to 0 first BEFORE calling reset_fts()
  * and you MUST use reset_fts() before the first use of this function or
- * find_path() or find_paths() (which actually use this function)! An example
- * use:
+ * find_path() or find_paths() (which actually use this function)! This is
+ * because we can then be sure everything is a sane value. An example use:
  *
  *      FTSENT *ent = NULL;
  *      struct fts fts;
@@ -2039,6 +2047,11 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * but AFTER doing the memset() and reset_fts():
  *
  *      append_path(&(fts.ignore), "foo", true, false, false); // last false means don't match case
+ *
+ * NOTE: if one specifies a bogus range for min/max depth the function will find
+ * nothing. For example if one gives a min_depth > the max_depth the function
+ * will skip past every file. Of course this only matters if they are > 0. This
+ * is tested in the util test code.
  *
  * As a special feature we offer a way to restore and close the previous working
  * directory. If all the pointers (except cwd) are NULL and *cwd > 0 we will try
@@ -2269,8 +2282,38 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                 /*
                  * first check depth
                  */
-                if (fts->depth > 0 && ent->fts_level != fts->depth) {
-                    continue;
+                /*
+                 * if depth > 0 then we will NOT check for min or max depth
+                 */
+                if (fts->depth > 0) {
+                    if (ent->fts_level != fts->depth) {
+                        continue;
+                    }
+                } else if (fts->min_depth > 0 || fts->max_depth > 0) {
+                    /*
+                     * if min_depth > 0 and max_depth > 0 the depth has to be in
+                     * the range
+                     */
+                    if (fts->min_depth > 0 && fts->max_depth > 0 &&
+                            (ent->fts_level < fts->min_depth || ent->fts_level > fts->max_depth)) {
+                        continue;
+                    } else if (fts->min_depth > 0) {
+                        /*
+                         * if only min depth is set then the depth of this file
+                         * must be >= that value
+                         */
+                        if (ent->fts_level < fts->min_depth) {
+                            continue;
+                        }
+                    } else if (fts->max_depth > 0) {
+                        /*
+                         * if max_depth > 0 then the current depth must be <=
+                         * the max_depth
+                         */
+                        if (ent->fts_level > fts->max_depth) {
+                            continue;
+                        }
+                    }
                 /*
                  * case: we do not want to see '.' or '..' or './' and that is
                  * what the path is
@@ -8799,7 +8842,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.21 2025-02-24" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.23 2025-02-26" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -10154,9 +10197,9 @@ main(int argc, char **argv)
      */
 
     /*
-     * make some directories
+     * make some a directory under test_jparse/ with many subdirectories
      */
-    relpath = "test_jparse/a/b/c";
+    relpath = "test_jparse/a/b/c/d/e/f/g";
     /*
      * we need to know if this path already exists so we know whether or not to
      * test the modes
@@ -10185,8 +10228,9 @@ main(int argc, char **argv)
         }
     }
 
+
     /*
-     * make a single directory
+     * make a single directory under test_jparse/
      */
     relpath = "test_jparse/b";
     /*
@@ -10679,6 +10723,8 @@ main(int argc, char **argv)
      */
     (void) read_fts(NULL, -1, &cwd, NULL);
 
+
+
     /*
      * we need to test find_paths() now
      */
@@ -10696,6 +10742,7 @@ main(int argc, char **argv)
      * directories
      */
     append_path(&paths, "test_jparse", true, false, true);
+    append_path(&paths, "test_jparse/a", true, false, true);
     append_path(&paths, "test_jparse/test_JSON", true, false, true);
     /*
      * special checks: . and ..
@@ -11209,6 +11256,225 @@ main(int argc, char **argv)
     (void) read_fts(NULL, -1, &cwd, NULL);
 
     /*
+     * test find_paths() looking for directories under test_jparse/a with a min
+     * depth of 4 and a max depth of 5
+     */
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    fts.type = FTS_TYPE_DIR;
+    fts.depth = 0;
+    fts.min_depth = 4;
+    fts.max_depth = 5;
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
+    if (paths_found == NULL) {
+        err(208, __func__, "didn't find any paths in the paths array");
+        not_reached();
+    }
+
+    /*
+     * show what we found
+     */
+    len = paths_in_array(paths_found);
+    if (len > 0) {
+        size_t dirs = 0; /* directories */
+        for (j = 0; j < len; ++j) {
+            /* get next string pointer */
+            name = dyn_array_value(paths_found, char *, j);
+            if (name == NULL) {	/* paranoia */
+                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                not_reached();
+            }
+
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    ++dirs;
+                }
+            }
+        }
+        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_jparse with min/max depth of 4/5",
+            (uintmax_t)dirs, dirs==1?"y":"ies");
+    }
+    /*
+     * free array
+     */
+    free_paths_array(&paths_found, false);
+    paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+    /*
+     * test find_paths() looking for directories under test_jparse/a with a min
+     * depth of 0 and a max depth of 3
+     */
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    fts.type = FTS_TYPE_DIR;
+    fts.depth = 0;
+    fts.min_depth = 0;
+    fts.max_depth = 3;
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
+    if (paths_found == NULL) {
+        err(208, __func__, "didn't find any paths in the paths array");
+        not_reached();
+    }
+
+    /*
+     * show what we found
+     */
+    len = paths_in_array(paths_found);
+    if (len > 0) {
+        size_t dirs = 0; /* directories */
+        for (j = 0; j < len; ++j) {
+            /* get next string pointer */
+            name = dyn_array_value(paths_found, char *, j);
+            if (name == NULL) {	/* paranoia */
+                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                not_reached();
+            }
+
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    ++dirs;
+                }
+            }
+        }
+        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_jparse with min/max depth of 0/3",
+            (uintmax_t)dirs, dirs==1?"y":"ies");
+    }
+    /*
+     * free array
+     */
+    free_paths_array(&paths_found, false);
+    paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+    /*
+     * test find_paths() looking for directories under test_jparse/a with a min
+     * depth of 0 and a max depth of 0.
+     *
+     * NOTE: this disables the check.
+     */
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    fts.type = FTS_TYPE_DIR;
+    fts.depth = 0;
+    fts.min_depth = 0;
+    fts.max_depth = 0;
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
+    if (paths_found == NULL) {
+        err(208, __func__, "didn't find any paths in the paths array");
+        not_reached();
+    }
+
+    /*
+     * show what we found
+     */
+    len = paths_in_array(paths_found);
+    if (len > 0) {
+        size_t dirs = 0; /* directories */
+        for (j = 0; j < len; ++j) {
+            /* get next string pointer */
+            name = dyn_array_value(paths_found, char *, j);
+            if (name == NULL) {	/* paranoia */
+                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                not_reached();
+            }
+
+            /*
+             * if dbg level DBG_MED is allowed, report what we found
+             */
+            if (dbg_allowed(DBG_MED)) {
+                if (is_dir(name)) {
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    ++dirs;
+                }
+            }
+        }
+        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_jparse with min/max depth of 0/0",
+            (uintmax_t)dirs, dirs==1?"y":"ies");
+    }
+    /*
+     * free array
+     */
+    free_paths_array(&paths_found, false);
+    paths_found = NULL; /* paranoia */
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+
+
+    /*
+     * test find_paths() looking for directories under test_jparse/a with a min
+     * depth of 7 and a max depth of 3.
+     *
+     * NOTE: that is not a typo; we're testing bogus ranges.
+     */
+    /*
+     * reset fts
+     */
+    fts.base = true;
+    fts.seedot = false;
+    fts.match_case = true;
+    fts.type = FTS_TYPE_DIR;
+    fts.depth = 0;
+    fts.min_depth = 7;
+    fts.max_depth = 3;
+    paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
+    if (paths_found != NULL) {
+        err(208, __func__, "bogus range of min/max directories found directories");
+        not_reached();
+    }
+
+
+    /*
+     * restore earlier directory that might have happened with read_fts()
+     *
+     * NOTE: this will close cwd so it will no longer be valid (that does not
+     * mean it can't be reset)
+     */
+    (void) read_fts(NULL, -1, &cwd, NULL);
+
+
+    /*
      * special test: verify no sockets exist in the directory by setting path to
      * "" and setting FTS_TYPE_SOCK
      */
@@ -11337,7 +11603,7 @@ main(int argc, char **argv)
     /*
      * special test: verify no file types exist in the directory other than
      * files, directories and symlinks by setting the path to "" and masking
-     * FTS_TYPE_ANY with (FTS_TYPE_FILE|FTS_TYPE_DIR|FTS_TYPE_SYMLINK).
+     * FTS_TYPE_ANY by ~(FTS_TYPE_FILE|FTS_TYPE_DIR|FTS_TYPE_SYMLINK).
      */
     /*
      * reset fts

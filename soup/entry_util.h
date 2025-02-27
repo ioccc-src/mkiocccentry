@@ -7,9 +7,38 @@
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * This tool and the JSON parser were co-developed in 2022 by:
+ * As per IOCCC anonymous judging policy, the calls to json_dbg() in this file
+ * that are JSON_DBG_MED or lower will NOT reveal any JSON content.
+ * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
+ * print JSON content.
  *
- *	@xexyl
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+ * "Because grammar and syntax alone do not make a complete language." :-)
+ *
+ * Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+ * AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+ * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * This tool and the JSON parser were co-developed in 2022-2025 by Cody Boone
+ * Ferguson and Landon Curt Noll:
+ *
+ *  @xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  * and:

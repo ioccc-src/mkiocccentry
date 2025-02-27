@@ -36,15 +36,15 @@
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
+# Share and enjoy! :-)
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
 # setup
 #
 # Maintain this list towards the top of file, in sorted order.
 #
-# Do NOT put this tool (bug_report.sh) in the list, it will
-# cause an infinite loop.
-#
 export TOOLS="
+    ./bug_report.sh
     ./chkentry
     ./dbg/dbg_test
     ./dyn_array/dyn_test
@@ -96,7 +96,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.8 2025-02-11"
+export BUG_REPORT_VERSION="1.0.9 2025-02-27"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1471,7 +1471,7 @@ if [[ -z "$T_FLAG" ]]; then
     # use of this repo so each time the script fails we report the issue for that
     # very reason.
     #
-    run_check 42 "$MAKE $MAKE_FLAGS all" # the answer to life, the universe and everything conveniently makes all :-)
+    run_check 42 "$MAKE $MAKE_FLAGS all" # the answer to Life, the Universe and Everything conveniently makes all :-)
 
     # make test: run the IOCCC toolkit test suite
     run_check 43 "$MAKE $MAKE_FLAGS test"

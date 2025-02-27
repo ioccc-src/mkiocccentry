@@ -4,6 +4,35 @@
  * "Because sometimes code is foo and sometimes foo is fubar." :-)
  * "Because sometimes we need more O in C." :-)
  *
+ * Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll.
+ * All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ * ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+ * AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+ * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * This tool and the JSON parser were co-developed in 2022-2025 by Cody Boone
+ * Ferguson and Landon Curt Noll:
+ *
+ *  @xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
  * The concept of this file was developed by:
  *
  *	Cody Boone Ferguson
@@ -13,21 +42,12 @@
  * bonkers and in fact he quite welcomes it and even relishes the idea! :-)
  *
  * "Because Cody enjoys being a bit bonkers and he is rather proud of it too!" :-)
- *
- * This tool and the JSON parser were co-developed in 2022-2024 by:
- *
- *	@xexyl
- *	https://xexyl.net		Cody Boone Ferguson
- *	https://ioccc.xexyl.net
- * and:
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * BTW: If you want to win the IOCCC every time all you need to do
+ * BTW: if you want to win the IOCCC every time all you need to do
  * (supposedly :-) ) is decipher this quote with a top secret hint from Landon
- * to me in private. It's so secret and seems so ridiculously simple in fact
- * that I've decided to not use it as it all seems more like a misleading
+ * to me (Cody) in private. It's so secret and seems so ridiculously simple in
+ * fact that I've decided to not use it as it all seems more like a misleading
  * comment and possibly a huge joke. Nevertheless I give you, dear reader, the
  * chance to always win should you determine what this says:
  *
