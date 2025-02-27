@@ -27,6 +27,9 @@ defeat the purpose of the answers file). The use of `-Y` is highly discouraged
 unless you are **certain** you're good to go and it is mostly used for
 `mkiocccentry_test.sh` which needs to be non-interactive.
 
+Improve usage string about `workdir` and `topdir` to make certain things a bit
+clearer.
+
 Updated `MKIOCCCENTRY_VERSION` to `"1.2.35 2025-02-27"`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to` "1.0.15 2025-02-26"`.
 
