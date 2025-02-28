@@ -11271,7 +11271,7 @@ main(int argc, char **argv)
     fts.max_depth = 5;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(208, __func__, "didn't find any paths in the paths array");
+        err(210, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -11285,7 +11285,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(211, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -11332,7 +11332,7 @@ main(int argc, char **argv)
     fts.max_depth = 3;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(208, __func__, "didn't find any paths in the paths array");
+        err(212, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -11346,7 +11346,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(213, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -11395,7 +11395,7 @@ main(int argc, char **argv)
     fts.max_depth = 0;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found == NULL) {
-        err(208, __func__, "didn't find any paths in the paths array");
+        err(214, __func__, "didn't find any paths in the paths array");
         not_reached();
     }
 
@@ -11409,7 +11409,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(209, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(215, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
                 not_reached();
             }
 
@@ -11460,7 +11460,7 @@ main(int argc, char **argv)
     fts.max_depth = 3;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(208, __func__, "bogus range of min/max directories found directories");
+        err(216, __func__, "bogus range of min/max directories found directories");
         not_reached();
     }
 
@@ -11489,7 +11489,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(210, __func__, "found unexpected socket under test_jparse/");
+        err(217, __func__, "found unexpected socket under test_jparse/");
         not_reached();
     }
 
@@ -11521,7 +11521,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(211, __func__, "found unexpected character device under test_jparse/");
+        err(218, __func__, "found unexpected character device under test_jparse/");
         not_reached();
     }
 
@@ -11554,7 +11554,7 @@ main(int argc, char **argv)
     fts.match_case = true;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(212, __func__, "found unexpected block device under test_jparse/");
+        err(219, __func__, "found unexpected block device under test_jparse/");
         not_reached();
     }
 
@@ -11581,7 +11581,7 @@ main(int argc, char **argv)
     fts.match_case = false;
     paths_found = find_paths(paths, "test_jparse", -1, &cwd, false, &fts);
     if (paths_found != NULL) {
-        err(213, __func__, "found unexpected FIFO under test_jparse/");
+        err(220, __func__, "found unexpected FIFO under test_jparse/");
         not_reached();
     }
 
@@ -11621,7 +11621,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(214, __func__, "found NULL pointer in paths_found (not file, directory or symlink) array");
+                err(221, __func__, "found NULL pointer in paths_found (not file, directory or symlink) array");
                 not_reached();
             }
             warn(__func__, "path is not a file, directory or symlink: %s", name);
@@ -11629,7 +11629,7 @@ main(int argc, char **argv)
         /*
          * make it an error
          */
-        err(215, __func__, "found unexpected file type under test_jparse/");
+        err(222, __func__, "found unexpected file type under test_jparse/");
         not_reached();
     }
 
@@ -11669,7 +11669,7 @@ main(int argc, char **argv)
     relpath = "foobar";
     touch(relpath, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (!exists(relpath)) {
-        err(216, __func__, "file %s does not exist after touch()", relpath);
+        err(223, __func__, "file %s does not exist after touch()", relpath);
         not_reached();
     }
 
@@ -11693,17 +11693,17 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(217, __func__, "found NULL pointer in paths_found (any) array");
+                err(224, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             if (strcmp(relpath, name) != 0) {
-                err(218, __func__, "found non-matching file in list: %s != %s", name, relpath);
+                err(225, __func__, "found non-matching file in list: %s != %s", name, relpath);
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found file %s as case-sensitive search", name);
         }
     } else {
-        err(219, __func__, "couldn't find any file called \"%s\" as case-sensitive search", relpath);
+        err(226, __func__, "couldn't find any file called \"%s\" as case-sensitive search", relpath);
         not_reached();
     }
 
@@ -11742,18 +11742,18 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(220, __func__, "found NULL pointer in paths_found (any) array");
+                err(227, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             if (strcasecmp(relpath, name) != 0) {
-                err(221, __func__, "found non-matching file in list: %s != %s", name, relpath);
+                err(228, __func__, "found non-matching file in list: %s != %s", name, relpath);
                 not_reached();
             }
 
             fdbg(stderr, DBG_MED, "found %s by case-insensitive search", name);
         }
     } else {
-        err(222, __func__, "couldn't find any file called \"%s\" by case-insensitive search", relpath);
+        err(229, __func__, "couldn't find any file called \"%s\" by case-insensitive search", relpath);
         not_reached();
     }
 
@@ -11763,7 +11763,7 @@ main(int argc, char **argv)
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {
         if (errno != ENOENT) {
-            errp(223, __func__, "unable to delete file %s", relpath);
+            errp(230, __func__, "unable to delete file %s", relpath);
             not_reached();
         }
     } else {
@@ -11805,7 +11805,7 @@ main(int argc, char **argv)
      * make sure it exists
      */
     if (!exists(relpath)) {
-        err(224, __func__, "file %s does not exist", relpath);
+        err(231, __func__, "file %s does not exist", relpath);
         not_reached();
     }
 
@@ -11843,7 +11843,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(225, __func__, "found NULL pointer in paths_found (any) array");
+                err(232, __func__, "found NULL pointer in paths_found (any) array");
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found file %s as case-sensitive search", name);
@@ -11892,11 +11892,11 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {
-                err(226, __func__, "found NULL pointer in paths_found array");
+                err(233, __func__, "found NULL pointer in paths_found array");
                 not_reached();
             }
             if (strcasecmp(relpath, name) != 0) {
-                err(227, __func__, "found non-matching file: %s != %s", name, relpath);
+                err(234, __func__, "found non-matching file: %s != %s", name, relpath);
                 not_reached();
             }
             fdbg(stderr, DBG_MED, "found %s by case-insensitive search", name);
@@ -11905,7 +11905,7 @@ main(int argc, char **argv)
         /*
          * as it is a case-insensitive it should always succeed
          */
-        err(228, __func__, "couldn't find any file called %s by case-insensitive search", relpath);
+        err(235, __func__, "couldn't find any file called %s by case-insensitive search", relpath);
         not_reached();
     }
 
@@ -11935,7 +11935,7 @@ main(int argc, char **argv)
         free(fname);
         fname = NULL;
     } else {
-        err(229, __func__, "couldn't find %s in tree", relpath);
+        err(236, __func__, "couldn't find %s in tree", relpath);
         not_reached();
     }
 
@@ -11946,7 +11946,7 @@ main(int argc, char **argv)
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {
         if (errno != ENOENT) {
-            errp(230, __func__, "unable to delete file %s", relpath);
+            errp(237, __func__, "unable to delete file %s", relpath);
             not_reached();
         }
     } else {

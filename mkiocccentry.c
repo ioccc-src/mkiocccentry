@@ -7517,7 +7517,7 @@ form_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-        err(15, __func__, "passed NULL infop");
+        err(14, __func__, "passed NULL infop");
         not_reached();
     }
     /*
@@ -7536,13 +7536,13 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(16, __func__, "cannot set TZ=UTC");
+	errp(15, __func__, "cannot set TZ=UTC");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(17, __func__, "gmtime returned NULL");
+	errp(16, __func__, "gmtime returned NULL");
 	not_reached();
     }
 
@@ -7553,7 +7553,7 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     infop->utctime = (char *)calloc(utctime_len + 1, sizeof(char)); /* + 1 for paranoia padding */
     if (infop->utctime == NULL) {
-	errp(18, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
+	errp(17, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -7568,7 +7568,7 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
-	errp(19, __func__, "strftime returned 0");
+	errp(18, __func__, "strftime returned 0");
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
@@ -7610,7 +7610,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * firewall
      */
     if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL) {
-        err(20, __func__, "called with NULL arg(s)");
+        err(19, __func__, "called with NULL arg(s)");
         not_reached();
     }
 
@@ -7618,10 +7618,10 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * first write .auth.json
      */
     if (authp->author_count <= 0) {
-	err(21, __func__, "author_count %d <= 0", authp->author_count);
+	err(20, __func__, "author_count %d <= 0", authp->author_count);
 	not_reached();
     } else if (authp->author_count > MAX_AUTHORS) {
-	err(22, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
+	err(21, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
 	not_reached();
     }
 
@@ -7632,27 +7632,27 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     auth_path = (char *)malloc(auth_path_len + 1);
     if (auth_path == NULL) {
-	errp(23, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
+	errp(22, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
-	errp(24, __func__, "snprintf #0 error: %d", ret);
+	errp(23, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
     errno = 0;			/* pre-clear errno for errp() */
     auth_stream = fopen(auth_path, "w");
     if (auth_stream == NULL) {
-	errp(25, __func__, "failed to open for writing: %s", auth_path);
+	errp(24, __func__, "failed to open for writing: %s", auth_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        err(26, __func__, "failed to obtain file descriptor for: %s", auth_path);
+        err(25, __func__, "failed to obtain file descriptor for: %s", auth_path);
         not_reached();
     }
 
@@ -7675,7 +7675,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
 	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
     if (!ret) {
-	errp(27, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
+	errp(26, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -7702,7 +7702,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
 	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
 	if (ret == false) {
-	    errp(28, __func__, "fprintf error writing author %d info to %s", i, auth_path);
+	    errp(27, __func__, "fprintf error writing author %d info to %s", i, auth_path);
 	    not_reached();
 	}
     }
@@ -7718,7 +7718,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
-	errp(29, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
+	errp(28, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -7728,7 +7728,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(auth_stream);
     if (ret < 0) {
-	errp(30, __func__, "fclose error");
+	errp(29, __func__, "fclose error");
 	not_reached();
     }
 
@@ -7738,7 +7738,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(31, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
+        err(30, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
         not_reached();
     }
 
@@ -7748,7 +7748,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0; /* pre-clear for errp() */
     ret = close(fd);
     if (ret < 0) {
-        errp(32, __func__, "close(fd) failed");
+        errp(31, __func__, "close(fd) failed");
         not_reached();
     }
 
@@ -7756,7 +7756,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * now write .info.json
      */
     if (infop->required_files == NULL) {
-        err(33, __func__, "called with NULL files list");
+        err(32, __func__, "called with NULL files list");
         not_reached();
     }
 
@@ -7767,20 +7767,20 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(34, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(33, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/%s", submission_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
-	errp(35, __func__, "snprintf #0 error: %d", ret);
+	errp(34, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(36, __func__, "failed to open for writing: %s", info_path);
+	errp(35, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
     }
 
@@ -7790,7 +7790,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0; /* pre-clear errno for errp() */
     fd = open(info_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        errp(37, __func__, "failed to obtain file descriptor for: %s", info_path);
+        errp(36, __func__, "failed to obtain file descriptor for: %s", info_path);
         not_reached();
     }
 
@@ -7833,7 +7833,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
 	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {
-	errp(38, __func__, "fprintf error writing leading part of info to %s", info_path);
+	errp(37, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
 
@@ -7866,7 +7866,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", "remarks.md", "\n") &&
 			    fprintf(info_stream, "        }%s\n", (infop->extra_count > 0) ?  "," : "") > 0;
     if (!ret) {
-	errp(39, __func__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(38, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
 
@@ -7877,14 +7877,14 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
         for (j = 0; j < infop->extra_count; ++j) {
             p = dyn_array_value(infop->extra_files, char *, j);
             if (p == NULL) {
-                err(40, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)j);
+                err(39, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)j);
                 not_reached();
             }
             ret =                   fprintf(info_stream, "        {\n") > 0 &&
                   json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", p, "\n") &&
                                     fprintf(info_stream, "        }%s\n", ((j+1) < infop->extra_count) ?  "," : "") > 0;
             if (!ret) {
-                errp(41, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)j, info_path);
+                errp(40, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)j, info_path);
                 not_reached();
             }
         }
@@ -7900,7 +7900,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_long(info_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
-	errp(42, __func__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(41, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
 
@@ -7910,7 +7910,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(43, __func__, "fclose error");
+	errp(42, __func__, "fclose error");
 	not_reached();
     }
 
@@ -7921,7 +7921,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(44, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
+        err(43, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
         not_reached();
     }
 
@@ -7973,19 +7973,19 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
      * firewall
      */
     if (authp == NULL || infop == NULL || authorp == NULL) {
-	err(45, __func__, "called with NULL arg(s)");
+	err(44, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (infop->ioccc_id == NULL) {
-	err(46, __func__, "infop->ioccc_id is NULL");
+	err(45, __func__, "infop->ioccc_id is NULL");
 	not_reached();
     }
     if (infop->tarball == NULL) {
-	err(47, __func__, "infop->tarball is NULL");
+	err(46, __func__, "infop->tarball is NULL");
 	not_reached();
     }
     if (infop->utctime == NULL) {
-	err(48, __func__, "infop->utctime is NULL");
+	err(47, __func__, "infop->utctime is NULL");
 	not_reached();
     }
     memset(authp, 0, sizeof(*authp));
@@ -8009,14 +8009,14 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->ioccc_id = strdup(infop->ioccc_id);
     if (authp->ioccc_id == NULL) {
-	errp(49, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
+	errp(48, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
     authp->submit_slot = infop->submit_slot;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
-	errp(50, __func__, "strdup() tarball path %s failed", infop->tarball);
+	errp(49, __func__, "strdup() tarball path %s failed", infop->tarball);
 	not_reached();
     }
     /* copy over test or non-test mode */
@@ -8038,7 +8038,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->utctime = strdup(infop->utctime);
     if (authp->utctime == NULL) {
-	errp(51, __func__, "strdup() utctime path %s failed", infop->utctime);
+	errp(50, __func__, "strdup() utctime path %s failed", infop->utctime);
 	not_reached();
     }
     return;
@@ -8081,7 +8081,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
      */
     if (workdir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
-	err(52, __func__, "called with NULL arg(s)");
+	err(51, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -8097,7 +8097,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(53, __func__, "cannot open .");
+	errp(52, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -8107,7 +8107,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(workdir);
     if (ret < 0) {
-	errp(54, __func__, "cannot cd %s", workdir);
+	errp(53, __func__, "cannot cd %s", workdir);
 	not_reached();
     }
 
@@ -8135,7 +8135,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_submission_dir);
     if (exit_code != 0) {
-	err(55, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
+	err(54, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -8146,7 +8146,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(56, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(55, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -8155,7 +8155,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(57, __func__, "The compressed tarball: %s size: %ju > %jd",
+	err(56, __func__, "The compressed tarball: %s size: %ju > %jd",
 		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -8166,13 +8166,13 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-	errp(58, __func__, "cannot fchdir to the previous current directory");
+	errp(57, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = close(cwd);
     if (ret < 0) {
-	errp(59, __func__, "close of previous current directory failed");
+	errp(58, __func__, "close of previous current directory failed");
 	not_reached();
     }
 
@@ -8193,10 +8193,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(60, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(59, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(61, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(60, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8216,10 +8216,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(62, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(61, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(63, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(62, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8270,13 +8270,13 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
      * firewall
      */
     if (workdir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(64, __func__, "called with NULL arg(s)");
+	err(63, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     submission_dir_esc = cmdprintf("%", submission_dir);
     if (submission_dir_esc == NULL) {
-	err(65, __func__, "failed to cmdprintf: submission_dir");
+	err(64, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
@@ -8289,14 +8289,14 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
-	errp(66, __func__, "printf #0 error");
+	errp(65, __func__, "printf #0 error");
 	not_reached();
     }
     free(submission_dir_esc);
 
     workdir_esc = cmdprintf("%", workdir);
     if (workdir_esc == NULL) {
-	err(67, __func__, "failed to cmdprintf: workdir");
+	err(66, __func__, "failed to cmdprintf: workdir");
 	not_reached();
     }
 
@@ -8307,7 +8307,7 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, workdir[0] == '-' ? "./" : "", workdir_esc, tarball_path);
     if (ret <= 0) {
-	errp(68, __func__, "printf #2 error");
+	errp(67, __func__, "printf #2 error");
 	not_reached();
     }
     free(workdir_esc);
@@ -8379,7 +8379,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	errp(69, __func__, "printf error printing IOCCC_REGISTER_URL");
+	errp(68, __func__, "printf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
     para("",
@@ -8389,7 +8389,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_FAQ_URL);
     if (ret <= 0) {
-	errp(70, __func__, "printf error printing IOCCC register FAQ URL");
+	errp(69, __func__, "printf error printing IOCCC register FAQ URL");
 	not_reached();
     }
     para("",
@@ -8399,7 +8399,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n    %s\n    %s\n", IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL, IOCCC_SUBMIT_INFO_URL);
     if (ret <= 0) {
-	errp(71, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
+	errp(70, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
 	not_reached();
     }
 
@@ -8411,7 +8411,7 @@ show_registration_url(void)
     errno = 0;      /* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_STATUS_URL);
     if (ret < 0) {
-	errp(72, __func__, "printf error printing IOCCC status URL");
+	errp(71, __func__, "printf error printing IOCCC status URL");
 	not_reached();
     }
 
@@ -8448,7 +8448,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
         "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
         workdir, tarball_path);
     if (ret <= 0) {
-	errp(73, __func__, "printf error printing tarball path and slot number");
+	errp(72, __func__, "printf error printing tarball path and slot number");
 	not_reached();
     }
     para("",
@@ -8458,7 +8458,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(74, __func__, "printf error printing IOCCC submit URL");
+	errp(73, __func__, "printf error printing IOCCC submit URL");
 	not_reached();
     }
 
@@ -8469,7 +8469,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
      ret = printf("    %s\n", IOCCC_ENTER_FAQ_URL);
     if (ret < 0) {
-	errp(75, __func__, "printf error printing IOCCC enter FAQ URL");
+	errp(74, __func__, "printf error printing IOCCC enter FAQ URL");
 	not_reached();
     }
 }
