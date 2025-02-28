@@ -14,8 +14,14 @@ caution.
 It is hoped this is the last update to `mkiocccentry(1)` prior to the soft code
 freeze today.
 
+Update `MKIOCCCENTRY_VERSION` to `"1.2.36 2025-02-28"`.
+
 TODO: finish work on the `chkentry_test.sh` script.
 
+Resequence exit codes in `jparse/util.c`. It appears that this was not done or
+something went wrong when doing so (as running `make seqcexit` updated the exit
+codes and this comes from after running it in `jparse/` and committing and then
+syncing from `jparse` to `jparse/`).
 
 
 ## Release 2.3.44 2025-02-27
