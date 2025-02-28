@@ -2,7 +2,8 @@
 #
 # test_ioccc - mkiocccentry test tools
 #
-# Copyright (c) 2022-2025 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -14,18 +15,28 @@
 #       source works derived from this source
 #       binaries derived from this source or from derived source
 #
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+# These tools were co-developed in 2021-2025 by Cody Boone Ferguson and Landon
+# Curt Noll:
+#
+#  @xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # Share and enjoy! :-)
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 ####
+
 
 
 #############
@@ -678,6 +689,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f Makefile.orig
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -rf test_iocccsize topdir workdir test_JSON
+	${E} ${RM} ${RM_V} -rf slot/good/workdir slot/bad/workdir
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

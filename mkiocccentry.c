@@ -2654,16 +2654,35 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     /*
      * check for existence of Makefile
      *
-     * This is necessary only because if make clobber fails it is because the
-     * user did not have a clobber rule which although is not something wanted
-     * by the judges, one is allowed to override it. So as long as Makefile
-     * exists it is okay; otherwise it is not. (Of course if its size <= 0 it'll be
-     * an error too but that's flagged by check_Makefile()).
+     * This is necessary not only because if it doesn't exist something went
+     * wrong and also because if make clobber fails it's not an error.
      */
-    if (!is_read("Makefile")) {
+    if (!is_read(MAKEFILE_FILENAME)) {
         err(4, __func__, "Makefile not a regular readable file in submission directory %s", submit_path);/*ooo*/
         not_reached();
+    } else if (is_empty(MAKEFILE_FILENAME)) {
+        err(4, __func__, "Makefile is empty in submission directory %s", submit_path);/*ooo*/
+        not_reached();
     }
+    /*
+     * prog.c must exist but it may be empty (though it'll be flagged)
+     */
+    if (!is_read(PROG_C_FILENAME)) {
+        err(4, __func__, "prog.c not a regular readable file in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    }
+    /*
+     * remarks.md must not be empty
+     */
+    if (!is_read(REMARKS_FILENAME)) {
+        err(4, __func__, "remarks.md not a regular readable file in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    } else if (is_empty(REMARKS_FILENAME)) {
+        err(4, __func__, "remarks.md is empty in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    }
+
+
     /*
      * run make clobber on Makefile
      */

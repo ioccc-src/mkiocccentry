@@ -805,15 +805,15 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
 	    ++tarball.total_feathers;
 	    tarball.empty_info_json = true;
 	    warn("txzchk", "%s: found empty %s file", tarball_path, INFO_JSON_FILENAME);
-	} else if (!strcmp(file->basename, "remarks.md")) {
+	} else if (!strcmp(file->basename, REMARKS_FILENAME)) {
 	    ++tarball.total_feathers;
 	    tarball.empty_remarks_md = true;
 	    warn("txzchk", "%s: found empty remarks.md", tarball_path);
-	} else if (!strcmp(file->basename, "Makefile")) {
+	} else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
 	    ++tarball.total_feathers;
 	    tarball.empty_Makefile = true;
 	    warn("txzchk", "%s: found empty Makefile", tarball_path);
-	} else if (!strcmp(file->basename, "prog.c")) {
+	} else if (!strcmp(file->basename, PROG_C_FILENAME)) {
 	    /* this is NOT a feather: it's only for informational purposes! */
 	    tarball.empty_prog_c = true;
 	}
@@ -823,11 +823,11 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
 	    tarball.auth_json_size = size;
 	} else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    tarball.info_json_size = size;
-	} else if (!strcmp(file->basename, "remarks.md")) {
+	} else if (!strcmp(file->basename, REMARKS_FILENAME)) {
 	    tarball.remarks_md_size = size;
-	} else if (!strcmp(file->basename, "Makefile")) {
+	} else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
 	    tarball.Makefile_size = size;
-	} else if (!strcmp(file->basename, "prog.c")) {
+	} else if (!strcmp(file->basename, PROG_C_FILENAME)) {
 	    tarball.prog_c_size = size;
 	}
     }

@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.30 2025-02-28
+
+Add util function that uses `file_size()` called `is_empty()`.
+
+Updated `JPARSE_UTILS_VERSION` to `"1.0.26 2025-02-28"`.
+Updated `UTIL_TEST_VERSION` to `"1.0.24 2025-02-28"`.
+
+
 ## Release 2.2.29 2025-02-27
 
 The script `jparse_bug_report.sh` actually can have the script in the `TOOLS`

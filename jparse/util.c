@@ -3847,6 +3847,52 @@ file_size(char const *path)
     return buf.st_size;
 }
 
+/*
+ * is_empty - determine if the file is empty
+ *
+ * Return if a file is empty (size 0).
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> file size <= 0
+ *      false ==> file size > 0
+ *
+ * NOTE: if the file does not exist (ENOENT) we return true. In other words if
+ * file_size() returns <= 0 it is true; otherwise it is false.
+ */
+bool
+is_empty(char const *path)
+{
+    off_t size = -1;
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(181, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    size = file_size(path);
+
+    if (size < 0) {
+        dbg(DBG_VHIGH, "path %s does not exist", path);
+        return true;
+    } else if (size == 0) {
+        dbg(DBG_VHIGH, "path %s is empty", path);
+        return true;
+    }
+
+    /*
+     * return not empty
+     */
+    dbg(DBG_VHIGH, "path %s is not empty, size: %jd", path, (intmax_t)size);
+    return false;
+}
+
+
 
 /*
  * cmdprintf - malloc a safer shell command line for use with system() and popen()
@@ -8842,7 +8888,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.23 2025-02-26" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "1.0.24 2025-02-28" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -10104,6 +10150,14 @@ main(int argc, char **argv)
         }
 
         /*
+         * now check that the size is empty
+         */
+        if (!is_empty("util_test.copy.c")) {
+            errp(156, __func__, "just deleted file util_test.copy.c is not empty");
+            not_reached();
+        }
+
+        /*
          * free relpath
          */
         free(relpath);
@@ -10143,6 +10197,13 @@ main(int argc, char **argv)
             not_reached();
         } else {
             fdbg(stderr, DBG_MED, "successfully deleted copied file util_test.copy.c");
+        }
+        /*
+         * now check that the size is empty
+         */
+        if (!is_empty("util_test.copy.c")) {
+            errp(156, __func__, "just deleted file util_test.copy.c is not empty");
+            not_reached();
         }
 
         /*
@@ -10192,6 +10253,15 @@ main(int argc, char **argv)
     } else {
         fdbg(stderr, DBG_MED, "successfully deleted copied file util_test.copy.c");
     }
+    /*
+     * now check that the size is empty
+     */
+    if (!is_empty("util.copy.o")) {
+        errp(156, __func__, "just deleted file util.copy.o is not empty");
+        not_reached();
+    }
+
+
     /*
      * relpath is NOT allocated so don't free!
      */
@@ -11769,6 +11839,15 @@ main(int argc, char **argv)
     } else {
         fdbg(stderr, DBG_MED, "successfully deleted created file %s", relpath);
     }
+    /*
+     * now check that the size is empty
+     */
+    if (!is_empty(relpath)) {
+        errp(156, __func__, "just deleted file %s is not empty", relpath);
+        not_reached();
+    }
+
+
 
     /*
      * restore earlier directory that might have happened with read_fts()
@@ -11952,6 +12031,15 @@ main(int argc, char **argv)
     } else {
         fdbg(stderr, DBG_MED, "successfully deleted created file %s", relpath);
     }
+    /*
+     * now check that the size is empty
+     */
+    if (!is_empty(relpath)) {
+        errp(156, __func__, "just deleted file %s is not empty", relpath);
+        not_reached();
+    }
+
+
 
     /*
      * free paths_found array
