@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.3.45 2025-02-28
+
+Fix and improve warning of `-y` and `-Y` in `mkiocccentry`.
+
+The code did not explicitly check for `-Y`; it just used the implicit `-y` from
+`-Y`. That is fixed and now if not `-q` show a simple summary but always show
+the longer warning to be sure that they know. As for `-Y` it really ought to be
+used only for the test script but even `-y` should be used with **EXTREME**
+caution.
+
+It is hoped this is the last update to `mkiocccentry(1)` prior to the soft code
+freeze today.
+
+TODO: finish work on the `chkentry_test.sh` script.
+
+
+
 ## Release 2.3.44 2025-02-27
 
 Prepare for code freeze (28 February 2025) with some final changes, some
