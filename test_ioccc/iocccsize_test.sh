@@ -14,13 +14,6 @@
 
 # setup
 #
-# Under CentOS shellcheck complains about the comment, reporting:
-#
-#	warning: Remove space after = if trying to assign a value (for empty string, use var='' ... ). [SC1007]
-#
-# which seems silly and pointless so we disable it for the next two
-# lines.
-#
 export DIGRAPHS=	# assume #undef DIGRAPHS
 export TRIGRAPHS=	# assume #undef TRIGRAPHS
 export LIMIT_IOCCC="./soup/limit_ioccc.sh"

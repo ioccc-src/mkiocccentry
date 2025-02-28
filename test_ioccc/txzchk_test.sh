@@ -2,7 +2,27 @@
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 #
-# Written in 2022 by:
+# Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# CODY BOONE FERGUSON DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT
+# SHALL CODY BOONE FERGUSON BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+# OF THIS SOFTWARE.
+#
+# This tool and script were written in 2022-2025 by Cody Boone Ferguson:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -14,9 +34,7 @@
 #
 #	The many poor souls who have been tarred and feathered:
 #
-#	    "Because sometimes people throw feathers on tar :-( and because
-#	    sometimes people try hiding the fact that they're planning on
-#	    throwing feathers on the tar." :-)
+#	    "Because sometimes people throw feathers on tar." :-(
 #
 #	And to my wonderful Mum and my dear cousin and friend Dani:
 #
@@ -30,6 +48,9 @@
 #	nevertheless none were harmed. :-) More importantly, no tar pits -
 #	including the La Brea Tar Pits - were disturbed in the making of this
 #	tool. :-)
+#
+# Share and enjoy! :-)
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 #
 
 # setup
@@ -53,7 +74,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="1.0.4 2025-02-19"
+export TXZCHK_TEST_VERSION="2.0.0 2025-02-28"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"

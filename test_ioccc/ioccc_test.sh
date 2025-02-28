@@ -2,9 +2,30 @@
 #
 # ioccc_test.sh - perform the complete suite of tests for the mkiocccentry repo
 #
-# This script was co-developed in 2022 by:
+# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# All Rights Reserved.
 #
-#	@xexyl
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+# This script was co-developed in 2021-2025 by Landon Curt Noll and Cody Boone
+# Ferguson:
+#
+#  @xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 # and:
@@ -13,11 +34,12 @@
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # Share and enjoy! :-)
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
 
 # setup
 #
-export IOCCC_TEST_VERSION="1.0.4 2025-0l-11"
+export IOCCC_TEST_VERSION="2.0.0 2025-02-28"
 
 # attempt to fetch system specific path to the tools we need
 #

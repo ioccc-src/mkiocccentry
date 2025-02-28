@@ -54,7 +54,7 @@ export EXIT_CODE=0
 export INVALID_DIRECTORY_FOUND=""
 export SLOT_TREE="./test_ioccc/slot"
 
-export CHKENTRY_TEST_VERSION="1.1.1 2025-02-28"
+export CHKENTRY_TEST_VERSION="2.0.0 2025-02-28"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c chkentry] [-d slot_tree]
 
