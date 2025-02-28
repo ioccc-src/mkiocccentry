@@ -2,6 +2,8 @@
 #
 # jparse_test.sh - test JSON parser on valid and invalid JSON file(s)
 #
+# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+#
 # Run jparse on simple JSON documents, one per line, in files (including stdin
 # if '-') and on whole JSON documents, to test the JSON parser.
 #
@@ -55,11 +57,30 @@
 # not invalid it is an error. Whether or not -f is used, as long as the default
 # error file is a regular readable file.
 #
-# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+# Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll. All
+# rights reserved.
 #
-# This JSON parser was co-developed in 2022 by:
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
 #
-#	@xexyl
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
+#
+# This JSON parser and tool were co-developed in 2022-205 by Cody Boone
+# Ferguson and Landon Curt Noll:
+#
+#  @xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 # and:
@@ -69,8 +90,7 @@
 #
 # "Share and Enjoy!"
 #     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
-
-
+#
 # setup
 #
 export JPARSE_TEST_VERSION="2.0.0 2025-02-28"	    # version format: major.minor YYYY-MM-DD */
