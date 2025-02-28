@@ -11,12 +11,37 @@ the longer warning to be sure that they know. As for `-Y` it really ought to be
 used only for the test script but even `-y` should be used with **EXTREME**
 caution.
 
-It is hoped this is the last update to `mkiocccentry(1)` prior to the soft code
-freeze today.
+Add extra sanity checks in `check_submission_dir()`: it now checks towards the
+beginning if the required files exist (that is, the three user submitted files,
+not the JSON file as those don't exist yet, though it does check that they do
+not exist as dot files here would be an error) and are readable and if they are
+not size 0 (for Makefile and remarks.md - prog.c may be empty).
 
-Update `MKIOCCCENTRY_VERSION` to `"1.2.36 2025-02-28"`.
+Updated some literal strings of the three required filenames (as above) to their
+macros in both mkiocccentry and txzchk.
 
-TODO: finish work on the `chkentry_test.sh` script.
+Fixes in `chkentry` with checking if files exist or do not exist (depending on
+options) and also add checks for file sizes for certain files, namely Makefile,
+remarks.md (in non-winning mode) as well as index.html (in winning mode) and
+README.md (in winning mode).
+
+Error messages were improved in `chkentry` as well though there are some places
+(the manifest check) where they could be improved (this would require lower
+level changes that we do not have time for before the freeze later today).
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new util
+function (that uses its `file_size()` function) `is_empty()`. This is used in
+the update to `chkentry`.
+
+More work on the `chkentry_test.sh` script. The script is in better shape so
+that when the directories are generated (they cannot be static due to version
+changes - at least without a new option) the script should hopefully be easily
+updated (though it depends maybe on how the new directories are generated).
+
+Updated `MKIOCCCENTRY_VERSION` to `"1.2.36 2025-02-28"`.
+Updated `TXZCHK_VERSION` to `"1.1.15 2025-02-28"`.
+Updated `CHKENTRY_VERSION` to `"1.1.6 2025-02-28"`.
+Updated `CHKENTRY_TEST_VERSION` to `"1.1.1 2025-02-28"`.
 
 Resequence exit codes in `jparse/util.c`. It appears that this was not done or
 something went wrong when doing so (as running `make seqcexit` updated the exit

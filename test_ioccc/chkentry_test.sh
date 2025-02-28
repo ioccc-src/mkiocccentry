@@ -4,13 +4,8 @@
 #
 # "Because grammar and syntax alone do not make a complete language." :-)
 #
-# Use chkentry to test all the files under test_JSON{info,auth}.json/good/ and
-# verify there are no JSON semantic errors.  If any JSON semantic errors are
-# detected, this script will exit non-zero.
-#
-# Use chkentry to test all the files under test_JSON{info,auth}.json/bad/ and
-# verify there are JSON semantic errors.  If any file is found to be free of
-# JSON semantic errors, this script will exit non-zero.
+# Use chkentry to test all the submission directories under
+# test_ioccc/slot/{good,bad}.
 #
 # Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
@@ -56,9 +51,7 @@ export Q_FLAG=""
 export CHKENTRY="./chkentry"
 export LOGFILE="./test_ioccc/chkentry_test.log"
 export EXIT_CODE=0
-export INVALID_JSON_FOUND=""
-export UNEXPECTED_SEMANTIC_ERROR=""
-export SEMANTIC_ERROR_MISSED=""
+export INVALID_DIRECTORY_FOUND=""
 export SLOT_TREE="./test_ioccc/slot"
 
 export CHKENTRY_TEST_VERSION="1.1.1 2025-02-28"
@@ -81,13 +74,10 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
 
 Exit codes:
      0   all OK
-     1   all JSON files were valid JSON; however some chkentry semantic tests failed
-     2   -h and help string printed or -V and version string printed
+     1   one or more tests failed
      3   invalid command line
      4	 missing or non-executable chkentry
      5	 missing or non-readable slot_tree directory or subdirectory
-     6	 some files were invalid JSON; chkentry correctly tested all other files
-     7	 some files were invalid JSON and some chkentry tests failed
  >= 10   internal error
 
 chkentry_test.sh version: $CHKENTRY_TEST_VERSION"
@@ -177,7 +167,7 @@ if [[ ! -d $SLOT_TREE ]]; then
     exit 5
 fi
 if [[ ! -r $SLOT_TREE ]]; then
-    echo "$0: ERROR: slot_tree not readable directory: $SLOT_TREE" 1>&2
+    echo "$0: ERROR: slot_tree not a readable directory: $SLOT_TREE" 1>&2
     exit 5
 fi
 
@@ -192,7 +182,14 @@ if [[ ! -d $GOOD_TREE ]]; then
     exit 5
 fi
 if [[ ! -r $GOOD_TREE ]]; then
-    echo "$0: ERROR: slot_tree/good for chkentry not readable directory: $GOOD_TREE" 1>&2
+    echo "$0: ERROR: slot_tree/good for chkentry not a readable directory: $GOOD_TREE" 1>&2
+    exit 5
+fi
+
+# if slot/good/workdir does not exist, is not a directory or is not readable it
+# is an error
+if [[ ! -e "$GOOD_TREE/workdir" ]] || [[ ! -d "$GOOD_TREE/workdir" ]] || [[ ! -r "$GOOD_TREE/workdir" ]]; then
+    echo "$0: ERROR: slot/good/workdir does not exist" 1>&2
     exit 5
 fi
 
@@ -210,7 +207,20 @@ if [[ ! -r $BAD_TREE ]]; then
     echo "$0: ERROR: slot_tree/bad for chkentry not readable directory: $BAD_TREE" 1>&2
     exit 5
 fi
+# if slot/bad/workdir does not exist, is not a directory or is not readable it
+# is an error
+if [[ ! -e "$BAD_TREE/workdir" ]] || [[ ! -d "$BAD_TREE/workdir" ]] || [[ ! -r "$BAD_TREE/workdir" ]]; then
+    echo "$0: ERROR: slot/bad/workdir does not exist" 1>&2
+    exit 5
+fi
 
+
+# make sure workdir under bad directory exists
+#
+if ! mkdir -p "$BAD_TREE"/workdir ; then
+    echo "$0: ERROR: could not make $BAD_TREE/workdir" 1>&2
+    exit 5
+fi
 
 # remove logfile so that each run starts out with an empty file
 #
@@ -234,7 +244,7 @@ fi
 #	dbg_level		internal test debugging level to use as in: chkentry -v dbg_level
 #	json_dbg_level		JSON parser debug level to use in: chkentry -J json_dbg_level
 #	quiet_mode		quiet mode to use in: chkentry -q
-#	directory		directory to check
+#	workdir		        directory to check
 #
 # The return code of this function is non-zero if an internal error occurs OR if
 # the return value of chkentry is not 0.
@@ -251,7 +261,7 @@ run_good_test()
     declare dbg_level="$2"
     declare json_dbg_level="$3"
     declare quiet_mode="$4"
-    declare directory="$5"
+    declare workdir="$5"
 
     # debugging
     #
@@ -260,13 +270,13 @@ run_good_test()
 	echo "$0: debug[9]: in run_good_test: dbg_level: $dbg_level" 1>&2
 	echo "$0: debug[9]: in run_good_test: json_dbg_level: $json_dbg_level" 1>&2
 	echo "$0: debug[9]: in run_good_test: quiet_mode: $quiet_mode" 1>&2
-	echo "$0: debug[9]: in run_good_test: directory: $directory" 1>&2
+	echo "$0: debug[9]: in run_good_test: workdir: $workdir" 1>&2
     fi
 
-    # directory must exist
+    # workdir must exist
     #
-    if [[ ! -d "$directory" ]] || [[ ! -r "$directory" ]]; then
-        echo "$0: ERROR: directory is not a directory or unreadable: $directory"
+    if [[ ! -d "$workdir" ]] || [[ ! -r "$workdir" ]]; then
+        echo "$0: ERROR: workdir is not a directory or is unreadable: $workdir"
         exit 13
     fi
 
@@ -274,32 +284,119 @@ run_good_test()
     #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -- $directory >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -- $workdir >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -- $directory >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$directory" >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$workdir" >> "${LOGFILE}" 2>&1
 	status="$?"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -q -- $directory >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -q -- $directory >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$directory" >> "${LOGFILE}" 2>&1
+	echo "$0: about to run test that must pass: $chkentry -v $dbg_level -J $json_dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$workdir" >> "${LOGFILE}" 2>&1
 	status="$?"
     fi
 
     # examine test result
     #
     if [[ $status -eq 0 ]]; then
-        echo "$0: test $directory should PASS: chkentry PASS with exit code 0" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should PASS: chkentry PASS with exit code 0" 1>&2 >> "${LOGFILE}"
         if [[ $V_FLAG -ge 3 ]]; then
-            echo "$0: debug[3]: test $directory should PASS: chkentry passed with exit code 0" 1>&2
+            echo "$0: debug[3]: test $workdir should PASS: chkentry passed with exit code 0" 1>&2
         fi
     else
-        echo "$0: test $directory should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should PASS: chkentry FAILED with exit code: $status" 1>&2 >> "${LOGFILE}"
         if [[ $V_FLAG -ge 1 ]]; then
             if [[ $V_FLAG -ge 3 ]]; then
-                echo "$0: debug[3]: debug[3]: test $directory should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2
+                echo "$0: debug[3]: debug[3]: test $workdir should PASS: chkentry FAILED with exit code: $status" 1>&2
+            fi
+        fi
+        EXIT_CODE=1
+    fi
+    echo >> "${LOGFILE}"
+
+    # return
+    #
+    return
+}
+
+# run_bad_test - run a single chkentry test on a directory that must pass
+#
+# usage:
+#	run_bad_test chkentry dbg_level json_dbg_level quiet_mode directory
+#
+#	chkentry		path to the chkentry program
+#	dbg_level		internal test debugging level to use as in: chkentry -v dbg_level
+#	json_dbg_level		JSON parser debug level to use in: chkentry -J json_dbg_level
+#	quiet_mode		quiet mode to use in: chkentry -q
+#	workdir		        directory to check
+#
+# The return code of this function is non-zero if an internal error occurs OR if
+# the return value of chkentry is 0.
+#
+run_bad_test()
+{
+    # parse args
+    #
+    if [[ $# -ne 5 ]]; then
+	echo "$0: ERROR: expected 5 args to run_bad_test, found $#" 1>&2
+	exit 12
+    fi
+    declare chkentry="$1"
+    declare dbg_level="$2"
+    declare json_dbg_level="$3"
+    declare quiet_mode="$4"
+    declare workdir="$5"
+
+    # debugging
+    #
+    if [[ $V_FLAG -ge 9 ]]; then
+	echo "$0: debug[9]: in run_bad_test: chkentry: $chkentry" 1>&2
+	echo "$0: debug[9]: in run_bad_test: dbg_level: $dbg_level" 1>&2
+	echo "$0: debug[9]: in run_bad_test: json_dbg_level: $json_dbg_level" 1>&2
+	echo "$0: debug[9]: in run_bad_test: quiet_mode: $quiet_mode" 1>&2
+	echo "$0: debug[9]: in run_bad_test: workdir: $workdir" 1>&2
+    fi
+
+    # workdir must exist
+    #
+    if [[ ! -d "$workdir" ]] || [[ ! -r "$workdir" ]]; then
+        echo "$0: ERROR: workdir is not a directory or is unreadable: $workdir"
+        exit 13
+    fi
+
+    # perform the test
+    #
+    if [[ -z $quiet_mode ]]; then
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that MUST FAIL: $chkentry -v $dbg_level -J $json_dbg_level -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: about to run test that MUST FAIL: $chkentry -v $dbg_level -J $json_dbg_level -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$workdir" >> "${LOGFILE}" 2>&1
+	status="$?"
+    else
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that MUST FAIL: $chkentry -v $dbg_level -J $json_dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: about to run test that MUST FAIL: $chkentry -v $dbg_level -J $json_dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$workdir" >> "${LOGFILE}" 2>&1
+	status="$?"
+    fi
+
+    # examine test result
+    #
+    if [[ $status -eq 0 ]]; then
+        echo "$0: test $workdir should FAIL: chkentry incorrectly passed with exit code 0" 1>&2 >> "${LOGFILE}"
+        if [[ $V_FLAG -ge 3 ]]; then
+            echo "$0: debug[3]: test $workdir: chkentry should FAIL: chkentry incorrectly passed with exit code 0" 1>&2
+        fi
+        EXIT_CODE=1
+    else
+        echo "$0: test $workdir should PASS: chkentry correctly passed with exit code: $status" 1>&2 >> "${LOGFILE}"
+        if [[ $V_FLAG -ge 1 ]]; then
+            if [[ $V_FLAG -ge 3 ]]; then
+                echo "$0: debug[3]: debug[3]: test $workdir should PASS: chkentry correctly passed with exit code: $status" 1>&2
             fi
         fi
     fi
@@ -310,71 +407,42 @@ run_good_test()
     return
 }
 
-
-
-
 # run tests that must pass: good
 #
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run chkentry tests that must pass: good/ files" 1>&2
 fi
-while read -r file; do
-    run_good_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file"
-done < <(find "$GOOD_TREE" -mindepth 2 -maxdepth 2 -type d -print)
+while read -r dir; do
+    run_good_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$dir"
+done < <(find "$GOOD_TREE/workdir" -mindepth 1 -maxdepth 1 -type d -print)
 
 
 # run tests that must fail: bad
 #
-#if [[ $V_FLAG -ge 3 ]]; then
-#    echo "$0: debug[3]: about to run chkentry tests that must fail: bad/ files" 1>&2
-#fi
-#while read -r file; do
-#    run_bad_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file"
-#done < <(find "$BAD_TREE" -type d -print)
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: about to run chkentry tests that must fail: bad/ files" 1>&2
+fi
+while read -r dir; do
+    run_bad_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$dir"
+done < <(find "$BAD_TREE/workdir" -mindepth 1 -maxdepth 1 -type d -print)
 
 # determine exit code
 #
-if [[ -z $INVALID_JSON_FOUND ]]; then
-    if [[ -z $UNEXPECTED_SEMANTIC_ERROR && -z $SEMANTIC_ERROR_MISSED ]]; then
-	EXIT_CODE=0
-	echo "$0: all tests PASSED" >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: all tests PASSED" 1>&2
-	fi
-	echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
-    else
-	EXIT_CODE=1
-	echo "$0: all JSON files were valid JSON; however some chkentry semantic tests failed" >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: all JSON files were valid JSON; however some chkentry semantic tests failed" 1>&2
-	    echo 1>&2
-	    echo "$0: Notice: chkentry semantic tests failed, see $LOGFILE for details" 1>&2
-	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
-	fi
-	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+if [[ $EXIT_CODE -ne 0 ]]; then
+    echo "$0: one or more tests FAILED" >> "${LOGFILE}"
+    if [[ $V_FLAG -ge 1 ]]; then
+        echo "$0: debug[1]: one or more tests FAILED" 1>&2
+        echo "$0: Notice: one or more directories failed chkentry tests, see $LOGFILE for details" 1>&2
+        echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
     fi
+    echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
 else
-    if [[ -z $UNEXPECTED_SEMANTIC_ERROR && -z $SEMANTIC_ERROR_MISSED ]]; then
-	EXIT_CODE=6
-	echo "$0: some files were invalid JSON; chkentry correctly tested all other files" >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: some files were invalid JSON; chkentry correctly tested all other files" 1>&2
-	    echo 1>&2
-	    echo "$0: Notice: some files were invalid JSON, see $LOGFILE for details" 1>&2
-	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
-	fi
-	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
-    else
-	EXIT_CODE=7
-	echo "$0: some files were invalid JSON and some chkentry tests failed" >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: some files were invalid JSON and some chkentry tests failed" 1>&2
-	    echo 1>&2
-	    echo "$0: Notice: chkentry tests failed and some files were invalid JSON: see $LOGFILE for details" 1>&2
-	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
-	fi
-	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    echo "$0: all tests PASSED" >> "${LOGFILE}"
+    if [[ $V_FLAG -ge 1 ]]; then
+        echo "$0: debug[1]: all tests PASSED" 1>&2
+        echo 1>&2
     fi
+    echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
 fi
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2

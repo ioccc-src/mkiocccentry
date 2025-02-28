@@ -121,12 +121,12 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.1.14 2025-02-19"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "1.1.15 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "1.1.5 2025-02-25"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "1.1.6 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.

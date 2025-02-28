@@ -630,7 +630,6 @@ main(int argc, char *argv[])
     uintmax_t all_extra_err_count = 0;  /* depending on options and conditions, we might need this */
     struct json_sem_count_err *sem_count_err = NULL;	/* semantic count error to print */
     struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
-    char *path = NULL;                  /* specific checks depending on the option (like -i entry/-i .entry.json) */
     uintmax_t c = 0;			/* dynamic array index */
     uintmax_t len = 0;                  /* dynamic array length */
     int cwd = -1;                       /* for when we have to use find_path() */
@@ -640,6 +639,15 @@ main(int argc, char *argv[])
     bool winning_entry_mode = false;    /* true ==> -w used, do other checks */
     struct dyn_array *paths = NULL;     /* paths to find for find_paths() */
     struct dyn_array *found = NULL;     /* paths found by find_paths() */
+    bool found_entry = false;           /* true ==> .entry.json found */
+    bool found_prog_c = false;          /* true ==> prog.c found */
+    bool found_prog = false;            /* true ==> prog found */
+    bool found_auth = false;            /* true ==> .auth.json found */
+    bool found_info = false;            /* true ==> .info.json found */
+    bool found_README = false;          /* true ==> README.md found */
+    bool found_index = false;           /* true ==> index.html found */
+    bool found_remarks = false;         /* true ==> remarks.md found */
+    bool found_Makefile = false;        /* true ==> Makefile found */
 
 
 
@@ -755,228 +763,14 @@ main(int argc, char *argv[])
             errp(59, __func__, "cannot open .");
             not_reached();
         }
-        fts.depth = 1; /* we need depth 1 only */
-        fts.match_case = true; /* we must need to match case */
-        fts.type = FTS_TYPE_FILE; /* regular files only */
 
         if (winning_entry_mode) {
             /*
-             * make sure .entry.json exists unless -i entry
+             * set up fts
              */
-            if (!ignore_entry) {
-                path = find_path(ENTRY_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i entry NOT used: %s", ENTRY_JSON_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * unless -i auth .auth.json must NOT exist
-             */
-            if (!ignore_auth) {
-                path = find_path(AUTH_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "file EXISTS and -w USED and -i auth NOT used: %s", AUTH_JSON_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i info .info.json must NOT exist
-             */
-            if (!ignore_info) {
-                /*
-                 * .info.json
-                 */
-                path = find_path(INFO_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "file EXISTS and -w USED and -i info NOT used: %s", INFO_JSON_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i README README.md MUST exist
-             */
-            if (!ignore_README_md) {
-                /*
-                 * README.md
-                 */
-                path = find_path(README_MD_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i README NOT used: %s", README_MD_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i index index.html MUST exist
-             */
-            if (!ignore_index) {
-                /*
-                 * index.html
-                 */
-                path = find_path(INDEX_HTML_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "file does NOT exist and -w USED and -i index NOT used: %s", INDEX_HTML_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * unless -i Makefile Makefile MUST exist
-             */
-            if (!ignore_Makefile) {
-                /*
-                 * Makefile
-                 */
-                path = find_path(MAKEFILE_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -w used and -i Makefile not used", MAKEFILE_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i prog.c prog.c MUST exist
-             */
-            if (!ignore_prog_c) {
-                /*
-                 * prog.c
-                 */
-                path = find_path(PROG_C_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -w used and -i prog.c not used", PROG_C_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i prog prog must NOT exist
-             */
-            if (!ignore_prog) {
-                /*
-                 * prog
-                 */
-                path = find_path(PROG_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -w used and -i prog not used", PROG_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i remarks remarks.md must NOT exist
-             */
-            if (!ignore_remarks_md) {
-                /*
-                 * remarks.md
-                 */
-                path = find_path(REMARKS_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -w used and -i remarks not used", REMARKS_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
+            fts.depth = 0;
+            fts.match_case = true; /* we must match case here */
+            fts.type = FTS_TYPE_FILE; /* regular files only */
             /*
              * now for the FTS find_paths() function: we need to find all files
              * that are NOT ignored (this is why there are two ignore lists)
@@ -1003,22 +797,104 @@ main(int argc, char *argv[])
                 for (c = 0; c < len; ++c) {
                     u = dyn_array_value(found, char *, c);
                     if (u == NULL) {
-                        err(60, __func__, "NULL pointer in ignore list");
+                        err(60, __func__, "NULL pointer in found files list");
                         not_reached();
                     }
                     /*
                      * now we have to determine what file this is
-                     *
-                     * Since we already tested specific files we only have to
-                     * test files that have not been tested.
                      */
-                    if (!strcmp(u, AUTH_JSON_FILENAME) || !strcmp(u, INFO_JSON_FILENAME) || !strcmp(u, REMARKS_FILENAME) ||
-                        !strcmp(u, MAKEFILE_FILENAME) || !strcmp(u, PROG_C_FILENAME) || !strcmp(u, PROG_FILENAME) ||
-                        !strcmp(u, ENTRY_JSON_FILENAME) || !strcmp(u, README_MD_FILENAME) || !strcmp(u, INDEX_HTML_FILENAME)) {
-                            /*
-                             * these we already tested, skip
-                             */
+
+                    /*
+                     * Certain files have specific checks so we check those by
+                     * name explicitly.
+                     */
+                    if (!strcmp(u, AUTH_JSON_FILENAME)) {
+                        if (ignore_auth) {
                             continue;
+                        }
+                        found_auth = true;
+                        ++all_extra_err_count;
+                    } else if (!strcmp(u, INFO_JSON_FILENAME)) {
+                        if (ignore_info) {
+                            continue;
+                        }
+                        ++all_extra_err_count;
+                        found_info = true;
+                    } else if (!strcmp(u, REMARKS_FILENAME)) {
+                        if (ignore_remarks_md) {
+                            continue;
+                        }
+
+                        ++all_extra_err_count;
+                        found_remarks = true;
+                    } else if (!strcmp(u, MAKEFILE_FILENAME)) {
+                        if (ignore_Makefile) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+
+                        found_Makefile = true;
+                    } else if (!strcmp(u, PROG_C_FILENAME)) {
+                        if (ignore_prog_c) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        found_prog_c = true;
+                    } else if (!strcmp(u, PROG_FILENAME)) {
+                        if (ignore_prog) {
+                            continue;
+                        }
+                        ++all_extra_err_count;
+                        found_prog = true;
+                    } else if (!strcmp(u, ENTRY_JSON_FILENAME)) {
+                        if (ignore_entry) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_entry = true;
+                    } else if (!strcmp(u, README_MD_FILENAME)) {
+                        if (ignore_README_md) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_README = true;
+                    } else if (!strcmp(u, INDEX_HTML_FILENAME)) {
+                        if (ignore_index) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_index = true;
                     } else {
                         /*
                          * not one of the specific filenames so we have to do
@@ -1044,20 +920,70 @@ main(int argc, char *argv[])
                     }
                 }
 
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
+            } else {
+                werr(1, __func__, "NO FILES FOUND in submission directory: %s", *submission_dir);/*ooo*/
+                ++all_extra_err_count;
             }
+
+            /*
+             * now we have to verify that certain files do exist or do not exist
+             * depending on the -i option
+             */
+            if (!ignore_entry && !found_entry) {
+                werr(1, __func__, "%s does NOT exist and -w USED and -i entry NOT used", ENTRY_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_auth && found_auth) {
+                werr(1, __func__, "%s EXISTS and -w USED and -i auth NOT used", AUTH_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_info && found_info) {
+                werr(1, __func__, "%s EXISTS and -w USED and -i info NOT used", INFO_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_README_md && !found_README) {
+                werr(1, __func__, "%s does NOT exist and -w USED and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_index && !found_index) {
+                werr(1, __func__, "%s does NOT exist and -w USED and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_Makefile && !found_Makefile) {
+                werr(1, __func__, "%s does NOT exist and -w USED and -i Makefile NOT used", MAKEFILE_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_prog_c && !found_prog_c) {
+                werr(1, __func__, "%s does NOT exist and -w USED and -i prog.c NOT used", PROG_C_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_prog && found_prog) {
+                werr(1, __func__, "%s EXISTS and -w USED and -i prog NOT used", PROG_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_remarks_md && found_remarks) {
+                werr(1, __func__, "%s EXISTS and -w USED and -i remarks NOT used", REMARKS_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            /*
+             * move back to previous directory
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
         } else {
             /*
              * case: -w NOT used
              */
+            /*
+             * set up fts
+             */
+            fts.depth = 0;
+            fts.match_case = true; /* we must match case here */
+            fts.type = FTS_TYPE_FILE; /* regular files only */
 
             /*
              * additional checks: we have to verify the file permissions are correct
              * of files if not ignored. Yes this does mean there is some duplicated
-             * obtaining of paths. That also happens when -i info is not used. This
+             * checking of paths. That also happens when -i info is not used. This
              * could be said to be a mis-feature or it could be said to be defence
              * in depth. You may choose your poison, keeping in mind that:
              *
@@ -1069,222 +995,6 @@ main(int argc, char *argv[])
              */
 
             /*
-             * make sure .entry.json does NOT exist unless -i entry
-             */
-            if (!ignore_entry) {
-                path = find_path(ENTRY_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -w and -i entry not used and ", ENTRY_JSON_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * unless -i auth .auth.json MUST exist
-             */
-            if (!ignore_auth) {
-                path = find_path(AUTH_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i auth not used", AUTH_JSON_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i info .info.json MUST exist
-             */
-            if (!ignore_info) {
-                /*
-                 * .info.json
-                 */
-                path = find_path(INFO_JSON_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i info not used", INFO_JSON_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i README README.md must NOT exist
-             */
-            if (!ignore_README_md) {
-                /*
-                 * README.md
-                 */
-                path = find_path(README_MD_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -i README not used", README_MD_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i index index.html must NOT exist
-             */
-            if (!ignore_index) {
-                /*
-                 * index.html
-                 */
-                path = find_path(INDEX_HTML_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -i index not used", INDEX_HTML_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-
-            /*
-             * unless -i Makefile Makefile MUST exist
-             */
-            if (!ignore_Makefile) {
-                /*
-                 * Makefile
-                 */
-                path = find_path(MAKEFILE_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i Makefile not used", MAKEFILE_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i prog.c prog.c MUST exist
-             */
-            if (!ignore_prog_c) {
-                /*
-                 * prog.c
-                 */
-                path = find_path(PROG_C_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i prog.c not used", PROG_C_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i prog prog must NOT exist
-             */
-            if (!ignore_prog) {
-                /*
-                 * prog
-                 */
-                path = find_path(PROG_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path != NULL) {
-                    dbg(DBG_LOW, "%s exists and -i prog not used", PROG_FILENAME);
-                    ++all_extra_err_count;
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
-             * unless -i remarks remarks.md MUST exist
-             */
-            if (!ignore_remarks_md) {
-                /*
-                 * remarks.md
-                 */
-                path = find_path(REMARKS_FILENAME, *submission_dir, -1, &cwd, false, &fts);
-                if (path == NULL) {
-                    dbg(DBG_LOW, "%s does not exist and -i remarks not used", REMARKS_FILENAME);
-                    ++all_extra_err_count;
-                } else {
-                    /*
-                     * now check the permissions are correct
-                     */
-                    if (!is_mode(path, S_IRUSR | S_IRGRP | S_IROTH)) {
-                        werr(1, __func__, "%s: permissions: %o != 0444", path, filemode(path));/*ooo*/
-                        ++all_extra_err_count;
-                    }
-                    free(path);
-                    path = NULL;
-                }
-
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
-            }
-            /*
              * now for the FTS find_paths() function: we need to find all files
              * that are NOT ignored (this is why there are two ignore lists)
              */
@@ -1310,22 +1020,103 @@ main(int argc, char *argv[])
                 for (c = 0; c < len; ++c) {
                     u = dyn_array_value(found, char *, c);
                     if (u == NULL) {
-                        err(61, __func__, "NULL pointer in ignore list");
+                        err(61, __func__, "NULL pointer in found files list");
                         not_reached();
                     }
                     /*
                      * now we have to determine what file this is
                      *
-                     * Since we already tested specific files we only have to
-                     * test files that have not been tested.
+                     * Specific files have additional checks.
                      */
-                    if (!strcmp(u, AUTH_JSON_FILENAME) || !strcmp(u, INFO_JSON_FILENAME) || !strcmp(u, REMARKS_FILENAME) ||
-                        !strcmp(u, MAKEFILE_FILENAME) || !strcmp(u, PROG_C_FILENAME) || !strcmp(u, PROG_FILENAME) ||
-                        !strcmp(u, ENTRY_JSON_FILENAME) || !strcmp(u, README_MD_FILENAME) || !strcmp(u, INDEX_HTML_FILENAME)) {
-                            /*
-                             * these we already tested, skip
-                             */
+                    if (!strcmp(u, AUTH_JSON_FILENAME)) {
+                        if (ignore_auth) {
                             continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_auth = true;
+                    } else if (!strcmp(u, INFO_JSON_FILENAME)) {
+                        if (ignore_info) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_info = true;
+                    } else if (!strcmp(u, REMARKS_FILENAME)) {
+                        if (ignore_remarks_md) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_remarks = true;
+                    } else if (!strcmp(u, MAKEFILE_FILENAME)) {
+                        if (ignore_Makefile) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        if (is_empty(u)) {
+                            werr(1, __func__, "%s: file is empty", u);
+                            ++all_extra_err_count;
+                        }
+                        found_Makefile = true;
+                    } else if (!strcmp(u, PROG_C_FILENAME)) {
+                        if (ignore_prog_c) {
+                            continue;
+                        }
+                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                            ++all_extra_err_count;
+                        }
+                        found_prog_c = true;
+                    } else if (!strcmp(u, PROG_FILENAME)) {
+                        if (ignore_prog) {
+                            continue;
+                        }
+                        werr(1, __func__, "%s EXISTS and -i prog NOT used", PROG_FILENAME);/*ooo*/
+                        ++all_extra_err_count;
+                        found_prog = true;
+                    } else if (!strcmp(u, ENTRY_JSON_FILENAME)) {
+                        if (ignore_entry) {
+                            continue;
+                        }
+                        werr(1, __func__, "%s EXISTS and -w and -i entry NOT used", ENTRY_JSON_FILENAME);/*ooo*/
+                        ++all_extra_err_count;
+                        found_entry = true;
+                    } else if (!strcmp(u, README_MD_FILENAME)) {
+                        if (ignore_README_md) {
+                            continue;
+                        }
+                        werr(1, __func__, "%s EXISTS and -w and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                        ++all_extra_err_count;
+                        found_README = true;
+                    } else if (!strcmp(u, INDEX_HTML_FILENAME)) {
+                        if (ignore_index) {
+                            continue;
+                        }
+                        werr(1, __func__, "%s EXISTS and -w and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                        ++all_extra_err_count;
+                        found_index = true;
                     } else {
                         /*
                          * not one of the specific filenames so we have to do
@@ -1351,11 +1142,55 @@ main(int argc, char *argv[])
                     }
                 }
 
-                /*
-                 * move back to previous directory
-                 */
-                (void) read_fts(NULL, -1, &cwd, NULL);
+            } else {
+                werr(1, __func__, "no files found in submission directory: %s", *submission_dir);/*ooo*/
+                ++all_extra_err_count;
             }
+            /*
+             * now we have to verify that certain files do exist or do not exist
+             * depending on the -i option
+             */
+            if (!ignore_entry && found_entry) {
+                werr(1, __func__, "%s EXISTS and -w and -i entry NOT used and ", ENTRY_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_auth && !found_auth) {
+                werr(1, __func__, "%s does NOT exist and -w and -i auth NOT used", AUTH_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_info && !found_info) {
+                werr(1, __func__, "%s does NOT exist and -w and -i info NOT used", INFO_JSON_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_README_md && found_README) {
+                werr(1, __func__, "%s EXISTS and -w and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_index && found_index) {
+                werr(1, __func__, "%s EXISTS and -w and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_Makefile && !found_Makefile) {
+                werr(1, __func__, "%s does NOT exist and -i Makefile NOT used", MAKEFILE_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_prog_c && !found_prog_c) {
+                werr(1, __func__, "%s does NOT exist and -i prog.c NOT used", PROG_C_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_prog && found_prog) {
+                werr(1, __func__, "%s EXISTS and -i prog NOT used", PROG_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+            if (!ignore_remarks_md && !found_remarks) {
+                werr(1, __func__, "%s does NOT exist and -i remarks NOT used", REMARKS_FILENAME);/*ooo*/
+                ++all_extra_err_count;
+            }
+
+            /*
+             * move back to previous directory
+             */
+            (void) read_fts(NULL, -1, &cwd, NULL);
         }
 
         /*
@@ -1527,10 +1362,10 @@ main(int argc, char *argv[])
         all_all_err_count = info_all_err_count + auth_all_err_count;
 
         /*
-         * report details of any .auth.json semantic errors
+         * report details of any .auth.json errors
          */
         if (auth_all_err_count > 0) {
-            fpr(stderr, __func__, "What follows are semantic errors for .auth.json file: %s\n", auth_path);
+            fpr(stderr, __func__, "What follows are errors for .auth.json file: %s\n", auth_path);
             if (auth_count_err == NULL) {
                 fpr(stderr, __func__, "auth_count_err is NULL!!!\n");
             } else {
@@ -1549,10 +1384,10 @@ main(int argc, char *argv[])
         }
 
         /*
-         * report details of any .info.json semantic errors
+         * report details of any .info.json errors
          */
         if (info_all_err_count > 0) {
-            fpr(stderr, __func__, "What follows are semantic errors for .info.json file: %s\n", info_path);
+            fpr(stderr, __func__, "What follows are errors for .info.json file: %s\n", info_path);
             if (info_count_err == NULL) {
                 fpr(stderr, __func__, "info_count_err is NULL!!!\n");
             } else {
@@ -1571,7 +1406,7 @@ main(int argc, char *argv[])
         }
 
         /*
-         * report on semantic count errors
+         * report on error count
          */
         if (all_count_err_count > 0) {
             if (auth_count_err_count > 0) {
@@ -1584,7 +1419,7 @@ main(int argc, char *argv[])
         }
 
         /*
-         * report on semantic validation errors
+         * report on validation errors
          */
         if (all_val_err_count > 0) {
             if (auth_val_err_count > 0) {
@@ -1614,33 +1449,33 @@ main(int argc, char *argv[])
          */
         if (all_all_err_count > 0) {
             if (auth_all_err_count > 0) {
-                dbg(DBG_LOW, "total semantic errors for .auth.json: %ju", auth_all_err_count);
+                dbg(DBG_LOW, "total errors for .auth.json: %ju", auth_all_err_count);
             }
             if (info_all_err_count > 0) {
-                dbg(DBG_LOW, "total semantic errors for .info.json: %ju", info_all_err_count);
+                dbg(DBG_LOW, "total errors for .info.json: %ju", info_all_err_count);
             }
-            dbg(DBG_LOW, "total semantic errors for both files: %ju", all_all_err_count);
+            dbg(DBG_LOW, "total errors for both files: %ju", all_all_err_count);
         }
 
         /*
-         * summarize the JSON semantic check status
+         * summarize the JSON check status
          */
         if (auth_all_err_count > 0) {
             if (auth_path == NULL) {
-                werr(1, __func__, "JSON semantic check failed for .auth.json file: ((NULL))"); /*ooo*/
+                werr(1, __func__, "JSON check failed for .auth.json file: ((NULL))"); /*ooo*/
             } else {
-                werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_path); /*ooo*/
+                werr(1, __func__, "JSON check failed for .auth.json file: %s", auth_path); /*ooo*/
             }
         }
         if (info_all_err_count > 0) {
             if (info_path == NULL) {
-                werr(1, __func__, "JSON semantic check failed for .info.json file: ((NULL))"); /*ooo*/
+                werr(1, __func__, "JSON check failed for .info.json file: ((NULL))"); /*ooo*/
             } else {
-                werr(1, __func__, "JSON semantic check failed for .info.json file: %s", info_path); /*ooo*/
+                werr(1, __func__, "JSON check failed for .info.json file: %s", info_path); /*ooo*/
             }
         }
-        if (all_all_err_count == 0) {
-            dbg(DBG_LOW, "JSON semantic check OK");
+        if (all_all_err_count == 0 && all_extra_err_count == 0) {
+            dbg(DBG_LOW, "checks OK");
         }
         /*
          * cleanup - except for info_stream and auth_stream.
@@ -1682,6 +1517,9 @@ main(int argc, char *argv[])
             free(info_path);
             info_path = NULL;
         }
+        /*
+         * also free the global ignored paths array
+         */
         if (ignored_paths != NULL) {
             free_paths_array(&ignored_paths, false);
             ignored_paths = NULL;
@@ -1711,12 +1549,7 @@ main(int argc, char *argv[])
          */
         reset_fts(&fts, true);
         /*
-         * now free the global ignored list as well
-         */
-        free_paths_array(&ignored_paths, false);
-        ignored_paths = NULL; /* paranoia */
-        /*
-         * free the paths and fund paths arrays too
+         * free the paths and found paths arrays too
          */
         free_paths_array(&paths, false);
         paths = NULL; /* paranoia */
