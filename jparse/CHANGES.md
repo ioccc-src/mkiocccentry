@@ -7,6 +7,7 @@ Add util function that uses `file_size()` called `is_empty()`.
 Updated all tools by changing `x.y.z` to `x.y+1.0` except that for those under <
 `2.0.0` they have been changed to `2.0.0`.
 
+Add copyright message to all source (code, header, scripts) and Makefiles.
 
 ## Release 2.2.29 2025-02-27
 

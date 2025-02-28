@@ -33,6 +33,9 @@ Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` for new util
 function (that uses its `file_size()` function) `is_empty()`. This is used in
 the update to `chkentry`.
 
+Added copyright message to jparse files (at the request of Landon some while
+back).
+
 More work on the `chkentry_test.sh` script. The script is in better shape so
 that when the directories are generated (they cannot be static due to version
 changes - at least without a new option) the script should hopefully be easily
