@@ -131,7 +131,7 @@ static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar(1) that supports the -J (xz) option (def: %s)\n"
     "\t-l ls\t\tpath to ls(1) (def: %s)\n"
     "\t-T txzchk\tpath to txzchk(1) (def: %s)\n"
-    "\t-e\t\tentertainment mode\n"
+    "\t-e\t\tentertainment mode (for txzchk)\n"
     "\t-f feathers\tdefine how many feathers is feathery (for -e)\n"
     "\t-F fnamchk\tpath to fnamchk(1) (used by txzchk) (def: %s)";
 static const char * const usage_msg2 =
@@ -152,8 +152,9 @@ static const char * const usage_msg3 =
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -I args\n";
 static const char * const usage_msg4 =
     "\tworkdir\t\tdirectory where the submission directory and tarball are formed\n"
+    "\t\t\t    NOTE: the submission directory under this directory must NOT exist\n"
     "\ttopdir\t\tdirectory with required, optional and extra files and/or directories\n"
-    "\t\t\t    to be copied to tarball\n";
+    "\t\t\t    NOTE: the topdir MUST have your prog.c, Makefile and remarks.md\n";
 static const char * const usage_msg5 =
     "\n"
     "Exit codes:\n"
