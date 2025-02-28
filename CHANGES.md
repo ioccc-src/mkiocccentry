@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.3.45 2025-02-28
+## Release 2.4.0 2025-02-28
 
 Fix and improve warning of `-y` and `-Y` in `mkiocccentry`.
 
@@ -41,15 +41,26 @@ that when the directories are generated (they cannot be static due to version
 changes - at least without a new option) the script should hopefully be easily
 updated (though it depends maybe on how the new directories are generated).
 
-Updated `MKIOCCCENTRY_VERSION` to `"1.2.36 2025-02-28"`.
-Updated `TXZCHK_VERSION` to `"1.1.15 2025-02-28"`.
-Updated `CHKENTRY_VERSION` to `"1.1.6 2025-02-28"`.
-Updated `CHKENTRY_TEST_VERSION` to `"1.1.1 2025-02-28"`.
+Resequence exit codes in `jparse/util.c`.
 
-Resequence exit codes in `jparse/util.c`. It appears that this was not done or
-something went wrong when doing so (as running `make seqcexit` updated the exit
-codes and this comes from after running it in `jparse/` and committing and then
-syncing from `jparse` to `jparse/`).
+Updated versions of `jparse` by changing `x.y.z` to `x.y+1.0` except that for
+those under < `2.0.0` they have been changed to `2.0.0`.
+
+`chkentry` now looks for directories that are the wrong permissions as well as
+directories with a depth beyond the max as well as any type of file other than a
+regular file or directory.
+
+Bug fix an enum in jparse which caused a util function (used in the above fix to
+chkentry) to fail.
+
+Updated `SOUP_VERSION "2.0.0 2025-02-28"`.
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.0 2025-02-28"`.
+Updated `FNAMCHK_VERSION` to `"2.0.0 2025-02-28"`.
+Updated `TXZCHK_VERSION` to `"2.0.0 2025-02-28"`.
+Updated `CHKENTRY_VERSION` to `"2.0.0 2025-02-28"`.
+Updated the version of `test_ioccc/chkentry_test.sh`, `test_ioccc/hostchk.sh`,
+`test_ioccc/ioccc_test.sh`, `test_ioccc/mkiocccentry_test.sh`,
+`test_ioccc/prep.sh` and `test_ioccc/txzchk_test.sh` to `"2.0.0 2025-02-28"`.
 
 
 ## Release 2.3.44 2025-02-27

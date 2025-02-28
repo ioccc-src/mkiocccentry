@@ -230,7 +230,7 @@ enum fts_type
     FTS_TYPE_FIFO       = 64,        /* FIFO allowed */
     FTS_TYPE_ANY        = FTS_TYPE_FILE | FTS_TYPE_DIR | /* all types of files */
                           FTS_TYPE_SYMLINK | FTS_TYPE_SOCK | /* all types of files */
-                          FTS_TYPE_CHAR | FTS_TYPE_BLOCK, /* all types of files allowed */
+                          FTS_TYPE_CHAR | FTS_TYPE_BLOCK | FTS_TYPE_FIFO /* all types of files allowed */
 };
 
 /*

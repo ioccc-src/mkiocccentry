@@ -903,7 +903,9 @@ main(int argc, char *argv[])
                          * based on the filename.
                          */
                         if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
-                            werr(1, __func__, "%s: not a sane relative path", u);/*ooo*/
+                            werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
+                                    "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
+                                    (uintmax_t)MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
                         if (is_executable_filename(u)) {
@@ -969,6 +971,15 @@ main(int argc, char *argv[])
              * move back to previous directory
              */
             (void) read_fts(NULL, -1, &cwd, NULL);
+
+            /*
+             * free paths arrays
+             *
+             */
+            free_paths_array(&found, false);
+            found = NULL; /* paranoia */
+            free_paths_array(&paths, false);
+            paths = NULL; /* paranoia */
         } else {
             /*
              * case: -w NOT used
@@ -1125,7 +1136,9 @@ main(int argc, char *argv[])
                          * based on the filename.
                          */
                         if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
-                            werr(1, __func__, "%s: not a sane relative path", u);/*ooo*/
+                            werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
+                                    "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
+                                    (uintmax_t)MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
                         if (is_executable_filename(u)) {
@@ -1188,9 +1201,157 @@ main(int argc, char *argv[])
             }
 
             /*
+             * free paths arrays
+             *
+             */
+            free_paths_array(&found, false);
+            found = NULL; /* paranoia */
+            free_paths_array(&paths, false);
+            paths = NULL; /* paranoia */
+
+            /*
              * move back to previous directory
              */
             (void) read_fts(NULL, -1, &cwd, NULL);
+        }
+
+        /*
+         * set up fts for additional checks
+         *
+         * First directories without regard to depth
+         */
+        fts.depth = 0;
+        fts.match_case = true; /* we must match case here */
+        fts.type = FTS_TYPE_DIR; /* directories */
+        /*
+         * now for the FTS find_paths() function: we need to find all
+         * directories that are NOT ignored (this is why there are two ignore
+         * lists)
+         */
+        append_path(&paths, "", true, false, false);
+        /*
+         * find paths
+         *
+         * NOTE: an empty string means find all paths not ignored. And since the
+         * list of paths to ignore is already in the fts->ignore list we
+         * don't need to do anything special.
+         */
+        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        if (found != NULL) {
+            /*
+             * case: directories were found, check permissions
+             */
+            char *u = NULL;
+            len = paths_in_array(found);
+            for (c = 0; c < len; ++c) {
+                u = dyn_array_value(found, char *, c);
+                if (u == NULL) {
+                    err(70, __func__, "NULL pointer in found files list");
+                    not_reached();
+                }
+
+                /*
+                 * directories must be the right permissions.
+                 */
+                if (!is_mode(u, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                    werr(1, __func__, "directory %s: permissions: %o != 0755", u, filemode(u));/*ooo*/
+                    ++all_extra_err_count;
+                }
+            }
+            /*
+             * free found array again
+             */
+            free_paths_array(&found, false);
+            found = NULL;
+        }
+        /*
+         * Now directories with depth checks.
+         */
+        fts.min_depth = MAX_PATH_DEPTH + 1;
+        fts.match_case = true; /* we must match case here */
+        fts.type = FTS_TYPE_DIR; /* directories */
+        /*
+         * now for the FTS find_paths() function: we need to find all
+         * directories that are NOT ignored (this is why there are two ignore
+         * lists)
+         */
+        /*
+         * find paths
+         *
+         * NOTE: an empty string means find all paths not ignored. And since the
+         * list of paths to ignore is already in the fts->ignore list we
+         * don't need to do anything special.
+         */
+        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        if (found != NULL) {
+            /*
+             * case: directories beyond the max depth were found, report it as
+             * an error.
+             */
+            char *u = NULL;
+            len = paths_in_array(found);
+            for (c = 0; c < len; ++c) {
+                u = dyn_array_value(found, char *, c);
+                if (u == NULL) {
+                    err(71, __func__, "NULL pointer in found files list");
+                    not_reached();
+                }
+
+                /*
+                 * directories must be the right permissions.
+                 */
+                werr(1, __func__, "directory %s depth > max %ju", u, (uintmax_t)MAX_PATH_DEPTH);/*ooo*/
+                ++all_extra_err_count;
+            }
+            /*
+             * free found array again
+             */
+            free_paths_array(&found, false);
+            found = NULL;
+        }
+
+        /*
+         * Now anything other than files and directories
+         */
+        reset_fts(&fts, false);
+        fts.match_case = true; /* we must match case here */
+        fts.type = FTS_TYPE_ANY & ~(FTS_TYPE_FILE|FTS_TYPE_DIR);
+        /*
+         * now for the FTS find_paths() function: we need to find everything not
+         * a directory or file that are not ignored.
+         */
+        /*
+         * find paths
+         *
+         * NOTE: an empty string means find all paths not ignored. And since the
+         * list of paths to ignore is already in the fts->ignore list we
+         * don't need to do anything special.
+         */
+        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        if (found != NULL) {
+            /*
+             * case: directories beyond the max depth were found, report it as
+             * an error.
+             */
+            char *u = NULL;
+            len = paths_in_array(found);
+            for (c = 0; c < len; ++c) {
+                u = dyn_array_value(found, char *, c);
+                if (u == NULL) {
+                    err(72, __func__, "NULL pointer in found files list");
+                    not_reached();
+                }
+
+                /*
+                 */
+                werr(1, __func__, "%s: not a file or directory", u);/*ooo*/
+                ++all_extra_err_count;
+            }
+            /*
+             * free found array again
+             */
+            free_paths_array(&found, false);
+            found = NULL;
         }
 
         /*
@@ -1201,9 +1362,10 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(70, __func__, "failed to change back to original directory");
+            errp(73, __func__, "failed to change back to original directory");
             not_reached();
         }
+
 
         /*
          * open the .auth.json file under submission_dir if !ignore_auth && -w not used
@@ -1212,12 +1374,12 @@ main(int argc, char *argv[])
             auth_filename = ".auth.json";
             auth_stream = open_dir_file(*submission_dir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(71, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
+                err(74, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
                 not_reached();
             }
             auth_path = calloc_path(*submission_dir, auth_filename);
             if (auth_path == NULL) {
-                err(72, __func__, "auth_path is NULL");
+                err(75, __func__, "auth_path is NULL");
                 not_reached();
             }
         }
@@ -1229,12 +1391,12 @@ main(int argc, char *argv[])
             info_filename = ".info.json";
             info_stream = open_dir_file(*submission_dir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(73, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
+                err(76, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
                 not_reached();
             }
             info_path = calloc_path(*submission_dir, info_filename);
             if (info_path == NULL) {
-                err(74, __func__, "info_path is NULL");
+                err(77, __func__, "info_path is NULL");
                 not_reached();
             }
         }
@@ -1279,27 +1441,27 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .auth.json
              */
             if (auth_count_err == NULL) {
-                err(75, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+                err(78, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_count_err) < 0) {
-                err(76, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+                err(79, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
                 not_reached();
             }
             auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
             if (auth_val_err == NULL) {
-                err(77, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+                err(80, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_val_err) < 0) {
-                err(78, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+                err(81, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
                 not_reached();
             }
             auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
             if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-                err(79, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+                err(82, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
                        "for .auth.json file: %s",
                        auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
                 not_reached();
@@ -1323,29 +1485,29 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .info.json
              */
             if (info_count_err == NULL) {
-                err(80, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+                err(83, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_count_err) < 0) {
-                err(81, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+                err(84, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
                        "for .info.json file: %s",
                        dyn_array_tell(info_count_err), info_path);
                 not_reached();
             }
             info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
             if (info_val_err == NULL) {
-                err(82, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+                err(85, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_val_err) < 0) {
-                err(83, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+                err(86, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
                        "for .info.json file: %ss",
                        dyn_array_tell(info_val_err), info_path);
                 not_reached();
             }
             info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
             if (info_all_err_count < info_count_err_count+info_val_err_count) {
-                err(84, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+                err(87, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
                        "for .info.json file: %s",
                        info_all_err_count, info_count_err_count, info_val_err_count, info_path);
                 not_reached();
@@ -1530,7 +1692,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(85, __func__, "failed to change back to previous directory");
+            errp(88, __func__, "failed to change back to previous directory");
             not_reached();
         }
         /*
@@ -1541,7 +1703,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp */
         if (close(cwd2) != 0) {
-            errp(86, __func__, "failed to close original directory FD");
+            errp(89, __func__, "failed to close original directory FD");
             not_reached();
         }
         /*

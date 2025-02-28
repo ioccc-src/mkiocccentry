@@ -9,6 +9,9 @@ Updated all tools by changing `x.y.z` to `x.y+1.0` except that for those under <
 
 Add copyright message to all source (code, header, scripts) and Makefiles.
 
+Fix enum `FTS_TYPE_ANY` - add missing `FTS_TYPE_FIFO`.
+
+
 ## Release 2.2.29 2025-02-27
 
 The script `jparse_bug_report.sh` actually can have the script in the `TOOLS`

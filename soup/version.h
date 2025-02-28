@@ -83,13 +83,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.3.46 2025-02-28"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.0 2025-02-28"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "1.1.23 2025-02-23"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -99,7 +99,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "1.2.36 2025-02-28"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -116,17 +116,17 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "1.0.4 2025-02-19"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "1.1.15 2025-02-28"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "1.1.6 2025-02-28"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.
