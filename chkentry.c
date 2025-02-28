@@ -1246,7 +1246,7 @@ main(int argc, char *argv[])
             for (c = 0; c < len; ++c) {
                 u = dyn_array_value(found, char *, c);
                 if (u == NULL) {
-                    err(60, __func__, "NULL pointer in found files list");
+                    err(70, __func__, "NULL pointer in found files list");
                     not_reached();
                 }
 
@@ -1293,7 +1293,7 @@ main(int argc, char *argv[])
             for (c = 0; c < len; ++c) {
                 u = dyn_array_value(found, char *, c);
                 if (u == NULL) {
-                    err(60, __func__, "NULL pointer in found files list");
+                    err(71, __func__, "NULL pointer in found files list");
                     not_reached();
                 }
 
@@ -1338,7 +1338,7 @@ main(int argc, char *argv[])
             for (c = 0; c < len; ++c) {
                 u = dyn_array_value(found, char *, c);
                 if (u == NULL) {
-                    err(60, __func__, "NULL pointer in found files list");
+                    err(72, __func__, "NULL pointer in found files list");
                     not_reached();
                 }
 
@@ -1362,7 +1362,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(70, __func__, "failed to change back to original directory");
+            errp(73, __func__, "failed to change back to original directory");
             not_reached();
         }
 
@@ -1374,12 +1374,12 @@ main(int argc, char *argv[])
             auth_filename = ".auth.json";
             auth_stream = open_dir_file(*submission_dir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(71, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
+                err(74, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
                 not_reached();
             }
             auth_path = calloc_path(*submission_dir, auth_filename);
             if (auth_path == NULL) {
-                err(72, __func__, "auth_path is NULL");
+                err(75, __func__, "auth_path is NULL");
                 not_reached();
             }
         }
@@ -1391,12 +1391,12 @@ main(int argc, char *argv[])
             info_filename = ".info.json";
             info_stream = open_dir_file(*submission_dir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(73, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
+                err(76, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
                 not_reached();
             }
             info_path = calloc_path(*submission_dir, info_filename);
             if (info_path == NULL) {
-                err(74, __func__, "info_path is NULL");
+                err(77, __func__, "info_path is NULL");
                 not_reached();
             }
         }
@@ -1441,27 +1441,27 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .auth.json
              */
             if (auth_count_err == NULL) {
-                err(75, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
+                err(78, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_count_err) < 0) {
-                err(76, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
+                err(79, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
                 not_reached();
             }
             auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
             if (auth_val_err == NULL) {
-                err(77, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
+                err(80, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
                 not_reached();
             }
             if (dyn_array_tell(auth_val_err) < 0) {
-                err(78, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
+                err(81, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
                        "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
                 not_reached();
             }
             auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
             if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-                err(79, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
+                err(82, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
                        "for .auth.json file: %s",
                        auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
                 not_reached();
@@ -1485,29 +1485,29 @@ main(int argc, char *argv[])
              * firewall on json_sem_check() results AND count errors for .info.json
              */
             if (info_count_err == NULL) {
-                err(80, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
+                err(83, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_count_err) < 0) {
-                err(81, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
+                err(84, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
                        "for .info.json file: %s",
                        dyn_array_tell(info_count_err), info_path);
                 not_reached();
             }
             info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
             if (info_val_err == NULL) {
-                err(82, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
+                err(85, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
                 not_reached();
             }
             if (dyn_array_tell(info_val_err) < 0) {
-                err(83, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
+                err(86, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
                        "for .info.json file: %ss",
                        dyn_array_tell(info_val_err), info_path);
                 not_reached();
             }
             info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
             if (info_all_err_count < info_count_err_count+info_val_err_count) {
-                err(84, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
+                err(87, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
                        "for .info.json file: %s",
                        info_all_err_count, info_count_err_count, info_val_err_count, info_path);
                 not_reached();
@@ -1692,7 +1692,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp() */
         if (fchdir(cwd2) != 0) {
-            errp(85, __func__, "failed to change back to previous directory");
+            errp(88, __func__, "failed to change back to previous directory");
             not_reached();
         }
         /*
@@ -1703,7 +1703,7 @@ main(int argc, char *argv[])
          */
         errno = 0; /* pre-clear errno for errp */
         if (close(cwd2) != 0) {
-            errp(86, __func__, "failed to close original directory FD");
+            errp(89, __func__, "failed to close original directory FD");
             not_reached();
         }
         /*

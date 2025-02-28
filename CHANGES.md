@@ -59,9 +59,8 @@ Updated `FNAMCHK_VERSION` to `"2.0.0 2025-02-28"`.
 Updated `TXZCHK_VERSION` to `"2.0.0 2025-02-28"`.
 Updated `CHKENTRY_VERSION` to `"2.0.0 2025-02-28"`.
 Updated the version of `test_ioccc/chkentry_test.sh`, `test_ioccc/hostchk.sh`,
-`test_ioccc/ioccc_test.sh`, `test_ioccc/iocccsize_test.sh`,
-`test_ioccc/mkiocccentry_test.sh`, `test_ioccc/prep.sh` and
-`test_ioccc/txzchk_test.sh` to `"2.0.0 2025-02-28"`.
+`test_ioccc/ioccc_test.sh`, `test_ioccc/mkiocccentry_test.sh`,
+`test_ioccc/prep.sh` and `test_ioccc/txzchk_test.sh` to `"2.0.0 2025-02-28"`.
 
 
 ## Release 2.3.44 2025-02-27
