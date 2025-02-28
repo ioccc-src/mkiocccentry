@@ -567,20 +567,45 @@ main(int argc, char *argv[])
 	print("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
     }
 
-    /*
-     * warn (if not -q/quiet mode) user that with -i answers (or -y) we will
-     * always answer yes. This is especially important (in fact absolutely
-     * essential for -i answers) because if there was a change in file set(s)
-     * then the answers file would be entirely useless!
-     */
-    if (answer_yes && !quiet) {
-        /*
-         * we could use msg() but this performs more checks which is very
-         * important for this
-         */
-        print("%s", "Notice: we will always answer yes to questions.");
-    }
 
+    /*
+     * warn about -Y option
+     */
+    if (force_yes) {
+        para("",
+             "WARNING: you've chosen to answer YES to ALL prompts. If this was",
+             "unintentional, run the program again without specifying -Y. We cannot",
+             "stress the importance of this enough! Well OK, we can overstress most things",
+             "but you get the point; do not use the -Y option without EXTREME caution!",
+             "",
+             "Hint: this option is mostly useful for mkiocccentry_test.sh; if you REALLY",
+             "want to answer yes you should use -y instead which will allow you to still",
+             "verify certain things.",
+             "",
+             NULL);
+
+        /*
+         * if not quiet give a shorter warning as well
+         */
+        if (!quiet) {
+            print("%s", "Notice: we will ALWAYS answer YES to questions.\n");
+        }
+    } else if (answer_yes) {
+        /* warn about -y option */
+        para("",
+             "WARNING: you've chosen to answer yes to ALMOST ALL prompts. If this was",
+             "unintentional, run the program again without specifying -y. We cannot",
+             "stress the importance of this enough! Well OK, we can overstress most things",
+             "but you get the point; do not use the -y option without EXTREME caution!",
+             "",
+             NULL);
+        /*
+         * if not quiet give a shorter warning as well
+         */
+        if (!quiet) {
+            print("%s", "Notice: we will answer YES to MOST questions.\n");
+        }
+    }
 
 
     /*
@@ -588,18 +613,6 @@ main(int argc, char *argv[])
      */
     info.mkiocccentry_ver = MKIOCCCENTRY_VERSION;
     dbg(DBG_HIGH, "info.mkiocccentry_ver: %s", info.mkiocccentry_ver);
-
-    /* warn about -y option */
-    if (answer_yes) {
-	para("",
-	     "WARNING: you've chosen to answer yes to almost all prompts. If this was",
-	     "unintentional, run the program again without specifying -y. We cannot",
-	     "stress the importance of this enough! Well OK, we can overstress most things",
-	     "but you get the point; do not use the -y option without EXTREME caution!",
-	     "",
-	     NULL);
-    }
-
     /* if the user requested to ignore warnings, and now -E, then ignore this once and warn them :) */
     if (ignore_warnings) {
 	para("",
