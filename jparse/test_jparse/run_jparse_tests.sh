@@ -20,7 +20,7 @@
 
 # setup
 #
-export RUN_JPARSE_TESTS_VERSION="1.0.1 2024-10-22"
+export RUN_JPARSE_TESTS_VERSION="2.0.0 2025-02-28"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J json_level] [-j jparse] [-p pr_jparse_test] [-c jnum_chk] [-Z topdir]
 
     -h			print help and exit

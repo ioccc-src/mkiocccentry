@@ -76,7 +76,7 @@
 /*
  * official jsemtblgen version
  */
-#define JSEMTBLGEN_VERSION "1.2.2 2025-02-23"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "2.0.0 2025-02-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jsemtblgen tool basename

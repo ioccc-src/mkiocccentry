@@ -38,7 +38,7 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.0.6 2025-01-17"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.1.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
 
 
 extern size_t utf8len(const char *str, int32_t surrogate);

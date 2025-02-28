@@ -24,7 +24,7 @@ export JSTRENCODE="./jstrencode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="1.2.7 2025-01-02" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="2.0.0 2025-02-28" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]

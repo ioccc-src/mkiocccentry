@@ -40,7 +40,7 @@
 
 # setup
 #
-export VERSION="1.0 2025-01-03"
+export VERSION="2.0.0 2025-02-28"
 NAME=$(basename "$0")
 export NAME
 #

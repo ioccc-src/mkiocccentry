@@ -73,7 +73,7 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="1.2.3 2025-01-01"	    # version format: major.minor YYYY-MM-DD */
+export JPARSE_TEST_VERSION="2.0.0 2025-02-28"	    # version format: major.minor YYYY-MM-DD */
 export CHK_TEST_FILE="./test_jparse/json_teststr.txt"
 export CHK_INVALID_TEST_FILE="./test_jparse/json_teststr_fail.txt"
 export JPARSE="./jparse"
