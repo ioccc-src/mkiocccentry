@@ -50,7 +50,7 @@
 /*
  * official verge tool version
  */
-#define VERGE_VERSION "1.2.0 2024-10-09"		/* format: major.minor YYYY-MM-DD */
+#define VERGE_VERSION "2.0.0 2025-02-28"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

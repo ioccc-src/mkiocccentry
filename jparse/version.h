@@ -34,22 +34,22 @@
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "2.2.29 2025-02-28"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "2.3.0 2025-02-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "1.2.8 2024-12-31"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "2.0.0 2025-02-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official JSON parser version
  */
-#define JPARSE_LIBRARY_VERSION "2.2.7 2025-01-18"	/* library version format: major.minor YYYY-MM-DD */
+#define JPARSE_LIBRARY_VERSION "2.3.0 2025-02-28"	/* library version format: major.minor YYYY-MM-DD */
 
 /*
  * official utility functions (util.c) version
  */
-#define JPARSE_UTILS_VERSION "1.0.26 2025-02-28"         /* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTILS_VERSION "2.0.0 2025-02-28"         /* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_JPARSE_VERSION_H */

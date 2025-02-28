@@ -4,8 +4,8 @@
 
 Add util function that uses `file_size()` called `is_empty()`.
 
-Updated `JPARSE_UTILS_VERSION` to `"1.0.26 2025-02-28"`.
-Updated `UTIL_TEST_VERSION` to `"1.0.24 2025-02-28"`.
+Updated all tools by changing `x.y.z` to `x.y+1.0` except that for those under <
+`2.0.0` they have been changed to `2.0.0`.
 
 
 ## Release 2.2.29 2025-02-27

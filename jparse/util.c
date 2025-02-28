@@ -8888,7 +8888,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "1.0.24 2025-02-28" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "2.0.0 2025-02-28" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)

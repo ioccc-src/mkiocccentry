@@ -66,7 +66,7 @@
 /*
  * official jnum_chk version
  */
-#define JNUM_CHK_VERSION "1.0.1 2024-03-02"      /* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "2.0.0 2025-02-28"      /* format: major.minor YYYY-MM-DD */
 
 
 /*

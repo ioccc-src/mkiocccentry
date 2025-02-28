@@ -39,7 +39,7 @@ export UNKNOWN_FUNC=
 export JSEMTBLGEN="./jsemtblgen"
 export JSEMTBLGEN_ARGS=
 export PATCH_TOOL=
-export JSEMCGEN_VERSION="1.2.0 2024-10-09"
+export JSEMCGEN_VERSION="2.0.0 2025-02-28"
 
 # attempt to fetch system specific paths to tools we need
 #
