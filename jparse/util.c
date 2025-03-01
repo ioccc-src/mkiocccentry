@@ -5328,7 +5328,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * obtain file descriptor of src file
      */
     errno = 0; /* pre-clear errno for errp() */
-    infd = open(src, O_WRONLY|O_CLOEXEC, S_IRWXU);
+    infd = open(src, O_RDONLY|O_CLOEXEC, S_IRWXU);
     if (infd < 0) {
         errp(230, __func__, "failed to obtain file descriptor for %s: %s", src, strerror(errno));
         not_reached();

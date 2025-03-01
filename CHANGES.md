@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.1 2025-03-01
+
+Fix critical bug in jparse/ `copyfile()` function.
+
+
 ## Release 2.4.0 2025-02-28
 
 Fix and improve warning of `-y` and `-Y` in `mkiocccentry`.
