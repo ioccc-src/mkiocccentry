@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.31 2025-03-01
+
+Fix critical bug in `copyfile()`: obtaining the FD of the source file should not
+have the flag `O_WRONLY` but rather `O_RDONLY`.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.1 2025-03-01"`.
+
+
 ## Release 2.2.30 2025-02-28
 
 Add util function that uses `file_size()` called `is_empty()`.
