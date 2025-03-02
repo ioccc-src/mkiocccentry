@@ -4273,6 +4273,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     va_list ap;			/* variable argument list */
     char *cmd = NULL;		/* e.g. cp prog.c submission_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
+    int saved_errno = 0;        /* before we return from the function we need to let the caller have the errno */
 
     /*
      * firewall
@@ -4309,6 +4310,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
     errno = 0;			/* pre-clear errno for errp() */
     cmd = vcmdprintf(format, ap);
     if (cmd == NULL) {
+        saved_errno = 0;
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
 	    errp(185, name, "calloc failed in vcmdprintf()");
@@ -4317,6 +4319,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
 			 name, strerror(errno), EXIT_CALLOC_FAILED);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
+            errno = saved_errno;
 	    return EXIT_CALLOC_FAILED;
 	}
     }
@@ -4338,6 +4341,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
 	    errp(186, __func__, "error calling system(\"%s\")", cmd);
 	    not_reached();
 	} else {
+            saved_errno = errno;
 	    dbg(DBG_MED, "called from %s: error calling system(\"%s\")", name, cmd);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    /* free allocated command storage */
@@ -4345,6 +4349,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
 		free(cmd);
 		cmd = NULL;
 	    }
+            errno = saved_errno;
 	    return EXIT_SYSTEM_FAILED;
 	}
 
@@ -4357,6 +4362,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
 	    errp(187, __func__, "execution of the shell failed for system(\"%s\")", cmd);
 	    not_reached();
 	} else {
+            saved_errno = errno;
 	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(\"%s\")", name, cmd);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    /* free allocated command storage */
@@ -4364,6 +4370,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
 		free(cmd);
 		cmd = NULL;
 	    }
+            errno = saved_errno;
 	    return EXIT_SYSTEM_FAILED;
 	}
     }
@@ -4424,6 +4431,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
     char *cmd = NULL;		/* e.g., cp prog.c submission_dir/prog.c */
     FILE *stream = NULL;	/* open pipe to shell command or NULL */
     int ret;			/* libc function return */
+    int saved_errno = 0;        /* in case of error, save errno for before we return */
 
     /*
      * firewall
@@ -4492,6 +4500,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	    errp(191, name, "error calling popen(\"%s\", \"%s\")", cmd, write_mode?"w":"r");
 	    not_reached();
 	} else {
+            saved_errno = errno;
 	    dbg(DBG_MED, "called from %s: error calling popen(\"%s\", \"%s\"): %s", name, cmd, write_mode?"w":"r",
                     strerror(errno));
 	    va_end(ap);		/* stdarg variable argument list cleanup */
@@ -4500,6 +4509,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 		free(cmd);
 		cmd = NULL;
 	    }
+            errno = saved_errno;
 	    return NULL;
 	}
     }
