@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "26 February 2025" "chkentry" "IOCCC tools"
+.TH chkentry 1 "02 March 2025" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check JSON files in an IOCCC entry
@@ -23,17 +23,20 @@
 .RB [\| \-q \|]
 .RB [\| \-i
 .IR path \|]
+.RB [\| \-P \|]
 .RB [\| \-w \|]
-.I submission_dir
+.I directory
 .SH DESCRIPTION
 .PP
 .BR chkentry (1)
-runs a number of validation checks on an IOCCC submission directory.
+runs a number of validation checks on an IOCCC submission or winning entry directory.
 Depending on the options, it will validate the
 .B .auth.json
 and/or
 .B .info.json
-files, as well as checking the permissions of files and, if the
+files, as well as checking the permissions of files and directories (unless the
+.B \-P
+option is used) and, if the
 .B .info.json
 file is not ignored, it will compare the manifest with the files in the directory, unless that file has been explicitly ignored with the
 .BI \-i\  path
@@ -47,12 +50,11 @@ option; otherwise, without
 a different set of files must exist and must not exist, again depending on the
 .BI \-i\  path
 option.
-In either case, even if the manifest is being ignored, it will verify that the files in the directories are valid permissions, whether specific files are missing and if specific files in the directory are not, by name, allowed.
-It will also verify that the filenames are sane, relative paths, in the context of the IOCCC rules and as both
-.BR mkiocccentry (1)
-and
-.BR txzchk (1)
-test.
+.PP
+In either case, even if the manifest is being ignored, it will verify that the files in the directories are valid permissions (again, unless it's an ignored path or the
+.B \-P
+option is used), whether specific files are missing (unless it was ignored) and if specific files in the directory are not, by name, allowed (unless it was ignored).
+It will also verify that the filenames are sane, relative paths, in the context of the IOCCC rules, at least when not in winning entry mode and if not ignored.
 .PP
 As a sanity check, the
 .BR mkiocccentry (1)
@@ -67,13 +69,13 @@ If
 .BR mkiocccentry (1)
 sees a 0 exit status, then all is well.
 For a non\-zero exit code, the tool aborts because any problems detected by
-.B chkentry
+.BR chkentry (1)
 based on what
 .BR mkiocccentry (1)
 did indicates there is a serious mismatch between what
 .BR mkiocccentry (1)
 is doing and what
-.B chkentry
+.BR chkentry (1)
 expects.
 .PP
 .SH OPTIONS
@@ -101,10 +103,13 @@ Silences msg(), warn(), warnp() if verbosity level is 0.
 .BI \-i\  path
 Ignore a path.
 This option may be used more than once but is only meant for the judges.
+.TP \-P
+Ignore permissions of files and directories.
+This option is for the judges.
 .TP
 .B \-w
 Perform winning entry tests instead of submission tests.
-This option is only meant for the judges.
+This option is for the judges.
 .SH EXIT STATUS
 .TP
 0

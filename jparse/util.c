@@ -744,7 +744,7 @@ exists(char const *path)
 
 
 /*
- * type_of_file     -  determine type of file of path
+ * file_type     -  determine type of file of path
  *
  * This function determines the type of file if path exists, else it returns an
  * appropriate error.
@@ -775,7 +775,7 @@ exists(char const *path)
  * using stat(2)).
  */
 enum file_type
-type_of_file(char const *path)
+file_type(char const *path)
 {
     struct stat buf;		/* path status */
 
@@ -899,20 +899,34 @@ is_mode(char const *path, mode_t mode)
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
-    if (is_file(path)) {
-        mode |= S_IFREG;
-    } else if (is_dir(path)) {
-        mode |= S_IFDIR;
-    } else if (is_symlink(path)) {
-        mode |= S_IFLNK;
-    } else if (is_socket(path)) {
-        mode |= S_IFSOCK;
-    } else if (is_chardev(path)) {
-        mode |= S_IFCHR;
-    } else if (is_blockdev(path)) {
-        mode |= S_IFBLK;
-    } else if (is_fifo(path)) {
-        mode |= S_IFIFO;
+    switch (file_type(path)) {
+        case FILE_TYPE_ERR:
+            err(55, __func__, "error in obtaining file type of path: %s", path);
+            not_reached();
+        case FILE_TYPE_ENOENT:
+            warn(__func__, "path does not exist: %s", path);
+            break;
+        case FILE_TYPE_FILE:
+            mode |= S_IFREG;
+            break;
+        case FILE_TYPE_DIR:
+            mode |= S_IFDIR;
+            break;
+        case FILE_TYPE_SYMLINK:
+            mode |= S_IFLNK;
+            break;
+        case FILE_TYPE_SOCK:
+            mode |= S_IFSOCK;
+            break;
+        case FILE_TYPE_CHAR:
+            mode |= S_IFCHR;
+            break;
+        case FILE_TYPE_BLOCK:
+            mode |= S_IFBLK;
+            break;
+        case FILE_TYPE_FIFO:
+            mode |= S_IFIFO;
+            break;
     }
 
     if (buf.st_mode != mode) {
@@ -2383,7 +2397,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                                  * get file first. This is useful so we don't have to repeatedly
                                  * call lstat(2)/stat(2) in the case of FTS_DEFAULT.
                                  */
-                                enum file_type type = type_of_file(ent->fts_path);
+                                enum file_type type = file_type(ent->fts_path);
                                 if ((!(fts->type & FTS_TYPE_SOCK) && type == FILE_TYPE_SOCK) ||
                                     (!(fts->type & FTS_TYPE_CHAR) && type == FILE_TYPE_CHAR) ||
                                     (!(fts->type & FTS_TYPE_BLOCK) && type == FILE_TYPE_BLOCK) ||
@@ -2415,7 +2429,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                             err(152, __func__, "found NULL pointer in fts->ignore[%ju]", (uintmax_t)i);
                             not_reached();
                         }
-                        if (fts->base && ((fts->match_case && !strcmp(ent->fts_name, u)) ||
+                        if ((fts->base || count_dirs(name) == 1) && ((fts->match_case && !strcmp(ent->fts_name, u)) ||
                            (!fts->match_case && !strcasecmp(ent->fts_name, u)))) {
                             /*
                              * if this is a directory we will not descend into
@@ -2430,8 +2444,8 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                             dbg(DBG_HIGH, "ignoring name: %s", ent->fts_name);
                             skip = true;
                             break;
-                        } else if (!fts->base && ((fts->match_case && !strcmp(u, ent->fts_path)) ||
-                                  (!fts->match_case && !strcasecmp(u, ent->fts_path)))) {
+                        } else if (!fts->base && ((fts->match_case && !strcmp(u, name)) ||
+                                  (!fts->match_case && !strcasecmp(u, name)))) {
                             /*
                              * if this is a directory we will not descend into
                              * it
@@ -3333,18 +3347,25 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
 /*
  * filemode - return stat.st_mode of a path
  *
- * This function will, if it is a path that exists, return the stat.st_mode.
+ * This function will, if it is a path that exists, return the stat.st_mode,
+ * unless printing == true in which case we will mask it with the appropriate
+ * macro to make it easier to recognise.
  *
  * given:
- *      path    - path to check
+ *      path        - path to check
+ *      printing    - the user wants the value to be printed
  *
  * NOTE: this function does not return on a NULL path.
+ *
+ * NOTE: if printing == true the format specifier should be %04o.
  */
 mode_t
-filemode(char const *path)
+filemode(char const *path, bool printing)
 {
     int ret;			/* return code holder */
     struct stat buf;		/* path status */
+    mode_t st_mode = 0;
+    enum file_type type = FILE_TYPE_ERR; /* assume some error */
     /*
      * firewall
      */
@@ -3362,9 +3383,56 @@ filemode(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return 0;
     }
+
+    /*
+     * we have to do special checks to mask out certain bits depending on if we
+     * want to print the mode OR if we want to get the raw bits. If we are not
+     * printing we need to mask out certain bits; otherwise we can mask out
+     * simply S_IFMT (i.e. st_mode &= ~S_IFMT).
+     */
+    st_mode = buf.st_mode;
+    /*
+     * if printing we can just  mask out the single macro.
+     */
+    if (printing) {
+        st_mode &= ~S_IFMT;
+    } else {
+        /*
+         * her we need to get the file type first
+         */
+        type = file_type(path);
+        switch (type) {
+            case FILE_TYPE_FILE:
+                st_mode &= ~S_IFREG;
+                break;
+            case  FILE_TYPE_DIR:
+                st_mode &= ~S_IFDIR;
+                break;
+            case FILE_TYPE_SYMLINK:
+                st_mode &= ~S_IFLNK;
+                break;
+            case FILE_TYPE_SOCK:
+                st_mode &= ~S_IFSOCK;
+                break;
+            case FILE_TYPE_CHAR:
+                st_mode &= ~S_IFCHR;
+                break;
+            case FILE_TYPE_BLOCK:
+                st_mode &= ~S_IFBLK;
+                break;
+            case FILE_TYPE_FIFO:
+                st_mode &= ~S_IFIFO;
+                break;
+            default:
+                err(55, __func__, "unexpected error in determining file type");
+                not_reached();
+                break;
+        }
+    }
+
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
-    dbg(DBG_HIGH, "path %s is mode %o", path, buf.st_mode);
-    return buf.st_mode;
+    dbg(DBG_HIGH, "path %s is mode %o (printing: %s)", path, st_mode, booltostr(printing));
+    return st_mode;
 }
 
 /*
@@ -5622,7 +5690,7 @@ touch(char const *path, mode_t mode)
         not_reached();
     }
 
-    dbg(DBG_MED, "created file %s with mode %o", path, mode);
+    dbg(DBG_MED, "created file %s with mode %04o", path, mode);
 
     /*
      * now close the file we created
@@ -8910,7 +8978,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "2.0.0 2025-02-28" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "2.0.1 2025-03-02" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -10156,8 +10224,8 @@ main(int argc, char **argv)
             err(154, __func__, "copyfile() failed to copy st_mode of file %s", relpath);
             not_reached();
         } else {
-            fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode of file %s: %o == %o", relpath,
-                in_st.st_mode, out_st.st_mode);
+            fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode of file %s: %04o == %04o", relpath,
+                in_st.st_mode & ~S_IFMT, out_st.st_mode & ~S_IFMT);
         }
 
         /*
@@ -10260,10 +10328,12 @@ main(int argc, char **argv)
     }
 
     if (!is_mode("util.copy.o", in_st.st_mode)) {
-        err(163, __func__, "util.o st_mode != util.copy.o st_mode: %o != %o", in_st.st_mode, out_st.st_mode);
+        err(163, __func__, "util.o st_mode != util.copy.o st_mode: %04o != %04o",
+                in_st.st_mode & ~S_IFMT, out_st.st_mode & ~S_IFMT);
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode to dest file: %o == %o", in_st.st_mode, out_st.st_mode);
+        fdbg(stderr, DBG_MED, "copyfile() successfully copied st_mode to dest file: %04o == %04o",
+                filemode("util.o", true), filemode(relpath, true));
     }
     /*
      * delete copied file
@@ -10396,7 +10466,7 @@ main(int argc, char **argv)
         /*
          * test the file mode if verbose enough
          */
-        fdbg(stderr, DBG_HIGH, "/dev/null is mode: %o", filemode("/dev/null"));
+        fdbg(stderr, DBG_HIGH, "/dev/null is mode: %o", filemode("/dev/null", true));
     } else {
         fdbg(stderr, DBG_MED, "/dev/null is NOT a character device");
     }

@@ -1,6 +1,30 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.2 2025-03-02
+
+Resolve issue #1201.
+
+Fix a number of bugs in `chkentry(1)` and add new option to ignore permissions
+of files and directories (`-P`). This option is only meant for the judges and
+just like with `-i` and `-w` using it when verifying a submission puts one at
+grave risk of violating the rules; it is not even documented outside the usage
+message and the man page.
+
+Fix display issues in `mkiocccentry(1)` and `chkentry(1)` with regards to file
+permissions.
+
+The above fixes required updates to the jparse utility functions so the [jparse
+repo](https://github.com/xexyl/jparse/) was synced to `jparse/`.
+
+Fix `chdir(2)` error in `chkentry(1)` in some places (it did not restore the
+directory after a call to `find_paths()`).
+
+Updated `SOUP_VERSION` to `"2.0.1 2025-03-02"`.
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.1 2025-03-02"`.
+Updated `CHKENTRY_VERSION` to `"2.0.1 2025-03-02"`.
+
+
 ## Release 2.4.1 2025-03-01
 
 Fix critical bug in jparse/ `copyfile()` function.

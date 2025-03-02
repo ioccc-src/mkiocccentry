@@ -119,12 +119,23 @@
 #define MONOTONE_DIRNAME "_MTN"                 /* For Monotone */
 #define DARCS_DIRNAME "_darcs"                  /* For Darcs */
 
+/*
+ * filenames that should be ignored, mostly for chkentry -w but it can be used
+ * in mkiocccentry too (although it is implicit since these are dot files)
+ */
+#define GITIGNORE_FILENAME      ".gitignore"            /* ignore list for git */
+#define DS_STORE_FILENAME0      ".DS_Store"             /* Apple's annoying .DS_Store file */
+#define DS_STORE_FILENAME1      "._.DS_Store"           /* Apple's annoying ._.DS_Store file */
+#define DOT_PATH_FILENAME       ".path"                 /* IOCCC .path dot file */
+
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
 extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
 extern char *ignored_dirnames[];                /* directory names that should be ignored */
+extern char *ignored_filenames[];               /* ignored filenames like .gitignore, .DS_Store etc. */
 extern char *executable_filenames[];            /* filenames that should have mode 0555 */
 extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
+extern bool ignore_permissions;                 /* true ==> ignore permissions of files and directories */
 
 /*
  * enums

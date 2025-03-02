@@ -124,7 +124,7 @@ static const char * const usage_msg =
     "\t-w\t\talways show warning messages\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-F fnamchk\tpath to tool that checks if tarball_path is a valid compressed tarball name\n"
+    "\t-F fnamchk\tpath to tool that checks if tarball_path is a valid compressed tarball\n"
     "\t\t\t    filename (def: %s)\n"
     "\t-T\t\tassume tarball_path is a text file with tar listing (for testing\n"
     "\t\t\t    different formats)\n"
