@@ -1816,15 +1816,17 @@ check_tarball(char const *tar, char const *fnamchk)
              * timestamp failure); if we're given -x we MUST give fnamchk -t.
              */
             if (test_mode) {
+                errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -t -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    err(38, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(38, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             } else {
+                errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    err(39, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(39, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             }
@@ -1834,13 +1836,14 @@ check_tarball(char const *tar, char const *fnamchk)
              * we must NOT use the -T option to fnamchk. Depending on whether we
              * were given -x or not we will give fnamchk -t (we were given -x).
              */
+            errno = 0; /* pre-clear errno for errp() */
             if (test_mode) {
                 fnamchk_stream = pipe_open(__func__, false, true, "% -t -E % -- %", fnamchk, ext, tarball_path);
             } else {
                 fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
             }
             if (fnamchk_stream == NULL) {
-                err(40, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                errp(40, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                 not_reached();
             }
         }
@@ -1919,22 +1922,22 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * first execute the tar command
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
 	if (verbosity_level) {
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	} else {
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
 	}
 	if (exit_code != 0) {
-	    errp(44, __func__, "%s -tJvf %s failed with exit code: %d",
+	    err(44, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
 
 	/* now open a pipe to tar command (tar -tJvf) to read from */
+        errno = 0; /* pre-clear errno for errp() */
 	input_stream = pipe_open(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (input_stream == NULL) {
-	    err(45, __func__, "popen for reading failed for: %s -tJvf %s",
+	    errp(45, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, tarball_path);
 	    not_reached();
 	}

@@ -119,8 +119,8 @@ char *abbrevs[][2] =
     { "info"        , INFO_JSON_FILENAME    },
     { "prog.c"      , PROG_C_FILENAME       },
     { "Makefile"    , MAKEFILE_FILENAME     },
-    { "try"         , TRY_SH                },
-    { "try.alt"     , TRY_ALT_SH            },
+    { "try"         , TRY_SH                }, /* try not to keep sorted */
+    { "try.alt"     , TRY_ALT_SH            }, /* alternatively, try and keep sorted */
     { "remarks"     , REMARKS_FILENAME      },
     { "README"      , README_MD_FILENAME    },
     { "index"       , INDEX_HTML_FILENAME   },
