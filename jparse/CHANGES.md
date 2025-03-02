@@ -25,6 +25,12 @@ Thus it's `(fts->base || count_dirs(name) == 1) && ...`. If it's not base or the
 This solves a problem where files to be ignored were not ignored in the case of
 base being false (when we needed that to be the case).
 
+Save and restore errno prior to returning from `pipe_open()` and `shell_cmd()`.
+In some systems `popen(3)` are not reliable with errno (like macOS) but in linux
+it CAN in some cases set errno. For `system(3)` it does no seem to set errno at
+all but we still do this process especially as it also uses a function that can
+have errno (and we return from the function in that case with an error).
+
 Updated `JPARSE_UTILS_VERSION` to `"2.0.2 2025-03-02"`.
 Updated `UTIL_TEST_VERSION` to `"2.0.1 2025-03-02"`.
 

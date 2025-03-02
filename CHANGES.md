@@ -20,9 +20,17 @@ repo](https://github.com/xexyl/jparse/) was synced to `jparse/`.
 Fix `chdir(2)` error in `chkentry(1)` in some places (it did not restore the
 directory after a call to `find_paths()`).
 
+Add missing calls to `errp()` in `txzchk`.  This might be important in some
+cases as we're now at the point of the next contest. The calls are specific to
+the functions `popen(3)` in `pipe_open()` and `system(3)` in `shell_cmd()`. In
+linux in some cases popen() will set errno; in macOS it is unreliable. For
+`system(3)` it appears that errno is not set so `warnp()`/`errp()` were changed
+to the non-errno versions.
+
 Updated `SOUP_VERSION` to `"2.0.1 2025-03-02"`.
 Updated `MKIOCCCENTRY_VERSION` to `"2.0.1 2025-03-02"`.
 Updated `CHKENTRY_VERSION` to `"2.0.1 2025-03-02"`.
+Updated `TXZCHK_VERSION` to `"2.0.1 2025-03-02"`.
 
 
 ## Release 2.4.1 2025-03-01
