@@ -95,6 +95,12 @@
 #include "location.h"
 
 /*
+ * globals
+ */
+struct dyn_array *ignored_paths = NULL;     /* ignored paths when searching manifest */
+bool ignore_permissions = false;            /* true ==> ignore permissions checks on paths */
+
+/*
  * mandatory files that must exist in the submission top level directory
  */
 char *mandatory_filenames[] =
@@ -104,7 +110,7 @@ char *mandatory_filenames[] =
     PROG_C_FILENAME,
     MAKEFILE_FILENAME,
     REMARKS_FILENAME,
-    NULL
+    NULL /* MUST BE LAST!! */
 };
 /*
  * forbidden files that must NOT exist in the submission top level directory
@@ -118,7 +124,7 @@ char *forbidden_filenames[] =
     PROG_ORIG_FILENAME,
     PROG_ORIG_C_FILENAME,
     README_MD_FILENAME,
-    NULL
+    NULL /* MUST BE LAST!! */
 };
 
 /*
@@ -153,7 +159,23 @@ char *ignored_dirnames[] =
     FOSSIL_DIRNAME1,
     MONOTONE_DIRNAME,
     DARCS_DIRNAME,
-    NULL
+    NULL /* MUST BE LAST!! */
+};
+
+/*
+ * filenames that should be ignored
+ *
+ * NOTE: as these are dot files they are implicitly ignored by mkiocccentry(1)
+ * due to sane_relative_path() thus we don't need to use it for mkiocccentry(1);
+ * it is for chkentry(1) in particular for -w mode.
+ */
+char *ignored_filenames[] =
+{
+    GITIGNORE_FILENAME,
+    DS_STORE_FILENAME0,
+    DS_STORE_FILENAME1,
+    DOT_PATH_FILENAME,
+    NULL /* MUST BE LAST!! */
 };
 
 /*
@@ -163,11 +185,10 @@ char *executable_filenames[] =
 {
     TRY_SH,
     TRY_ALT_SH,
-    NULL
+    NULL /* MUST BE LAST!! */
 };
 
 
-struct dyn_array *ignored_paths = NULL;
 /*
  * free_auth - free auto and related sub-elements
  *
@@ -3662,7 +3683,7 @@ check_manifest_path(char *path, char const *name, mode_t mode)
          */
         if (!exists(path)) {
             ret = MAN_PATH_ENOENT;
-        } else if (!is_mode(path, mode)) {
+        } else if (!ignore_permissions && !is_mode(path, mode)) {
             ret = MAN_PATH_EPERM;
         }
     }
@@ -3757,12 +3778,12 @@ test_manifest_path(char *path, char const *name, enum manifest_path error, mode_
             if (name != NULL) {
                 json_dbg(JSON_DBG_MED, __func__, "invalid: path found by find_path() is not the correct mode");
                 json_dbg(JSON_DBG_HIGH, __func__,
-                        "invalid: path found by find_path() for: %s: %s is not the correct mode: %o != %o",
-                        name, path, mode, filemode(path));
+                        "invalid: path found by find_path() for: %s: %s is not the correct mode: %04o != %04o",
+                        name, path, mode, filemode(path, true));
             } else {
                 json_dbg(JSON_DBG_MED, __func__, "path found by find_path() is not the correct mode");
-                json_dbg(JSON_DBG_HIGH, __func__, "path found by find_path(): %s is not the correct mode: %o != %o",
-                        path, mode, filemode(path));
+                json_dbg(JSON_DBG_HIGH, __func__, "path found by find_path(): %s is not the correct mode: %04o != %04o",
+                        path, mode, filemode(path, true));
             }
             break;
         default:

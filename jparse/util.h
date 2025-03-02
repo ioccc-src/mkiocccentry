@@ -234,7 +234,7 @@ enum fts_type
 };
 
 /*
- * file_type enum - for type_of_file() function to determine type of file
+ * file_type enum - for file_type() function to determine type of file
  */
 
 enum file_type
@@ -284,7 +284,7 @@ extern char *dir_name(char const *path, int level);
 extern size_t count_comps(char const *str, char comp, bool remove_all);
 extern size_t count_dirs(char const *path);
 extern bool exists(char const *path);
-extern enum file_type type_of_file(char const *path);
+extern enum file_type file_type(char const *path);
 extern bool is_mode(char const *path, mode_t mode);
 extern bool has_mode(char const *path, mode_t mode);
 extern bool is_file(char const *path);
@@ -297,7 +297,7 @@ extern bool is_fifo(char const *path);
 extern bool is_exec(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
-extern mode_t filemode(char const *path);
+extern mode_t filemode(char const *path, bool printing);
 extern bool is_open_file_stream(FILE *stream);
 extern void reset_fts(struct fts *fts, bool free_ignored);
 extern char *fts_path(FTSENT *ent);

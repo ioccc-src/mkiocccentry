@@ -85,7 +85,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i file] submission_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i path] [-P] submission_dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -93,7 +93,9 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-i file\t\tadd file to ignore list\n"
+    "\t-i path\t\tadd path to (to file or directory) under directory to check\n"
+    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
+    "\t-P\t\tIgnore permissions\n"
     "\t-w\t\twinning entry checks\n"
     "\n"
     "Exit codes:\n"
@@ -630,7 +632,7 @@ main(int argc, char *argv[])
     uintmax_t all_extra_err_count = 0;  /* depending on options and conditions, we might need this */
     struct json_sem_count_err *sem_count_err = NULL;	/* semantic count error to print */
     struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
-    uintmax_t c = 0;			/* dynamic array index */
+    uintmax_t c = 0;			/* dynamic array index and ignored lists iterator */
     uintmax_t len = 0;                  /* dynamic array length */
     int cwd = -1;                       /* for when we have to use find_path() */
     int cwd2 = -1;                      /* cwd of program when we start */
@@ -665,7 +667,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vqi:w")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:Vqi:Pw")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -703,8 +705,11 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-        case 'i':
+        case 'i':   /* ignore a path */
             add_ignore_path(optarg, &fts);
+            break;
+        case 'P': /* ignore permissions of paths */
+            ignore_permissions = true;
             break;
         case 'w':
             winning_entry_mode = true;
@@ -764,9 +769,26 @@ main(int argc, char *argv[])
             not_reached();
         }
 
+        /*
+         * add to ignore list the ignored files and directories
+         */
+        for (c = 0; ignored_dirnames[c] != NULL; ++c) {
+            add_ignore_path(ignored_dirnames[c], &fts);
+        }
+
         if (winning_entry_mode) {
             /*
-             * set up fts
+             * in winning mode we must also ignore certain filenames. The list,
+             * like all the others, can be updated if necessary. We only do this
+             * in winning mode as these files are dot files that are part of a
+             * winning entry which would be picked up by sane_relative_path() as
+             * an error.
+             */
+            for (c = 0; ignored_filenames[c] != NULL; ++c) {
+                add_ignore_path(ignored_filenames[c], &fts);
+            }
+            /*
+             * and now we can set up fts
              */
             fts.depth = 0;
             fts.match_case = true; /* we must match case here */
@@ -831,8 +853,8 @@ main(int argc, char *argv[])
                         if (ignore_Makefile) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -845,8 +867,8 @@ main(int argc, char *argv[])
                         if (ignore_prog_c) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         found_prog_c = true;
@@ -860,8 +882,8 @@ main(int argc, char *argv[])
                         if (ignore_entry) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -873,8 +895,8 @@ main(int argc, char *argv[])
                         if (ignore_README_md) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -886,8 +908,8 @@ main(int argc, char *argv[])
                         if (ignore_index) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -908,15 +930,17 @@ main(int argc, char *argv[])
                                     (uintmax_t)MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
-                        if (is_executable_filename(u)) {
-                            if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                                werr(1, __func__, "%s: permissions: %o != 0555", u, filemode(u));/*ooo*/
-                                ++all_extra_err_count;
-                            }
-                        } else {
-                            if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                                werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
-                                ++all_extra_err_count;
+                        if (!ignore_permissions) {
+                            if (is_executable_filename(u)) {
+                                if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                                    werr(1, __func__, "%s: permissions: %04o != 0555", u, filemode(u, true));/*ooo*/
+                                    ++all_extra_err_count;
+                                }
+                            } else {
+                                if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                                    werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
+                                    ++all_extra_err_count;
+                                }
                             }
                         }
                     }
@@ -1043,8 +1067,8 @@ main(int argc, char *argv[])
                         if (ignore_auth) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -1056,8 +1080,8 @@ main(int argc, char *argv[])
                         if (ignore_info) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -1069,8 +1093,8 @@ main(int argc, char *argv[])
                         if (ignore_remarks_md) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -1082,8 +1106,8 @@ main(int argc, char *argv[])
                         if (ignore_Makefile) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         if (is_empty(u)) {
@@ -1095,8 +1119,8 @@ main(int argc, char *argv[])
                         if (ignore_prog_c) {
                             continue;
                         }
-                        if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
+                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
                             ++all_extra_err_count;
                         }
                         found_prog_c = true;
@@ -1141,15 +1165,17 @@ main(int argc, char *argv[])
                                     (uintmax_t)MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
-                        if (is_executable_filename(u)) {
-                            if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                                werr(1, __func__, "%s: permissions: %o != 0555", u, filemode(u));/*ooo*/
-                                ++all_extra_err_count;
-                            }
-                        } else {
-                            if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                                werr(1, __func__, "%s: permissions: %o != 0444", u, filemode(u));/*ooo*/
-                                ++all_extra_err_count;
+                        if (!ignore_permissions) {
+                            if (is_executable_filename(u)) {
+                                if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                                    werr(1, __func__, "%s: permissions: %04o != 0555", u, filemode(u, true));/*ooo*/
+                                    ++all_extra_err_count;
+                                }
+                            } else {
+                                if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
+                                    werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
+                                    ++all_extra_err_count;
+                                }
                             }
                         }
                     }
@@ -1253,8 +1279,8 @@ main(int argc, char *argv[])
                 /*
                  * directories must be the right permissions.
                  */
-                if (!is_mode(u, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                    werr(1, __func__, "directory %s: permissions: %o != 0755", u, filemode(u));/*ooo*/
+                if (!ignore_permissions && !is_mode(u, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+                    werr(1, __func__, "directory %s: permissions: %04o != 0755", u, filemode(u, true));/*ooo*/
                     ++all_extra_err_count;
                 }
             }
@@ -1264,6 +1290,10 @@ main(int argc, char *argv[])
             free_paths_array(&found, false);
             found = NULL;
         }
+        /*
+         * move back to previous directory
+         */
+        (void) read_fts(NULL, -1, &cwd, NULL);
         /*
          * Now directories with depth checks.
          */
@@ -1310,6 +1340,10 @@ main(int argc, char *argv[])
             found = NULL;
         }
 
+        /*
+         * move back to previous directory
+         */
+        (void) read_fts(NULL, -1, &cwd, NULL);
         /*
          * Now anything other than files and directories
          */

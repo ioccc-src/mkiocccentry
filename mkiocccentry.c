@@ -2852,16 +2852,16 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                                 ent->fts_path + 2);
                         not_reached();
                     } else if (!is_mode(ent->fts_path + 2, 0755)) {
-                        err(4, __func__, "directory %s: mode %o != 0755", ent->fts_path + 2,/*ooo*/
-                                filemode(ent->fts_path + 2));
+                        err(4, __func__, "directory %s: mode %04o != 0755", ent->fts_path + 2,/*ooo*/
+                                filemode(ent->fts_path + 2, true));
                         not_reached();
                     }
                     /*
                      * directories MUST be mode 0755!
                      */
                     if (!is_mode(ent->fts_path + 2, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                        err(4, __func__, "directory %s must be mode 0755: %o != 0755", ent->fts_path + 2,/*ooo*/
-                                filemode(ent->fts_path + 2));
+                        err(4, __func__, "directory %s must be mode 0755: %04o != 0755", ent->fts_path + 2,/*ooo*/
+                                filemode(ent->fts_path + 2, true));
                         not_reached();
                     }
 
@@ -2921,8 +2921,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                                     /*
                                      * these MUST be mode 0555!
                                      */
-                                    err(4, __func__, "file %s must be mode 0555: %o != 0555",/*ooo*/
-                                            filename, filemode(filename));
+                                    err(4, __func__, "file %s must be mode 0555: %04o != 0555",/*ooo*/
+                                            filename, filemode(filename, true));
                                     not_reached();
                                 }
                             } else {
@@ -2930,8 +2930,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                                  * these MUST be mode 0444!
                                  */
                                 if (!is_mode(filename, S_IRUSR | S_IRGRP | S_IROTH)) {
-                                    err(4, __func__, "file %s must be mode 0444: %o != 0444",/*ooo*/
-                                            filename, filemode(filename));
+                                    err(4, __func__, "file %s must be mode 0444: %04o != 0444",/*ooo*/
+                                            filename, filemode(filename, true));
                                     not_reached();
                                 }
                             }
@@ -2945,8 +2945,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                          * these files MUST be mode 0444!
                          */
                         if (!is_mode(filename, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            err(4, __func__, "file %s must be mode 0444: %o != 0444", filename,/*ooo*/
-                                    filemode(filename));
+                            err(4, __func__, "file %s must be mode 0444: %04o != 0444", filename,/*ooo*/
+                                    filemode(filename, true));
                             not_reached();
                         }
                         append_unique_filename(required_files, filename);
