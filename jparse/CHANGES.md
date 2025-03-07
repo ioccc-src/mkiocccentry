@@ -1,5 +1,28 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.33 2025-03-07
+
+Additional sanity checks added to FTS code.
+
+The `read_fts()` function now does not just skip on NULL or empty path name; it
+will abort just like `check_fts_info()` does (though that would never have been
+reached as we skipped that item and moved to the next). If there is a NULL
+pointer or an empty string something is wrong and it's better to abort early.
+
+Also in `check_fts_info()` when the `fts_info == FTS_NS` the `ent->fts_errno` is
+the errno so we set `errno = ent->fts_errno` prior to calling `errp()` (instead
+of `err()`).
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.3 2025-03-07"`.
+
+Moved `main()` in `verge.c` to `verge_main.c` and added function `vercmp()`
+which does the work of what `verge` does. The `verge.o` is now linked into the
+library and `verge.h` is installed with `make install`. This was necessary for
+mkiocccentry.
+
+Updated `VERGE_VERSION` to `"2.0.1 2025-03-07"`.
+
+
 ## Release 2.2.32 2025-03-02
 
 Updated `filemode()` with new boolean (sorry!) to mask `S_IFMT` if true. In

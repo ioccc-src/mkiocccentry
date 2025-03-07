@@ -83,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.2 2025-03-02"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.3 2025-03-07"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -95,11 +95,13 @@
  * official iocccsize version
  */
 #define IOCCCSIZE_VERSION "28.15 2024-06-27"	/* format: major.minor YYYY-MM-DD */
+#define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
 #define MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
+#define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -107,36 +109,43 @@
  * Version of info for JSON the .info.json file.
  */
 #define INFO_VERSION "1.16 2024-05-18"		/* format: major.minor YYYY-MM-DD */
+#define MIN_INFO_VERSION INFO_VERSION
 
 /*
  * Version of info for JSON the .auth.json file.
  */
 #define AUTH_VERSION "1.22 2024-05-18"		/* format: major.minor YYYY-MM-DD */
+#define MIN_AUTH_VERSION AUTH_VERSION
 
 /*
  * official fnamchk version
  */
 #define FNAMCHK_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
+#define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
 #define TXZCHK_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
+#define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
 #define CHKENTRY_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
+#define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * Version of info for JSON the .entry.json files.
  */
 #define ENTRY_VERSION "1.2 2024-09-25"		/* format: major.minor YYYY-MM-DD */
+#define MIN_ENTRY_VERSION ENTRY_VERSION
 
 /*
  * Version of info for JSON the author_handle.json files.
  */
 #define AUTHOR_VERSION "1.1 2024-02-11"		/* format: major.minor YYYY-MM-DD */
+#define MIN_AUTHOR_VERSION AUTHOR_VERSION
 
 
 /*

@@ -2687,7 +2687,7 @@ chk_tarball(struct json const *node,
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
     struct json *parent = NULL;			/* JSON parse tree node parent */
     struct json *IOCCC_contest_id_node = NULL;	/* JSON parse node containing IOCCC_contest_id */
-    char const *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
+    char *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
     struct json *submit_slot_node = NULL;	/* JSON parse node containing submit_slot */
     int *submit_slot = NULL;			/* pointer to author count as int from JSON parse node for submit_slot */
     struct json *test_mode_node = NULL;		/* JSON parse node containing test_mode */

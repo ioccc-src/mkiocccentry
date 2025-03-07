@@ -63,98 +63,37 @@
 #define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
 
 /*
- * usage message
+ * vercmp - compare two version strings
  *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
+ * given:
+ *
+ *  ver1    -   first version to compare
+ *  ver2    -   second version to compare
+ *
+ * Returns:
+ *      0   ver1 version >= ver2
+ *      1   ver1 < ver2
+ *      4   first or second version string is an invalid version
+ *
+ * This function does not return on errors or NULL pointers.
  */
-static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] major.minor.patch-1 major.minor.patch-2\n"
-    "\n"
-    "\t-h\t\t\tprint help message and exit\n"
-    "\t-v level\t\tset verbosity level (def level: %d)\n"
-    "\t-V\t\t\tprint version strings and exit\n"
-    "\n"
-    "\tmajor.minor.patch-1\tfirst version  (example: 0.1.1)\n"
-    "\tmajor.minor.patch-2\tsecond version (example: 1.3.2)\n"
-    "\n"
-    "Exit codes:\n"
-    "     0   first version >= second version\n"
-    "     1   first version < second version\n"
-    "     2   -h and help string printed or -V and version strings printed\n"
-    "     3   command line error\n"
-    "     4   first or second version string is an invalid version\n"
-    "  >=10   internal error\n"
-    "\n"
-    "%s version: %s\n"
-    "jparse utils version: %s\n"
-    "jparse UTF-8 version: %s\n"
-    "jparse library version: %s";
-
-
-/*
- * forward declarations
- */
-static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-
 int
-main(int argc, char *argv[])
+vercmp(char *ver1, char *ver2)
 {
-    char const *program = NULL;	/* our name */
-    extern char *optarg;	/* option argument */
-    extern int optind;		/* argv index of the next arg */
-    int arg_count = 0;		/* number of args to process */
-    char *ver1 = NULL;		/* first version string */
-    char *ver2 = NULL;		/* second version string */
     int ver1_levels = 0;	/* number of version levels for first version string */
     int ver2_levels = 0;	/* number of version levels for second version string */
     intmax_t *vlevel1 = NULL;	/* allocated version levels from first version string */
     intmax_t *vlevel2 = NULL;	/* allocated version levels from second version string */
-    int i;
+    int i=0;
 
-    /*
-     * parse args
-     */
-    program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:V")) != -1) {
-	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(2, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	case 'v':		/* -v verbosity */
-	    /*
-	     * parse verbosity
-	     */
-	    verbosity_level = parse_verbosity(optarg);
-	    if (verbosity_level < 0) {
-		usage(3, program, "invalid -v verbosity"); /*ooo*/
-		not_reached();
-	    }
-	    break;
-	case 'V':		/* -V - print version and exit */
-	    print("%s version: %s\n", VERGE_BASENAME, VERGE_VERSION);
-	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
-	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
-	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
-	    exit(2); /*ooo*/
-	    not_reached();
-	    break;
-	case ':':   /* option requires an argument */
-	case '?':   /* illegal option */
-	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
-	    break;
-	}
+    if (ver1 == NULL || *ver1 == '\0') {
+        err(55, __func__, "first version string is NULL or empty");
+        not_reached();
     }
-    arg_count = argc - optind;
-    if (arg_count != REQUIRED_ARGS) {
-	usage(3, program, "two args are required"); /*ooo*/
-	not_reached();
+    if (ver2 == NULL || *ver2 == '\0') {
+        err(56, __func__, "second version string is NULL or empty");
+        not_reached();
     }
-    ver1 = argv[optind];
-    ver2 = argv[optind+1];
     dbg(DBG_LOW, "first version: <%s>", ver1);
     dbg(DBG_LOW, "second version: <%s>", ver2);
 
@@ -163,8 +102,13 @@ main(int argc, char *argv[])
      */
     ver1_levels = (int)allocate_vers(ver1, &vlevel1);
     if (ver1_levels <= 0) {
-	err(4, program, "first version string is invalid"); /*ooo*/
-	not_reached();
+        /* free memory */
+        if (vlevel1 != NULL) {
+            free(vlevel1);
+            vlevel1 = NULL;
+        }
+	dbg(DBG_MED, "first version string is invalid");
+        return 4;
     }
 
     /*
@@ -172,8 +116,18 @@ main(int argc, char *argv[])
      */
     ver2_levels = (int)allocate_vers(ver2, &vlevel2);
     if (ver2_levels <= 0) {
-	err(4, program, "second version string is invalid"); /*ooo*/
-	not_reached();
+        /* free memory */
+        if (vlevel1 != NULL) {
+            free(vlevel1);
+            vlevel1 = NULL;
+        }
+        if (vlevel2 != NULL) {
+            free(vlevel2);
+            vlevel2 = NULL;
+        }
+
+        dbg(DBG_MED, "second version string is invalid");
+        return 4;
     }
 
     /*
@@ -200,8 +154,7 @@ main(int argc, char *argv[])
 		vlevel2 = NULL;
 	    }
 	    /* report ver1 > ver2 */
-	    exit(0); /*ooo*/
-
+            return 0;
 	} else if (vlevel1[i] < vlevel2[i]) {
 
 	    /* ver1 < ver2 */
@@ -218,8 +171,7 @@ main(int argc, char *argv[])
 		vlevel2 = NULL;
 	    }
 	    /* report ver1 < ver2 */
-	    exit(1); /*ooo*/
-
+            return 1;
 	} else {
 
 	    /* versions match down to this level */
@@ -253,16 +205,14 @@ main(int argc, char *argv[])
 		     ver1_levels, ver2_levels);
 	dbg(DBG_LOW, "%s < %s", ver1, ver2);
 	/* report ver1 < ver2 */
-	exit(1); /*ooo*/
-
+        return 1;
     } else if (ver1_levels > ver2_levels) {
 
 	dbg(DBG_MED, "version 1 level count: %d > version level count: %d",
 		     ver1_levels, ver2_levels);
 	dbg(DBG_LOW, "%s > %s", ver1, ver2);
 	/* report ver1 > ver2 */
-	exit(0); /*ooo*/
-
+        return 0;
     }
 
     /*
@@ -272,9 +222,8 @@ main(int argc, char *argv[])
 		 ver1_levels, ver2_levels);
     dbg(DBG_LOW, "%s == %s", ver1, ver2);
     /* report ver1 == ver2 */
-    exit(0); /*ooo*/
+    return 0;
 }
-
 
 /*
  * allocate_vers - convert version string into an allocated array or version numbers
@@ -290,7 +239,7 @@ main(int argc, char *argv[])
  *
  * NOTE: This function does not return on allocation failures or NULL args.
  */
-static size_t
+size_t
 allocate_vers(char *str, intmax_t **pvers)
 {
     char *wstr = NULL;		/* working allocated copy of orig_str */
@@ -306,7 +255,7 @@ allocate_vers(char *str, intmax_t **pvers)
      * firewall
      */
     if (str == NULL || pvers == NULL) {
-	err(10, __func__, "NULL arg(s)");
+	err(57, __func__, "NULL arg(s)");
 	not_reached();
     }
     len = strlen(str);
@@ -321,7 +270,7 @@ allocate_vers(char *str, intmax_t **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     wstr = strdup(str);
     if (wstr == NULL) {
-	errp(11, __func__, "cannot strdup: <%s>", str);
+	errp(58, __func__, "cannot strdup: <%s>", str);
 	not_reached();
     }
     wstr_start = wstr;
@@ -417,7 +366,7 @@ allocate_vers(char *str, intmax_t **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(intmax_t));
     if (*pvers == NULL) {
-	errp(12, __func__, "cannot calloc %ju intmax_ts", (uintmax_t)dot_count+1+1);
+	errp(59, __func__, "cannot calloc %ju intmax_ts", (uintmax_t)dot_count+1+1);
 	not_reached();
     }
 
@@ -443,49 +392,4 @@ allocate_vers(char *str, intmax_t **pvers)
      * return number of version levels
      */
     return dot_count+1;
-}
-
-
-/*
- * usage - print usage to stderr
- *
- * Example:
- *      usage(3, program, "wrong number of arguments");
- *
- * given:
- *	exitcode        value to exit with
- *	prog		our program name
- *	str		top level usage message
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-usage(int exitcode, char const *prog, char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	str = "((NULL str))";
-	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
-    }
-    if (prog == NULL) {
-	prog = VERGE_BASENAME;
-	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
-    }
-
-    /*
-     * print the formatted usage stream
-     */
-    if (*str != '\0') {
-	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    }
-
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, VERGE_BASENAME, VERGE_VERSION,
-	    JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
-    exit(exitcode); /*ooo*/
-    not_reached();
 }

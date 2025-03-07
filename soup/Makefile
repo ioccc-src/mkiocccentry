@@ -982,8 +982,8 @@ default_handle.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
 entry_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h entry_util.c entry_util.h limit_ioccc.h location.h \
-    version.h
+    ../jparse/verge.h ../jparse/version.h entry_util.c entry_util.h \
+    limit_ioccc.h location.h version.h
 foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
 location_main.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \

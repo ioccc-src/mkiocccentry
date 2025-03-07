@@ -44,6 +44,7 @@ build.log
 /test_jparse/util_test.o
 util_test.c
 /verge
+/verge_main.o
 foobar
 util_test.copy.c
 util.copy.o
