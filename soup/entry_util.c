@@ -159,6 +159,8 @@ char *ignored_dirnames[] =
     FOSSIL_DIRNAME1,
     MONOTONE_DIRNAME,
     DARCS_DIRNAME,
+    SCCS_DIRNAME,
+    RCS_DIRNAME,
     NULL /* MUST BE LAST!! */
 };
 

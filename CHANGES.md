@@ -1,6 +1,40 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.3 2025-03-07
+
+Fix critical issues in mkiocccentry.
+
+It is an error if the topdir and the workdir are the same (same device and
+inode).
+
+If the workdir is found in the topdir it is skipped.
+
+Before doing anything make sure the args are actually directories that can be
+searched and (in the case of workdir) written to.
+
+To help users not have to repeatedly copy and paste their UUID there is a new
+option, `-u uuid` which will read from a file the UUID. If the file does not
+exist or cannot be read or it does not have a valid UUID the program will prompt
+for it as if you didn't use the option.
+
+Extra sanity checks in the FTS code.
+
+Make it clearer what happens when one does not agree to a prompt in the
+scanning/copying the topdir and the checking of the submission directory. The
+prompt also is now 'Do you wish to continue?' instead of 'Is this OK?'.
+
+When checking the submission directory if a directory that is the workdir OR
+topdir is encountered it is an error.
+
+Ignore directories for additional RCSs: namely `RCS` and `SCCS`.
+
+I believe this should resolve issues #1207, #1209 and #1210.
+
+**IMPORTANT REMINDER**: the version of the tools have NOT been updated because
+doing so would **INVALIDATE** submissions already uploaded!
+
+
 ## Release 2.4.2 2025-03-02
 
 Resolve issue #1201.
