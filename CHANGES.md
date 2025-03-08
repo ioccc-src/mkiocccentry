@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.4 2025-03-08
+
+Rollback fix to #1207.
+
+It cannot be fixed until after IOCCC28. This is because if someone did have
+these directories in their submission (unlikely as it is) this fix would
+invalidate their submission.
+
+
 ## Release 2.4.3 2025-03-07
 
 Resolve issues #1215 and #1207.
