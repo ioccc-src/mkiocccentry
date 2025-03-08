@@ -3,7 +3,7 @@
 
 ## Release 2.4.3 2025-03-07
 
-Resolve issues #1215.
+Resolve issue #1215.
 
 Now the version checks for `chkentry(1)` are a >= check. Uses code from
 `jparse/verge.c`. Its `main()` was moved to `verge_main.c` and `verge.c` now has
