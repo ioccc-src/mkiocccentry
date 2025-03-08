@@ -1,18 +1,9 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.4.4 2025-03-08
-
-Rollback fix to #1207.
-
-It cannot be fixed until after IOCCC28. This is because if someone did have
-these directories in their submission (unlikely as it is) this fix would
-invalidate their submission.
-
-
 ## Release 2.4.3 2025-03-07
 
-Resolve issues #1215 and #1207.
+Resolve issues #1215.
 
 Now the version checks for `chkentry(1)` are a >= check. Uses code from
 `jparse/verge.c`. Its `main()` was moved to `verge_main.c` and `verge.c` now has
@@ -24,9 +15,6 @@ release. If a version is incremented then the minimum version would be changed
 to be the version at the time the contest opens. In this way uploaded
 submissions will not be invalidated. As for poisoned versions the lists are
 currently empty (just NULL terminated - must be last element).
-
-Issue #1207 was only resolved as it is an update to an array and is only to help
-users out. This issue is what prompted issue #1215.
 
 Updated `gen_test_JSON.sh` (under `test_ioccc/`) to have a new function -
 `get_version`. This was necessary so we can use `grep -v MIN_`. If it was in the
