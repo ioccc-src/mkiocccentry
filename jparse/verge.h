@@ -71,7 +71,7 @@
 /*
  * official verge tool version
  */
-#define VERGE_VERSION "2.0.0 2025-02-28"		/* format: major.minor YYYY-MM-DD */
+#define VERGE_VERSION "2.0.1 2025-03-07"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -92,7 +92,7 @@
 /*
  * function prototypes
  */
-static size_t allocate_vers(char *str, intmax_t **pvers);
-
+size_t allocate_vers(char *str, intmax_t **pvers);
+int vercmp(char *ver1, char *ver2);
 
 #endif /* INCLUDE_VERGE_H */

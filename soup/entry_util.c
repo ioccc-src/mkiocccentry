@@ -75,6 +75,11 @@
 #include "../jparse/jparse.h"
 
 /*
+ * verge - the functionality to test versions
+ */
+#include "../jparse/verge.h"
+
+/*
  * version - official IOCCC toolkit versions
  */
 #include "version.h"
@@ -188,6 +193,34 @@ char *executable_filenames[] =
     NULL /* MUST BE LAST!! */
 };
 
+static char const *poison_mkiocccentry_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_txzchk_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_iocccsize_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_info_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_auth_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_fnamchk_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
+static char const *poison_chkentry_versions[] =
+{
+    NULL /* MUST BE LAST!! */
+};
 
 /*
  * free_auth - free auto and related sub-elements
@@ -2022,6 +2055,96 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
     return tarball_filename;
 }
 
+/*
+ * test_version - test if a version is >= a minimum version
+ *
+ * given:
+ *
+ *  str     - version to check
+ *  min     - min version to check against
+ *
+ * Returns true if version >= min, false otherwise.
+ */
+bool
+test_version(char const *str, char const *min)
+{
+    char *dup1 = NULL;
+    char *dup2 = NULL;
+    char *ver1 = NULL;
+    char *ver2 = NULL;
+
+    if (str == NULL || *str == '\0') {
+        err(148, __func__, "str is NULL or empty string");
+        not_reached();
+    }
+    if (min == NULL || *min == '\0') {
+        err(149, __func__, "min is NULL or empty mining");
+        not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    dup1 = strdup(str);
+    if (dup1 == NULL) {
+        err(150, __func__, "strdup(str) returned NULL");
+        not_reached();
+    }
+    errno = 0; /* pre-clear errno for errp() */
+    dup2 = strdup(min);
+    if (dup2 == NULL) {
+        err(151, __func__, "strdup(min) returned NULL");
+        not_reached();
+    }
+
+    ver1 = strchr(dup1, ' ');
+    if (ver1 != NULL) {
+        *ver1 = '\0';
+    }
+    ver2 = strchr(dup2, ' ');
+    if (ver2 != NULL) {
+        *ver2 = '\0';
+    }
+
+    if (vercmp(dup1, dup2) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+/*
+ * test_poisons - test if a version is a so-called poison version
+ *
+ * given:
+ *
+ *  str     - version to check
+ *  min     - min version to check against
+ *
+ * Returns true if poisoned version, false otherwise
+ */
+bool
+test_poison(char const *str, char const **poisons)
+{
+    size_t i;
+
+    if (str == NULL || *str == '\0') {
+        err(152, __func__, "str is NULL or empty string");
+        not_reached();
+    }
+    if (poisons == NULL) {
+        err(153, __func__, "poisons list is NULL");
+        not_reached();
+    }
+
+    for (i = 0; poisons[i]; ++i) {
+        if (!strcasecmp(str, poisons[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 
 /*
  * test_IOCCC_auth_version - test if IOCCC_auth_version is valid
@@ -2038,6 +2161,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
 bool
 test_IOCCC_auth_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -2049,11 +2173,18 @@ test_IOCCC_auth_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, AUTH_VERSION) != 0) {
+    if (test_poison(str, poison_auth_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: IOCCC_auth_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: IOCCC_auth_version: %s is poisonous: %s", str, poison_auth_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_AUTH_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: IOCCC_auth_version != AUTH_VERSION: %s", AUTH_VERSION);
+		 "invalid: IOCCC_auth_version < MIN_AUTH_VERSION: %s", MIN_AUTH_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: IOCCC_auth_version: %s is not AUTH_VERSION: %s", str, AUTH_VERSION);
+		 "invalid: IOCCC_auth_version: %s is not >= MIN_AUTH_VERSION: %s", str, MIN_AUTH_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_auth_version is valid");
@@ -2165,6 +2296,7 @@ test_IOCCC_contest_id(char const *str)
 bool
 test_IOCCC_info_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -2176,11 +2308,18 @@ test_IOCCC_info_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, INFO_VERSION) != 0) {
+    if (test_poison(str, poison_info_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: IOCCC_info_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: IOCCC_info_version: %s is poisonous: %s", str, poison_info_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_INFO_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: IOCCC_info_version != INFO_VERSION: %s", INFO_VERSION);
+		 "invalid: IOCCC_info_version < MIN_INFO_VERSION: %s", MIN_INFO_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: IOCCC_info_version: %s is not INFO_VERSION: %s", str, INFO_VERSION);
+		 "invalid: IOCCC_info_version: %s is not >= MIN_INFO_VERSION: %s", str, MIN_INFO_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version is valid");
@@ -2740,6 +2879,7 @@ test_c_src(char const *str)
 bool
 test_chkentry_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -2751,11 +2891,18 @@ test_chkentry_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, CHKENTRY_VERSION) != 0) {
+    if (test_poison(str, poison_chkentry_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: chkentry_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: chkentry_version: %s is poisonous: %s", str, poison_chkentry_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_CHKENTRY_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+		 "invalid: chkentry_version < MIN_CHKENTRY_VERSION: %s", MIN_CHKENTRY_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+		 "invalid: chkentry_version: %s is not >= MIN_CHKENTRY_VERSION: %s", str, MIN_CHKENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
@@ -3091,6 +3238,7 @@ test_first_rule_is_all(bool boolean)
 bool
 test_fnamchk_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -3102,11 +3250,18 @@ test_fnamchk_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, FNAMCHK_VERSION) != 0) {
+    if (test_poison(str, poison_fnamchk_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: fnamchk_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: fnamchk_version: %s is poisonous: %s", str, poison_fnamchk_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_FNAMCHK_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+		 "invalid: fnamchk_version < MIN_FNAMCHK_VERSION: %s", MIN_FNAMCHK_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+		 "invalid: fnamchk_version: %s is not >= MIN_FNAMCHK_VERSION: %s", str, MIN_FNAMCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
@@ -3537,6 +3692,7 @@ test_IOCCC_year(int IOCCC_year)
 bool
 test_iocccsize_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -3548,11 +3704,18 @@ test_iocccsize_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
+    if (test_poison(str, poison_iocccsize_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: iocccsize_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: iocccsize_version: %s is poisonous: %s", str, poison_iocccsize_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_IOCCCSIZE_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
+		 "invalid: iocccsize_version < MIN_IOCCCSIZE_VERSION: %s", MIN_IOCCCSIZE_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
+		 "invalid: iocccsize_version: %s is not >= MIN_IOCCCSIZE_VERSION: %s", str, MIN_IOCCCSIZE_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
@@ -3670,7 +3833,7 @@ check_manifest_path(char *path, char const *name, mode_t mode)
      * firewall
      */
     if (name == NULL || *name == '\0') {
-        err(148, __func__, "passed NULL or empty name");
+        err(154, __func__, "passed NULL or empty name");
         not_reached();
     } else if (path == NULL) {
         ret = MAN_PATH_NULL;
@@ -4256,6 +4419,7 @@ test_min_timestamp(time_t tstamp)
 bool
 test_mkiocccentry_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -4267,11 +4431,18 @@ test_mkiocccentry_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+    if (test_poison(str, poison_mkiocccentry_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: mkiocccentry_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: mkiocccentry_version: %s is poisonous: %s", str, poison_mkiocccentry_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_MKIOCCCENTRY_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+		 "invalid: mkiocccentry_version < MIN_MKIOCCCENTRY_VERSION: %s", MIN_MKIOCCCENTRY_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+		 "invalid: mkiocccentry_version: %s is not >= MIN_MKIOCCCENTRY_VERSION: %s", str, MIN_MKIOCCCENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
@@ -5003,6 +5174,7 @@ test_mastodon(char const *str)
 bool
 test_txzchk_version(char const *str)
 {
+    size_t i = 0;
     /*
      * firewall
      */
@@ -5014,11 +5186,18 @@ test_txzchk_version(char const *str)
     /*
      * validate str
      */
-    if (strcmp(str, TXZCHK_VERSION) != 0) {
+    if (test_poison(str, poison_txzchk_versions)) {
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: txzchk_version: is poisonous");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: txzchk_version: %s is poisonous: %s", str, poison_txzchk_versions[i]);
+        return false;
+    }
+    if (!test_version(str, MIN_TXZCHK_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+		 "invalid: txzchk_version < MIN_TXZCHK_VERSION: %s", MIN_TXZCHK_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+		 "invalid: txzchk_version: %s is not >= MIN_TXZCHK_VERSION: %s", str, MIN_TXZCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");

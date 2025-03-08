@@ -346,6 +346,8 @@ extern bool object2manifest(struct json *node, unsigned int depth, struct json_s
 extern char *form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
 			       time_t formed_timestamp);
 
+extern bool test_version(char const *str, char const *min);
+extern bool test_poison(char const *str,  char const **poisons);
 extern bool test_IOCCC_auth_version(char const *str);
 extern bool test_IOCCC_contest_id(char const *str);
 extern bool test_IOCCC_info_version(char const *str);

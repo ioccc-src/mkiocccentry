@@ -31,7 +31,7 @@
 
 # setup
 #
-export VERSION="1.0.1 2025-02-11"
+export VERSION="1.0.2 2025-03-07"
 NAME=$(basename "$0")
 export NAME
 export V_FLAG=0
@@ -130,6 +130,55 @@ function get_value
     echo "$VALUE" | sed -e 's/(time_t)//' -e 's/^.[^"(]*["(]//' -e 's/[")].*$//'
     return 0
 }
+
+# get_version - obtain version from include file
+#
+# usage:
+#
+#   get_version TOKEN file
+#
+#   TOKEN	The #define version to obtain
+#   FILE	The include file to read
+#
+# returns:
+#   TOKEN version from file
+#
+# NOTE: This function will exit 6 on error or if the TOKEN is not found in FILE
+#
+function get_version
+{
+    local TOKEN;    # name of TOKEN
+    local FILE;	    # include file
+    local VERSION;    # version of the TOKEN
+
+    # parse args
+    #
+    if [[ $# -ne 2 ]]; then
+        echo "$0: ERROR: in get_version expected 2 args, found $#" 1>&2
+        return 6
+    fi
+    TOKEN="$1"
+    FILE="$2"
+
+    # fetch #define line from FILE
+    #
+    VERSION=$(grep "#define.*$TOKEN" "$FILE"|grep -v "MIN_")
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+        echo "$0: ERROR: fetch $TOKEN from $FILE failed, status: $status" 1>&2
+        return 6
+    fi
+    if [[ -z $VERSION ]]; then
+        echo "$0: ERROR: $TOKEN not found in: $FILE" 1>&2
+        return 6
+    fi
+
+    # print a cleared version line
+    #
+    echo "$VERSION" | sed -e 's/(time_t)//' -e 's/^.[^"(]*["(]//' -e 's/[")].*$//'
+    return 0
+}
+
 
 
 # parse args
@@ -255,55 +304,55 @@ export IOCCC_CONTEST IOCCC_YEAR MIN_TIMESTAMP TIMESTAMP_EPOCH
 #	%%MKIOCCCENTRY_VERSION%%
 #	%%TXZCHK_VERSION%%
 #
-AUTH_VERSION=$(get_value AUTH_VERSION "$VERSION_H")
+AUTH_VERSION=$(get_version AUTH_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: AUTH_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-AUTHOR_VERSION=$(get_value AUTHOR_VERSION "$VERSION_H")
+AUTHOR_VERSION=$(get_version AUTHOR_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: AUTHOR_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-CHKENTRY_VERSION=$(get_value CHKENTRY_VERSION "$VERSION_H")
+CHKENTRY_VERSION=$(get_version CHKENTRY_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: CHKENTRY_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-ENTRY_VERSION=$(get_value ENTRY_VERSION "$VERSION_H")
+ENTRY_VERSION=$(get_version ENTRY_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: ENTRY_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-FNAMCHK_VERSION=$(get_value FNAMCHK_VERSION "$VERSION_H")
+FNAMCHK_VERSION=$(get_version FNAMCHK_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: FNAMCHK_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-INFO_VERSION=$(get_value INFO_VERSION "$VERSION_H")
+INFO_VERSION=$(get_version INFO_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: INFO_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-IOCCCSIZE_VERSION=$(get_value IOCCCSIZE_VERSION "$VERSION_H")
+IOCCCSIZE_VERSION=$(get_version IOCCCSIZE_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: IOCCCSIZE_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-MKIOCCCENTRY_VERSION=$(get_value MKIOCCCENTRY_VERSION "$VERSION_H")
+MKIOCCCENTRY_VERSION=$(get_version MKIOCCCENTRY_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: MKIOCCCENTRY_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-TXZCHK_VERSION=$(get_value TXZCHK_VERSION "$VERSION_H")
+TXZCHK_VERSION=$(get_version TXZCHK_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: TXZCHK_VERSION not found in: $VERSION_H" 1>&2

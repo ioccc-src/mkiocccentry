@@ -281,11 +281,11 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o jstr_util.o json_utf8.o
+LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o jstr_util.o json_utf8.o verge.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
+OTHER_OBJS= verge_main.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -428,7 +428,7 @@ PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
 #
 H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
 	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
-	       version.h json_utf8.h
+	       version.h json_utf8.h verge.h
 
 # what to make by all but NOT to removed by clobber
 #
@@ -583,7 +583,7 @@ util.o: util.c util.h
 verge.o: verge.c verge.h version.h
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o util.o
+verge: verge.o verge_main.o util.o
 	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array
 
 libjparse.a: ${LIB_OBJS}
