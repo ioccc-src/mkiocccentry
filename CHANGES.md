@@ -1,6 +1,41 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.4 2025-03-09
+
+Resolve some (mostly top priority) issues.
+
+Resolve issue #1206. Some people wanted this option to submit multiple
+submissions without having to repeatedly copy/paste the UUID. Now they can just
+put the UUID in a text file and use `-u uuid`. If the file is not a regular
+readable file or it does not have a valid UUID it'll prompt like before. If the
+`-i answers` flag is used it is not relevant.
+
+Resolve issue #1210. The directory/file lists to be ignored prompting was
+confusing to some people. The question of 'Is this OK?' was reworded to 'Do you
+wish to continue?' and the explanation is hopefully a bit clearer too.
+
+Resolve issue #1221. Removed the check for first rule is all (in Makefiles).
+This allows one to also have earlier on the format of `CC:= cc` rather than just
+`CC= cc`, should they wish. The .info.json file still has this bool but it's
+always set to true and chkentry will ignore it. **AFTER** IOCCC28 it will be
+removed from .info.json and chkentry code will no longer have the functions
+involved.
+
+Resolve issue #1209. Although not labelled 'top priority' it was already done in
+the code. If topdir is the same as workdir it is an error. If workdir is under
+topdir it is an error. If topdir is somehow slipped into the submission
+directory it is an error. If workdir is encountered in topdir we skip it with
+`fts_set()` so as to not descend into it. Also, we now check that the
+directories are directories an are the right permissions, prior to even trying
+to scan/copy files/directories (to show a better error message).
+
+**IMPORTANT NOTE**: none of these will cause a previously uploaded submission to
+be invalidated. You do **NOT** need to install or use the updated tools. These
+are for those who want or need (or feel they need) the features (and fixes)
+only.
+
+
 ## Release 2.4.3 2025-03-07
 
 Resolve issue #1215.

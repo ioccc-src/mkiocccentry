@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "27 February 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "08 March 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -295,7 +295,13 @@ or
 This option implies
 .B \-y
 and disables some messages as well.
-Thus if you do have a file set change you should inspect your tarball after it has been formed to make sure it is still OK.
+However you will still be prompted to verify files and directories are okay.
+.TP
+.BI \-u\  uuid
+Read UUID from a text file.
+If this file cannot be read or does not have a valid UUID
+.BR mkiocccentry (1)
+will prompt you as usual.
 .TP
 .BI \-s\  seed
 Generate pseudo-random answers to the questions
