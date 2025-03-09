@@ -548,8 +548,8 @@ main(int argc, char *argv[])
         err(3, __func__, "workdir is NULL or empty string");/*ooo*/
         not_reached();
     }
-    if (!is_dir(workdir) || !is_read(workdir) || !is_write(workdir)) {
-        err(3, __func__, "workdir is not a searchable and writable directory: %s", workdir);/*ooo*/
+    if (!is_dir(workdir) || !is_write(workdir) || !is_exec(workdir)) {
+        err(3, __func__, "workdir is not a writable and searchable directory: %s", workdir);/*ooo*/
         not_reached();
     }
     /*
@@ -565,8 +565,8 @@ main(int argc, char *argv[])
         err(3, __func__, "topdir is NULL or empty string");/*ooo*/
         not_reached();
     }
-    if (!is_dir(*topdir) || !is_read(*topdir)) {
-        err(3, __func__, "workdir is not a searchable directory: %s", *topdir);/*ooo*/
+    if (!is_dir(*topdir) || !is_read(*topdir) || !is_exec(*topdir)) {
+        err(3, __func__, "topdir is not a readable and searchable directory: %s", *topdir);/*ooo*/
         not_reached();
     }
     /*
