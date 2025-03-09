@@ -2056,29 +2056,36 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
 }
 
 /*
- * test_version - test if a version is >= a minimum version
+ * test_version - test if a version is >= minimum version && <= max version
  *
  * given:
  *
  *  str     - version to check
  *  min     - min version to check against
+ *  max     - max version to check against
  *
  * Returns true if version >= min, false otherwise.
  */
 bool
-test_version(char const *str, char const *min)
+test_version(char const *str, char const *min, char const *max)
 {
     char *dup1 = NULL;
     char *dup2 = NULL;
+    char *dup3 = NULL;
     char *ver1 = NULL;
     char *ver2 = NULL;
+    char *ver3 = NULL;
 
     if (str == NULL || *str == '\0') {
         err(148, __func__, "str is NULL or empty string");
         not_reached();
     }
     if (min == NULL || *min == '\0') {
-        err(149, __func__, "min is NULL or empty mining");
+        err(149, __func__, "min is NULL or empty string");
+        not_reached();
+    }
+    if (max == NULL || *max == '\0') {
+        err(150, __func__, "max is NULL or empty");
         not_reached();
     }
 
@@ -2094,6 +2101,12 @@ test_version(char const *str, char const *min)
         err(151, __func__, "strdup(min) returned NULL");
         not_reached();
     }
+    errno = 0; /* pre-clear errno for errp() */
+    dup3 = strdup(max);
+    if (dup3 == NULL) {
+        err(151, __func__, "strdup(max) returned NULL");
+        not_reached();
+    }
 
     ver1 = strchr(dup1, ' ');
     if (ver1 != NULL) {
@@ -2103,8 +2116,19 @@ test_version(char const *str, char const *min)
     if (ver2 != NULL) {
         *ver2 = '\0';
     }
+    ver3 = strchr(dup3, ' ');
+    if (ver3 != NULL) {
+        *ver3 = '\0';
+    }
 
-    if (vercmp(dup1, dup2) == 0) {
+    /*
+     * NOTE: vercmp() returns 0 if first version >= second version and returns 1
+     * if first version < second version. We need to determine if the current
+     * version (in dup1) is >= min (dup2) and <= max (dup3). Thus we check dup1
+     * against dup2 and then dup3 against dup1. If both are 0 return values the
+     * range is valid.
+     */
+    if (vercmp(dup1, dup2) == 0 && vercmp(dup3, dup1) == 0) {
         return true;
     }
 
@@ -2180,11 +2204,13 @@ test_IOCCC_auth_version(char const *str)
                  "invalid: IOCCC_auth_version: %s is poisonous: %s", str, poison_auth_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_AUTH_VERSION)) {
+    if (!test_version(str, MIN_AUTH_VERSION, MAX_AUTH_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: IOCCC_auth_version < MIN_AUTH_VERSION: %s", MIN_AUTH_VERSION);
+		 "invalid: IOCCC_auth_version not >= MIN_AUTH_VERSION %s && <= MAX_AUTH_VERSION: %s", MIN_AUTH_VERSION,
+                 MAX_AUTH_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: IOCCC_auth_version: %s is not >= MIN_AUTH_VERSION: %s", str, MIN_AUTH_VERSION);
+		 "invalid: IOCCC_auth_version: %s is not >= MIN_AUTH_VERSION %s && <= MAX_AUTH_VERSION %s", str, MIN_AUTH_VERSION,
+                 MAX_AUTH_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_auth_version is valid");
@@ -2315,11 +2341,13 @@ test_IOCCC_info_version(char const *str)
                  "invalid: IOCCC_info_version: %s is poisonous: %s", str, poison_info_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_INFO_VERSION)) {
+    if (!test_version(str, MIN_INFO_VERSION, MAX_INFO_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: IOCCC_info_version < MIN_INFO_VERSION: %s", MIN_INFO_VERSION);
+		 "invalid: IOCCC_info_version not >= MIN_INFO_VERSION %s && <= MAX_INFO_VERSION %s", MIN_INFO_VERSION,
+                 MAX_INFO_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: IOCCC_info_version: %s is not >= MIN_INFO_VERSION: %s", str, MIN_INFO_VERSION);
+		 "invalid: IOCCC_info_version: %s not >= MIN_INFO_VERSION %s && <= MAX_INFO_VERSION %s", str, MIN_INFO_VERSION,
+                 MAX_INFO_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version is valid");
@@ -2898,11 +2926,13 @@ test_chkentry_version(char const *str)
                  "invalid: chkentry_version: %s is poisonous: %s", str, poison_chkentry_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_CHKENTRY_VERSION)) {
+    if (!test_version(str, MIN_CHKENTRY_VERSION, MAX_CHKENTRY_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: chkentry_version < MIN_CHKENTRY_VERSION: %s", MIN_CHKENTRY_VERSION);
+		 "invalid: chkentry_version not >= MIN_CHKENTRY_VERSION %s && <=  MAX_CHKENTRY_VERSION %s",
+                 MIN_CHKENTRY_VERSION, MAX_CHKENTRY_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: chkentry_version: %s is not >= MIN_CHKENTRY_VERSION: %s", str, MIN_CHKENTRY_VERSION);
+		 "invalid: chkentry_version: %s not >= MIN_CHKENTRY_VERSION %s && <= MAX_CHKENTRY_VERSION %s", str,
+                 MIN_CHKENTRY_VERSION, MAX_CHKENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
@@ -3257,11 +3287,13 @@ test_fnamchk_version(char const *str)
                  "invalid: fnamchk_version: %s is poisonous: %s", str, poison_fnamchk_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_FNAMCHK_VERSION)) {
+    if (!test_version(str, MIN_FNAMCHK_VERSION, MAX_FNAMCHK_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: fnamchk_version < MIN_FNAMCHK_VERSION: %s", MIN_FNAMCHK_VERSION);
+		 "invalid: fnamchk_version not >= MIN_FNAMCHK_VERSION %s && <= MAX_FNAMCHK_VERSION %s", MIN_FNAMCHK_VERSION,
+                 MAX_FNAMCHK_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: fnamchk_version: %s is not >= MIN_FNAMCHK_VERSION: %s", str, MIN_FNAMCHK_VERSION);
+		 "invalid: fnamchk_version: %s not >= MIN_FNAMCHK_VERSION %s && <= MAX_FNAMCHK_VERSION %s", str,
+                 MIN_FNAMCHK_VERSION, MAX_FNAMCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
@@ -3711,11 +3743,13 @@ test_iocccsize_version(char const *str)
                  "invalid: iocccsize_version: %s is poisonous: %s", str, poison_iocccsize_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_IOCCCSIZE_VERSION)) {
+    if (!test_version(str, MIN_IOCCCSIZE_VERSION, MAX_IOCCCSIZE_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: iocccsize_version < MIN_IOCCCSIZE_VERSION: %s", MIN_IOCCCSIZE_VERSION);
+		 "invalid: iocccsize_version not >= MIN_IOCCCSIZE_VERSION %s && <= MAX_IOCCCSIZE_VERSION %s",
+                 MIN_IOCCCSIZE_VERSION, MAX_IOCCCSIZE_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: iocccsize_version: %s is not >= MIN_IOCCCSIZE_VERSION: %s", str, MIN_IOCCCSIZE_VERSION);
+		 "invalid: iocccsize_version: %s not >= MIN_IOCCCSIZE_VERSION %s && <= MAX_IOCCCSIZE_VERSION %s",
+                 str, MIN_IOCCCSIZE_VERSION, MAX_IOCCCSIZE_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
@@ -4438,11 +4472,13 @@ test_mkiocccentry_version(char const *str)
                  "invalid: mkiocccentry_version: %s is poisonous: %s", str, poison_mkiocccentry_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_MKIOCCCENTRY_VERSION)) {
+    if (!test_version(str, MIN_MKIOCCCENTRY_VERSION, MAX_MKIOCCCENTRY_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: mkiocccentry_version < MIN_MKIOCCCENTRY_VERSION: %s", MIN_MKIOCCCENTRY_VERSION);
+		 "invalid: mkiocccentry_version not >= MIN_MKIOCCCENTRY_VERSION %s && <= MAX_MKIOCCCENTRY_VERSION %s",
+                 MIN_MKIOCCCENTRY_VERSION, MAX_MKIOCCCENTRY_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: mkiocccentry_version: %s is not >= MIN_MKIOCCCENTRY_VERSION: %s", str, MIN_MKIOCCCENTRY_VERSION);
+		 "invalid: mkiocccentry_version: %s not >= MIN_MKIOCCCENTRY_VERSION %s && <= MAX_MKIOCCCENTRY_VERSION %s",
+                 str, MIN_MKIOCCCENTRY_VERSION, MAX_MKIOCCCENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
@@ -5193,11 +5229,13 @@ test_txzchk_version(char const *str)
                  "invalid: txzchk_version: %s is poisonous: %s", str, poison_txzchk_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_TXZCHK_VERSION)) {
+    if (!test_version(str, MIN_TXZCHK_VERSION, MAX_TXZCHK_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: txzchk_version < MIN_TXZCHK_VERSION: %s", MIN_TXZCHK_VERSION);
+		 "invalid: txzchk_version not >= MIN_TXZCHK_VERSION %s && <= MAX_TXZCHK_VERSION %s",
+                 MIN_TXZCHK_VERSION, MAX_TXZCHK_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: txzchk_version: %s is not >= MIN_TXZCHK_VERSION: %s", str, MIN_TXZCHK_VERSION);
+		 "invalid: txzchk_version: %s not >= MIN_TXZCHK_VERSION %s && <= MAX_TXZCHK_VERSION %s",
+                 str, MIN_TXZCHK_VERSION, MAX_TXZCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");

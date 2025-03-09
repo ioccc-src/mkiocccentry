@@ -5,7 +5,8 @@
 # The template_tree contains JSON files with %%TOKEN%% values that need to
 # be substituted with current values.
 #
-# Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -17,21 +18,30 @@
 #       source works derived from this source
 #       binaries derived from this source or from derived source
 #
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+# This script was co-developed in 2025 by Landon Curt Noll and Cody Boone
+# Ferguson:
+#
+#  @xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # Share and enjoy! :-)
+#     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
 # setup
 #
-export VERSION="1.0.2 2025-03-07"
+export VERSION="1.0.3 2025-03-09"
 NAME=$(basename "$0")
 export NAME
 export V_FLAG=0
@@ -162,7 +172,7 @@ function get_version
 
     # fetch #define line from FILE
     #
-    VERSION=$(grep "#define.*$TOKEN" "$FILE"|grep -v "MIN_")
+    VERSION=$(grep "#define.*$TOKEN" "$FILE"|grep -vE "MIN_|MAX_")
     status="$?"
     if [[ $status -ne 0 ]]; then
         echo "$0: ERROR: fetch $TOKEN from $FILE failed, status: $status" 1>&2

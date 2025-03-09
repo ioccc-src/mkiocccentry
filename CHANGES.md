@@ -45,6 +45,12 @@ mkiocccentry as it's only referenced `#ifdef ASCII_ONLY` and before that check
 is in `soup/rule_count.c` the code does `#undef ASCII_ONLY` (and it's not even
 referenced in mkiocccentry.c).
 
+Plug loophole in min version checks by adding a max version too. This will
+prevent someone from having their own version that might not be released or
+official and it can be flagged (okay so they might still have a version in
+between but that's inconsequential).
+
+Updated `gen_test_JSON.sh` version to `"1.0.3 2025-03-09"`.
 
 **IMPORTANT NOTE**: none of these will cause a previously uploaded submission to
 be invalidated. You do **NOT** need to install or use the updated tools. These
