@@ -322,7 +322,7 @@ rule_count(FILE *fp_in)
 			 * How does that relate to UTF8 and wide-character library
 			 * handling?  An invalid trigraph results in 2x ungetc().
 			 */
-			counts.wordbuf_warning = true;
+			counts.ungetc_warning = true;
 			counts.rule_2a_size++;
 			continue;
 		}

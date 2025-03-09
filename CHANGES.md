@@ -30,6 +30,22 @@ directory it is an error. If workdir is encountered in topdir we skip it with
 directories are directories an are the right permissions, prior to even trying
 to scan/copy files/directories (to show a better error message).
 
+Resolve issue #1214. With guidance from @SirWumpus and Landon, and at their
+request, the iocccsize tool no longer warns against wordbuf warning unless
+verbosity is high enough; in mkiocccentry it sets the boolean to true or false
+depending on the result but it only notes it as a fun fact, suggesting the user
+note it in their remarks. Post IOCCC28 the bool will be removed from .info.json
+and chkentry(1) functions for it will be removed. For now the function that
+checks this value in chkentry(1) simply returns true. Additionally, the wrong
+variable was being referenced in `soup/rule_count.c` - it was referencing
+`counts.wordbuf_warning` when it should have been referencing
+`counts.ungetc_error`. Also, because rule 13 no longer restricts UTF the char
+warning is only shown if verbose enough. This did not need to be updated in
+mkiocccentry as it's only referenced `#ifdef ASCII_ONLY` and before that check
+is in `soup/rule_count.c` the code does `#undef ASCII_ONLY` (and it's not even
+referenced in mkiocccentry.c).
+
+
 **IMPORTANT NOTE**: none of these will cause a previously uploaded submission to
 be invalidated. You do **NOT** need to install or use the updated tools. These
 are for those who want or need (or feel they need) the features (and fixes)

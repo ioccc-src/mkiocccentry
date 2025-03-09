@@ -3364,39 +3364,19 @@ chk_url(struct json const *node,
  * returns:
  *	true ==> JSON element is valid
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ *
+ * XXX: post IOCCC28 this function and related JSON will be removed but to
+ * simplify it during IOCCC28 we simply return true in every case as we no
+ * longer care about it.
  */
 bool
 chk_wordbuf_warning(struct json const *node,
 		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
-    bool test = false;				/* validation test result */
+    UNUSED_ARG(node);
+    UNUSED_ARG(depth);
+    UNUSED_ARG(sem);
+    UNUSED_ARG(val_err);
 
-    /*
-     * firewall - args
-     */
-    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
-    if (boolean == NULL) {
-	/* sem_member_value_bool() will have set *val_err */
-	return false;
-    }
-
-    /*
-     * validate decoded JSON string
-     */
-    test = test_wordbuf_warning(*boolean);
-    if (test == false) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(177, node, depth, sem, __func__, "invalid wordbuf_warning");
-	}
-	return false;
-    }
-
-    /*
-     * return validation success
-     */
-    if (val_err != NULL) {
-	*val_err = NULL;
-    }
     return true;
 }

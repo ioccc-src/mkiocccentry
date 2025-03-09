@@ -4936,31 +4936,11 @@ warn_trigraph(void)
 static void
 warn_wordbuf(void)
 {
-    int ret, yorn;
-
-    /*
-     * warn the user about triggered a word buffer overflow in iocccsize, if we are allowed
-     */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog.c triggered a word buffer overflow!\n"
-			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
-			      "YOUR remarks.md FILE!\n\n");
-	if (ret <= 0) {
-	    errp(176, __func__, "fprintf error when printing prog.c wordbuf_warning");
-            not_reached();
-	}
-	if (abort_on_warning) {
-	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
-            not_reached();
-	}
-	yorn = yes_or_no("Are you sure you want to proceed? [Ny]", false);
-	if (!yorn) {
-	    err(177, __func__, "please fix your prog.c file");
-	    not_reached();
-	}
-	dbg(DBG_MED, "user says that prog.c triggering a word buffer overflow is OK");
-    }
+    para("",
+         "The iocccsize reported a buffer overflow. How curious!",
+         "You might mention this fun fact in your remarks.md file.",
+         "",
+         NULL);
 }
 
 
@@ -4986,7 +4966,7 @@ warn_ungetc(void)
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
 			      "YOUR remarks.md FILE!\n\n");
 	if (ret <= 0) {
-	    errp(178, __func__, "fprintf error when printing prog.c ungetc_warning");
+	    errp(176, __func__, "fprintf error when printing prog.c ungetc_warning");
             not_reached();
 	}
 	if (abort_on_warning) {
@@ -4995,7 +4975,7 @@ warn_ungetc(void)
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [Ny]", false);
 	if (!yorn) {
-	    err(179, __func__, "please fix your prog.c file");
+	    err(177, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that prog.c triggering an ungetc warning OK");
@@ -5019,7 +4999,7 @@ warn_rule_2b_size(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(180, __func__, "called with NULL infop");
+	err(178, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -5031,7 +5011,7 @@ warn_rule_2b_size(struct info *infop)
 	ret = fprintf(stderr, "\nWARNING: The prog.c size: %ju > Rule 2b maximum: %ju\n",
 		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
 	if (ret <= 0) {
-	    errp(181, __func__, "printf error printing prog.c size > Rule 2b maximum");
+	    errp(179, __func__, "printf error printing prog.c size > Rule 2b maximum");
 	    not_reached();
 	}
 
@@ -5048,7 +5028,7 @@ warn_rule_2b_size(struct info *infop)
 	}
 	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [Ny]", false);
 	if (!yorn) {
-	    err(182, __func__, "please fix your prog.c file");
+	    err(180, __func__, "please fix your prog.c file");
 	    not_reached();
 	}
 	dbg(DBG_MED, "user says that their prog.c size: %ju > Rule 2B max size: %ju is OK",
@@ -5085,7 +5065,7 @@ check_prog_c(struct info *infop, char const *prog_c)
      * firewall
      */
     if (infop == NULL || prog_c == NULL) {
-	err(183, __func__, "called with NULL arg(s)");
+	err(181, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     /*
@@ -5097,7 +5077,7 @@ check_prog_c(struct info *infop, char const *prog_c)
 	      "We cannot find the prog.c file.",
 	      "",
 	      NULL);
-	err(184, __func__, "prog.c does not exist: %s", prog_c);
+	err(182, __func__, "prog.c does not exist: %s", prog_c);
 	not_reached();
     }
     if (!is_file(prog_c)) {
@@ -5106,7 +5086,7 @@ check_prog_c(struct info *infop, char const *prog_c)
 	      "The prog.c path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(185, __func__, "prog.c is not a regular file: %s", prog_c);
+	err(183, __func__, "prog.c is not a regular file: %s", prog_c);
 	not_reached();
     }
     if (!is_read(prog_c)) {
@@ -5115,7 +5095,7 @@ check_prog_c(struct info *infop, char const *prog_c)
 	      "The prog.c path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(186, __func__, "prog.c is not a readable file: %s", prog_c);
+	err(184, __func__, "prog.c is not a readable file: %s", prog_c);
 	not_reached();
     }
 
@@ -5129,7 +5109,7 @@ check_prog_c(struct info *infop, char const *prog_c)
     errno = 0;			/* pre-clear errno for errp() */
     prog_stream = fopen(prog_c, "r");
     if (prog_stream == NULL) {
-	errp(187, __func__, "failed to fopen: %s", prog_c);
+	errp(185, __func__, "failed to fopen: %s", prog_c);
 	not_reached();
     }
     size = rule_count(prog_stream);
@@ -5138,7 +5118,7 @@ check_prog_c(struct info *infop, char const *prog_c)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(prog_stream);
     if (ret != 0) {
-	errp(188, __func__, "failed to fclose: %s", prog_c);
+	errp(186, __func__, "failed to fclose: %s", prog_c);
 	not_reached();
     }
 
@@ -5148,7 +5128,7 @@ check_prog_c(struct info *infop, char const *prog_c)
     infop->rule_2a_size = file_size(prog_c);
     dbg(DBG_MED, "Rule 2a size: %jd", (intmax_t)infop->rule_2a_size);
     if (infop->rule_2a_size < 0) {
-	err(189, __func__, "file_size error: %jd on prog.c: %s", (intmax_t)infop->rule_2a_size, prog_c);
+	err(187, __func__, "file_size error: %jd on prog.c: %s", (intmax_t)infop->rule_2a_size, prog_c);
 	not_reached();
     } else if (infop->rule_2a_size == 0 || infop->rule_2b_size == 0) {
 	warn_empty_prog();
@@ -5275,7 +5255,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
      * firewall
      */
     if (Makefile == NULL || infop == NULL) {
-	err(190, __func__, "called with NULL arg(s)");
+	err(188, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5285,7 +5265,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     stream = fopen(Makefile, "r");
     if (stream == NULL) {
-	errp(191, __func__, "cannot open Makefile: %s", Makefile);
+	errp(189, __func__, "cannot open Makefile: %s", Makefile);
 	not_reached();
     }
 
@@ -5477,7 +5457,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(stream);
     if (ret < 0) {
-	errp(192, __func__, "fclose error");
+	errp(190, __func__, "fclose error");
 	not_reached();
     }
 
@@ -5520,7 +5500,7 @@ warn_Makefile(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(193, __func__, "called with NULL infop");
+	err(191, __func__, "called with NULL infop");
 	not_reached();
     }
     if (need_confirm && (!answer_yes || seed_used)) {
@@ -5595,7 +5575,7 @@ warn_Makefile(struct info *infop)
 	if (!answer_yes) {
 	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [Ny]", false);
 	    if (!yorn) {
-		err(194, __func__, "Use a different Makefile or modify your Makefile");
+		err(192, __func__, "Use a different Makefile or modify your Makefile");
 		not_reached();
 	    }
 	}
@@ -5624,7 +5604,7 @@ check_Makefile(struct info *infop, char const *Makefile)
      * firewall
      */
     if (infop == NULL || Makefile == NULL) {
-	err(195, __func__, "called with NULL arg(s)");
+	err(193, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5637,7 +5617,7 @@ check_Makefile(struct info *infop, char const *Makefile)
 	      "We cannot find the Makefile.",
 	      "",
 	      NULL);
-	err(196, __func__, "Makefile does not exist: %s", Makefile);
+	err(194, __func__, "Makefile does not exist: %s", Makefile);
 	not_reached();
     }
     if (!is_file(Makefile)) {
@@ -5646,7 +5626,7 @@ check_Makefile(struct info *infop, char const *Makefile)
 	       "The Makefile path, while it exists, is not a regular file.",
 	       "",
 	       NULL);
-	err(197, __func__, "Makefile is not a regular file: %s", Makefile);
+	err(195, __func__, "Makefile is not a regular file: %s", Makefile);
 	not_reached();
     }
     if (!is_read(Makefile)) {
@@ -5655,15 +5635,15 @@ check_Makefile(struct info *infop, char const *Makefile)
 	      "The Makefile path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(198, __func__, "Makefile is not readable file: %s", Makefile);
+	err(196, __func__, "Makefile is not readable file: %s", Makefile);
 	not_reached();
     }
     filesize = file_size(Makefile);
     if (filesize < 0) {
-	err(199, __func__, "file_size error: %jd on Makefile  %s", (intmax_t)filesize, Makefile);
+	err(197, __func__, "file_size error: %jd on Makefile  %s", (intmax_t)filesize, Makefile);
 	not_reached();
     } else if (filesize == 0) {
-	err(200, __func__, "Makefile cannot be empty: %s", Makefile);
+	err(198, __func__, "Makefile cannot be empty: %s", Makefile);
 	not_reached();
     }
 
@@ -5701,7 +5681,7 @@ check_remarks_md(struct info *infop, char const *remarks_md)
      * firewall
      */
     if (infop == NULL || remarks_md == NULL) {
-	err(201, __func__, "called with NULL arg(s)");
+	err(199, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5714,7 +5694,7 @@ check_remarks_md(struct info *infop, char const *remarks_md)
 	       "We cannot find the remarks.md file.",
 	       "",
 	       NULL);
-	err(202, __func__, "remarks.md does not exist: %s", remarks_md);
+	err(200, __func__, "remarks.md does not exist: %s", remarks_md);
 	not_reached();
     }
     if (!is_file(remarks_md)) {
@@ -5722,7 +5702,7 @@ check_remarks_md(struct info *infop, char const *remarks_md)
 	      "The remarks.md path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(203, __func__, "remarks.md is not a regular file: %s", remarks_md);
+	err(201, __func__, "remarks.md is not a regular file: %s", remarks_md);
 	not_reached();
     }
     if (!is_read(remarks_md)) {
@@ -5731,15 +5711,15 @@ check_remarks_md(struct info *infop, char const *remarks_md)
 	      "The remarks.md path, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(204, __func__, "remarks.md is not readable file: %s", remarks_md);
+	err(202, __func__, "remarks.md is not readable file: %s", remarks_md);
 	not_reached();
     }
     filesize = file_size(remarks_md);
     if (filesize < 0) {
-	err(205, __func__, "file_size error: %jd on remarks.md %s", (intmax_t)filesize, remarks_md);
+	err(203, __func__, "file_size error: %jd on remarks.md %s", (intmax_t)filesize, remarks_md);
 	not_reached();
     } else if (filesize == 0) {
-	err(206, __func__, "remarks.md cannot be empty: %s", remarks_md);
+	err(204, __func__, "remarks.md cannot be empty: %s", remarks_md);
 	not_reached();
     }
 
@@ -5769,7 +5749,7 @@ yes_or_no(char const *question, bool def_answer)
      * firewall
      */
     if (question == NULL) {
-	err(207, __func__, "called with NULL question");
+	err(205, __func__, "called with NULL question");
 	not_reached();
     }
 
@@ -5888,7 +5868,7 @@ get_title(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(208, __func__, "called with NULL infop");
+	err(206, __func__, "called with NULL infop");
 	not_reached();
     }
 
@@ -5908,7 +5888,7 @@ get_title(struct info *infop)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "Your title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
 	if (ret <= 0) {
-	    errp(209, __func__, "fprintf #0 error: %d", ret);
+	    errp(207, __func__, "fprintf #0 error: %d", ret);
             not_reached();
 	}
     }
@@ -5966,7 +5946,7 @@ get_title(struct info *infop)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "Your title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
 	    if (ret <= 0) {
-		errp(210, __func__, "fprintf #1 error: %d", ret);
+		errp(208, __func__, "fprintf #1 error: %d", ret);
                 not_reached();
 	    }
 	    if (abort_on_warning) {
@@ -6025,7 +6005,7 @@ get_title(struct info *infop)
             ret = printf("\nThe title you entered is: %s\n",
                          title);
             if (ret <= 0) {
-                errp(211, __func__, "fprintf title");
+                errp(209, __func__, "fprintf title");
                 not_reached();
             }
             yorn = yes_or_no("\nIs that title correct? [Yn]", true);
@@ -6076,7 +6056,7 @@ get_abstract(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(212, __func__, "called with NULL infp");
+	err(210, __func__, "called with NULL infp");
 	not_reached();
     }
 
@@ -6143,7 +6123,7 @@ get_abstract(struct info *infop)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "Your abstract must be between 1 and %d characters long.\n\n", MAX_ABSTRACT_LEN);
 	    if (ret <= 0) {
-		errp(213, __func__, "fprintf error: %d", ret);
+		errp(211, __func__, "fprintf error: %d", ret);
                 not_reached();
 	    }
 	    if (abort_on_warning) {
@@ -6169,7 +6149,7 @@ get_abstract(struct info *infop)
             ret = printf("\nThe abstract you entered is: %s\n",
                          abstract);
             if (ret <= 0) {
-                errp(214, __func__, "fprintf abstract");
+                errp(212, __func__, "fprintf abstract");
                 not_reached();
             }
             yorn = yes_or_no("\nIs that abstract correct? [Yn]", true);
@@ -6372,7 +6352,7 @@ get_author_info(struct author **author_set_p)
      * firewall
      */
     if (author_set_p == NULL) {
-	err(215, __func__, "called with NULL author_set_p");
+	err(213, __func__, "called with NULL author_set_p");
 	not_reached();
     }
 
@@ -6394,20 +6374,20 @@ get_author_info(struct author **author_set_p)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "\nThe number of authors must be a number from 1 through %d;\nplease re-enter.\n", MAX_AUTHORS);
 	    if (ret <= 0) {
-		errp(216, __func__, "fprintf error #0 while printing author number range");
+		errp(214, __func__, "fprintf error #0 while printing author number range");
                 not_reached();
 	    }
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "\nIf you happen to have more than %d authors, we ask that you pick\n", MAX_AUTHORS);
 	    if (ret <= 0) {
-		errp(217, __func__, "fprintf error #1 while printing author number range");
+		errp(215, __func__, "fprintf error #1 while printing author number range");
                 not_reached();
 	    }
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "just %d authors and mention the remaining NUMBER of the authors in\nthe remarks file.\n",
                     MAX_AUTHORS);
 	    if (ret <= 0) {
-		errp(218, __func__, "fprintf error #2 while printing author number range");
+		errp(216, __func__, "fprintf error #2 while printing author number range");
                 not_reached();
 	    }
 	    author_count = -1;	/* invalidate input */
@@ -6435,7 +6415,7 @@ get_author_info(struct author **author_set_p)
     errno = 0;			/* pre-clear errno for errp() */
     author_set = (struct author *) malloc(sizeof(struct author) * (size_t)author_count);
     if (author_set == NULL) {
-	errp(219, __func__, "malloc a struct author array of length: %d failed", author_count);
+	errp(217, __func__, "malloc a struct author array of length: %d failed", author_count);
 	not_reached();
     }
 
@@ -6471,31 +6451,31 @@ get_author_info(struct author **author_set_p)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = puts(ISO_3166_1_CODE_URL0);
 	if (ret < 0) {
-	    errp(220, __func__, "puts error printing ISO 3166-1 URL0");
+	    errp(218, __func__, "puts error printing ISO 3166-1 URL0");
             not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = puts(ISO_3166_1_CODE_URL1);
 	if (ret < 0) {
-	    errp(221, __func__, "puts error printing ISO 3166-1 URL1");
+	    errp(219, __func__, "puts error printing ISO 3166-1 URL1");
             not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = puts(ISO_3166_1_CODE_URL2);
 	if (ret < 0) {
-	    errp(222, __func__, "puts error printing ISO 3166-1 URL2");
+	    errp(220, __func__, "puts error printing ISO 3166-1 URL2");
             not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = puts(ISO_3166_1_CODE_URL3);
 	if (ret < 0) {
-	    errp(223, __func__, "puts error printing ISO 3166-1 URL3");
+	    errp(221, __func__, "puts error printing ISO 3166-1 URL3");
             not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = puts(ISO_3166_1_CODE_URL4);
 	if (ret < 0) {
-	    errp(224, __func__, "puts error printing ISO 3166-1 URL4");
+	    errp(222, __func__, "puts error printing ISO 3166-1 URL4");
             not_reached();
 	}
 	para("",
@@ -6527,7 +6507,7 @@ get_author_info(struct author **author_set_p)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = printf("\nEnter information for author #%d\n\n", i);
 	if (ret <= 0) {
-	    errp(225, __func__, "printf error printing author number");
+	    errp(223, __func__, "printf error printing author number");
             not_reached();
 	}
 	author_set[i].author_num = i;
@@ -6580,7 +6560,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit names to %d characters\n\n", MAX_NAME_LEN);
 		if (ret <= 0) {
-		    errp(226, __func__, "fprintf error while reject name that is too long");
+		    errp(224, __func__, "fprintf error while reject name that is too long");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -6609,7 +6589,7 @@ get_author_info(struct author **author_set_p)
 			errno = 0;		/* pre-clear errno for errp() */
 			ret = fprintf(stderr, "\nauthor #%d name duplicates previous author #%d name", i, j);
 			if (ret <= 0) {
-			    errp(227, __func__, "fprintf error while reject duplicate name");
+			    errp(225, __func__, "fprintf error while reject duplicate name");
                             not_reached();
 			}
 			if (abort_on_warning) {
@@ -6663,7 +6643,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL0);
 		if (ret <= 0) {
-		    errp(228, __func__, "fprintf while printing ISO 3166-1 CODE URL #0");
+		    errp(226, __func__, "fprintf while printing ISO 3166-1 CODE URL #0");
                     not_reached();
 		}
 		fpara(stderr,
@@ -6673,19 +6653,19 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL1);
 		if (ret <= 0) {
-		    errp(229, __func__, "fprintf while printing ISO 3166-1 CODE URL #1");
+		    errp(227, __func__, "fprintf while printing ISO 3166-1 CODE URL #1");
                     not_reached();
 		}
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
 		if (ret <= 0) {
-		    errp(230, __func__, "fprintf while printing ISO 3166-1 CODE URL #2");
+		    errp(228, __func__, "fprintf while printing ISO 3166-1 CODE URL #2");
                     not_reached();
 		}
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
 		if (ret <= 0) {
-		    errp(231, __func__, "fprintf while printing ISO 3166-1 CODE URL #3");
+		    errp(229, __func__, "fprintf while printing ISO 3166-1 CODE URL #3");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -6734,7 +6714,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
 		if (ret <= 0) {
-		    errp(232, __func__, "fprintf when printing ISO 3166-1 CODE URL #0");
+		    errp(230, __func__, "fprintf when printing ISO 3166-1 CODE URL #0");
                     not_reached();
 		}
 		fpara(stderr,
@@ -6744,19 +6724,19 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
 		if (ret <= 0) {
-		    errp(233, __func__, "fprintf when printing ISO 3166-1 CODE URL #1");
+		    errp(231, __func__, "fprintf when printing ISO 3166-1 CODE URL #1");
                     not_reached();
 		}
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
 		if (ret <= 0) {
-		    errp(234, __func__, "fprintf when printing ISO 3166-1 CODE URL #2");
+		    errp(232, __func__, "fprintf when printing ISO 3166-1 CODE URL #2");
                     not_reached();
 		}
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
 		if (ret <= 0) {
-		    errp(235, __func__, "fprintf when printing ISO 3166-1 CODE URL #3");
+		    errp(233, __func__, "fprintf when printing ISO 3166-1 CODE URL #3");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -6791,7 +6771,7 @@ get_author_info(struct author **author_set_p)
 		ret = printf("\nThe location/country code you entered is assigned to: %s (%s)\n",
 			     author_set[i].location_name, author_set[i].common_name);
 		if (ret <= 0) {
-		    errp(236, __func__, "fprintf location/country code assignment");
+		    errp(234, __func__, "fprintf location/country code assignment");
                     not_reached();
 		}
 		yorn = yes_or_no("\nIs that location/country code correct? [Yn]", true);
@@ -6846,7 +6826,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit email address to %d characters\n", MAX_EMAIL_LEN);
 		if (ret <= 0) {
-		    errp(237, __func__, "fprintf error while printing Email address length limit");
+		    errp(235, __func__, "fprintf error while printing Email address length limit");
                     not_reached();
 		}
 		fpara(stderr,
@@ -6904,7 +6884,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters.\n\n", MAX_URL_LEN);
 		if (ret <= 0) {
-		    errp(238, __func__, "fprintf error while printing URL length limit");
+		    errp(236, __func__, "fprintf error while printing URL length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7000,7 +6980,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit URLs to %d characters\n\n", MAX_URL_LEN);
 		if (ret <= 0) {
-		    errp(239, __func__, "fprintf error while printing URL length limit");
+		    errp(237, __func__, "fprintf error while printing URL length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7096,7 +7076,7 @@ get_author_info(struct author **author_set_p)
 		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit Mastodon handles to %d "
 			"characters, starting with the @\n\n", MAX_MASTODON_LEN);
 		if (ret <= 0) {
-		    errp(240, __func__, "fprintf error while printing mastodon handle length limit");
+		    errp(238, __func__, "fprintf error while printing mastodon handle length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7186,7 +7166,7 @@ get_author_info(struct author **author_set_p)
 			    "\nSorry ( tm Canada :-) ), we limit GitHub account names to %d characters after the 1st @.\n\n",
 			    MAX_GITHUB_LEN);
 		if (ret <= 0) {
-		    errp(241, __func__, "fprintf error while printing GitHub user length limit");
+		    errp(239, __func__, "fprintf error while printing GitHub user length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7273,7 +7253,7 @@ get_author_info(struct author **author_set_p)
 		    fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit affiliation names to %d characters\n\n",
 			    MAX_AFFILIATION_LEN);
 		if (ret <= 0) {
-		    errp(242, __func__, "fprintf error while printing affiliation length limit");
+		    errp(240, __func__, "fprintf error while printing affiliation length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7350,7 +7330,7 @@ get_author_info(struct author **author_set_p)
 	     */
 	    def_handle = default_handle(author_set[i].name);
 	    if (def_handle == NULL) {
-		err(243, __func__, "default_handle() returned NULL!");
+		err(241, __func__, "default_handle() returned NULL!");
 		not_reached();
 	    }
 	    dbg(DBG_VHIGH, "default IOCCC author handle: <%s>", def_handle);
@@ -7358,7 +7338,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = printf("\nThe default IOCCC author handle for author #%d is:\n\n    %s\n\n", i, def_handle);
 		if (ret <= 0) {
-		    errp(244, __func__, "fprintf error while printing default IOCCC author handle");
+		    errp(242, __func__, "fprintf error while printing default IOCCC author handle");
                     not_reached();
 		}
 	    }
@@ -7421,7 +7401,7 @@ get_author_info(struct author **author_set_p)
 		errno = 0;		/* pre-clear errno for errp() */
 		ret = fprintf(stderr, "\nThe IOCCC author handle is limited to %d characters\n\n", MAX_HANDLE);
 		if (ret <= 0) {
-		    errp(245, __func__, "fprintf error while printing IOCCC author handle length limit");
+		    errp(243, __func__, "fprintf error while printing IOCCC author handle length limit");
                     not_reached();
 		}
 		if (abort_on_warning) {
@@ -7452,7 +7432,7 @@ get_author_info(struct author **author_set_p)
 			errno = 0;		/* pre-clear errno for errp() */
 			ret = fprintf(stderr, "\nauthor #%d author_handle duplicates previous author #%d author_handle", i, j);
 			if (ret <= 0) {
-			    errp(246, __func__, "fprintf error while printing duplicate author_handle error");
+			    errp(244, __func__, "fprintf error while printing duplicate author_handle error");
                             not_reached();
 			}
 			if (abort_on_warning) {
@@ -7499,7 +7479,7 @@ get_author_info(struct author **author_set_p)
 						      printf("IOCCC author handle was manually entered\n"))  <= 0 ||
 	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC author handle\n\n") :
 						        printf("IOCCC author handle: %s\n\n", author_set[i].author_handle)) <= 0) {
-	    errp(247, __func__, "error while printing author #%d information\n", i);
+	    errp(245, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
 	if (need_confirm) {
@@ -7553,7 +7533,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
      * firewall
      */
     if (submission_dir == NULL || ls == NULL) {
-	err(248, __func__, "called with NULL arg(s)");
+	err(246, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -7566,7 +7546,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", submission_dir);
     if (ret <= 0) {
-	errp(249, __func__, "printf error code: %d", ret);
+	errp(247, __func__, "printf error code: %d", ret);
         not_reached();
     }
     para("",
@@ -7576,7 +7556,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     dbg(DBG_HIGH, "about to perform: cd -- %s && %s -lakR .", submission_dir, ls);
     exit_code = shell_cmd(__func__, false, true, "cd -- % && % -lakR .", submission_dir, ls);
     if (exit_code != 0) {
-	err(10, __func__, "cd -- %s && %s -lakR . failed with exit code: %d",
+	err(248, __func__, "cd -- %s && %s -lakR . failed with exit code: %d",
 			   submission_dir, ls, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -7587,7 +7567,7 @@ verify_submission_dir(char const *submission_dir, char const *ls)
     dbg(DBG_HIGH, "about to popen: cd -- %s && %s -lakR .", submission_dir, ls);
     ls_stream = pipe_open(__func__, false, true, "cd -- % && % -lakR .", submission_dir, ls);
     if (ls_stream == NULL) {
-	err(11, __func__, "popen filed for: cd -- %s && %s -lakR .", submission_dir, ls);
+	err(249, __func__, "popen filed for: cd -- %s && %s -lakR .", submission_dir, ls);
 	not_reached();
     }
 
@@ -7619,18 +7599,18 @@ verify_submission_dir(char const *submission_dir, char const *ls)
      * no line was read at all
      */
     if (readline_len < 0 && i == 0) {
-	err(12, __func__, "EOF while reading output of ls: %s", ls);
+	err(10, __func__, "EOF while reading output of ls: %s", ls);
 	not_reached();
     }
     /*
      * lines were read from ls but nothing correct was found
      */
     if (i == 0) {
-        err(13, __func__, "found no k-block line in ls output");
+        err(11, __func__, "found no k-block line in ls output");
         not_reached();
     }
     if (kdirsize <= 0) {
-	err(14, __func__, "ls k-block value: %d <= 0", kdirsize);
+	err(12, __func__, "ls k-block value: %d <= 0", kdirsize);
 	not_reached();
     }
     dbg(DBG_MED, "Directory %s size in kibibyte (1024 byte blocks): %d", submission_dir, kdirsize);
@@ -7709,7 +7689,7 @@ form_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-        err(15, __func__, "passed NULL infop");
+        err(13, __func__, "passed NULL infop");
         not_reached();
     }
     /*
@@ -7728,13 +7708,13 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(16, __func__, "cannot set TZ=UTC");
+	errp(14, __func__, "cannot set TZ=UTC");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(17, __func__, "gmtime returned NULL");
+	errp(15, __func__, "gmtime returned NULL");
 	not_reached();
     }
 
@@ -7745,7 +7725,7 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     infop->utctime = (char *)calloc(utctime_len + 1, sizeof(char)); /* + 1 for paranoia padding */
     if (infop->utctime == NULL) {
-	errp(18, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
+	errp(16, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -7760,7 +7740,7 @@ form_info(struct info *infop)
     errno = 0;			/* pre-clear errno for errp() */
     strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
-	errp(19, __func__, "strftime returned 0");
+	errp(17, __func__, "strftime returned 0");
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
@@ -7802,7 +7782,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * firewall
      */
     if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL) {
-        err(20, __func__, "called with NULL arg(s)");
+        err(18, __func__, "called with NULL arg(s)");
         not_reached();
     }
 
@@ -7810,10 +7790,10 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * first write .auth.json
      */
     if (authp->author_count <= 0) {
-	err(21, __func__, "author_count %d <= 0", authp->author_count);
+	err(19, __func__, "author_count %d <= 0", authp->author_count);
 	not_reached();
     } else if (authp->author_count > MAX_AUTHORS) {
-	err(22, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
+	err(20, __func__, "author count %d > max authors %d", authp->author_count, MAX_AUTHORS);
 	not_reached();
     }
 
@@ -7824,27 +7804,27 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     auth_path = (char *)malloc(auth_path_len + 1);
     if (auth_path == NULL) {
-	errp(23, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
+	errp(21, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(auth_path, auth_path_len, "%s/%s", submission_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
-	errp(24, __func__, "snprintf #0 error: %d", ret);
+	errp(22, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".auth.json path: %s", auth_path);
     errno = 0;			/* pre-clear errno for errp() */
     auth_stream = fopen(auth_path, "w");
     if (auth_stream == NULL) {
-	errp(25, __func__, "failed to open for writing: %s", auth_path);
+	errp(23, __func__, "failed to open for writing: %s", auth_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     fd = open(auth_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        err(26, __func__, "failed to obtain file descriptor for: %s", auth_path);
+        err(24, __func__, "failed to obtain file descriptor for: %s", auth_path);
         not_reached();
     }
 
@@ -7867,7 +7847,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(auth_stream, "    ", "test_mode", " : ", authp->test_mode, ",\n") &&
 	fprintf(auth_stream, "    \"authors\" : [\n") > 0;
     if (!ret) {
-	errp(27, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
+	errp(25, __func__, "fprintf error writing leading part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -7894,7 +7874,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	    json_fprintf_value_long(auth_stream, "            ", "author_number", " : ", ap->author_num, "\n") &&
 	    fprintf(auth_stream, "        }%s\n", (((i + 1) < authp->author_count) ? "," : "")) > 0;
 	if (ret == false) {
-	    errp(28, __func__, "fprintf error writing author %d info to %s", i, auth_path);
+	    errp(26, __func__, "fprintf error writing author %d info to %s", i, auth_path);
 	    not_reached();
 	}
     }
@@ -7910,7 +7890,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_long(auth_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(auth_stream, "}\n") > 0;
     if (!ret) {
-	errp(29, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
+	errp(27, __func__, "fprintf error writing trailing part of authorship to %s", auth_path);
 	not_reached();
     }
 
@@ -7920,7 +7900,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(auth_stream);
     if (ret < 0) {
-	errp(30, __func__, "fclose error");
+	errp(28, __func__, "fclose error");
 	not_reached();
     }
 
@@ -7930,7 +7910,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(31, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
+        err(29, __func__, "chmod(2) failed to set user, group and other read-only on %s", auth_path);
         not_reached();
     }
 
@@ -7940,7 +7920,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0; /* pre-clear for errp() */
     ret = close(fd);
     if (ret < 0) {
-        errp(32, __func__, "close(fd) failed");
+        errp(30, __func__, "close(fd) failed");
         not_reached();
     }
 
@@ -7948,7 +7928,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      * now write .info.json
      */
     if (infop->required_files == NULL) {
-        err(33, __func__, "called with NULL files list");
+        err(31, __func__, "called with NULL files list");
         not_reached();
     }
 
@@ -7959,20 +7939,20 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(34, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(32, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/%s", submission_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
-	errp(35, __func__, "snprintf #0 error: %d", ret);
+	errp(33, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(36, __func__, "failed to open for writing: %s", info_path);
+	errp(34, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
     }
 
@@ -7982,7 +7962,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0; /* pre-clear errno for errp() */
     fd = open(info_path, O_WRONLY|O_CLOEXEC, S_IRWXU);
     if (fd < 0) {
-        errp(37, __func__, "failed to obtain file descriptor for: %s", info_path);
+        errp(35, __func__, "failed to obtain file descriptor for: %s", info_path);
         not_reached();
     }
 
@@ -8025,7 +8005,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
 	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {
-	errp(38, __func__, "fprintf error writing leading part of info to %s", info_path);
+	errp(36, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
 
@@ -8058,7 +8038,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	  json_fprintf_value_string(info_stream, "            ", "remarks", " : ", "remarks.md", "\n") &&
 			    fprintf(info_stream, "        }%s\n", (infop->extra_count > 0) ?  "," : "") > 0;
     if (!ret) {
-	errp(39, __func__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(37, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
 
@@ -8069,14 +8049,14 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
         for (j = 0; j < infop->extra_count; ++j) {
             p = dyn_array_value(infop->extra_files, char *, j);
             if (p == NULL) {
-                err(40, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)j);
+                err(38, __func__, "found NULL pointer in files list, element: %ju", (uintmax_t)j);
                 not_reached();
             }
             ret =                   fprintf(info_stream, "        {\n") > 0 &&
                   json_fprintf_value_string(info_stream, "            ", "extra_file", " : ", p, "\n") &&
                                     fprintf(info_stream, "        }%s\n", ((j+1) < infop->extra_count) ?  "," : "") > 0;
             if (!ret) {
-                errp(41, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)j, info_path);
+                errp(39, __func__, "fprintf error writing extra filename[%ju] to %s", (uintmax_t)j, info_path);
                 not_reached();
             }
         }
@@ -8092,7 +8072,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_long(info_stream, "    ", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
-	errp(42, __func__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(40, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
 
@@ -8102,7 +8082,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(43, __func__, "fclose error");
+	errp(41, __func__, "fclose error");
 	not_reached();
     }
 
@@ -8113,7 +8093,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     errno = 0;      /* pre-clear errno for errp() */
     ret = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH);
     if (ret != 0) {
-        err(44, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
+        err(42, __func__, "chmod(2) failed to set user, group and other read-only on %s", info_path);
         not_reached();
     }
 
@@ -8165,19 +8145,19 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
      * firewall
      */
     if (authp == NULL || infop == NULL || authorp == NULL) {
-	err(45, __func__, "called with NULL arg(s)");
+	err(43, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (infop->ioccc_id == NULL) {
-	err(46, __func__, "infop->ioccc_id is NULL");
+	err(44, __func__, "infop->ioccc_id is NULL");
 	not_reached();
     }
     if (infop->tarball == NULL) {
-	err(47, __func__, "infop->tarball is NULL");
+	err(45, __func__, "infop->tarball is NULL");
 	not_reached();
     }
     if (infop->utctime == NULL) {
-	err(48, __func__, "infop->utctime is NULL");
+	err(46, __func__, "infop->utctime is NULL");
 	not_reached();
     }
     memset(authp, 0, sizeof(*authp));
@@ -8201,14 +8181,14 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->ioccc_id = strdup(infop->ioccc_id);
     if (authp->ioccc_id == NULL) {
-	errp(49, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
+	errp(47, __func__, "strdup() ioccc_id path %s failed", infop->ioccc_id);
 	not_reached();
     }
     authp->submit_slot = infop->submit_slot;
     errno = 0;			/* pre-clear errno for errp() */
     authp->tarball = strdup(infop->tarball);
     if (authp->tarball == NULL) {
-	errp(50, __func__, "strdup() tarball path %s failed", infop->tarball);
+	errp(48, __func__, "strdup() tarball path %s failed", infop->tarball);
 	not_reached();
     }
     /* copy over test or non-test mode */
@@ -8230,7 +8210,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     errno = 0;			/* pre-clear errno for errp() */
     authp->utctime = strdup(infop->utctime);
     if (authp->utctime == NULL) {
-	errp(51, __func__, "strdup() utctime path %s failed", infop->utctime);
+	errp(49, __func__, "strdup() utctime path %s failed", infop->utctime);
 	not_reached();
     }
     return;
@@ -8273,7 +8253,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
      */
     if (workdir == NULL || submission_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
-	err(52, __func__, "called with NULL arg(s)");
+	err(50, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -8289,7 +8269,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(53, __func__, "cannot open .");
+	errp(51, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -8299,7 +8279,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(workdir);
     if (ret < 0) {
-	errp(54, __func__, "cannot cd %s", workdir);
+	errp(52, __func__, "cannot cd %s", workdir);
 	not_reached();
     }
 
@@ -8327,7 +8307,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     exit_code = shell_cmd(__func__, false, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_submission_dir);
     if (exit_code != 0) {
-	err(55, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
+	err(53, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -8338,7 +8318,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(56, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(54, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -8347,7 +8327,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(57, __func__, "The compressed tarball: %s size: %ju > %jd",
+	err(55, __func__, "The compressed tarball: %s size: %ju > %jd",
 		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -8358,13 +8338,13 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
     errno = 0;			/* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-	errp(58, __func__, "cannot fchdir to the previous current directory");
+	errp(56, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = close(cwd);
     if (ret < 0) {
-	errp(59, __func__, "close of previous current directory failed");
+	errp(57, __func__, "close of previous current directory failed");
 	not_reached();
     }
 
@@ -8385,10 +8365,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(60, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(58, __func__, "%s -x -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(61, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(59, __func__, "%s -e -f %ju -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                                txzchk, feathery, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8408,10 +8388,10 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         }
         if (exit_code != 0) {
             if (test_mode) {
-                err(62, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(60, __func__, "%s -x -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             } else {
-                err(63, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
+                err(61, __func__, "%s -w -v 1 -F %s -- %s/../%s failed with exit code: %d",
                    txzchk, fnamchk, submission_dir, basename_tarball_path, WEXITSTATUS(exit_code));
             }
             not_reached();
@@ -8462,13 +8442,13 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
      * firewall
      */
     if (workdir == NULL || submission_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(64, __func__, "called with NULL arg(s)");
+	err(62, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     submission_dir_esc = cmdprintf("%", submission_dir);
     if (submission_dir_esc == NULL) {
-	err(65, __func__, "failed to cmdprintf: submission_dir");
+	err(63, __func__, "failed to cmdprintf: submission_dir");
 	not_reached();
     }
 
@@ -8481,14 +8461,14 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    rm -rf %s%s\n", submission_dir[0] == '-' ? "-- " : "", submission_dir_esc);
     if (ret <= 0) {
-	errp(66, __func__, "printf #0 error");
+	errp(64, __func__, "printf #0 error");
 	not_reached();
     }
     free(submission_dir_esc);
 
     workdir_esc = cmdprintf("%", workdir);
     if (workdir_esc == NULL) {
-	err(67, __func__, "failed to cmdprintf: workdir");
+	err(65, __func__, "failed to cmdprintf: workdir");
 	not_reached();
     }
 
@@ -8499,7 +8479,7 @@ remind_user(char const *workdir, char const *submission_dir, char const *tar, ch
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, workdir[0] == '-' ? "./" : "", workdir_esc, tarball_path);
     if (ret <= 0) {
-	errp(68, __func__, "printf #2 error");
+	errp(66, __func__, "printf #2 error");
 	not_reached();
     }
     free(workdir_esc);
@@ -8571,7 +8551,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_URL);
     if (ret <= 0) {
-	errp(69, __func__, "printf error printing IOCCC_REGISTER_URL");
+	errp(67, __func__, "printf error printing IOCCC_REGISTER_URL");
 	not_reached();
     }
     para("",
@@ -8581,7 +8561,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_REGISTER_FAQ_URL);
     if (ret <= 0) {
-	errp(70, __func__, "printf error printing IOCCC register FAQ URL");
+	errp(68, __func__, "printf error printing IOCCC register FAQ URL");
 	not_reached();
     }
     para("",
@@ -8591,7 +8571,7 @@ show_registration_url(void)
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("    %s\n    %s\n    %s\n", IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL, IOCCC_SUBMIT_INFO_URL);
     if (ret <= 0) {
-	errp(71, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
+	errp(69, __func__, "printf error printing IOCCC_REGISTER_INFO_URL, IOCCC_PW_CHANGE_INFO_URL and IOCCC_SUBMIT_INFO_URL");
 	not_reached();
     }
 
@@ -8603,7 +8583,7 @@ show_registration_url(void)
     errno = 0;      /* pre-clear errno for errp() */
     ret = printf("    %s\n", IOCCC_STATUS_URL);
     if (ret < 0) {
-	errp(72, __func__, "printf error printing IOCCC status URL");
+	errp(70, __func__, "printf error printing IOCCC status URL");
 	not_reached();
     }
 
@@ -8640,7 +8620,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
         "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
         workdir, tarball_path);
     if (ret <= 0) {
-	errp(73, __func__, "printf error printing tarball path and slot number");
+	errp(71, __func__, "printf error printing tarball path and slot number");
 	not_reached();
     }
     para("",
@@ -8650,7 +8630,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
     ret = printf("    %s\n", IOCCC_SUBMIT_URL);
     if (ret < 0) {
-	errp(74, __func__, "printf error printing IOCCC submit URL");
+	errp(72, __func__, "printf error printing IOCCC submit URL");
 	not_reached();
     }
 
@@ -8661,7 +8641,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
 
      ret = printf("    %s\n", IOCCC_ENTER_FAQ_URL);
     if (ret < 0) {
-	errp(75, __func__, "printf error printing IOCCC enter FAQ URL");
+	errp(73, __func__, "printf error printing IOCCC enter FAQ URL");
 	not_reached();
     }
 }
