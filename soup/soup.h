@@ -102,22 +102,36 @@
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
  * txzchk, chkentry, etc.)
  */
-#define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
-#define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
-#define LS_PATH_0 "/bin/ls"			    /* historic path for ls */
-#define LS_PATH_1 "/usr/bin/ls"			    /* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
-#define FNAMCHK_PATH_0 "./test_ioccc/fnamchk"	    /* path to fnamchk tool if not installed */
-#define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
-#define TXZCHK_PATH_0 "./txzchk"		    /* path to txzchk tool if not installed */
-#define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
-#define CHKENTRY_PATH_0 "./chkentry"		    /* path to chkentry tool if not installed */
-#define CHKENTRY_PATH_1 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
-#define JPARSE_PATH_0 "./jparse/jparse"		    /* path to jparse if not installed */
-#define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
-#define MAKE_PATH_0 "/usr/bin/make"                 /* default path to make tool */
-#define MAKE_PATH_1 "/bin/make"                     /* in case /usr/bin/make doesn't work */
-#define RM_PATH_0 "/bin/rm"                         /* default path to rm tool */
-#define RM_PATH_1 "/usr/bin/rm"                     /* in case /bin/rm doesn't work */
+#define TAR_PATH_0 "tar"                            /* for $PATH search */
+#define TAR_PATH_1 "/usr/bin/tar"		    /* historic path for tar */
+#define TAR_PATH_2 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
+#define LS_PATH_0 "ls"                              /* for $PATH search */
+#define LS_PATH_1 "/bin/ls"			    /* historic path for ls */
+#define LS_PATH_2 "/usr/bin/ls"			    /* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
+#define FNAMCHK_PATH_0 "fnamchk"                    /* for $PATH search */
+#define FNAMCHK_PATH_1 "./test_ioccc/fnamchk"	    /* path to fnamchk tool if not installed */
+#define FNAMCHK_PATH_2 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
+#define TXZCHK_PATH_0 "txzchk"                      /* for $PATH search */
+#define TXZCHK_PATH_1 "./txzchk"		    /* path to txzchk tool if not installed */
+#define TXZCHK_PATH_2 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
+#define CHKENTRY_PATH_0 "chkentry"                  /* for $PATH search */
+#define CHKENTRY_PATH_1 "./chkentry"		    /* path to chkentry tool if not installed */
+#define CHKENTRY_PATH_2 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
+#define MAKE_PATH_0 "gmake"                          /* for $PATH search */
+#define MAKE_PATH_1 "make"                          /* for $PATH search */
+#define MAKE_PATH_2 "/usr/bin/make"                 /* default path to make tool */
+#define MAKE_PATH_3 "/bin/make"                     /* in case /usr/bin/make doesn't work */
+#define RM_PATH_0 "rm"                              /* for $PATH search */
+#define RM_PATH_1 "/bin/rm"                         /* default path to rm tool */
+#define RM_PATH_2 "/usr/bin/rm"                     /* in case /bin/rm doesn't work */
+
+extern char *tar_paths[];
+extern char *ls_paths[];
+extern char *fnamchk_paths[];
+extern char *txzchk_paths[];
+extern char *chkentry_paths[];
+extern char *make_paths[];
+extern char *rm_paths[];
 
 
 /*

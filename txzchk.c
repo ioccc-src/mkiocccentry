@@ -159,8 +159,6 @@ main(int argc, char **argv)
     extern int optind;			    /* argv index of the next arg */
     char *tar = TAR_PATH_0;		    /* path to tar executable that supports the -J (xz) option */
     char *fnamchk = FNAMCHK_PATH_0;	    /* path to fnamchk tool */
-    bool fnamchk_flag_used = false;	    /* if -F option used */
-    bool tar_flag_used = false;		    /* true ==> -t /path/to/tar was given */
     int i;
 
     /*
@@ -195,12 +193,10 @@ main(int argc, char **argv)
 	    not_reached();
 	    break;
 	case 'F': /* -F fnamchk - specify path to fnamchk tool */
-	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
 	case 't': /* -t tar - specify path to tar (perhaps to tar and feather :-) ) */
 	    tar = optarg;
-	    tar_flag_used = true;
 	    break;
 	case 'T': /* -T - text (test) file mode - don't rely on tar: just read file as if it was a text file */
 	    read_from_text_file = true;
@@ -278,11 +274,9 @@ main(int argc, char **argv)
      */
 
     if (!read_from_text_file) {
-	find_utils(tar_flag_used, &tar, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL, false, NULL);
+	find_utils(&tar, NULL, NULL, &fnamchk, NULL, NULL, NULL);
     } else {
-	find_utils(false, NULL, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL, false, NULL);
+	find_utils(NULL, NULL, NULL, &fnamchk, NULL, NULL, NULL);
     }
 
     /* additional sanity checks */
@@ -310,6 +304,18 @@ main(int argc, char **argv)
 	}
     }
     show_tarball_info(tarball_path);
+
+    /*
+     * we need to free the paths to the tools
+     */
+    if (tar != NULL) {
+        free(tar);
+        tar = NULL;
+    }
+    if (fnamchk != NULL) {
+        free(fnamchk);
+        fnamchk = NULL;
+    }
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
