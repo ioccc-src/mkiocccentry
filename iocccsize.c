@@ -178,7 +178,7 @@ main(int argc, char **argv)
 	/*
 	 * issue warnings
 	 */
-	if (count.char_warning) {
+	if (1 < verbosity_level && 0 < count.char_warning) {
 		iocccsize_warnx("Warning: character(s) with high bit set found! Be careful you don't violate rule 13!");
 	}
 	if (count.nul_warning) {
@@ -187,7 +187,7 @@ main(int argc, char **argv)
 	if (count.trigraph_warning) {
 		iocccsize_warnx("Warning: unknown or invalid trigraph(s) found! Is that a bug in, or a feature of your code?");
 	}
-	if (count.wordbuf_warning) {
+        if (1 < verbosity_level && 0 < count.wordbuf_warning) {
 		iocccsize_warnx("Warning: word buffer overflow! Is that a bug in, or a feature of your code?");
 	}
 	if (count.ungetc_warning) {
