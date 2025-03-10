@@ -211,6 +211,9 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         }
     }
 
+    if (tar_found) {
+        dbg(DBG_MED, "found tar at: %s", *tar);
+    }
     if (ls != NULL && *ls != NULL && is_file(*ls) && is_exec(*ls)) {
         /*
          * we have to strdup() it
@@ -250,6 +253,9 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         }
     }
 
+    if (ls_found) {
+        dbg(DBG_MED, "found ls at: %s", *ls);
+    }
     if (txzchk != NULL && *txzchk != NULL && is_file(*txzchk) && is_exec(*txzchk)) {
         /*
          * we have to strdup() it
@@ -289,6 +295,9 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         }
     }
 
+    if (txzchk_found) {
+        dbg(DBG_MED, "found txzchk at: %s", *txzchk);
+    }
     if (fnamchk != NULL && *fnamchk != NULL && is_file(*fnamchk) && is_exec(*fnamchk)) {
         /*
          * we have to strdup() it
@@ -326,6 +335,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
                 }
             }
         }
+    }
+
+    if (fnamchk_found) {
+        dbg(DBG_MED, "found fnamchk at: %s", *fnamchk);
     }
 
     if (chkentry != NULL && *chkentry != NULL && is_file(*chkentry) && is_exec(*chkentry)) {
@@ -367,6 +380,9 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         }
     }
 
+    if (chkentry_found) {
+        dbg(DBG_MED, "found chkentry at: %s", *chkentry);
+    }
     if (make != NULL && *make != NULL && is_file(*make) && is_exec(*make)) {
         /*
          * we have to strdup() it
@@ -404,6 +420,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
                 }
             }
         }
+    }
+
+    if (make_found) {
+        dbg(DBG_MED, "found make at: %s", *make);
     }
 
     if (rm != NULL && *rm != NULL && is_file(*rm) && is_exec(*rm)) {
@@ -445,5 +465,8 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         }
     }
 
+    if (rm_found) {
+        dbg(DBG_MED, "found rm at: %s", *rm);
+    }
     return;
 }
