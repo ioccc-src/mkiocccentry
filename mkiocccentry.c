@@ -4369,24 +4369,23 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
     /*
      * if -U UUID not used check if -u uuidfile was used
      */
-    if (uuidstr == NULL) {
-        if (uuidfile != NULL) {
-            if (is_read(uuidfile)) {
+    if (uuidfile != NULL) {
+        if (is_read(uuidfile)) {
+            errno = 0; /* pre-clear errno for warnp() */
+            uuidfp = fopen(uuidfile, "r");
+            if (uuidfp == NULL) {
+                warnp(__func__, "failed to open uuidfile, will prompt instead");
+            } else {
+                uuidstr = readline_dup(&linep, true, NULL, uuidfp);
                 errno = 0; /* pre-clear errno for warnp() */
-                uuidfp = fopen(uuidfile, "r");
-                if (uuidfp == NULL) {
-                    warnp(__func__, "failed to open uuidfile, will prompt instead");
-                } else {
-                    uuidstr = readline_dup(&linep, true, NULL, uuidfp);
-                    errno = 0; /* pre-clear errno for warnp() */
-                    if (fclose(uuidfp) != 0) {
-                        warnp(__func__, "failed to fclose(uuidfp)");
-                    }
-                    if (uuidstr != NULL) {
-                        if (valid_contest_id(uuidstr)) {
-                            if (strcmp(uuidstr, "test") == 0) {
+                if (fclose(uuidfp) != 0) {
+                    warnp(__func__, "failed to fclose(uuidfp)");
+                }
+                if (uuidstr != NULL) {
+                    if (valid_contest_id(uuidstr)) {
+                        if (strcmp(uuidstr, "test") == 0) {
 
-                                /*
+                                    /*
                                  * report test mode
                                  */
                                 para("",
@@ -4409,7 +4408,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
                 warn(__func__, "-u uuidfile not readable, will prompt instead");
             }
         }
-    } else if (valid_contest_id(uuidstr)) {
+    if (uuidstr != NULL && valid_contest_id(uuidstr)) {
         /*
          * case: IOCCC contest ID is test, quick return
          */
@@ -4735,7 +4734,8 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
             }
             fpara(stderr,
                   "",
-                  "You need to move that directory, or remove it, or use a different workdir.",
+                  "You need to move that directory, or remove it, use the -x option",
+                  "or use a different workdir.",
                   "",
                   NULL);
             err(161, __func__, "submission directory exists: %s", submission_dir);
