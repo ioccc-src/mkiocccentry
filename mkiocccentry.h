@@ -181,7 +181,7 @@ static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, ch
 				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
                                      char const *make);
 static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(bool *testp);
+static char *get_contest_id(bool *testp, FILE *uuidp);
 static int get_submit_slot(struct info *infop);
 static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 			  char **tarball_path, time_t tstamp, bool test_mode);
