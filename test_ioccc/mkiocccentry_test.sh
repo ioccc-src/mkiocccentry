@@ -76,7 +76,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="2.0.0 2025-02-28"
+export MKIOCCCENTRY_TEST_VERSION="2.0.1 2025-03-10"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -264,7 +264,7 @@ LONG_FILENAME="fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 workdir_esc="${workdir}"
 test "${workdir:0:1}" = "-" && workdir_esc=./"${workdir}"
 find "${workdir_esc}" -mindepth 1 -depth -delete
-rm -f "${topdir}"/
+rm -rf "${topdir}"/
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers()

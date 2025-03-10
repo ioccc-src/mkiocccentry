@@ -28,6 +28,8 @@ called `resolve_path()`. The jparse util functions `shell_cmd()` and
 name. As for `make`: we now search for `gmake` first as the Makefiles we need
 are GNU Makefiles.
 
+Add missing `-r` to `rm` in `mkiocccentry_test.sh`.
+
 **IMPORTANT NOTE**: you do NOT need to use this update in order to participate
 in the IOCCC28!
 
