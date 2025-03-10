@@ -264,7 +264,7 @@ LONG_FILENAME="fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 workdir_esc="${workdir}"
 test "${workdir:0:1}" = "-" && workdir_esc=./"${workdir}"
 find "${workdir_esc}" -mindepth 1 -depth -delete
-rm -rf "${topdir}"
+mkdir -p "${topdir}"
 
 # Answers as of mkiocccentry version: v0.40 2022-03-15
 answers()
