@@ -142,8 +142,12 @@ static const char * const usage_msg3 =
     "\t-A answers\twrite answers file even if it already exists\n"
     "\t-i answers\tread answers from file previously written by -a|-A answers\n"
     "\t\t\t    NOTE: One cannot use both -a/-A answers and -i answers.\n"
-    "\t-u uuid\t\tread UUID from a file (def: prompt for UUID)\n"
+    "\t-u uuidfile\tread UUID from a file (def: prompt for UUID)\n"
     "\t\t\t    NOTE: if an invalid UUID is in the file, it will try the usual way\n"
+    "\t\t\t    NOTE: this option may not be used with -U UUID, -d, -s seed or -i answers\n"
+    "\t-U UUID\t\tset UUID to UUID\n"
+    "\t\t\t    NOTE: if an invalid UUID is in the file, it will try the usual way\n"
+    "\t\t\t    NOTE: this option may not be used with -u uuidfile, -d, -s seed or -i answers\n"
     "\t-s seed\t\tGenerate and use pseudo-random answers, seeding with\n"
     "\t\t\t    seed & 0x%08u (def: do not)\n"
     "\t-d\t\tAlias for -s %u\n"
@@ -222,8 +226,8 @@ main(int argc, char *argv[])
     char *make = MAKE_PATH_0;                   /* path to make(1) executable */
     char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answersp = NULL;			/* file pointer to the answers file */
-    char *uuid = NULL;			/* path to the UUID file */
-    FILE *uuidp = NULL;			/* file pointer to the UUID file */
+    char *uuidfile = NULL;			/* path to the UUID file */
+    char *uuidstr = NULL;			/* -U UUID option or UUID environmental var */
     char *submission_dir = NULL;		/* submission directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
     struct info info;				/* data to form .info.json */
@@ -234,7 +238,8 @@ main(int argc, char *argv[])
     bool ls_flag_used = false;			/* true ==> -l /path/to/ls was given */
     bool make_flag_used = false;                /* true ==> -m /path/to/make was given */
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
-    bool read_uuid_flag_used = false;                /* true ==> -u uuid used */
+    bool read_uuid_flag_used = false;           /* true ==> -u uuidfile used */
+    bool uuid_flag_used = false;                /* true ==> -U uuid used */
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
@@ -253,6 +258,7 @@ main(int argc, char *argv[])
      */
     memset(&auth, 0, sizeof(auth));
 
+
     /*
      * even though these stat structs are in file scope, make sure they are
      * zeroed out
@@ -265,7 +271,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yYds:m:I:u:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yYds:m:I:u:U:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -419,8 +425,12 @@ main(int argc, char *argv[])
             append_path(&info.ignore_paths, optarg, true, false, false);
             break;
         case 'u':
-            uuid = optarg;
+            uuidfile = optarg;
             read_uuid_flag_used = true;
+            break;
+        case 'U':
+            uuidstr = optarg;
+            uuid_flag_used = true;
             break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -477,7 +487,23 @@ main(int argc, char *argv[])
 	not_reached();
     }
     if (seed_used && read_uuid_flag_used) {
-        err(3, __func__, "-u uuid cannot be used with either -d or -s seed");/*ooo*/
+        err(3, __func__, "-u uuidfile cannot be used with either -d or -s seed");/*ooo*/
+        not_reached();
+    }
+    if (seed_used && uuidstr != NULL) {
+        err(3, __func__, "-U UUID cannot be used with -d or -s seed");/*ooo*/
+        not_reached();
+    }
+    if (read_uuid_flag_used && uuid_flag_used) {
+        err(3, __func__, "-u uuidfile and -U UUID cannot be used together");/*ooo*/
+        not_reached();
+    }
+    if ((read_uuid_flag_used || uuid_flag_used) && seed_used) {
+        err(3, __func__, "-U UUID or -u uuidfile cannot be used with -d or -s seed");/*ooo*/
+        not_reached();
+    }
+    if ((read_uuid_flag_used || uuid_flag_used) && read_answers_flag_used) {
+        err(3, __func__, "-U UUID or -u uuidfile cannot be used with -i answers");/*ooo*/
         not_reached();
     }
     if (ignore_warnings && abort_on_warning) {
@@ -726,25 +752,9 @@ main(int argc, char *argv[])
     }
 
     /*
-     * check if we should read input from UUID file
-     */
-    if (read_uuid_flag_used && uuid != NULL && strlen(uuid) > 0) {
-	if (!is_read(uuid)) {
-	    warn(__func__, "cannot read UUID file, will prompt for UUID");
-	} else {
-            errno = 0;		/* pre-clear errno for errp() */
-            uuidp = fopen(uuid, "r");
-            if (uuidp == NULL) {
-                warnp(__func__, "cannot open UUID file, will prompt for UUID");
-            }
-        }
-    }
-
-
-    /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&info.test_mode, uuidp);
+    info.ioccc_id = get_contest_id(&info.test_mode, uuidfile, uuidstr);
     dbg(DBG_LOW, "Submission: IOCCC contest ID: %s", info.ioccc_id);
 
     /*
@@ -1072,14 +1082,6 @@ main(int argc, char *argv[])
     if (remarks_md != NULL) {
         free(remarks_md);
         remarks_md = NULL;
-    }
-
-    /*
-     * if uuid file is open, close it
-     */
-    if (uuidp != NULL && is_open_file_stream(uuidp)) {
-        fclose(uuidp);
-        uuidp = NULL;
     }
 
     /*
@@ -4323,7 +4325,9 @@ prompt(char const *str, size_t *lenp)
  * *testp will be set to true, otherwise it will be set to false.
  *
  * given:
- *      testp   - pointer to boolean (in struct info) for test mode
+ *      testp       - pointer to boolean (in struct info) for test mode
+ *      uuidfile    - -u uuidfile option - path to file which if not NULL and is open can have a UUID
+ *      uuidstr     - -U UUID option (only used if -u uuidfile not used or is invalid)
  *
  * returns:
  *      allocated contest ID string
@@ -4332,13 +4336,14 @@ prompt(char const *str, size_t *lenp)
  * This function does not return on error or if the contest ID is malformed.
  */
 static char *
-get_contest_id(bool *testp, FILE *uuidp)
+get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 {
     char *malloc_ret = NULL;	/* allocated return string */
     char *linep = NULL;         /* when reading from file */
     size_t len;			/* input string length */
     bool valid = false;		/* true ==> IOCCC_contest_id is valid */
     bool seen_answers_header = false;
+    FILE *uuidfp = NULL;        /* if -u uuidfile */
 
     /*
      * firewall
@@ -4349,17 +4354,66 @@ get_contest_id(bool *testp, FILE *uuidp)
     }
 
     /*
-     * explain contest ID unless uuidp != NULL
+     * if -U UUID not used check if -u uuidfile was used
      */
-    if (uuidp != NULL && is_open_file_stream(uuidp)) {
-	malloc_ret = readline_dup(&linep, true, NULL, uuidp);
-	if (malloc_ret != NULL) {
-            if (valid_contest_id(malloc_ret)) {
-                return malloc_ret;
+    if (uuidstr == NULL) {
+        if (uuidfile != NULL) {
+            if (is_read(uuidfile)) {
+                errno = 0; /* pre-clear errno for warnp() */
+                uuidfp = fopen(uuidfile, "r");
+                if (uuidfp == NULL) {
+                    warnp(__func__, "failed to open uuidfile, will prompt instead");
+                } else {
+                    uuidstr = readline_dup(&linep, true, NULL, uuidfp);
+                    errno = 0; /* pre-clear errno for warnp() */
+                    if (fclose(uuidfp) != 0) {
+                        warnp(__func__, "failed to fclose(uuidfp)");
+                    }
+                    if (uuidstr != NULL) {
+                        if (valid_contest_id(uuidstr)) {
+                            if (strcmp(uuidstr, "test") == 0) {
+
+                                /*
+                                 * report test mode
+                                 */
+                                para("",
+                                     "IOCCC contest ID is test, entering test mode.",
+                                     NULL);
+                                *testp = true;
+                            } else {
+                                *testp = false;
+                            }
+                            return uuidstr;
+                        }
+                        free(uuidstr);
+                        uuidstr = NULL;
+                        /*
+                         * we will have to prompt the user instead
+                         */
+                    }
+                }
+            } else {
+                warn(__func__, "-u uuidfile not readable, will prompt instead");
             }
-            free(malloc_ret);
-            malloc_ret = NULL;
-	}
+        }
+    } else if (valid_contest_id(uuidstr)) {
+        /*
+         * case: IOCCC contest ID is test, quick return
+         */
+        if (strcmp(uuidstr, "test") == 0) {
+
+            /*
+             * report test mode
+             */
+            para("",
+                 "IOCCC contest ID is test, entering test mode.",
+                 NULL);
+            *testp = true;
+            return uuidstr;
+        } else {
+            *testp = false;
+            return uuidstr;
+        }
     }
     /*
      * if we get here then the user has to input their uuid manually
