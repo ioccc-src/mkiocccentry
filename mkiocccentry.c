@@ -8441,13 +8441,13 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         if (test_mode) {
             dbg(DBG_HIGH, "about to perform: %s -x -e -f %ju -w -v 1 -F %s -- %s/../%s",
                           txzchk, feathery, fnamchk, submission_dir, basename_tarball_path);
-            exit_code = shell_cmd(__func__, false, true, "txzchk -x -e -w -v 1 -F % -- %/../%",
-                                                  fnamchk, submission_dir, basename_tarball_path);
+            exit_code = shell_cmd(__func__, false, true, "% -x -e -w -v 1 -F % -- %/../%",
+                                                  txzchk, fnamchk, submission_dir, basename_tarball_path);
         } else {
             dbg(DBG_HIGH, "about to perform: %s -e -f %ju -w -v 1 -F %s -- %s/../%s",
                           txzchk, feathery, fnamchk, submission_dir, basename_tarball_path);
-            exit_code = shell_cmd(__func__, false, true, "txzchk -e -w -v 1 -F % -- %/../%",
-                                                  fnamchk, submission_dir, basename_tarball_path);
+            exit_code = shell_cmd(__func__, false, true, "%s -e -w -v 1 -F % -- %/../%",
+                                                  txzchk, fnamchk, submission_dir, basename_tarball_path);
         }
         if (exit_code != 0) {
             if (test_mode) {
@@ -8464,8 +8464,8 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         if (test_mode) {
             dbg(DBG_HIGH, "about to perform: %s -x -w -v 1 -F %s -- %s/../%s",
                           txzchk, fnamchk, submission_dir, basename_tarball_path);
-            exit_code = shell_cmd(__func__, false, true, "txzchk -x -w -v 1 -F % -- %/../%",
-                                  fnamchk, submission_dir, basename_tarball_path);
+            exit_code = shell_cmd(__func__, false, true, "% -x -w -v 1 -F % -- %/../%",
+                                  txzchk, fnamchk, submission_dir, basename_tarball_path);
         } else {
             dbg(DBG_HIGH, "about to perform: %s -w -v 1 -F %s -- %s/../%s",
                           txzchk, fnamchk, submission_dir, basename_tarball_path);
