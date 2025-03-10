@@ -276,7 +276,7 @@ main(int argc, char **argv)
     if (!read_from_text_file) {
 	find_utils(&tar, NULL, NULL, &fnamchk, NULL, NULL, NULL);
     } else {
-	find_utils(NULL, NULL, NULL, &fnamchk, NULL, NULL, NULL);
+	find_utils(&tar, NULL, NULL, &fnamchk, NULL, NULL, NULL);
     }
 
     /* additional sanity checks */
