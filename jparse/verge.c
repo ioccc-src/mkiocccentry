@@ -58,11 +58,6 @@
 
 
 /*
- * definitions
- */
-#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
-
-/*
  * vercmp - compare two version strings
  *
  * given:

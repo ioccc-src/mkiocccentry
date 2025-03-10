@@ -1,5 +1,35 @@
 # Significant changes in the JSON parser repo
 
+
+## Release 2.2.35 2025-03-10
+
+Improved `shell_cmd()` and `pipe_open()` to resolve path (using `resolve_path()`
+which searches `$PATH`) if there is no `/` in the command.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.5 2025-03-10"`.
+
+
+## Release 2.2.34 2025-03-09
+
+Updated `base_name()`, `dir_name()` and added new function `resolve_path()`.
+
+The function `base_name()` now will, on a NULL or empty string, return a copy of
+`"."` just like `basename(3)` does.
+
+The function `dir_name()` now will, on a NULL or empty string or a string that
+has no `/` (unless `level < 0`) , return a copy of `"."` just like `dirname(3)`
+(though that function does not have the `level` functionality).
+
+The function `resolve_path()` will go through the process's `$PATH` and search
+for an executable file with the name passed to the function, returning either a
+copy of the path or NULL. If the command starts with `/` or `./` then the
+`$PATH` is not searched and instead that exact string is duplicated and
+returned.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.4 2025-03-09"`.
+Updated `UTIL_TEST_VERSION` to `"2.0.2 2025-03-09"`.
+
+
 ## Release 2.2.33 2025-03-07
 
 Additional sanity checks added to FTS code.
