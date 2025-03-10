@@ -184,7 +184,8 @@ static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
 static int get_submit_slot(struct info *infop);
 static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
-			  char **tarball_path, time_t tstamp, bool test_mode);
+			  char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
+                          char const *rm);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
 static void check_Makefile(struct info *infop, char const *Makefile);

@@ -11,6 +11,13 @@ to true if the UUID was `"true"`.
 The `-u uuidfile` and `-U UUID` options may not be used with `-i answers`, `-d`
 or `-s seed`.
 
+Partial fix to issue #1208. The `-x` option to force delete the
+submission directory and `-r rm` option to set path to `rm(1)` were added to
+`mkiocccentry` as part of #1208. The change in order of args is **NOT** done and
+will not be done until **AFTER** IOCCC28.
+
+Fixed bug where `overwrite_answers` was always true by default (`mkiocccentry`).
+
 Updated man page for the above changes.
 
 **IMPORTANT NOTE**: you do NOT need to use this update in order to participate
