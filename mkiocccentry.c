@@ -8446,7 +8446,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
         } else {
             dbg(DBG_HIGH, "about to perform: %s -e -f %ju -w -v 1 -F %s -- %s/../%s",
                           txzchk, feathery, fnamchk, submission_dir, basename_tarball_path);
-            exit_code = shell_cmd(__func__, false, true, "%s -e -w -v 1 -F % -- %/../%",
+            exit_code = shell_cmd(__func__, false, true, "% -e -w -v 1 -F % -- %/../%",
                                                   txzchk, fnamchk, submission_dir, basename_tarball_path);
         }
         if (exit_code != 0) {
