@@ -1,6 +1,18 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.2.36 2025-03-11
+
+Fix bugs in `resolve_path()`. If one had the path of `./foo` or even `/foo` then
+it should check that the path is a regular executable file. And if not it should
+return NULL. Otherwise it should return the path. Then, if the path is not a
+regular executable file and `$PATH` is empty it should return NULL, not a
+strdup()d copy of the path. This way the caller can know for sure that the path
+returned is in fact a regular executable file.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.6 2025-03-11"`.
+
+
 ## Release 2.2.35 2025-03-10
 
 Improved `shell_cmd()` and `pipe_open()` to resolve path (using `resolve_path()`

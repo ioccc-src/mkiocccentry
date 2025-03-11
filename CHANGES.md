@@ -5,12 +5,24 @@
 
 Fix search of tools under `$PATH`.
 
-Due to the fact we have to have (for our tools) `./` ahead of other paths
-(including the tool names themselves) and also allow for a user to specify a
-path (even a bogus one, which if they do we will look for a proper path) and
-also search for installed paths, a more careful check has to be done in the
-`find_utils()` functions as otherwise it does not work when out of the repo
-directory.
+Fix bugs in `resolve_path()` where even if one had `./` or `/` in front of the
+path it could end up resolving a path that is not a regular executable file
+(when it did not have a `/` in the path this did not happen). Another bug was
+fixed where if `$PATH` is NULL or empty and the path is not a regular executable
+file it still would be a strdup()d copy of the original path.
+
+The above solved a problem where we could get the tools to be found (if they
+exist) if we also did a check for `is_file()` and `is_exec()` but with the above
+fixes we only have to check for `!= NULL`.
+
+The `find_utils()` functions now takes a corresponding `bool *` for each tool to
+find. If the boolean is not NULL then we search for that tool. If it is NULL and
+the `char **` is not NULL then we set the `*tool` to NULL. This way the caller
+can, if they wish and they are careful, decide whether or not to find all the
+tools. For example `txzchk` only looks for `tar` if test mode is not enabled.
+And although as a safety check before free()ing the pointer we do check that
+test mode was not used we do not technically need it as long as we pass in
+`&tar` (although we do give NULL so we do need to check it).
 
 Sync copyright fixes from jparse.
 

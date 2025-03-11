@@ -160,6 +160,8 @@ main(int argc, char **argv)
     char *tar = TAR_PATH_0;		    /* path to tar executable that supports the -J (xz) option */
     char *fnamchk = FNAMCHK_PATH_0;	    /* path to fnamchk tool */
     int i;
+    bool found_tar = false;                     /* for find_utils */
+    bool found_fnamchk = false;                 /* for find_utils */
 
     /*
      * parse args
@@ -268,15 +270,20 @@ main(int argc, char **argv)
      *
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
-     *
-     * If -T was used we don't actually need tar(1) so we test for that
-     * specifically.
      */
 
     if (!read_from_text_file) {
-	find_utils(&tar, NULL, NULL, &fnamchk, NULL, NULL, NULL);
+        /*
+         * we need tar
+         */
+        find_utils(&found_tar, &tar, NULL, NULL, NULL, NULL, &found_fnamchk, &fnamchk,
+            NULL, NULL, NULL, NULL, NULL, NULL);
     } else {
-	find_utils(&tar, NULL, NULL, &fnamchk, NULL, NULL, NULL);
+        /*
+         * we do not need tar
+         */
+        find_utils(NULL, NULL, NULL, NULL, NULL, NULL, &found_fnamchk, &fnamchk,
+            NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     /* additional sanity checks */
@@ -308,7 +315,7 @@ main(int argc, char **argv)
     /*
      * we need to free the paths to the tools
      */
-    if (tar != NULL) {
+    if (tar != NULL && !read_from_text_file) {
         free(tar);
         tar = NULL;
     }
