@@ -100,8 +100,8 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
-#define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
+#define MKIOCCCENTRY_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define MIN_MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -126,14 +126,14 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
-#define MIN_TXZCHK_VERSION TXZCHK_VERSION
+#define TXZCHK_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define MIN_TXZCHK_VERSION "2.0.1 2025-03-02"
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
-#define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
+#define CHKENTRY_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define MIN_CHKENTRY_VERSION "2.0.1 2025-03-02"
 
 /*
  * Version of info for JSON the .entry.json files.
