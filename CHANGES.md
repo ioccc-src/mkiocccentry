@@ -1,7 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.4.4 2025-03-11
+## Release 2.4.3 2025-03-11
+
+**IMPORTANT NOTE**:
+
+While you are **NOT** required to use this release in order to submit to **IOCCC28**,
+we do **RECOMMEND** that you use and install this release of the mkiocccentry toolkit.
+
+**BACKWARD COMPATIBILITY**:
+
+This release is backward compatible with "_Release 2.4.2 2025-03-02_".
+Submissions made under "_Release 2.4.2 2025-03-02_" remain valid for **IOCCC28**.
+
+**RELEASE DETAILS FOLLOW**:
 
 Fix search of tools under `$PATH`.
 
@@ -21,21 +33,6 @@ it in `chkentry(1)`. Post IOCCC28 it will be removed from struct info, the
 Rather than directly put in `true` in the writing of the .info.json file, force
 set `first_rule_is_all` to `true` in `mkiocccentry(1)` and reference that
 boolean in the writing of the .info.json file.
-
-
-## Release 2.4.3 2025-03-10
-
-**IMPORTANT NOTE**:
-
-While you are **NOT** required to use this release in order to submit to **IOCCC28**,
-we do **RECOMMEND** that you use and install this release of the mkiocccentry toolkit.
-
-**BACKWARD COMPATIBILITY**:
-
-This release is backward compatible with "_Release 2.4.2 2025-03-02_".
-Submissions made under "_Release 2.4.2 2025-03-02_" remain valid for **IOCCC28**.
-
-**RELEASE DETAILS FOLLOW**:
 
 Resolve issue #1229.  Add `-U UUID` to `mkiocccentry(1)` to set the username.
 
