@@ -5315,18 +5315,23 @@ check_prog_c(struct info *infop, char const *prog_c)
 
     /*
      * now that we allow all UTF-8 in prog.c, we force highbit_warning off
+     *
+     * XXX - post IOCCC28 the boolean will be removed from struct info, the
+     * .info.json file and the chkentry(1) code that checks it.
      */
     infop->highbit_warning = false;
 
     /*
      * sanity check on NUL character(s)
      */
-    if (size.nul_warning) {
-	warn_nul_chars();
-	infop->nul_warning = true;
-    } else {
-	infop->nul_warning = false;
-    }
+
+    /*
+     * XXX - as the rules now allow NUL bytes we force set infop->nul_warning to
+     * false. Post IOCCC28 the boolean will be removed from struct info, the
+     * .info.json file and all code that verifies it (i.e. the chkentry(1)) code
+     * will be removed.
+     */
+    infop->nul_warning = false;
 
     /*
      * sanity check on unknown trigraph(s)
@@ -5425,6 +5430,12 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	not_reached();
     }
 
+    /*
+     * force first_rule_is_all to true
+     *
+     * XXX: post IOCCC28 this boolean will be removed from all files and code.
+     */
+    infop->first_rule_is_all = true;
     /*
      * process lines until EOF
      */
@@ -5563,7 +5574,6 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 		 */
 		dbg(DBG_HIGH, "rulenum[%d]: all token found", rulenum);
 		infop->found_all_rule = true;
-		infop->first_rule_is_all = true;
 	    /*
 	     * detect clean rule
 	     */
@@ -8153,7 +8163,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(info_stream, "    ", "wordbuf_warning", " : ", infop->wordbuf_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "ungetc_warning", " : ", infop->ungetc_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "    ", "first_rule_is_all", " : ", true, ",\n") &&
+	json_fprintf_value_bool(info_stream, "    ", "first_rule_is_all", " : ", infop->first_rule_is_all, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
