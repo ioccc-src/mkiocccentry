@@ -3,7 +3,25 @@
 
 ## Release 2.4.3 2025-03-10
 
-Add `-U UUID` option - resolve #1229.
+
+**IMPORTANT NOTE**:
+
+While you are **NOT** required to use this release in order to submit to **IOCCC28**,
+we do **RECOMMEND** that you use and install this release of the mkiocccentry toolkit.
+
+
+**BACKWARD COMPATIBILITY**:
+
+This release is backward compatible with "_Release 2.4.2 2025-03-02_".
+
+Submissions made under "_Release 2.4.2 2025-03-02_" are valid for **IOCCC28**.
+
+None of these will cause a previously uploaded valid submission to be invalidated.
+
+
+**RELEASE DETAILS FOLLOW**:
+
+Add `-U UUID` option - resolve issue #1229.
 
 Also fixed an error with `-u uuidfile` where it would not set the `test` boolean
 to true if the UUID was `"true"`.
@@ -13,8 +31,8 @@ or `-s seed`.
 
 Partial fix to issue #1208. The `-x` option to force delete the
 submission directory and `-r rm` option to set path to `rm(1)` were added to
-`mkiocccentry` as part of #1208. The change in order of args is **NOT** done and
-will not be done until **AFTER** IOCCC28.
+`mkiocccentry` as part of issue #1208, the part that is **NOT** related to
+issue #1235 as that will be done for **IOCCC29** (**NOT IOCCC28**).
 
 Fixed bug where `overwrite_answers` was always true by default (`mkiocccentry`).
 
@@ -30,11 +48,6 @@ are GNU Makefiles.
 
 Add missing `-r` to `rm` in `mkiocccentry_test.sh`.
 
-**IMPORTANT NOTE**: you do NOT need to use this update in order to participate
-in the IOCCC28!
-
-Resolve some (mostly top priority) issues.
-
 Resolve issue #1206. Some people wanted this option to submit multiple
 submissions without having to repeatedly copy/paste the UUID. Now they can just
 put the UUID in a text file and use `-u uuid`. If the file is not a regular
@@ -48,7 +61,7 @@ wish to continue?' and the explanation is hopefully a bit clearer too.
 Resolve issue #1221. Removed the check for first rule is all (in Makefiles).
 This allows one to also have earlier on the format of `CC:= cc` rather than just
 `CC= cc`, should they wish. The .info.json file still has this bool but it's
-always set to true and chkentry will ignore it. **AFTER** IOCCC28 it will be
+always set to true and chkentry will ignore it. **AFTER** **IOCCC28** it will be
 removed from .info.json and chkentry code will no longer have the functions
 involved.
 
@@ -64,7 +77,7 @@ Resolve issue #1214. With guidance from @SirWumpus and Landon, and at their
 request, the iocccsize tool no longer warns against wordbuf warning unless
 verbosity is high enough; in mkiocccentry it sets the boolean to true or false
 depending on the result but it only notes it as a fun fact, suggesting the user
-note it in their remarks. Post IOCCC28 the bool will be removed from .info.json
+note it in their remarks. Post **IOCCC28** the bool will be removed from .info.json
 and chkentry(1) functions for it will be removed. For now the function that
 checks this value in chkentry(1) simply returns true. Additionally, the wrong
 variable was being referenced in `soup/rule_count.c` - it was referencing
@@ -74,12 +87,6 @@ warning is only shown if verbose enough. This did not need to be updated in
 mkiocccentry as it's only referenced `#ifdef ASCII_ONLY` and before that check
 is in `soup/rule_count.c` the code does `#undef ASCII_ONLY` (and it's not even
 referenced in mkiocccentry.c).
-
-
-**IMPORTANT NOTE**: none of these will cause a previously uploaded submission to
-be invalidated. You do **NOT** need to install or use the updated tools. These
-are for those who want or need (or feel they need) the features (and fixes)
-only.
 
 Resolve issue #1215.
 
