@@ -1,6 +1,20 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.4 2025-03-11
+
+Fix search of tools under `$PATH`.
+
+Due to the fact we have to have (for our tools) `./` ahead of other paths
+(including the tool names themselves) and also allow for a user to specify a
+path (even a bogus one, which if they do we will look for a proper path) and
+also search for installed paths, a more careful check has to be done in the
+`find_utils()` functions as otherwise it does not work when out of the repo
+directory.
+
+Sync copyright fixes from jparse.
+
+
 ## Release 2.4.3 2025-03-10
 
 **IMPORTANT NOTE**:
