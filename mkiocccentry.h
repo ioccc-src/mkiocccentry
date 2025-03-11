@@ -177,9 +177,9 @@ static void copy_topdir(struct info *infop, char const *make, char const *submis
         char *submit_path, int topdir, int cwd, RuleCount *size);
 static void check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
         char const *make, RuleCount *size, int cwd);
-static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char const *tar,
-				     char const *ls, char const *txzchk, char const *fnamchk, char const *chkentry,
-                                     char const *make);
+static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar,
+				     char *ls, char *txzchk, char *fnamchk, char *chkentry,
+                                     char *make, char *rm);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
 static int get_submit_slot(struct info *infop);

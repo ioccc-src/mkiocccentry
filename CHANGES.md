@@ -20,6 +20,16 @@ Fixed bug where `overwrite_answers` was always true by default (`mkiocccentry`).
 
 Updated man page for the above changes.
 
+Resolved issues #1233 and #1218. Both `mkiocccentry` and `txzchk` (the only ones
+that use other tools) now search `$PATH` for the tools first by way of the
+`find_utils()` function (modified a fair bit) and a new util function in jparse
+called `resolve_path()`. The jparse util functions `shell_cmd()` and
+`pipe_open()` were also improved to resolve paths if no `/` is in the command
+name. As for `make`: we now search for `gmake` first as the Makefiles we need
+are GNU Makefiles.
+
+Add missing `-r` to `rm` in `mkiocccentry_test.sh`.
+
 **IMPORTANT NOTE**: you do NOT need to use this update in order to participate
 in the IOCCC28!
 
