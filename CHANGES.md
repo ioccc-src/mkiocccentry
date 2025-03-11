@@ -3,42 +3,36 @@
 
 ## Release 2.4.3 2025-03-10
 
-
 **IMPORTANT NOTE**:
 
 While you are **NOT** required to use this release in order to submit to **IOCCC28**,
 we do **RECOMMEND** that you use and install this release of the mkiocccentry toolkit.
 
-
 **BACKWARD COMPATIBILITY**:
 
 This release is backward compatible with "_Release 2.4.2 2025-03-02_".
-
-Submissions made under "_Release 2.4.2 2025-03-02_" are valid for **IOCCC28**.
-
-None of these will cause a previously uploaded valid submission to be invalidated.
-
+Submissions made under "_Release 2.4.2 2025-03-02_" remain valid for **IOCCC28**.
 
 **RELEASE DETAILS FOLLOW**:
 
-Add `-U UUID` option - resolve issue #1229.
+Resolve issue #1229.  Add `-U UUID` to `mkiocccentry(1)` to set the username.
 
 Also fixed an error with `-u uuidfile` where it would not set the `test` boolean
 to true if the UUID was `"true"`.
 
-The `-u uuidfile` and `-U UUID` options may not be used with `-i answers`, `-d`
-or `-s seed`.
+The `-u uuidfile` and `-U UUID` options may not be used with `-i answers`,
+`-d`, nor `-s seed`.
 
 Partial fix to issue #1208. The `-x` option to force delete the
 submission directory and `-r rm` option to set path to `rm(1)` were added to
-`mkiocccentry` as part of issue #1208, the part that is **NOT** related to
-issue #1235 as that will be done for **IOCCC29** (**NOT IOCCC28**).
+`mkiocccentry(1)` as part of issue #1208. The part of issue #1208 that was **NOT**
+done was moved into issue #1235: and that will be completed later for **IOCCC29**.
 
-Fixed bug where `overwrite_answers` was always true by default (`mkiocccentry`).
+Fixed bug where `overwrite_answers` was always true by default in `mkiocccentry(1)`.
 
 Updated man page for the above changes.
 
-Resolved issues #1233 and #1218. Both `mkiocccentry` and `txzchk` (the only ones
+Resolved issues #1233 and #1218. Both `mkiocccentry(1)` and `txzchk(1)` (the only ones
 that use other tools) now search `$PATH` for the tools first by way of the
 `find_utils()` function (modified a fair bit) and a new util function in jparse
 called `resolve_path()`. The jparse util functions `shell_cmd()` and
@@ -49,8 +43,8 @@ are GNU Makefiles.
 Add missing `-r` to `rm` in `mkiocccentry_test.sh`.
 
 Resolve issue #1206. Some people wanted this option to submit multiple
-submissions without having to repeatedly copy/paste the UUID. Now they can just
-put the UUID in a text file and use `-u uuid`. If the file is not a regular
+submissions without having to repeatedly copy/paste their username UUID. Now they
+can just put the UUID in a text file and use `-u uuid`. If the file is not a regular
 readable file or it does not have a valid UUID it'll prompt like before. If the
 `-i answers` flag is used it is not relevant.
 
@@ -60,26 +54,26 @@ wish to continue?' and the explanation is hopefully a bit clearer too.
 
 Resolve issue #1221. Removed the check for first rule is all (in Makefiles).
 This allows one to also have earlier on the format of `CC:= cc` rather than just
-`CC= cc`, should they wish. The .info.json file still has this bool but it's
-always set to true and chkentry will ignore it. **AFTER** **IOCCC28** it will be
-removed from .info.json and chkentry code will no longer have the functions
+`CC= cc`, should they wish. The `.info.json` file still has this bool but it's
+always set to true and chkentry will ignore it. **AFTER IOCCC28** it will be
+removed from `.info.json` and `chkentry(1)` code will no longer have the functions
 involved.
 
 Resolve issue #1209. Although not labelled 'top priority' it was already done in
-the code. If topdir is the same as workdir it is an error. If workdir is under
-topdir it is an error. If topdir is somehow slipped into the submission
-directory it is an error. If workdir is encountered in topdir we skip it with
+the code. If `topdir` is the same as `workdir` it is an error. If `workdir` is under
+`topdir` it is an error. If `topdir` is somehow slipped into the submission
+directory it is an error. If `workdir` is encountered in `topdir` we skip it with
 `fts_set()` so as to not descend into it. Also, we now check that the
 directories are directories an are the right permissions, prior to even trying
 to scan/copy files/directories (to show a better error message).
 
 Resolve issue #1214. With guidance from @SirWumpus and Landon, and at their
 request, the iocccsize tool no longer warns against wordbuf warning unless
-verbosity is high enough; in mkiocccentry it sets the boolean to true or false
+verbosity is high enough; in `mkiocccentry(1)` it sets the boolean to true or false
 depending on the result but it only notes it as a fun fact, suggesting the user
 note it in their remarks. Post **IOCCC28** the bool will be removed from .info.json
-and chkentry(1) functions for it will be removed. For now the function that
-checks this value in chkentry(1) simply returns true. Additionally, the wrong
+and `chkentry(1)` functions for it will be removed. For now the function that
+checks this value in `chkentry(1)` simply returns true. Additionally, the wrong
 variable was being referenced in `soup/rule_count.c` - it was referencing
 `counts.wordbuf_warning` when it should have been referencing
 `counts.ungetc_error`. Also, because rule 13 no longer restricts UTF the char
@@ -101,11 +95,11 @@ to be the version at the time the contest opens. In this way uploaded
 submissions will not be invalidated. As for poisoned versions the lists are
 currently empty (just NULL terminated - must be last element).
 
-Updated `gen_test_JSON.sh` (under `test_ioccc/`) to have a new function -
+Updated `test_ioccc/gen_test_JSON.sh` to have a new function -
 `get_version`. This was necessary so we can use `grep -v MIN_`. If it was in the
 same function it would cause another `MIN_` macro to be excluded from
-`limit_ioccc.h` which was a problem. Updated the script's version to `"1.0.2
-2025-03-07"`.
+`limit_ioccc.h` which was a problem. Updated the script's version to
+`"1.0.2 2025-03-07"`.
 
 
 ## Release 2.4.2 2025-03-02
