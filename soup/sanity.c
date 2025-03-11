@@ -140,25 +140,54 @@ ioccc_sanity_chks(void)
  *
  * given:
  *
+ *      found_tar           - pointer to bool to set if tar is found
  *	tar		    - if tar != NULL set *tar to to tar path
+ *      found_ls            - pointer to bool to set if ls is found
  *	ls		    - if ls != NULL set *ls to ls path
+ *      found_txzchk        - pointer to bool to set if txzchk is found
  *	txzchk		    - if txzchk != NULL set *txzchk to path
+ *      found_fnamchk       - pointer to bool to set if fnamchk is found
  *	fnamchk		    - if fnamchk ! NULL set *fnamchk to path
+ *      found_chkentry      - pointer to bool to set if chkentry is found
  *	chkentry	    - if chkentry != NULL set *chkentry to path
+ *      found_make          - pointer to bool to set if make is found
  *	make                - if make != NULL set *make to path
+ *      found_rm            - pointer to bool to set if rm is found
  *	rm                  - if rm != NULL set *rm to path
+ *
+ * NOTE: if a found_ boolean is NULL we will not check for the tool.
  */
 void
-find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry, char **make, char **rm)
+find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_txzchk,
+        char **txzchk, bool *found_fnamchk, char **fnamchk, bool *found_chkentry, char **chkentry,
+        bool *found_make, char **make, bool *found_rm, char **rm)
 {
     size_t i = 0; /* for iterating through paths arrays */
-    bool tar_found = false;
-    bool ls_found = false;
-    bool txzchk_found = false;
-    bool fnamchk_found = false;
-    bool chkentry_found = false;
-    bool make_found = false;
-    bool rm_found = false;
+
+    /*
+     * set up booleans if not NULL
+     */
+    if (found_tar != NULL) {
+        *found_tar = false;
+    }
+    if (found_ls != NULL) {
+        *found_ls = false;
+    }
+    if (found_txzchk != NULL) {
+        *found_txzchk = false;
+    }
+    if (found_fnamchk != NULL) {
+        *found_fnamchk = false;
+    }
+    if (found_chkentry != NULL) {
+        *found_chkentry = false;
+    }
+    if (found_make != NULL) {
+        *found_make = false;
+    }
+    if (found_rm != NULL) {
+        *found_rm = false;
+    }
 
     /*
      * guess where tools are
@@ -172,189 +201,218 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
      * alternate path works instead.
      */
 
-    if (tar != NULL && *tar != NULL && is_file(*tar) && is_exec(*tar)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *tar = strdup(*tar);
-        if (*tar == NULL) {
-            errp(55, __func__, "strdup(tar) failed");
-            not_reached();
-        }
-        tar_found = true;
-    }
-    if (!tar_found && tar != NULL) {
-        for (i = 0; tar_paths[i] != NULL; ++i) {
-            *tar = resolve_path(tar_paths[i]);
-            if (*tar != NULL && is_file(*tar) && is_exec(*tar)) {
-                tar_found = true;
-                break;
-            }
-        }
-    }
-
-    if (tar_found) {
-        dbg(DBG_MED, "found tar at: %s", *tar);
-    }
-
-    if (ls != NULL && *ls != NULL && is_file(*ls) && is_exec(*ls)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *ls = strdup(*ls);
-        if (*ls == NULL) {
-            errp(57, __func__, "strdup(ls) failed");
-            not_reached();
-        }
-        ls_found = true;
-    }
-    if (!ls_found && ls != NULL) {
-        for (i = 0; ls_paths[i] != NULL; ++i) {
-            *ls = resolve_path(ls_paths[i]);
-            if (*ls != NULL && is_file(*ls) && is_exec(*ls)) {
-                ls_found = true;
-                break;
-            }
-        }
-    }
-
-    if (ls_found) {
-        dbg(DBG_MED, "found ls at: %s", *ls);
-    }
-    if (txzchk != NULL && *txzchk != NULL && is_file(*txzchk) && is_exec(*txzchk)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *txzchk = strdup(*txzchk);
-        if (*txzchk == NULL) {
-            errp(59, __func__, "strdup(txzchk) failed");
-            not_reached();
-        }
-        txzchk_found = true;
-    }
-    if (!txzchk_found && txzchk != NULL) {
-        for (i = 0; txzchk_paths[i] != NULL; ++i) {
+    if (found_tar != NULL) {
+        if (tar != NULL && *tar != NULL && is_file(*tar) && is_exec(*tar)) {
             /*
-             * try resolving the path
+             * we have to strdup() it
              */
-            *txzchk = resolve_path(txzchk_paths[i]);
-            if (*txzchk != NULL && is_file(*txzchk) && is_exec(*txzchk)) {
-                txzchk_found = true;
-                break;
+            errno = 0; /* pre-clear errno for errp */
+            *tar = strdup(*tar);
+            if (*tar == NULL) {
+                errp(55, __func__, "strdup(tar) failed");
+                not_reached();
+            }
+            *found_tar = true;
+        }
+        if (!*found_tar && tar != NULL) {
+            for (i = 0; tar_paths[i] != NULL; ++i) {
+                *tar = resolve_path(tar_paths[i]);
+                if (*tar != NULL) {
+                    *found_tar = true;
+                    break;
+                }
             }
         }
+        if (*found_tar) {
+            dbg(DBG_MED, "found tar at: %s", *tar);
+        }
+    } else if (tar != NULL) {
+        *tar = NULL;
     }
 
-    if (txzchk_found) {
-        dbg(DBG_MED, "found txzchk at: %s", *txzchk);
-    }
-    if (fnamchk != NULL && *fnamchk != NULL && is_file(*fnamchk) && is_exec(*fnamchk)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *fnamchk = strdup(*fnamchk);
-        if (*fnamchk == NULL) {
-            errp(61, __func__, "strdup(fnamchk)");
-            not_reached();
-        }
-        fnamchk_found = true;
-    }
-    if (!fnamchk_found && fnamchk != NULL) {
-        for (i = 0; fnamchk_paths[i] != NULL; ++i) {
-            *fnamchk = resolve_path(fnamchk_paths[i]);
-            if (*fnamchk != NULL && is_file(*fnamchk) && is_exec(*fnamchk)) {
-                fnamchk_found = true;
-                break;
-            }
-        }
-    }
-
-    if (fnamchk_found) {
-        dbg(DBG_MED, "found fnamchk at: %s", *fnamchk);
-    }
-
-    if (chkentry != NULL && *chkentry != NULL && is_file(*chkentry) && is_exec(*chkentry)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *chkentry = strdup(*chkentry);
-        if (*chkentry == NULL) {
-            errp(63, __func__, "strdup(chkentry) failed");
-            not_reached();
-        }
-        chkentry_found = true;
-    }
-    if (!chkentry_found && chkentry != NULL) {
-        for (i = 0; chkentry_paths[i] != NULL; ++i) {
+    if (found_ls != NULL) {
+        if (ls != NULL && *ls != NULL && is_file(*ls) && is_exec(*ls)) {
             /*
-             * try resolving the path
+             * we have to strdup() it
              */
-            *chkentry = resolve_path(chkentry_paths[i]);
-            if (*chkentry != NULL &&  is_file(*chkentry) && is_exec(*chkentry)) {
-                chkentry_found = true;
-                break;
+            errno = 0; /* pre-clear errno for errp */
+            *ls = strdup(*ls);
+            if (*ls == NULL) {
+                errp(57, __func__, "strdup(ls) failed");
+                not_reached();
+            }
+            *found_ls = true;
+        }
+        if (!*found_ls && ls != NULL) {
+            for (i = 0; ls_paths[i] != NULL; ++i) {
+                *ls = resolve_path(ls_paths[i]);
+                if (*ls != NULL) {
+                    *found_ls = true;
+                    break;
+                }
             }
         }
+        if (*found_ls) {
+            dbg(DBG_MED, "found ls at: %s", *ls);
+        }
+    } else if (ls != NULL) {
+        *ls = NULL;
     }
 
-    if (chkentry_found) {
-        dbg(DBG_MED, "found chkentry at: %s", *chkentry);
-    }
-    if (make != NULL && *make != NULL && is_file(*make) && is_exec(*make)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *make = strdup(*make);
-        if (*make == NULL) {
-            errp(65, __func__, "strdup(make) failed");
-            not_reached();
+    if (found_txzchk != NULL) {
+        if (txzchk != NULL && *txzchk != NULL && is_file(*txzchk) && is_exec(*txzchk)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *txzchk = strdup(*txzchk);
+            if (*txzchk == NULL) {
+                errp(59, __func__, "strdup(txzchk) failed");
+                not_reached();
+            }
+            *found_txzchk = true;
         }
-        make_found = true;
-    }
-    if (!make_found && make != NULL) {
-        for (i = 0; make_paths[i] != NULL; ++i) {
-            *make = resolve_path(make_paths[i]);
-            if (*make != NULL && is_file(*make) && is_exec(*make)) {
-                make_found = true;
-                break;
+        if (!*found_txzchk && txzchk != NULL) {
+            for (i = 0; txzchk_paths[i] != NULL; ++i) {
+                /*
+                 * try resolving the path
+                 */
+                *txzchk = resolve_path(txzchk_paths[i]);
+                if (*txzchk != NULL) {
+                    *found_txzchk = true;
+                    break;
+                }
             }
         }
-    }
 
-    if (make_found) {
-        dbg(DBG_MED, "found make at: %s", *make);
-    }
-
-    if (rm != NULL && *rm != NULL && is_file(*rm) && is_exec(*rm)) {
-        /*
-         * we have to strdup() it
-         */
-        errno = 0; /* pre-clear errno for errp */
-        *rm = strdup(*rm);
-        if (*rm == NULL) {
-            errp(67, __func__, "strdup(rm) failed");
-            not_reached();
+        if (*found_txzchk) {
+            dbg(DBG_MED, "found txzchk at: %s", *txzchk);
         }
-        rm_found = true;
+    } else if (txzchk != NULL) {
+        *txzchk = NULL;
     }
-    if (!rm_found && rm != NULL) {
-        for (i = 0; rm_paths[i] != NULL; ++i) {
-            *rm = resolve_path(rm_paths[i]);
-            if (*rm != NULL && is_file(*rm) && is_exec(*rm)) {
-                rm_found = true;
-                break;
+
+    if (found_fnamchk != NULL) {
+        if (fnamchk != NULL && *fnamchk != NULL && is_file(*fnamchk) && is_exec(*fnamchk)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *fnamchk = strdup(*fnamchk);
+            if (*fnamchk == NULL) {
+                errp(61, __func__, "strdup(fnamchk)");
+                not_reached();
+            }
+            *found_fnamchk = true;
+        }
+        if (!*found_fnamchk && fnamchk != NULL) {
+            for (i = 0; fnamchk_paths[i] != NULL; ++i) {
+                *fnamchk = resolve_path(fnamchk_paths[i]);
+                if (*fnamchk != NULL) {
+                    *found_fnamchk = true;
+                    break;
+                }
             }
         }
+
+        if (*found_fnamchk) {
+            dbg(DBG_MED, "found fnamchk at: %s", *fnamchk);
+        }
+    } else if (fnamchk != NULL) {
+        *fnamchk = NULL;
     }
 
-    if (rm_found) {
-        dbg(DBG_MED, "found rm at: %s", *rm);
+    if (found_chkentry != NULL) {
+        if (chkentry != NULL && *chkentry != NULL && is_file(*chkentry) && is_exec(*chkentry)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *chkentry = strdup(*chkentry);
+            if (*chkentry == NULL) {
+                errp(63, __func__, "strdup(chkentry) failed");
+                not_reached();
+            }
+            *found_chkentry = true;
+        }
+        if (!*found_chkentry && chkentry != NULL) {
+            for (i = 0; chkentry_paths[i] != NULL; ++i) {
+                /*
+                 * try resolving the path
+                 */
+                *chkentry = resolve_path(chkentry_paths[i]);
+                if (*chkentry != NULL) {
+                    *found_chkentry = true;
+                    break;
+                }
+            }
+        }
+
+        if (*found_chkentry) {
+            dbg(DBG_MED, "found chkentry at: %s", *chkentry);
+        }
+    } else if (chkentry != NULL) {
+        *chkentry = NULL;
+    }
+
+    if (found_make != NULL) {
+        if (make != NULL && *make != NULL && is_file(*make) && is_exec(*make)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *make = strdup(*make);
+            if (*make == NULL) {
+                errp(65, __func__, "strdup(make) failed");
+                not_reached();
+            }
+            *found_make = true;
+        }
+        if (!*found_make && make != NULL) {
+            for (i = 0; make_paths[i] != NULL; ++i) {
+                *make = resolve_path(make_paths[i]);
+                if (*make != NULL) {
+                    *found_make = true;
+                    break;
+                }
+            }
+        }
+
+        if (*found_make) {
+            dbg(DBG_MED, "found make at: %s", *make);
+        }
+    } else if (make != NULL) {
+        *make = NULL;
+    }
+
+    if (found_rm != NULL) {
+        if (rm != NULL && *rm != NULL && is_file(*rm) && is_exec(*rm)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *rm = strdup(*rm);
+            if (*rm == NULL) {
+                errp(67, __func__, "strdup(rm) failed");
+                not_reached();
+            }
+            *found_rm = true;
+        }
+        if (!*found_rm && rm != NULL) {
+            for (i = 0; rm_paths[i] != NULL; ++i) {
+                *rm = resolve_path(rm_paths[i]);
+                if (*rm != NULL) {
+                    *found_rm = true;
+                    break;
+                }
+            }
+        }
+
+        if (*found_rm) {
+            dbg(DBG_MED, "found rm at: %s", *rm);
+        }
+    } else if (rm != NULL) {
+        *rm = NULL;
     }
     return;
 }

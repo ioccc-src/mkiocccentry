@@ -245,6 +245,13 @@ main(int argc, char *argv[])
     RuleCount size;				/* rule_count() processing results */
     int ret;					/* libc return code */
     int i;
+    bool found_tar = false;                     /* for find_utils */
+    bool found_ls = false;                      /* for find_utils */
+    bool found_txzchk = false;                  /* for find_utils */
+    bool found_fnamchk = false;                 /* for find_utils */
+    bool found_chkentry = false;                /* for find_utils */
+    bool found_make = false;                    /* for find_utils */
+    bool found_rm = false;                      /* for find_utils */
 
     /*
      * zeroize info
@@ -456,8 +463,9 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(&tar, &ls, &txzchk, &fnamchk, &chkentry, &make, &rm);
-
+    find_utils(&found_tar, &tar, &found_ls, &ls, &found_txzchk, &txzchk,
+            &found_fnamchk, &fnamchk, &found_chkentry, &chkentry,
+            &found_make, &make, &found_rm, &rm);
 
     /*
      * check that conflicting answers file options are not used together
@@ -3815,6 +3823,10 @@ usage(int exitcode, char const *prog, char const *str)
  *	rm              - path to rm
  *
  * NOTE: This function does not return on error or if things are not sane.
+ *
+ * NOTE: if a pointer to a tool path is NULL it is an error but we let the user
+ * know that they need to use the appropriate option. Thus the firewall check
+ * only checks infop and workdir, not the others.
  */
 static void
 mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, char *ls, char *txzchk, char *fnamchk,
@@ -3823,8 +3835,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * firewall
      */
-    if (infop == NULL || workdir == NULL || tar == NULL || ls == NULL || txzchk == NULL || fnamchk == NULL ||
-            chkentry == NULL || make == NULL || rm == NULL) {
+    if (infop == NULL || workdir == NULL) {
 	err(116, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -3832,7 +3843,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * tar must be executable
      */
-    if (!exists(tar)) {
+    if (tar == NULL || !exists(tar)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the tar program.",
@@ -3847,7 +3858,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(117, __func__, "tar does not exist: %s", tar);
+        if (tar != NULL) {
+	    err(117, __func__, "tar does not exist: %s", tar);
+        } else {
+	    err(117, __func__, "tar does not exist");
+        }
 	not_reached();
     }
     if (!is_file(tar)) {
@@ -3888,7 +3903,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * ls must be executable
      */
-    if (!exists(ls)) {
+    if (ls == NULL || !exists(ls)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the ls program.",
@@ -3903,7 +3918,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(120, __func__, "ls does not exist: %s", ls);
+        if (ls != NULL) {
+            err(120, __func__, "ls does not exist: %s", ls);
+        } else {
+            err(120, __func__, "ls does not exist");
+        }
 	not_reached();
     }
     if (!is_file(ls)) {
@@ -3944,7 +3963,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * txzchk must be executable
      */
-    if (!exists(txzchk)) {
+    if (txzchk == NULL || !exists(txzchk)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find txzchk.",
@@ -3959,7 +3978,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(123, __func__, "txzchk does not exist: %s", txzchk);
+        if (txzchk != NULL) {
+	    err(123, __func__, "txzchk does not exist: %s", txzchk);
+        } else {
+    	    err(123, __func__, "txzchk does not exist");
+        }
 	not_reached();
     }
     if (!is_file(txzchk)) {
@@ -4000,7 +4023,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * fnamchk must be executable
      */
-    if (!exists(fnamchk)) {
+    if (fnamchk == NULL || !exists(fnamchk)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the fnamchk tool.",
@@ -4015,7 +4038,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(126, __func__, "fnamchk does not exist: %s", fnamchk);
+        if (fnamchk != NULL) {
+    	    err(126, __func__, "fnamchk does not exist: %s", fnamchk);
+        } else {
+	    err(126, __func__, "fnamchk does not exist");
+        }
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -4056,7 +4083,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * chkentry must be executable
      */
-    if (!exists(chkentry)) {
+    if (chkentry == NULL || !exists(chkentry)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the chkentry tool.",
@@ -4071,7 +4098,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(130, __func__, "chkentry does not exist: %s", chkentry);
+        if (chkentry != NULL) {
+	    err(130, __func__, "chkentry does not exist: %s", chkentry);
+        } else {
+	    err(130, __func__, "chkentry does not exist");
+        }
 	not_reached();
     }
     if (!is_file(chkentry)) {
@@ -4112,7 +4143,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * make must be executable
      */
-    if (!exists(make)) {
+    if (make == NULL || !exists(make)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the make program.",
@@ -4127,7 +4158,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
 	      "    https://www.gnu.org/software/make/",
 	      "",
 	      NULL);
-	err(133, __func__, "make does not exist: %s", make);
+        if (make != NULL) {
+	    err(133, __func__, "make does not exist: %s", make);
+        } else {
+	    err(133, __func__, "make does not exist");
+        }
 	not_reached();
     }
     if (!is_file(make)) {
@@ -4168,7 +4203,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     /*
      * rm must be executable
      */
-    if (!exists(rm)) {
+    if (rm == NULL || !exists(rm)) {
 	fpara(stderr,
 	      "",
 	      "We cannot find the rm program.",
@@ -4182,7 +4217,11 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
               "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(136, __func__, "rm does not exist: %s", rm);
+        if (rm != NULL) {
+	    err(136, __func__, "rm does not exist: %s", rm);
+        } else {
+	    err(136, __func__, "rm does not exist");
+        }
 	not_reached();
     }
     if (!is_file(rm)) {

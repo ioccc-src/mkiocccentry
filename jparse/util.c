@@ -4282,12 +4282,21 @@ vcmdprintf(char const *fmt, va_list ap)
  * This function does not return on a NULL cmd.
  *
  * If getenv("PATH") returns NULL or an empty string or the command is not found
- * under the path the original cmd is returned, strdup()d.
+ * under the path, if the path (cmd) is not a regular executable file, NULL is
+ * returned; otherwise the original path is returned, strdup()d.
  *
- * Returns a char * which is the path to the executable file or the original
- * cmd if not found; in either case the return value is a strdup()d copy.
+ * If the command is not a regular executable file and $PATH is NULL or empty
+ * then NULL is returned.
+ *
+ * If it is a relative or absolute path and it is both a regular file and
+ * executable then a strdup()d copy of that is returned.
+ *
+ * If nothing is found in $PATH that results in a regular executable file then
+ * NULL is returned.
  *
  * It is the caller's responsibility to free() the returned value.
+ *
+ * This function will not return on error.
  */
 char *
 resolve_path(char const *cmd)
@@ -4309,13 +4318,23 @@ resolve_path(char const *cmd)
      * check if absolute path or if it starts with ./
      */
     if (*cmd == '/' || (*cmd == '.' && cmd[1] == '/')) {
-        errno = 0; /* pre-clear errno for errp() */
-        str = strdup(cmd);
-        if (str == NULL) {
-            errp(144, __func__, "strstr(cmd) returned NULL");
-            not_reached();
+        if (is_file(cmd) && is_exec(cmd)) {
+            /*
+             * return a strdup() copy of the path
+             */
+            errno = 0; /* pre-clear errno for errp() */
+            str = strdup(cmd);
+            if (str == NULL) {
+                errp(144, __func__, "strstr(cmd) returned NULL");
+                not_reached();
+            }
+            return str;
+        } else {
+            /*
+             * no regular executable file here, return NULL
+             */
+            return NULL;
         }
-        return str;
     }
 
     /*
@@ -4324,15 +4343,20 @@ resolve_path(char const *cmd)
     path = getenv("PATH");
     if (path == NULL || *path == '\0') {
         /*
-         * if NULL or empty we will just strdup() the original command
+         * if NULL or empty we will just strdup() the original command, unless
+         * the command is not a regular executable file
          */
-        errno = 0; /* pre-clear errno for errp() */
-        str = strdup(cmd);
-        if (str == NULL) {
-            errp(145, __func__, "strdup(cmd) returned NULL");
-            not_reached();
+        if (is_file(cmd) && is_exec(cmd)) {
+            errno = 0; /* pre-clear errno for errp() */
+            str = strdup(cmd);
+            if (str == NULL) {
+                errp(145, __func__, "strdup(cmd) returned NULL");
+                not_reached();
+            }
+            return str;
+        } else {
+            return NULL;
         }
-        return str;
     }
     /*
      * now duplicate path to tokenise

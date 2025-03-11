@@ -73,6 +73,8 @@
  * function prototypes
  */
 extern void ioccc_sanity_chks(void); /* all *_sanity_chks() functions should call this */
-extern void find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry, char **make, char **rm);
+extern void find_utils(bool *tar_found, char **tar, bool *found_ls, char **ls, bool *found_txzchk,
+        char **txzchk, bool *found_fnamchk, char **fnamchk, bool *found_chkentry, char **chkentry,
+        bool *found_make, char **make, bool *found_rm, char **rm);
 
 #endif /* INCLUDE_SANITY_H */
