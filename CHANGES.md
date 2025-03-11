@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.4.5 2025-03-10
+## Release 2.4.3 2025-03-10
 
 Add `-U UUID` option - resolve #1229.
 
@@ -32,9 +32,6 @@ Add missing `-r` to `rm` in `mkiocccentry_test.sh`.
 
 **IMPORTANT NOTE**: you do NOT need to use this update in order to participate
 in the IOCCC28!
-
-
-## Release 2.4.4 2025-03-09
 
 Resolve some (mostly top priority) issues.
 
@@ -83,9 +80,6 @@ referenced in mkiocccentry.c).
 be invalidated. You do **NOT** need to install or use the updated tools. These
 are for those who want or need (or feel they need) the features (and fixes)
 only.
-
-
-## Release 2.4.3 2025-03-07
 
 Resolve issue #1215.
 
