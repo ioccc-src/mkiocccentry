@@ -116,6 +116,8 @@
 #define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
 #define MAKE_PATH_0 "/usr/bin/make"                 /* default path to make tool */
 #define MAKE_PATH_1 "/bin/make"                     /* in case /usr/bin/make doesn't work */
+#define RM_PATH_0 "/bin/rm"                         /* default path to rm tool */
+#define RM_PATH_1 "/usr/bin/rm"                     /* in case /bin/rm doesn't work */
 
 
 /*

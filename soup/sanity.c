@@ -102,11 +102,14 @@ ioccc_sanity_chks(void)
  *	chkentry	    - if -C chkentry was used and chkentry != NULL set *chkentry to path
  *	make_flag_used      - true ==> -m make was used
  *	make                - if -m make was used and make != NULL set *make to path
+ *	rm_flag_used        - true ==> -r rm was used
+ *	rm                  - if -r rm was used and rm != NULL set *rm to path
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool ls_flag_used,
 	   char **ls, bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
-	   bool chkentry_flag_used, char **chkentry, bool make_flag_used, char **make)
+	   bool chkentry_flag_used, char **chkentry, bool make_flag_used, char **make,
+           bool rm_flag_used, char **rm)
 {
     /*
      * guess where tar and ls utilities are located
@@ -144,7 +147,10 @@ find_utils(bool tar_flag_used, char **tar, bool ls_flag_used,
 	*make = MAKE_PATH_1;
 	dbg(DBG_MED, "using default make path: %s", MAKE_PATH_1);
     }
-
+    if (rm != NULL && !rm_flag_used && !is_exec(RM_PATH_0) && is_exec(RM_PATH_1)) {
+	*rm = RM_PATH_1;
+	dbg(DBG_MED, "using default rm path: %s", RM_PATH_1);
+    }
 
     return;
 }

@@ -220,7 +220,8 @@ if this option is not specified.
 Pass
 .B \-e
 to
-.BR txzchk (1).
+.BR txzchk (1)
+(entertainment mode).
 .TP
 .BI \-f\  feathers
 Pass
@@ -384,6 +385,18 @@ option.
 If the path is a directory
 .BR mkiocccentry (1)
 will not traverse it.
+.TP
+.BI \-r\  rm
+Set path to
+.BR rm (1)
+if
+.B \-x
+used.
+.TP
+.B \-x
+Force delete submission directory if it already exists.
+Use with
+.BR CARE !
 .SH EXIT STATUS
 .TP
 0
