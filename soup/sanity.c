@@ -186,27 +186,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!tar_found && tar != NULL) {
         for (i = 0; tar_paths[i] != NULL; ++i) {
-            if (is_file(tar_paths[i]) && is_exec(tar_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *tar = strdup(tar_paths[i]);
-                if (*tar == NULL) {
-                    errp(56, __func__, "strdup(\"%s\") failed", tar_paths[i]);
-                    not_reached();
-                }
+            *tar = resolve_path(tar_paths[i]);
+            if (*tar != NULL && is_file(*tar) && is_exec(*tar)) {
                 tar_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *tar = resolve_path(tar_paths[i]);
-                if (*tar != NULL) {
-                    tar_found = true;
-                    break;
-                }
             }
         }
     }
@@ -214,6 +197,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     if (tar_found) {
         dbg(DBG_MED, "found tar at: %s", *tar);
     }
+
     if (ls != NULL && *ls != NULL && is_file(*ls) && is_exec(*ls)) {
         /*
          * we have to strdup() it
@@ -228,27 +212,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!ls_found && ls != NULL) {
         for (i = 0; ls_paths[i] != NULL; ++i) {
-            if (is_file(ls_paths[i]) && is_exec(ls_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *ls = strdup(ls_paths[i]);
-                if (*ls == NULL) {
-                    errp(58, __func__, "strdup(\"%s\") failed", ls_paths[i]);
-                    not_reached();
-                }
+            *ls = resolve_path(ls_paths[i]);
+            if (*ls != NULL && is_file(*ls) && is_exec(*ls)) {
                 ls_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *ls = resolve_path(ls_paths[i]);
-                if (*ls != NULL) {
-                    ls_found = true;
-                    break;
-                }
             }
         }
     }
@@ -270,27 +237,13 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!txzchk_found && txzchk != NULL) {
         for (i = 0; txzchk_paths[i] != NULL; ++i) {
-            if (is_file(txzchk_paths[i]) && is_exec(txzchk_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *txzchk = strdup(txzchk_paths[i]);
-                if (*txzchk == NULL) {
-                    errp(60, __func__, "strdup(\"%s\") failed", txzchk_paths[i]);
-                    not_reached();
-                }
+            /*
+             * try resolving the path
+             */
+            *txzchk = resolve_path(txzchk_paths[i]);
+            if (*txzchk != NULL && is_file(*txzchk) && is_exec(*txzchk)) {
                 txzchk_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *txzchk = resolve_path(txzchk_paths[i]);
-                if (*txzchk != NULL) {
-                    txzchk_found = true;
-                    break;
-                }
             }
         }
     }
@@ -312,27 +265,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!fnamchk_found && fnamchk != NULL) {
         for (i = 0; fnamchk_paths[i] != NULL; ++i) {
-            if (is_file(fnamchk_paths[i]) && is_exec(fnamchk_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *fnamchk = strdup(fnamchk_paths[i]);
-                if (*fnamchk == NULL) {
-                    errp(62, __func__, "strdup(\"%s\") failed", fnamchk_paths[i]);
-                    not_reached();
-                }
+            *fnamchk = resolve_path(fnamchk_paths[i]);
+            if (*fnamchk != NULL && is_file(*fnamchk) && is_exec(*fnamchk)) {
                 fnamchk_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *fnamchk = resolve_path(fnamchk_paths[i]);
-                if (*fnamchk != NULL) {
-                    fnamchk_found = true;
-                    break;
-                }
             }
         }
     }
@@ -355,27 +291,13 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!chkentry_found && chkentry != NULL) {
         for (i = 0; chkentry_paths[i] != NULL; ++i) {
-            if (is_file(chkentry_paths[i]) && is_exec(chkentry_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *chkentry = strdup(chkentry_paths[i]);
-                if (*chkentry == NULL) {
-                    errp(64, __func__, "strdup(\"%s\") failed", chkentry_paths[i]);
-                    not_reached();
-                }
+            /*
+             * try resolving the path
+             */
+            *chkentry = resolve_path(chkentry_paths[i]);
+            if (*chkentry != NULL &&  is_file(*chkentry) && is_exec(*chkentry)) {
                 chkentry_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *chkentry = resolve_path(chkentry_paths[i]);
-                if (*chkentry != NULL) {
-                    chkentry_found = true;
-                    break;
-                }
             }
         }
     }
@@ -397,27 +319,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!make_found && make != NULL) {
         for (i = 0; make_paths[i] != NULL; ++i) {
-            if (is_file(make_paths[i]) && is_exec(make_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *make = strdup(make_paths[i]);
-                if (*make == NULL) {
-                    errp(66, __func__, "strdup(\"%s\") failed", make_paths[i]);
-                    not_reached();
-                }
+            *make = resolve_path(make_paths[i]);
+            if (*make != NULL && is_file(*make) && is_exec(*make)) {
                 make_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *make = resolve_path(make_paths[i]);
-                if (*make != NULL) {
-                    make_found = true;
-                    break;
-                }
             }
         }
     }
@@ -440,27 +345,10 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
     }
     if (!rm_found && rm != NULL) {
         for (i = 0; rm_paths[i] != NULL; ++i) {
-            if (is_file(rm_paths[i]) && is_exec(rm_paths[i])) {
-                /*
-                 * we have to strdup() it
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                *rm = strdup(rm_paths[i]);
-                if (*rm == NULL) {
-                    errp(68, __func__, "strdup(\"%s\") failed", rm_paths[i]);
-                    not_reached();
-                }
+            *rm = resolve_path(rm_paths[i]);
+            if (*rm != NULL && is_file(*rm) && is_exec(*rm)) {
                 rm_found = true;
                 break;
-            } else {
-                /*
-                 * try resolving the path
-                 */
-                *rm = resolve_path(rm_paths[i]);
-                if (*rm != NULL) {
-                    rm_found = true;
-                    break;
-                }
             }
         }
     }

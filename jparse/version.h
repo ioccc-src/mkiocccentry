@@ -23,7 +23,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
  *
- * This JSON parser and all the tools were co-developed in 2022-205 by Cody
+ * This JSON parser, library and tools were co-developed in 2022-2025 by Cody
  * Boone Ferguson and Landon Curt Noll:
  *
  *  @xexyl
