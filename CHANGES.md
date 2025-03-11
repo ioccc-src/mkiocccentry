@@ -46,6 +46,13 @@ Rather than directly put in `true` in the writing of the .info.json file, force
 set `first_rule_is_all` to `true` in `mkiocccentry(1)` and reference that
 boolean in the writing of the .info.json file.
 
+Changed `MIN_MKIOCCCENTRY_VERSION` to `"2.0.1 2025-03-02"`
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.2 2025-03-11"`.
+Changed `MIN_TXZCHK_VERSION` to `"2.0.1 2025-03-02"`.
+Updated `TXZCHK_VERSION` to `"2.0.2 2025-03-11"`.
+Changed `MIN_CHKENTRY_VERSION` to `"2.0.1 2025-03-02"`.
+Updated `CHKENTRY_VERSION` to `"2.0.2 2025-03-11"`.
+
 Resolve issue #1229.  Add `-U UUID` to `mkiocccentry(1)` to set the username.
 
 Also fixed an error with `-u uuidfile` where it would not set the `test` boolean
