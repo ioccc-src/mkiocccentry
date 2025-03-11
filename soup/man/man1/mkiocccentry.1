@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "08 March 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "10 March 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -297,11 +297,34 @@ This option implies
 and disables some messages as well.
 However you will still be prompted to verify files and directories are okay.
 .TP
-.BI \-u\  uuid
+.BI \-u\  uuidfile
 Read UUID from a text file.
-If this file cannot be read or does not have a valid UUID
+If this file cannot be read or does not have a valid UUID by itself,
 .BR mkiocccentry (1)
 will prompt you as usual.
+This option cannot be used with
+.BI \-U\  UUID
+or
+.BI \-s\  seed
+or
+.BI \-i\  answers
+or
+.BR \-d .
+.TP
+.BI \-U\  UUID
+Set UUID to
+.IR UUID .
+If this an invalid UUID
+.BR mkiocccentry (1)
+will prompt you as usual.
+This option cannot be used with
+.BI \-u\  uuidfile
+or
+.BI \-s\  seed
+or
+.BI \-i\  answers
+or
+.BR \-d .
 .TP
 .BI \-s\  seed
 Generate pseudo-random answers to the questions

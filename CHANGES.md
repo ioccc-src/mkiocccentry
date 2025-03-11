@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.5 2025-03-10
+
+Add `-U UUID` option - resolve #1229.
+
+Also fixed an error with `-u uuidfile` where it would not set the `test` boolean
+to true if the UUID was `"true"`.
+
+The `-u uuidfile` and `-U UUID` options may not be used with `-i answers`, `-d`
+or `-s seed`.
+
+Updated man page for the above changes.
+
+**IMPORTANT NOTE**: you do NOT need to use this update in order to participate
+in the IOCCC28!
+
+
 ## Release 2.4.4 2025-03-09
 
 Resolve some (mostly top priority) issues.
