@@ -181,7 +181,7 @@ main(int argc, char **argv)
 	if (1 < verbosity_level && 0 < count.char_warning) {
 		iocccsize_warnx("Warning: character(s) with high bit set found! Be careful you don't violate rule 13!");
 	}
-	if (count.nul_warning) {
+        if (1 < verbosity_level && count.nul_warning) {
 		iocccsize_warnx("Warning: NUL character(s) found! Be careful you don't violate rule 13!");
 	}
 	if (count.trigraph_warning) {

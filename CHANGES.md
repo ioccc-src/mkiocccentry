@@ -14,6 +14,14 @@ directory.
 
 Sync copyright fixes from jparse.
 
+Force set `nul_warning` to false in `mkiocccentry(1)` and disable checking of
+it in `chkentry(1)`. Post IOCCC28 it will be removed from struct info, the
+.info.json files and chkentry(1) that checks it.
+
+Rather than directly put in `true` in the writing of the .info.json file, force
+set `first_rule_is_all` to `true` in `mkiocccentry(1)` and reference that
+boolean in the writing of the .info.json file.
+
 
 ## Release 2.4.3 2025-03-10
 
