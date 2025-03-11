@@ -205,7 +205,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *ls = strdup(*ls);
         if (*ls == NULL) {
-            errp(57, __func__, "strdup(ls) failed");
+            errp(56, __func__, "strdup(ls) failed");
             not_reached();
         }
         ls_found = true;
@@ -230,7 +230,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *txzchk = strdup(*txzchk);
         if (*txzchk == NULL) {
-            errp(59, __func__, "strdup(txzchk) failed");
+            errp(57, __func__, "strdup(txzchk) failed");
             not_reached();
         }
         txzchk_found = true;
@@ -258,7 +258,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *fnamchk = strdup(*fnamchk);
         if (*fnamchk == NULL) {
-            errp(61, __func__, "strdup(fnamchk)");
+            errp(58, __func__, "strdup(fnamchk)");
             not_reached();
         }
         fnamchk_found = true;
@@ -284,7 +284,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *chkentry = strdup(*chkentry);
         if (*chkentry == NULL) {
-            errp(63, __func__, "strdup(chkentry) failed");
+            errp(59, __func__, "strdup(chkentry) failed");
             not_reached();
         }
         chkentry_found = true;
@@ -312,7 +312,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *make = strdup(*make);
         if (*make == NULL) {
-            errp(65, __func__, "strdup(make) failed");
+            errp(60, __func__, "strdup(make) failed");
             not_reached();
         }
         make_found = true;
@@ -338,7 +338,7 @@ find_utils(char **tar, char **ls, char **txzchk, char **fnamchk, char **chkentry
         errno = 0; /* pre-clear errno for errp */
         *rm = strdup(*rm);
         if (*rm == NULL) {
-            errp(67, __func__, "strdup(rm) failed");
+            errp(61, __func__, "strdup(rm) failed");
             not_reached();
         }
         rm_found = true;
