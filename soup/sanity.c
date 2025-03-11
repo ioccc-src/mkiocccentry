@@ -238,7 +238,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *ls = strdup(*ls);
             if (*ls == NULL) {
-                errp(57, __func__, "strdup(ls) failed");
+                errp(56, __func__, "strdup(ls) failed");
                 not_reached();
             }
             *found_ls = true;
@@ -267,7 +267,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *txzchk = strdup(*txzchk);
             if (*txzchk == NULL) {
-                errp(59, __func__, "strdup(txzchk) failed");
+                errp(57, __func__, "strdup(txzchk) failed");
                 not_reached();
             }
             *found_txzchk = true;
@@ -300,7 +300,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *fnamchk = strdup(*fnamchk);
             if (*fnamchk == NULL) {
-                errp(61, __func__, "strdup(fnamchk)");
+                errp(58, __func__, "strdup(fnamchk)");
                 not_reached();
             }
             *found_fnamchk = true;
@@ -330,7 +330,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *chkentry = strdup(*chkentry);
             if (*chkentry == NULL) {
-                errp(63, __func__, "strdup(chkentry) failed");
+                errp(59, __func__, "strdup(chkentry) failed");
                 not_reached();
             }
             *found_chkentry = true;
@@ -363,7 +363,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *make = strdup(*make);
             if (*make == NULL) {
-                errp(65, __func__, "strdup(make) failed");
+                errp(60, __func__, "strdup(make) failed");
                 not_reached();
             }
             *found_make = true;
@@ -393,7 +393,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *rm = strdup(*rm);
             if (*rm == NULL) {
-                errp(67, __func__, "strdup(rm) failed");
+                errp(61, __func__, "strdup(rm) failed");
                 not_reached();
             }
             *found_rm = true;
