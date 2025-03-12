@@ -336,14 +336,12 @@ main(int argc, char *argv[])
               */
             need_confirm = false;
              /*
-              * set answer_yes to prevent problem where a user might have a
-              * different file set
+              * set answer_yes for things like author details
               */
             answer_yes = true;
             need_hints = false;
             silence_prompt = true;
 	    answers = optarg;
-            answer_yes = true;
 	    break;
 	case 'W':		/* -W ignores all warnings (this does NOT the judges will! :) ) */
 	    ignore_warnings = true;
@@ -453,15 +451,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * guess where tar, ls, txzchk, fnamchk and make utilities are located
-     *
-     * If the user did not give a -t, -c, -l and/or -m /path/to/foo path, then
-     * look at the historic location (except for make(1)) for the utility.  If
-     * the historic location of the utility isn't executable, look for an
-     * executable in the alternate location.
-     *
-     * On some systems where /usr/bin != /bin, the distribution made the mistake of
-     * moving historic critical applications, look to see if the alternate path works instead.
+     * find utilities we need.
      */
     find_utils(&found_tar, &tar, &found_ls, &ls, &found_txzchk, &txzchk,
             &found_fnamchk, &fnamchk, &found_chkentry, &chkentry,
