@@ -55,6 +55,11 @@
  */
 #include "fnamchk.h"
 
+/*
+ * location - location/country codes
+ */
+#include "../soup/location.h"
+
 
 /*
  * definitions
@@ -127,7 +132,7 @@ main(int argc, char *argv[])
     bool ignore_timestamp = false; /* true ==> ignore timestamp check result (for testing purposes) */
 
     /* IOCCC requires use of C locale */
-    (void) setlocale(LC_ALL, "C");
+    set_ioccc_locale();
 
     /*
      * parse args

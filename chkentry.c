@@ -653,7 +653,7 @@ main(int argc, char *argv[])
     bool found_Makefile = false;        /* true ==> Makefile found */
 
     /* IOCCC requires use of C locale */
-    (void) setlocale(LC_ALL, "C");
+    set_ioccc_locale();
 
     /*
      * we MUST take care of this first before we parse args because not only

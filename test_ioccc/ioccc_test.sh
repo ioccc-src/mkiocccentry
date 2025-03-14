@@ -44,9 +44,20 @@ export IOCCC_TEST_VERSION="2.0.1 2025-03-14"
 
 # IOCCC requires use of C locale
 #
-export LC_ALL="C"
 export LANG="C"
+export LC_CTYPE="C"
 export LC_NUMERIC="C"
+export LC_TIME="C"
+export LC_COLLATE="C"
+export LC_MONETARY="C"
+export LC_MESSAGES="C"
+export LC_PAPER="C"
+export LC_NAME="C"
+export LC_ADDRESS="C"
+export LC_TELEPHONE="C"
+export LC_MEASUREMENT="C"
+export LC_IDENTIFICATION="C"
+export LC_ALL="C"
 
 
 # attempt to fetch system specific path to the tools we need

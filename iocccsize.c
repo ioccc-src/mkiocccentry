@@ -69,6 +69,7 @@
  */
 #include "soup/iocccsize_err.h"
 #include "soup/limit_ioccc.h"
+#include "soup/location.h"
 #else /* MKIOCCCENTRY_USE */
 #include "iocccsize_err.h"
 #endif /* MKIOCCCENTRY_USE */
@@ -110,8 +111,10 @@ main(int argc, char **argv)
 	RuleCount count;		/* rule_count() processing results */
 	int ch;
 
+#if defined(MKIOCCCENTRY_USE)
 	/* IOCCC requires use of C locale */
-	(void) setlocale(LC_ALL, "C");
+	set_ioccc_locale();
+#endif /* MKIOCCCENTRY_USE */
 
 	while ((ch = getopt(argc, argv, "6ihv:aV")) != -1) {
 		switch (ch) {

@@ -43,6 +43,7 @@
 #    define  INCLUDE_LOCATION_H
 
 #include <ctype.h>
+#include <locale.h>
 
 
 /*
@@ -98,5 +99,6 @@ extern char const *lookup_location_name_r(char const *code, size_t *idx, struct 
 extern char const *lookup_location_code_r(char const *location_name, size_t *idx, struct location **location,
 					  bool substrings, bool use_common);
 extern bool location_code_name_match(char const *code, char const *location_name, bool use_common);
+extern void set_ioccc_locale(void);
 
 #endif				/* INCLUDE_LOCATION_H */

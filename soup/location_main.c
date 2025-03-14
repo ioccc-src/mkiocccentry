@@ -121,7 +121,7 @@ main(int argc, char **argv)
     int i;
 
     /* IOCCC requires use of C locale */
-    (void) setlocale(LC_ALL, "C");
+    set_ioccc_locale();
 
     /*
      * parse args

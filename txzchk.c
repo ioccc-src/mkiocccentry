@@ -165,7 +165,7 @@ main(int argc, char **argv)
     bool found_fnamchk = false;                 /* for find_utils */
 
     /* IOCCC requires use of C locale */
-    (void) setlocale(LC_ALL, "C");
+    set_ioccc_locale();
 
     /*
      * parse args

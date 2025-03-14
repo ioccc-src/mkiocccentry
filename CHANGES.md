@@ -18,7 +18,10 @@ Submissions made under "_Release 2.4.3 2025-03-11_" remain valid for **IOCCC28**
 
 **RELEASE DETAILS FOLLOW**:
 
-Set locale to C as required by IOCCC.
+Set locale to C as required by the IOCCC.
+
+See the "programmers apology" of the `set_ioccc_locale()` function in `soup/location_util.c`
+for more details.
 
 Updated `MKIOCCCENTRY_VERSION` to "2.0.3 2025-03-14".
 Updated `FNAMCHK_VERSION` to "2.0.1 2025-03-14".
