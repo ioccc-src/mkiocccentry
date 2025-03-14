@@ -48,6 +48,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdint.h>
+#include <locale.h>
 
 /*
  * fnamchk - IOCCC compressed tarball filename sanity check tool
@@ -125,6 +126,8 @@ main(int argc, char *argv[])
     char *saveptr = NULL;	/* for strtok_r() */
     bool ignore_timestamp = false; /* true ==> ignore timestamp check result (for testing purposes) */
 
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
 
     /*
      * parse args

@@ -55,6 +55,14 @@
 
 # setup
 
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
+
 # attempt to fetch system specific path to the tool (tar) we need
 #
 # get tar path
@@ -74,7 +82,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="2.0.0 2025-02-28"
+export TXZCHK_TEST_VERSION="2.0.1 2025-03-14"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"

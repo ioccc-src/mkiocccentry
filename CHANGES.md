@@ -1,6 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.4 2025-03-14
+
+**IMPORTANT NOTE**:
+
+While you are **NOT** required to use this release in order to submit to **IOCCC28**,
+we do **RECOMMEND** that you use and install this release of the mkiocccentry toolkit.
+
+**BACKWARD COMPATIBILITY**:
+
+This release is backward compatible with both "_Release 2.4.2 2025-03-02_".
+This release is backward compatible with both "_Release 2.4.3 2025-03-11_".
+
+Submissions made under "_Release 2.4.2 2025-03-02_" remain valid for **IOCCC28**.
+Submissions made under "_Release 2.4.3 2025-03-11_" remain valid for **IOCCC28**.
+
+**RELEASE DETAILS FOLLOW**:
+
+Set locale to C as required by IOCCC.
+
+Updated `MKIOCCCENTRY_VERSION` to "2.0.3 2025-03-14".
+Updated `FNAMCHK_VERSION` to "2.0.1 2025-03-14".
+Maintain `MIN_FNAMCHK_VERSION` as "2.0.0 2025-02-28".
+Updated `TXZCHK_VERSION` to "2.0.3 2025-03-14"
+Updated `CHKENTRY_VERSION` to "2.0.3 2025-03-14".
+
+
 ## Release 2.4.3 2025-03-11
 
 **IMPORTANT NOTE**:

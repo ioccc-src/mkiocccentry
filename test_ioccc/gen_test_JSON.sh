@@ -31,7 +31,7 @@
 
 # setup
 #
-export VERSION="1.0.2 2025-03-07"
+export VERSION="1.0.3 2025-03-14"
 NAME=$(basename "$0")
 export NAME
 export V_FLAG=0
@@ -60,6 +60,14 @@ else
     VERSION_H="../soup/version.h"
 fi
 export VERSION_H
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [template_tree [test_JSON]]
 

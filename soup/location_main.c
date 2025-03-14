@@ -45,6 +45,7 @@
 
 
 #include <unistd.h>
+#include <locale.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -118,6 +119,9 @@ main(int argc, char **argv)
     bool found = false;		/* true if nothing found */
     bool use_common = false;	/* true ==> use common name, false ==> use official name */
     int i;
+
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
 
     /*
      * parse args

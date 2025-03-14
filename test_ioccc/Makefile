@@ -64,6 +64,15 @@ SHELLCHECK= shellcheck
 SORT= sort
 
 
+##########
+# locale #
+##########
+
+LC_ALL= C
+LANG= C
+LC_NUMERIC= C
+
+
 ####################
 # Makefile control #
 ####################

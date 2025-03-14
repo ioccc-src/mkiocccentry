@@ -50,6 +50,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <locale.h>
 
 /*
  * chkentry - check JSON files in an IOCCC submission
@@ -651,7 +652,8 @@ main(int argc, char *argv[])
     bool found_remarks = false;         /* true ==> remarks.md found */
     bool found_Makefile = false;        /* true ==> Makefile found */
 
-
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
 
     /*
      * we MUST take care of this first before we parse args because not only

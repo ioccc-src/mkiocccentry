@@ -74,6 +74,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <sys/wait.h>	/* for WEXITSTATUS() */
+#include <locale.h>
 
 /*
  * txzchk - IOCCC tarball validation check tool
@@ -162,6 +163,9 @@ main(int argc, char **argv)
     int i;
     bool found_tar = false;                     /* for find_utils */
     bool found_fnamchk = false;                 /* for find_utils */
+
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
 
     /*
      * parse args

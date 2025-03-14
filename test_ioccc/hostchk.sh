@@ -83,7 +83,7 @@ CC="$(type -P cc 2>/dev/null)"
 if [[ -z $CC ]]; then
     CC="/usr/bin/cc"
 fi
-export HOSTCHK_VERSION="2.0.0 2025-02-28"
+export HOSTCHK_VERSION="2.0.1 2025-03-14"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w workdir] [-f] [-Z topdir]
 
     -h			    Print help and exit
@@ -108,6 +108,14 @@ hostchk.sh version: $HOSTCHK_VERSION"
 
 export EXIT_CODE=0
 export TOPDIR=
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 # parse args
 #

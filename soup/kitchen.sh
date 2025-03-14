@@ -12,6 +12,14 @@
 # very tired at the time, one word as 'soup', when discussing decreasing the
 # number of files in the top level directory (thus the name of this directory).
 
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
+
 echo "Welcome to the IOCCC Soup Kitchen!" 1>&2
 echo 1>&2
 

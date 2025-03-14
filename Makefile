@@ -79,6 +79,16 @@ TEE= tee
 TR= tr
 
 
+##########
+# locale #
+##########
+
+LC_ALL= C
+LANG= C
+LC_NUMERIC= C
+
+
+
 ####################
 # Makefile control #
 ####################

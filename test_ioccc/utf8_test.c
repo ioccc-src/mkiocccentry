@@ -15,7 +15,7 @@
  *
  *	^[0-9A-Za-z][0-9A-Za-z._+-]*$*
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2022,2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -52,6 +52,7 @@
 #include <strings.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <locale.h>
 
 
 /*
@@ -124,6 +125,9 @@ main(int argc, char *argv[])
     char *name = NULL;			/* translated name argument */
     int ret;				/* libc return code */
     int i;
+
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
 
     /*
      * parse args

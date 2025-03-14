@@ -78,6 +78,12 @@ export TOOLS="
     ./txzchk
     "
 
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 # we need this to find overriding Makefile.local in all directories to see if
 # the user is overriding any Makefile. As well, we check if the directory even
 # is searchable and has a Makefile.
@@ -96,7 +102,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.9 2025-02-27"
+export BUG_REPORT_VERSION="1.0.10 2025-03-14"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

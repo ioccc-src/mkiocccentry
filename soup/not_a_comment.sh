@@ -40,12 +40,19 @@
 
 # setup
 #
-export VERSION="1.0 2025-01-03"
+export VERSION="1.0.1 2025-03-14"
 NAME=$(basename "$0")
 export NAME
 #
 export V_FLAG=0
 export EXIT_CODE=0
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
 
 
 # usage

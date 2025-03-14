@@ -54,7 +54,7 @@ export EXIT_CODE=0
 export INVALID_DIRECTORY_FOUND=""
 export SLOT_TREE="./test_ioccc/slot"
 
-export CHKENTRY_TEST_VERSION="2.0.0 2025-02-28"
+export CHKENTRY_TEST_VERSION="2.0.1 2025-03-14"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c chkentry] [-d slot_tree]
 
@@ -81,6 +81,14 @@ Exit codes:
  >= 10   internal error
 
 chkentry_test.sh version: $CHKENTRY_TEST_VERSION"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 # parse args
 #

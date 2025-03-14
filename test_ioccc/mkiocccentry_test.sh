@@ -20,6 +20,13 @@
 #
 
 
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
+
 # get tar path
 TAR="$(type -P tar 2>/dev/null)"
 # Make sure TAR is set:
@@ -76,7 +83,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="2.0.1 2025-03-10"
+export MKIOCCCENTRY_TEST_VERSION="2.0.2 2025-03-14"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit

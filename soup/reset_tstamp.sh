@@ -12,7 +12,7 @@
 # Yes, we make it very hard to run this script for good reason.  Only IOCCC
 # judges can perform ALL the steps needed to complete this action.
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022,2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation for any purpose and without fee is hereby granted, provided that
@@ -39,7 +39,7 @@
 
 # setup
 #
-export RESET_TSTAMP_VERSION="1.0.2 2024-05-18"
+export RESET_TSTAMP_VERSION="1.0.3 2025-03-14"
 export LIMIT_IOCCC_H="./soup/limit_ioccc.h"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
@@ -58,6 +58,14 @@ Exit codes:
 reset_tstamp.sh version: $RESET_TSTAMP_VERSION"
 
 export V_FLAG="0"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 # parse args
 #

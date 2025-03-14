@@ -83,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.3 2025-03-11"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.4 2025-03-14"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -94,13 +94,13 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.15 2024-06-27"	/* format: major.minor YYYY-MM-DD */
-#define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
+#define IOCCCSIZE_VERSION "28.16 2025-03-14"	/* format: major.minor YYYY-MM-DD */
+#define MIN_IOCCCSIZE_VERSION "28.15 2024-06-27"
 
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.0.3 2025-03-14"	/* format: major.minor YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -120,19 +120,19 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
-#define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
+#define FNAMCHK_VERSION "2.0.1 2025-03-14"	/* format: major.minor YYYY-MM-DD */
+#define MIN_FNAMCHK_VERSION "2.0.0 2025-02-28"
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.3 2025-03-14"	/* format: major.minor YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION "2.0.1 2025-03-02"
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.0.2 2025-03-11"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.0.3 2025-03-14"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION "2.0.1 2025-03-02"
 
 /*

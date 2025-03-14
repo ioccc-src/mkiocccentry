@@ -16,11 +16,19 @@
 #
 # Share and enjoy! :-)
 
-export VERSION="1.1.1 2024-10-01"
+export VERSION="1.1.2 2025-03-14"
 NAME=$(basename "$0")
 export NAME
 export PRINT_WHERE=""
 export V_FLAG="0"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-w] tool
 

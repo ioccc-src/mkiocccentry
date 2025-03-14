@@ -61,6 +61,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <locale.h>
 
 #if defined(MKIOCCCENTRY_USE)
 /*
@@ -108,6 +109,9 @@ main(int argc, char **argv)
 	FILE *fp = stdin;		/* stream from which to determine sizes */
 	RuleCount count;		/* rule_count() processing results */
 	int ch;
+
+	/* IOCCC requires use of C locale */
+	(void) setlocale(LC_ALL, "C");
 
 	while ((ch = getopt(argc, argv, "6ihv:aV")) != -1) {
 		switch (ch) {

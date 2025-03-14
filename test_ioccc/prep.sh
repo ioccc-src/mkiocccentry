@@ -42,7 +42,7 @@
 export FAILURE_SUMMARY=
 export SKIPPED_SUMMARY=
 export LOGFILE=
-export PREP_VERSION="1.0.5 2025-01-03"
+export PREP_VERSION="1.0.5 2025-03-14"
 export NOTICE_COUNT="0"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile] [-l logfile]
 
@@ -65,6 +65,14 @@ Exit codes:
  >= 10   some make action exited non-zero
 
 prep.sh version: $PREP_VERSION"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 export MAKE="make"
 export MAKEFILE="./Makefile"

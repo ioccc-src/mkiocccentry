@@ -92,6 +92,7 @@
 #include <sys/wait.h> /* for WEXITSTATUS() */
 #include <fcntl.h> /* for open() */
 #include <fts.h>
+#include <locale.h>
 
 /*
  * mkiocccentry - form IOCCC entry compressed tarball
@@ -253,6 +254,9 @@ main(int argc, char *argv[])
     bool found_make = false;                    /* for find_utils */
     bool found_rm = false;                      /* for find_utils */
 
+    /* IOCCC requires use of C locale */
+    (void) setlocale(LC_ALL, "C");
+
     /*
      * zeroize info
      */
@@ -261,7 +265,6 @@ main(int argc, char *argv[])
      * zeroize auth
      */
     memset(&auth, 0, sizeof(auth));
-
 
     /*
      * even though these stat structs are in file scope, make sure they are

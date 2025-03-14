@@ -27,7 +27,7 @@
 export V_FLAG="0"
 export JSEMTBLGEN="../jparse/jsemtblgen"
 export JSEMCGEN_SH="../jparse/jsemcgen.sh"
-export ALL_SEM_REF_VERSION="1.2 2023-02-04"
+export ALL_SEM_REF_VERSION="1.2.1 2023-03-14"
 
 export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] info.head.c info.tail.c info.head.h
 	info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
@@ -64,6 +64,14 @@ Exit codes:
  >= 10	    internal error
 
 all_sem_ref.sh version: $ALL_SEM_REF_VERSION"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 # parse args
 #

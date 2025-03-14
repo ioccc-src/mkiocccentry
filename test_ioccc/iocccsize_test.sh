@@ -6,7 +6,7 @@
 #
 # Public Domain 1992, 2015, 2019 by Anthony Howe.  All rights released.
 #
-# IOCCC mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
+# IOCCC mods in 2019,2021,2022,2025 by chongo (Landon Curt Noll) ^oo^
 #
 # ***
 # *** NOTE when editing this file it contains UTF8 multibyte characters.
@@ -23,7 +23,15 @@ export EXIT_CODE=0
 export IOCCCSIZE_ARGS="-v 1 --"
 export V_FLAG=0
 export TOPDIR=
-export TEST_IOCCCSIZE_VERSION="1.4 2023-02-04"
+export TEST_IOCCCSIZE_VERSION="1.4.1 2025-03-14"
+
+
+# IOCCC requires use of C locale
+#
+export LC_ALL="C"
+export LANG="C"
+export LC_NUMERIC="C"
+
 
 export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w workdir] [-l limit] [-Z topdir] [-I iocccsize_args]
 
