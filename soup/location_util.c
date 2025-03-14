@@ -507,13 +507,13 @@ location_code_name_match(char const *code, char const *location_name, bool use_c
  * support for valid UTC-8 encoding of Unicode control points, so that people may specify
  * things such as their name, submission abstract, affiliation, etc. as well as having
  * the official IOCCC web site under https://www.ioccc.org all using and supporting valid UTF-8
- * encodings for Unicode control points: the first C in IOCCC stands for C.  :-)
+ * encoding for Unicode control points: the first C in IOCCC stands for C.  :-)
  * Therefore the IOCCC will use the C locale as common contest wide locale for the IOCCC.
  *
  * The Open Group Base Specifications Issue 7, 2018 edition IEEE Std 1003.1-2017
  * (Revision of IEEE Std 1003.1-2008) may be found in:
  *
- *     https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_02
+ *     https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap08.html#tag_08_02
  *
  * And while a careful reading of that spec may say otherwise, experience and practice shows
  * that just calling:
