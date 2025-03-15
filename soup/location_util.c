@@ -496,9 +496,9 @@ location_code_name_match(char const *code, char const *location_name, bool use_c
 /*
  * set_ioccc_locale - set the contest wide locale for the IOCCC
  *
- * ********************* *
- * A programmers apology *
- * ********************* *
+ * ********************** *
+ * A programmer's apology *
+ * #********************* *
  *
  * We need to establish a content wide locale for the IOCCC to help ensure consistently
  * across the contents, the web site, the submit server, and the mkiocccentry toolkit.
@@ -556,14 +556,14 @@ set_ioccc_locale(void)
     /*
      * IOCCC requires use of C locale
      *
-     * See also the programmers apology above.
+     * See also the "programmer's apology" above.
      */
     (void) setlocale(LC_ALL, "C");
 
    /*
     * workaround locale bogons often found elsewhere
     *
-    * See also the programmers apology above.
+    * See also the "programmer's apology" above.
     */
     (void)  setenv("LANG", "C", 1);
     (void)  setenv("LC_CTYPE", "C", 1);
