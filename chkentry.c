@@ -96,7 +96,7 @@ static const char * const usage_msg =
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-i path\t\tadd path to (to file or directory) under directory to check\n"
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
-    "\t-P\t\tIgnore permissions\n"
+    "\t-P\t\tignore permissions\n"
     "\t-w\t\twinning entry checks\n"
     "\n"
     "Exit codes:\n"
