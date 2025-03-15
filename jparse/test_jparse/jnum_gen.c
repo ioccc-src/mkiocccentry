@@ -50,6 +50,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <locale.h>
 
 /*
  * jnum_gen - generate JSON number string conversion test data
@@ -124,6 +125,11 @@ main(int argc, char *argv[])
     bool moved = false;		/* true ==> realloc() moved data */
     intmax_t linenum = 0;	/* readline_buf number from filename */
     int i;
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
 
     /*
      * parse args

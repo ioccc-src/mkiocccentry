@@ -47,6 +47,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <locale.h>
 
 /*
  * jparse_main - tool that parses a block of JSON input
@@ -105,6 +106,11 @@ main(int argc, char **argv)
     int i;
 
     /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
+
+    /*
      * parse args
      */
     program = argv[0];
@@ -138,7 +144,7 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version strings and exit */
-	    print("%s version: %s\n", JPARSE_BASENAME, JPARSE_VERSION);
+	    print("%s version: %s\n", JPARSE_BASENAME, JPARSE_TOOL_VERSION);
 	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
@@ -250,7 +256,7 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
     fprintf_usage(exitcode, stderr, usage_msg, prog,
-		  DBG_DEFAULT, JSON_DBG_DEFAULT, JPARSE_BASENAME, JPARSE_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
+		  DBG_DEFAULT, JSON_DBG_DEFAULT, JPARSE_BASENAME, JPARSE_TOOL_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION,
                   JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

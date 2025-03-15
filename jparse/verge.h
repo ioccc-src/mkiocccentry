@@ -71,7 +71,7 @@
 /*
  * official verge tool version
  */
-#define VERGE_VERSION "2.0.1 2025-03-07"		/* format: major.minor YYYY-MM-DD */
+#define VERGE_VERSION "2.0.2 2025-03-15"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

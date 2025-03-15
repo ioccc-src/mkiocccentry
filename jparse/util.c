@@ -8655,8 +8655,8 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * check for invalid negative values
      */
     inv_value = ~value;
-    if (value < 0) {
-	dbg(DBG_HIGH, "sum_and_count value argument < 0: value %jd < 0", value);
+    if (inv_value < 0) {
+	dbg(DBG_HIGH, "sum_and_count inv_value argument < 0: inv_value %jd < 0", inv_value);
 	return false;
     }
 
@@ -9178,6 +9178,9 @@ check_invalid_option(char const *prog, int ch, int opt)
 }
 
 #if defined(UTIL_TEST)
+
+#include <locale.h>
+
 /*
  * jparse - JSON library
  */
@@ -9193,7 +9196,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "2.0.2 2025-03-09" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "2.0.3 2025-03-15" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -9225,6 +9228,13 @@ main(int argc, char **argv)
     uintmax_t j = 0; /* for arrays */
     intmax_t idx = 0; /* for find_path_in_array() */
     struct fts fts; /* for read_fts(), find_path() and find_paths() */
+
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
+
 
     /*
      * parse args

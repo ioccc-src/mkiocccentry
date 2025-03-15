@@ -59,6 +59,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <locale.h>
+
 #include "../util.h"
 #include "../jparse.h"
 
@@ -126,6 +128,11 @@ main(int argc, char *argv[])
     int vprint_test_cnt = 0;	/* error count from vprint_test() */
     int pr_jparse_test_cnt = 0;	/* error count from pr_jparse_test() */
     int i;
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
 
     /*
      * open a write stream to /dev/null

@@ -427,12 +427,9 @@ main(int argc, char **argv)
     char *dup_input = NULL;	/* duplicate of input w/o newlines */
 
     /*
-     * set locale
+     * use default locale based on LANG
      */
-    if (setlocale(LC_ALL, "") == NULL) {
-	err(12, __func__, "failed to set locale");
-	not_reached();
-    }
+    (void) setlocale(LC_ALL, "");
 
     /*
      * parse args
@@ -570,7 +567,7 @@ main(int argc, char **argv)
 		 */
 		dup_input = dup_without_nl(input, &inputlen);
 		if (dup_input == NULL) {
-		    err(13, __func__, "dup_without_nl failed");
+		    err(12, __func__, "dup_without_nl failed");
 		    not_reached();
 		}
 

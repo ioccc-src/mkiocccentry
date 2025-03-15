@@ -51,6 +51,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <math.h>
+#include <locale.h>
 
 /*
  * jnum_chk - tool to check JSON number string conversions
@@ -116,6 +117,11 @@ main(int argc, char *argv[])
     size_t len = 0;		/* length of str */
     int arg_count = 0;		/* number of args to process */
     int i;
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
 
     /*
      * parse args
