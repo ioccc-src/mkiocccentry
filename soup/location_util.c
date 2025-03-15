@@ -548,7 +548,7 @@ location_code_name_match(char const *code, char const *location_name, bool use_c
  * what can we really do (other then exiting)?  We might as well plow ahead and hope for the best:
  * and we do believe that the best is yet to come!
  *
- * End of the programmers apology.
+ * End of the "programmer's apology".
  */
 void
 set_ioccc_locale(void)
