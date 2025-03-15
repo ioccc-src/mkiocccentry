@@ -49,6 +49,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
 
 /*
  * verge - determine if first version is greater or equal to the second version
@@ -107,6 +108,11 @@ main(int argc, char *argv[])
     char *ver2 = NULL;		/* second version string */
     int i;
     int ret = 0;                /* return value of vercmp() */
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
 
     /*
      * parse args

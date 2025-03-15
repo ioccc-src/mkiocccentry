@@ -83,7 +83,7 @@
 extern const char *const jparse_library_version;	/* library version format: major.minor YYYY-MM-DD */
 extern const char *const jparse_utils_version;		/* jparse utils (util.c) version format: major.minor YYYY-MM-DD */
 extern const char *const jparse_utf8_version;		/* jparse utf8 version format: major.minor YYYY-MM-DD */
-extern const char *const jparse_version;		/* jparse version format: major.minor YYYY-MM-DD */
+extern const char *const jparse_tool_version;		/* jparse version format: major.minor YYYY-MM-DD */
 /* lexer and parser specific variables */
 extern int jparse_debug;
 

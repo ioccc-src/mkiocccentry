@@ -47,6 +47,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <locale.h>
 
 /*
  * jsemtblgen - generate JSON semantics table
@@ -287,6 +288,11 @@ main(int argc, char **argv)
     size_t len = 0;		    /* length of tbl_name */
     int i;
     size_t c;
+
+    /*
+     * use default locale based on LANG
+     */
+    (void) setlocale(LC_ALL, "");
 
     /*
      * parse args

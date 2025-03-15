@@ -9,12 +9,14 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 3  "17 January 2025" "jparse"
+.TH jparse 3  "14 March 2025" "jparse"
 .SH NAME
 .BR parse_json() \|,
 .BR parse_json_str() \|,
 .BR parse_json_stream() \|,
 .BR parse_json_file() \|,
+.BR json_tree_walk() \|,
+.BR vjson_tree_walk() \|,
 .BR json_tree_free(tree() \|,
 .BR json_dbg_allowed() \|,
 .BR json_warn_allowed() \|,
@@ -30,7 +32,7 @@
 .br
 .B "extern const char *const jparse_utf8_version;	/* jparse utf8 version format: major.minor YYYY-MM-DD */"
 .br
-.B "extern const char *const jparse_version;		/* jparse tool version format: major.minor YYYY-MM-DD */"
+.B "extern const char *const jparse_tool_version;	/* jparse tool version format: major.minor YYYY-MM-DD */"
 .sp
 \fB#define VALID_JSON_NODE(item) ((item) != NULL && (((item)->parsed == true) || ((item)->converted == true)))\fP
 .br
@@ -47,6 +49,18 @@
 .B "extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);"
 .br
 .B "extern struct json *parse_json_file(char const *filename, bool *is_valid);"
+.sp
+.B "extern void json_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,"
+.br
+.RS
+.B    "bool post_order, void (*vcallback)(struct json *, unsigned int, va_list), ...);"
+.RE
+.br
+.B "extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, bool post_order,"
+.br
+.RS
+.B  "void (*vcallback)(struct json *, unsigned int, va_list), va_list ap)"
+.RE
 .sp
 .B "extern void json_tree_free(struct json *node, unsigned int max_depth, ...);"
 .sp
@@ -79,7 +93,7 @@ The
 is a pointer to the start of the JSON data, so that one may scan part of a document, should they wish.
 The function will scan up to
 .I len
-bytes so that one may scan part of a document or string, which might have other kinds of data, in other words is only partly JSON.
+bytes so that one may scan part of a document or string, which might have other kinds of data; in other words in case it is only partly JSON.
 This function takes a
 .I filename
 arg which is used for messages, in particular error messages.
@@ -155,6 +169,51 @@ and then, as long as it can be opened, pass the
 .B FILE *
 to
 .BR parse_json_stream ().
+.SS Walking a JSON tree
+The function
+.BR json_tree_walk ()
+will walk a tree with a callback function, running the callback on each node.
+This function uses the function
+.BR vjson_tree_walk (),
+described below.
+.PP
+The function
+.BR vjson_tree_walk ()
+walks a JSON parse tree calling a callback on each node in va_list form.
+The
+.I node
+is the node to traverse, up to the maximum depth, if not 0 (
+.BR JSON_INFINITE_DEPTH ).
+For each node in the tree, it will call the callback, and for some types (such as
+.BR JTYPE_MEMBER ),
+it will call the function again (this is done via the var arg function
+.BR vjson_tree_walk() ).
+The
+.I post_order
+changes the order of when to call the callback, before or after calling the 
+.BR vjson_tree_walk ()
+function (again, depending on the node type).
+.PP
+For
+.BR JTYPE_MEMBER ,
+the
+.BR vjson_tree_walk ()
+function is called either before or after the callback, on the name and the value of the member.
+For
+.BR JTYPE_OBJECT ,
+.BR JTYPE_ARRAY
+and
+.BR JTYPE_ELEMENTS ,
+the callback will called either before or after the function (the
+.BR vjson_tree_walk ())
+is called on each node in the tree.
+For each child node
+For an example use, see the function
+.BR json_tree_free (),
+described below, and defined in
+.BR json_util.c .
+The function itself can also be found in
+.BR json_util.c .
 .SS Freeing the struct json * tree
 .PP
 After you are done with working with the tree, you should free it, using the
@@ -312,9 +371,9 @@ which points to
 .BR JPARSE_UTF8_VERSION ,
 is the current jparse UTF\-8 version.
 The string
-.BR jparse_version ,
+.BR jparse_tool_version ,
 which points to
-.BR JPARSE_VERSION ,
+.BR JPARSE_TOOL_VERSION ,
 is the current version of the
 .B jparse
 tool.
@@ -333,6 +392,10 @@ Otherwise, if the JSON is invalid, a NULL pointer is returned, and the bool
 .B is_valid
 in the calling function is set to false (this also happens if an unset type is returned).
 Certain error conditions will prevent the function from returning.
+.PP
+The function
+.BR json_tree_walk ()
+returns void but will not
 .PP
 The functions
 .BR json_dbg_allowed (),
@@ -368,7 +431,7 @@ section above for details.
 .PP
 .SH BUGS
 Although error reporting does have locations it is only line numbers and columns.
-Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (say, because of tabs).
+Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (say, because of tabs, although we do detect tabs and increment by 8 instead of 1).
 .sp
 Although the scanner and parser are re-entrant only one parse at one time in a process has been tested.
 .sp

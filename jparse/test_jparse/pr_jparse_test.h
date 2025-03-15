@@ -97,7 +97,7 @@
 /*
  * official pr_jparse_test version
  */
-#define PR_JPARSE_TEST_VERSION "2.0.0 2025-02-28"	/* format: major.minor YYYY-MM-DD */
+#define PR_JPARSE_TEST_VERSION "2.0.1 2025-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * pr_jparse_test tool basename
