@@ -3,16 +3,6 @@
 
 ## Release 2.4.4 2025-03-15
 
-Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/`. This updates
-jparse.3 with additional functions (with two new files added), adds to all the
-tools (early on `main()` - no libraries) `setlocale(LC_ALL, "");` to use the
-system's default locale based on LANG. Additionally a macro and variable were
-renamed to better reflect what they are (this does not affect any code in
-mkiocccentry however).
-
-
-## Release 2.4.4 2025-03-14
-
 **IMPORTANT NOTE**:
 
 While you are **NOT** required to use this release in order to submit to **IOCCC28**,
@@ -28,9 +18,9 @@ Submissions made under "_Release 2.4.3 2025-03-11_" remain valid for **IOCCC28**
 
 **RELEASE DETAILS FOLLOW**:
 
-Set locale to C as required by the IOCCC.
+Set locale to C, the **official** locale of the IOCCC.
 
-See the "programmers apology" of the `set_ioccc_locale()` function in `soup/location_util.c`
+See the "programmer's apology" of the `set_ioccc_locale()` function in `soup/location_util.c`
 for more details.
 
 Updated `MKIOCCCENTRY_VERSION` to "2.0.3 2025-03-14".
@@ -38,6 +28,13 @@ Updated `FNAMCHK_VERSION` to "2.0.1 2025-03-14".
 Maintain `MIN_FNAMCHK_VERSION` as "2.0.0 2025-02-28".
 Updated `TXZCHK_VERSION` to "2.0.3 2025-03-14"
 Updated `CHKENTRY_VERSION` to "2.0.3 2025-03-14".
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/`. This
+updates the `jparse(3)` man page with additional functions (with two new
+files added), adds to all the tools (early on `main()` - no libraries)
+`setlocale(LC_ALL, "");` to use the system's default locale based on
+`$LANG`. Additionally a macro and variable were renamed to better reflect
+what they are (this does not affect any code in mkiocccentry toolkit however).
 
 
 ## Release 2.4.3 2025-03-11
