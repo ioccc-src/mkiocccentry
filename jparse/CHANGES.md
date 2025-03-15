@@ -21,6 +21,11 @@ Updated `UTIL_TEST_VERSION` to `"2.0.3 2025-03-15"`.
 Updated `VERGE_VERSION` to `"2.0.2 2025-03-15"`.
 Updated `JPARSE_TOOL_VERSION` to `"2.0.1 2025-03-15"`.
 
+Undo the variable swap (`< 0` check) in `sum_and_count()` and add a comment
+about it so that when we don't stupidly change it again.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.8 2025-03-15"`.
+
 
 ## Release 2.2.37 2025-03-14
 

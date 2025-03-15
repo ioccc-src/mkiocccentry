@@ -3,12 +3,12 @@
 
 ## Release 2.4.4 2025-03-15
 
-Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/`. This fixes a
-potentially critical bug in `sum_and_count()` (used in `txzchk(1)`), man page
-updates and all the tools (only tools, no library related code) have early in
-`main()` a `setlocale(LC_ALL, "");` to use the system's default locale based on
-LANG. Additionally a macro and variable were renamed to better reflect what they
-are (this does not affect any code in mkiocccentry however).
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/`. This updates
+jparse.3 with additional functions (with two new files added), adds to all the
+tools (early on `main()` - no libraries) `setlocale(LC_ALL, "");` to use the
+system's default locale based on LANG. Additionally a macro and variable were
+renamed to better reflect what they are (this does not affect any code in
+mkiocccentry however).
 
 
 ## Release 2.4.4 2025-03-14
