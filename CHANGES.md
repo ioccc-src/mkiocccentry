@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.5 2025-04-24
+
+Fix `scan_topdir()` to not count dot files/directories against max allowed.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.4 2025-04-24"`.
+
+Typo fix in txzchk.1.
+
+
 ## Release 2.4.4 2025-03-15
 
 **IMPORTANT NOTE**:
