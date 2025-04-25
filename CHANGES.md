@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.4.6 2025-04-25
+## Release 2.4.5 2025-04-25
 
 Fix #1252. `mkiocccentry` must run `make clobber` before scanning the topdir and
 then also later when running the checks. This is because if someone tests their
@@ -12,12 +12,7 @@ then not have this problem.
 
 Updated `MKIOCCCENTRY_VERSION` to `"2.0.5 2025-04-25"`.
 
-
-## Release 2.4.5 2025-04-24
-
 Fix `scan_topdir()` to not count dot files/directories against max allowed.
-
-Updated `MKIOCCCENTRY_VERSION` to `"2.0.4 2025-04-24"`.
 
 Typo fix in txzchk.1.
 
