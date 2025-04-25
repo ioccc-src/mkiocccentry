@@ -6164,7 +6164,7 @@ get_title(struct info *infop)
 	      "amongst the submissions that you submit to the current IOCCC.",
 	      "",
 	      "To help keep your submission anonymous, please do NOT put your name(s),"
-	      "nor your author handle(s) into your title!.",
+	      "nor your author handle(s) into your title.",
 	      "",
 	      NULL);
 	errno = 0;		/* pre-clear errno for errp() */
