@@ -1625,7 +1625,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                 errno = 0; /* pre-clear errno for errp() */
                 filename = strdup(ent->fts_path + 2);
                 if (filename == NULL) {
-                    errp(55, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    errp(52, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
                     not_reached();
                 }
                 if (ent->fts_info == FTS_D) {
@@ -1634,7 +1634,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                      */
                     errno = 0;  /* pre-clear errno for errp() */
                     if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
-                        errp(56, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
+                        errp(53, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
                         not_reached();
                     }
                     append_unique_filename(infop->ignored_dirs, filename);
@@ -1653,7 +1653,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                 errno = 0; /* pre-clear errno for errp() */
                 filename = strdup(ent->fts_path + 2);
                 if (filename == NULL) {
-                    errp(57, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    errp(54, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
                     not_reached();
                 }
 
@@ -1706,7 +1706,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                         errno = 0; /* pre-clear errno for errp() */
                         filename = strdup(ent->fts_path + 2);
                         if (filename == NULL) {
-                            errp(52, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                            errp(55, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
                             not_reached();
                         }
                         if (ent->fts_info == FTS_F) {
@@ -1736,7 +1736,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                         errno = 0; /* pre-clear errno for errp() */
                         filename = strdup(ent->fts_path + 2);
                         if (filename == NULL) {
-                            errp(53, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                            errp(56, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
                             not_reached();
                         }
                         if (ent->fts_info == FTS_D) {
@@ -1745,7 +1745,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                              */
                             errno = 0;  /* pre-clear errno for errp() */
                             if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
-                                errp(54, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
+                                errp(57, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
                                 not_reached();
                             }
                             append_unique_filename(infop->ignored_dirs, filename);
@@ -6155,11 +6155,16 @@ get_title(struct info *infop)
     if (need_hints) {
 	para("A submission title is a short name using the [a-z0-9][a-z0-9._+-]* regex pattern.",
 	      "",
+	      "What would you call your program if was not named prog?",
+	      "",
 	      "If your submission wins, the title might become the directory name of the winning entry,",
 	      "although the IOCCC judges might change the title for various reason.",
 	      "",
 	      "If you have more than one submission to submit, please make your titles unique",
 	      "amongst the submissions that you submit to the current IOCCC.",
+	      "",
+	      "To help keep your submission anonymous, please do NOT put your name(s),"
+	      "nor your author handle(s) into your title!.",
 	      "",
 	      NULL);
 	errno = 0;		/* pre-clear errno for errp() */
