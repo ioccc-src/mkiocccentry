@@ -1320,6 +1320,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     size_t dirs = 0;                    /* number of sane dirnames (added to unsafe_dirs to verify there aren't too many) */
     size_t unsafe_dirs = 0;             /* number of unsafe dirnames (added to dirs to verify there aren't too many) */
     struct fts fts;                     /* for FTS functions */
+    int exit_code = 0;                  /* for make clobber */
 
     /*
      * firewall
@@ -1481,6 +1482,53 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
 
     /*
+     * check for existence of remarks.md, prog.c and Makefile (this check is
+     * done again later but we need to do it here now too, especially the
+     * Makefile but if the others are missing it's an error so we'll save the
+     * user time).
+     */
+
+    /*
+     * check for existence of Makefile
+     *
+     * This is necessary not only because if it doesn't exist something went
+     * wrong and also because if make clobber fails it's not an error.
+     */
+    if (!is_read(MAKEFILE_FILENAME)) {
+        err(4, __func__, "Makefile not a regular readable file in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    } else if (is_empty(MAKEFILE_FILENAME)) {
+        err(4, __func__, "Makefile is empty in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    }
+    /*
+     * prog.c must exist but it may be empty (though it'll be flagged)
+     */
+    if (!is_read(PROG_C_FILENAME)) {
+        err(4, __func__, "prog.c not a regular readable file in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    }
+    /*
+     * remarks.md must not be empty
+     */
+    if (!is_read(REMARKS_FILENAME)) {
+        err(4, __func__, "remarks.md not a regular readable file in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    } else if (is_empty(REMARKS_FILENAME)) {
+        err(4, __func__, "remarks.md is empty in submission directory %s", submit_path);/*ooo*/
+        not_reached();
+    }
+
+    /*
+     * run make clobber on Makefile
+     */
+    dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
+    exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
+    if (exit_code != 0) {
+	warn(__func__, "make -f Makefile clobber failed");
+    }
+
+    /*
      * before we do anything else we must reset fts structure and set the
      * variables we need
      *
@@ -1567,6 +1615,56 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
             forbidden_filename = is_forbidden_filename(ent->fts_path + 2);
             optional = is_optional_filename(ent->fts_path + 2);
             mandatory_filename = is_mandatory_filename(ent->fts_path + 2);
+
+            if (ignored_dirname) {
+                /*
+                 * if we get here it means that either the path does not have a
+                 * component starting with a '.' (like '.git') or it is an ignored
+                 * directory name (like '.git')
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(55, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+                if (ent->fts_info == FTS_D) {
+                    /*
+                     * we don't want to traverse below ignored directories
+                     */
+                    errno = 0;  /* pre-clear errno for errp() */
+                    if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
+                        errp(56, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
+                        not_reached();
+                    }
+                    append_unique_filename(infop->ignored_dirs, filename);
+                }
+                /*
+                 * again we don't need to add any other type of item as we will
+                 * see directories before files under them
+                 */
+                continue;
+            }
+            if (forbidden_filename) {
+                /*
+                 * we have to add the path of the forbidden file to the
+                 * forbidden files list
+                 */
+                errno = 0; /* pre-clear errno for errp() */
+                filename = strdup(ent->fts_path + 2);
+                if (filename == NULL) {
+                    errp(57, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
+                    not_reached();
+                }
+
+                /*
+                 * add to forbidden files list if not found (if it already
+                 * exists it is an error)
+                 */
+                append_unique_filename(infop->forbidden_files, filename);
+                continue;
+            }
+
 
             /*
              * NOTE: when traversing the directory "." the filenames found under
@@ -1685,55 +1783,6 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     not_reached();
                     break;
             }
-            if (ignored_dirname) {
-                /*
-                 * if we get here it means that either the path does not have a
-                 * component starting with a '.' (like '.git') or it is an ignored
-                 * directory name (like '.git')
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                filename = strdup(ent->fts_path + 2);
-                if (filename == NULL) {
-                    errp(55, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
-                    not_reached();
-                }
-                if (ent->fts_info == FTS_D) {
-                    /*
-                     * we don't want to traverse below ignored directories
-                     */
-                    errno = 0;  /* pre-clear errno for errp() */
-                    if (fts_set(fts.tree, ent, FTS_SKIP) != 0) {
-                        errp(56, __func__, "fts_set() failed to set FTS_SKIP for %s", ent->fts_path + 2);
-                        not_reached();
-                    }
-                    append_unique_filename(infop->ignored_dirs, filename);
-                }
-                /*
-                 * again we don't need to add any other type of item as we will
-                 * see directories before files under them
-                 */
-                continue;
-            }
-            if (forbidden_filename) {
-                /*
-                 * we have to add the path of the forbidden file to the
-                 * forbidden files list
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                filename = strdup(ent->fts_path + 2);
-                if (filename == NULL) {
-                    errp(57, __func__, "strdup(\"%s\") failed", ent->fts_path + 2);
-                    not_reached();
-                }
-
-                /*
-                 * add to forbidden files list if not found (if it already
-                 * exists it is an error)
-                 */
-                append_unique_filename(infop->forbidden_files, filename);
-                continue;
-            }
-
             /* we need the type of the file */
             switch (ent->fts_info) {
                 case FTS_D: /* directory */

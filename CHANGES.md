@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.6 2025-04-25
+
+Fix #1252. `mkiocccentry` must run `make clobber` before scanning the topdir and
+then also later when running the checks. This is because if someone tests their
+code in their topdir anything compiled will be included as extra files (unless
+forbidden) but if the make clobber that follows removes any of those files the
+extra files list will be the wrong size. So now one can test from the topdir and
+then not have this problem.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.5 2025-04-25"`.
+
+
 ## Release 2.4.5 2025-04-24
 
 Fix `scan_topdir()` to not count dot files/directories against max allowed.
