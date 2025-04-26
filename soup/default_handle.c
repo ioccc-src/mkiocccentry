@@ -169,34 +169,34 @@ static struct default_handle_map hmap[] =
 
     /* \x40 -\x4f */
     {"@", "_", -1, -1},			/* @ */
-    {"A", "a", -1, -1},			/* A - converted to lower case character */
-    {"B", "b", -1, -1},			/* B - converted to lower case character */
-    {"C", "c", -1, -1},			/* C - converted to lower case character */
-    {"D", "d", -1, -1},			/* D - converted to lower case character */
-    {"E", "e", -1, -1},			/* E - converted to lower case character */
-    {"F", "f", -1, -1},			/* F - converted to lower case character */
-    {"G", "g", -1, -1},			/* G - converted to lower case character */
-    {"H", "h", -1, -1},			/* H - converted to lower case character */
-    {"I", "i", -1, -1},			/* I - converted to lower case character */
-    {"J", "j", -1, -1},			/* J - converted to lower case character */
-    {"K", "k", -1, -1},			/* K - converted to lower case character */
-    {"L", "l", -1, -1},			/* L - converted to lower case character */
-    {"M", "m", -1, -1},			/* M - converted to lower case character */
-    {"N", "n", -1, -1},			/* N - converted to lower case character */
-    {"O", "o", -1, -1},			/* O - converted to lower case character */
+    {"A", "A", -1, -1},			/* A */
+    {"B", "B", -1, -1},			/* B */
+    {"C", "C", -1, -1},			/* C */
+    {"D", "D", -1, -1},			/* D */
+    {"E", "E", -1, -1},			/* E */
+    {"F", "F", -1, -1},			/* F */
+    {"G", "G", -1, -1},			/* G */
+    {"H", "H", -1, -1},			/* H */
+    {"I", "I", -1, -1},			/* I */
+    {"J", "J", -1, -1},			/* J */
+    {"K", "K", -1, -1},			/* K */
+    {"L", "L", -1, -1},			/* L */
+    {"M", "M", -1, -1},			/* M */
+    {"N", "N", -1, -1},			/* N */
+    {"O", "O", -1, -1},			/* O */
 
     /* \x50 -\x5f */
-    {"P", "p", -1, -1},			/* P - converted to lower case character */
-    {"Q", "q", -1, -1},			/* Q - converted to lower case character */
-    {"R", "r", -1, -1},			/* R - converted to lower case character */
-    {"S", "s", -1, -1},			/* S - converted to lower case character */
-    {"T", "t", -1, -1},			/* T - converted to lower case character */
-    {"U", "u", -1, -1},			/* U - converted to lower case character */
-    {"V", "v", -1, -1},			/* V - converted to lower case character */
-    {"W", "w", -1, -1},			/* W - converted to lower case character */
-    {"X", "x", -1, -1},			/* X - converted to lower case character */
-    {"Y", "y", -1, -1},			/* Y - converted to lower case character */
-    {"Z", "z", -1, -1},			/* Z - converted to lower case character */
+    {"P", "P", -1, -1},			/* P */
+    {"Q", "Q", -1, -1},			/* Q */
+    {"R", "R", -1, -1},			/* R */
+    {"S", "S", -1, -1},			/* S */
+    {"T", "T", -1, -1},			/* T */
+    {"U", "U", -1, -1},			/* U */
+    {"V", "V", -1, -1},			/* V */
+    {"W", "W", -1, -1},			/* W */
+    {"X", "X", -1, -1},			/* X */
+    {"Y", "Y", -1, -1},			/* Y */
+    {"Z", "Z", -1, -1},			/* Z */
     {"[", "_", -1, -1},			/* [ */
     {"\\", "_", -1, -1},		/* \ */
     {"]", "_", -1, -1},			/* ] */
@@ -1609,7 +1609,7 @@ check_default_handle_map(void)
 	hmap[i].posix_str_len = (int)strlen(hmap[i].posix_str);
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
-	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
+	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, false, false, false) == false) {
 	    err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
 			      "fix table in %s and recompile", (uintmax_t)i, hmap[i].posix_str, __FILE__);
 	    not_reached();
@@ -1712,7 +1712,7 @@ default_handle(char const *name)
 	    }
 
 	    /* skip if there isn't match with the rest of the string */
-	    if (strncasecmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
+	    if (strncmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
 		continue;
 	    }
 
@@ -1737,11 +1737,11 @@ default_handle(char const *name)
 	    /* case: 1st character map */
 	    if (def_len == 0) {
 
-		/* ignore if 1st mapped character is not an ASCII [0-9a-z] character */
+		/* ignore if 1st mapped character is not an ASCII [0-9A-Za-z] character */
 		if (!isascii(m->posix_str[0])) {
 		    continue;
 		}
-		if (!islower(m->posix_str[0]) && !isdigit(m->posix_str[0])) {
+		if (!isalnum(m->posix_str[0])) {
 		    continue;
 		}
 	    }
@@ -1899,7 +1899,7 @@ default_handle(char const *name)
 		}
 
 		/* skip if there isn't a match with the rest of the string */
-		if (strncasecmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
+		if (strncmp(m->utf8_str, name+i, (uintmax_t)m->utf8_str_len) != 0) {
 		    continue;
 		}
 
@@ -1929,11 +1929,11 @@ default_handle(char const *name)
 		    /* case: 1st character map */
 		    if (cur_len == 0) {
 
-			/* ignore if 1st mapped character is not an ASCII [0-9a-z] character */
+			/* ignore if 1st mapped character is not an ASCII [0-9A-Za-z] character */
 			if (!isascii(m->posix_str[0])) {
 			    continue;
 			}
-			if (!islower(m->posix_str[0]) && !isdigit(m->posix_str[0])) {
+			if (!isalnum(m->posix_str[0])) {
 			    continue;
 			}
 		    }
@@ -2020,7 +2020,7 @@ default_handle(char const *name)
      * sanity check: default author handle must have only POSIX portable safe
      * plus + chars
      */
-    safe = posix_plus_safe(ret, true, false, true);
+    safe = posix_plus_safe(ret, false, false, true);
     if (safe == false) {
 	err(26, __func__, "default author handle contains unsafe chars: <%s>", ret);
 	not_reached();

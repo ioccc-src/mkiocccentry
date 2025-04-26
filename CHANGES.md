@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.6 2025-04-26
+
+Allow for the default handle to contain upper case letters.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.4.6 2025-04-26"`.
+
+
 ## Release 2.4.5 2025-04-25
 
 Fix #1252. `mkiocccentry` must run `make clobber` before scanning the topdir and
@@ -10,14 +17,14 @@ forbidden) but if the make clobber that follows removes any of those files the
 extra files list will be the wrong size. So now one can test from the topdir and
 then not have this problem.
 
-Updated `MKIOCCCENTRY_VERSION` to `"2.0.5 2025-04-25"`.
+Updated `MKIOCCCENTRY_VERSION` to `"2.4.5 2025-04-25"`.
 
 Fix `scan_topdir()` to not count dot files/directories against max allowed.
 
 Typo fix in txzchk.1.
 
 Clarified the purpose of a submission title, and emphasized that the title
-should NOT contain name(s) nor author handle information.
+should NOT contain name(s) no contain author handle information.
 
 
 ## Release 2.4.4 2025-03-15
