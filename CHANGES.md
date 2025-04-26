@@ -24,7 +24,7 @@ Fix `scan_topdir()` to not count dot files/directories against max allowed.
 Typo fix in txzchk.1.
 
 Clarified the purpose of a submission title, and emphasized that the title
-should NOT contain name(s) no contain author handle information.
+should NOT contain name(s), and they should NOT contain author handle information.
 
 
 ## Release 2.4.4 2025-03-15
