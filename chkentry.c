@@ -86,7 +86,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i path] [-P] submission_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] submission_dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -94,7 +94,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-i path\t\tadd path to (to file or directory) under directory to check\n"
+    "\t-i subpath\tignore subpath, where subpath is under the directory to be checked\n"
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
     "\t-P\t\tignore permissions\n"
     "\t-w\t\twinning entry checks\n"
@@ -115,7 +115,7 @@ static const char * const usage_msg =
  * functions
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static void add_ignore_path(char *path, struct fts *fts);
+static void add_ignore_subpath(char *path, struct fts *fts);
 
 /*
  * usage - print usage to stderr
@@ -162,7 +162,7 @@ usage(int exitcode, char const *prog, char const *str)
 
 
 /*
- * add_ignore_path - add path to ignored paths list
+ * add_ignore_subpath - add path, relative to the directory to be checked, to ignored paths list
  *
  * This function is used instead of just append_path() (although it uses this)
  * because some names have an abbreviation.
@@ -204,7 +204,7 @@ usage(int exitcode, char const *prog, char const *str)
  * or empty it'll return before that check).
  */
 static void
-add_ignore_path(char *path, struct fts *fts)
+add_ignore_subpath(char *path, struct fts *fts)
 {
     /*
      * firewall
@@ -452,8 +452,8 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-        case 'i':   /* ignore a path */
-            add_ignore_path(optarg, &fts);
+        case 'i':   /* ignore subpath, where subpath is under the directory to be checked */
+            add_ignore_subpath(optarg, &fts);
             break;
         case 'P': /* ignore permissions of paths */
             ignore_permissions = true;
@@ -520,7 +520,7 @@ main(int argc, char *argv[])
          * add to ignore list the ignored files and directories
          */
         for (c = 0; ignored_dirnames[c] != NULL; ++c) {
-            add_ignore_path(ignored_dirnames[c], &fts);
+            add_ignore_subpath(ignored_dirnames[c], &fts);
         }
 
         if (winning_entry_mode) {
@@ -532,7 +532,7 @@ main(int argc, char *argv[])
              * an error.
              */
             for (c = 0; ignored_filenames[c] != NULL; ++c) {
-                add_ignore_path(ignored_filenames[c], &fts);
+                add_ignore_subpath(ignored_filenames[c], &fts);
             }
             /*
              * and now we can set up fts
