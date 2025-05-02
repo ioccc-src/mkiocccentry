@@ -703,23 +703,23 @@ main(int argc, char *argv[])
              * depending on the -i option
              */
             if (!ignore_entry && !found_entry) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i entry NOT used", ENTRY_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -w USED and -i .entry.json NOT used", ENTRY_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_auth && found_auth) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i auth NOT used", AUTH_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w USED and -i .auth.json NOT used", AUTH_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_info && found_info) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i info NOT used", INFO_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w USED and -i .info.json NOT used", INFO_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_README_md && !found_README) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -w USED and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_index && !found_index) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -w USED and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_Makefile && !found_Makefile) {
@@ -735,7 +735,7 @@ main(int argc, char *argv[])
                 ++all_extra_err_count;
             }
             if (!ignore_remarks_md && found_remarks) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i remarks NOT used", REMARKS_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w USED and -i remarks.md NOT used", REMARKS_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             /*
@@ -882,21 +882,21 @@ main(int argc, char *argv[])
                         if (ignore_entry) {
                             continue;
                         }
-                        werr(1, __func__, "%s EXISTS and -w and -i entry NOT used", ENTRY_JSON_FILENAME);/*ooo*/
+                        werr(1, __func__, "%s EXISTS and -w and -i .entry.json NOT used", ENTRY_JSON_FILENAME);/*ooo*/
                         ++all_extra_err_count;
                         found_entry = true;
                     } else if (!strcmp(u, README_MD_FILENAME)) {
                         if (ignore_README_md) {
                             continue;
                         }
-                        werr(1, __func__, "%s EXISTS and -w and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                        werr(1, __func__, "%s EXISTS and -w and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
                         ++all_extra_err_count;
                         found_README = true;
                     } else if (!strcmp(u, INDEX_HTML_FILENAME)) {
                         if (ignore_index) {
                             continue;
                         }
-                        werr(1, __func__, "%s EXISTS and -w and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                        werr(1, __func__, "%s EXISTS and -w and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
                         ++all_extra_err_count;
                         found_index = true;
                     } else {
@@ -937,23 +937,23 @@ main(int argc, char *argv[])
              * depending on the -i option
              */
             if (!ignore_entry && found_entry) {
-                werr(1, __func__, "%s EXISTS and -w and -i entry NOT used and ", ENTRY_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w and -i .entry.json NOT used and ", ENTRY_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_auth && !found_auth) {
-                werr(1, __func__, "%s does NOT exist and -w and -i auth NOT used", AUTH_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -w and -i .auth.json NOT used", AUTH_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_info && !found_info) {
-                werr(1, __func__, "%s does NOT exist and -w and -i info NOT used", INFO_JSON_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -w and -i .info.json NOT used", INFO_JSON_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_README_md && found_README) {
-                werr(1, __func__, "%s EXISTS and -w and -i README NOT used", README_MD_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_index && found_index) {
-                werr(1, __func__, "%s EXISTS and -w and -i index NOT used", INDEX_HTML_FILENAME);/*ooo*/
+                werr(1, __func__, "%s EXISTS and -w and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
             if (!ignore_Makefile && !found_Makefile) {
@@ -969,7 +969,7 @@ main(int argc, char *argv[])
                 ++all_extra_err_count;
             }
             if (!ignore_remarks_md && !found_remarks) {
-                werr(1, __func__, "%s does NOT exist and -i remarks NOT used", REMARKS_FILENAME);/*ooo*/
+                werr(1, __func__, "%s does NOT exist and -i remarks.md NOT used", REMARKS_FILENAME);/*ooo*/
                 ++all_extra_err_count;
             }
 
