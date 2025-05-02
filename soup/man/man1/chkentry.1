@@ -25,7 +25,7 @@
 .IR subpath \|]
 .RB [\| \-P \|]
 .RB [\| \-w \|]
-.I directory
+.I submission_dir
 .SH DESCRIPTION
 .PP
 .BR chkentry (1)
@@ -38,7 +38,10 @@ files, as well as checking the permissions of files and directories (unless the
 .B \-P
 option is used) and, if the
 .B .info.json
-file is not ignored, it will compare the manifest with the files in the directory, unless that file has been explicitly ignored with the
+file is not ignored, it will compare the manifest with the files in the
+.B submission_dir
+directory,
+unless that file has been explicitly ignored with the
 .BI \-i\  subpath
 option.
 In winning entry mode (the
@@ -105,7 +108,9 @@ Ignore
 .IR subpath ,
 where
 .I subpath
-is under the directory to be checked.
+is under the
+.B submission_dir
+directory.
 .PP
 This option may be used more than once but is only meant for the judges.
 .TP
