@@ -17,6 +17,8 @@ quickly) that a fix in jparse/util.c has to be done instead later on.
 
 Updated `CHKENTRY_VERSION` to `"2.0.4 2025-05-02"`.
 
+Removed aliases for `chkentry -i` option after discussion on GitHub.
+
 
 ## Release 2.4.6 2025-04-26
 
