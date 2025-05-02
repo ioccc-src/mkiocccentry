@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.7 2025-04-30
+
+Fix annoying bug where `-i answers` would warn about using the answer yes
+option.
+
+Make it an error if the answers file used is in the topdir.
+
 
 ## Release 2.4.6 2025-04-26
 
