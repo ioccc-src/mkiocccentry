@@ -94,7 +94,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-i subpath\tignore subpath, where subpath is a path under submission_dir\n"
+    "\t-i subpath\tignore subpath, where subpath is a path relative to submission_dir\n"
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
     "\t-P\t\tignore permissions\n"
     "\t-w\t\twinning entry checks\n"
