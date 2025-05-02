@@ -112,27 +112,6 @@ static const char * const usage_msg =
     "jparse library version: %s";
 
 /*
- * NOTE: this MUST end with { NULL, NULL }!
- */
-char *abbrevs[][2] =
-{
-    { "auth"        , AUTH_JSON_FILENAME    },
-    { "info"        , INFO_JSON_FILENAME    },
-    { "prog.c"      , PROG_C_FILENAME       },
-    { "Makefile"    , MAKEFILE_FILENAME     },
-    { "try"         , TRY_SH                }, /* try not to keep sorted */
-    { "try.alt"     , TRY_ALT_SH            }, /* alternatively, try and keep sorted */
-    { "remarks"     , REMARKS_FILENAME      },
-    { "README"      , README_MD_FILENAME    },
-    { "index"       , INDEX_HTML_FILENAME   },
-    { "prog"        , PROG_FILENAME         },
-    { "prog.orig.c" , PROG_ORIG_C_FILENAME  },
-    { "prog.orig"   , PROG_ORIG_FILENAME    },
-    { "entry"       , ENTRY_JSON_FILENAME   },
-    { NULL          , NULL                  } /* MUST be last! */
-};
-
-/*
  * functions
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
@@ -214,9 +193,6 @@ usage(int exitcode, char const *prog, char const *str)
  *
  *      chkentry -i foo/bar/baz submission_dir
  *
- * NOTE: this function uses the static char *abbrevs[][2]  to find abbreviations.
- * In the case nothing is found then the path will be added to the list as is.
- *
  * NOTE: this function will not add a path to the array more than once so if you
  * were to do:
  *
@@ -230,8 +206,6 @@ usage(int exitcode, char const *prog, char const *str)
 static void
 add_ignore_path(char *path, struct fts *fts)
 {
-    size_t i = 0;
-
     /*
      * firewall
      */
@@ -245,236 +219,7 @@ add_ignore_path(char *path, struct fts *fts)
         not_reached();
     }
 
-    for (i = 0; abbrevs[i][0] != NULL; ++i) {
-        if (!strcmp(abbrevs[i][0], path)) {
-            /*
-             * we have to determine if this is the .auth.json file to ignore
-             */
-            if (!strcmp(path, "auth")) {
-                if (ignore_auth) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_auth = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
 
-            /*
-             * we also have to check for .info.json
-             */
-            else if (!strcmp(path, "info")) {
-                if (ignore_info) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_info = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            /*
-             * we also need to record if .entry.json is here
-             */
-            else if (!strcmp(path, "entry")) {
-                if (ignore_entry) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_entry = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            /*
-             * remarks.md
-             */
-            else if (!strcmp(path, "remarks")) {
-                if (ignore_remarks_md) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_remarks_md = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            /*
-             * README.md
-             */
-            else if (!strcmp(path, "README")) {
-                if (ignore_README_md) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_README_md = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            /*
-             * prog
-             */
-            else if (!strcmp(path, PROG_FILENAME)) {
-                if (ignore_prog) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_prog = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            /*
-             * prog.c
-             */
-            else if (!strcmp(path, PROG_C_FILENAME)) {
-                if (ignore_prog_c) {
-                    /*
-                     * skip
-                     */
-                     return;
-                }
-                ignore_prog_c = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            else if (!strcmp(path, MAKEFILE_FILENAME)) {
-                if (ignore_Makefile) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_Makefile = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-            else if (!strcmp(path, "index")) {
-                if (ignore_index) {
-                    /*
-                     * skip
-                     */
-                    return;
-                }
-                ignore_index = true;
-                /* we can append the file now */
-                append_path(&ignored_paths, abbrevs[i][1], true, false, false);
-                /*
-                 * we also have to append it to the fts->ignore list for later
-                 * on
-                 */
-                append_path(&(fts->ignore), abbrevs[i][1], true, false, false);
-
-                /*
-                 * return as we don't need to check the file below as we have a
-                 * match
-                 */
-                return;
-            }
-
-            /*
-             * we should not get here but we will warn if we do as it indicates
-             * a check is missing here
-             */
-            warn(__func__, "found match in filename but unhandled");
-            return;
-        }
-    }
 
     /*
      * we have to determine if this is a certain file
