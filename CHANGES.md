@@ -1,11 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 2.4.7 2025-04-30
 
-Fix annoying bug where `-i answers` would warn about using the answer yes
-option.
+## Release 2.4.7 2025-05-02
 
-Make it an error if the answers file used is in the topdir.
+Fix annoying bug where `mkiocccentry -i answers` would warn about using
+the answer yes option.
+
+Make it an error if the answers file used is in the topdir in `mkiocccentry(1)`.
 
 Add temporary workaround for issue #1258. It might be that the real fix involves
 an update to a jparse routine but during the IOCCC28 itself that is not going to
@@ -13,11 +14,14 @@ be looked at and it is arguable it is not even a good idea to do that anyway.
 Instead for the time being in the problematic code an extra check is done with
 another FTS related routine I had written last year (I guess) in jparse. An
 comment was added to chkentry.c but it might be (unsure as this was done
-quickly) that a fix in jparse/util.c has to be done instead later on.
+quickly) that a fix in `jparse/util.c` has to be done instead later on.
 
 Updated `CHKENTRY_VERSION` to `"2.0.4 2025-05-02"`.
 
-Removed aliases for `chkentry -i` option after discussion on GitHub.
+Removed aliases for `chkentry -i subpath` option after discussion on GitHub.
+
+Clarified the meaning of `chkentry -i subpath` in both the `chkentry(1)`
+man page and in the `chkentrty -h` usage message.
 
 
 ## Release 2.4.6 2025-04-26
