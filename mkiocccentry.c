@@ -1564,6 +1564,10 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      * run make clobber on Makefile
      */
     dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
+    para("",
+	 "About to run: make -f Makefile clobber",
+	 "",
+	 NULL);
     exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
     if (exit_code != 0) {
 	warn(__func__, "make -f Makefile clobber failed");
@@ -2533,6 +2537,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             para("",
                     "The following is a list of files that will be added to the tarball:"
                     "",
+                    "",
                     NULL);
 
             /*
@@ -2567,8 +2572,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
             }
             if (!answer_yes) {
                 para("",
-                     "If this list is incorrect, you will have to fix your topdir",
-                     "and try again.",
+                     "If this list is incorrect, you will have to fix your topdir and try again.",
                      NULL);
                 yorn = yes_or_no("\nDo you wish to continue? [Yn]", true);
                 if (!yorn) {
@@ -2968,6 +2972,10 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      * run make clobber on Makefile
      */
     dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
+    para("",
+	 "About to run: make -f Makefile clobber",
+	 "",
+	 NULL);
     exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
     if (exit_code != 0) {
 	warn(__func__, "make -f Makefile clobber failed");

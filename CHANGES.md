@@ -1,12 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.4.8 2025-05-03
+## Release 2.4.8 2025-05-05
 
 Allow a submitter's system clock to be as much as 48 hours in the future before
-their submission is rejected as having a bogus timestamp.
+their submission is rejected as having a bogus "future" timestamp.
 
 Improved text in the `chkentry(1)` man page and in the `chkentrty -h` usage message.
+
+Improved the format of how `mkiocccentry(1)` announces doing a `make clobber`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.7 2025-05-05".
 
 
 ## Release 2.4.7 2025-05-02
