@@ -2020,7 +2020,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
  * In all other cases such as not a file, or path does not exist, or path
  * is not accessible, 0 is returned.
  *
- * XXX - This function belongs in jparse/util.h - XXX
+ * XXX - This function belongs in jparse/util.c - XXX
  *
  * given:
  *      path    - the path to test
