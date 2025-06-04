@@ -1,6 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.9 2025-06-04
+
+Fix bug where `-i answers` did not warn about issues found in prog.c and
+Makefile.
+
+
 ## Release 2.4.8 2025-05-05
 
 Allow a submitter's system clock to be as much as 48 hours in the future before
