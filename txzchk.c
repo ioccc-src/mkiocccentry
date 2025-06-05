@@ -1898,11 +1898,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
-	    fpara(stderr,
-		  "",
-		  "The compressed tarball exceeds the maximum allowed size, sorry.",
-		  "",
-		  NULL);
+        fpara(stderr,
+              "",
+              "The compressed tarball exceeds the maximum allowed size, sorry.",
+              "",
+              NULL);
 	    warn("txzchk", "%s: the compressed tarball size %jd > %jd",
 		     tarball_path, (intmax_t)tarball.size, (intmax_t)MAX_TARBALL_LEN);
     } else if (verbosity_level) {
