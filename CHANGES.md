@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.10 2025-06-06
+
+When `-Y` is used, don't show warnings even if `-i answers` is used as that was
+the point of it (one should use this with caution as it answers yes to every
+question automatically). It is unclear if this should show the list of
+files/directories to be copied (showing the contents of the tarball is part of
+txzchk's algorithm so this is unrelated) as it currently does.  It is also
+unclear if the use of `-Y` should show warnings but just not confirm. Given that
+one is just an informational notice and that one does say something (at least if
+the function is called), even pointing out that one might wish to note it in
+their remarks, it might be better to always show but that really depends on what
+other people want (the point of `-Y` in any case is to always answer yes even
+when the answers file is used, as some people do in fact want this).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.9 2025-06-06"`.
+
+
 ## Release 2.4.10 2025-06-05
 
 Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` with new
