@@ -340,7 +340,7 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS= prep.sh hostchk.sh
+SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
