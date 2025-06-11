@@ -14,6 +14,9 @@ Updated `LOCATION_VERSION` to `"1.0.5 2024-06-11"`.
 
 Run `make depend` for the move of `LOCATION_VERSION` to `soup/version.h`.
 
+Add `SCCS` and `RCS` to ignored directory names - issue #1207.
+
+
 
 ## Release 2.4.11 2025-06-08
 
