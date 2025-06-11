@@ -1,6 +1,20 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.12 2025-06-11
+
+Bug fix `check_location_table()` - when the function was moved to
+`location_util.c` it broke the `__FILE__` macro in the check.
+
+Moved `LOCATION_VERSION` to `soup/version.h` (instead of
+`soup/location_main.c`).
+
+Updated `SOUP_VERSION` to `2.0.2 2025-06-11"`.
+Updated `LOCATION_VERSION` to `"1.0.5 2024-06-11"`.
+
+Run `make depend` for the move of `LOCATION_VERSION` to `soup/version.h`.
+
+
 ## Release 2.4.11 2025-06-08
 
 Don't install prep.sh or hostchk.sh. The uninstall rule still removes these

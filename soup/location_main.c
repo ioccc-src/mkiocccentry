@@ -58,12 +58,6 @@
 #include "location.h"
 
 /*
- * official location version
- */
-#define LOCATION_VERSION "1.0.4 2024-05-22"		/* format: major.minor YYYY-MM-DD */
-
-
-/*
  * usage message
  */
 static const char * const usage_msg =

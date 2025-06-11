@@ -62,6 +62,12 @@
  */
 #include "../dbg/dbg.h"
 
+/*
+ * version - official IOCCC toolkit versions
+ */
+#include "version.h"
+
+
 
 /*
  * macros
