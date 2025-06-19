@@ -1,5 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.13 2025-06-19
+
+Added support of globs with the `mkiocccentry` ignore option (`-I`). This
+involves syncing jparse/ from the jparse repo. It would appear that GitHub
+changed something with workflows so this might fail the workflow check. If so
+that might require a new issue or looking at later. In any case `make prep`
+works fine even if it does fail the workflow (it is not clear to me if it's due
+to the dependencies but the last commit to jparse worked fine and the build
+steps did not change at all).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.10 2025-06-19"`.
+
+
 
 ## Release 2.4.12 2025-06-11
 

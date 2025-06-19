@@ -1585,6 +1585,8 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     reset_fts(&fts, false); /* false means do not clear out ignored list */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
+    fts.ignore = infop->ignore_paths; /* do NOT free this list!! */
+    fts.fnmatch_flags = 0;
     /*
      * now that we have changed to the correct directory and gathered everything
      * we need to scan for files and directories, we can traverse the tree.
@@ -1628,6 +1630,9 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
              * NOTE: we do NOT need to check if the array is not allocated or
              * even if the string is not NULL (though it should not be) because
              * array_has_path() simply returns false in this case.
+             *
+             * Strictly speaking this MIGHT not be necessary but it does not
+             * hurt either.
              */
             if (array_has_path(infop->ignore_paths, ent->fts_path + 2, false, NULL)) {
                 /*
@@ -2992,6 +2997,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     reset_fts(&fts, false); /* false means do not clear out ignored list */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
+    fts.fnmatch_flags = 0;
+    fts.ignore = infop->ignore_paths;
 
     /*
      * now that we have changed to the submission directory and have run make

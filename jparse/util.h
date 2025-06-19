@@ -48,6 +48,7 @@
 #include <sys/types.h>  /* various things */
 #include <sys/stat.h>   /* for stat(2) and others */
 #include <fts.h>        /* FTS and FTSENT */
+#include <fnmatch.h>    /* for fnmatch(3) (for ignored paths - if desired) */
 
 
 /*
@@ -272,6 +273,7 @@ struct fts
     bool match_case;        /* true ==> case-sensitive match */
     struct dyn_array *ignore;   /* paths to ignore */
     int (*cmp)(const FTSENT **, const FTSENT **);   /* function pointer to use when traversing (NULL ==> fts_cmp()) */
+    int fnmatch_flags;      /* flags for fnmatch(3) for ignored list or < 0 (default) if undesired */
     bool(*check)(FTS *, FTSENT *);  /* function pointer to use to check an FTSENT * (NULL ==> check_fts_info()) */
     bool initialised;       /* internal use: after first call we can safely check pointers */
 };
