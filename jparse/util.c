@@ -9249,6 +9249,7 @@ check_invalid_option(char const *prog, int ch, int opt)
 #if defined(UTIL_TEST)
 
 #include <locale.h>
+#include <fnmatch.h>
 
 /*
  * jparse - JSON library
@@ -10986,8 +10987,8 @@ main(int argc, char **argv)
     fts.type = FTS_TYPE_FILE;
     fts.base = false; /* important */
     fts.match_case = false;
-    fts.fnmatch_flags = FNM_CASEFOLD;
-    append_path(&(fts.ignore), "UTIL*", true, false, true);
+    fts.fnmatch_flags = 0;
+    append_path(&(fts.ignore), "util*", true, false, true);
     ent = read_fts(".", -1, &cwd, &fts);
     if (ent == NULL) {
         err(160, __func__, "read_fts() returned a NULL pointer on \".\" for directories");
