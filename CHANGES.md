@@ -1,5 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.14 2025-06-20
+
+Address issue #1228. By request one may use the `-M manifest_file` option to
+specify what files to include in the topdir. This required updates to jparse/
+(from the jparse repo) and also soup/. Due to the nature of the lists of files
+(there being separate lists depending on the file) the `check_submission_dir()`
+function does not check that the directory does not have files not in the list.
+But given that the FTS functions would not find those files EXACTLY BECAUSE OF
+this option it can't be checked so this should not matter anyway. What it can
+and does check is that the required files are there and that everything else is
+sane, even if by some chance this option causes some insanity (i.e. a fileset
+that is not what one might usually expect) :-) (diagnosis not yet made :-) ).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.11 2025-06-20"`.
+Updated `SOUP_VERSION` to `"2.0.3 2025-06-20"`.
+
+
 ## Release 2.4.13 2025-06-19
 
 Added support of globs with the `mkiocccentry` ignore option (`-I`). This

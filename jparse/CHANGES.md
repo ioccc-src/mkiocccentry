@@ -1,6 +1,24 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.2.41 2025-06-20
+
+Changed `fnmatch_flags` in `struct fts` to `fn_ignore_flags` and added
+`fn_match_flags`. Added `struct dyn_array *match` for a list of paths (or if
+`fn_match_flags` >= 0 then globs for `fnmatch(3)`) to find. If a file matches
+then it will be 'returned' otherwise it'll be skipped. This does mean that a
+large list of files to find will make it slower. This is also by request for
+mkiocccentry.
+
+The function `reset_fts()` now takes a new boolean (sorry but it's necessary for
+this enhancement). If true it clears out the match list.
+
+Fix memory leak in `reset_fts()`.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.11 2025-06-20"`.
+Updated `UTIL_TEST_VERSION` to `"2.0.6 2025-06-20"`.
+
+
 ## Release 2.2.40 2025-06-19
 
 Added `fnmatch_flags` to `struct fts` for ignored list of files. This is by

@@ -410,7 +410,7 @@ main(int argc, char *argv[])
      * IMPORTANT: make SURE to memset(&fts, 0, sizeof(struct fts)) first!
      */
     memset(&fts, 0,sizeof(struct fts));
-    reset_fts(&fts, false); /* false means do not clear out ignored list (which is empty at this point) */
+    reset_fts(&fts, false, false); /* false , false: don't clear out ignore or match lists (empty at this point) */
 
     /*
      * parse args
@@ -1096,7 +1096,7 @@ main(int argc, char *argv[])
         /*
          * Now anything other than files and directories
          */
-        reset_fts(&fts, false);
+        reset_fts(&fts, false, false);
         fts.match_case = true; /* we must match case here */
         fts.type = FTS_TYPE_ANY & ~(FTS_TYPE_FILE|FTS_TYPE_DIR);
         /*
@@ -1506,7 +1506,7 @@ main(int argc, char *argv[])
         /*
          * free the array in fts if not NULL and reset to 0
          */
-        reset_fts(&fts, true);
+        reset_fts(&fts, true, true);
         /*
          * free the paths and found paths arrays too
          */

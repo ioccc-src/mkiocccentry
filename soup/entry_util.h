@@ -298,6 +298,7 @@ struct info
     struct dyn_array *unsafe_dirs;      /* unsafe directories */
     struct dyn_array *ignored_symlinks; /* ignored symlinks files */
     struct dyn_array *ignore_paths;     /* list of paths user requested we ignore (-I foo -I bar) */
+    struct dyn_array *manifest_paths;   /* list of paths to include from -M file */
 
     /*
      * JSON stuff

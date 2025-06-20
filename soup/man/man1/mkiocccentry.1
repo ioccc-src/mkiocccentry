@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH mkiocccentry 1 "10 March 2025" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "20 June 2025" "mkiocccentry" "IOCCC tools"
 .SH NAME
 .B mkiocccentry
 \- make an IOCCC compressed tarball for an IOCCC entry
@@ -385,6 +385,12 @@ option.
 If the path is a directory
 .BR mkiocccentry (1)
 will not traverse it.
+.TP
+.BI \-M\  manifest_file
+Read from file
+.I manifest_file
+what files to include from in the
+.BR topdir .
 .TP
 .BI \-r\  rm
 Set path to

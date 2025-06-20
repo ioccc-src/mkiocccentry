@@ -272,8 +272,10 @@ struct fts
     bool seedot;            /* true ==> analogous to FTS_SEEDOT */
     bool match_case;        /* true ==> case-sensitive match */
     struct dyn_array *ignore;   /* paths to ignore */
+    struct dyn_array *match;    /* list of globs (or files) that are allowed */
     int (*cmp)(const FTSENT **, const FTSENT **);   /* function pointer to use when traversing (NULL ==> fts_cmp()) */
-    int fnmatch_flags;      /* flags for fnmatch(3) for ignored list or < 0 (default) if undesired */
+    int fn_ignore_flags;    /* flags for fnmatch(3) for ignored list or < 0 (default) if undesired */
+    int fn_match_flags;     /* flags for fnmatch(3) to find (nothing else will be added) */
     bool(*check)(FTS *, FTSENT *);  /* function pointer to use to check an FTSENT * (NULL ==> check_fts_info()) */
     bool initialised;       /* internal use: after first call we can safely check pointers */
 };
@@ -301,7 +303,7 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern mode_t filemode(char const *path, bool printing);
 extern bool is_open_file_stream(FILE *stream);
-extern void reset_fts(struct fts *fts, bool free_ignored);
+extern void reset_fts(struct fts *fts, bool free_ignored, bool free_match);
 extern char *fts_path(FTSENT *ent);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_rcmp(const FTSENT **a, const FTSENT **b);

@@ -156,7 +156,8 @@ static const char * const usage_msg3 =
     "\t\t\t    NOTE: one cannot use -a/-A or -i with -s seed/-d.\n"
     "\t\t\t    NOTE: this is the only time -a/-A can be used with -i answers.\n"
     "\t-I path\t\tignore path (to file or directory) under topdir\n"
-    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -I args\n";
+    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -I args\n"
+    "\t-M path\t\tuse manifest file with list of files (one per line) to include from topdir\n";
 static const char * const usage_msg4 =
     "\t-x\t\tforce delete submission directory if it already exists (def: don't)\n"
     "\t-r rm\t\tset path to rm\n\n"
@@ -281,7 +282,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yYds:m:I:u:U:xr:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:qVt:l:a:i:A:WT:ef:F:C:yYds:m:I:u:U:xr:M:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, program, ""); /*ooo*/
@@ -427,6 +428,9 @@ main(int argc, char *argv[])
             break;
         case 'I': /* ignore a path */
             append_path(&info.ignore_paths, optarg, true, false, false);
+            break;
+        case 'M':
+            read_manifest(optarg, &info);
             break;
         case 'u':
             uuidfile = optarg;
@@ -1583,11 +1587,13 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      * IMPORTANT: make SURE to use memset(&fts, 0, sizeof(struct fts)) first!
      */
     memset(&fts, 0, sizeof(struct fts));
-    reset_fts(&fts, false); /* false means do not clear out ignored list */
+    reset_fts(&fts, false, false); /* false, false: do not clear out ignore or match lists */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
     fts.ignore = infop->ignore_paths; /* do NOT free this list!! */
-    fts.fnmatch_flags = 0;
+    fts.fn_ignore_flags = 0;
+    fts.fn_match_flags = 0;
+    fts.match = infop->manifest_paths;
     /*
      * now that we have changed to the correct directory and gathered everything
      * we need to scan for files and directories, we can traverse the tree.
@@ -1850,7 +1856,9 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                      * not the workdir; if it is we will not traverse it.
                      *
                      * NOTE: read_fts() will NEVER return a struct FTSENT * that has a
-                     * NULL fts_statp! Thus we do not need to check for it being NULL.
+                     * NULL fts_statp! Thus we do not need to check for it being
+                     * NULL (in fact, ent->fts_info would not be FTS_D in this
+                     * case).
                     */
                     if (ent->fts_statp->st_ino == workdir_st.st_ino && ent->fts_statp->st_dev == workdir_st.st_dev) {
                         /*
@@ -2995,11 +3003,13 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      * IMPORTANT: make SURE to use memset(&fts, 0, sizeof(struct fts)) first!
      */
     memset(&fts, 0, sizeof(struct fts));
-    reset_fts(&fts, false); /* false means do not clear out ignored list */
+    reset_fts(&fts, false, false); /* false, false: do not clear out ignore or match lists */
     fts.logical = false;
     fts.options = FTS_NOCHDIR | FTS_NOSTAT;
-    fts.fnmatch_flags = 0;
+    fts.fn_ignore_flags = 0;
     fts.ignore = infop->ignore_paths;
+    fts.fn_match_flags = 0;
+    fts.match = infop->manifest_paths;
 
     /*
      * now that we have changed to the submission directory and have run make
@@ -3126,7 +3136,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
 
                      /* NOTE: read_fts() will NEVER return a struct FTSENT *
                       * that has a NULL fts_statp! Thus we do not need to check
-                      * for it being NULL.
+                      * for it being NULL (in fact, ent->fts_info would not be
+                      * FTS_D here).
                       */
                     /*
                      * first of all, make sure the directory we just located is
@@ -9003,5 +9014,57 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
     if (ret < 0) {
 	errp(88, __func__, "printf error printing IOCCC enter FAQ URL");
 	not_reached();
+    }
+}
+
+/*
+ * read_manifest - read in a manifest file, adding to infop->manifest_paths
+ *
+ * given:
+ *      manifest    - path to FILE * to read
+ *      infop       - pointer to struct info from main()
+ *
+ * This function will not return on NULL pointers or errors.
+ */
+static void
+read_manifest(char const *manifest, struct info *infop)
+{
+    FILE *manf = NULL;
+    ssize_t readline_len = -1;
+    char *line = NULL;
+
+    /*
+     * firewall
+     */
+    if (manifest == NULL || !*manifest) {
+        err(3, __func__, "manifest path NULL or empty"); /*ooo*/
+        not_reached();
+    }
+    if (infop == NULL) {
+        err(89, __func__, "infop is NULL");
+        not_reached();
+    }
+
+    errno = 0; /* pre-clear errno for errp() */
+    manf = fopen(manifest, "r");
+    if (manf == NULL) {
+        err(3, __func__, "manifest file not found or not readable"); /*ooo*/
+        not_reached();
+    }
+
+    while ((readline_len = readline(&line, manf)) >= 0) {
+        append_path(&(infop->manifest_paths), line, true, false, false);
+        /*
+         * free storage
+         */
+        if (line != NULL) {
+            free(line);
+            line = NULL;
+        }
+    }
+
+    errno = 0; /* pre-clear errno for warnp() */
+    if (fclose(manf) != 0) {
+        warnp(__func__, "failed to close manifest file %s", manifest);
     }
 }

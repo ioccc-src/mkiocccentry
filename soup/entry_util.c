@@ -411,6 +411,11 @@ free_info(struct info *infop)
      */
     free_paths_array(&infop->ignore_paths, false);
     infop->ignore_paths = NULL;
+   /*
+     * user requested files from manifest file
+     */
+    free_paths_array(&infop->manifest_paths, false);
+    infop->manifest_paths = NULL;
 
     /*
      * zeroize the info structure
@@ -4044,7 +4049,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
      * not pass a struct fts * here nor should we.
      */
     memset(&fts, 0, sizeof(struct fts));
-    reset_fts(&fts, false); /* false means do not clear out ignored list */
+    reset_fts(&fts, false, false); /* false means do not clear out ignored or match lists */
     /*
      * Below we will have to check that the files in the manifest actually exist
      * in the submission directory. To do this we have to use the find_path() or
