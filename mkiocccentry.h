@@ -205,6 +205,7 @@ static void remind_user(char const *workdir, char const *submission_dir, char co
 static void show_registration_url(void);
 static void show_submit_url(char const *workdir, char const *tarball_path, int slot_number);
 static void read_manifest(char const *manifest, struct info *infop);
+static void read_ignore(char const *ignore, struct info *infop);
 
 static long answer_seed = NO_SEED;	/* if != 0 ==> srandom argument used to seed generation of answers */
 #endif /* INCLUDE_MKIOCCCENTRY_H */
