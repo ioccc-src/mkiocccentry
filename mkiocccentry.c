@@ -1188,8 +1188,9 @@ main(int argc, char *argv[])
  *	str		string to search array and append if not already found
  *	fn              true => use fnmatch(3)
  *
- * NOTE: this function does not return if given NULL pointers, on any error or
- * if the string is already in the array.
+ * NOTE: this function does not return if given NULL pointers or on any error.
+ *
+ * NOTE: if the string is already in the array it does nothing.
  */
 static void
 append_unique_filename(struct dyn_array *array, char *str, bool fn)
@@ -1211,8 +1212,7 @@ append_unique_filename(struct dyn_array *array, char *str, bool fn)
      */
     if (array_has_path(array, str, false, fn, NULL)) {
         /* str found in array */
-        err(4, __func__, "path already in array: %s", str);/*ooo*/
-        not_reached();
+        return;
     }
 
     /*

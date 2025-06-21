@@ -13,6 +13,12 @@ Fix bug with globs in manifest and ignore lists. Now when checking lists that
 can have a glob in an item it uses the updated jparse routines that take a new
 `bool fn`.
 
+Change `append_unique_filename()` to not abort when the filename already exists
+in the array. This is important in case (for example) someone has a directory
+named as a forbidden filename. It does not hurt to have the function return
+doing nothing and given the error message that was given it would have been very
+confusing to someone not familiar with the code.
+
 Updated `MKIOCCCENTRY_VERSION` to `"2.0.12 2025-06-21"`.
 Updated `CHKENTRY_VERSION` to `"2.0.6 2025-06-21"`.
 Updated `SOUP_VERSION` to `"2.0.4 2025-06-21"`.
