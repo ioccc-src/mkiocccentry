@@ -519,7 +519,7 @@ main(int argc, char *argv[])
         }
 
         /*
-         * add to ignore list the ignored files and directories
+         * add to ignore list the ignored directories
          */
         for (c = 0; ignored_dirnames[c] != NULL; ++c) {
             add_ignore_subpath(ignored_dirnames[c], &fts);
@@ -1109,11 +1109,6 @@ main(int argc, char *argv[])
          * NOTE: an empty string means find all paths not ignored. And since the
          * list of paths to ignore is already in the fts->ignore list we
          * don't need to do anything special.
-         *
-         * XXX - there appears to be a bug or issue in the find_paths() function
-         * and during IOCCC28 that cannot be looked at in more detail. Thus we
-         * also do check if the path is in our ignore list. After IOCCC28 closes
-         * this can be looked at more.
          */
         found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
         if (found != NULL) {
@@ -1128,15 +1123,6 @@ main(int argc, char *argv[])
                 if (u == NULL) {
                     err(72, __func__, "NULL pointer in found files list");
                     not_reached();
-                }
-
-                /*
-                 * XXX - temporary workaround for ignored paths that are not
-                 * files/directories until a better fix can be done (post
-                 * IOCCC28)
-                 */
-                if (find_path_in_array(u, ignored_paths, true, false, NULL)) {
-                    continue;
                 }
 
                 /*

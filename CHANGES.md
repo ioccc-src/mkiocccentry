@@ -1,5 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.16 2025-06-22
+
+Address issue #1272. There indeed was an issue in an FTS routine in
+jparse/util.c. The issue was that the `-i path` option added to the struct fts
+but when `reset_fts()` was called in all cases the ignore list was set to NULL,
+even when it was already initialised AND `free_ignored` was false. As of
+yesterday or the day before this bug was fixed so the additional code in
+chkentry was removed as the workaround is no longer needed.
+
+Updated `CHKENTRY_VERSION` to `"2.0.7 2025-06-22"`.
+
+
 ## Release 2.4.15 2025-06-21
 
 Address issue #1216. By using `-X file` (X for eXclude) one can provide a file
