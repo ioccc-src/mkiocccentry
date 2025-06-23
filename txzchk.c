@@ -1392,8 +1392,10 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
     }
     /* check for sum of total file lengths being too big */
     if (*sum > MAX_SUM_FILELEN) {
-	++tarball.total_feathers;
-	++tarball.files_size_too_big;
+        if (tarball.previous_files_size <= MAX_SUM_FILELEN) {
+            ++tarball.total_feathers;
+            ++tarball.files_size_too_big;
+        }
 	warn("txzchk", "%s: total file size too big: %jd > %jd", tarball_path,
 	    *sum, (intmax_t)MAX_SUM_FILELEN);
     }
