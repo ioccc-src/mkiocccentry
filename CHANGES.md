@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.17 2025-06-23
+
+Fix error messages in `fnamchk`.
+
+Updated `FNAMCHK_VERSION` to `"2.0.2 2025-0l-23"`.
+
+
 ## Release 2.4.16 2025-06-22
 
 Address issue #1272. There indeed was an issue in an FTS routine in

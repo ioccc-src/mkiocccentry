@@ -233,7 +233,7 @@ main(int argc, char *argv[])
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	/* if it starts as "test-" and -u was specified it's an error */
 	if (!test_mode) {
-	    err(59, __func__, "-t not specified with filename that starts as a test mode filename: %s", filename);
+	    err(59, __func__, "-t not specified with filename that starts as a test mode filename: %s", filepath);
             not_reached();
         }
 
@@ -271,7 +271,7 @@ main(int argc, char *argv[])
 	 * "submit.test-") then it's an error.
 	 */
 	if (test_mode) {
-	    err(63, __func__, "-t specified and filename does not start with \"submit.test-\": %s", filename);
+	    err(63, __func__, "-t specified and filename does not start with \"submit.test-\": %s", filepath);
 	    not_reached();
         }
 
@@ -317,7 +317,7 @@ main(int argc, char *argv[])
      */
     timestamp_str = strtok_r(NULL, ".", &saveptr);
     if (timestamp_str == NULL) {
-	err(69, __func__, "nothing found after second '.' separated token of submit number");
+	err(69, __func__, "nothing found after second '.' separated token of submit number: %s", filepath);
 	not_reached();
     }
     if (!ignore_timestamp) {
@@ -338,7 +338,7 @@ main(int argc, char *argv[])
      */
     extension = strtok_r(NULL, ".", &saveptr);
     if (extension == NULL) {
-	err(72, __func__, "nothing found after third '.' separated token of timestamp");
+	err(72, __func__, "nothing found after third '.' separated token of timestamp: %s", filepath);
 	not_reached();
     }
     if (strcmp(extension, ext) != 0) {

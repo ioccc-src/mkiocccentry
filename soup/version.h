@@ -83,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.16 2025-06-22"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.17 2025-06-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -126,7 +126,7 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.0.1 2025-03-14"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.0.2 2025-0l-23"	/* format: major.minor YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION "2.0.0 2025-02-28"
 
 /*
