@@ -272,13 +272,10 @@ struct info
     bool rule_2a_override;	/* true ==> Rule 2a override requested */
     bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
     bool rule_2b_override;	/* true ==> Rule 2b override requested */
-    bool highbit_warning;	/* true ==> high bit character(s) detected */
-    bool nul_warning;		/* true ==> NUL character(s) detected */
     bool trigraph_warning;	/* true ==> unknown or invalid trigraph(s) detected */
     bool wordbuf_warning;	/* true ==> word buffer overflow detected */
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
-    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
     bool found_all_rule;	/* true ==> Makefile has an all rule */
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
@@ -371,7 +368,6 @@ extern bool test_empty_override(bool boolean);
 extern bool test_submit_slot(int submit_slot);
 extern bool test_extra_filename(char const *str);
 extern bool test_filename_len(char const *str);
-extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char const *str);
 extern bool test_formed_timestamp(time_t tstamp);
 extern bool test_formed_timestamp_usec(int formed_timestamp_usec);
@@ -380,7 +376,6 @@ extern bool test_found_clean_rule(bool boolean);
 extern bool test_found_clobber_rule(bool boolean);
 extern bool test_found_try_rule(bool boolean);
 extern bool test_github(char const *str);
-extern bool test_highbit_warning(bool boolean);
 extern bool test_info_JSON(char const *str);
 extern bool test_IOCCC_contest(char const *str);
 extern bool test_IOCCC_year(int IOCCC_year);
@@ -393,7 +388,6 @@ extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);
 extern bool test_name(char const *str);
 extern bool test_no_comment(char const *str);
-extern bool test_nul_warning(bool boolean);
 extern bool test_past_winning_author(bool boolean);
 extern bool test_remarks(char const *str);
 extern bool test_rule_2a_mismatch(bool boolean);

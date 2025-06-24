@@ -1,5 +1,40 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.18 2025-06-24
+
+Resolve issue #1222. Removed the JSON members (from .info.json file):
+`first_rule_is_all`, `highbit_warning` and `nul_warning`. The template
+.info.json file
+(`test_ioccc/template.test_JSON/info.json/good/info.reference.json`)  was
+updated to no longer have these members and the other JSON files under
+`test_ioccc/template.test_JSON/` that referred to the members no longer do (this
+was done with my [sgit](https://github.com/xexyl/sgit) and manual editing of the
+two files without spaces outside of strings).
+
+The JSON files under jparse which have these members were not updated as that's
+out of scope and is entirely unnecessary (although a couple minor updates were
+made to its README.md file).
+
+The files under `soup/` including the semantics tables (base and patch files
+were updated, some automatically and some by hand - see below on this point).
+Other code was updated as well for this update.
+
+`mkiocccentry` no longer checks, warns or writes these members to the .info.json
+file. The `struct info` no longer has these bools. If `chkentry` were to
+encounter any of these members it will now flag it as an error.
+
+I observe that the iocccsize related file `soup/rule_count.c` does in fact still
+refer to `nul_warning` but it does not refer to `highbit_warning`. This is
+because the NUL one came later; @SirWumpus directed me in this after Landon
+requested I remove it. But as neither mkiocccentry nor chkentry care about this
+it won't cause any problems.
+
+This took a lot of work and all the more reason does issue #1171 need to be
+resolved. However that will very likely require an update to the [jparse
+repo](https://github.com/xexyl/jparse) as well. But in any case the issue #1222
+should now be resolved.
+
+
 ## Release 2.4.17 2025-06-23
 
 Fix error messages in `fnamchk`.

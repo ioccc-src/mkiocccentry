@@ -1,5 +1,5 @@
---- ref/auth.reference.json.h	2025-02-22 23:00:29
-+++ chk_sem_auth.h	2025-02-22 23:58:24
+--- ref/auth.reference.json.h	2025-06-24 08:43:22
++++ chk_sem_auth.h	2025-06-24 08:38:33
 @@ -33,19 +33,17 @@
  /*
   * json_sem - JSON semantics support

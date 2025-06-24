@@ -3209,28 +3209,6 @@ test_filename_len(char const *str)
 }
 
 /*
- * test_first_rule_is_all - test if first_rule_is_all is valid
- *
- * Determine if first_rule_is_all boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_first_rule_is_all(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
  * test_fnamchk_version - test if fnamchk_version is valid
  *
  * Determine if fnamchk_version matches FNAMCHK_VERSION.
@@ -3554,29 +3532,6 @@ test_github(char const *str)
     json_dbg(JSON_DBG_MED, __func__, "github is valid");
     return true;
 }
-
-
-/*
- * test_highbit_warning - test if highbit_warning is valid
- *
- * Determine if highbit_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_highbit_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
-    return true;
-}
-
 
 /*
  * test_info_JSON - test if info_JSON is valid
@@ -4549,29 +4504,6 @@ test_no_comment(char const *str)
     return true;
 
 }
-
-
-/*
- * test_nul_warning - test if nul_warning is valid
- *
- * Determine if nul_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_nul_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
-    return true;
-}
-
 
 /*
  * test_past_winning_author - test if past_winning_author is valid

@@ -1,4 +1,4 @@
-_README.md last updated: 21 January 2025
+_README.md last updated: 24 June 2025_
 
 # jparse -  JSON parser, library and tools written in C
 
@@ -38,6 +38,12 @@ The `jparse` library is much more useful for C programmers because you can
 integrate it into your own applications and work with the parsed tree(s). For
 information on using the `jparse` library, we refer you to the file
 [jparse_library_README.md](https://github.com/xexyl/jparse/blob/master/jparse_library_README.md).
+
+The [util.c](https://github.com/xexyl/jparse/blob/master/util.c) file has some
+functions that are out of scope. This is mostly a carry-over from `jparse`'s
+[mkiocccentry](https://github.com/ioccc-src/mkiocccentry) origin and the way it
+is used there. Nonetheless there are many useful functions, a fair few used by
+jparse itself and many that are not but are nonetheless useful.
 
 We also do recommend that you read the
 [json_README.md](https://github.com/xexyl/jparse/blob/master/json_README.md)
