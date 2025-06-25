@@ -99,10 +99,8 @@ utf8len(const char *str, int32_t surrogate)
      */
     scanned = sscanf(str, "\\u%c%c%c%c", &xa, &xb, &xc, &xd);
     if (scanned != 4) {
-	warn(__func__, "did not find \\u followed by four HEX digits: %ju values: <%s>: %x %x %x %x", (uintmax_t)scanned, str,
-		xa, xb, xc, xd);
+	warn(__func__, "expected \\u followed by FOUR HEX digits, only got %d", scanned);
 	len = -1;
-
 	return len;
     } else {
 	/*
@@ -155,20 +153,67 @@ utf8len(const char *str, int32_t surrogate)
 }
 
 /*
- * The below functions are based on code from
- * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes made by us.
+ * surrogate_pair_to_codepoint - convert surrogate pair to a single codepoint
+ *
+ * given:
+ *
+ *      hi  - high byte
+ *      lo  - low byte
+ * NOTE: if a value is out of range the function will return a negative number.
  */
+int32_t
+surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
+{
+    int32_t codepoint;
+
+    /*
+     * sanity checks
+     *
+     * These should theoretically never happen.
+     */
+    if (hi < 0 && lo < 0) {
+        warn(__func__, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
+        return -1;
+    } else if (hi < 0) {
+        warn(__func__, "hi %jd < 0", (intmax_t)hi);
+        return -1;
+    } else if (lo < 0) {
+        warn(__func__, "lo %jd < 0", (intmax_t)lo);
+        return -1;
+    }
+
+    if (hi < 0xD800 || hi > 0xDBFF) {
+        warn(__func__, "hi < 0xD800 or > 0xDBFF");
+        return -1;
+    } else if (lo < 0xDC00 || lo > 0xDFFF) {
+        warn(__func__, "lo < 0xDC00 or > 0xDFFF");
+	return -1;
+    }
+    codepoint = ((hi - 0xD800) << 10) + (lo - 0xDC00) + 0x10000;
+    dbg(DBG_MED, "codepoint: %jd", (intmax_t)codepoint);
+    return codepoint;
+}
 
 /*
- * NOTE: the following comment describes the function utf8encode() but we have
- * renamed it because in JSON in BOTH encoding and decoding it should convert
- * \uxxxx to unicode. This is by all sources seen called encoding but since this
- * is a JSON library, to be less confusing, we call it utf8_to_unicode().
+ * codepoint_to_unicode - convert a codepoint to Unicode
  *
- * --
+ * given:
+ *      output      - buffer to write output Unicode to
+ *      codepoint   - codepoint to convert to Unicode
  *
- * UTF8 valid ranges.
+ * NOTE: it is the caller's responsibility to ensure that the output buffer is
+ * big enough for the result + the terminating NUL byte.
+ *
+ * NOTE: if the output buffer is NULL this function will not return.
+ *
+ * NOTE: if an error occurs this function returns a negative number.
+ *
+ * The below comments come from
+ * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c
+ * which we leave for posterity, even though we no longer use their code (the
+ * constants notwithstanding as we have no choice in the matter):
+ *
+ * UTF8 valid ranges
  *
  * The UTF-8 decoding spreads the bits of a 32bit word over several
  * bytes. This table gives the ranges that can be held and how they'd
@@ -216,137 +261,87 @@ utf8len(const char *str, int32_t surrogate)
  *
  */
 int
-utf8_to_unicode(char *str, unsigned int val)
+codepoint_to_unicode(char *output, unsigned int codepoint)
 {
     int len = -1;
 
     /*
      * firewall
      */
-    if (str == NULL) {
-	err(10, __func__, "str is NULL");
+    if (output == NULL) {
+	err(10, __func__, "output is NULL");
 	not_reached();
     }
 
-    if (val >= UNI_SUR_HIGH_START && val <= UNI_SUR_LOW_END) {
-	warn(__func__, "codepoint: %X: illegal surrogate", val);
-	len = UNICODE_SURROGATE_PAIR;
-    } else if (val < 0x80) {
-	dbg(DBG_VVHIGH, "%s: val: %X < 0x80", __func__, val);
-	str[0] = val;
-	len = 1;
-    } else if (val < 0x800) {
-	dbg(DBG_VVHIGH, "%s: val: %X < 0x800", __func__, val);
-	str[1] = val & UTF8_V_MASK;
-	str[1] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[0] = val;
-	str[0] |= UTF8_2_BITS;
-	len = 2;
-    } else if (val < 0x10000) {
-	dbg(DBG_VVHIGH, "%s: val: %X < 0x10000", __func__, val);
-	str[2] = val & UTF8_V_MASK;
-	str[2] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[1] = val & UTF8_V_MASK;
-	str[1] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[0] = val;
-	str[0] |= UTF8_3_BITS;
-	len = 3;
-    } else if (val < 0x110000) {
-	dbg(DBG_VVHIGH, "%s: val: %X < 0x110000", __func__, val);
-	str[3] = val & UTF8_V_MASK;
-	str[3] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[2] = val & UTF8_V_MASK;
-	str[2] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[1] = val & UTF8_V_MASK;
-	str[1] |= UTF8_N_BITS;
-	val >>= UTF8_V_SHIFT;
-	str[0] = val;
-	str[0] |= UTF8_4_BITS;
-	len = 4;
+    if (codepoint >= 0xD800 && codepoint <= 0xDFFF) {
+	warn(__func__, "codepoint: %X: illegal surrogate", codepoint);
+	len = -2;
+    } else if (codepoint <= 0x7F) {
+        output[0] = (char)codepoint;
+        output[1] = '\0';
+        len = 1;
+        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x7F", __func__, codepoint);
+    } else if (codepoint <= 0x7FF) {
+        output[0] = (char)(0xC0 | (codepoint >> 6));
+        output[1] = (char)(0x80 | (codepoint & 0x3F));
+        output[2] = '\0';
+        len = 2;
+        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x7FF", __func__, codepoint);
+    } else if (codepoint <= 0xFFFF) {
+        output[0] = (char)(0xE0 | (codepoint >> 12));
+        output[1] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+        output[2] = (char)(0x80 | (codepoint & 0x3F));
+        output[3] = '\0';
+        len = 3;
+        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0xFFFF", __func__, codepoint);
+    } else if (codepoint <= 0x10FFFF) {
+        output[0] = (char)(0xF0 | (codepoint >> 18));
+        output[1] = (char)(0x80 | ((codepoint >> 12) & 0x3F));
+        output[2] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+        output[3] = (char)(0x80 | (codepoint & 0x3F));
+        output[4] = '\0';
+        len = 4;
+        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x10FFFF", __func__, codepoint);
     } else {
+	warn(__func__, "illegal value: %#X too big\n", codepoint);
 	len = -1;
-	warn(__func__, "illegal value: %#X too big\n", val);
-	len = UNICODE_TOO_BIG;
     }
 
     return len;
 }
 
-
 /*
- * The above function is based on code from
- * https://lxr.missinglinkelectronics.com/linux+v5.19/fs/unicode/mkutf8data.c,
- * with a number of changes made by us.
- */
-
-/*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
- */
-
-/*
- * The below function (with some extra sanity checks added by us) come from
- * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode library
- * in the programming language C which deals with conversions to and from the
- * UTF-8 format', and was written by:
+ * utf8_to_codepoint - convert UTF-8 byte(s) to a codepoint
  *
- *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
- */
-
-
-/*
- * Convert a surrogate pair in "hi" and "lo" to a single Unicode value. The
- * return value is the Unicode value. If the return value is negative, an error
- * has occurred. If "hi" and "lo" do not form a surrogate pair, the error value
- * UNICODE_NOT_SURROGATE_PAIR is returned.
+ * given:
+ *      str - UTF-8 byte(s)
  *
- * https://android.googlesource.com/platform/external/id3lib/+/master/unicode.org/ConvertUTF.c.
+ * Returns the codepoint assuming no error occurs.
+ *
+ * NOTE: this function will not return on a NULL pointer.
  */
-int32_t
-surrogates_to_unicode(int32_t hi, int32_t lo)
+uint32_t utf8_to_codepoint(const char *str)
 {
-    int32_t u;
+    unsigned char c = '\0';
 
     /*
-     * sanity checks
-     *
-     * These should theoretically never happen.
+     * firewall
      */
-    if (hi < 0 && lo < 0) {
-        warn(__func__, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
-        return UNICODE_NOT_SURROGATE_PAIR;
-    } else if (hi < 0) {
-        warn(__func__, "hi %jd < 0", (intmax_t)hi);
-        return UNICODE_NOT_SURROGATE_PAIR;
-    } else if (lo < 0) {
-        warn(__func__, "lo %jd < 0", (intmax_t)lo);
-        return UNICODE_NOT_SURROGATE_PAIR;
+    if (str == NULL || *str == '\0') {
+        err(55, __func__, "str is NULL or empty");
+        not_reached();
     }
 
-    if (hi < UNI_SUR_HIGH_START || hi > UNI_SUR_HIGH_END ||
-	lo < UNI_SUR_LOW_START || lo > UNI_SUR_LOW_END) {
-	return UNICODE_NOT_SURROGATE_PAIR;
+    c = str[0];
+    if ((str[0] & 0x80) == 0) {
+        return *str;
+    } else if ((c & 0xE0) == 0xC0 && str[1] != '\0') {
+        return ((*str & 0x1F) << 6) | (str[1] & 0x3F);
+    } else if ((*str & 0xF0) == 0xE0 && str[1] != '\0' && str[2] != '\0') {
+        return ((*str & 0x0F) << 12) | ((str[1] & 0x3F) << 6) | (str[2] & 0x3F);
+    } else if ((c & 0xF8) == 0xF0 && str[1] != '\0' && str[2] != '\0' && str[3] != '\0') {
+        return ((*str & 0x07) << 18) | ((str[1] & 0x3F) << 12) | ((str[2] & 0x3F) << 6) | (str[3] & 0x3F);
     }
-
-    u = ((hi - UNI_SUR_HIGH_START) << TEN_BITS)
-      + (lo - UNI_SUR_LOW_START) + HALF_BASE;
-
-    return u;
+    warn(__func__, "invalid UTF-8 sequence");
+    return 0;
 }
-
-/*
- * The above function (with some extra sanity checks added by us) come from
- * https://github.com/benkasminbullock/unicode-c/, which is 'a Unicode which is
- * 'a Unicode library in the programming language C which deals with conversions
- * to and from the UTF-8 format', and was written by:
- *
- *	Ben Bullock <benkasminbullock@gmail.com>, <bkb@cpan.org>
- */
-
-/*
- * -=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=-=-=-=---=-=-=-=-=-=-=-=-=
- */

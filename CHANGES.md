@@ -10,6 +10,9 @@ repo](https://github.com/xexyl/jparse/) as well.
 
 Updated `BUG_REPORT_VERSION` to `"1.0.11 2025-06-25"`.
 
+Sync additional updates from jparse - rewrote UTF code (though an issue still
+remains).
+
 
 ## Release 2.4.18 2025-06-24
 
