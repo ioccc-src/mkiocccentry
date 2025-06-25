@@ -1,7 +1,14 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.43 2025-06-25
 
-## Release 2.2.41 2025-06-20
+Fix `jparse_bug_report.sh` to check if one is inside a repo (hopefully jparse
+:-) ) prior to running git commands.
+
+Updated `BUG_REPORT_VERSION` to `"2.1.1 2025-06-25"`.
+
+
+## Release 2.2.42 2025-06-20
 
 Fix bug in checking arrays for paths to honour `fnmatch(3)`. The following
 function prototypes have changed with a new `bool fn`:
