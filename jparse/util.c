@@ -3946,7 +3946,7 @@ fd_is_ready(char const *name, bool open_test_only, int fd)
  *	flush_stdin	- true ==> stdin should be flushed as well as stdout and stderr,
  *			  false ==> only flush stdout and stderr
  *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
- *			            return EXIT_CALLOC_FAILED malloc() failure,
+ *			            return EXIT_CALLOC_FAILED calloc() failure,
  *			            return EXIT_FFLUSH_FAILED on fflush failure,
  *			            return EXIT_SYSTEM_FAILED if system() failed,
  *			            return EXIT_NULL_ARGS if NULL pointers were passed
@@ -4196,7 +4196,7 @@ is_empty(char const *path)
 
 
 /*
- * cmdprintf - malloc a safer shell command line for use with system() and popen()
+ * cmdprintf - calloc a safer shell command line for use with system() and popen()
  *
  * For each % in the format, the next argument from the list argument list (which
  * is assumed to be of type char *) is processed, escaping special characters that
@@ -4253,7 +4253,7 @@ cmdprintf(char const *fmt, ...)
 
 
 /*
- * vcmdprintf - malloc a safer shell command line for use with system() and popen() in va_list form
+ * vcmdprintf - calloc a safer shell command line for use with system() and popen() in va_list form
  *
  * This is a va_list form of cmdprintf().
  *
@@ -4593,7 +4593,7 @@ resolve_path(char const *cmd)
  *	flush_stdin	- true ==> stdin should be flushed as well as stdout and stderr,
  *			  false ==> only flush stdout and stderr
  *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
- *			            return EXIT_CALLOC_FAILED malloc() failure,
+ *			            return EXIT_CALLOC_FAILED calloc() failure,
  *			            return EXIT_FFLUSH_FAILED on fflush failure,
  *			            return EXIT_SYSTEM_FAILED if system() failed,
  *			            return EXIT_NULL_ARGS if NULL pointers were passed
@@ -5338,7 +5338,7 @@ pr(char const *name, char const *fmt, ...)
  *
  * given:
  *      linep   - allocated line buffer (may be realloced) or ptr to NULL
- *                NULL ==> getline() will malloc() the linep buffer
+ *                NULL ==> getline() will calloc() the linep buffer
  *                else ==> getline() might realloc() the linep buffer
  *      stream - file stream to read from
  *
@@ -5411,7 +5411,7 @@ readline(char **linep, FILE * stream)
  *
  * given:
  *      linep   - allocated line buffer (may be realloced) or ptr to NULL
- *                NULL ==> getline() will malloc() the linep buffer
+ *                NULL ==> getline() will calloc() the linep buffer
  *                else ==> getline() might realloc() the linep buffer
  *      strip   - true ==> remove trailing whitespace,
  *                false ==> only remove the trailing newline
@@ -5460,7 +5460,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * duplicate the line
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc((size_t)len+1+1, sizeof(char));
+    ret = calloc((size_t)len+1+1, sizeof(*ret));
     if (ret == NULL) {
 	errp(186, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
@@ -5504,7 +5504,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	psize	    - if psize != NULL, *psize is the amount of data read
  *
  * returns:
- *	malloc buffer containing the entire contents of stream,
+ *	calloc buffer containing the entire contents of stream,
  *	or NULL is an error occurred.
  *
  * This function will update *psize, if it was non-NULL, to indicate
@@ -5521,7 +5521,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  * These extra bytes(s) WILL be set to NUL.  Thus, a file or stream
  * without a NUL byte will return a NUL terminated C-style string.
  *
- * If no data is read, the malloc buffer will still be NUL terminated.
+ * If no data is read, the calloc buffer will still be NUL terminated.
  *
  * If one is using is_string() to check if the data read is a string,
  * one should check for ONE EXTRA BYTE!  That is:
@@ -9057,7 +9057,7 @@ char *
 calloc_path(char const *dirname, char const *filename)
 {
     int ret = -1;		/* libc return status */
-    char *buf = NULL;		/* malloced string to return */
+    char *buf = NULL;		/* calloced string to return */
     size_t len;			/* length of path */
 
     /*
@@ -9076,7 +9076,7 @@ calloc_path(char const *dirname, char const *filename)
     if (dirname == NULL) {
 
 	/*
-	 * just return a newly malloced filename
+	 * just return a newly calloced filename
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
@@ -9093,10 +9093,10 @@ calloc_path(char const *dirname, char const *filename)
     } else {
 
 	/*
-	 * malloc string
+	 * calloc string
 	 */
 	len = strlen(dirname) + 1 + strlen(filename) + 1; /* + 1 for NUL */
-	buf = calloc(len+2, sizeof(char));	/* + 1 for paranoia padding */
+	buf = calloc(len+2, sizeof(*buf));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
 	    errp(248, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
@@ -9125,7 +9125,7 @@ calloc_path(char const *dirname, char const *filename)
     }
 
     /*
-     * return malloc path
+     * return calloc path
      */
     if (buf == NULL) {
 	errp(10, __func__, "function attempted to return NULL");

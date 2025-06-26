@@ -94,7 +94,7 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "2.2.2 2025-03-15"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "2.2.3 2025-06-26"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

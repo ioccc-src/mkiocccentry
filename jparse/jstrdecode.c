@@ -185,8 +185,8 @@ add_decoded_string(char *string, size_t bufsiz)
  *	inputlen    pointer to the length of the input buffer
  *
  * returns:
- *	malloced buffer without any newlines
- *	NULL ==> malloc error, or NULL argument
+ *	calloced buffer without any newlines
+ *	NULL ==> calloc error, or NULL argument
  *
  * NOTE: If newlines were removed in the copy, then *inputlen will be updated
  *	 to account for the new length.
@@ -213,9 +213,9 @@ dup_without_nl(char *input, size_t *inputlen)
     /*
      * copy input removing all newlines
      */
-    dup_input = malloc(*inputlen + 1);	/* + 1 for guard NUL byte */
+    dup_input = calloc(*inputlen + 1, sizeof(*dup_input));	/* + 1 for guard NUL byte */
     if (dup_input == NULL) {
-	warn(__func__, "malloc of input failed");
+	warn(__func__, "calloc of input failed");
 	return NULL;
     }
     for (i=0, j=0; i < *inputlen; ++i) {

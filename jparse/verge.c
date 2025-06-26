@@ -359,7 +359,7 @@ allocate_vers(char *str, intmax_t **pvers)
      * Allocate the array of dot_count+1 versions.
      */
     errno = 0;		/* pre-clear errno for errp() */
-    *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(intmax_t));
+    *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(**pvers));
     if (*pvers == NULL) {
 	errp(59, __func__, "cannot calloc %ju intmax_ts", (uintmax_t)dot_count+1+1);
 	not_reached();

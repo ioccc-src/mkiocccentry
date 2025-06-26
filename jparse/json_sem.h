@@ -92,8 +92,8 @@ struct json_sem_count_err
     bool unknown_node;		/* true ==> JSON node is not known to JSON semantics */
     int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     char *diagnostic;		/* diagnostic message or NULL */
-    bool malloced;		/* true ==> struct diagnostic malloced */
-				/* false ==> diagnostic is a non-malloced static string */
+    bool calloced;		/* true ==> struct diagnostic calloced */
+				/* false ==> diagnostic is a non-calloced static string */
 };
 
 /*
@@ -109,8 +109,8 @@ struct json_sem_val_err
     struct json_sem const *sem;	/* semantic node in question or NULL */
     int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     char *diagnostic;		/* diagnostic message or NULL */
-    bool malloced;		/* true ==> struct diagnostic malloced */
-				/* false ==> diagnostic is a non-malloced static string */
+    bool calloced;		/* true ==> struct diagnostic calloced */
+				/* false ==> diagnostic is a non-calloced static string */
 };
 
 /*

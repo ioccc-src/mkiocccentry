@@ -1,5 +1,21 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.44 2025-06-26
+
+Changed remaining calls of `malloc()` to `calloc()` outside of the generated
+code. Also, don't do `foo = calloc(size, sizeof(char))` etc. but instead do `foo
+= calloc(size, sizeof(*foo))`. The boolean that existed, `malloced`, was also
+changed to `calloced`. Comments for code that had already been changed to use
+`calloc(3)` but still said `malloced` were changed as well.
+
+Updated `JSEMTBLGEN_VERSION` to `"2.0.2 2025-06-26"`.
+Updated `JSTRDECODE_VERSION` to `"2.2.3 2025-06-26"`.
+Updated `JSTRENCODE_VERSION` to `"2.2.3 2025-06-26"`.
+Updated `VERGE_VERSION` to `"2.0.3 2025-06-26"`.
+Updated `JPARSE_LIBRARY_VERSION` to `"2.3.1 2025-06-26"`.
+Updated `JPARSE_UTILS_VERSION` to `"2.0.13 2025-06-26"`.
+
+
 ## Release 2.2.43 2025-06-25
 
 Fix `jparse_bug_report.sh` to check if one is inside a repo (hopefully jparse

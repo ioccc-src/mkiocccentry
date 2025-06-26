@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.20 2025-06-26
+
+Sync `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). Made
+last calls to malloc() use calloc() instead - and do not assume the type either,
+just use `foo = calloc(size, sizeof(*foo))`.
+
+
 ## Release 2.4.19 2025-06-25
 
 Fix `bug_report.sh` to check if one is inside a repo (hopefully mkiocccentry :-)
