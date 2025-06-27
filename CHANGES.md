@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.21 2025-06-27
+
+Change last calls (outside of `jparse` generated code and the code in
+`dyn_array` as that's part of another repo) of `malloc()` to `calloc()`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.15 2025-06-25"`.
+Updated `SOUP_VERSION` to `"2.0.6 2025-06-27"`.
+
+
 ## Release 2.4.20 2025-06-26
 
 Sync `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). Made

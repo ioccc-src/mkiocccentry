@@ -2027,7 +2027,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
      */
     tarball_len = LITLEN("submit.") + strlen(IOCCC_contest_id) + 1 + MAX_SUBMIT_SLOT_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for warnp() */
-    tarball_filename = (char *)malloc(tarball_len + 1);
+    tarball_filename = (char *)calloc(tarball_len + 1, sizeof(*tarball_filename));
     if (tarball_filename == NULL) {
 	warnp(__func__, "malloc #1 of %ju bytes failed", (uintmax_t)(tarball_len + 1));
 	return NULL;

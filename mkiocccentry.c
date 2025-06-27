@@ -551,9 +551,9 @@ main(int argc, char *argv[])
 	 *	random_answers.answer_seed
 	 */
 	answer_len = (sizeof("random_answers.")-1) + SEED_DECIMAL_DIGITS + 1 + 1;   /* +1 for NULL, +1 for paranoia */
-	answers = malloc((size_t)answer_len + 1);	/* +1 for paranoia */
+	answers = calloc((size_t)answer_len + 1, sizeof(*answers));	/* +1 for paranoia */
 	if (answers == NULL) {
-	    err(3, __func__, "failed to malloc %d bytes for answers filename", answer_len + 1); /*ooo*/
+	    err(3, __func__, "failed to calloc %d bytes for answers filename", answer_len + 1); /*ooo*/
 	    not_reached();
 	}
 	answers[answer_len] = '\0';		/* paranoia */
@@ -4673,7 +4673,7 @@ prompt(char const *str, size_t *lenp)
 static char *
 get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 {
-    char *malloc_ret = NULL;	/* allocated return string */
+    char *calloc_ret = NULL;	/* allocated return string */
     char *linep = NULL;         /* when reading from file */
     size_t len;			/* input string length */
     bool valid = false;		/* true ==> IOCCC_contest_id is valid */
@@ -4773,28 +4773,28 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 	/*
 	 * prompt for the contest ID
 	 */
-	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
-	if (!seen_answers_header && !strcmp(malloc_ret, MKIOCCCENTRY_ANSWERS_VERSION)) {
+	calloc_ret = prompt("Enter IOCCC contest ID or test", &len);
+	if (!seen_answers_header && !strcmp(calloc_ret, MKIOCCCENTRY_ANSWERS_VERSION)) {
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
 	    read_answers_flag_used = true;
 	    need_confirm = false;
 	    need_hints = false;
 
-	    free(malloc_ret);
-	    malloc_ret = prompt("", &len);
+	    free(calloc_ret);
+	    calloc_ret = prompt("", &len);
 	}
 	if (read_answers_flag_used && !seen_answers_header) {
 	    err(167, __func__, "didn't find the correct answers file header");
 	    not_reached();
 	}
 
-	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
+	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", calloc_ret);
 
 	/*
 	 * case: IOCCC contest ID is test, quick return
 	 */
-	if (strcmp(malloc_ret, "test") == 0) {
+	if (strcmp(calloc_ret, "test") == 0) {
 
 	    /*
 	     * report test mode
@@ -4803,7 +4803,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 		 "IOCCC contest ID is test, entering test mode.",
 		 NULL);
 	    *testp = true;
-	    return malloc_ret;
+	    return calloc_ret;
 	}
 
 	/*
@@ -4815,7 +4815,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 	 *
 	 * where 'x' is a hex character,  is the UUID version, and N is one of 8, 9, a, or b.
 	 */
-	valid = test_IOCCC_contest_id(malloc_ret);
+	valid = test_IOCCC_contest_id(calloc_ret);
 	if (valid == false) {
 
 	    /*
@@ -4833,9 +4833,9 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 	    /*
 	     * free storage
 	     */
-	    if (malloc_ret != NULL) {
-		free(malloc_ret);
-		malloc_ret = NULL;
+	    if (calloc_ret != NULL) {
+		free(calloc_ret);
+		calloc_ret = NULL;
 	    }
 	    continue;
 	}
@@ -4844,7 +4844,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
     /*
      * report on the result of the contest ID validation
      */
-    dbg(DBG_MED, "Contest ID is a UUID: %s", malloc_ret);
+    dbg(DBG_MED, "Contest ID is a UUID: %s", calloc_ret);
 
     /*
      * report contest ID format is valid
@@ -4857,7 +4857,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
     /*
      * return IOCCC contest ID
      */
-    return malloc_ret;
+    return calloc_ret;
 }
 
 
@@ -5030,9 +5030,9 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
      */
     submission_dir_len = strlen(workdir) + 1 + strlen(ioccc_id) + 1 + MAX_SUBMIT_SLOT_CHARS + 1 + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    submission_dir = (char *)malloc(submission_dir_len + 1);
+    submission_dir = (char *)calloc(submission_dir_len + 1, sizeof(*submission_dir));
     if (submission_dir == NULL) {
-	errp(174, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(submission_dir_len + 1));
+	errp(174, __func__, "calloc #0 of %ju bytes failed", (uintmax_t)(submission_dir_len + 1));
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -6775,9 +6775,9 @@ get_author_info(struct author **author_set_p)
      * allocate the author array
      */
     errno = 0;			/* pre-clear errno for errp() */
-    author_set = (struct author *) malloc(sizeof(struct author) * (size_t)author_count);
+    author_set = (struct author *) calloc(sizeof(struct author) * (size_t)author_count, sizeof(*author_set));
     if (author_set == NULL) {
-	errp(232, __func__, "malloc a struct author array of length: %d failed", author_count);
+	errp(232, __func__, "calloc a struct author array of length: %d failed", author_count);
 	not_reached();
     }
 
@@ -8164,9 +8164,9 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      */
     auth_path_len = strlen(submission_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    auth_path = (char *)malloc(auth_path_len + 1);
+    auth_path = (char *)calloc(auth_path_len + 1, sizeof(*auth_path));
     if (auth_path == NULL) {
-	errp(36, __func__, "malloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
+	errp(36, __func__, "calloc of %ju bytes failed", (uintmax_t)auth_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -8299,9 +8299,9 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
      */
     info_path_len = strlen(submission_dir) + 1 + LITLEN(INFO_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    info_path = (char *)malloc(info_path_len + 1);
+    info_path = (char *)calloc(info_path_len + 1, sizeof(*info_path));
     if (info_path == NULL) {
-	errp(47, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(47, __func__, "calloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
