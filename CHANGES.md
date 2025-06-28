@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.22 2025-06-28
+
+Squelch `surrogate_pair_to_codepoint()` in `jparse/` from [jparse
+repo](https://github.com/xexyl/jparse/). Instead of `warn()` use `dbg()` with
+`DBG_HIGH`.
+
+
 ## Release 2.4.21 2025-06-27
 
 Change last calls (outside of `jparse` generated code and the code in

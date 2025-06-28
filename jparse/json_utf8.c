@@ -172,21 +172,21 @@ surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
      * These should theoretically never happen.
      */
     if (hi < 0 && lo < 0) {
-        warn(__func__, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
+        dbg(DBG_HIGH, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
         return -1;
     } else if (hi < 0) {
-        warn(__func__, "hi %jd < 0", (intmax_t)hi);
+        dbg(DBG_HIGH, "hi %jd < 0", (intmax_t)hi);
         return -1;
     } else if (lo < 0) {
-        warn(__func__, "lo %jd < 0", (intmax_t)lo);
+        dbg(DBG_HIGH, "lo %jd < 0", (intmax_t)lo);
         return -1;
     }
 
     if (hi < 0xD800 || hi > 0xDBFF) {
-        warn(__func__, "hi < 0xD800 or > 0xDBFF");
+        dbg(DBG_HIGH, "hi: %jd < 0xD800 or > 0xDBFF", (intmax_t)hi);
         return -1;
     } else if (lo < 0xDC00 || lo > 0xDFFF) {
-        warn(__func__, "lo < 0xDC00 or > 0xDFFF");
+        dbg(DBG_HIGH, "lo: %jd < 0xDC00 or > 0xDFFF", (intmax_t)lo);
 	return -1;
     }
     codepoint = ((hi - 0xD800) << 10) + (lo - 0xDC00) + 0x10000;

@@ -1,5 +1,12 @@
 # Significant changes in the JSON parser repo
 
+Don't warn on invalid range in `surrogate_pair_to_codepoint()` but rather make
+it debug output (at level high). This is because it can give a warning where it
+is not desired. Warning might cause too much chatter anyway.
+
+Updated `JPARSE_UTF8_VERSION` to `"2.1.2 2025-06-28"`.
+
+
 ## Release 2.2.44 2025-06-26
 
 Changed remaining calls of `malloc()` to `calloc()` outside of the generated

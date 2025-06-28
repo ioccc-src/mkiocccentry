@@ -60,7 +60,7 @@
 /*
  * official jparse UTF-8 version
  */
-#define JPARSE_UTF8_VERSION "2.1.1 2025-06-25"	/* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTF8_VERSION "2.1.2 2025-06-28"	/* format: major.minor YYYY-MM-DD */
 
 extern size_t utf8len(const char *str, int32_t surrogate);
 extern int32_t surrogate_pair_to_codepoint(int32_t hi, int32_t lo);
