@@ -46,7 +46,7 @@ export JSTRENCODE="./jstrencode"
 export TEST_FILE="./test_jparse/jstr_test.out"
 export TEST_FILE2="./test_jparse/jstr_test2.out"
 export JSTR_TEST_TXT="./test_jparse/jstr_test.txt"
-export JSTR_TEST_VERSION="2.0.0 2025-02-28" # version format: major.minor YYYY-MM-DD
+export JSTR_TEST_VERSION="2.0.1 2025-07-04" # version format: major.minor YYYY-MM-DD
 export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode] [-Z topdir]
@@ -370,7 +370,7 @@ else
 fi
 
 echo "$0: about to run test #9" 1>&2
-echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" -d '\\u0153\\u00df\\u00e5\\u00e9'))")"
+echo "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" -d '\\u0153\\u00df\\u00e5\\u00e9')")"
 "$JSTRDECODE" "$("$JSTRENCODE" "$("$JSTRDECODE" -d '\u0153\u00df\u00e5\u00e9')")" > "$TEST_FILE"
 if cmp "$JSTR_TEST_TXT" "$TEST_FILE"; then
     echo "$0: test #9 passed" 1>&2
