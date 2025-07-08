@@ -348,7 +348,7 @@ int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
-    char **submission_dir = NULL;       /* directory from which files are to be checked */
+    char *submission_dir = NULL;       /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
@@ -477,7 +477,7 @@ main(int argc, char *argv[])
     argv += optind;
     switch (argc) {
     case 1:
-        submission_dir = argv;
+        submission_dir = argv[0];
 	break;
     case 2:
         if (!strcmp(argv[0], ".") && !strcmp(argv[1], ".")) {
@@ -491,20 +491,20 @@ main(int argc, char *argv[])
 	break;
     }
 
-    if (submission_dir != NULL && *submission_dir != NULL) {
+    if (submission_dir != NULL) {
 	/*
 	 * check if we can search / work within the directory
 	 */
-	if (!exists(*submission_dir)) {
-	    err(56, __func__, "directory does not exist: %s", *submission_dir);
+	if (!exists(submission_dir)) {
+	    err(56, __func__, "directory does not exist: %s", submission_dir);
 	    not_reached();
 	}
-	if (!is_dir(*submission_dir)) {
-	    err(57, __func__, "is not a directory: %s", *submission_dir);
+	if (!is_dir(submission_dir)) {
+	    err(57, __func__, "is not a directory: %s", submission_dir);
 	    not_reached();
 	}
-	if (!is_exec(*submission_dir)) {
-	    err(58, __func__, "directory is not searchable: %s", *submission_dir);
+	if (!is_exec(submission_dir)) {
+	    err(58, __func__, "directory is not searchable: %s", submission_dir);
 	    not_reached();
 	}
 
@@ -554,7 +554,7 @@ main(int argc, char *argv[])
              * list of paths to ignore is already in the fts->ignore list we
              * don't need to do anything special.
              */
-            found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+            found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
             if (found != NULL) {
                 /*
                  * case: files were found, check that they are both allowed and
@@ -696,7 +696,7 @@ main(int argc, char *argv[])
                 }
 
             } else {
-                werr(1, __func__, "NO FILES FOUND in submission directory: %s", *submission_dir);/*ooo*/
+                werr(1, __func__, "NO FILES FOUND in submission directory: %s", submission_dir);/*ooo*/
                 ++all_extra_err_count;
             }
 
@@ -790,7 +790,7 @@ main(int argc, char *argv[])
              * list of paths to ignore is already in the fts->ignore list we
              * don't need to do anything special.
              */
-            found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+            found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
             if (found != NULL) {
                 /*
                  * case: files were found, check that they are both allowed and
@@ -931,7 +931,7 @@ main(int argc, char *argv[])
                 }
 
             } else {
-                werr(1, __func__, "no files found in submission directory: %s", *submission_dir);/*ooo*/
+                werr(1, __func__, "no files found in submission directory: %s", submission_dir);/*ooo*/
                 ++all_extra_err_count;
             }
             /*
@@ -1011,7 +1011,7 @@ main(int argc, char *argv[])
          * list of paths to ignore is already in the fts->ignore list we
          * don't need to do anything special.
          */
-        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
         if (found != NULL) {
             /*
              * case: directories were found, check permissions
@@ -1061,7 +1061,7 @@ main(int argc, char *argv[])
          * list of paths to ignore is already in the fts->ignore list we
          * don't need to do anything special.
          */
-        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
         if (found != NULL) {
             /*
              * case: directories beyond the max depth were found, report it as
@@ -1110,7 +1110,7 @@ main(int argc, char *argv[])
          * list of paths to ignore is already in the fts->ignore list we
          * don't need to do anything special.
          */
-        found = find_paths(paths, *submission_dir, -1, &cwd, false, &fts);
+        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
         if (found != NULL) {
             /*
              * case: directories beyond the max depth were found, report it as
@@ -1155,12 +1155,12 @@ main(int argc, char *argv[])
          */
         if (!ignore_auth && !winning_entry_mode) {
             auth_filename = ".auth.json";
-            auth_stream = open_dir_file(*submission_dir, auth_filename);
+            auth_stream = open_dir_file(submission_dir, auth_filename);
             if (auth_stream == NULL) { /* paranoia */
-                err(74, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, auth_filename);
+                err(74, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
                 not_reached();
             }
-            auth_path = calloc_path(*submission_dir, auth_filename);
+            auth_path = calloc_path(submission_dir, auth_filename);
             if (auth_path == NULL) {
                 err(75, __func__, "auth_path is NULL");
                 not_reached();
@@ -1172,12 +1172,12 @@ main(int argc, char *argv[])
          */
         if (!ignore_info && !winning_entry_mode) {
             info_filename = ".info.json";
-            info_stream = open_dir_file(*submission_dir, info_filename);
+            info_stream = open_dir_file(submission_dir, info_filename);
             if (info_stream == NULL) { /* paranoia */
-                err(76, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", *submission_dir, info_filename);
+                err(76, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
                 not_reached();
             }
-            info_path = calloc_path(*submission_dir, info_filename);
+            info_path = calloc_path(submission_dir, info_filename);
             if (info_path == NULL) {
                 err(77, __func__, "info_path is NULL");
                 not_reached();
@@ -1262,7 +1262,7 @@ main(int argc, char *argv[])
              */
             dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s", info_path);
             info_all_err_count = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
-                                              &info_count_err, &info_val_err, *submission_dir);
+                                              &info_count_err, &info_val_err, submission_dir);
 
             /*
              * firewall on json_sem_check() results AND count errors for .info.json
