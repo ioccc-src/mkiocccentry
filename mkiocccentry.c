@@ -5788,15 +5788,6 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 		dbg(DBG_HIGH, "rulenum[%d]: clobber token found", rulenum);
 		infop->found_clobber_rule = true;
 
-	    /*
-	     * detect try rule
-	     */
-	    } else if (!infop->found_try_rule && strcmp(p, "try") == 0) {
-		/*
-		 * first try rule found
-		 */
-		dbg(DBG_HIGH, "rulenum[%d]: try token found", rulenum);
-		infop->found_try_rule = true;
 	    }
 	}
 
@@ -5809,7 +5800,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
         line = NULL;
 
     } while (!infop->found_all_rule || !infop->found_clean_rule ||
-	     !infop->found_clobber_rule || !infop->found_try_rule);
+	     !infop->found_clobber_rule);
 
     /*
      * close Makefile
@@ -5832,8 +5823,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     /*
      * if our parse of Makefile was successful
      */
-    if (infop->found_all_rule && infop->found_clean_rule &&
-	infop->found_clobber_rule && infop->found_try_rule) {
+    if (infop->found_all_rule && infop->found_clean_rule && infop->found_clobber_rule) {
 	dbg(DBG_MED, "Makefile appears to pass");
 	return true;
     }
@@ -5896,15 +5886,6 @@ warn_Makefile(struct info *infop)
 		  "    The clobber rule should depend on the clean rule and should remove the submission's program,",
 		  "    clean up after program execution (if needed) and restore the entire directory back",
 		  "    to the original submission state.",
-		  "",
-		  NULL);
-	}
-	if (!infop->found_try_rule) {
-	    fpara(stderr,
-		  "  The Makefile appears to not have a try rule.",
-		  "    The try rule should execute the program with suggested arguments (if any needed).",
-		  "    The program may be executed more than once if such examples are informative.",
-		  "	   The try rule should depend on the all rule.",
 		  "",
 		  NULL);
 	}
@@ -8360,7 +8341,6 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_bool(info_stream, "    ", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "    ", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "test_mode", " : ", infop->test_mode, ",\n") &&
 	fprintf(info_stream, "    \"manifest\" : [\n") > 0;
     if (!ret) {

@@ -279,7 +279,6 @@ struct info
     bool found_all_rule;	/* true ==> Makefile has an all rule */
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
-    bool found_try_rule;	/* true ==> Makefile has a try rule */
     /* test or non-test mode */
     bool test_mode;		/* true ==> test mode entered */
 
@@ -374,7 +373,6 @@ extern bool test_formed_timestamp_usec(int formed_timestamp_usec);
 extern bool test_found_all_rule(bool boolean);
 extern bool test_found_clean_rule(bool boolean);
 extern bool test_found_clobber_rule(bool boolean);
-extern bool test_found_try_rule(bool boolean);
 extern bool test_github(char const *str);
 extern bool test_info_JSON(char const *str);
 extern bool test_IOCCC_contest(char const *str);

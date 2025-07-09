@@ -65,7 +65,6 @@ struct json_sem sem_info[SEM_INFO_LEN+1] = {
   { 1,	JTYPE_MEMBER,	1,	1,	1,	24,	14,	chk_found_all_rule,	"found_all_rule",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	25,	16,	chk_found_clean_rule,	"found_clean_rule",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	26,	18,	chk_found_clobber_rule,	"found_clobber_rule",	NULL },
-  { 1,	JTYPE_MEMBER,	1,	1,	1,	27,	14,	chk_found_try_rule,	"found_try_rule",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	29,	17,	chk_iocccsize_version,	"iocccsize_version",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	30,	8,	chk_manifest,	"manifest",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	31,	13,	chk_min_timestamp,	"min_timestamp",	NULL },

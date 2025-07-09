@@ -26,7 +26,6 @@
     "found_all_rule" : true,
     "found_clean_rule" : true,
     "found_clobber_rule" : true,
-    "found_try_rule" : true,
     "test_mode" : false,
     "manifest" : [
         {

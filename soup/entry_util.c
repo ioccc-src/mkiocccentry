@@ -3440,27 +3440,6 @@ test_found_clobber_rule(bool boolean)
 }
 
 
-/*
- * test_found_try_rule - test if found_try_rule is valid
- *
- * Determine if found_try_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_try_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
-    return true;
-}
-
 
 /*
  * test_github - test if GitHub account is valid
