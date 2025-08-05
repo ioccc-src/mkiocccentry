@@ -2113,9 +2113,9 @@ has_special_bits(struct txz_file *file)
         }
     } else if (file->isexec) {
         ++tarball.total_exec_files;
-        if (count_dirs(file->filename) != 1 || (!is_executable_filename(file->basename))) {
+        if (!is_executable_filename(file->basename)) {
             ++tarball.invalid_perms;
-            warn("txzchk", "found executable file that is in the wrong directory or the wrong filename: %s", file->filename);
+            warn("txzchk", "found executable file that does not match an executable filename: %s", file->filename);
             /*
              * NOTE: the caller will increment the tarball.total_feathers so do
              * NOT do it here.

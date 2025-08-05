@@ -93,7 +93,6 @@
 #include <fcntl.h> /* for open() */
 #include <fts.h>
 #include <locale.h>
-#include <fnmatch.h>
 
 /*
  * mkiocccentry - form IOCCC entry compressed tarball

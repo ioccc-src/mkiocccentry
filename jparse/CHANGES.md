@@ -1,5 +1,14 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.47 2025-07-23
+
+Update issues URL in `jparse_bug_report.sh`.
+
+Added issues URL to `jparse_bug_report.1`.
+
+Updated `BUG_REPORT_VERSION` to `"2.1.2 2025-07-23"`.
+
+
 ## Release 2.2.46 2025-07-04
 
 Remove debug output in `surrogate_pair_to_codepoint()` as having it allows for

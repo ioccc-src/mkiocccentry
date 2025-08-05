@@ -63,6 +63,7 @@
 #include <fts.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -5557,6 +5558,21 @@ has_ignored_dirname(char const *path)
  * NOTE: if str is NULL we return false.
  *
  * If there is a match the file MUST be mode 0555.
+ *
+ * NOTE: an executable filename is one that matches a name in the
+ * executable_filenames array OR one that matches the glob:
+ *
+ *      *.sh
+ *
+ * If it is a directory this does not apply. Yes the try.sh and try.alt.sh
+ * scripts in the executable_filenames array are redundant. The array, however,
+ * exists so that if other files have to be executable in the future, it can be
+ * updated to account for this. Also, for those in the array, it is more
+ * efficient to check the array first (and those files MUST be executable) than
+ * to use fnmatch(3). Note that txzchk(1) also uses this function.
+ *
+ * NOTE: we use FNM_PERIOD to match the shell: the glob *sh would not match
+ * .foo.sh but it would match foo.sh.
  */
 bool
 is_executable_filename(char const *str)
@@ -5571,10 +5587,25 @@ is_executable_filename(char const *str)
         return false;
     }
 
+    /*
+     * first check the executable_filenames array
+     */
     for (i = 0; executable_filenames[i] != NULL; ++i) {
         if (!strcasecmp(executable_filenames[i], str)) {
             return true;
         }
+    }
+
+    /*
+     * now use fnmatch(3) to check for files with the glob:
+     *
+     *      *.sh
+     *
+     * Yes that would ignore files like .foo.sh but that is a forbidden
+     * filename.
+     */
+    if (!fnmatch("*.sh", str, FNM_PERIOD)) {
+        return true;
     }
 
     return false;
