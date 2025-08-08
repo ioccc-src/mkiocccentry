@@ -126,7 +126,7 @@ static const char * const usage_msg0 =
     "\t-E\t\texit non-zero after the first warning (def: do not)\n"
     "\t\t\t    NOTE: one cannot use both -W and -E.\n"
     "\t-y\t\tanswer yes to most questions (use with EXTREME caution!)\n"
-    "\t-Y\t\tforce answer yes even when using -i answers";
+    "\t-Y\t\tforce answer yes even when using -i answers (use with EXTREME CAUTION!)";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar(1) that supports the -J (xz) option (def: %s)\n"
     "\t-l ls\t\tpath to ls(1) (def: %s)\n"
@@ -392,6 +392,7 @@ main(int argc, char *argv[])
 	    silence_prompt = true;
 	    /* set -E boolean */
 	    abort_on_warning = true;
+            /* set -Y */
             force_yes = true;
 	    break;
 	case 's':		/* set seed as seed & SEED_MASK */
@@ -416,6 +417,7 @@ main(int argc, char *argv[])
 		silence_prompt = true;
 		/* set -E boolean */
 		abort_on_warning = true;
+                /* set -Y */
                 force_yes = true;
 	    }
 	    break;
@@ -1033,7 +1035,7 @@ main(int argc, char *argv[])
 	    info.Makefile_override) {
 
 	    do {
-		if (!ignore_warnings || read_answers_flag_used) {
+		if (!ignore_warnings || (read_answers_flag_used && !force_yes)) {
 		    need_confirm = true;
 
 		    if (info.empty_override) {
@@ -5061,7 +5063,8 @@ warn_empty_prog(void)
     bool yorn = false;
 
     dbg(DBG_MED, "prog.c is empty");
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used &&
+                !force_yes)) {
 	fpara(stderr,
 	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	  "",
@@ -5129,7 +5132,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    errp(182, __func__, "fprintf error when printing prog.c Rule 2a warning");
             not_reached();
 	}
-	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	    fpara(stderr,
 	      "If you are attempting some clever rule abuse, then we STRONGLY",
               "suggest that you tell us about your rule abuse towards the TOP",
@@ -5154,7 +5157,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
      * File size and iocccsize file size differ warning
      */
     } else if (mode == RULE_2A_BIG_FILE_WARNING) {
-	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "\nInteresting: prog.c file size: %jd != rule_count function size: %jd\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -5203,7 +5206,7 @@ warn_nul_chars(void)
     /*
      * warn about NUL chars(s) if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n");
@@ -5241,7 +5244,7 @@ warn_trigraph(void)
     /*
      * warn the user about unknown or invalid trigraph(s), if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n");
@@ -5297,7 +5300,7 @@ warn_ungetc(void)
     /*
      * warn the user abort iocccsize ungetc error, if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -5343,7 +5346,7 @@ warn_rule_2b_size(struct info *infop)
     /*
      * warn the user about a possible Rule 2b violation, if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || (read_answers_flag_used && !force_yes)) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c size: %ju > Rule 2b maximum: %ju\n",
 		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
@@ -5850,7 +5853,7 @@ warn_Makefile(struct info *infop)
 	err(206, __func__, "called with NULL infop");
 	not_reached();
     }
-    if ((need_confirm && (!answer_yes || seed_used)) || read_answers_flag_used) {
+    if ((need_confirm && ((!answer_yes && !force_yes) || seed_used)) || (read_answers_flag_used && !force_yes)) {
 
 	/*
 	 * report problem with Makefile
@@ -5917,9 +5920,9 @@ warn_Makefile(struct info *infop)
 	      NULL);
 
 	/*
-	 * Ask if they want to submit it anyway unless -y
+	 * Ask if they want to submit it anyway unless -y or -Y
 	 */
-	if (!answer_yes) {
+	if (!answer_yes && !force_yes) {
 	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [Ny]", false);
 	    if (!yorn) {
 		err(207, __func__, "Use a different Makefile or modify your Makefile");
@@ -6101,9 +6104,9 @@ yes_or_no(char const *question, bool def_answer)
     }
 
     /*
-     * if -y, return true
+     * if -y or -Y, return true
      */
-    if (answer_yes) {
+    if (answer_yes || force_yes) {
 	/* return yes */
 	return true;
     }
@@ -6549,7 +6552,7 @@ noprompt_yes_or_no(void)
     char *p;
     FILE *stream = NULL;        /* we need this so we can prompt users with -i answers */
 
-    if (read_answers_flag_used && !answer_yes) {
+    if (read_answers_flag_used && (!answer_yes && !force_yes)) {
         stream = stdin;
     } else {
         stream = input_stream;
