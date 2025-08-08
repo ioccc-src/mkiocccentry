@@ -1,5 +1,5 @@
---- ref/auth.reference.json.c	2025-02-22 23:00:28
-+++ chk_sem_auth.c	2025-02-22 23:55:51
+--- ref/auth.reference.json.c	2025-06-24 08:43:21
++++ chk_sem_auth.c	2025-06-24 08:38:33
 @@ -40,9 +40,9 @@
  struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name    data */

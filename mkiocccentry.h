@@ -164,7 +164,6 @@
  */
 static void warn_empty_prog(void);
 static void warn_rule_2a_size(struct info *infop, int mode, RuleCount size);
-static void warn_nul_chars(void);
 static void warn_trigraph(void);
 static void warn_wordbuf(void);
 static void warn_ungetc(void);
