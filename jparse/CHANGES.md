@@ -1,6 +1,19 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.2.40 2025-06-19
+
+Added `fnmatch_flags` to `struct fts` for ignored list of files. This is by
+request for mkiocccentry. It is possibly feasible to have it for non-ignored
+paths but that is not for now if it will be done (or even desired).
+
+Removed a test in `util_test` because it is faulty in logic due to depth. A test
+for `fnmatch(3)` was added.
+
+Updated `JPARSE_UTILS_VERSION` to  `"2.0.10 2025-06-19"`.
+Updated `UTIL_TEST_VERSION` to `"2.0.5 2025-06-19"`.
+
+
 ## Release 2.2.39 2025-06-05
 
 Added `size_if_file()` which will return the `st_size` (from `stat(2)`) if the

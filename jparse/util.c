@@ -1544,21 +1544,22 @@ is_exec(char const *path)
  * struct fts * the following variables (with the corresponding type) are set to
  * the value:
  *
- *  variable        type                                        value
+ *  variable            type                                        value
  *
- *      tree        (FTS *)                                     NULL
- *      options     int                                         FTS_NOCHDIR
- *      logical     bool                                        false
- *      count       int                                         0
- *      depth       int                                         0
- *      min_depth   int                                         0
- *      max_depth   int                                         0
- *      base        bool                                        false
- *      seedot      bool                                        false
- *      match_case  bool                                        false
- *      ignore      struct dyn_array *                          NULL if free_ignored == true
- *      cmp         int (const FTSENT **, const FTSENT **)      fts_cmp
- *      check       bool (FTS *, FTSENT *)                      check_fts_info
+ *      tree            (FTS *)                                     NULL
+ *      options         int                                         FTS_NOCHDIR
+ *      logical         bool                                        false
+ *      count           int                                         0
+ *      depth           int                                         0
+ *      min_depth       int                                         0
+ *      max_depth       int                                         0
+ *      base            bool                                        false
+ *      seedot          bool                                        false
+ *      match_case      bool                                        false
+ *      ignore          struct dyn_array *                          NULL if free_ignored == true
+ *      cmp             int (const FTSENT **, const FTSENT **)      fts_cmp
+ *      fnmatch_flags   int                                         0
+ *      check           bool (FTS *, FTSENT *)                      check_fts_info
  *
  * given:
  *
@@ -1627,6 +1628,7 @@ reset_fts(struct fts *fts, bool free_ignored)
     }
     fts->ignore = NULL; /* paranoia */
     fts->cmp = fts_cmp;
+    fts->fnmatch_flags = -1;
     fts->check = check_fts_info;
 
     /*
@@ -2034,27 +2036,28 @@ check_fts_info(FTS *fts, FTSENT *ent)
  *
  * NOTE: the struct fts has:
  *
- *      tree        - FTS * returned by fts_open()
- *      options     - options to pass to fts_open() (via read_fts()), see above
- *                    on options
- *      logical     - true ==> use FTS_LOGICAL (follow symlinks), false ==> use
- *                    FTS_PHYSICAL (do not follow symlinks, refer to link itself)
- *      type        - bitwise of types (enum fts_type) to allow different types
- *                    only
- *      count       - if > 0 and base == false search until count file have
- *                    been found
- *      depth       - if > 0 required depth
- *      min_depth   - if > 0 the path depth must be >= this value (if depth <= 0)
- *      max_depth   - if > 0 the path depth must be <= this value (if depth <= 0)
- *      base        - true ==> basename only (i.e. fts->fts_name)
- *      seedot      - true ==> don't skip '.' and '..',
- *                    false ==> skip '.' and '..'
- *      match_case  - true ==> use strcmp(), not strcasecmp()
- *      ignore      - struct dyn_array * of paths to ignore (if desired, else NULL)
- *      cmp         - callback for fts_open() (used by read_fts())
- *      check       - pointer to function to check FTSENT * for certain conditions
- *                    (if NULL we will use check_fts_info())
- *      initialised - used internally by reset_fts()
+ *      tree            - FTS * returned by fts_open()
+ *      options         - options to pass to fts_open() (via read_fts()), see above
+ *                        on options
+ *      logical         - true ==> use FTS_LOGICAL (follow symlinks), false ==> use
+ *                        FTS_PHYSICAL (do not follow symlinks, refer to link itself)
+ *      type            - bitwise of types (enum fts_type) to allow different types
+ *                        only
+ *      count           - if > 0 and base == false search until count file have
+ *                        been found
+ *      depth           - if > 0 required depth
+ *      min_depth       - if > 0 the path depth must be >= this value (if depth <= 0)
+ *      max_depth       - if > 0 the path depth must be <= this value (if depth <= 0)
+ *      base            - true ==> basename only (i.e. fts->fts_name)
+ *      seedot          - true ==> don't skip '.' and '..',
+ *                        false ==> skip '.' and '..'
+ *      match_case      - true ==> use strcmp(), not strcasecmp()
+ *      ignore          - struct dyn_array * of paths to ignore (if desired, else NULL)
+ *      cmp             - callback for fts_open() (used by read_fts())
+ *      fnmatch_flags   - flags for fnmatch(3) or < 0 (default) if undesired
+ *      check           - pointer to function to check FTSENT * for certain conditions
+ *                        (if NULL we will use check_fts_info())
+ *      initialised     - used internally by reset_fts()
  *
  * To use this function you might do something like this where:
  *
@@ -2075,6 +2078,7 @@ check_fts_info(FTS *fts, FTSENT *ent)
  *      seedot          ==> false (remove FTS_SEEDOT; true could be done in options as well)
  *      ignore          ==> NULL (don't ignore anything)
  *      cmp             ==> fts_rcmp
+ *      fnmatch_flags   ==> -1 (not strictly relevant as ignore is NULL)
  *      check           ==> NULL (don't do any checks)
  *
  * We do not use the variables count or match_case as this traverses a tree and
@@ -2117,9 +2121,14 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * directory in *cwd.
  *
  * If you need to ignore paths you might do this PRIOR to calling the function
- * but AFTER doing the memset() and reset_fts():
+ * but AFTER doing the memset() and reset_fts() (!):
  *
  *      append_path(&(fts.ignore), "foo", true, false, false); // last false means don't match case
+ *
+ * NOTE: the fnmatch(3) (i.e. fnmatch_flags) apply ONLY to ignored paths. Unless
+ * it is desired by more than 0 people, there will only be one fnmatch(3) flags
+ * variable and even if more than 0 people find a use for it it might or might
+ * not be done. The use of fnmatch(3) for ignored file is by request.
  *
  * NOTE: if one specifies a bogus range for min/max depth the function will find
  * nothing. For example if one gives a min_depth > the max_depth the function
@@ -2394,7 +2403,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                     }
                 /*
                  * case: we do not want to see '.' or '..' or './' and that is
-                 * what the path is
+                 * what the path is.
                  */
                 } else if (!fts->seedot && (!strcmp(ent->fts_name, ".") || !strcmp(ent->fts_name, "..") ||
                            !strcmp(ent->fts_name, "./"))) {
@@ -2414,8 +2423,9 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                             err(110, __func__, "found NULL pointer in fts->ignore[%ju]", (uintmax_t)i);
                             not_reached();
                         }
-                        if ((fts->base || count_dirs(name) == 1) && ((fts->match_case && !strcmp(ent->fts_name, u)) ||
-                           (!fts->match_case && !strcasecmp(ent->fts_name, u)))) {
+                        if ((fts->base || count_dirs(name) == 1) && (((fts->match_case && !strcmp(ent->fts_name, u)) ||
+                           (!fts->match_case && !strcasecmp(ent->fts_name, u)))||(fts->fnmatch_flags >= 0 &&
+                            fnmatch(u, ent->fts_name, fts->fnmatch_flags) == 0))) {
                             /*
                              * if this is a directory we will not descend into
                              * it
@@ -2429,8 +2439,9 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                             dbg(DBG_HIGH, "ignoring name: %s", ent->fts_name);
                             skip = true;
                             break;
-                        } else if (!fts->base && ((fts->match_case && !strcmp(u, name)) ||
-                                  (!fts->match_case && !strcasecmp(u, name)))) {
+                        } else if (!fts->base && (((fts->match_case && !strcmp(u, name)) ||
+                                  (!fts->match_case && !strcasecmp(u, name)))||(fts->fnmatch_flags >= 0 &&
+                                      fnmatch(u, name, fts->fnmatch_flags) == 0))) {
                             /*
                              * if this is a directory we will not descend into
                              * it
@@ -9238,6 +9249,7 @@ check_invalid_option(char const *prog, int ch, int opt)
 #if defined(UTIL_TEST)
 
 #include <locale.h>
+#include <fnmatch.h>
 
 /*
  * jparse - JSON library
@@ -9254,7 +9266,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "2.0.4 2025-06-05" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "2.0.5 2025-06-19" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -10964,24 +10976,22 @@ main(int argc, char **argv)
      * mean it can't be reset)
      */
     (void) read_fts(NULL, -1, &cwd, NULL);
-
     /*
-     * test read_fts() only finding directories but ignoring good, bad and
-     * bad_loc
+     * test read_fts() with fnmatch(3)
      */
 
     /*
      * reset fts
      */
     reset_fts(&fts, false);
-    fts.type = FTS_TYPE_DIR;
-    fts.base = true; /* important */
-    append_path(&(fts.ignore), "test_jparse/test_JSON/good", true, false, true);
-    append_path(&(fts.ignore), "test_jparse/test_JSON/bad", true, false, true);
-    append_path(&(fts.ignore), "test_jparse/test_JSON/bad_loc", true, false, true);
-    ent = read_fts("test_jparse", -1, &cwd, &fts);
+    fts.type = FTS_TYPE_FILE;
+    fts.base = false; /* important */
+    fts.match_case = false;
+    fts.fnmatch_flags = 0;
+    append_path(&(fts.ignore), "util*", true, false, true);
+    ent = read_fts(".", -1, &cwd, &fts);
     if (ent == NULL) {
-        err(160, __func__, "read_fts() returned a NULL pointer on \"test_jparse\" for directories");
+        err(160, __func__, "read_fts() returned a NULL pointer on \".\" for directories");
         not_reached();
     } else {
         do {
@@ -10990,18 +11000,17 @@ main(int argc, char **argv)
                 err(161, __func__, "fts_path(ent) returned NULL");
                 not_reached();
             }
-            if (ent->fts_info != FTS_D && ent->fts_info != FTS_DP) {
-                err(162, __func__, "%s is not a directory", p);
+            if (ent->fts_info != FTS_F) {
+                err(162, __func__, "%s is not a file", p);
                 not_reached();
-            } else if (!strcmp(p, "good") || !strcmp(p, "bad") || !strcmp(p, "bad_loc")) {
-                err(163, __func__, "found directory meant to be ignored: %s", p);
+            } else if (!strncmp(p, "util",4)) {
+                err(163, __func__, "found file meant to be ignored: %s", p);
                 not_reached();
             } else {
-                fdbg(stderr, DBG_MED, "%s is a non-ignored directory", p);
+                fdbg(stderr, DBG_MED, "%s is a non-ignored file", p);
             }
         } while ((ent = read_fts(NULL, -1, &cwd, &fts)) != NULL);
     }
-
     /*
      * restore earlier directory that might have happened with read_fts()
      *
@@ -11009,6 +11018,8 @@ main(int argc, char **argv)
      * mean it can't be reset)
      */
     (void) read_fts(NULL, -1, &cwd, NULL);
+
+
 
 
 
