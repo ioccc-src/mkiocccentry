@@ -83,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.15 2025-06-21"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.16 2025-06-22"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -138,7 +138,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.0.6 2025-06-21"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.0.7 2025-06-22"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION "2.0.1 2025-03-02"
 
 /*
