@@ -83,13 +83,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.11 2025-06-08"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.4.12 2025-06-11"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.0.1 2025-03-02"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.0.2 2025-06-11"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -104,6 +104,12 @@
 #define MIN_MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
+
+/*
+ * official location version
+ */
+#define LOCATION_VERSION "1.0.5 2024-06-11"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * Version of info for JSON the .info.json file.

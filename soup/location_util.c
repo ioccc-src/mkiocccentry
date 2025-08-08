@@ -54,37 +54,6 @@
 #include "location.h"
 
 
-/*
- * check_location_table	    - make sure that there are no embedded NULL elements
- *			      in the location table and that the last element is
- *			      NULL
- *
- * This function verifies that the only NULL element in the table is the very
- * last element: if it's not there or there's another NULL element it's a
- * problem that has to be fixed.
- *
- * This function does not return on error.
- */
-void
-check_location_table(void)
-{
-    size_t max = SIZEOF_LOCATION_TABLE;
-
-    size_t i;
-
-    for (i = 0; i < max - 1 && loc[i].code != NULL; )
-	++i;
-
-    if (max - 1 != i) {
-	err(333, __func__, "found embedded NULL element in location table; fix table in %s and recompile", __FILE__);
-	not_reached();
-    }
-    if (loc[i].code != NULL || loc[i].name != NULL || loc[i].common_name) {
-	err(10, __func__, "no final NULL element found in location table; fix table in %s and recompile", __FILE__);
-	not_reached();
-    }
-}
-
 
 /*
  * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
