@@ -1033,7 +1033,7 @@ main(int argc, char *argv[])
 	    info.Makefile_override) {
 
 	    do {
-		if (!ignore_warnings) {
+		if (!ignore_warnings || read_answers_flag_used) {
 		    need_confirm = true;
 
 		    if (info.empty_override) {
@@ -5061,7 +5061,7 @@ warn_empty_prog(void)
     bool yorn = false;
 
     dbg(DBG_MED, "prog.c is empty");
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	fpara(stderr,
 	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	  "",
@@ -5129,7 +5129,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    errp(182, __func__, "fprintf error when printing prog.c Rule 2a warning");
             not_reached();
 	}
-	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	    fpara(stderr,
 	      "If you are attempting some clever rule abuse, then we STRONGLY",
               "suggest that you tell us about your rule abuse towards the TOP",
@@ -5154,7 +5154,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
      * File size and iocccsize file size differ warning
      */
     } else if (mode == RULE_2A_BIG_FILE_WARNING) {
-	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+	if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "\nInteresting: prog.c file size: %jd != rule_count function size: %jd\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -5203,7 +5203,7 @@ warn_nul_chars(void)
     /*
      * warn about NUL chars(s) if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n");
@@ -5241,7 +5241,7 @@ warn_trigraph(void)
     /*
      * warn the user about unknown or invalid trigraph(s), if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n");
@@ -5297,7 +5297,7 @@ warn_ungetc(void)
     /*
      * warn the user abort iocccsize ungetc error, if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog.c triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -5343,7 +5343,7 @@ warn_rule_2b_size(struct info *infop)
     /*
      * warn the user about a possible Rule 2b violation, if we are allowed
      */
-    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes)) {
+    if (abort_on_warning || (need_confirm && !ignore_warnings && !answer_yes) || read_answers_flag_used) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c size: %ju > Rule 2b maximum: %ju\n",
 		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
@@ -5850,7 +5850,7 @@ warn_Makefile(struct info *infop)
 	err(206, __func__, "called with NULL infop");
 	not_reached();
     }
-    if (need_confirm && (!answer_yes || seed_used)) {
+    if ((need_confirm && (!answer_yes || seed_used)) || read_answers_flag_used) {
 
 	/*
 	 * report problem with Makefile
