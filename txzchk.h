@@ -58,9 +58,7 @@
  *
  * Share and enjoy! :-)
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
-
  */
-
 
 
 #if !defined(INCLUDE_TXZCHK_H)

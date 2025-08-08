@@ -4,7 +4,13 @@
 
 Fix error messages in `fnamchk`.
 
+Only count total file size > max as one issue (feather) in txzchk. The warning
+for each time it goes over is still printed as the sum and count function is run
+per line parsed but once the size limit has been broken there is no need to
+raise an issue after the first time.
+
 Updated `FNAMCHK_VERSION` to `"2.0.2 2025-0l-23"`.
+Updated `TXZCHK_VERSION` to `"2.0.4 2025-06-23"`.
 
 
 ## Release 2.4.16 2025-06-22
