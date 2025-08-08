@@ -1,5 +1,12 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.24 2025-07-08
+
+Fix `submission_dir` in `chkentry(1)` to be a `char *`, not a `char **`.
+
+Updated `CHKENTRY_VERSION` to `"2.0.9 2025-07-08"`.
+
+
 ## Release 2.4.23 2025-07-04
 
 Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). This cleans
