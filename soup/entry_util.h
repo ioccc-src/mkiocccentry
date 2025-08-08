@@ -118,6 +118,8 @@
 #define FOSSIL_DIRNAME1 "_FOSSIL_"              /* For Fossil */
 #define MONOTONE_DIRNAME "_MTN"                 /* For Monotone */
 #define DARCS_DIRNAME "_darcs"                  /* For Darcs */
+#define SCCS_DIRNAME "SCCS"                     /* For SCCS */
+#define RCS_DIRNAME "RCS"                       /* for RCS */
 
 /*
  * filenames that should be ignored, mostly for chkentry -w but it can be used
