@@ -1,5 +1,34 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.14 2025-06-20
+
+Address issue #1228. By request one may use the `-M manifest_file` option to
+specify what files to include in the topdir. This required updates to jparse/
+(from the jparse repo) and also soup/.
+
+Fix bug where the function `check_submission_dir()` did not actually verify if
+any ignored files were present in the submission directory.
+
+A question was posed in the comments that might be worth noting here:
+
+```c
+/*
+ * Should we check (here or anywhere else) that an ignored
+ * file is not in the manifest? On the one hand it would
+ * seem to be a command line error but on the other hand if
+ * someone is using the manifest option it probably can be
+ * assumed they know what they are doing and given that they
+ * have to verify things look okay it should not really
+ * matter much (if at all).
+ */
+```
+
+If this is deemed not ideal it can be updated.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.11 2025-06-20"`.
+Updated `SOUP_VERSION` to `"2.0.3 2025-06-20"`.
+
+
 ## Release 2.4.13 2025-06-19
 
 Added support of globs with the `mkiocccentry` ignore option (`-I`). This
