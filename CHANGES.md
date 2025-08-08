@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.23 2025-07-04
+
+Sync `jparse/` from [jparse repo](https://github.com/xexyl/jparse/). This cleans
+up the function `surrogate_pair_to_codepoint()` (no debug output is actually
+correct, at least in the invalid range) and adds the function
+`is_surrogate_pair()`. We don't need that function as the JSON decode string
+functions would be needlessly complicated; it's in case someone needs to check
+if a `\uxxxx\uxxxx` is a valid surrogate pair but not necessary parse it (like
+the `surrogate_pair_to_codepoint()` does).
+
+
 ## Release 2.4.22 2025-06-28
 
 Squelch `surrogate_pair_to_codepoint()` in `jparse/` from [jparse

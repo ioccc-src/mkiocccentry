@@ -1,5 +1,32 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.46 2025-07-04
+
+Remove debug output in `surrogate_pair_to_codepoint()` as having it allows for
+debug output when it's simply that there is no surrogate pair which is not
+invalid.
+
+Changed debug level in `surrogate_pair_to_codepoint()` to `DBG_VVHIGH` (up from
+`DBG_MED`).
+
+Added function `is_surrogate_pair()`:
+
+```c
+extern bool is_surrogate_pair(const int32_t xa, const int32_t xb);
+```
+
+to `json_utf8.c`. This is not used in the json decode string functions as it
+would needlessly complicate the code but now one can use it if they need to
+check and not parse it (i.e. just check).
+
+Typo fix in `jstr_test.sh`.
+
+Updated `JPARSE_UTF8_VERSION` to `"2.1.3 2025-07-04"`.
+Updated `JSTR_TEST_VERSION` to `"2.0.1 2025-07-04"`.
+
+
+## Release 2.2.45 2025-06-26
+
 Don't warn on invalid range in `surrogate_pair_to_codepoint()` but rather make
 it debug output (at level high). This is because it can give a warning where it
 is not desired. Warning might cause too much chatter anyway.

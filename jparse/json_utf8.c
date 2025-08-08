@@ -159,7 +159,14 @@ utf8len(const char *str, int32_t surrogate)
  *
  *      hi  - high byte
  *      lo  - low byte
+ *
  * NOTE: if a value is out of range the function will return a negative number.
+ * NOTE: although we could use is_surrogate_pair() this would needlessly
+ * complicate the decode functions in json_parse.c. In that code if this
+ * function returns < 0 it the string is processed as if it was a single \uxxxx.
+ * That happens if one or both of the bytes is out of range. Otherwise the
+ * codepoint is returned and it is processed in the other function (the decode
+ * on in json_parse.c).
  */
 int32_t
 surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
@@ -171,26 +178,22 @@ surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
      *
      * These should theoretically never happen.
      */
-    if (hi < 0 && lo < 0) {
-        dbg(DBG_HIGH, "hi %jd < 0 && lo %jd < 0", (intmax_t)hi, (intmax_t)lo);
-        return -1;
-    } else if (hi < 0) {
-        dbg(DBG_HIGH, "hi %jd < 0", (intmax_t)hi);
+    if (hi < 0) {
+        warn(__func__, "high byte < 0: %4x", hi);
         return -1;
     } else if (lo < 0) {
-        dbg(DBG_HIGH, "lo %jd < 0", (intmax_t)lo);
+        warn(__func__, "low byte < 0: %4x", lo);
         return -1;
     }
 
-    if (hi < 0xD800 || hi > 0xDBFF) {
-        dbg(DBG_HIGH, "hi: %jd < 0xD800 or > 0xDBFF", (intmax_t)hi);
-        return -1;
-    } else if (lo < 0xDC00 || lo > 0xDFFF) {
-        dbg(DBG_HIGH, "lo: %jd < 0xDC00 or > 0xDFFF", (intmax_t)lo);
+    if (hi < 0xD800 || hi > 0xDBFF || lo < 0xDC00 || lo > 0xDFFF) {
+        /*
+         * don't report this as it might just be that it's not a surrogate pair.
+         */
 	return -1;
     }
     codepoint = ((hi - 0xD800) << 10) + (lo - 0xDC00) + 0x10000;
-    dbg(DBG_MED, "codepoint: %jd", (intmax_t)codepoint);
+    dbg(DBG_VVHIGH, "codepoint: %jd", (intmax_t)codepoint);
     return codepoint;
 }
 
@@ -344,4 +347,43 @@ uint32_t utf8_to_codepoint(const char *str)
     }
     warn(__func__, "invalid UTF-8 sequence");
     return 0;
+}
+
+/*
+ * is_surrogate_pair    - detect if valid surrogate pair
+ *
+ * given:
+ *
+ *      xa      first \uxxxx
+ *      xb      second \uxxxx
+ *
+ * Returns true if a valid surrogate pair, else false.
+ *
+ * NOTE: this function checks that the xa (high surrogate or presumed high
+ * surrogate) is not a low surrogate if it's not a valid surrogate pair as an
+ * extra sanity check.
+ *
+ * NOTE: this function is not strictly needed due to the fact that
+ * surrogate_pair_to_codepoint() does the proper checks too, but we offer this
+ * function for those who need or desire it (we do not use it as it would
+ * complicate the code even more).
+ */
+bool
+is_surrogate_pair(const int32_t xa, const int32_t xb)
+{
+    if (xa < 0) {
+        warn(__func__, "high surrogate < 0");
+        return false;
+    } else if (xb < 0) {
+        warn(__func__, "low surrogate < 0");
+        return false;
+    }
+    if (xa >= 0xD800 && xa <= 0xDBFF && xb >= 0xDC00 && xb <= 0xDFFF) {
+        dbg(DBG_HIGH, "high surrogate %4x followed by low surrogate %4x", xa, xb);
+        return true;
+    } else if (xa >= 0xDC00 && xa <= 0xDFFF) {
+        warn(__func__, "low surrogate %4x not preceded by high surrogate", xa);
+        return false;
+    }
+    return false;
 }
