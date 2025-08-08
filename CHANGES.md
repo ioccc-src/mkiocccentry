@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.11 2025-06-08
+
+Don't install prep.sh or hostchk.sh. The uninstall rule still removes these
+files to clean out systems which had this problem. Assuming all is already
+compiled one could do `sudo make uninstall install` to clean up their system.
+Otherwise one should do `make; sudo make uninstall install` as trying to compile
+the tools with root will cause problems when trying to run `make` again (due to
+ownership change).
+
+
+
 ## Release 2.4.10 2025-06-06
 
 When `-Y` is used, don't show warnings even if `-i answers` is used as that was
