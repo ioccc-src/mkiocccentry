@@ -1,6 +1,21 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.2.39 2025-06-05
+
+Added `size_if_file()` which will return the `st_size` (from `stat(2)`) if the
+path exists and `stat(2)` does not fail on it and it is a regular file. It is an
+error if the path is NULL. For all other cases 0 is returned.
+
+Check ignored file list `read_fts()` before checking file type as there is no
+point in checking the file type if the file is to be ignored.
+
+Updated `util_test` to test this new function.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.9 2025-06-05"`.
+Updated `UTIL_TEST_VERSION` to `"2.0.4 2025-06-05"`.
+
+
 ## Release 2.2.38 2025-03-15
 
 Add `setlocale(LC_ALL, "");` to all `main()` functions.

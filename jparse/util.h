@@ -316,6 +316,7 @@ extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool chk_stdio_printf_err(FILE *stream, int ret);
 extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 extern off_t file_size(char const *path);
+extern off_t size_if_file(char const *path);
 extern bool is_empty(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern char *vcmdprintf(char const *format, va_list ap);

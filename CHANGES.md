@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.4.10 2025-06-05
+
+Sync [jparse repo](https://github.com/xexyl/jparse/) to `jparse/` with new
+utility function for issue #1263 - and a minor optimisation to `read_fts()`.
+
+Slight format fix in txzchk.
+
+
 ## Release 2.4.9 2025-06-04
 
 Fix bug where `-i answers` did not warn about issues found in prog.c and
