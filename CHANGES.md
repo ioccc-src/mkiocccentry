@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.25 2025-07-09
+
+This commit is a pre-emptive commit to not have to worry about it before
+IOCCC29, which is meant to run later this year (based on what Landon told me
+many months back and which was recently confirmed in a video).
+
+Removed `found_try_rule` from `mkiocccentry(1)` and `chkentry(1)`. During
+judging of IOCCC28 the example Makefile in the website was changed to say that
+if one has a try.sh script they should remove the try rule. This means that the
+mkiocccentry tool and chkentry cannot look for it in the Makefile or verify the
+JSON member exists in the .info.json file.
+
+This commit also reminds that issue #1171 should really be figured out, even if
+it is not necessarily urgent (as Landon and I can do it manually if necessary).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.16 2025-07-09"`.
+Updated `CHKENTRY_VERSION` to `"2.0.10 2025-07-09".
+
+
 ## Release 2.4.24 2025-07-08
 
 Fix `submission_dir` in `chkentry(1)` to be a `char *`, not a `char **`.
