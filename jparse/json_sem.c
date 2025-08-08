@@ -57,43 +57,47 @@
  * static variables
  */
 /* NULL pointer error */
-static struct json_sem_val_err sem_null_ptr = {
+static struct json_sem_val_err sem_null_ptr =
+{
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
     -1,		/* json_sem ptr is NULL, not in table */
     "NULL pointer given to werr_sem_val",	/* diagnostic message or NULL */
-    false	/* true ==> struct json_sem_val_err was malloced */
+    false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
 /* calloc failure */
-static struct json_sem_val_err sem_calloc_err = {
+static struct json_sem_val_err sem_calloc_err =
+{
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
     -1,		/* json_sem ptr is NULL, not in table */
     "calloc failure",	/* diagnostic message or NULL */
-    false	/* true ==> struct json_sem_val_err was malloced */
+    false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
 /* strdup failure */
-static struct json_sem_val_err sem_strdup_err = {
+static struct json_sem_val_err sem_strdup_err =
+{
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
     -1,		/* json_sem ptr is NULL, not in table */
     "strdup failure",	/* diagnostic message or NULL */
-    false	/* true ==> struct json_sem_val_err was malloced */
+    false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
 /* validation failure w/o json_sem_val_err */
-static struct json_sem_val_err sem_val_err_NULL = {
+static struct json_sem_val_err sem_val_err_NULL =
+{
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
     -1,		/* json_sem ptr is NULL, not in table */
     "validation failed yet json_sem_val_err is NULL",	/* diagnostic message or NULL */
-    false	/* true ==> struct json_sem_val_err was malloced */
+    false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
 
@@ -110,7 +114,7 @@ static void sem_walk(struct json *node, unsigned int depth, va_list ap);
  * This function fills out a struct json_sem_val_err containing JSON validation error
  * information about a failure to validate a JSON node's semantic context.
  *
- * Callers should examine the malloced element of the structure returned in determine
+ * Callers should examine the calloced element of the structure returned in determine
  * if the return value should be freed.
  *
  * given:
@@ -124,15 +128,15 @@ static void sem_walk(struct json *node, unsigned int depth, va_list ap);
  *
  * returns:
  *	pointer to a struct json_sem_val_err containing JSON validation error information
- *	This may be a pointer to a malloced struct json_sem_val_err (ret->malloced == true),
- *	or a pointer to a static struct json_sem_val_err (ret->malloced == false).
+ *	This may be a pointer to a calloced struct json_sem_val_err (ret->calloced == true),
+ *	or a pointer to a static struct json_sem_val_err (ret->calloced == false).
  *
  * NOTE: This function will never return NULL.
  *
  * NOTE: The ret->diagnostic will never be set to NULL.
  *
  * NOTE: In case of calloc or strdup error, or if name is NULL, or if fmt is NULL,
- *	 then ret->malloced will be set to false and a pointer to a static
+ *	 then ret->calloced will be set to false and a pointer to a static
  *	 struct json_sem_val_err will be returned.
  */
 struct json_sem_val_err *
@@ -140,7 +144,7 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
 	     char const *name, char const *fmt, ...)
 {
     va_list ap;					/* variable argument list */
-    struct json_sem_val_err *ret = NULL;	/* malloced return value */
+    struct json_sem_val_err *ret = NULL;	/* calloced return value */
     char message[BUFSIZ+1];				/* vsnwerr() message buffer */
     char *diagnostic = NULL;			/* pointer to duplicated message buffer */
 
@@ -179,9 +183,9 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     }
 
     /*
-     * malloc the return value
+     * calloc the return value
      */
-    ret = calloc(1, sizeof(struct json_sem_val_err));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
 	/* report calloc error */
 	if (diagnostic != NULL) {
@@ -198,7 +202,7 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     ret->depth = depth;
     ret->sem = sem;
     ret->diagnostic = diagnostic;
-    ret->malloced = true;
+    ret->calloced = true;
 
     /*
      * return pointer to new json_sem_val_err
@@ -213,7 +217,7 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
  * This function fills out a struct json_sem_val_err containing JSON validation error
  * information about a failure to validate a JSON node's semantic context.
  *
- * Callers should examine the malloced element of the structure returned in determine
+ * Callers should examine the calloced element of the structure returned in determine
  * if the return value should be freed.
  *
  * given:
@@ -227,15 +231,15 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
  *
  * returns:
  *	pointer to a struct json_sem_val_err containing JSON validation error information
- *	This may be a pointer to a malloced struct json_sem_val_err (ret->malloced == true),
- *	or a pointer to a static struct json_sem_val_err (ret->malloced == false).
+ *	This may be a pointer to a calloced struct json_sem_val_err (ret->calloced == true),
+ *	or a pointer to a static struct json_sem_val_err (ret->calloced == false).
  *
  * NOTE: This function will never return NULL.
  *
  * NOTE: The ret->diagnostic will never be set to NULL.
  *
  * NOTE: In case of calloc or strdup error, or if name is NULL, or if fmt is NULL,
- *	 then ret->malloced will be set to false and a pointer to a static
+ *	 then ret->calloced will be set to false and a pointer to a static
  *	 struct json_sem_val_err will be returned.
  */
 struct json_sem_val_err *
@@ -243,7 +247,7 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
 	      char const *name, char const *fmt, ...)
 {
     va_list ap;					/* variable argument list */
-    struct json_sem_val_err *ret = NULL;	/* malloced return value */
+    struct json_sem_val_err *ret = NULL;	/* calloced return value */
     char mesg[BUFSIZ+1];				/* vsnwerr() message buffer */
     char *diagnostic = NULL;			/* pointer to duplicated message buffer */
 
@@ -282,9 +286,9 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     }
 
     /*
-     * malloc the return value
+     * calloc the return value
      */
-    ret = calloc(1, sizeof(struct json_sem_val_err));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
 	/* report calloc error */
 	if (diagnostic != NULL) {
@@ -301,7 +305,7 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     ret->depth = depth;
     ret->sem = sem;
     ret->diagnostic = diagnostic;
-    ret->malloced = true;
+    ret->calloced = true;
 
     /*
      * return pointer to new json_sem_val_err
@@ -1792,17 +1796,17 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 	    } else {
 		count.sem_index = -1;
 	    }
-	    count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	    count.diagnostic = calloc(BUFSIZ+1, sizeof(*(count.diagnostic)));
 	    if (count.diagnostic == NULL) {
 		count.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
-		count.malloced = false;
+		count.calloced = false;
 	    } else {
 		snmsg(count.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u < minimum: %d",
 		      json_type_name(sem[i].type), sem[i].depth,
 		      (sem[i].name != NULL) ? " member name: " : "",
 		      (sem[i].name != NULL) ? sem[i].name : "",
 		      sem[i].count, sem[i].min);
-		count.malloced = true;
+		count.calloced = true;
 	    }
 
 	    /* save semantic count error */
@@ -1827,17 +1831,17 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 	    } else {
 		count.sem_index = -1;
 	    }
-	    count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	    count.diagnostic = calloc(BUFSIZ+1, sizeof(*(count.diagnostic)));
 	    if (count.diagnostic == NULL) {
 		count.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
-		count.malloced = false;
+		count.calloced = false;
 	    } else {
 		snmsg(count.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u > maximum: %d",
 		      json_type_name(sem[i].type), sem[i].depth,
 		      (sem[i].name != NULL) ? " member name: " : "",
 		      (sem[i].name != NULL) ? sem[i].name : "",
 		      sem[i].count, sem[i].max);
-		count.malloced = true;
+		count.calloced = true;
 	    }
 
 	    /* save semantic count error */
@@ -2057,10 +2061,10 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	count.bad_max = false;
 	count.unknown_node = true;
 	count.sem_index = -1;
-	count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	count.diagnostic = calloc(BUFSIZ+1, sizeof(*(count.diagnostic)));
 	if (count.diagnostic == NULL) {
 	    count.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
-	    count.malloced = false;
+	    count.calloced = false;
 	} else {
 	    if (node->type == JTYPE_MEMBER) {
 		char *name = NULL;	/* name of JTYPE_MEMBER */
@@ -2087,7 +2091,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 		snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s; unexpected node",
 		      depth, json_item_type_name(node));
 	    }
-	    count.malloced = true;
+	    count.calloced = true;
 	}
 
 	/* save semantic count error */
@@ -2105,14 +2109,14 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	count.bad_max = false;
 	count.unknown_node = true;
 	count.sem_index = -1;
-	count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	count.diagnostic = calloc(BUFSIZ+1, sizeof(*(count.diagnostic)));
 	if (count.diagnostic == NULL) {
 	    count.diagnostic = "calloc BUFSIZ calloc failed for json_sem_find result < -1";
-	    count.malloced = false;
+	    count.calloced = false;
 	} else {
 	    snwerr(index, count.diagnostic, BUFSIZ, "json_sem_find",
 			  "json_sem_find failed, returned %d < -1", index);
-	    count.malloced = true;
+	    count.calloced = true;
 	}
 
 	/* save semantic count error */
@@ -2304,19 +2308,19 @@ free_count_err(struct dyn_array *count_err)
     }
 
     /*
-     * free each semantic count error if malloced
+     * free each semantic count error if calloced
      */
     count = dyn_array_tell(count_err);
     for (i=0; i < count; ++i) {
 
 	/*
-	 * free diagnostic is malloced
+	 * free diagnostic is calloced
 	 */
 	p = dyn_array_addr(count_err, struct json_sem_count_err, i);
-	if (p->malloced == true) {
+	if (p->calloced == true) {
 	    free(p->diagnostic);
 	    p->diagnostic = NULL;
-	    p->malloced = false;
+	    p->calloced = false;
 	}
     }
 
@@ -2350,19 +2354,19 @@ free_val_err(struct dyn_array *val_err)
     }
 
     /*
-     * free each semantic count error if malloced
+     * free each semantic count error if calloced
      */
     count = dyn_array_tell(val_err);
     for (i=0; i < count; ++i) {
 
 	/*
-	 * free diagnostic is malloced
+	 * free diagnostic is calloced
 	 */
 	p = dyn_array_addr(val_err, struct json_sem_val_err, i);
-	if (p->malloced == true) {
+	if (p->calloced == true) {
 	    free(p->diagnostic);
 	    p->diagnostic = NULL;
-	    p->malloced = false;
+	    p->calloced = false;
 	}
     }
 

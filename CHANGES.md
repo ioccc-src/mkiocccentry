@@ -1,5 +1,28 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.22 2025-06-28
+
+Squelch `surrogate_pair_to_codepoint()` in `jparse/` from [jparse
+repo](https://github.com/xexyl/jparse/). Instead of `warn()` use `dbg()` with
+`DBG_HIGH`.
+
+
+## Release 2.4.21 2025-06-27
+
+Change last calls (outside of `jparse` generated code and the code in
+`dyn_array` as that's part of another repo) of `malloc()` to `calloc()`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.15 2025-06-25"`.
+Updated `SOUP_VERSION` to `"2.0.6 2025-06-27"`.
+
+
+## Release 2.4.20 2025-06-26
+
+Sync `jparse/` from the [jparse repo](https://github.com/xexyl/jparse/). Made
+last calls to malloc() use calloc() instead - and do not assume the type either,
+just use `foo = calloc(size, sizeof(*foo))`.
+
+
 ## Release 2.4.19 2025-06-25
 
 Fix `bug_report.sh` to check if one is inside a repo (hopefully mkiocccentry :-)

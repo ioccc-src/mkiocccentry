@@ -256,15 +256,15 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     }
 
     /*
-     * malloc the encoded string
+     * calloc the encoded string
      */
-    ret = malloc((size_t)mlen + 1 + 1);
+    ret = calloc((size_t)mlen + 1 + 1, sizeof(*ret));
     if (ret == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
+	warn(__func__, "calloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -1365,13 +1365,13 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
     /*
      * allocated decoded string
      */
-    ret = malloc(mlen + 1 + 1);
+    ret = calloc(mlen + 1 + 1, sizeof(*ret));
     if (ret == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
+	warn(__func__, "calloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -1382,7 +1382,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
     /*
      * JSON string decode
      *
-     * In the counting code in json_decode(), prior to the malloc for the
+     * In the counting code in json_decode(), prior to the calloc for the
      * decoded string, we already determined that the JSON encoded block of
      * memory is valid.
      */
@@ -2339,7 +2339,7 @@ json_parse_member(struct json *name, struct json *value)
  * returns:
  *	pointer to an initialized the JSON parse tree item
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3182,7 +3182,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  * returns:
  *	allocated JSON parser tree node of the parsed JSON number
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3268,7 +3268,7 @@ json_conv_number(char const *ptr, size_t len)
      * duplicate the JSON integer string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(char));
+    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
 	errp(13, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
@@ -3412,7 +3412,7 @@ json_conv_number(char const *ptr, size_t len)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3472,7 +3472,7 @@ json_conv_number_str(char const *str, size_t *retlen)
  * returns:
  *	allocated JSON parser tree node converted JSON string
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  *
  * NOTE: We let this function decide whether the string is actually valid
@@ -3552,7 +3552,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * duplicate the JSON string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(char));
+    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
 	errp(16, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
@@ -3613,7 +3613,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3672,7 +3672,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
  * returns:
  *	allocated JSON parser tree node converted JSON boolean
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3719,9 +3719,9 @@ json_conv_bool(char const *ptr, size_t len)
      * duplicate the JSON encoded string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = malloc(len+1+1);
+    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(19, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(19, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3769,7 +3769,7 @@ json_conv_bool(char const *ptr, size_t len)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3827,7 +3827,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
  * returns:
  *	allocated JSON parser tree node converted JSON null
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3874,9 +3874,9 @@ json_conv_null(char const *ptr, size_t len)
      * duplicate the JSON string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = malloc(len+1+1);
+    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(22, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(22, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3920,7 +3920,7 @@ json_conv_null(char const *ptr, size_t len)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -3991,7 +3991,7 @@ json_conv_null_str(char const *str, size_t *retlen)
  * returns:
  *	allocated JSON parser tree node converted JSON member
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -4113,7 +4113,7 @@ json_conv_member(struct json *name, struct json *value)
  * returns:
  *	allocated JSON parser tree node converted JSON object
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -4266,7 +4266,7 @@ json_object_add_member(struct json *node, struct json *member)
  * returns:
  *	allocated JSON parser tree as a JSON elements
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
@@ -4431,7 +4431,7 @@ json_elements_add_value(struct json *node, struct json *value)
  * returns:
  *	allocated JSON parser tree node converted JSON array
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
