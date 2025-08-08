@@ -205,6 +205,7 @@ static struct stat topdir_st;           /* stat(2) information of topdir */
 static struct stat workdir_st;          /* stat(2) information of workdir */
 static int answersfd = -1;              /* -i answers fd */
 static struct stat answers_st;
+static off_t total_file_size = 0;       /* total size of all files to be copied (in topdir) */
 
 /*
  * forward declarations
@@ -1923,6 +1924,10 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                         }
                     }
 
+                    /*
+                     * update total file size for copy_topdir()
+                     */
+                    total_file_size += ent->fts_statp->st_size;
                     dbg(DBG_MED, "found sane relative filename in topdir: %s", ent->fts_path + 2);
                     errno = 0; /* pre-clear errno for errp() */
                     filename = strdup(ent->fts_path + 2);
@@ -2591,7 +2596,17 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                     print("%s\n", p);
                 }
             }
+            print("\nEstimated total file size: %jd.\n", (intmax_t)total_file_size);
             if (!answer_yes) {
+                if (total_file_size > MAX_SUM_FILELEN) {
+                    /*
+                     * We probably should check >= because we have to create the
+                     * JSON files as well. But since those are an indeterminate
+                     * size but are also > 1 byte it doesn't really matter.
+                     */
+                    print("\nWARNING: the %jd estimate exceeds the Rule 17 limit of %jd.\n",
+                            (intmax_t)total_file_size, (intmax_t)MAX_SUM_FILELEN);
+                }
                 para("",
                      "If this list is incorrect, you will have to fix your topdir and try again.",
                      NULL);

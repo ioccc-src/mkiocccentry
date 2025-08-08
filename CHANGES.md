@@ -9,7 +9,17 @@ even when it was already initialised AND `free_ignored` was false. As of
 yesterday or the day before this bug was fixed so the additional code in
 chkentry was removed as the workaround is no longer needed.
 
+Address issue #1263. Using the FTS stat(2) struct the function `scan_topdir()`
+now tallies the total file size. Then in `copy_topdir()` it gives an ESTIMATED
+total size. If the `-Y` option is not used it will warn you about this. Note
+that just because a total size is not > the max size does not mean there is not
+a problem - this is due to the fact two JSON files have to be created too. These
+JSON files are of indeterminate size so we can't do a proper check. Thus even if
+one does not see the warning it is technically possible that txzchk will flag it
+for being too big, even if `-Y` is used.
+
 Updated `CHKENTRY_VERSION` to `"2.0.7 2025-06-22"`.
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.13 2025-06-22"`.
 
 
 ## Release 2.4.15 2025-06-21
