@@ -4076,7 +4076,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
      * look for required mandatory files in manifest if not ignored
      */
     pathname = INFO_JSON_FILENAME;
-    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+    if (!array_has_path(ignored_paths, pathname, true, false, NULL)) {
         if (manp->count_info_JSON != 1) {
             json_dbg(JSON_DBG_MED, __func__,
                      "invalid: found info_JSON != expected 1 valid info_JSON");
@@ -4112,7 +4112,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     }
 
     pathname = AUTH_JSON_FILENAME;
-    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+    if (!array_has_path(ignored_paths, pathname, true, false, NULL)) {
         if (manp->count_auth_JSON != 1) {
             json_dbg(JSON_DBG_MED, __func__,
                      "invalid: found auth_JSON != expected 1 valid auth_JSON");
@@ -4148,7 +4148,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     }
 
     pathname = PROG_C_FILENAME;
-    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+    if (!array_has_path(ignored_paths, pathname, true, false, NULL)) {
         if (manp->count_c_src != 1) {
             json_dbg(JSON_DBG_MED, __func__,
                      "invalid: found c_src != expected 1 valid c_src");
@@ -4184,7 +4184,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     }
 
     pathname = MAKEFILE_FILENAME;
-    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+    if (!array_has_path(ignored_paths, pathname, true, false, NULL)) {
         if (manp->count_Makefile != 1) {
             json_dbg(JSON_DBG_MED, __func__,
                      "invalid: found Makefile != expected 1 valid Makefile");
@@ -4220,7 +4220,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     }
 
     pathname = REMARKS_FILENAME;
-    if (!array_has_path(ignored_paths, pathname, true, NULL)) {
+    if (!array_has_path(ignored_paths, pathname, true, false, NULL)) {
         if (manp->count_remarks != 1) {
             json_dbg(JSON_DBG_MED, __func__,
                      "invalid: remarks found != expected 1 valid remarks");
@@ -4275,7 +4275,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
         /*
          * don't do any checks if this file is being ignored
          */
-        if (array_has_path(ignored_paths, extra_filename, false, NULL)) {
+        if (array_has_path(ignored_paths, extra_filename, false, false, NULL)) {
             continue;
         }
 
@@ -4330,7 +4330,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
         /*
          * don't do any checks if the file is being ignored
          */
-        if (array_has_path(ignored_paths, extra_filename, false, NULL)) {
+        if (array_has_path(ignored_paths, extra_filename, false, false, NULL)) {
             continue;
         }
 

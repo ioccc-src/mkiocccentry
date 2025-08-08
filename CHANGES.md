@@ -1,5 +1,29 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.15 2025-06-21
+
+Address issue #1216. By using `-X file` (X for eXclude) one can provide a file
+with a list of path to ignore (one path per line). Like with `-I path` and `-M
+manifest_file` one may have (in the file itself) globs (based on the rules of
+`fnmatch(3)`). The reason a long option is not used is because GNU and BSD have
+different behaviours in `getopt_long(3)` in ways that might cause problems. This
+can be looked at later if necessary.
+
+Fix bug with globs in manifest and ignore lists. Now when checking lists that
+can have a glob in an item it uses the updated jparse routines that take a new
+`bool fn`.
+
+Change `append_unique_filename()` to not abort when the filename already exists
+in the array. This is important in case (for example) someone has a directory
+named as a forbidden filename. It does not hurt to have the function return
+doing nothing and given the error message that was given it would have been very
+confusing to someone not familiar with the code.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.0.12 2025-06-21"`.
+Updated `CHKENTRY_VERSION` to `"2.0.6 2025-06-21"`.
+Updated `SOUP_VERSION` to `"2.0.4 2025-06-21"`.
+
+
 ## Release 2.4.14 2025-06-20
 
 Address issue #1228. By request one may use the `-M manifest_file` option to

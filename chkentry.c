@@ -337,11 +337,11 @@ add_ignore_subpath(char *path, struct fts *fts)
     /*
      * this will not add the path if it is already there
      */
-    append_path(&ignored_paths, path, true, false, false);
+    append_path(&ignored_paths, path, true, false, false, false);
     /*
      * we have to add it to fts->ignore list too
      */
-    append_path(&(fts->ignore), path, true, false, false);
+    append_path(&(fts->ignore), path, true, false, false, false);
 }
 
 int
@@ -546,7 +546,7 @@ main(int argc, char *argv[])
              * now for the FTS find_paths() function: we need to find all files
              * that are NOT ignored (this is why there are two ignore lists)
              */
-            append_path(&paths, "", true, false, false);
+            append_path(&paths, "", true, false, false, false);
             /*
              * find paths
              *
@@ -782,7 +782,7 @@ main(int argc, char *argv[])
              * now for the FTS find_paths() function: we need to find all files
              * that are NOT ignored (this is why there are two ignore lists)
              */
-            append_path(&paths, "", true, false, false);
+            append_path(&paths, "", true, false, false, false);
             /*
              * find paths
              *
@@ -1003,7 +1003,7 @@ main(int argc, char *argv[])
          * directories that are NOT ignored (this is why there are two ignore
          * lists)
          */
-        append_path(&paths, "", true, false, false);
+        append_path(&paths, "", true, false, false, false);
         /*
          * find paths
          *
@@ -1135,7 +1135,7 @@ main(int argc, char *argv[])
                  * files/directories until a better fix can be done (post
                  * IOCCC28)
                  */
-                if (find_path_in_array(u, ignored_paths, true, NULL)) {
+                if (find_path_in_array(u, ignored_paths, true, false, NULL)) {
                     continue;
                 }
 

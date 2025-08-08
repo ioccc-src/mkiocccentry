@@ -2144,19 +2144,23 @@ check_fts_info(FTS *fts, FTSENT *ent)
  * If you need to ignore paths you might do this PRIOR to calling the function
  * but AFTER doing the memset() and reset_fts() (!):
  *
- *      append_path(&(fts.ignore), "foo", true, false, false); // last false means don't match case when searching list
+ *      append_path(&(fts.ignore), "foo", true, false, false, false);
  *
- * If you wish for this to be a glob you can set the fts.fn_ignore_flags to >= 0
- * (either 0 or one of the flags in the fnmatch(3) man page), otherwise keep <
- * 0.
+ * NOTE: second to last false means don't match case. The last false is to not
+ * use fnmatch(3) when searching if the path is already in the array. This does
+ * not depend on the fts struct because it's a more general function (and one
+ * might have the flags set but not want it in some case). If you wish for this
+ * to be a glob you can set the fts.fn_ignore_flags to >= 0 (either 0 or one of
+ * the flags in the fnmatch(3) man page), otherwise keep -1.
  *
  * If you want to match only specific files (or globs) try something like:
  *
- *      append_path(&(fts.match), "foo", true, false, false); // last false means don't match case when searching list
+ *      append_path(&(fts.match), "foo*", true, false, false, true);
  *
- * If you wish for this to be a glob you can set the fts.fn_match_flags to >= 0
- * (either 0 or one of the flags in the fnmatch(3) man page), otherwise keep <
- * 0.
+ * The same notes above apply here except that here we allow globs with
+ * fnmatch(3) prior to adding the path (the same could be done for ignore paths
+ * of course). In other words, the finding routine will use fnmatch(3) to check
+ * if the path already exists in the array.
  *
  * NOTE: if one specifies a bogus range for min/max depth the function will find
  * nothing. For example if one gives a min_depth > the max_depth the function
@@ -2918,6 +2922,8 @@ paths_in_array(struct dyn_array *array)
  *      path        - path to find in array
  *      fts         - struct fts * with parameters
  *      match_case  - true ==> use strcmp(), not strcasecmp()
+ *      fn          - true ==> use fnmatch(3)
+ *      idx         - if not NULL, set to location in array
  *
  * NOTE: this function will return false on a NULL array, an empty array or a
  * NULL path (it will not return false on an empty path as due to the way the
@@ -2925,7 +2931,7 @@ paths_in_array(struct dyn_array *array)
  * string in it).
  */
 bool
-array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *idx)
+array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, intmax_t *idx)
 {
     uintmax_t len = 0;	/* number of strings in the array */
     char *u = NULL;     /* name pointer */
@@ -2956,7 +2962,7 @@ array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *i
 	}
 
 	/* look for match */
-	if ((match_case && !strcmp(path, u)) || (!match_case && !strcasecmp(path, u))) {
+	if ((match_case && !strcmp(path, u)) || (!match_case && !strcasecmp(path, u)) || (fn && !fnmatch(u, path, 0))) {
 	    /* str found in array */
             if (idx != NULL) {
                 *idx = (intmax_t)i;
@@ -2982,6 +2988,7 @@ array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *i
  *	str		string to find in array
  *	paths		pointer to a struct dyn_array of char * (paths)
  *	match_case      true ==> match case (use strcmp(), not strcasecmp())
+ *	fn              true ==> use fnmatch(3)
  *	idx             if not NULL set *idx to element if found
  *
  * returns:
@@ -2995,7 +3002,7 @@ array_has_path(struct dyn_array *array, char *path, bool match_case, intmax_t *i
  * string is not found NULL will be returned.
  */
 char *
-find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_t *idx)
+find_path_in_array(char *path, struct dyn_array *paths, bool match_case, bool fn, intmax_t *idx)
 {
     intmax_t i;
 
@@ -3014,7 +3021,7 @@ find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_
     }
 
     i = -1;
-    if (array_has_path(paths, path, match_case, &i) && i >= 0) {
+    if (array_has_path(paths, path, match_case, fn, &i) && i >= 0) {
         if (idx != NULL) {
             /*
              * record index if requested
@@ -3046,6 +3053,7 @@ find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_
  *	path		string to search array and append if not already found
  *	unique          true ==> don't add to array if it already exists
  *	duped           true ==> str was dynamically allocated
+ *	fn              true ==> use fnmatch(3)
  *	match_case      true ==> use strcmp() not strcasecmp()
  *
  * returns:
@@ -3058,7 +3066,7 @@ find_path_in_array(char *path, struct dyn_array *paths, bool match_case, intmax_
  * size of 64.
  */
 bool
-append_path(struct dyn_array **paths, char *path, bool unique, bool duped, bool match_case)
+append_path(struct dyn_array **paths, char *path, bool unique, bool duped, bool match_case, bool fn)
 {
     char *u = NULL;		/* unique name pointer */
 
@@ -3090,7 +3098,7 @@ append_path(struct dyn_array **paths, char *path, bool unique, bool duped, bool 
      *
      * NOTE: we don't care about idx.
      */
-    if (unique && find_path_in_array(path, *paths, match_case, NULL) != NULL) {
+    if (unique && find_path_in_array(path, *paths, match_case, fn, NULL) != NULL) {
         return false;
     }
 
@@ -3332,8 +3340,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                             }
                             /*
                              * false, false because it's already allocated!
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, name, false, false, fts->match_case);
+                            append_path(&paths_found, name, false, false, fts->match_case, false);
 
                             /*
                              * do NOT free the name as it's been added to the
@@ -3342,8 +3354,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                         } else {
                             /*
                              * regular append in this case
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, p, true, false, fts->match_case);
+                            append_path(&paths_found, p, true, false, fts->match_case, false);
                         }
 
                         /*
@@ -3378,8 +3394,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                             }
                             /*
                              * false, false because it's already allocated!
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, name, false, false, fts->match_case);
+                            append_path(&paths_found, name, false, false, fts->match_case, false);
 
                             /*
                              * do NOT free the name as it's been added to the
@@ -3388,8 +3408,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                         } else {
                             /*
                              * regular append in this case
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, p, true, false, fts->match_case);
+                            append_path(&paths_found, p, true, false, fts->match_case, false);
                         }
 
                         /*
@@ -3425,8 +3449,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                             }
                             /*
                              * false, false because it's already allocated!
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, name, false, false, fts->match_case);
+                            append_path(&paths_found, name, false, false, fts->match_case, false);
 
                             /*
                              * do NOT free the name as it's been added to the
@@ -3435,8 +3463,12 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                         } else {
                             /*
                              * regular append in this case
+                             *
+                             * NOTE: as we have an exact path name here we do
+                             * not want to use fnmatch(3), thus false as the
+                             * last parameter to append_path().
                              */
-                            append_path(&paths_found, p, true, false, fts->match_case);
+                            append_path(&paths_found, p, true, false, fts->match_case, false);
                         }
 
                         /*
@@ -9338,7 +9370,7 @@ check_invalid_option(char const *prog, int ch, int opt)
  */
 #include "../json_utf8.h"
 
-#define UTIL_TEST_VERSION "2.0.6 2025-06-20" /* version format: major.minor YYYY-MM-DD */
+#define UTIL_TEST_VERSION "2.0.7 2025-06-21" /* version format: major.minor YYYY-MM-DD */
 
 int
 main(int argc, char **argv)
@@ -11060,7 +11092,7 @@ main(int argc, char **argv)
     fts.base = false; /* important */
     fts.match_case = false;
     fts.fn_ignore_flags = 0;
-    append_path(&(fts.ignore), "util*", true, false, true);
+    append_path(&(fts.ignore), "util*", true, false, true, false);
     ent = read_fts(".", -1, &cwd, &fts);
     if (ent == NULL) {
         err(161, __func__, "read_fts() returned a NULL pointer on \".\" for directories");
@@ -11099,7 +11131,7 @@ main(int argc, char **argv)
     fts.base = true; /* important */
     fts.match_case = false;
     fts.fn_match_flags = 0;
-    append_path(&(fts.match), "util*", true, false, true);
+    append_path(&(fts.match), "util*", true, false, true, false);
     ent = read_fts(".", -1, &cwd, &fts);
     if (ent == NULL) {
         err(165, __func__, "read_fts() returned a NULL pointer on \".\" for directories");
@@ -11393,26 +11425,26 @@ main(int argc, char **argv)
      */
     /* filenames
      */
-    append_path(&paths, "util.o", true, false, true);
-    append_path(&paths, "util.c", true, false, true);
-    append_path(&paths, "util.h", true, false, true);
-    append_path(&paths, "util_test.c", true, false, true);
-    append_path(&paths, "util_test.o", true, false, true);
+    append_path(&paths, "util.o", true, false, true, false);
+    append_path(&paths, "util.c", true, false, true, false);
+    append_path(&paths, "util.h", true, false, true, false);
+    append_path(&paths, "util_test.c", true, false, true, false);
+    append_path(&paths, "util_test.o", true, false, true, false);
     /*
      * directories
      */
-    append_path(&paths, "test_jparse", true, false, true);
-    append_path(&paths, "test_jparse/a", true, false, true);
-    append_path(&paths, "test_jparse/test_JSON", true, false, true);
+    append_path(&paths, "test_jparse", true, false, true, false);
+    append_path(&paths, "test_jparse/a", true, false, true, false);
+    append_path(&paths, "test_jparse/test_JSON", true, false, true, false);
     /*
      * special checks: . and ..
      */
-    append_path(&paths, ".", true, false, true);
-    append_path(&paths, "..", true, false, true);
+    append_path(&paths, ".", true, false, true, false);
+    append_path(&paths, "..", true, false, true, false);
     /*
      * path that doesn't exist (or shouldn't)
      */
-    append_path(&paths, "foobar", true, false, true);
+    append_path(&paths, "foobar", true, false, true, false);
 
     /*
      * test find_paths()
@@ -11436,7 +11468,7 @@ main(int argc, char **argv)
     /*
      * look for test_jparse
      */
-    name = find_path_in_array("test_jparse", paths, false, &idx);
+    name = find_path_in_array("test_jparse", paths, false, false, &idx);
     if (name == NULL) {
         /*
          * "test_jparse" must exist
@@ -11791,7 +11823,7 @@ main(int argc, char **argv)
      * special test: only add "bad". Then make sure that this is in the ignored
      * list. Then try and find this path. It should return NULL.
      */
-    append_path(&paths, "bad", true, false, true);
+    append_path(&paths, "bad", true, false, true, false);
 
     /*
      * test find_paths() looking for every file called bad; this should fail.
@@ -11813,7 +11845,7 @@ main(int argc, char **argv)
      * test find_paths() looking for every file called util.c; this should
      * succeed because it's not in the ignore list.
      */
-    append_path(&paths, "util.c", true, false, true);
+    append_path(&paths, "util.c", true, false, true, false);
 
     /*
      * free paths found
@@ -11838,7 +11870,7 @@ main(int argc, char **argv)
      * special test: this time we will look for every single file by making
      * an empty path string and FTS_TYPE_ANY
      */
-    append_path(&paths, "", true, false, false);
+    append_path(&paths, "", true, false, false, false);
 
     /*
      * test find_paths() looking for every file under test_jparse/
@@ -12321,7 +12353,7 @@ main(int argc, char **argv)
     /*
      * now append "foobar" to the array
      */
-    append_path(&paths, "foobar", true, false, true);
+    append_path(&paths, "foobar", true, false, true, false);
 
     /*
      * create a file called foobar
@@ -12488,7 +12520,7 @@ main(int argc, char **argv)
     /*
      * now append "foobar" to the array
      */
-    append_path(&paths, "foobar", true, false, true);
+    append_path(&paths, "foobar", true, false, true, false);
 
     /*
      * check for "foobar" by case-sensitive
