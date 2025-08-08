@@ -79,7 +79,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V= MAKE_CD_Q="
-export BUG_REPORT_VERSION="2.1.1 2025-06-25"
+export BUG_REPORT_VERSION="2.1.2 2025-07-23"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1759,7 +1759,7 @@ elif [[ -z "$X_FLAG" ]]; then
     write_echo "If you feel everything is in order you may safely delete that file."
     write_echo "Otherwise you may report the issue at the GitHub issue page:"
     write_echo ""
-    write_echo "	https://github.com/xexyl/jparse/issues"
+    write_echo "	https://github.com/xexyl/jparse/issues/new/choose"
     write_echo ""
     write_echo "making sure to attach $LOGFILE with your report."
 fi

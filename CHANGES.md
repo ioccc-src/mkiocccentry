@@ -1,5 +1,19 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.26 2025-08-05
+
+Resolve issue #1288. Any FILE that has a name that ends with `.sh` (i.e. matches
+the glob `*.sh`) is now set to mode 0555.
+
+Synced `jparse/` from [jparse repo](https://github.com/xexyl/jparse/) (just link
+fixes in the `jparse_bug_report.sh` script and man page - which is not used by
+mkiocccentry other than jparse itself being necessary).
+
+Updated `SOUP_VERSION` to `"2.0.7 2025-08-05"`.
+Updated `TXZCHK_VERSION` to `"2.0.5 2025-08-05"`.
+
+
+
 ## Release 2.4.25 2025-07-09
 
 This commit is a pre-emptive commit to not have to worry about it before
