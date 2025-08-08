@@ -1,5 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.4.19 2025-06-25
+
+Fix `bug_report.sh` to check if one is inside a repo (hopefully mkiocccentry :-)
+) prior to running git commands.
+
+The above was done in `jparse/` from the [jparse
+repo](https://github.com/xexyl/jparse/) as well.
+
+Updated `BUG_REPORT_VERSION` to `"1.0.11 2025-06-25"`.
+
+
 ## Release 2.4.18 2025-06-24
 
 Resolve issue #1222. Removed the JSON members (from .info.json file):

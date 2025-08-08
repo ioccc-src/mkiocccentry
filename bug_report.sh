@@ -113,7 +113,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.10 2025-03-14"
+export BUG_REPORT_VERSION="1.0.11 2025-06-25"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1756,27 +1756,34 @@ write_echo ""
 # differences or not git will return 0. It will return non-zero in the case that
 # it's not in a git repo but we don't explicitly check for this. All we care
 # about is whether or not the user has changes that might be causing a problem.
+#
+# But before we do anything, make sure this is actually in a git repo
+# (presumably of jparse :-) ).
+#
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    write_echo "## RUNNING: \"git status\" on the code"
+    exec_command git --no-pager status
+    write_echo ""
+    write_echo "## \"git status\" ABOVE"
+    write_echo ""
 
-write_echo "## RUNNING: \"git status\" on the code"
-exec_command git --no-pager status
-write_echo ""
-write_echo "## \"git status\" ABOVE"
-write_echo ""
+    write_echo "## RUNNING: \"git diff\" to check for local modifications to the code"
+    exec_command git --no-pager diff
+    write_echo "## \"git diff\" ABOVE"
+    write_echo ""
 
-write_echo "## RUNNING: \"git diff\" to check for local modifications to the code"
-exec_command git --no-pager diff
-write_echo "## \"git diff\" ABOVE"
-write_echo ""
+    write_echo "## RUNNING: git diff --staged to check for local modifications to the code"
+    exec_command git --no-pager diff --staged
+    write_echo "## git diff --staged ABOVE"
+    write_echo ""
 
-write_echo "## RUNNING: git diff --staged to check for local modifications to the code"
-exec_command git --no-pager diff --staged
-write_echo "## git diff --staged ABOVE"
-write_echo ""
-
-write_echo "#----------------------------------------------------#"
-write_echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO IOCCC TOOLS #"
-write_echo "#----------------------------------------------------#"
-write_echo ""
+    write_echo "#----------------------------------------------------#"
+    write_echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO IOCCC TOOLS #"
+    write_echo "#----------------------------------------------------#"
+    write_echo ""
+else
+    write_echo "### Notice: directory not under git control."
+fi
 
 ################
 # final report #
