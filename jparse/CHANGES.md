@@ -5,7 +5,17 @@
 Fix `jparse_bug_report.sh` to check if one is inside a repo (hopefully jparse
 :-) ) prior to running git commands.
 
+Rewrite the UTF-8 library, with some research, although the code might seem not
+changed much, due to the fact that a lot of it consists of magic numbers. This
+does not mean that the issue #31 is resolved.  It is not possible for me to test
+that but in any event it'll likely take much more work to integrate into the
+`json_parse.c` and `json_utf8.c` code and is for further down the road. It might
+involve the code from the original reporter, @SirWumpus, but this will all be
+done another time (the problem also has to be looked at in more detail before
+anything can be done with it).
+
 Updated `BUG_REPORT_VERSION` to `"2.1.1 2025-06-25"`.
+Updated `JPARSE_UTF8_VERSION` to `"2.1.1 2025-06-25"`.
 
 
 ## Release 2.2.42 2025-06-20
