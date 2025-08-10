@@ -1,5 +1,52 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 2.5.0 2025-08-10
+
+Initial changes to get ready for **IOCCC29**.
+
+Updated versions and limits so that for **IOCCC29**,
+older **IOCCC28** will no longer be allowed.
+
+Changed `MIN_TIMESTAMP` from 1716103155
+to 1754850884.
+
+Changed `IOCCC_CONTEST` from "IOCCC28"
+to "IOCCC29".
+
+Changed `IOCCC_YEAR` from 2024 to 2025.
+
+Changed `MIN_IOCCCSIZE_VERSION` from "28.15 2024-06-27"
+to IOCCCSIZE_VERSION which is equal to "28.16 2025-03-14".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.4.26 2025-08-05"
+to "2.5.0 2025-08-10".
+
+Changed `MIN_IOCCCSIZE_VERSION` from "28.15 2024-06-27"
+to "28.16 2025-03-14".
+
+Changed `MKIOCCCENTRY_VERSION` from "2.0.16 2025-07-09"
+to "2.1.0 2025-08-10".
+
+Changed `MIN_MKIOCCCENTRY_VERSION` from "2.0.1 2025-03-02"
+to "2.1.0 2025-08-10".
+
+Changed `MKIOCCCENTRY_ANSWERS_VERSION` from "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0"
+to "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0".
+
+Changed `INFO_VERSION` from "1.16 2024-05-18"
+to "1.17 2025-05-10".
+
+Changed `AUTH_VERSION` from "1.22 2024-05-18"
+to "1.23 2025-05-10".
+
+Changed `FNAMCHK_VERSION` from "2.0.2 2025-0l-23"
+to "2.1.0 2025-08-10".
+
+Changed `MIN_FNAMCHK_VERSION` from "2.0.0 2025-02-28"
+to FNAMCHK_VERSION which is equal to "2.1.0 2025-08-10".
+
+
 ## Release 2.4.26 2025-08-05
 
 Resolve issue #1288. Any FILE that has a name that ends with `.sh` (i.e. matches
@@ -1321,7 +1368,7 @@ uses. This is necessary because the Makefile that was used before was the top
 level Makefile here and using `make clobber` on it caused errors (because of
 missing subdirectories).
 
-Unrelated but I have removed `XXX` comments in FAQ.md as the task had been done
+Unrelated but I have removed "triple-X" comments in FAQ.md as the task had been done
 (updating links after the great fork merge).
 
 
@@ -1393,7 +1440,7 @@ is also an error).
 `collect_topdir_files()` now copies additional files to the submission
 directory. It requires obtaining absolute paths for the target file and the
 source files because otherwise files might not be found (this does mean we have
-to use `getcwd()` and have buffers of size `PATH_MAX+1`). There are numerous XXX
+to use `getcwd()` and have buffers of size `PATH_MAX+1`). There are numerous "triple-X"
 comments added pointing out that some of this has to be changed and perhaps
 cleaned up (one such thing is that prog.c, Makefile and remarks.md will not be
 checked when traversing the topdir but processed later on with the other files -
@@ -3704,7 +3751,7 @@ implementation details until we have discussed output, how `jfmt` should format
 code, search routines are added and numerous other things. This was just an
 aside, one might say.
 
-Added `XXX` comment to the print count function of each tool that points out
+Added `"triple-X"` comment to the print count function of each tool that points out
 that currently the count is not correct. This will be removed in time.
 
 Update `jval(1)` man page - add exit code 8 to list of exit codes.
@@ -4053,14 +4100,14 @@ cannot say that it's not valid JSON.
 Add back good json file `googolplex.json` as it now is considered valid json: if
 the error is a range error then we know it's valid JSON so we can set parsed to
 true. If it's something else we cannot. THIS IS TEMPORARY! It could be that
-there is both a range error and it's an invalid string. There are XXX comments
+there is both a range error and it's an invalid string. There are "triple-X" comments
 about this as it needs to change!
 
 Fix detection of '.' with e notation if a '.' found and also whether 'e' was
 found in the jnum tests.
 
 Add code to `is_floating_notation()` and `is_e_notation()` functions. More needs
-to be checked and there are still some `XXX` comments to look at. Note that the
+to be checked and there are still some `"triple-X"` comments to look at. Note that the
 code here does the same checks as `json_process_floating()` and this might not
 be strictly correct but that can determined later: as it's used only in JSON
 parsing it should be okay for the time being.

@@ -138,7 +138,7 @@
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
-#define MIN_TIMESTAMP ((time_t)1716103155)
+#define MIN_TIMESTAMP ((time_t)1754850884)
 
 
 /*
@@ -146,7 +146,7 @@
  *
  * use format: IOCCC[0-9][0-9] or IOCCCMOCK
  */
-#define IOCCC_CONTEST "IOCCC28"
+#define IOCCC_CONTEST "IOCCC29"
 
 
 /*
@@ -155,7 +155,7 @@
  * NOTE: If the contest spans the new year, then the year
  *	 that IOCCC_CONTEST opens may be different.
  */
-#define IOCCC_YEAR (2024)
+#define IOCCC_YEAR (2025)
 
 
 /*

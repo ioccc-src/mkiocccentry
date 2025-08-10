@@ -83,7 +83,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.4.26 2025-08-05"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.5.0 2025-08-10"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -95,14 +95,14 @@
  * official iocccsize version
  */
 #define IOCCCSIZE_VERSION "28.16 2025-03-14"	/* format: major.minor YYYY-MM-DD */
-#define MIN_IOCCCSIZE_VERSION "28.15 2024-06-27"
+#define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.0.16 2025-07-09"	/* format: major.minor YYYY-MM-DD */
-#define MIN_MKIOCCCENTRY_VERSION "2.0.1 2025-03-02"
-#define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC28-1.0" /* answers file version */
+#define MKIOCCCENTRY_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define MIN_MKIOCCCENTRY_VERSION "2.1.0 2025-08-10"
+#define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
 /*
@@ -110,36 +110,35 @@
  */
 #define LOCATION_VERSION "1.0.5 2024-06-11"		/* format: major.minor YYYY-MM-DD */
 
-
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.16 2024-05-18"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.17 2025-05-10"		/* format: major.minor YYYY-MM-DD */
 #define MIN_INFO_VERSION INFO_VERSION
 
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.22 2024-05-18"		/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.23 2025-05-10"		/* format: major.minor YYYY-MM-DD */
 #define MIN_AUTH_VERSION AUTH_VERSION
 
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.0.2 2025-0l-23"	/* format: major.minor YYYY-MM-DD */
-#define MIN_FNAMCHK_VERSION "2.0.0 2025-02-28"
+#define FNAMCHK_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
 #define TXZCHK_VERSION "2.0.5 2025-08-05"	/* format: major.minor YYYY-MM-DD */
-#define MIN_TXZCHK_VERSION "2.0.1 2025-03-02"
+#define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.0.10 2025-07-09"	/* format: major.minor YYYY-MM-DD */
-#define MIN_CHKENTRY_VERSION "2.0.1 2025-03-02"
+#define CHKENTRY_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * Version of info for JSON the .entry.json files.
