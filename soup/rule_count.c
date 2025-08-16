@@ -116,86 +116,96 @@ typedef struct {
 } Word;
 
 static Word cwords[] = {
-	/* Yes Virginia, we left #define off the list on purpose! */
-	{ STRLEN("#elif"), "#elif" } ,
-	{ STRLEN("#else"), "#else" } ,
-	{ STRLEN("#endif"), "#endif" } ,
-	{ STRLEN("#error"), "#error" } ,
-	{ STRLEN("#ident"), "#ident" } ,
-	{ STRLEN("#if"), "#if" } ,
-	{ STRLEN("#ifdef"), "#ifdef" } ,
-	{ STRLEN("#ifndef"), "#ifndef" } ,
-	{ STRLEN("#include"), "#include" } ,
-	{ STRLEN("#line"), "#line" } ,
-	{ STRLEN("#pragma"), "#pragma" } ,
-	{ STRLEN("#sccs"), "#sccs" } ,
-	{ STRLEN("#warning"), "#warning" } ,
+	/* Yes Virginia, we left #define off the list on purpose!  K&R */
+	{ STRLEN("#elif"), "#elif" } ,				/* K&R */
+	{ STRLEN("#elifdef"), "#elifdef" } ,			/* +C23 */
+	{ STRLEN("#elifndef"), "#elifndef" } ,			/* +C23 */
+	{ STRLEN("#else"), "#else" } ,				/* K&R */
+	{ STRLEN("#embed"), "#embed" } ,			/* +C23 */
+	{ STRLEN("#endif"), "#endif" } ,			/* K&R */
+	{ STRLEN("#error"), "#error" } ,			/* +C89 */
+	{ STRLEN("#ident"), "#ident" } ,			/* gcc */
+	{ STRLEN("#if"), "#if" } ,				/* K&R */
+	{ STRLEN("#ifdef"), "#ifdef" } ,			/* K&R */
+	{ STRLEN("#ifndef"), "#ifndef" } ,			/* K&R */
+	{ STRLEN("#include"), "#include" } ,			/* K&R */
+	{ STRLEN("#line"), "#line" } ,				/* K*R */
+	{ STRLEN("#pragma"), "#pragma" } ,			/* +C89 */
+	{ STRLEN("#sccs"), "#sccs" } ,				/* gcc */
+	{ STRLEN("#warning"), "#warning" } ,			/* +C23 */
+	{ STRLEN("#undef"), "#undef" } ,			/* K&R */
 
-	{ STRLEN("_Alignas"), "_Alignas" } ,
-	{ STRLEN("_Alignof"), "_Alignof" } ,
-	{ STRLEN("_Atomic"), "_Atomic" } ,
-	{ STRLEN("_Bool"), "_Bool" } ,
-	{ STRLEN("_Complex"), "_Complex" } ,
-	{ STRLEN("_Generic"), "_Generic" } ,
-	{ STRLEN("_Imaginary"), "_Imaginary" } ,
-	{ STRLEN("_Noreturn"), "_Noreturn" } ,
-	{ STRLEN("_Pragma"), "_Pragma" } ,
-	{ STRLEN("_Static_assert"), "_Static_assert" } ,
-	{ STRLEN("_Thread_local"), "_Thread_local" } ,
+	{ STRLEN("_Alignas"), "_Alignas" } ,			/* +C11 */
+	{ STRLEN("_Alignof"), "_Alignof" } ,			/* +C11 */
+	{ STRLEN("_Atomic"), "_Atomic" } ,			/* +C11 */
+	{ STRLEN("_BitInt"), "_BitInt" } ,			/* +C23 */
+	{ STRLEN("_Bool"), "_Bool" } ,				/* +C99 */
+	{ STRLEN("_Complex"), "_Complex" } ,			/* +C99 */
+	{ STRLEN("_Decimal128"), "_Decimal128" } ,		/* +C23 */
+	{ STRLEN("_Decimal64"), "_Decimal64" } ,		/* +C23 */
+	{ STRLEN("_Decimal32"), "_Decimal32" } ,		/* +C23 */
+	{ STRLEN("_Generic"), "_Generic" } ,			/* +C11 */
+	{ STRLEN("_Imaginary"), "_Imaginary" } ,		/* +C99 */
+	{ STRLEN("_Noreturn"), "_Noreturn" } ,			/* +C11 */
+	{ STRLEN("_Pragma"), "_Pragma" } ,			/* +C99 */
+	{ STRLEN("_Static_assert"), "_Static_assert" } ,	/* +C11 */
+	{ STRLEN("_Thread_local"), "_Thread_local" } ,		/* +C11 */
 
-	{ STRLEN("alignas"), "alignas" } ,
-	{ STRLEN("alignof"), "alignof" } ,
-	{ STRLEN("and"), "and" } ,
-	{ STRLEN("and_eq"), "and_eq" } ,
-	{ STRLEN("auto"), "auto" } ,
-	{ STRLEN("bitand"), "bitand" } ,
-	{ STRLEN("bitor"), "bitor" } ,
-	{ STRLEN("bool"), "bool" } ,
-	{ STRLEN("break"), "break" } ,
-	{ STRLEN("case"), "case" } ,
-	{ STRLEN("char"), "char" } ,
-	{ STRLEN("compl"), "compl" } ,
-	{ STRLEN("const"), "const" } ,
-	{ STRLEN("continue"), "continue" } ,
-	{ STRLEN("default"), "default" } ,
-	{ STRLEN("do"), "do" } ,
-	{ STRLEN("double"), "double" } ,
-	{ STRLEN("else"), "else" } ,
-	{ STRLEN("enum"), "enum" } ,
-	{ STRLEN("extern"), "extern" } ,
-	{ STRLEN("false"), "false" } ,
-	{ STRLEN("float"), "float" } ,
-	{ STRLEN("for"), "for" } ,
-	{ STRLEN("goto"), "goto" } ,
-	{ STRLEN("if"), "if" } ,
-	{ STRLEN("inline"), "inline" } ,
-	{ STRLEN("int"), "int" } ,
-	{ STRLEN("long"), "long" } ,
-	{ STRLEN("noreturn"), "noreturn" } ,
-	{ STRLEN("not"), "not" } ,
-	{ STRLEN("not_eq"), "not_eq" } ,
-	{ STRLEN("or"), "or" } ,
-	{ STRLEN("or_eq"), "or_eq" } ,
-	{ STRLEN("register"), "register" } ,
-	{ STRLEN("restrict"), "restrict" } ,
-	{ STRLEN("return"), "return" } ,
-	{ STRLEN("short"), "short" } ,
-	{ STRLEN("signed"), "signed" } ,
-	{ STRLEN("sizeof"), "sizeof" } ,
-	{ STRLEN("static"), "static" } ,
-	{ STRLEN("static_assert"), "static_assert" } ,
-	{ STRLEN("struct"), "struct" } ,
-	{ STRLEN("switch"), "switch" } ,
-	{ STRLEN("thread_local"), "thread_local" } ,
-	{ STRLEN("true"), "true" } ,
-	{ STRLEN("typedef"), "typedef" } ,
-	{ STRLEN("union"), "union" } ,
-	{ STRLEN("unsigned"), "unsigned" } ,
-	{ STRLEN("void"), "void" } ,
-	{ STRLEN("volatile"), "volatile" } ,
-	{ STRLEN("while"), "while" } ,
-	{ STRLEN("xor"), "xor" } ,
-	{ STRLEN("xor_eq"), "xor_eq" } ,
+	{ STRLEN("alignas"), "alignas" } ,			/* +C23 */
+	{ STRLEN("alignof"), "alignof" } ,			/* +C23 */
+	{ STRLEN("and"), "and" } ,				/* +C89 iso646.h */
+	{ STRLEN("and_eq"), "and_eq" } ,			/* +C89 iso646.h */
+	{ STRLEN("auto"), "auto" } ,				/* K&R */
+	{ STRLEN("bitand"), "bitand" } ,			/* +C89 iso646.h */
+	{ STRLEN("bitor"), "bitor" } ,				/* +C89 iso646.h */
+	{ STRLEN("bool"), "bool" } ,				/* +C23 */
+	{ STRLEN("break"), "break" } ,				/* K&R */
+	{ STRLEN("case"), "case" } ,				/* K&R */
+	{ STRLEN("char"), "char" } ,				/* K&R */
+	{ STRLEN("compl"), "compl" } ,				/* +C89 iso646.h */
+	{ STRLEN("const"), "const" } ,				/* +C89 */
+	{ STRLEN("continue"), "continue" } ,			/* K&R */
+	{ STRLEN("default"), "default" } ,			/* K&R */
+	{ STRLEN("do"), "do" } ,				/* K&R */
+	{ STRLEN("double"), "double" } ,			/* K&R */
+	{ STRLEN("else"), "else" } ,				/* K&R */
+	{ STRLEN("enum"), "enum" } ,				/* +C89 */
+	{ STRLEN("extern"), "extern" } ,			/* K&R */
+	{ STRLEN("false"), "false" } ,				/* +C23 */
+	{ STRLEN("float"), "float" } ,				/* K&R */
+	{ STRLEN("for"), "for" } ,				/* K&R */
+	{ STRLEN("goto"), "goto" } ,				/* K&R */
+	{ STRLEN("if"), "if" } ,				/* K&R */
+	{ STRLEN("inline"), "inline" } ,			/* +C99 */
+	{ STRLEN("int"), "int" } ,				/* K&R */
+	{ STRLEN("long"), "long" } ,				/* K&R */
+	{ STRLEN("noreturn"), "noreturn" } ,			/* +C23 */
+	{ STRLEN("not"), "not" } ,				/* +C89 iso646.h */
+	{ STRLEN("not_eq"), "not_eq" } ,			/* +C89 iso646.h */
+	{ STRLEN("or"), "or" } ,				/* +C89 iso646.h */
+	{ STRLEN("or_eq"), "or_eq" } ,				/* +C89 iso646.h */
+	{ STRLEN("register"), "register" } ,			/* K&R */
+	{ STRLEN("restrict"), "restrict" } ,			/* +C99 */
+	{ STRLEN("return"), "return" } ,			/* K&R */
+	{ STRLEN("short"), "short" } ,				/* K&R */
+	{ STRLEN("signed"), "signed" } ,			/* K&R */
+	{ STRLEN("sizeof"), "sizeof" } ,			/* K&R */
+	{ STRLEN("static"), "static" } ,			/* K&R */
+	{ STRLEN("static_assert"), "static_assert" } ,		/* +C23 */
+	{ STRLEN("struct"), "struct" } ,			/* K&R */
+	{ STRLEN("switch"), "switch" } ,			/* K&R */
+	{ STRLEN("thread_local"), "thread_local" } ,		/* +C23 */
+	{ STRLEN("true"), "true" } ,				/* +C23 */
+	{ STRLEN("typedef"), "typedef" } ,			/* K&R */
+	{ STRLEN("typeof"), "typeof" } ,			/* +C23 */
+	{ STRLEN("typeof_unequal"), "typeof_unequal" } ,	/* +C23 */
+	{ STRLEN("union"), "union" } ,				/* K&R */
+	{ STRLEN("unsigned"), "unsigned" } ,			/* K&R */
+	{ STRLEN("void"), "void" } ,				/* +C89 */
+	{ STRLEN("volatile"), "volatile" } ,			/* +C89 */
+	{ STRLEN("while"), "while" } ,				/* K&R */
+	{ STRLEN("xor"), "xor" } ,				/* +C89 iso646.h */
+	{ STRLEN("xor_eq"), "xor_eq" } ,			/* +C89 iso646.h */
 
 	{ 0, NULL }
 };
