@@ -56,7 +56,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * Most of these tool were co-developed in 2021-2025 by Cody Boone Ferguson and
+ * Most of these tools were co-developed in 2021-2025 by Cody Boone Ferguson and
  * Landon Curt Noll:
  *
  *  @xexyl
@@ -65,7 +65,8 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * and a few tools were developed by Cody and others by Landon.
+ * and a few tools were developed by Cody and the rest by Landon, with the
+ * exception of iocccsize, which was developed by Anthony C Howe.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
