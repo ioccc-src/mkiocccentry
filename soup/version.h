@@ -94,7 +94,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.16 2025-03-14"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "29.0 2025-08-16"	/* format: major.minor YYYY-MM-DD */
 #define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
