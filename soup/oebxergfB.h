@@ -1439,7 +1439,7 @@ static char const *oebxergfB[] =
 "    yxym im tuow psd xutt puvw msq ktssd bs dlueh!'\n"
 "\n"
 "    -- Uylyn Wssd bs Mwvwlwed Fufstya Fsmwa yobwl nw bluwd bs pwb nwl bs\n"
-"       fseowaa bs kwuep y 'xubfn' se 39 Aqtm 3908\n"
+"       fseowaa bs kwuep y 'xubfn' se 39 Aqtm 3098\n"
 "\n"
 "Ce 3636 nw xsqtd duw olsi y nywisllnypw, fnshuep se nua ktssd, wzyfbtm ya Uylyn\n"
 "Wssd nyd abybwd 85 mwyla wyltuwl.\n"
