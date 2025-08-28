@@ -5,7 +5,7 @@
 	"IOCCC_year" : %%IOCCC_YEAR%%,
 	"mkiocccentry_version" : "%%MKIOCCCENTRY_VERSION%%",
 	"iocccsize_version" : 12345,
-	"chkentry_version" : "%%CHKENTRY_VERSION%%",
+	"chksubmit_version" : "%%CHKSUBMIT_VERSION%%",
 	"fnamchk_version" : "%%FNAMCHK_VERSION%%",
 	"txzchk_version" : "%%TXZCHK_VERSION%%",
 	"IOCCC_contest_id" : "%%CONTEST_ID%%",

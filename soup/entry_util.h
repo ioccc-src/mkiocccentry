@@ -82,6 +82,25 @@
 #define PROG_ORIG_FILENAME "prog.orig"          /* compiled winning entry code filename */
 #define PROG_ORIG_C_FILENAME "prog.orig.c"      /* entry source code filename */
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
+/*
+ * the following ones are licence related filenames
+ */
+#define LICENSE_FILENAME        "LICENSE"
+#define LICENSE_HTML_FILENAME   "LICENSE.html"
+#define LICENSE_MD_FILENAME     "LICENSE.md"
+#define LICENSE_TXT_FILENAME    "LICENSE.txt"
+#define LICENCE_FILENAME        "LICENCE"
+#define LICENCE_HTML_FILENAME   "LICENCE.html"
+#define LICENCE_MD_FILENAME     "LICENCE.md"
+#define LICENCE_TXT_FILENAME    "LICENCE.txt"
+#define COPYING_FILENAME        "COPYING"
+#define COPYING_HTML_FILENAME   "COPYING.html"
+#define COPYING_MD_FILENAME     "COPYING.md"
+#define COPYING_TXT_FILENAME    "COPYING.txt"
+#define COPYRIGHT_FILENAME      "COPYRIGHT"
+#define COPYRIGHT_HTML_FILENAME "COPYRIGHT.html"
+#define COPYRIGHT_MD_FILENAME   "COPYRIGHT.md"
+#define COPYRIGHT_TXT_FILENAME  "COPYRIGHT.txt"
 
 /*
  * submissions are not allowed to have any dot file other than the required
@@ -209,7 +228,7 @@ struct auth
     int year;			/* IOCCC year */
     /* IOCCC tool versions */
     char const *mkiocccentry_ver; /* mkiocccentry version (compiled in MKIOCCCENTRY_VERSION) */
-    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
+    char const *chksubmit_ver;	/* chksubmit version (compiled in, same as chksubmit -V) */
     char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
@@ -254,7 +273,7 @@ struct info
     int year;			/* IOCCC year */
     /* IOCCC tool versions */
     char const *mkiocccentry_ver; /* mkiocccentry version (compiled in MKIOCCCENTRY_VERSION) */
-    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
+    char const *chksubmit_ver;	/* chksubmit version (compiled in, same as chksubmit -V) */
     char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
@@ -360,7 +379,7 @@ extern bool test_author_handle(char const *str);
 extern bool test_author_number(int author_number);
 extern bool test_authors(int author_count, struct author const *authorp);
 extern bool test_c_src(char const *str);
-extern bool test_chkentry_version(char const *str);
+extern bool test_chksubmit_version(char const *str);
 extern bool test_default_handle(bool boolean);
 extern bool test_email(char const *str);
 extern bool test_empty_override(bool boolean);

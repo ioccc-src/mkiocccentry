@@ -4,7 +4,7 @@
 	"IOCCC_contest" : "%%IOCCC_CONTEST%%",
 	"IOCCC_year" : %%IOCCC_YEAR%%,
 	"mkiocccentry_version" : "%%MKIOCCCENTRY_VERSION%%",
-	"chkentry_version" : "%%CHKENTRY_VERSION%%",
+	"chksubmit_version" : "%%CHKSUBMIT_VERSION%%",
 	"fnamchk_version" : "%%FNAMCHK_VERSION%%",
 	"IOCCC_contest_id" : "tst",
 	"tarball" : "submit.tst-0.2647469509.txz",

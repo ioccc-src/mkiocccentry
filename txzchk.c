@@ -281,13 +281,13 @@ main(int argc, char **argv)
          * we need tar
          */
         find_utils(&found_tar, &tar, NULL, NULL, NULL, NULL, &found_fnamchk, &fnamchk,
-            NULL, NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     } else {
         /*
          * we do not need tar
          */
         find_utils(NULL, NULL, NULL, NULL, NULL, NULL, &found_fnamchk, &fnamchk,
-            NULL, NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     /* additional sanity checks */
@@ -514,7 +514,7 @@ usage(int exitcode, char const *prog, char const *str)
  *      tar             - path to tar that supports the -J (xz) option
  *	fnamchk		- path to the fnamchk utility
  *
- * NOTE: This function does not return on error or if things are not sane.
+ * NOTE: this function does not return on error or if things are not sane.
  */
 static void
 txzchk_sanity_chks(char const *tar, char const *fnamchk)

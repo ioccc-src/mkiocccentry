@@ -31,7 +31,7 @@
 
 # setup
 #
-export VERSION="1.0.3 2025-03-14"
+export VERSION="1.0.4 2025-08-28"
 NAME=$(basename "$0")
 export NAME
 export V_FLAG=0
@@ -315,7 +315,7 @@ export IOCCC_CONTEST IOCCC_YEAR MIN_TIMESTAMP TIMESTAMP_EPOCH
 #
 #	%%AUTH_VERSION%%
 #	%%AUTHOR_VERSION%%
-#	%%CHKENTRY_VERSION%%
+#	%%CHKSUBMIT_VERSION%%
 #	%%ENTRY_VERSION%%
 #	%%FNAMCHK_VERSION%%
 #	%%INFO_VERSION%%
@@ -335,10 +335,10 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: AUTHOR_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-CHKENTRY_VERSION=$(get_version CHKENTRY_VERSION "$VERSION_H")
+CHKSUBMIT_VERSION=$(get_version CHKSUBMIT_VERSION "$VERSION_H")
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: CHKENTRY_VERSION not found in: $VERSION_H" 1>&2
+    echo "$0: ERROR: CHKSUBMIT_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
 ENTRY_VERSION=$(get_version ENTRY_VERSION "$VERSION_H")
@@ -377,7 +377,7 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: TXZCHK_VERSION not found in: $VERSION_H" 1>&2
     exit 6
 fi
-export AUTH_VERSION CHKENTRY_VERSION ENTRY_VERSION FNAMCHK_VERSION
+export AUTH_VERSION CHKSUBMIT_VERSION ENTRY_VERSION FNAMCHK_VERSION
 export INFO_VERSION IOCCCSIZE_VERSION MKIOCCCENTRY_VERSION TXZCHK_VERSION
 
 
@@ -402,7 +402,7 @@ if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[1]: TIMESTAMP_EPOCH: $TIMESTAMP_EPOCH" 1>&2
     echo "$0: debug[1]: AUTH_VERSION: $AUTH_VERSION" 1>&2
     echo "$0: debug[1]: AUTHOR_VERSION: $AUTHOR_VERSION" 1>&2
-    echo "$0: debug[1]: CHKENTRY_VERSION: $CHKENTRY_VERSION" 1>&2
+    echo "$0: debug[1]: CHKSUBMIT_VERSION: $CHKSUBMIT_VERSION" 1>&2
     echo "$0: debug[1]: ENTRY_VERSION: $ENTRY_VERSION" 1>&2
     echo "$0: debug[1]: FNAMCHK_VERSION: $FNAMCHK_VERSION" 1>&2
     echo "$0: debug[1]: INFO_VERSION: $INFO_VERSION" 1>&2
@@ -451,7 +451,7 @@ find "$JSON_TREE" -type f -name '*.json' -print0 | xargs -0 perl -p -i -e \
    s/%%TIMESTAMP_EPOCH%%/$TIMESTAMP_EPOCH/g;
    s/%%AUTH_VERSION%%/$AUTH_VERSION/g;
    s/%%AUTHOR_VERSION%%/$AUTHOR_VERSION/g;
-   s/%%CHKENTRY_VERSION%%/$CHKENTRY_VERSION/g;
+   s/%%CHKSUBMIT_VERSION%%/$CHKSUBMIT_VERSION/g;
    s/%%ENTRY_VERSION%%/$ENTRY_VERSION/g;
    s/%%FNAMCHK_VERSION%%/$FNAMCHK_VERSION/g;
    s/%%INFO_VERSION%%/$INFO_VERSION/g;

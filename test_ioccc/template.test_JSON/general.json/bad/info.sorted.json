@@ -24,7 +24,7 @@
 	"IOCCC_contest" : "%%IOCCC_CONTEST%%",
 	"IOCCC_year" : %%IOCCC_YEAR%%,
 	"iocccsize_version" : "%%IOCCCSIZE_VERSION%%",
-	"chkentry_version" : "%%CHKENTRY_VERSION%%",
+	"chksubmit_version" : "%%CHKSUBMIT_VERSION%%",
 	"min_timestamp" : %%MIN_TIMESTAMP%%,
 	"mkiocccentry_version" : "%%MKIOCCCENTRY_VERSION%%",
 	"rule_2a_mismatch" : false,

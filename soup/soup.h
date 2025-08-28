@@ -117,6 +117,9 @@
 #define CHKENTRY_PATH_0 "./chkentry"		    /* path to chkentry tool if not installed */
 #define CHKENTRY_PATH_1 "chkentry"                  /* for $PATH search */
 #define CHKENTRY_PATH_2 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
+#define CHKSUBMIT_PATH_0 "./chksubmit"		    /* path to chksubmit tool if not installed */
+#define CHKSUBMIT_PATH_1 "chksubmit"                /* for $PATH search */
+#define CHKSUBMIT_PATH_2 "/usr/local/bin/chksubmit" /* default path to chksubmit tool if installed */
 #define MAKE_PATH_0 "gmake"                          /* for $PATH search */
 #define MAKE_PATH_1 "make"                          /* for $PATH search */
 #define MAKE_PATH_2 "/usr/bin/make"                 /* default path to make tool */
@@ -130,6 +133,7 @@ extern char *ls_paths[];
 extern char *fnamchk_paths[];
 extern char *txzchk_paths[];
 extern char *chkentry_paths[];
+extern char *chksubmit_paths[];
 extern char *make_paths[];
 extern char *rm_paths[];
 

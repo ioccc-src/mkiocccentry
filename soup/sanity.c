@@ -40,8 +40,6 @@
  */
 
 
-#include <stdio.h>
-
 /*
  * sanity - perform common IOCCC sanity checks
  */
@@ -90,6 +88,14 @@ char *chkentry_paths[] =
     CHKENTRY_PATH_2,
     NULL /* MUST BE LAST!! */
 };
+char *chksubmit_paths[] =
+{
+    CHKSUBMIT_PATH_0,
+    CHKSUBMIT_PATH_1,
+    CHKSUBMIT_PATH_2,
+    NULL /* MUST BE LAST!! */
+};
+
 char *make_paths[] =
 {
     MAKE_PATH_0,
@@ -150,6 +156,8 @@ ioccc_sanity_chks(void)
  *	fnamchk		    - if fnamchk ! NULL set *fnamchk to path
  *      found_chkentry      - pointer to bool to set if chkentry is found
  *	chkentry	    - if chkentry != NULL set *chkentry to path
+ *	found_chksubmit     - pointer to bool to set if chksubmit found
+ *	chksubmit           - if chksubmit != NULL set *chksubmit to path
  *      found_make          - pointer to bool to set if make is found
  *	make                - if make != NULL set *make to path
  *      found_rm            - pointer to bool to set if rm is found
@@ -158,9 +166,14 @@ ioccc_sanity_chks(void)
  * NOTE: if a found_ boolean is NULL we will not check for the tool.
  */
 void
-find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_txzchk,
-        char **txzchk, bool *found_fnamchk, char **fnamchk, bool *found_chkentry, char **chkentry,
-        bool *found_make, char **make, bool *found_rm, char **rm)
+find_utils(bool *found_tar, char **tar,
+        bool *found_ls, char **ls,
+        bool *found_txzchk, char **txzchk,
+        bool *found_fnamchk, char **fnamchk,
+        bool *found_chkentry, char **chkentry,
+        bool *found_chksubmit, char **chksubmit,
+        bool *found_make, char **make,
+        bool *found_rm, char **rm)
 {
     size_t i = 0; /* for iterating through paths arrays */
 
@@ -181,6 +194,9 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
     }
     if (found_chkentry != NULL) {
         *found_chkentry = false;
+    }
+    if (found_chksubmit != NULL) {
+        *found_chksubmit = false;
     }
     if (found_make != NULL) {
         *found_make = false;
@@ -355,6 +371,40 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
         *chkentry = NULL;
     }
 
+    if (found_chksubmit != NULL) {
+        if (chksubmit != NULL && *chksubmit != NULL && is_file(*chksubmit) && is_exec(*chksubmit)) {
+            /*
+             * we have to strdup() it
+             */
+            errno = 0; /* pre-clear errno for errp */
+            *chksubmit = strdup(*chksubmit);
+            if (*chksubmit == NULL) {
+                errp(60, __func__, "strdup(chksubmit) failed");
+                not_reached();
+            }
+            *found_chksubmit = true;
+        }
+        if (!*found_chksubmit && chksubmit != NULL) {
+            for (i = 0; chksubmit_paths[i] != NULL; ++i) {
+                /*
+                 * try resolving the path
+                 */
+                *chksubmit = resolve_path(chksubmit_paths[i]);
+                if (*chksubmit != NULL) {
+                    *found_chksubmit = true;
+                    break;
+                }
+            }
+        }
+
+        if (*found_chksubmit) {
+            dbg(DBG_MED, "found chksubmit at: %s", *chksubmit);
+        }
+    } else if (chksubmit != NULL) {
+        *chksubmit = NULL;
+    }
+
+
     if (found_make != NULL) {
         if (make != NULL && *make != NULL && is_file(*make) && is_exec(*make)) {
             /*
@@ -363,7 +413,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *make = strdup(*make);
             if (*make == NULL) {
-                errp(60, __func__, "strdup(make) failed");
+                errp(61, __func__, "strdup(make) failed");
                 not_reached();
             }
             *found_make = true;
@@ -393,7 +443,7 @@ find_utils(bool *found_tar, char **tar, bool *found_ls, char **ls, bool *found_t
             errno = 0; /* pre-clear errno for errp */
             *rm = strdup(*rm);
             if (*rm == NULL) {
-                errp(61, __func__, "strdup(rm) failed");
+                errp(62, __func__, "strdup(rm) failed");
                 not_reached();
             }
             *found_rm = true;

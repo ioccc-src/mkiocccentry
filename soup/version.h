@@ -84,7 +84,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.5.0 2025-08-10"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.5.1 2025-08-28"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -101,7 +101,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.1.1 2025-08-28"	/* format: major.minor YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION "2.1.0 2025-08-10"
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -114,13 +114,13 @@
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.17 2025-05-10"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.18 2025-05-28"		/* format: major.minor YYYY-MM-DD */
 #define MIN_INFO_VERSION INFO_VERSION
 
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.23 2025-05-10"		/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.24 2025-08-28"		/* format: major.minor YYYY-MM-DD */
 #define MIN_AUTH_VERSION AUTH_VERSION
 
 /*
@@ -132,14 +132,21 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.5 2025-08-05"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.6 2025-08-28"	/* format: major.minor YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.0 2025-08-28"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
+
+/*
+ * official chksubmit version
+ */
+#define CHKSUBMIT_VERSION "1.0.0 2025-08-28"	/* format: major.minor YYYY-MM-DD */
+#define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
+
 
 /*
  * Version of info for JSON the .entry.json files.

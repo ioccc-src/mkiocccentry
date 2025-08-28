@@ -254,8 +254,8 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c
-H_SRC= mkiocccentry.h iocccsize.h txzchk.h chkentry.h
+C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c chksubmit.c
+H_SRC= mkiocccentry.h iocccsize.h txzchk.h chkentry.h chksubmit.h
 
 # source files that do not conform to strict picky standards
 #
@@ -294,7 +294,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= mkiocccentry.o iocccsize.o txzchk.o chkentry.o
+OTHER_OBJS= mkiocccentry.o iocccsize.o txzchk.o chkentry.o chksubmit.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -338,7 +338,7 @@ EXTERN_H=
 EXTERN_O=
 EXTERN_MAN=
 EXTERN_LIBA=
-EXTERN_PROG= bug_report.sh chkentry iocccsize mkiocccentry txzchk
+EXTERN_PROG= bug_report.sh chkentry chksubmit iocccsize mkiocccentry txzchk
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -362,11 +362,11 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
+PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry chksubmit
 
 # directories sometimes built under macOS and removed by clobber
 #
-DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
+DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM chksubmit.dSYM
 
 # logs for testing
 #
@@ -514,6 +514,12 @@ chkentry.o: chkentry.c
 	${CC} ${CFLAGS} chkentry.c -c
 
 chkentry: chkentry.o soup/soup.a jparse/libjparse.a dyn_array/libdyn_array.a dbg/libdbg.a
+	${CC} ${CFLAGS} $^ -lm -o $@
+
+chksubmit.o: chksubmit.c
+	${CC} ${CFLAGS} chksubmit.c -c
+
+chksubmit: chksubmit.o soup/soup.a jparse/libjparse.a dyn_array/libdyn_array.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 
@@ -1740,6 +1746,13 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h dyn_array/dyn_array.h \
+    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
+    jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
+    jparse/version.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/default_handle.h soup/entry_util.h soup/foo.h \
+    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
+    soup/version.h
+chksubmit.o: chksubmit.c chksubmit.h dbg/dbg.h dyn_array/dyn_array.h \
     jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
     jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
     jparse/version.h soup/chk_sem_auth.h soup/chk_sem_info.h \

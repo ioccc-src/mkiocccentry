@@ -1,7 +1,7 @@
 --- ref/info.reference.json.c	2025-07-09 08:36:53
 +++ chk_sem_info.c	2025-07-09 08:36:25
 @@ -39,17 +39,17 @@
- 
+
  struct json_sem sem_info[SEM_INFO_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name    data */
 -  { 5,	JTYPE_STRING,	1,	72,	72,	0,	0,	NULL,	NULL,	NULL },
@@ -26,7 +26,7 @@
    { 1,	JTYPE_MEMBER,	1,	1,	1,	13,	16,	chk_IOCCC_contest_id,	"IOCCC_contest_id",	NULL },
 @@ -59,31 +59,31 @@
    { 1,	JTYPE_MEMBER,	1,	1,	1,	17,	8,	chk_abstract,	"abstract",	NULL },
-   { 1,	JTYPE_MEMBER,	1,	1,	1,	18,	16,	chk_chkentry_version,	"chkentry_version",	NULL },
+   { 1,	JTYPE_MEMBER,	1,	1,	1,	18,	16,	chk_chksubmit_version,	"chksubmission_version",	NULL },
    { 1,	JTYPE_MEMBER,	1,	1,	1,	19,	14,	chk_empty_override,	"empty_override",	NULL },
 -  { 1,	JTYPE_MEMBER,	1,	1,	1,	20,	15,	chk_fnamchk_version,	"fnamchk_version",	NULL },
 -  { 1,	JTYPE_MEMBER,	1,	1,	1,	21,	16,	chk_formed_timestamp,	"formed_timestamp",	NULL },

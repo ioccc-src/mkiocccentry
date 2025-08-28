@@ -86,7 +86,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] submission_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] [-s] [-S] [-w] submission_dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -97,6 +97,8 @@ static const char * const usage_msg =
     "\t-i subpath\tignore subpath, where subpath is a path relative to submission_dir\n"
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
     "\t-P\t\tignore permissions\n"
+    "\t-s\t\tenter special mode. This option is for the judges.\n"
+    "\t-S\t\tenter submission mode. This option is used by the chksubmit(1) tool.\n"
     "\t-w\t\twinning entry checks\n"
     "\n"
     "\tsubmission_dir\tthe directory to be checked\n"
@@ -387,6 +389,8 @@ main(int argc, char *argv[])
     struct fts fts;                     /* for when we have to use find_path() */
     int i;
     bool winning_entry_mode = false;    /* true ==> -w used, do other checks */
+    bool special_mode = false;          /* special features for the judges :-) */
+    bool submission_mode = false;       /* used by chksubmit(1) */
     struct dyn_array *paths = NULL;     /* paths to find for find_paths() */
     struct dyn_array *found = NULL;     /* paths found by find_paths() */
     bool found_entry = false;           /* true ==> .entry.json found */
@@ -398,6 +402,7 @@ main(int argc, char *argv[])
     bool found_index = false;           /* true ==> index.html found */
     bool found_remarks = false;         /* true ==> remarks.md found */
     bool found_Makefile = false;        /* true ==> Makefile found */
+    bool ignored_subpath = false;  /* true ==> '-i path' used */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -416,7 +421,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vqi:Pw")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:Vqi:PwsS")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -455,6 +460,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
         case 'i':   /* ignore subpath, where subpath is under the directory to be checked */
+            ignored_subpath = true;
             add_ignore_subpath(optarg, &fts);
             break;
         case 'P': /* ignore permissions of paths */
@@ -462,6 +468,12 @@ main(int argc, char *argv[])
             break;
         case 'w':
             winning_entry_mode = true;
+            break;
+        case 's':
+            special_mode = true;
+            break;
+        case 'S':
+            submission_mode = true;
             break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -471,6 +483,14 @@ main(int argc, char *argv[])
 	    not_reached();
 	    break;
 	}
+    }
+
+    /*
+     * before we do anything with the args we have to check conflicting options
+     */
+    if (submission_mode && (special_mode || winning_entry_mode || ignore_permissions || ignored_subpath)) {
+	usage(3, program, "cannot use -S with -s, -w, -i and -P options"); /*ooo*/
+        not_reached();
     }
 
     argc -= optind;

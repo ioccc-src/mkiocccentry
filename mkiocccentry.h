@@ -177,7 +177,7 @@ static void copy_topdir(struct info *infop, char const *make, char const *submis
 static void check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
         char const *make, RuleCount *size, int cwd);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar,
-				     char *ls, char *txzchk, char *fnamchk, char *chkentry,
+				     char *ls, char *txzchk, char *fnamchk, char *chksubmit,
                                      char *make, char *rm);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
@@ -194,7 +194,7 @@ static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct author **author_set_p);
 static void verify_submission_dir(char const *submission_dir, char const *ls);
-static void write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry);
+static void write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chksubmit);
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
 static void form_info(struct info *infop);
 static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,

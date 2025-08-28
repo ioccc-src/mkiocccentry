@@ -35,11 +35,12 @@ guidelines about
 ## Getting further help / reporting issues
 
 If you have a problem with anything in this repo, including with compiling
-and/or installing (which is not required), or other kinds of questions, please
-see the [FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) for
-answers to a number of possible problems as well as to see how to report issues.
+and/or installing (which is not required but is **highly recommended**), or
+other kinds of questions, please see the
+[FAQ](https://github.com/ioccc-src/mkiocccentry/blob/master/FAQ.md) for answers
+to a number of possible problems as well as to see how to report issues.
 
-If your problem is a problem compiling the tools or you have encountered what
+If your issue is a problem compiling the tools or you have encountered what
 you think is a bug, please see the
 FAQ on "[reporting bugs](FAQ.md#bugs)".
 
