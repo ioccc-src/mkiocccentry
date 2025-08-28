@@ -251,7 +251,7 @@ SH_FILES= all_sem_ref.sh reset_tstamp.sh not_a_comment.sh
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES= man/man1/bug_report.1 man/man1/chkentry.1 man/man1/iocccsize.1 \
-	man/man1/mkiocccentry.1 man/man1/txzchk.1 man/man1/location.1
+	man/man1/mkiocccentry.1 man/man1/txzchk.1 man/man1/location.1 man/man1/chksubmit.1
 MAN3_PAGES=
 MAN8_PAGES= man/man8/all_sem_ref.8 man/man8/reset_tstamp.8
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}

@@ -66,7 +66,7 @@ extern bool chk_Makefile_override(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_abstract(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_chkentry_version(struct json const *node,
+extern bool chk_chksubmit_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_empty_override(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

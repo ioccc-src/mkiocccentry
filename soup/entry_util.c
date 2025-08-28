@@ -119,7 +119,12 @@ char *mandatory_filenames[] =
     NULL /* MUST BE LAST!! */
 };
 /*
- * forbidden files that must NOT exist in the submission top level directory
+ * forbidden files that must NOT exist in the submission top level directory.
+ *
+ * NOTE: having these in the topdir is not an error as they will simply not be
+ * copied to the submission directory. If you run chksubmit(1) or chkentry(1)
+ * with the -S option (which chksubmit does) then it would be an error if the
+ * files existed in the submission directory.
  */
 char *forbidden_filenames[] =
 {
@@ -130,6 +135,22 @@ char *forbidden_filenames[] =
     PROG_ORIG_FILENAME,
     PROG_ORIG_C_FILENAME,
     README_MD_FILENAME,
+    LICENSE_FILENAME,
+    LICENSE_HTML_FILENAME,
+    LICENSE_MD_FILENAME,
+    LICENSE_TXT_FILENAME,
+    LICENCE_FILENAME,
+    LICENCE_HTML_FILENAME,
+    LICENCE_MD_FILENAME,
+    LICENCE_TXT_FILENAME,
+    COPYING_FILENAME,
+    COPYING_HTML_FILENAME,
+    COPYING_MD_FILENAME,
+    COPYING_TXT_FILENAME,
+    COPYRIGHT_FILENAME,
+    COPYRIGHT_HTML_FILENAME,
+    COPYRIGHT_MD_FILENAME,
+    COPYRIGHT_TXT_FILENAME,
     NULL /* MUST BE LAST!! */
 };
 
@@ -175,7 +196,7 @@ char *ignored_dirnames[] =
  *
  * NOTE: as these are dot files they are implicitly ignored by mkiocccentry(1)
  * due to sane_relative_path() thus we don't need to use it for mkiocccentry(1);
- * it is for chkentry(1) in particular for -w mode.
+ * it is for chkentry(1) in particular for -w mode (for judges only!).
  */
 char *ignored_filenames[] =
 {
@@ -220,7 +241,7 @@ static char const *poison_fnamchk_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
-static char const *poison_chkentry_versions[] =
+static char const *poison_chksubmit_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
@@ -255,7 +276,7 @@ free_auth(struct auth *authp)
      * free IOCCC tool versions
      */
     /* NOTE: mkiocccentry_ver is a compiled in constant */
-    /* NOTE: chkentry_ver is a compiled in constant */
+    /* NOTE: chksubmit_ver is a compiled in constant */
     /* NOTE: fnamchk_ver is a compiled in constant */
     /* NOTE: iocccsize_ver is a compiled in constant */
     /* NOTE: txzchk_ver is a compiled in constant */
@@ -324,7 +345,7 @@ free_info(struct info *infop)
      * free IOCCC tool versions
      */
     /* NOTE: mkiocccentry_ver is a compiled in constant */
-    /* NOTE: chkentry_ver is a compiled in constant */
+    /* NOTE: chksubmit_ver is a compiled in constant */
     /* NOTE: fnamchk_ver is a compiled in constant */
     /* NOTE: iocccsize_ver is a compiled in constant */
     /* NOTE: txzchk_ver is a compiled in constant */
@@ -2873,9 +2894,9 @@ test_c_src(char const *str)
 
 
 /*
- * test_chkentry_version - test if chkentry_version is valid
+ * test_chksubmit_version - test if chksubmit_version is valid
  *
- * Determine if chkentry_version matches CHKENTRY_VERSION.
+ * Determine if chksubmit_version matches CHKSUBMIT_VERSION.
  *
  * given:
  *	str	string to test
@@ -2885,7 +2906,7 @@ test_c_src(char const *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_chkentry_version(char const *str)
+test_chksubmit_version(char const *str)
 {
     size_t i = 0;
     /*
@@ -2899,21 +2920,21 @@ test_chkentry_version(char const *str)
     /*
      * validate str
      */
-    if (test_poison(str, poison_chkentry_versions)) {
+    if (test_poison(str, poison_chksubmit_versions)) {
         json_dbg(JSON_DBG_MED, __func__,
-                 "invalid: chkentry_version: is poisonous");
+                 "invalid: chksubmit_version: is poisonous");
         json_dbg(JSON_DBG_HIGH, __func__,
-                 "invalid: chkentry_version: %s is poisonous: %s", str, poison_chkentry_versions[i]);
+                 "invalid: chksubmit_version: %s is poisonous: %s", str, poison_chksubmit_versions[i]);
         return false;
     }
-    if (!test_version(str, MIN_CHKENTRY_VERSION)) {
+    if (!test_version(str, MIN_CHKSUBMIT_VERSION)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: chkentry_version < MIN_CHKENTRY_VERSION: %s", MIN_CHKENTRY_VERSION);
+		 "invalid: chksubmit_version < MIN_CHKSUBMIT_VERSION: %s", MIN_CHKSUBMIT_VERSION);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: chkentry_version: %s is not >= MIN_CHKENTRY_VERSION: %s", str, MIN_CHKENTRY_VERSION);
+		 "invalid: chksubmit_version: %s is not >= MIN_CHKSUBMIT_VERSION: %s", str, MIN_CHKSUBMIT_VERSION);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    json_dbg(JSON_DBG_MED, __func__, "chksubmit_version is valid");
     return true;
 }
 
@@ -3980,8 +4001,9 @@ test_manifest(struct manifest *manp, char *submission_dir)
      * first reset fts struct
      *
      * IMPORTANT: make sure to memset(&fts, 0, sizeof(struct fts)) before the
-     * first use of reset_fts()! This is needed here AND chkentry because we do
-     * not pass a struct fts * here nor should we.
+     * first use of reset_fts()! This is needed here AND chkentry (for
+     * submitters via chksubmit(1)) because we do not pass a struct fts * here
+     * nor should we.
      */
     memset(&fts, 0, sizeof(struct fts));
     reset_fts(&fts, false, false); /* false means do not clear out ignored or match lists */

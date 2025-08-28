@@ -66,7 +66,7 @@ struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
   { 1,	JTYPE_MEMBER,	1,	1,	1,	24,	10,	chk_IOCCC_year,	"IOCCC_year",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	25,	12,	chk_author_count,	"author_count",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	26,	7,	chk_authors,	"authors",	NULL },
-  { 1,	JTYPE_MEMBER,	1,	1,	1,	27,	16,	chk_chkentry_version,	"chkentry_version",	NULL },
+  { 1,	JTYPE_MEMBER,	1,	1,	1,	27,	17,	chk_chksubmit_version,	"chksubmit_version",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	28,	15,	chk_fnamchk_version,	"fnamchk_version",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	29,	16,	chk_formed_timestamp,	"formed_timestamp",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	30,	21,	chk_formed_timestamp_usec,	"formed_timestamp_usec",	NULL },

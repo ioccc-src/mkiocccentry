@@ -80,7 +80,7 @@
     "formed_timestamp_usec" : %%FORMED_TIMESTAMP_USEC%%,
     "IOCCC_contest" : "%%IOCCC_CONTEST%%",
     "IOCCC_year" : %%IOCCC_YEAR%%,
-    "chkentry_version" : "%%CHKENTRY_VERSION%%",
+    "chksubmit_version" : "%%CHKSUBMIT_VERSION%%",
     "min_timestamp" : %%MIN_TIMESTAMP%%,
     "mkiocccentry_version" : "%%MKIOCCCENTRY_VERSION%%",
     "no_comment" : "mandatory comment: because comments were removed from the original JSON spec",

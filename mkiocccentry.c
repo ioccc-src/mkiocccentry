@@ -135,7 +135,7 @@ static const char * const usage_msg1 =
     "\t-f feathers\tdefine how many feathers is feathery (for -e)\n"
     "\t-F fnamchk\tpath to fnamchk(1) (used by txzchk) (def: %s)";
 static const char * const usage_msg2 =
-    "\t-C chkentry\tpath to chkentry(1) (def: %s)\n"
+    "\t-C chksubmit\tpath to chksubmit(1) (def: %s)\n"
     "\t-m make\t\tpath to GNU compatible make(1) (def: %s)";
 static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a text file for future updates to the submission\n"
@@ -230,7 +230,7 @@ main(int argc, char *argv[])
     char *ls = LS_PATH_0;			/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
-    char *chkentry = CHKENTRY_PATH_0;		/* path to chkentry executable */
+    char *chksubmit = CHKSUBMIT_PATH_0;		/* path to chksubmit executable */
     char *make = MAKE_PATH_0;                   /* path to make(1) executable */
     char *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answersp = NULL;			/* file pointer to the answers file */
@@ -255,9 +255,9 @@ main(int argc, char *argv[])
     bool found_ls = false;                      /* for find_utils */
     bool found_txzchk = false;                  /* for find_utils */
     bool found_fnamchk = false;                 /* for find_utils */
-    bool found_chkentry = false;                /* for find_utils */
     bool found_make = false;                    /* for find_utils */
     bool found_rm = false;                      /* for find_utils */
+    bool found_chksubmit = false;               /* for find_utils */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -373,7 +373,7 @@ main(int argc, char *argv[])
 	    fnamchk = optarg;
 	    break;
 	case 'C':
-	    chkentry = optarg;
+	    chksubmit = optarg;
 	    break;
 	case 'y':
 	    answer_yes = true;
@@ -470,8 +470,8 @@ main(int argc, char *argv[])
      * find utilities we need.
      */
     find_utils(&found_tar, &tar, &found_ls, &ls, &found_txzchk, &txzchk,
-            &found_fnamchk, &fnamchk, &found_chkentry, &chkentry,
-            &found_make, &make, &found_rm, &rm);
+            &found_fnamchk, &fnamchk, NULL, NULL, &found_chksubmit,
+            &chksubmit, &found_make, &make, &found_rm, &rm);
 
     /*
      * check that conflicting answers file options are not used together
@@ -722,7 +722,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chks(&info, workdir, tar, ls, txzchk, fnamchk, chkentry, make, rm);
+    mkiocccentry_sanity_chks(&info, workdir, tar, ls, txzchk, fnamchk, chksubmit, make, rm);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -960,7 +960,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .auth.json file and .info json file ...", NULL);
     }
-    write_json_files(&auth, &info, submission_dir, chkentry);
+    write_json_files(&auth, &info, submission_dir, chksubmit);
     if (!quiet) {
 	para("... completed .auth.json and .info.json files.", "", NULL);
     }
@@ -1150,9 +1150,9 @@ main(int argc, char *argv[])
         free(fnamchk);
         fnamchk = NULL;
     }
-    if (chkentry != NULL) {
-        free(chkentry);
-        chkentry = NULL;
+    if (chksubmit != NULL) {
+        free(chksubmit);
+        chksubmit = NULL;
     }
     if (make != NULL) {
         free(make);
@@ -1997,7 +1997,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
      * check that there are not too many non-optional non-required files
      */
     if (count > MAX_EXTRA_FILE_COUNT) {
-        err(4, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);/*ooo*/
+        err(4, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_EXTRA_FILE_COUNT);/*ooo*/
         not_reached();
     }
 
@@ -3412,7 +3412,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
      * check that there are not too many extra files
      */
     if (count > MAX_EXTRA_FILE_COUNT) {
-        err(4, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_FILE_COUNT);/*ooo*/
+        err(4, __func__, "too many files: %ju > %ju", (uintmax_t)count, (uintmax_t)MAX_EXTRA_FILE_COUNT);/*ooo*/
         not_reached();
     }
     /*
@@ -4006,7 +4006,7 @@ usage(int exitcode, char const *prog, char const *str)
 
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, prog, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0, MAKE_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKSUBMIT_PATH_0, MAKE_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg4);
     fprintf_usage(exitcode, stderr, usage_msg5, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
@@ -4030,7 +4030,7 @@ usage(int exitcode, char const *prog, char const *str)
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
- *	chkentry	- path to chkentry tool
+ *	chksubmit	- path to chksubmit tool
  *	make            - path to make
  *	rm              - path to rm
  *
@@ -4042,7 +4042,7 @@ usage(int exitcode, char const *prog, char const *str)
  */
 static void
 mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, char *ls, char *txzchk, char *fnamchk,
-        char *chkentry, char *make, char *rm)
+        char *chksubmit, char *make, char *rm)
 {
     /*
      * firewall
@@ -4293,62 +4293,62 @@ mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, cha
     }
 
     /*
-     * chkentry must be executable
+     * chksubmit must be executable
      */
-    if (chkentry == NULL || !exists(chkentry)) {
+    if (chksubmit == NULL || !exists(chksubmit)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find the chkentry tool.",
+	      "We cannot find the chksubmit tool.",
 	      "",
-	      "The chkentry program performs sanity checks on the JSON files.",
+	      "The chksubmit program performs sanity checks on the JSON files.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -C /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chksubmit ...",
 	      "",
-	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
+	      "and/or install the chksubmit tool?  You can find the source for chksubmit in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-        if (chkentry != NULL) {
-	    err(140, __func__, "chkentry does not exist: %s", chkentry);
+        if (chksubmit != NULL) {
+	    err(140, __func__, "chksubmit does not exist: %s", chksubmit);
         } else {
-	    err(141, __func__, "chkentry does not exist");
+	    err(141, __func__, "chksubmit does not exist");
         }
 	not_reached();
     }
-    if (!is_file(chkentry)) {
+    if (!is_file(chksubmit)) {
 	fpara(stderr,
 	      "",
-	      "The chkentry path, while it exists, is not a regular file.",
+	      "The chksubmit path, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -C /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chksubmit ...",
 	      "",
-	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
+	      "and/or install the chksubmit tool?  You can find the source for chksubmit in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(142, __func__, "chkentry is not a regular file: %s", chkentry);
+	err(142, __func__, "chksubmit is not a regular file: %s", chksubmit);
 	not_reached();
     }
-    if (!is_exec(chkentry)) {
+    if (!is_exec(chksubmit)) {
 	fpara(stderr,
 	      "",
-	      "The chkentry path, while it is a file, is not executable.",
+	      "The chksubmit path, while it is a file, is not executable.",
 	      "",
-	      "We suggest you check the permissions on the chkentry program, or use another path:",
+	      "We suggest you check the permissions on the chksubmit program, or use another path:",
 	      "",
-	      "    mkiocccentry -C /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chksubmit ...",
 	      "",
-	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
+	      "and/or install the chksubmit tool?  You can find the source for chksubmit in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(143, __func__, "chkentry is not an executable program: %s", chkentry);
+	err(143, __func__, "chksubmit is not an executable program: %s", chksubmit);
 	not_reached();
     }
 
@@ -8093,19 +8093,19 @@ form_info(struct info *infop)
  * write_json_files
  *
  * Create the .auth.json and .info.json files and then verify them by running
- * chkentry(1) on the submission directory.
+ * chksubmit(1) on the submission directory.
  *
  * given:
  *      authp           -   pointer to auth structure
  *      infop           -   pointer to info structure
  *      submission_dir  -   submission directory
- *      chkentry        -   path to chkentry(1) tool
+ *      chksubmit        -   path to chksubmit(1) tool
  *
  * This function does not return if a NULL pointer is encountered, if certain
- * variables are not in the right range or if chkentry(1) fails.
+ * variables are not in the right range or if chksubmit(1) fails.
  */
 static void
-write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chkentry)
+write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chksubmit)
 {
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
@@ -8123,7 +8123,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     /*
      * firewall
      */
-    if (infop == NULL || authp == NULL || submission_dir == NULL || chkentry == NULL) {
+    if (infop == NULL || authp == NULL || submission_dir == NULL || chksubmit == NULL) {
         err(33, __func__, "called with NULL arg(s)");
         not_reached();
     }
@@ -8180,7 +8180,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(auth_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(auth_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
-	json_fprintf_value_string(auth_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(auth_stream, "    ", "chksubmit_version", " : ", CHKSUBMIT_VERSION, ",\n") &&
 	json_fprintf_value_string(auth_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(auth_stream, "    ", "IOCCC_contest_id", " : ", authp->ioccc_id, ",\n") &&
 	json_fprintf_value_string(auth_stream, "    ", "tarball", " : ", authp->tarball, ",\n") &&
@@ -8237,7 +8237,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     }
 
     /*
-     * close the file before checking it with chkentry
+     * close the file before checking it with chksubmit
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(auth_stream);
@@ -8319,7 +8319,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
 	json_fprintf_value_long(info_stream, "    ", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(info_stream, "    ", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "    ", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
-	json_fprintf_value_string(info_stream, "    ", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "    ", "chksubmit_version", " : ", CHKSUBMIT_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "    ", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "    ", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "    ", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
@@ -8415,7 +8415,7 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     }
 
     /*
-     * close the file prior to running chkentry
+     * close the file prior to running chksubmit
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
@@ -8436,17 +8436,17 @@ write_json_files(struct auth *authp, struct info *infop, char const *submission_
     }
 
     /*
-     * now we have to run chkentry(1) on the directory
+     * now we have to run chksubmit(1) on the directory
      */
     if (!quiet) {
 	para("",
 	    "Checking your submission directory for various issues ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s", chkentry, submission_dir);
-    exit_code = shell_cmd(__func__, false, true, "% -q -- %", chkentry, submission_dir);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s", chksubmit, submission_dir);
+    exit_code = shell_cmd(__func__, false, true, "% -q -- %", chksubmit, submission_dir);
     if (exit_code != 0) {
 	err(4, __func__, "%s -q -- %s failed with exit code: %d",/*ooo*/
-			   chkentry, submission_dir, WEXITSTATUS(exit_code));
+			   chksubmit, submission_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
     if (!quiet) {
@@ -8511,7 +8511,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
     authp->year = infop->year;
     /* copy over IOCCC tool versions as compiled in compiled in constants */
     authp->mkiocccentry_ver = infop->mkiocccentry_ver;
-    authp->chkentry_ver = infop->chkentry_ver;
+    authp->chksubmit_ver = infop->chksubmit_ver;
     authp->fnamchk_ver = infop->fnamchk_ver;
     authp->iocccsize_ver = infop->iocccsize_ver;
     authp->txzchk_ver = infop->txzchk_ver;

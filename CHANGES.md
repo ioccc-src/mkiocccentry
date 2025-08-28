@@ -1,6 +1,42 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.5.1 2025-08-28
+
+Add new tool `chksubmit(1)` as part of issue #1299. This tool runs `chkentry -S`
+(new option, see below) and `mkiocccentry(1)` runs it directly instead of
+`chkentry`. The `-C` option to `mkiocccentry(1)` now specifies the path to the
+new `chksubmit(1)` tool.
+
+Two new options were added to `chkentry(1)` but neither are implemented because
+the details are not yet finalised. This is `-S` for `submission mode` and `-s`
+for special mode.
+
+The new tool has a man page, `chksubmit.1`.
+
+The template JSON files had major updates due to the update of the `info` and
+`auth` structs. Thus the version of these also have been updated.
+
+The test `txzchk` files had to be updated as well due to call to the updated
+`find_utils()` function.
+
+Fixed display bug in `mkiocccentry(1)` (inconsistency with a value checked and
+what is reported).
+
+Updated the `forbidden_filenames` array. It is not clear if this is complete
+yet.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.1.1 2025-08-28"`.
+Updated `INFO_VERSION` to `"1.18 2025-05-28"`.
+Updated `AUTH_VERSION` to `"1.24 2025-08-28"`.
+Updated `TXZCHK_VERSION` to `"2.0.6 2025-08-28"`.
+Updated `CHKENTRY_VERSION` to `"2.1.0 2025-08-28"`.
+Updated `gen_test_JSON.sh` version to `"1.0.4 2025-08-28"`.
+Set `CHKSUBMIT_VERSION` to `"1.0.0 2025-08-28"`.
+
+Ran `make prep` to confirm this all works.
+
+
 ## Release 2.5.0 2025-08-10
 
 Initial changes to get ready for **IOCCC29**.

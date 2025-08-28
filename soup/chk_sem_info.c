@@ -57,7 +57,7 @@ struct json_sem sem_info[SEM_INFO_LEN+1] = {
   { 1,	JTYPE_MEMBER,	1,	1,	1,	15,	10,	chk_IOCCC_year,	"IOCCC_year",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	16,	17,	chk_Makefile_override,	"Makefile_override",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	17,	8,	chk_abstract,	"abstract",	NULL },
-  { 1,	JTYPE_MEMBER,	1,	1,	1,	18,	16,	chk_chkentry_version,	"chkentry_version",	NULL },
+  { 1,	JTYPE_MEMBER,	1,	1,	1,	18,	17,	chk_chksubmit_version,	"chksubmit_version",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	19,	14,	chk_empty_override,	"empty_override",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	21,	15,	chk_fnamchk_version,	"fnamchk_version",	NULL },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	22,	16,	chk_formed_timestamp,	"formed_timestamp",	NULL },

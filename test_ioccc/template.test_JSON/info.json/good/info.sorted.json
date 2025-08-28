@@ -15,7 +15,7 @@
     "IOCCC_contest" : "%%IOCCC_CONTEST%%",
     "IOCCC_year" : %%IOCCC_YEAR%%,
     "iocccsize_version" : "%%IOCCCSIZE_VERSION%%",
-    "chkentry_version" : "%%CHKENTRY_VERSION%%",
+    "chksubmit_version" : "%%CHKSUBMIT_VERSION%%",
     "manifest" : [
         {
             "info_JSON" : ".info.json"

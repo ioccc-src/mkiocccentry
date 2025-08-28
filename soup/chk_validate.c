@@ -847,7 +847,7 @@ chk_c_src(struct json const *node,
 
 
 /*
- * chk_chkentry_version - JSON semantic check for chkentry_version
+ * chk_chksubmit_version - JSON semantic check for chksubmit_version
  *
  * given:
  *	node	JSON parse node being checked
@@ -861,7 +861,7 @@ chk_c_src(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_chkentry_version(struct json const *node,
+chk_chksubmit_version(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -879,10 +879,10 @@ chk_chkentry_version(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_chkentry_version(str);
+    test = test_chksubmit_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(120, node, depth, sem, __func__, "invalid chkentry_version");
+	    *val_err = werr_sem_val(120, node, depth, sem, __func__, "invalid chksubmit_version");
 	}
 	return false;
     }
