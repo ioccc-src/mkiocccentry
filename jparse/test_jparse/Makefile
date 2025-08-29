@@ -665,7 +665,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${Q} ${RM} ${RM_V} -f jparse_test.log chksubmit_test.log txzchk_test.log
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${Q} ${RM} ${RM_V} -rf a b
 	${S} echo

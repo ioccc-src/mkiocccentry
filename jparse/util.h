@@ -49,6 +49,7 @@
 #include <sys/stat.h>   /* for stat(2) and others */
 #include <fts.h>        /* FTS and FTSENT */
 #include <fnmatch.h>    /* for fnmatch(3) (for ignored paths - if desired) */
+#include <limits.h>	/* for CHAR_BIT */
 
 
 /*
@@ -77,6 +78,7 @@ typedef unsigned char bool;
 #define strtobool(x) ((x) != NULL && !strcmp((x), "true"))
 #endif
 
+
 /*
  * dyn_array - dynamic array facility
  */
@@ -87,6 +89,16 @@ typedef unsigned char bool;
 #include <dyn_array.h>
 #include <dbg.h>
 #endif
+
+/*
+ * byte as octet constants
+ */
+#if !defined(CHAR_BIT)
+# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
+#endif
+#define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
+#define MAX_BYTE (0xff)		    /* maximum byte value */
+#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
 
 /*
@@ -140,13 +152,6 @@ typedef unsigned char bool;
 #define LLONG_MAX_BASE10_DIGITS (19) /* for string to int functions */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
-
-/*
- * byte as octet constants
- */
-#define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
-#define MAX_BYTE (0xff)		    /* maximum byte value */
-#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
 
 /*

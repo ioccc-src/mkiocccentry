@@ -19,17 +19,40 @@
 .RB [\| \-h \|]
 .RB [\| \-v
 .IR level \|]
+.RB [\| \-V \|]
+.RB [\| \-C
+.IR chkentry \|]
 .RB [\| \-q \|]
 .I submission_dir
 .SH DESCRIPTION
-.PP
 .BR chksubmit (1)
-runs
-.BR chkentry \-S
-on an IOCCC submission directory.
+This tool checks if a IOCCC submission directory will satisfy
+most of the important validation checks.
+The IOCCC submission directory is specified by
+.B submission_dir
+argument.
+.PP
+This tool calls
+.B "chkentry \-S"
+to perform important validation checks.
+.PP
+While of this tool does not guarantee that your submission will win the IOCCC,
+submitting something that fails to pass the important validation checks
+.B will guarantee
+that your submission will be
+.BR rejected .
+.PP
+If the
+tool is not installed in the default location,
+and/or that tool is not found, the path to may be specified
+via the
+.B \-C\  chkentry
+option.
+.PP
 Unlike
 .BR chkentry (1),
-this tool is meant to be used by contestants and is directly invoked by the
+this tool is meant to be used by contestants submitting to the IOCCC.
+This tool is also is directly invoked by the
 .BR mkiocccentry (1)
 tool.
 .SH OPTIONS
@@ -45,6 +68,12 @@ Set verbosity level to
 .B \-V
 Print version and exit.
 .TP
+.BI \-C\  chkentry
+Set the path of the
+.BR chkentry (1)
+tool to
+.BR chkentry .
+.TP
 .B \-q
 Set quiet mode.
 Silences msg(), warn(), warnp() if verbosity level is 0.
@@ -54,9 +83,8 @@ Silences msg(), warn(), warnp() if verbosity level is 0.
 all OK
 .TQ
 1
-a JSON file is not valid JSON, a semantics test failed or some other test failed (i.e.
-.BR chkentry (1)
-returned an error)
+.B chkentry
+exited 1 due to some submission directory check failure
 .TQ
 2
 .B \-h
@@ -71,24 +99,28 @@ command line error
 internal error
 .SH BUGS
 .PP
-More than 0 humans work on it! :)
+While the humans maintaining this code use a test suite to validate this code,
+and no so-called AI tool contributed to this tool's codebase,
+this tool's test suite was written by humans with the best of intentions. :)
 .PP
-If you have an issue with the tool you can open an issue at
-.br
-.IR https://github.com/ioccc\-src/mkiocccentry/issues\> .
+If you have an issue with the tool you can open an issue at:
+.sp
+.RS 4
+.ft B
+https://github.com/ioccc\-src/mkiocccentry/issues
+.ft R
+.RE
 .SH EXAMPLES
 .PP
 Run the tool on an IOCCC submission located in the directory
-.I submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666:
+.IR ./test_ioccc/workdir/test\-1 :
 .sp
-.RS
+.RS 4
 .ft B
- chksubmit submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666
+chksubmit ./test_ioccc/workdir/test\-1
 .ft R
 .RE
 .SH SEE ALSO
 .PP
 .BR mkiocccentry (1),
 .BR chkentry (1)
-and
-.BR jparse (1)

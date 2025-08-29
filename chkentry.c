@@ -72,12 +72,12 @@ static bool quiet = false;		    /* true ==> quiet mode */
 static bool ignore_info = false;            /* true ==> skip .info.json checks */
 static bool ignore_auth = false;            /* true ==> skip .auth.json checks */
 static bool ignore_entry = false;           /* true ==> skip .entry.json checks */
-static bool ignore_README_md = false;           /* true ==> skip README.md checks */
+static bool ignore_README_md = false;       /* true ==> skip README.md checks */
 static bool ignore_index = false;           /* true ==> skip index.html checks */
-static bool ignore_Makefile = false;         /* true ==> skip Makefile checks */
-static bool ignore_prog_c = false;         /* true ==> skip prog.c checks */
-static bool ignore_prog = false;         /* true ==> skip prog checks */
-static bool ignore_remarks_md = false;         /* true ==> skip remarks.md checks */
+static bool ignore_Makefile = false;        /* true ==> skip Makefile checks */
+static bool ignore_prog_c = false;          /* true ==> skip prog.c checks */
+static bool ignore_prog = false;            /* true ==> skip prog checks */
+static bool ignore_remarks_md = false;      /* true ==> skip remarks.md checks */
 
 
 /*
@@ -86,7 +86,7 @@ static bool ignore_remarks_md = false;         /* true ==> skip remarks.md check
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] [-s] [-S] [-w] submission_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] [-s] [-S] [-w] dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -96,16 +96,16 @@ static const char * const usage_msg =
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-i subpath\tignore subpath, where subpath is a path relative to submission_dir\n"
     "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
-    "\t-P\t\tignore permissions\n"
-    "\t-s\t\tenter special mode. This option is for the judges.\n"
-    "\t-S\t\tenter submission mode. This option is used by the chksubmit(1) tool.\n"
-    "\t-w\t\twinning entry checks\n"
+    "\t-P\t\tIOCCC judge use only: ignore permissions\n"
+    "\t-s\t\tIOCCC judge use only: enter special mode\n"
+    "\t-S\t\tenter submission mode: used by the chksubmit(1) tool\n"
+    "\t-w\t\tIOCCC judge use only: winning entry checks\n"
     "\n"
-    "\tsubmission_dir\tthe directory to be checked\n"
+    "\tdir\tthe directory to be checked (entry directory if -w, submission directory otherwise)\n"
     "\n"
     "Exit codes:\n"
     "    0\t\tall is OK\n"
-    "    1\t\ta JSON file is not valid JSON, a semantics test failed or some other test failed\n"
+    "    1\t\tsome check failed, invalid JSON, semantic test failure, or other test failure\n"
     "    2\t\t-h and help string printed or -V and version string printed\n"
     "    3\t\tcommand line error\n"
     "    >=10\tinternal error\n"

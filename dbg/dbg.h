@@ -41,7 +41,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "3.0 2023-08-05"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "3.1 2023-08-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * dbg basename
@@ -134,6 +134,9 @@ typedef unsigned char bool;
 
 #define FORCED_EXIT (255)	/* exit(255) on bad exit code */
 #define DO_NOT_EXIT (-1)	/* do not let the usage printing function exit */
+
+#undef is_dbg_enabled
+#define is_dbg_enabled (dbg_allowed(1))	/* true ==> some level of debugging has been enabled */
 
 
 /*

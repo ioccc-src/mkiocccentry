@@ -1618,7 +1618,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f answers.txt random_answers.*
 	${RM} -f ${TARGETS}
 	${RM} -rf man
-	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log ${BUILD_LOG}
+	${RM} -f jparse_test.log chksubmit_test.log txzchk_test.log ${BUILD_LOG}
 	${RM} -f tags ${LOCAL_DIR_TAGS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1669,7 +1669,7 @@ uninstall:
 	${RM} -f ${RM_V} ${MAN1_DIR}/mkiocccentry.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/txzchk.1
 	${RM} -f ${RM_V} ${MAN8_DIR}/all_sem_ref.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/chkentry_test.8
+	${RM} -f ${RM_V} ${MAN8_DIR}/chksubmit_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/hostchk.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.sh.8

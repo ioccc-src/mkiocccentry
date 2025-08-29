@@ -27,12 +27,21 @@
 .RB [\| \-s \|]
 .RB [\| \-S \|]
 .RB [\| \-w \|]
-.I submission_dir
+.I dir
 .SH DESCRIPTION
 .PP
 .BR chkentry (1)
-runs a number of validation checks on an IOCCC submission or winning entry directory.
-Depending on the options, it will validate the
+runs a number of validation checks on
+.B dir
+which is either a IOCCC submission
+.I topdir
+directory, or winning IOCCC entry directory.
+.PP
+If
+.I dir
+is an IOCCC submission
+.I topdir
+directory, then
 .B .auth.json
 and/or
 .B .info.json
@@ -41,14 +50,18 @@ files, as well as checking the permissions of files and directories (unless the
 option is used) and, if the
 .B .info.json
 file is not ignored, it will compare the manifest with the files in the
-.B submission_dir
+.B dir
 directory,
 unless that file has been explicitly ignored with the
 .BI \-i\  subpath
 option.
-In winning entry mode (the
+.PP
+If
+.I dir
+is a winning IOCCC entry directory, then the
 .B \-w
-option), some files must exist whereas others may not exist, depending on the
+option, must be given.
+Some files must exist whereas others may not exist, depending on the
 .BI \-i\  subpath
 option; otherwise, without
 .BR \-w ,
@@ -64,7 +77,7 @@ It will also verify that the filenames are sane, relative paths, in the context 
 As a sanity check, the
 .BR mkiocccentry (1)
 program executes
-.B chkentry
+.BR chkentry \-S
 after forming the
 .B .auth.json
 and
@@ -111,7 +124,7 @@ Ignore
 where
 .I subpath
 is a path relative to the
-.B submission_dir
+.B dir
 directory.
 .sp 1
 This option may be used more than once but is only meant for the judges.
@@ -141,7 +154,7 @@ This option is for the judges.
 all OK
 .TQ
 1
-a JSON file is not valid JSON, a semantics test failed or some other test failed
+some check failed, invalid JSON, semantic test failure, or other test failure
 .TQ
 2
 .B \-h
@@ -176,33 +189,15 @@ The IOCCC uses the term
 to refer to a submission that won the IOCCC whereas the term
 .B submission
 is used to refer to something given to the IOCCC judges for consideration when the IOCCC is open.
-If the IOCCC was being consistent, then
-.BR chkentry (1)
-and the
-.BR mkiocccentry (1)
-tools would not have "entry" in their names.
-On the other hand, if the names of those tools were named in a consistent fashion, they would have been named
-.B chksubmission
-and
-.B mkiocccsubmission
-respectively, which is a bit too long for a tool name, and it would have ruined the
-.B mkiocccentry
-pun.
-The IOCCC decided to
-.B NOT rename the tools
-in the name of
-.BR fputs (3)
-backward compatibility. :)
+Nevertheless, this tool is able to perform checks in a submission when the
+.B \-S
+option is used.
 .PP
-As a compromise, the name of the compressed tarball produced by
-.BR mkiocccentry (1)
-was changed to start with
-.I submit
-instead of
-.IR entry .
 The
-.BR fnamchk (1)
-tool was by necessity changed accordingly.
+.BR chksubmit (1)
+tool calls this tool with the
+.B \-S
+option in order to perform important validation checks on a submission.
 .PP
 Astute proof readers might find circumstances where variables, comments, error messages and prompt strings use
 .B entry
@@ -221,25 +216,38 @@ In other words if it refers to submissions won then it should be
 .B entry
 or
 .BR entries .
+.SH BUGS
 .PP
-If you have an issue with the tool you can open an issue at
-.br
-.IR https://github.com/ioccc\-src/mkiocccentry/issues\> .
+While the humans maintaining this code use a test suite to validate this code,
+and no so-called AI tool contributed to this tool's codebase,
+this tool's test suite was written by humans with the best of intentions. :)
+.PP
+While of this tool does not guarantee that your submission will win the IOCCC,
+submitting something that fails to pass the important validation checks
+.B will guarantee
+that your submission will be
+.BR rejected .
+.PP
+If you have an issue with the tool you can open an issue at:
+.sp
+.RS 4
+.ft B
+https://github.com/ioccc\-src/mkiocccentry/issues
+.ft R
+.RE
 .SH EXAMPLES
 .PP
-Run the tool on an IOCCC entry located in the directory
-.I submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666:
+Run the tool on an IOCCC submission located in the directory
+.IR ./test_ioccc/workdir/test\-1 :
 .sp
-.RS
+.RS 4
 .ft B
- chkentry submit.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666
+chkentry ./test_ioccc/workdir/test\-1
 .ft R
 .RE
 .SH SEE ALSO
 .PP
-.BR chkentry_test (8),
+.BR chksubmit_test (8),
 .BR mkiocccentry (1),
-.BR txzchk (1),
-.BR chksubmit (1)
-and
+.BR chksubmit (1),
 .BR jparse (1)

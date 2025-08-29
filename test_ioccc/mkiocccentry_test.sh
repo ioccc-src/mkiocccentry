@@ -94,7 +94,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="2.0.2 2025-03-14"
+export MKIOCCCENTRY_TEST_VERSION="2.1.0 2025-08-28"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -215,28 +215,36 @@ fi
 
 # working locations - adjust as needed
 #
-Makefile="test_ioccc/Makefile.test"
-workdir="test_ioccc/workdir"
-topdir="test_ioccc/topdir"
-topdir_topdir="test_ioccc/topdir/topdir"
-topdir_topdir_topdir_topdir_topdir="test_ioccc/topdir/a/b/c/d/e"
+export Makefile="test_ioccc/Makefile.test"
+export WORKDIR="test_ioccc/workdir"
+export WORKDIR_GOOD="$WORKDIR/good"
+export WORKDIR_BAD="$WORKDIR/bad"
+export topdir="test_ioccc/topdir"
+export topdir_topdir="test_ioccc/topdir/topdir"
+export topdir_topdir_topdir_topdir_topdir_head="a"
+export topdir_topdir_topdir_topdir_topdir_tail="$topdir_topdir_topdir_topdir_topdir_head/b/c/d/e"
+export topdir_topdir_topdir_topdir_topdir="test_ioccc/topdir/$topdir_topdir_topdir_topdir_topdir_tail"
 
 # clean out test directories first
-rm -rf -- "${workdir}" "${topdir}" "${topdir_topdir}" "${topdir_topdir_topdir_topdir_topdir}"
+rm -rf -- "${WORKDIR}" "${topdir}" "${topdir_topdir}" "${topdir_topdir_topdir_topdir_topdir}"
 # be sure the working locations exist
 #
-mkdir -p -- "${workdir}" "${topdir}"
+mkdir -p -- "${WORKDIR}" "${WORKDIR_GOOD}" "${WORKDIR_BAD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${workdir} ${topdir}" 1>&2
+    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${WORKDIR} ${WORKDIR_GOOD} ${WORKDIR_BAD} ${topdir}" 1>&2
     exit 9
 fi
 
 # firewall
 #
 # we need a working directory
-if [[ ! -d ${workdir} ]]; then
-    echo "$0: ERROR: workdir not found: ${workdir}" 1>&2
+if [[ ! -d ${WORKDIR_GOOD} ]]; then
+    echo "$0: ERROR: good WORKDIR not found: ${WORKDIR_GOOD}" 1>&2
+    exit 9
+fi
+if [[ ! -d ${WORKDIR_BAD} ]]; then
+    echo "$0: ERROR: bad WORKDIR not found: ${WORKDIR_BAD}" 1>&2
     exit 9
 fi
 # we also need the source directory
@@ -277,14 +285,21 @@ if [[ ! -x "${TAR}" ]]; then
 fi
 
 # we need this for later and to make sure it's removed now
+#
 LONG_FILENAME="ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-# clean out the workdir area
-workdir_esc="${workdir}"
-test "${workdir:0:1}" = "-" && workdir_esc=./"${workdir}"
+# clean out the WORKDIR area
+workdir_esc="${WORKDIR}"
+test "${WORKDIR:0:1}" = "-" && workdir_esc=./"${WORKDIR}"
 find "${workdir_esc}" -mindepth 1 -depth -delete
-mkdir -p "${topdir}"
+mkdir -p -- "${WORKDIR}" "${WORKDIR_GOOD}" "${WORKDIR_BAD}"
+export TEST_NAME TESTDIR
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a good submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-0"
+TESTDIR="$WORKDIR_GOOD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -358,6 +373,8 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
+# test a good submission
+#
 # fake a submission that only has the required files
 #
 test -f "${topdir}"/Makefile || cat "${Makefile}" >"${topdir}"/Makefile
@@ -365,18 +382,32 @@ test -f "${topdir}"/remarks.md || cat README.md >"${topdir}"/remarks.md
 test -f "${topdir}"/prog.c || echo "int main(){}" >"${topdir}"/prog.c
 # delete the work directory for next test
 find "${workdir_esc}" -mindepth 1 -depth -delete
+mkdir -p -- "${WORKDIR}" "${WORKDIR_GOOD}" "${WORKDIR_BAD}"
 # test empty prog.c, ignoring the warning about it
-echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo "# $TEST_NAME - this good submission must PASS"
+echo
+echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${WORKDIR_GOOD} ${topdir}"
+./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_GOOD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 10
+fi
 echo "--"
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a good submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-1"
+TESTDIR="$WORKDIR_GOOD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -461,17 +492,28 @@ test -f "${topdir}"/try.sh || touch "${topdir}"/try.sh
 test -f "${topdir}"/try.alt.sh || touch "${topdir}"/try.alt.sh
 test -f "${topdir}"/prog.alt.c || touch "${topdir}"/prog.alt.c
 
+# test a good submission
+#
 rm -f "${topdir}"/prog.c
 :> "${topdir}"/prog.c
 # test empty prog.c, ignoring the warning about it
-echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this good submission must PASS"
+echo
+echo "./mkiocccentry -y -Y -q -W -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS  -v $V_FLAG -J $J_FLAG -- ${WORKDIR_GOOD} ${topdir}"
+./mkiocccentry -y -Y -q -W -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS"  -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_GOOD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 11
+fi
 echo "--"
 
 # Form 'submissions' that are unlikely to win the IOCCC :-)
@@ -483,7 +525,12 @@ int main(void) { puts("Hello, World!"); }
 EOF
 }
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a good submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-2"
+TESTDIR="$WORKDIR_GOOD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -556,19 +603,35 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
+# test a good submission
+#
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this good submission must PASS"
+echo
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_GOOD} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_GOOD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 12
+fi
 echo "--"
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a good submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="12345678-1234-4321-abcd-1234567890ab-3"
+TESTDIR="$WORKDIR_GOOD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -643,22 +706,32 @@ answers >>answers.txt
 
 # fake a couple more files
 #
-test -f "${topdir}"/foo || cat LICENSE >"${topdir}"/foo
+test -f "${topdir}"/foo || cat SECURITY.md >"${topdir}"/foo
 test -f "${topdir}"/bar || cat CODE_OF_CONDUCT.md >"${topdir}"/bar
 
+# test a good submission
+#
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this good submission must PASS"
+echo
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_GOOD} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_GOOD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
-
+echo
 echo "--"
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a bad submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-4"
+TESTDIR="$WORKDIR_BAD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -732,18 +805,19 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 # shellcheck disable=SC2218
 answers >>answers.txt
 
-#
-# this next test must FAIL as it has a filename that is too long
-#
-
 # fake a filename that's too long
 #
 test -f "${topdir}/$LONG_FILENAME" || touch "${topdir}/$LONG_FILENAME"
 
+# test a bad submission
+#
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this bad submission must FAIL"
+echo
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_BAD} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 4 ]]; then
     echo "$0: ERROR: mkiocccentry exit code not 4: $status" 1>&2
@@ -753,9 +827,45 @@ else
     echo "$0: NOTE: length limit works." 1>&2
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 13
+fi
+echo
 echo "--"
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# form a bad submission for test_ioccc/chksubmit_test.sh to use
+#
+# The above test deliberately failed, so $TESTDIR is empty.
+# We will form form a good version of the code and then
+# put back the error for test_ioccc/chksubmit_test.sh to test.
+#
+#
+echo
+echo "# about to form a bad submission for test_ioccc/chksubmit_test.sh to use"
+echo
+rm -f "${topdir}/$LONG_FILENAME"
+rm -rf "${TESTDIR}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}" >/dev/null 2>&1
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    echo "$0: ERROR: unable to retry mkiocccentry with a good version of $TEST_NAME exit code not 0: $status" 1>&2
+    exit 23
+fi
+touch "${TESTDIR}/$LONG_FILENAME"
+echo
+echo "# formed a bad submission for test_ioccc/chksubmit_test.sh to use under: $TESTDIR"
+echo
+echo "--"
+
+# prep for a good submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-5"
+TESTDIR="$WORKDIR_GOOD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -835,19 +945,36 @@ rm -f "${topdir}"/"${LONG_FILENAME}"
 #
 test -f "${topdir_topdir}/foo" || touch "${topdir_topdir}/foo"
 
+# test a good submission
+#
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this good submission must PASS"
+echo
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_GOOD} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_GOOD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 14
+fi
+echo
 echo "--"
 
-# Answers as of mkiocccentry version: v0.40 2022-03-15
+# prep for a bad submission test
+#
+# Answers as of mkiocccentry version: 2.1.1 2025-08-28
+#
+TEST_NAME="test-6"
+TESTDIR="$WORKDIR_BAD/$TEST_NAME"
 answers()
 {
 cat <<"EOF"
@@ -929,13 +1056,19 @@ if [[ ${status} -ne 0 ]]; then
     echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${topdir_topdir_topdir_topdir_topdir}" 1>&2
     exit 9
 fi
+find "test_ioccc/topdir/$topdir_topdir_topdir_topdir_topdir_head" -type d -print0 | xargs -0 chmod 0755
+touch -- "${topdir_topdir_topdir_topdir_topdir}/foo"
+chmod 0444 "${topdir_topdir_topdir_topdir_topdir}/foo"
 
-test -f "${topdir_topdir_topdir_topdir_topdir}/foo" || touch "${topdir_topdir_topdir_topdir_topdir}/foo"
-
+# test a bad submission
+#
 # run the test, looking for an exit
 #
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${workdir} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${workdir}" "${topdir}"
+echo
+echo "# $TEST_NAME - this bad submission must FAIL"
+echo
+echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_BAD} ${topdir}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}"
 status=$?
 if [[ ${status} -ne 4 ]]; then
     echo "$0: ERROR: mkiocccentry zero exit code not 4: $status" 1>&2
@@ -945,8 +1078,44 @@ else
     echo "$0: NOTE: limit works." 1>&2
 fi
 
+# end of test check
+#
+if [[ ! -d $TESTDIR ]]; then
+    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
+    exit 15
+fi
+echo
+echo "--"
+
+# form a bad submission for test_ioccc/chksubmit_test.sh to use
+#
+# The above test deliberately failed, so $TESTDIR is empty.
+# We will form form a good version of the code and then
+# put back the error for test_ioccc/chksubmit_test.sh to test.
+#
+#
+echo
+echo "# about to form a bad submission for test_ioccc/chksubmit_test.sh to use"
+echo
+rm -rf "${topdir}/a"
+rm -rf "${TESTDIR}"
+./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}" >/dev/null 2>&1
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    echo "$0: ERROR: unable to retry mkiocccentry with a good version of $TEST_NAME exit code not 0: $status" 1>&2
+    exit 25
+fi
+mkdir -p -- "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}"
+find "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_head}" -type d -print0 | xargs -0 chmod 0755
+touch -- "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
+chmod 0444 "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
+echo
+echo "# formed a bad submission for test_ioccc/chksubmit_test.sh to use under: $TESTDIR"
+echo
 echo "--"
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
+echo
+echo "# All is OK"
 exit 0

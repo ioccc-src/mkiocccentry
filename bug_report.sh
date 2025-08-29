@@ -45,6 +45,7 @@
 #
 export TOOLS="
     ./bug_report.sh
+    ./chksubmit
     ./chkentry
     ./dbg/dbg_test
     ./dyn_array/dyn_test
@@ -65,7 +66,7 @@ export TOOLS="
     ./soup/all_sem_ref.sh
     ./soup/reset_tstamp.sh
     ./soup/run_usage.sh
-    ./test_ioccc/chkentry_test.sh
+    ./test_ioccc/chksubmit_test.sh
     ./test_ioccc/fnamchk
     ./test_ioccc/gen_test_JSON.sh
     ./test_ioccc/hostchk.sh
@@ -113,7 +114,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.11 2025-06-25"
+export BUG_REPORT_VERSION="1.0.12 2025-08-28"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"

@@ -89,8 +89,8 @@ vercmp(char *ver1, char *ver2)
         err(56, __func__, "second version string is NULL or empty");
         not_reached();
     }
-    dbg(DBG_LOW, "first version: <%s>", ver1);
-    dbg(DBG_LOW, "second version: <%s>", ver2);
+    dbg(DBG_MED, "first version: <%s>", ver1);
+    dbg(DBG_MED, "second version: <%s>", ver2);
 
     /*
      * convert first version string
@@ -102,7 +102,7 @@ vercmp(char *ver1, char *ver2)
             free(vlevel1);
             vlevel1 = NULL;
         }
-	dbg(DBG_MED, "first version string is invalid");
+	dbg(DBG_HIGH, "first version string is invalid");
         return 4;
     }
 
@@ -121,7 +121,7 @@ vercmp(char *ver1, char *ver2)
             vlevel2 = NULL;
         }
 
-        dbg(DBG_MED, "second version string is invalid");
+        dbg(DBG_HIGH, "second version string is invalid");
         return 4;
     }
 
@@ -136,9 +136,9 @@ vercmp(char *ver1, char *ver2)
 	if (vlevel1[i] > vlevel2[i]) {
 
 	    /* ver1 > ver2 */
-	    dbg(DBG_MED, "version 1 level %d: %jd > version 2 level %d: %jd",
+	    dbg(DBG_HIGH, "version 1 level %d: %jd > version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
-	    dbg(DBG_LOW, "%s > %s", ver1, ver2);
+	    dbg(DBG_MED, "%s > %s", ver1, ver2);
 	    /* free memory */
 	    if (vlevel1 != NULL) {
 		free(vlevel1);
@@ -153,9 +153,9 @@ vercmp(char *ver1, char *ver2)
 	} else if (vlevel1[i] < vlevel2[i]) {
 
 	    /* ver1 < ver2 */
-	    dbg(DBG_MED, "version 1 level %d: %jd < version 2 level %d: %jd",
+	    dbg(DBG_HIGH, "version 1 level %d: %jd < version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
-	    dbg(DBG_LOW, "%s < %s", ver1, ver2);
+	    dbg(DBG_MED, "%s < %s", ver1, ver2);
 	    /* free memory */
 	    if (vlevel1 != NULL) {
 		free(vlevel1);
@@ -170,11 +170,11 @@ vercmp(char *ver1, char *ver2)
 	} else {
 
 	    /* versions match down to this level */
-	    dbg(DBG_MED, "version 1 level %d: %jd == version 2 level %d: %jd",
+	    dbg(DBG_HIGH, "version 1 level %d: %jd == version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	}
     }
-    dbg(DBG_MED, "versions match down to level: %d",
+    dbg(DBG_HIGH, "versions match down to level: %d",
 		 (ver1_levels > ver2_levels) ? ver2_levels : ver1_levels);
 
     /*
@@ -196,16 +196,16 @@ vercmp(char *ver1, char *ver2)
      */
     if (ver1_levels < ver2_levels) {
 
-	dbg(DBG_MED, "version 1 level count: %d < version level count: %d",
+	dbg(DBG_HIGH, "version 1 level count: %d < version level count: %d",
 		     ver1_levels, ver2_levels);
-	dbg(DBG_LOW, "%s < %s", ver1, ver2);
+	dbg(DBG_MED, "%s < %s", ver1, ver2);
 	/* report ver1 < ver2 */
         return 1;
     } else if (ver1_levels > ver2_levels) {
 
-	dbg(DBG_MED, "version 1 level count: %d > version level count: %d",
+	dbg(DBG_HIGH, "version 1 level count: %d > version level count: %d",
 		     ver1_levels, ver2_levels);
-	dbg(DBG_LOW, "%s > %s", ver1, ver2);
+	dbg(DBG_MED, "%s > %s", ver1, ver2);
 	/* report ver1 > ver2 */
         return 0;
     }
@@ -213,9 +213,9 @@ vercmp(char *ver1, char *ver2)
     /*
      * versions match
      */
-    dbg(DBG_MED, "version 1 level count: %d == version level count: %d",
+    dbg(DBG_HIGH, "version 1 level count: %d == version level count: %d",
 		 ver1_levels, ver2_levels);
-    dbg(DBG_LOW, "%s == %s", ver1, ver2);
+    dbg(DBG_MED, "%s == %s", ver1, ver2);
     /* report ver1 == ver2 */
     return 0;
 }

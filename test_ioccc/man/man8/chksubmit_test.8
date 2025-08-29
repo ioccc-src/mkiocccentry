@@ -1,4 +1,4 @@
-.\" section 8 man page for chkentry_test.sh
+.\" section 8 man page for chksubmit_test.sh
 .\"
 .\" This man page was first written by Cody Boone Ferguson for the IOCCC
 .\" in 2022.
@@ -9,41 +9,41 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry_test.sh 8 "30 January 2023" "chkentry_test.sh" "IOCCC tools"
+.TH chksubmit_test.sh 8 "28 August 2025" "chksubmit_test.sh" "IOCCC tools"
 .SH NAME
-.B chkentry_test.sh
-\- test chkentry on good and bad auth.json and info.json files
+.B chksubmit_test.sh
+\- test chkentry on good and bad submission directories
 .SH SYNOPSIS
-.B chkentry_test.sh
+.B chksubmit_test.sh
 .RB [\| \-h \|]
 .RB [\| \-V \|]
 .RB [\| \-v
 .IR level \|]
 .RB [\| \-D
 .IR dbg_level \|]
-.RB [\| \-J
-.IR level \|]
 .RB [\| \-q \|]
 .RB [\| \-c
+.IR chksubmit \|]
+.RB [\| \-C
 .IR chkentry \|]
 .RB [\| \-d
 .IR json_tree \|]
 .SH DESCRIPTION
-.B chkentry_test.sh
+.B chksubmit_test.sh
 tests each file in the
-.I test_JSON/auth.json
+.I test_JSON/workdir/good
 and
-.I test_JSON/info.json
+.I test_JSON/workdir/bad
 subdirectories
 It uses
 .BR find (1)
-to look under the JSON tree for good and bad files that must pass or fail respectively.
+to look under the good and bad submission directories that must pass or fail respectively.
 The files that must pass are in the subdirectory called
 .I good
 and the files that must fail are in the subdirectory called
 .IR bad .
 It keeps a log of all the tests in
-.I chkentry_test.log
+.I chksubmit_test.log
 for later inspection.
 .SH OPTIONS
 .TP
@@ -63,16 +63,15 @@ Set debug level to
 .IR level
 (def: 0).
 .TP
-.BI \-J\  level
-Set JSON verbosity level to
-.IR level
-(def: 0).
-.TP
 .B \-q
 Set quiet mode.
 This will affect the JSON parser as well.
 .TP
-.BI \-c\  chkentry
+.BI \-c\  chksubmit
+Set path to chksubmit to
+.IR chksubmit .
+.TP
+.BI \-C\  chkentry
 Set path to chkentry to
 .IR chkentry .
 .TP
@@ -111,10 +110,10 @@ some files were invalid JSON and some chkentry tests failed
 >=10
 internal error
 .SH FILES
-.I chkentry_test.log
+.I chksubmit_test.log
 .RS
 The log file kept by
-.BR chkentry_test.sh .
+.BR chksubmit_test.sh .
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
 .RE
 .I test_JSON
@@ -123,14 +122,20 @@ The default JSON tree with good and bad subdirectories for files that must pass 
 .RE
 .SH NOTES
 The JSON parser
-.BR jparse (1)
-and
+.BR jparse (1),
 .BR chkentry (1)
-were co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+and,
+.BR chksubmit (1)
+were co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
-It can be found at
-.br
-.IR \<https://github.com/ioccc\-src/mkiocccentry/issues\> .
+You can open an issue at:
+.sp
+.RS 4
+.ft B
+https://github.com/ioccc\-src/mkiocccentry/issues
+.ft R
+.RE
 .SH SEE ALSO
-.BR chkentry (1)
+.BR chkentry (1),
+.BR chksubmit (1)

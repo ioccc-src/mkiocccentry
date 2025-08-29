@@ -34,7 +34,80 @@ Updated `CHKENTRY_VERSION` to `"2.1.0 2025-08-28"`.
 Updated `gen_test_JSON.sh` version to `"1.0.4 2025-08-28"`.
 Set `CHKSUBMIT_VERSION` to `"1.0.0 2025-08-28"`.
 
-Ran `make prep` to confirm this all works.
+The `chksubmit(1)` tool now passes `-S` to `chkentry(1)`.
+
+The `chksubmit(1)` tool now passes `-v level` to `chkentry(1)`
+when debugging is enabled.
+
+Improved `chksubmit(1)` help message and man page.  Added
+missing command line options.  Improved example.
+
+Improved `chkentry(1)` help message and man page.
+
+Increased the verbosity of debug messages for `vercmp()` in `jparse/verge.c`.
+
+Updated `MKIOCCCENTRY_ANSWERS_VERSION` for answers files under
+the `test_ioccc/slot/good/answers/' directory.
+
+Created a number of sub-directories under `test_ioccc/slot/good/topdir/`
+to help test use of sub-directories.
+
+Added `make test_mkiocccentry_slots` to `test_ioccc/Makefile` to build
+submission workdir's given submission topdir's using `mkiocccentry(1)`
+and submission answer files.
+
+Added `make test_mkiocccentry_slots` to `test_ioccc/ioccc_test.sh`.
+
+Changed `test_ioccc/ioccc_test.sh` IOCCC_TEST_VERSION from "2.0.1 2025-03-14"
+to "2.1.0 2025-08-28".
+
+Added `/chksubmit` to `.gitignore`.
+
+Sorted and improved `.gitignore`.
+
+Modified `test_ioccc/mkiocccentry_test.sh` to form bad submission directories
+for later use by the `test_ioccc/chkentry_test.sh` tool.
+
+Changed `test_ioccc/mkiocccentry_test.sh` MKIOCCCENTRY_TEST_VERSION from "2.0.3 2025-08-28"
+to "2.1.0 2025-08-28".
+
+Changed `test_ioccc/chkentry_test.sh` to `test_ioccc/chksubmit_test.sh`.
+
+Fixed `test_ioccc/chksubmit_test.sh`.  The `test_ioccc/chksubmit_test.sh`
+now tests `chksubmit(1)`.
+
+Changed `test_ioccc/chksubmit_test.sh` CHKENTRY_TEST_VERSION from "2.0.1 2025-03-14"
+to CHKSUBMIT_TEST_VERSION "2.1.0 2025-08-28".
+
+Changed `jparse/test_jparse/Makefile` to remove the new `chksubmit_test.log`
+(instead of the old `chkentry_test.log`).
+
+Renamed `chkentry_test.sh(8)` man page to the `chksubmit_test.sh(8)` man page.
+
+Fixed the `chksubmit_test.sh(8)` man page.
+
+Updated `test_ioccc/ioccc_test.sh` to run `test_ioccc/chksubmit_test.sh`.
+
+Changed `bug_report.sh` to test `./chksubmit` and `./test_ioccc/chksubmit_test.sh`.
+
+Changed `bug_report.sh` BUG_REPORT_VERSION from "1.0.11 2025-06-25"
+to "1.0.12 2025-08-28".
+
+Added `dbg_enabled` macro to dbg library.
+
+Updated `dbg(3)` man page with additional macros, the `dbg_allowed(3)` function,
+and the new dbg_enabled macro.  Updated EXAMPLE section in the `dbg(3)` man page.
+
+Expanded the `dbg/dbg_example.c` example code.
+
+Changed `DBG_VERSION` from "3.0 2023-08-05"
+to "3.1 2023-08-28".
+
+Changed `jparse/util.h` to include '<limits.h>` for the `CHAR_BIT` define,
+add code to define `CHAR_BIT` as 8 if undefined, and changed
+the `BITS_IN_BYTE` macro to use `CHAR_BIT` instead.
+
+Performed `make release` to confirm the above changes are OK.
 
 
 ## Release 2.5.0 2025-08-10

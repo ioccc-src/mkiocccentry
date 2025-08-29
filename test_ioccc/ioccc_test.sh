@@ -39,7 +39,7 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="2.0.1 2025-03-14"
+export IOCCC_TEST_VERSION="2.1.0 2025-08-28"
 
 
 # IOCCC requires use of C locale
@@ -341,15 +341,15 @@ elif [[ ! -x txzchk ]]; then
     echo "$0: ERROR: txzchk is not executable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
-# chkentry_test.sh
-if [[ ! -e test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh file not found" | tee -a -- "$LOGFILE"
+# chksubmit_test.sh
+if [[ ! -e test_ioccc/chksubmit_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chksubmit_test.sh file not found" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
-elif [[ ! -f test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not a regular file" | tee -a -- "$LOGFILE"
+elif [[ ! -f test_ioccc/chksubmit_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chksubmit_test.sh is not a regular file" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
-elif [[ ! -x test_ioccc/chkentry_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/chkentry_test.sh is not executable" | tee -a -- "$LOGFILE"
+elif [[ ! -x test_ioccc/chksubmit_test.sh ]]; then
+    echo "$0: ERROR: test_ioccc/chksubmit_test.sh is not executable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
 # test_JSON
@@ -552,8 +552,7 @@ fi
 # NOTE: do NOT test the test_ioccc/test_JSON/{auth,info}.json/ files with
 # jparse_test.sh because these files are valid JSON files. The bad files are
 # meant to be valid JSON but invalid per the chkentry rules. Thus the
-# chkentry_test.sh later in this file addresses these files.
-
+# chksubmit_test.sh later in this file addresses these files.
 
 # txzchk_test.sh
 #
@@ -582,28 +581,49 @@ else
     echo "PASSED: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
 fi
 
-# chkentry_test.sh
+# chksubmit_test.sh
 #
-# XXX - disable until we can create new tests with one arg mode
-# echo | tee -a -- "$LOGFILE"
-# echo "RUNNING: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-# echo | tee -a -- "$LOGFILE"
-# echo "test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
-# test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
-# status="${PIPESTATUS[0]}"
-# if [[ $status -ne 0 ]]; then
-#     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
-#     FAILURE_SUMMARY="$FAILURE_SUMMARY
-#     test_ioccc/chkentry_test.sh non-zero exit code: $status"
-#     EXIT_CODE="27"
-#     echo | tee -a -- "$LOGFILE"
-#     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
-#     echo | tee -a -- "$LOGFILE"
-#     echo "FAILED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-# else
-#     echo | tee -a -- "$LOGFILE"
-#     echo "PASSED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
-# fi
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "test_ioccc/chksubmit_test.sh -v 3 -d ./test_ioccc/workdir -c ./chksubmit -C ./chkentry" | tee -a -- "$LOGFILE"
+test_ioccc/chksubmit_test.sh -v 3 -d ./test_ioccc/workdir -c ./chksubmit -C ./chkentry | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+     echo "$0: ERROR: test_ioccc/chksubmit_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+     FAILURE_SUMMARY="$FAILURE_SUMMARY
+     test_ioccc/chksubmit_test.sh non-zero exit code: $status"
+     EXIT_CODE="27"
+     echo | tee -a -- "$LOGFILE"
+     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+     echo | tee -a -- "$LOGFILE"
+     echo "FAILED: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
+else
+     echo | tee -a -- "$LOGFILE"
+     echo "PASSED: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
+fi
+
+# test_mkiocccentry_slots
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "make -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+make -C test_ioccc -f Makefile test_mkiocccentry_slots | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+     echo "$0: ERROR: make -C test_ioccc -f Makefile test_mkiocccentry_slots non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+     FAILURE_SUMMARY="$FAILURE_SUMMARY
+     make -C test_ioccc -f Makefile test_mkiocccentry_slots non-zero exit code: $status"
+     EXIT_CODE="28"
+     echo | tee -a -- "$LOGFILE"
+     echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+     echo | tee -a -- "$LOGFILE"
+     echo "FAILED: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+else
+     echo | tee -a -- "$LOGFILE"
+     echo "PASSED: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+fi
 
 # report overall status
 #

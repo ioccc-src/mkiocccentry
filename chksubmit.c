@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
 
 /*
  * chksubmit - run chkentry -S
@@ -57,6 +58,12 @@
 
 
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+
+/* number of bytes to hold an int converted to decimal */
+#if !defined(CHAR_BIT)
+# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
+#endif
+#define INT_DECIMAL_SIZE ((((((size_t)CHAR_BIT) * sizeof(int)) * 302) / 1000) + 1)
 
 
 /*
@@ -78,12 +85,13 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-C chkentry\tpath to chkentry\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
-    "\t\t\t\tNOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "\tsubmission_dir\tthe directory to be checked\n"
+    "\tsubmission_dir\tsubmission directory to be checked\n"
     "\n"
     "Exit codes:\n"
     "    0\t\tall is OK\n"
+    "    1\t\tchkentry exited 1 due to some submission directory check failure\n"
     "    1\t\ta JSON file is not valid JSON, a semantics test failed or some other test failed\n"
     "    2\t\t-h and help string printed or -V and version string printed\n"
     "    3\t\tcommand line error\n"
@@ -93,6 +101,7 @@ static const char * const usage_msg =
     "jparse utils version: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
+
 
 /*
  * functions
@@ -141,6 +150,7 @@ usage(int exitcode, char const *prog, char const *str)
     exit(exitcode); /*ooo*/
     not_reached();
 }
+
 
 /*
  * chksubmit_sanity_chks - perform basic sanity checks
@@ -221,17 +231,17 @@ chksubmit_sanity_chks(char const *chkentry)
 }
 
 
-
 int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
-    char *submission_dir = NULL;       /* directory from which files are to be checked */
+    char *submission_dir = NULL;        /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    int exit_code = 0;                     /* return value of chkentry -S */
+    int exit_code = 0;                  /* return value of chkentry -S */
     bool found_chkentry = false;        /* for find_utils */
     char *chkentry = NULL;              /* for find_utils */
+    char v_str[INT_DECIMAL_SIZE+1+1];	/* verbosity level as a string + NUL + 1 for paranoia */
     int i = 0;
 
     /* IOCCC requires use of C locale */
@@ -313,20 +323,42 @@ main(int argc, char *argv[])
 	break;
     }
 
+    /*
+     * debugging
+     */
     if (dbg_allowed(DBG_MED)) {
         if (quiet) {
-            dbg(DBG_MED, "about to execute: %s -S -q -- %s", chkentry,
-                submission_dir);
+            dbg(DBG_MED, "about to execute: %s -S -v %d -q -- %s", chkentry, verbosity_level, submission_dir);
         } else {
-            dbg(DBG_MED, "about to execute: %s -S -- %s", chkentry, submission_dir);
+            dbg(DBG_MED, "about to execute: %s -S -v %d -- %s", chkentry, verbosity_level, submission_dir);
         }
     }
+
+    /*
+     * execute chkentry -S [-v level] [-q]
+     */
+    if (snprintf(v_str, sizeof(v_str)-2, "%d", verbosity_level) <= 0) {
+	err(16, program, "failed to convert int: %d into decimal", i);
+	not_reached();
+    }
+    v_str[sizeof(v_str)-1] = '\0';	/* paranoia */
     if (quiet) {
-        exit_code = shell_cmd(__func__, false, true, "% -q -- %", chkentry, submission_dir);
+	if (is_dbg_enabled) {
+	    exit_code = shell_cmd(__func__, false, true, "% -S -v % -q -- %", chkentry, v_str, submission_dir);
+	} else {
+	    exit_code = shell_cmd(__func__, false, true, "% -S -q -- %", chkentry, submission_dir);
+	}
     } else {
-        exit_code = shell_cmd(__func__, false, true, "% -- %", chkentry, submission_dir);
+	if (is_dbg_enabled) {
+	    exit_code = shell_cmd(__func__, false, true, "% -S -v % -- %", chkentry, v_str, submission_dir);
+	} else {
+	    exit_code = shell_cmd(__func__, false, true, "% -S -- %", chkentry, submission_dir);
+	}
     }
 
+    /*
+     * free storage
+     */
     if (chkentry != NULL && found_chkentry) {
         free(chkentry);
         chkentry = NULL;
