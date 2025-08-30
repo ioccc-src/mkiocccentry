@@ -39,7 +39,7 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="2.1.0 2025-08-28"
+export IOCCC_TEST_VERSION="2.1.1 2025-08-29"
 
 
 # IOCCC requires use of C locale
@@ -352,6 +352,17 @@ elif [[ ! -x test_ioccc/chksubmit_test.sh ]]; then
     echo "$0: ERROR: test_ioccc/chksubmit_test.sh is not executable" | tee -a -- "$LOGFILE"
     EXIT_CODE="5"
 fi
+# mkiocccentry_slots.sh
+if [[ ! -e test_ioccc/mkiocccentry_slots.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_slots.sh file not found" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -f test_ioccc/mkiocccentry_slots.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_slots.sh is not a regular file" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+elif [[ ! -x test_ioccc/mkiocccentry_slots.sh ]]; then
+    echo "$0: ERROR: test_ioccc/mkiocccentry_slots.sh is not executable" | tee -a -- "$LOGFILE"
+    EXIT_CODE="5"
+fi
 # test_JSON
 if [[ ! -e ./test_ioccc/test_JSON ]]; then
     echo "$0: ERROR: ./test_JSON file not found" | tee -a -- "$LOGFILE"
@@ -603,26 +614,26 @@ else
      echo "PASSED: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
 fi
 
-# test_mkiocccentry_slots
+# mkiocccentry_slots.sh
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+echo "RUNNING: test_ioccc/mkiocccentry_slots.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "make -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
-make -C test_ioccc -f Makefile test_mkiocccentry_slots | tee -a -- "$LOGFILE"
+echo "test_ioccc/mkiocccentry_slots.sh" | tee -a -- "$LOGFILE"
+test_ioccc/mkiocccentry_slots.sh | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-     echo "$0: ERROR: make -C test_ioccc -f Makefile test_mkiocccentry_slots non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+     echo "$0: ERROR: test_ioccc/mkiocccentry_slots.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
      FAILURE_SUMMARY="$FAILURE_SUMMARY
-     make -C test_ioccc -f Makefile test_mkiocccentry_slots non-zero exit code: $status"
+     test_ioccc/mkiocccentry_slots.sh non-zero exit code: $status"
      EXIT_CODE="28"
      echo | tee -a -- "$LOGFILE"
      echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
      echo | tee -a -- "$LOGFILE"
-     echo "FAILED: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+     echo "FAILED: test_ioccc/mkiocccentry_slots.sh" | tee -a -- "$LOGFILE"
 else
      echo | tee -a -- "$LOGFILE"
-     echo "PASSED: make -C test_ioccc -f Makefile test_mkiocccentry_slots" | tee -a -- "$LOGFILE"
+     echo "PASSED: test_ioccc/mkiocccentry_slots.sh" | tee -a -- "$LOGFILE"
 fi
 
 # report overall status

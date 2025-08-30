@@ -52,11 +52,11 @@ the `test_ioccc/slot/good/answers/' directory.
 Created a number of sub-directories under `test_ioccc/slot/good/topdir/`
 to help test use of sub-directories.
 
-Added `make test_mkiocccentry_slots` to `test_ioccc/Makefile` to build
+Added `test_ioccc/mkiocccentry_slots.sh` to `test_ioccc/Makefile` to build
 submission workdir's given submission topdir's using `mkiocccentry(1)`
 and submission answer files.
 
-Added `make test_mkiocccentry_slots` to `test_ioccc/ioccc_test.sh`.
+Added `test_ioccc/mkiocccentry_slots.sh` to `test_ioccc/ioccc_test.sh`.
 
 Changed `test_ioccc/ioccc_test.sh` IOCCC_TEST_VERSION from "2.0.1 2025-03-14"
 to "2.1.0 2025-08-28".
@@ -67,6 +67,8 @@ Sorted and improved `.gitignore`.
 
 Modified `test_ioccc/mkiocccentry_test.sh` to form bad submission directories
 for later use by the `test_ioccc/chkentry_test.sh` tool.
+
+Added `mkiocccentry_slots.sh(8)` man page.
 
 Changed `test_ioccc/mkiocccentry_test.sh` MKIOCCCENTRY_TEST_VERSION from "2.0.3 2025-08-28"
 to "2.1.0 2025-08-28".

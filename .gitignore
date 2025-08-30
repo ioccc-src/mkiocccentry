@@ -15,6 +15,7 @@ build.log
 /dyn_array.clone/
 /dyn_array/dyn_test
 /dyn_array/.github
+/.exit_code.*
 /iocccsize
 /jparse.clone/
 /jparse.clone.lcn2/

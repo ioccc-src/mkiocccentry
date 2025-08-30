@@ -1,0 +1,149 @@
+.\" section 8 man page for mkiocccentry_slots.sh
+.\"
+.\" This man page was first written by Landon Curt Noll for the IOCCC
+.\" in 2025.
+.\"
+.\" "Be careful what you measure, because you are likely to get it."
+.\"				    -- Richard Feynman to Landon Curt Noll
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH mkiocccentry_slots.sh 8 "29 August 2025" "mkiocccentry_slots.sh" "IOCCC tools"
+.SH NAME
+.B mkiocccentry_slots.sh
+\- test chkentry on good and bad submission directories
+.SH SYNOPSIS
+.B mkiocccentry_slots.sh
+.RB [\| \-h \|]
+.RB [\| \-V \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-g
+.IR good_tree \|]
+.RB [\| \-M
+.IR mkiocccentry \|]
+.RB [\| \-Z
+.IR repo_topdir \|]
+.SH DESCRIPTION
+.B mkiocccentry_slots.sh
+runs
+.BR mkiocccentry (1)
+against slot data found under
+.I good_tree.
+.PP
+This tool looks for
+.B UUID-SLOT_NUM
+information, where
+.B UUID
+is a version 4 UUID of the form:
+.sp
+.RS
+xxxxxxxx-xxxx-4xxx-Nxxx-xxxxxxxxxxxx
+.RE
+.sp
+where
+.I x
+is a hex character,
+.I 4
+is the UUID version, and
+.I N
+ne of 8, 9, a, or b.
+.PP
+A
+.I SLOT_NUM
+is an IOCCC slot number, currently a single decimal digit.
+.PP
+The following in an example of a
+.BR UUID-SLOT_NUM :
+.sp
+.RS
+12345678-1234-4321-abcd-1234567890ab-6
+.RE
+.sp
+.PP
+Each
+.B UUID-SLOT_NUM
+must have both an answers file:
+.BR good_tree/answers/UUID-SLOT_NUM ,
+and a code directory:
+.BR good_tree/topdir/UUID-SLOT_NUM .
+.PP
+When
+.BR mkiocccentry (1)
+successfully processes a slat, a submission tarball is formed:
+.BR good_tree/workdir/UUID-SLOT_NUM.txz ,
+and a submission tree directory:
+.BR good_tree/workdir/UUID-SLOT_NUM/ .
+.PP
+If
+.BR mkiocccentry (1)
+successfully processes all slots, then
+.B mkiocccentry_slots.sh
+will exit 0, otherwise it will exit non-zero.
+.SH OPTIONS
+.TP
+.B \-h
+Print help and exit.
+.TP
+.B \-V
+Print version and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.BI \-M\  mkiocccentry
+Set path to mkiocccentry to
+.IR mkiocccentry .
+By default, the path:
+.B ./mkiocccentry
+(relative to repo_topdir) is used.
+.TP
+.BI \-g\  good_tree
+Set path to the good slot tree.
+By default, the path:
+.B test_ioccc/slot/good
+(relative to repo_topdir) is used.
+.TP
+.BI \-Z\  repo_topdir
+Set the top level repo directory for the mkiocccentry toolkit.
+By default, the current directory or the parent if the current directory is used.
+.SH EXIT STATUS
+.TP
+0
+all OK
+.TQ
+1
+at least one test failed.
+.TQ
+2
+.B \-h
+and help string printed or
+.B \-V
+and version string printed
+.TQ
+3
+invalid command line
+.TQ
+4
+missing slot information
+.TQ
+>=10
+internal error
+.SH FILES
+Yes.  :-)
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+You can open an issue at:
+.sp
+.RS 4
+.ft B
+https://github.com/ioccc\-src/mkiocccentry/issues
+.ft R
+.RE
+.SH SEE ALSO
+.BR mkiocccentry (1),
+.BR txzchk (1),
+.BR chksubmit (1).
