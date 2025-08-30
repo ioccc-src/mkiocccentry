@@ -132,7 +132,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.6 2025-08-28"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.6 2025-08-30"	/* format: major.minor YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*

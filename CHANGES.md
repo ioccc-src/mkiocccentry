@@ -22,6 +22,9 @@ the `char *` of each tool, also check that it was found. The calls to
 already specified at the command line it still strdup()s it. But the two tools
 now check `found_foo` before freeing the strings.
 
+Updated `MKIOCCCENTRY_VERSION` to `"2.1.2 2025-08-30"`.
+Updated `TXZCHK_VERSION` to `"2.0.6 2025-08-30"`.
+
 
 ## Release 2.5.1 2025-08-28
 
