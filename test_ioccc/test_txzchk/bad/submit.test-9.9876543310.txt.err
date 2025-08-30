@@ -1,8 +1,0 @@
-Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543310.txt: found empty .info.json file
-Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543310.txt: found empty remarks.md
-Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543310.txt: found empty .auth.json file
-Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-ERROR[55]: parse_bsd_txz_line: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543310.txt: NULL pointer encountered trying to parse line

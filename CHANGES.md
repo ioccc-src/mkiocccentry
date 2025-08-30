@@ -13,9 +13,6 @@ Be more aggressive in errors with txzchk. Although it's still a warning for most
 issues with the tarball if a NULL pointer is encountered rather than skipping to
 the next line it is an error.
 
-Added test file for `txzchk_test.sh` that results in a NULL pointer to test the
-above (it should have already been there).
-
 Fix assumption about `find_utils()` in mkiocccentry and txzchk. Before freeing
 the `char *` of each tool, also check that it was found. The calls to
 `find_utils()` do (for the tools needed) do pass non-NULL and if the tool is
