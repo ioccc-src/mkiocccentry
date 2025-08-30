@@ -1,5 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.5.2 2025-08-30
+
+Fix bugs in txzchk and mkiocccentry.
+
+Although it mostly matters for `islower()` and `isupper()` it is safer to check
+`isascii()` before passing it on to one of the `is*()` functions. This is
+because of how some implementations do the functions. This probably does not
+matter much but it's now safer.
+
+Be more aggressive in errors with txzchk. Although it's still a warning for most
+issues with the tarball if a NULL pointer is encountered rather than skipping to
+the next line it is an error.
+
+Added test file for `txzchk_test.sh` that results in a NULL pointer to test the
+above (it should have already been there).
+
+Fix assumption about `find_utils()` in mkiocccentry and txzchk. Before freeing
+the `char *` of each tool, also check that it was found. The calls to
+`find_utils()` do (for the tools needed) do pass non-NULL and if the tool is
+already specified at the command line it still strdup()s it. But the two tools
+now check `found_foo` before freeing the strings.
+
 
 ## Release 2.5.1 2025-08-28
 

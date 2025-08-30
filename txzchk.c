@@ -319,11 +319,11 @@ main(int argc, char **argv)
     /*
      * we need to free the paths to the tools
      */
-    if (tar != NULL && !read_from_text_file) {
+    if (tar != NULL && !read_from_text_file && found_tar) {
         free(tar);
         tar = NULL;
     }
-    if (fnamchk != NULL) {
+    if (fnamchk != NULL && found_fnamchk) {
         free(fnamchk);
         fnamchk = NULL;
     }
@@ -1199,7 +1199,7 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
  *	p		- pointer to current field in line
  *	linep		- the line we're parsing
  *	line_dup	- duplicated line
- *	dirname	- directory name retrieved from fnamchk or NULL if it failed
+ *	dirname	        - directory name retrieved from fnamchk or NULL if it failed
  *	tarball_path	- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
  *	isfile	        - true ==> normal file, check size and number of files
@@ -1213,7 +1213,8 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
- * This function does not return on error.
+ * This function does not return on error although the word error is used
+ * loosely here.
  */
 static void
 parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
@@ -1235,7 +1236,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     }
 
     /* verify that this is a UID, not a username */
-    for ( ; *p && isdigit(*p) && *p != '/'; ) {
+    for ( ; *p && isascii(*p) && isdigit(*p) && *p != '/'; ) {
 	++p;
     }
 
@@ -1245,16 +1246,15 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	p = strchr(p, '/');
     }
     if (p == NULL) {
-	warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
-	++tarball.total_feathers;
-	return;
+	err(29, __func__, "txzchk: encountered NULL pointer when parsing line %s", line_dup);
+        not_reached();
     }
     ++p;
 
     /*
      * now do the same for group id
      */
-    for ( ; *p && isdigit(*p); ) {
+    for ( ; *p && isascii(*p) && isdigit(*p); ) {
 	++p; /* satisfy frivolous warning (give loop a body instead of having the loop do the actual action) */
     }
 
@@ -1264,12 +1264,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     }
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+	err(30, __func__, "%s: NULL pointer encountered trying to parse line", tarball_path);
+	not_reached();
     }
 
     test = string_to_intmax(p, &length);
@@ -1302,12 +1298,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 3; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
-	    if (verbosity_level) {
-		msg("skipping to next line");
-	    }
-	    ++tarball.total_feathers;
-	    return;
+            err(31, __func__, "%s: NULL pointer trying to parse line", tarball_path);
+            not_reached();
 	}
     }
     /* p should now contain the filename. */
@@ -1426,7 +1418,7 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
  *	p		- pointer to current field in line
  *	linep		- the line we're parsing
  *	line_dup	- duplicated line
- *	dirname	- directory name retrieved from fnamchk or NULL if it failed
+ *	dirname	        - directory name retrieved from fnamchk or NULL if it failed
  *	tarball_path	- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
  *	isfile	        - true ==> normal file, check size and number of files
@@ -1440,7 +1432,8 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
- * This function does not return on error.
+ * This function does not return on error although the word error is used
+ * loosely here.
  */
 static void
 parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
@@ -1464,19 +1457,15 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+        err(34, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        not_reached();
     }
 
     /*
      * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
      * the UID, not the user name).
      */
-    for (; p && *p && isdigit(*p); ) {
+    for (; p && *p && isascii(*p) && isdigit(*p); ) {
 	++p; /* satisfy frivolous warning (give loop a body instead of having the loop do the actual action) */
     }
 
@@ -1490,19 +1479,15 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      */
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+        err(55, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        not_reached();
     }
 
     /*
      * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
      * the GID of the file, not group name).
      */
-    for (; p && *p && isdigit(*p); ) {
+    for (; p && *p && isascii(*p) && isdigit(*p); ) {
 	++p; /* satisfy frivolous warnings */
     }
 
@@ -1513,12 +1498,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+	err(55, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        not_reached();
     }
 
     test = string_to_intmax(p, &length);
@@ -1551,18 +1532,14 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 4; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    warn("txzchk", "%s: NULL pointer trying to parse line", tarball_path);
-	    if (verbosity_level) {
-		msg("skipping to next line");
-	    }
-	    ++tarball.total_feathers;
-	    return;
+	    err(55, __func__, "txzchk: %s: NULL pointer trying to parse line", tarball_path);
+            not_reached();
 	}
     }
     /* p should now contain the filename. */
     file = alloc_txz_file(p, dirname, perms, isdir, isfile, isexec, length);
     if (file == NULL) {
-	err(34, __func__, "alloc_txz_file() returned NULL");
+	err(34, __func__, "txzchk: alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1644,12 +1621,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, tok_sep, &saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+	err(55, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        not_reached();
     }
 
     /*
@@ -1658,7 +1631,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     errno = 0;      /* pre-clear errno for errp() */
     perms = strdup(p);
     if (perms == NULL) {
-        errp(36, __func__, "failed to strdup permissions string");
+        errp(36, __func__, "txzchk: failed to strdup permissions string");
         not_reached();
     }
 
@@ -1683,12 +1656,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
      */
     p = strtok_r(NULL, tok_sep, &saveptr);
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line", tarball_path);
-	if (verbosity_level) {
-	    msg("skipping to next line");
-	}
-	++tarball.total_feathers;
-	return;
+	err(55, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        not_reached();
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
@@ -2209,7 +2178,7 @@ add_txz_line(char const *str, uintmax_t line_num)
 
 
 /*
- * parse_all_txz_lines - parse all tar txz lines
+ * parse_all_txz_lines - parse all tar lines
  *
  * Parse the txz_lines list and report any feathers stuck in the tarball. After
  * all the lines have been parsed additional tests will be performed.
