@@ -1134,31 +1134,31 @@ main(int argc, char *argv[])
     /*
      * we need to free the paths to the tools too
      */
-    if (tar != NULL) {
+    if (tar != NULL && found_tar) {
         free(tar);
         tar = NULL;
     }
-    if (ls != NULL) {
+    if (ls != NULL && found_ls) {
         free(ls);
         ls = NULL;
     }
-    if (txzchk != NULL) {
+    if (txzchk != NULL && found_txzchk) {
         free(txzchk);
         txzchk = NULL;
     }
-    if (fnamchk != NULL) {
+    if (fnamchk != NULL && found_fnamchk) {
         free(fnamchk);
         fnamchk = NULL;
     }
-    if (chksubmit != NULL) {
+    if (chksubmit != NULL && found_chksubmit) {
         free(chksubmit);
         chksubmit = NULL;
     }
-    if (make != NULL) {
+    if (make != NULL && found_make) {
         free(make);
         make = NULL;
     }
-    if (rm != NULL) {
+    if (rm != NULL && found_rm) {
         free(rm);
         rm = NULL;
     }
