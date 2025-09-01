@@ -54,7 +54,7 @@ export EXIT_CODE=0
 export INVALID_DIRECTORY_FOUND=""
 export WORKDIR="./test_ioccc/workdir"
 
-export CHKSUBMIT_TEST_VERSION="2.1.0 2025-08-28"
+export CHKSUBMIT_TEST_VERSION="2.1.1 2025-08-31"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-q] [-c chksubmit] [-C chkentry] [-d workdir]
 
@@ -415,7 +415,7 @@ run_bad_test()
         echo "$0: test $workdir should PASS: chksubmit correctly passed with exit code: $status" 1>&2 >> "${LOGFILE}"
         if [[ $V_FLAG -ge 1 ]]; then
             if [[ $V_FLAG -ge 3 ]]; then
-                echo "$0: debug[3]: debug[3]: test $workdir should PASS: chksubmit correctly passed with exit code: $status" 1>&2
+                echo "$0: debug[3]: debug[3]: test $workdir should FAIL: chksubmit correctly passed with exit code: $status" 1>&2
             fi
         fi
     fi

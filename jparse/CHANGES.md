@@ -1,5 +1,16 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.2.48 2025-08-30
+
+Changed `util.h` to include '<limits.h>` for the `CHAR_BIT` define,
+add code to define `CHAR_BIT` as 8 if undefined, and changed
+the `BITS_IN_BYTE` macro to use `CHAR_BIT` instead.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.14 2025-08-30"`.
+
+Increased the verbosity of debug messages for `vercmp()` in `verge.c`.
+
+
 ## Release 2.2.47 2025-07-23
 
 Update issues URL in `jparse_bug_report.sh`.

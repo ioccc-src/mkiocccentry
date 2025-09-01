@@ -22,6 +22,23 @@ now check `found_foo` before freeing the strings.
 Updated `MKIOCCCENTRY_VERSION` to `"2.1.2 2025-08-30"`.
 Updated `TXZCHK_VERSION` to `"2.0.6 2025-08-30"`.
 
+Fixed debug typo in `test_ioccc/chksubmit_test.sh` about a test that should fail.
+
+Changed `test_ioccc/chksubmit_test.sh` IOCCC_TEST_VERSION from "2.1.0 2025-08-28"
+to "2.1.1 2025-08-31".
+
+Synced with the [dbg repo](https://github.com/lcn2/dbg), including new git tags.
+
+Synced with the [dyn_array repo](https://github.com/lcn2/dyn_array), including new git tags.
+
+Fixed dependencies in `jparse/test_jparse/Makefile`.
+
+Synced `jparse/version.h` with the [jparse repo](https://github.com/xexyl/jparse) `version.h`.
+
+Synced `jparse/CHANGES.md` with the [jparse repo](https://github.com/xexyl/jparse) `CHANGES.md`.
+
+Updated jparse/CHANGES.md` as needed.
+
 
 ## Release 2.5.1 2025-08-28
 
