@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk_test 8 "05 February 2023" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "01 September 2025" "txzchk_test" "IOCCC tools"
 .SH NAME
 .B txzchk_test.sh
 \- test suite for
@@ -126,6 +126,16 @@ As already noted, the
 subdirectory also has error files to compare against the output of
 .BR txzchk (1),
 in order to make sure that the failure is the correct failure.
+.sp
+.B IMPORTANT
+The tests performed by
+.BR txzchk (1)
+are performed by an exact string match.
+This means that using:
+.BI \-d\ test_ioccc/fnamchk
+instead of using:
+.BI \-d\ ./test_ioccc/fnamchk
+is enough of a string change to cause the tests to fail.
 .TP
 .BI \-Z\  topdir
 Declare the top level directory of this repository.
@@ -228,6 +238,21 @@ is supposed to check all issues this would have to be done differently from the 
 Additionally if this was done it would make it necessary to have only one issue in each test file which is not a good idea as it's easier to miss feathered tarballs by the simple fact that one has to be sure to have enough test files (there are a lot of checks that
 .BR txzchk (1)
 performs!).
+.PP
+Simply changing:
+.sp
+.RS
+.BI \-d\ ./test_ioccc/fnamchk
+.RE
+to:
+.sp
+.RS
+.BI \-d\ test_ioccc/fnamchk
+.RE
+.sp
+even though they both the refer to the same
+.B txzchk_tree
+path, is enough to cause the strings to not match and the test to fail.
 .PP
 When the minimum timestamp changes this script will fail unless the filenames of the good files are changed.
 This probably should be fixed or dealt with in some manner.
