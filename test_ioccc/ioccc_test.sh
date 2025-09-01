@@ -39,7 +39,7 @@
 
 # setup
 #
-export IOCCC_TEST_VERSION="2.1.1 2025-08-29"
+export IOCCC_TEST_VERSION="2.1.2 2025-09-01"
 
 
 # IOCCC requires use of C locale
@@ -575,7 +575,7 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/txzchk_test.sh -t $TAR -T ./txzchk -F ./test_ioccc/fnamchk -d test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
+echo "test_ioccc/txzchk_test.sh -t $TAR -T ./txzchk -F ./test_ioccc/fnamchk -d ./test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
 test_ioccc/txzchk_test.sh -t "$TAR" -T ./txzchk -F ./test_ioccc/fnamchk -d ./test_ioccc/test_txzchk -Z "$TOPDIR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
