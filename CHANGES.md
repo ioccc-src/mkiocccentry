@@ -1,5 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.6.0 2025-09-01
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to "2.6.0 2025-09-01"
+in anticipation of work that may be needed for **IOCCC29**,
+and to tag this version as the starting code base for
+**IOCCC29** related development.
+
+Updated `MIN_MKIOCCCENTRY_VERSION` to `MKIOCCCENTRY_VERSION`
+which is currently "2.1.2 2025-08-30".
+
+Improved `txzchk_test(8)` with warnings about changing `-d txzchk_tree`.
+
+Fixed echo of `test_ioccc/ioccc_test.sh` command line within
+the `test_ioccc/ioccc_test.sh` script.
+
+
 ## Release 2.5.2 2025-08-30
 
 Fix bugs in txzchk and mkiocccentry.
