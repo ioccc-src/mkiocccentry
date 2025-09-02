@@ -89,8 +89,8 @@ vercmp(char *ver1, char *ver2)
         err(56, __func__, "second version string is NULL or empty");
         not_reached();
     }
-    dbg(DBG_MED, "first version: <%s>", ver1);
-    dbg(DBG_MED, "second version: <%s>", ver2);
+    dbg(DBG_HIGH, "first version: <%s>", ver1);
+    dbg(DBG_HIGH, "second version: <%s>", ver2);
 
     /*
      * convert first version string
@@ -102,7 +102,7 @@ vercmp(char *ver1, char *ver2)
             free(vlevel1);
             vlevel1 = NULL;
         }
-	dbg(DBG_HIGH, "first version string is invalid");
+	warn(__func__, "first version string is invalid");
         return 4;
     }
 
@@ -121,7 +121,7 @@ vercmp(char *ver1, char *ver2)
             vlevel2 = NULL;
         }
 
-        dbg(DBG_HIGH, "second version string is invalid");
+        warn(__func__, "second version string is invalid");
         return 4;
     }
 
@@ -136,9 +136,9 @@ vercmp(char *ver1, char *ver2)
 	if (vlevel1[i] > vlevel2[i]) {
 
 	    /* ver1 > ver2 */
-	    dbg(DBG_HIGH, "version 1 level %d: %jd > version 2 level %d: %jd",
+	    dbg(DBG_VHIGH, "version 1 level %d: %jd > version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
-	    dbg(DBG_MED, "%s > %s", ver1, ver2);
+	    dbg(DBG_HIGH, "%s > %s", ver1, ver2);
 	    /* free memory */
 	    if (vlevel1 != NULL) {
 		free(vlevel1);
@@ -153,9 +153,9 @@ vercmp(char *ver1, char *ver2)
 	} else if (vlevel1[i] < vlevel2[i]) {
 
 	    /* ver1 < ver2 */
-	    dbg(DBG_HIGH, "version 1 level %d: %jd < version 2 level %d: %jd",
+	    dbg(DBG_VHIGH, "version 1 level %d: %jd < version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
-	    dbg(DBG_MED, "%s < %s", ver1, ver2);
+	    dbg(DBG_HIGH, "%s < %s", ver1, ver2);
 	    /* free memory */
 	    if (vlevel1 != NULL) {
 		free(vlevel1);
@@ -170,11 +170,11 @@ vercmp(char *ver1, char *ver2)
 	} else {
 
 	    /* versions match down to this level */
-	    dbg(DBG_HIGH, "version 1 level %d: %jd == version 2 level %d: %jd",
+	    dbg(DBG_VHIGH, "version 1 level %d: %jd == version 2 level %d: %jd",
 			  i, vlevel1[i], i, vlevel2[i]);
 	}
     }
-    dbg(DBG_HIGH, "versions match down to level: %d",
+    dbg(DBG_VHIGH, "versions match down to level: %d",
 		 (ver1_levels > ver2_levels) ? ver2_levels : ver1_levels);
 
     /*
@@ -196,16 +196,16 @@ vercmp(char *ver1, char *ver2)
      */
     if (ver1_levels < ver2_levels) {
 
-	dbg(DBG_HIGH, "version 1 level count: %d < version level count: %d",
+	dbg(DBG_VHIGH, "version 1 level count: %d < version level count: %d",
 		     ver1_levels, ver2_levels);
-	dbg(DBG_MED, "%s < %s", ver1, ver2);
+	dbg(DBG_HIGH, "%s < %s", ver1, ver2);
 	/* report ver1 < ver2 */
         return 1;
     } else if (ver1_levels > ver2_levels) {
 
-	dbg(DBG_HIGH, "version 1 level count: %d > version level count: %d",
+	dbg(DBG_VHIGH, "version 1 level count: %d > version level count: %d",
 		     ver1_levels, ver2_levels);
-	dbg(DBG_MED, "%s > %s", ver1, ver2);
+	dbg(DBG_HIGH, "%s > %s", ver1, ver2);
 	/* report ver1 > ver2 */
         return 0;
     }
@@ -213,9 +213,9 @@ vercmp(char *ver1, char *ver2)
     /*
      * versions match
      */
-    dbg(DBG_HIGH, "version 1 level count: %d == version level count: %d",
+    dbg(DBG_VHIGH, "version 1 level count: %d == version level count: %d",
 		 ver1_levels, ver2_levels);
-    dbg(DBG_MED, "%s == %s", ver1, ver2);
+    dbg(DBG_HIGH, "%s == %s", ver1, ver2);
     /* report ver1 == ver2 */
     return 0;
 }
@@ -255,7 +255,7 @@ allocate_vers(char *str, intmax_t **pvers)
     }
     len = strlen(str);
     if (len <= 0) {
-	dbg(DBG_MED, "version string is empty");
+	warn(__func__, "version string is empty");
 	return 0;
     }
 
@@ -281,7 +281,7 @@ allocate_vers(char *str, intmax_t **pvers)
     }
     if (i == len) {
 	/* report invalid version string */
-	dbg(DBG_MED, "version string contained no digits: <%s>", wstr);
+	warn(__func__, "version string contained no digits: <%s>", wstr);
 	/* free strdup()d string if != NULL */
 	if (wstr_start != NULL) {
 	    free(wstr_start);
@@ -321,14 +321,14 @@ allocate_vers(char *str, intmax_t **pvers)
      * Inspect the remaining string for digits and '.'s only.
      * Also reject string if we find more than 2 '.'s in a row.
      */
-    dbg(DBG_HIGH, "trimmed version string: <%s>", wstr);
+    dbg(DBG_VHIGH, "trimmed version string: <%s>", wstr);
     for (i=0; i < len; ++i) {
 	if (isascii(wstr[i]) && isdigit(wstr[i])) {
 	    dot = false;
 	} else if (wstr[i] == '.') {
 	    if (dot == true) {
 		/* report invalid version string */
-		dbg(DBG_MED, "trimmed version string contains 2 dots in a row: <%s>", wstr);
+		dbg(DBG_HIGH, "trimmed version string contains 2 dots in a row: <%s>", wstr);
 		/* free strdup()d string if != NULL */
 		if (wstr_start != NULL) {
 		    free(wstr_start);
@@ -340,7 +340,7 @@ allocate_vers(char *str, intmax_t **pvers)
 	    ++dot_count;
 	} else {
 	    /* report invalid version string */
-	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
+	    dbg(DBG_HIGH, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
 			 (uintmax_t)i, wstr[i], wstr);
 	    /* free strdup()d string if != NULL */
 	    if (wstr_start != NULL) {
@@ -350,8 +350,8 @@ allocate_vers(char *str, intmax_t **pvers)
 	    return 0;
 	}
     }
-    dbg(DBG_MED, "trimmed version string is valid format: <%s>", wstr);
-    dbg(DBG_HIGH, "trimmed version string has %ju '.'s in it: <%s>", (uintmax_t)dot_count, wstr);
+    dbg(DBG_HIGH, "trimmed version string is valid format: <%s>", wstr);
+    dbg(DBG_VHIGH, "trimmed version string has %ju '.'s in it: <%s>", (uintmax_t)dot_count, wstr);
 
     /*
      * we now know the version string is valid format: ([0-9]+\.)*[0-9]+
@@ -372,9 +372,9 @@ allocate_vers(char *str, intmax_t **pvers)
          i <= dot_count && word != NULL;
 	 ++i, word=strtok_r(NULL, ".", &brkt)) {
 	/* word is the next version string - convert to integer */
-	dbg(DBG_VVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
+	dbg(DBG_VVVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
 	(void) string_to_intmax(word, &(*pvers)[i]);
-	dbg(DBG_VHIGH, "version level %ju: %jd", (uintmax_t)i, (*pvers)[i]);
+	dbg(DBG_VVHIGH, "version level %ju: %jd", (uintmax_t)i, (*pvers)[i]);
     }
 
     /* we no longer need the duplicated string */

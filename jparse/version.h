@@ -70,7 +70,7 @@
 /*
  * official utility functions (util.c) version
  */
-#define JPARSE_UTILS_VERSION "2.0.14 2025-08-30"         /* format: major.minor YYYY-MM-DD */
+#define JPARSE_UTILS_VERSION "2.0.15 2025-09-01"         /* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_JPARSE_VERSION_H */

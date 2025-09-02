@@ -452,7 +452,7 @@ dir_name(char const *path, int level)
                 not_reached();
             }
 
-            dbg(DBG_MED, "#4: dir_name(\"%s\", %d): %s", path, level, ret);
+            dbg(DBG_VHIGH, "#4: dir_name(\"%s\", %d): %s", path, level, ret);
             return ret;
         } else {
             /*
@@ -462,7 +462,7 @@ dir_name(char const *path, int level)
                 free(ret);
                 ret = NULL;
             }
-            dbg(DBG_MED, "#5: dir_name(\"%s\", %d): %s", path, level, copy);
+            dbg(DBG_VHIGH, "#5: dir_name(\"%s\", %d): %s", path, level, copy);
             return copy;
         }
     }
@@ -583,12 +583,12 @@ count_comps(char const *str, char comp, bool remove_all)
                 booltostr(remove_all));
 	return 0;
     }
-    dbg(DBG_HIGH, "#2: string before removing successive '%c's: %s", comp, copy);
 
     /*
      * remove any multiple trailing delimiter chars except the last one
      */
     if (remove_all) {
+	dbg(DBG_VHIGH, "#2: string before removing any multiple trailing delimiter chars '%c's: %s", comp, copy);
         for (i = len - 1; i > 0; --i) {
             if (copy[i] == comp) {
                 if (i > 0 && copy[i-1] != comp) {
@@ -2704,13 +2704,13 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
         not_reached();
     }
 
-    dbg(DBG_MED, "FTS_LOGICAL: %s", booltostr(fts->logical));
-    dbg(DBG_MED, "basename search: %s", booltostr(fts->base));
-    dbg(DBG_MED, "FTS_SEEDOT: %s", booltostr(fts->seedot));
-    dbg(DBG_MED, "case-sensitive: %s", booltostr(fts->match_case));
-    dbg(DBG_MED, "depth: %d", fts->depth);
-    dbg(DBG_MED, "count: %d", fts->count);
-    dbg(DBG_MED, "absolute path: %s", booltostr(abspath));
+    dbg(DBG_VHIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
+    dbg(DBG_VHIGH, "basename search: %s", booltostr(fts->base));
+    dbg(DBG_VHIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
+    dbg(DBG_VHIGH, "case-sensitive: %s", booltostr(fts->match_case));
+    dbg(DBG_VHIGH, "depth: %d", fts->depth);
+    dbg(DBG_VHIGH, "count: %d", fts->count);
+    dbg(DBG_VHIGH, "absolute path: %s", booltostr(abspath));
 
 
     /*
@@ -2742,9 +2742,9 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
             if (*path == '\0') {
                 if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
                     if (fts->count > 0) {
-                        dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                        dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                     } else {
-                        dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                        dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                     }
                     /*
                      * found a match: save found path
@@ -2789,9 +2789,9 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
                 (!fts->match_case && !strcasecmp(ent->fts_name, path)))) {
                     if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
                         if (fts->count > 0) {
-                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                            dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                         } else {
-                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                            dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                         }
                         /*
                          * found a match, save path
@@ -2836,9 +2836,9 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
                          */
 
                         if (fts->count > 0) {
-                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                            dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                         } else {
-                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                            dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                         }
 
                         /*
@@ -3271,13 +3271,13 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
     }
 
 
-    dbg(DBG_MED, "FTS_LOGICAL: %s", booltostr(fts->logical));
-    dbg(DBG_MED, "basename search: %s", booltostr(fts->base));
-    dbg(DBG_MED, "FTS_SEEDOT: %s", booltostr(fts->seedot));
-    dbg(DBG_MED, "case-sensitive: %s", booltostr(fts->match_case));
-    dbg(DBG_MED, "depth: %d", fts->depth);
-    dbg(DBG_MED, "count: %d", fts->count);
-    dbg(DBG_MED, "absolute path: %s", booltostr(abspath));
+    dbg(DBG_VHIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
+    dbg(DBG_VHIGH, "basename search: %s", booltostr(fts->base));
+    dbg(DBG_VHIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
+    dbg(DBG_VHIGH, "case-sensitive: %s", booltostr(fts->match_case));
+    dbg(DBG_VHIGH, "depth: %d", fts->depth);
+    dbg(DBG_VHIGH, "count: %d", fts->count);
+    dbg(DBG_VHIGH, "absolute path: %s", booltostr(abspath));
 
     /*
      * first open the stream and get the first entry
@@ -3317,9 +3317,9 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                 if (*path == '\0') {
                     if (fts->count <= 0 || (fts->count > 0 && ++i == fts->count)) {
                         if (fts->count > 0) {
-                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                            dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                         } else {
-                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                            dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                         }
                         /*
                          * found a match
@@ -3374,9 +3374,9 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                          * found a match
                          */
                         if (fts->count > 0) {
-                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                            dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                         } else {
-                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                            dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                         }
 
                         name = NULL;
@@ -3429,9 +3429,9 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
                          */
 
                         if (fts->count > 0) {
-                            dbg(DBG_MED, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
+                            dbg(DBG_HIGH, "found path with count %d at depth %d: %s", fts->count, fts->depth, p);
                         } else {
-                            dbg(DBG_MED, "found path %s at depth %d", p, fts->depth);
+                            dbg(DBG_HIGH, "found path %s at depth %d", p, fts->depth);
                         }
 
                         name = NULL;
@@ -3990,7 +3990,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 		    errp(139, name, "fflush(stdin): error code: %d", ret);
 		    not_reached();
 		} else {
-		    dbg(DBG_MED, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
+		    dbg(DBG_HIGH, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
 		    return;
 		}
 	    }
@@ -4015,7 +4015,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 		errp(140, name, "fflush(stdout): error code: %d", ret);
 		not_reached();
 	    } else {
-		dbg(DBG_MED, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
+		dbg(DBG_HIGH, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
 		return;
 	    }
 	}
@@ -4039,7 +4039,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 		errp(141, name, "fflush(stderr): error code: %d", ret);
 		not_reached();
 	    } else {
-		dbg(DBG_MED, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));
+		dbg(DBG_HIGH, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));
 		return;
 	    }
 	}
@@ -4550,7 +4550,7 @@ resolve_path(char const *cmd)
             /*
              * str should be the command's path
              */
-            dbg(DBG_MED, "found executable file at: %s", str);
+            dbg(DBG_HIGH, "found executable file at: %s", str);
             /*
              * free dup
              */
@@ -4638,7 +4638,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
             err(150, __func__, "function name is not caller name because we were called with NULL name");
             not_reached();
         } else {
-            dbg(DBG_MED, "called with NULL name, returning: %d < 0", EXIT_NULL_ARGS);
+            warn(__func__, "called with NULL name, returning: %d < 0", EXIT_NULL_ARGS);
             return EXIT_NULL_ARGS;
         }
     }
@@ -4648,7 +4648,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
             err(151, name, "called with NULL format");
             not_reached();
         } else {
-            dbg(DBG_MED, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
+            warn(__func__, "called with NULL format, returning: %d < 0", EXIT_NULL_ARGS);
             return EXIT_NULL_ARGS;
         }
     }
@@ -4670,7 +4670,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
             errp(152, name, "calloc failed in vcmdprintf()");
             not_reached();
         } else {
-            dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
+            warn(__func__, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
                          name, strerror(errno), EXIT_CALLOC_FAILED);
             va_end(ap);         /* stdarg variable argument list cleanup */
             errno = saved_errno;
@@ -4734,7 +4734,7 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
             not_reached();
         } else {
             saved_errno = errno;
-            dbg(DBG_MED, "called from %s: execution of the shell failed for system(\"%s\")", name, cmd);
+            warn(__func__, "called from %s: execution of the shell failed for system(\"%s\")", name, cmd);
             va_end(ap);         /* stdarg variable argument list cleanup */
             /* free allocated command storage */
             if (cmd != NULL) {
@@ -4806,7 +4806,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	    err(155, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called with NULL name, returning NULL");
+	    warn(__func__, "called with NULL name, returning NULL");
 	    return NULL;
 	}
     }
@@ -4816,7 +4816,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	    err(156, name, "called with NULL format");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called with NULL format, returning NULL");
+	    warn(__func__, "called with NULL format, returning NULL");
 	    return NULL;
 	}
     }
@@ -4837,7 +4837,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 	    errp(157, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
+	    warn(__func__, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
 			 name, strerror(errno), EXIT_CALLOC_FAILED);
 	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
@@ -4875,7 +4875,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
             not_reached();
         } else {
             saved_errno = errno;
-            dbg(DBG_MED, "called from %s: error calling popen(\"%s\", \"%s\"): %s", name, cmd, write_mode ? "w" : "r",
+            warn(__func__, "called from %s: error calling popen(\"%s\", \"%s\"): %s", name, cmd, write_mode ? "w" : "r",
                 strerror(errno));
             va_end(ap);        /* stdarg variable argument list cleanup */
             if (cmd != NULL) {
@@ -6074,7 +6074,7 @@ touch(char const *path, mode_t mode)
         not_reached();
     }
 
-    dbg(DBG_MED, "created file %s with mode %04o", path, mode);
+    dbg(DBG_HIGH, "created file %s with mode %04o", path, mode);
 
     /*
      * now close the file we created
@@ -6289,7 +6289,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                 }
             }
         } else {
-            dbg(DBG_MED, "made directory: %s", dup);
+            dbg(DBG_HIGH, "made directory: %s", dup);
             /*
              * now set modes
              */
@@ -6327,7 +6327,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
                 }
             }
         } else {
-            dbg(DBG_MED, "made directory: %s", p);
+            dbg(DBG_HIGH, "made directory: %s", p);
             /*
              * now set modes
              */

@@ -6,9 +6,14 @@ Changed `util.h` to include '<limits.h>` for the `CHAR_BIT` define,
 add code to define `CHAR_BIT` as 8 if undefined, and changed
 the `BITS_IN_BYTE` macro to use `CHAR_BIT` instead.
 
-Updated `JPARSE_UTILS_VERSION` to `"2.0.14 2025-08-30"`.
+Increased the debug level of most debug messages for functions in `jparse/verge.c`.
+In some cases a debug message was turned into a warning when an non-fatal
+error condition was detected.
 
-Increased the verbosity of debug messages for `vercmp()` in `verge.c`.
+Increased the debug level of non-UTIL_TEST code debug messages for
+functions in `jparse/util.c`.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.0.15 2025-09-01"`.
 
 
 ## Release 2.2.47 2025-07-23
