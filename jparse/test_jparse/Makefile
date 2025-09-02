@@ -655,6 +655,7 @@ clean:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	${Q} ${RM} ${RM_V} -f util_test.o
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -665,7 +666,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f jparse_test.log
+	${Q} ${RM} ${RM_V} -f jparse_test.log util_test.c
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${Q} ${RM} ${RM_V} -rf a b
 	${S} echo
@@ -745,23 +746,18 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
-    ../json_sem.h ../json_utf8.h ../json_util.h ../util.h ../version.h \
-    jnum_chk.c jnum_chk.h
-jnum_gen.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
-    ../json_sem.h ../json_utf8.h ../json_util.h ../util.h ../version.h \
-    jnum_gen.c jnum_gen.h
-jnum_header.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
-    ../json_sem.h ../json_utf8.h ../json_util.h ../util.h ../version.h \
-    jnum_chk.h jnum_header.c
-jnum_test.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
-    ../json_sem.h ../json_utf8.h ../json_util.h ../util.h ../version.h \
-    jnum_chk.h jnum_test.c
-pr_jparse_test.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
-    ../../dyn_array/dyn_array.h ../jparse.h ../jparse.tab.h ../json_parse.h \
-    ../json_sem.h ../json_utf8.h ../json_util.h ../util.h ../version.h \
-    pr_jparse_test.c pr_jparse_test.h
+jnum_chk.o: ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.c \
+    jnum_chk.h
+jnum_gen.o: ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_gen.c \
+    jnum_gen.h
+jnum_header.o: ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.h \
+    jnum_header.c
+jnum_test.o: ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.h \
+    jnum_test.c
+pr_jparse_test.o: ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h pr_jparse_test.c \
+    pr_jparse_test.h
