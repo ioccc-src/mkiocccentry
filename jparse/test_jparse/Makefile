@@ -300,7 +300,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jnum_chk jnum_gen pr_jparse_test util_test
+PROG_TARGETS= jnum_chk jnum_gen pr_jparse_test
 
 # what to make by all but NOT to removed by clobber
 #
@@ -423,16 +423,13 @@ rebuild_jparse_err_files:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-test: util_test
+test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${Q} if [[ ! -x ./run_jparse_tests.sh ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./run_jparse_tests.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
-	elif [[ ! -x ./util_test ]]; then \
-	    echo "${OUR_NAME}: ERROR: executable not found: ./util_test" 1>&2; \
-	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	elif [[ ! -x ./jstr_test.sh ]]; then \
 	    echo "${OUR_NAME}: ERROR: executable not found: ./jstr_test.sh" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
@@ -454,16 +451,6 @@ test: util_test
 	fi
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
-
-util_test.c: ../util.c
-	${Q} ${RM} ${RM_V} -f $@
-	${CP} -v -f $^ $@
-
-util_test.o: util_test.c
-	${CC} ${CFLAGS} -DUTIL_TEST util_test.c -c
-
-util_test: util_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldbg -ldyn_array -lm
 
 # sequence exit codes
 #
@@ -655,7 +642,6 @@ clean:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
-	${Q} ${RM} ${RM_V} -f util_test.o
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -666,7 +652,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f jparse_test.log util_test.c
+	${Q} ${RM} ${RM_V} -f jparse_test.log
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${Q} ${RM} ${RM_V} -rf a b
 	${S} echo
@@ -694,7 +680,6 @@ uninstall:
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jnum_chk
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/jnum_gen
 	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/pr_jparse_test
-	${Q} ${RM} ${RM_V} -f ${DEST_DIR}/util_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

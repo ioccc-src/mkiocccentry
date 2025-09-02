@@ -49,6 +49,11 @@
 #include "soup.h"
 
 /*
+ * file_util - common utility functions for file operations
+ */
+#include "file_util.h"
+
+/*
  * jparse - the parser
  */
 #include "../jparse/jparse.h"

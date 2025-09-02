@@ -100,6 +100,8 @@ static bool quiet = false;			/* true ==> quiet mode */
 /*
  * forward declarations
  */
+static bool is_file(char const *path);
+static bool is_read(char const *path);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
@@ -393,6 +395,109 @@ main(int argc, char *argv[])
 }
 
 
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/*
+ * is_file - if a path is a file
+ *
+ * This function tests if a path exists and is a regular file.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a regular file,
+ *      false ==> path does not exist OR is not a regular file
+ */
+static bool
+is_file(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(20, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a regular file
+     */
+    if (!S_ISREG(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a regular file", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a regular file", path);
+    return true;
+}
+
+
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/*
+ * is_read - if a path is readable
+ *
+ * This function tests if a path exists and we have permissions to read it.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and we have read access,
+ *      false ==> path does not exist OR is not read OR
+ *                we don't have permission to read it
+ */
+static bool
+is_read(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(21, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if we are allowed to execute it
+     */
+    ret = access(path, R_OK);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s is not readable", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is readable", path);
+    return true;
+}
+
+
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
 /*
  * fpr_number - print the contents of struct json_number on a stream
  *
@@ -409,11 +514,11 @@ fpr_number(FILE *stream, struct json_number *item)
      * firewall
      */
     if (stream == NULL) {
-	err(20, __func__, "stream is NULL");
+	err(22, __func__, "stream is NULL");
 	not_reached();
     }
     if (item == NULL) {
-	err(21, __func__, "item is NULL");
+	err(23, __func__, "item is NULL");
 	not_reached();
     }
 
@@ -663,7 +768,7 @@ fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const
      * firewall
      */
     if (stream == NULL || scomm == NULL || vcomm == NULL) {
-	err(22, __func__, "NULL arg(s)");
+	err(24, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -708,7 +813,7 @@ fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char con
      * firewall
      */
     if (stream == NULL || scomm == NULL || vcomm == NULL) {
-	err(23, __func__, "NULL arg(s)");
+	err(25, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -756,7 +861,7 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
      * firewall
      */
     if (stream == NULL || scomm == NULL || vcomm == NULL || sintval == NULL || suffix == NULL) {
-	err(24, __func__, "NULL arg(s)");
+	err(26, __func__, "NULL arg(s)");
 	not_reached();
     }
 

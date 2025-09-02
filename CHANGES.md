@@ -1,5 +1,55 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 2.6.1 2025-09-02
+
+Moved nearly all of the tree and file utility functions
+that were in `jparse/util.c` and `jparse/util.h` over to the
+files `soup/file_util.c` and `soup/file_util.h`.
+The code that was moved was not needed for the JSON
+parser nor the parser's related utilities.
+Moving that code will both simplify the JSON
+parser code base and make it easier to improve and
+enhance tree and file utility functions.
+Only a few small utility functions such as `exists()`,
+`is_file()`, and `is_read()` remain behind as private
+functions in `jparse.l` and `jparse/test_jparse/jnum_gen.c`.
+
+Moved the `jparse/test_jparse/util_test` code over to
+as `test_ioccc/test_file_util.c` and ran via the
+`test_ioccc/ioccc_test.sh` test script.  That test script
+is in its own file and thus no longer has to be copied
+from some other source file in order to be compiled.
+
+Restored some of the double blank lines separating functions
+in `jparse/util.c`.
+
+The `jparse/test_jparse/run_jparse_tests.sh` no longer runs `util_test`.
+Changed the `jparse/test_jparse/jnum_chk` test exit code to `27` to be in sequence.
+
+Made `.gitignore` and `jparse/.gitignore` much more robust, ignoring
+intermediate files that may be created while performing `make release`.
+
+Removed `UTIL_TEST` from the `jparse/` tree.
+
+Removed `UTIL_TEST_VERSION` from the `jparse/` tree..  That symbol
+has become, in `soup/version.h`, the symbol `FILE_UTIL_TEST_VERSION`
+and now has the value "2.0.0 2025-09-01".
+
+Updated, improved and sorted `.gitignore` and `jparse/.gitignore`.
+
+Updated `RUN_JPARSE_TESTS_VERSION` to "2.0.1 2025-09-01".
+
+Updated `JPARSE_UTILS_VERSION` to "2.1.0 2025-09-01".
+
+Updated `JPARSE_REPO_VERSION` to "2.3.0 2025-09-01".
+
+**NO** JSON parser code was changed as a result of
+these moves.  Nevertheless the movement of code
+serves as a "_checkpoint_" tag and thus warrants
+a 2nd-level version number change.
+
+
 ## Release 2.6.0 2025-09-01
 
 Updated `MKIOCCCENTRY_REPO_VERSION` to "2.6.0 2025-09-01"

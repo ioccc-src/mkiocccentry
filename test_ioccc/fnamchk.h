@@ -47,6 +47,11 @@
 #include "../dbg/dbg.h"
 
 /*
+ * file_util - common utility functions for file operations
+ */
+#include "../soup/file_util.h"
+
+/*
  * jparse/version - JSON parser API and tool version
  */
 #include "../jparse/version.h"

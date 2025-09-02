@@ -358,6 +358,14 @@ JSON_COMMA		","
  */
 
 /*
+ * static declarations
+ */
+static bool exists(char const *path);
+static bool is_file(char const *path);
+static bool is_read(char const *path);
+
+
+/*
  * low_byte_scan - detect certain low byte values
  *
  * Scan data for bytes in the class: [\x00-\x08\x0e-\x1f]
@@ -1053,6 +1061,151 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 }
 
 
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/*
+ * exists - if a path exists
+ *
+ * This function tests if a path exists.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists,
+ *      false ==> path does not exist
+ *
+ * This function does not return on NULL pointer.
+ */
+static bool
+exists(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(51, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    return true;
+}
+
+
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/*
+ * is_file - if a path is a file
+ *
+ * This function tests if a path exists and is a regular file.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and is a regular file,
+ *      false ==> path does not exist OR is not a regular file
+ */
+static bool
+is_file(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(52, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if path is a regular file
+     */
+    if (!S_ISREG(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a regular file", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is a regular file", path);
+    return true;
+}
+
+
+/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/*
+ * is_read - if a path is readable
+ *
+ * This function tests if a path exists and we have permissions to read it.
+ *
+ * given:
+ *      path    - the path to test
+ *
+ * returns:
+ *      true ==> path exists and we have read access,
+ *      false ==> path does not exist OR is not read OR
+ *                we don't have permission to read it
+ */
+static bool
+is_read(char const *path)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+	err(53, __func__, "called with NULL path");
+	not_reached();
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+
+    /*
+     * test if we are allowed to execute it
+     */
+    ret = access(path, R_OK);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s is not readable", path);
+	return false;
+    }
+    dbg(DBG_VHIGH, "path %s is readable", path);
+    return true;
+}
+
+
 /*
  * parse_json_file	    - parse a JSON file in a given filename
  *
@@ -1085,7 +1238,7 @@ parse_json_file(char const *filename, bool *is_valid)
      * firewall
      */
     if (is_valid == NULL) {
-	err(51, __func__, "is_valid == NULL");
+	err(54, __func__, "is_valid == NULL");
 	not_reached();
     } else {
 	/*
@@ -1096,7 +1249,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	*is_valid = true;
     }
     if (filename == NULL) {
-	werr(52, __func__, "passed NULL filename");
+	werr(55, __func__, "passed NULL filename");
 
 	/*
          * flag that we have invalid JSON
@@ -1114,7 +1267,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	/*
          * warn about bogus filename
          */
-	werr(53, __func__, "passed empty filename");
+	werr(56, __func__, "passed empty filename");
 
 	/*
          * flag that we have invalid JSON
@@ -1146,7 +1299,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	    /*
              * report missing file
              */
-	    werr(54, __func__, "passed filename that's not actually a file: %s", filename);
+	    werr(57, __func__, "passed filename that's not actually a file: %s", filename);
 
 	    /*
              * flag that we have invalid JSON
@@ -1164,7 +1317,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	    /*
              * report that file is not a normal file
              */
-	    werr(55, __func__, "passed filename not a normal file: %s", filename);
+	    werr(58, __func__, "passed filename not a normal file: %s", filename);
 
 	    /*
              * report invalid JSON
@@ -1181,7 +1334,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	    /*
              * report unreadable file
              */
-	    werr(56, __func__, "passed filename not a readable file: %s", filename);
+	    werr(59, __func__, "passed filename not a readable file: %s", filename);
 
 	    /*
              * flag that we have invalid JSON
@@ -1205,7 +1358,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	    /*
              * warn about file open error
              */
-	    werrp(57, __func__, "couldn't open file %s, ignoring", filename);
+	    werrp(60, __func__, "couldn't open file %s, ignoring", filename);
 
 	    /*
              * flag that we have invalid JSON

@@ -2481,7 +2481,7 @@ yyerror(JPARSE_LTYPE *yyltype, struct json **node, yyscan_t scanner, char const 
      * firewall
      */
     if (scanner == NULL) {
-	err(58, __func__, "NULL scanner");
+	err(61, __func__, "NULL scanner");
 	not_reached();
     }
     /*

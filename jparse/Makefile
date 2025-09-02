@@ -1136,11 +1136,9 @@ clobber: legacy_clobber clean
 	${Q} ${RM} ${RM_V} -f ${TARGETS}
 	${Q} ${RM} ${RM_V} -f jparse.output lex.yy.c jparse.c lex.jparse_.c
 	${Q} ${RM} ${RM_V} -f jsemcgen.out.*
-	${Q} ${RM} ${RM_V} -f util_test.c
 	${Q} ${RM} ${RM_V} -f ${BUILD_LOG} jparse_test.log
 	${Q} ${RM} ${RM_V} -f Makefile.orig
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${Q} ${RM} ${RM_V} -f util_test.copy.c util.copy.o foobar
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

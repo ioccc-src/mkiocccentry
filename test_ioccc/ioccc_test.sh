@@ -610,7 +610,6 @@ if [[ $status -ne 0 ]]; then
      echo | tee -a -- "$LOGFILE"
      echo "FAILED: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
 else
-     echo | tee -a -- "$LOGFILE"
      echo "PASSED: test_ioccc/chksubmit_test.sh" | tee -a -- "$LOGFILE"
 fi
 
@@ -634,6 +633,29 @@ if [[ $status -ne 0 ]]; then
 else
      echo | tee -a -- "$LOGFILE"
      echo "PASSED: test_ioccc/mkiocccentry_slots.sh" | tee -a -- "$LOGFILE"
+fi
+
+# test_file_util
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: test_ioccc/test_file_util" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "test_ioccc/test_file_util" | tee -a -- "$LOGFILE"
+test_ioccc/test_file_util | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: test_ioccc/test_file_util non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    test_ioccc/test_file_util non-zero exit code: $status"
+    EXIT_CODE="29"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: test_ioccc/test_file_util" | tee -a -- "$LOGFILE"
+else
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: test_ioccc/test_file_util" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
 fi
 
 # report overall status

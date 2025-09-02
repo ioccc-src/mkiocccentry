@@ -47,10 +47,11 @@
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
 #
-CHECKNR= checknr
 CC= cc
-CTAGS= ctags
+CHECKNR= checknr
 CMP= cmp
+CP= cp
+CTAGS= ctags
 GREP= grep
 INDEPEND= independ
 INSTALL= install
@@ -231,7 +232,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= utf8_test.c fnamchk.c
+C_SRC= utf8_test.c fnamchk.c test_file_util.c
 H_SRC= fnamchk.h
 
 # source files that do not conform to strict picky standards
@@ -268,7 +269,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= utf8_test.o fnamchk.o
+OTHER_OBJS= utf8_test.o fnamchk.o test_file_util.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -344,7 +345,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= utf8_test fnamchk
+PROG_TARGETS= utf8_test fnamchk test_file_util
 
 # what to make by all but NOT to removed by clobber
 #
@@ -447,6 +448,12 @@ test_JSON: ../soup/limit_ioccc.h ../soup/version.h
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 	${S} echo
+
+test_file_util.o: test_file_util.c
+	${CC} ${CFLAGS} test_file_util.c -c
+
+test_file_util: test_file_util.o ../soup/soup.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 test: test_JSON
 	${S} echo
@@ -686,6 +693,7 @@ clean: legacy_clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${RM} ${RM_V} -f ${OTHER_OBJS}
+	${E} ${RM} ${RM_V} -f test_file_util.o
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -699,6 +707,8 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -rf test_iocccsize topdir workdir test_JSON
 	${E} ${RM} ${RM_V} -rf slot/good/workdir slot/bad/workdir
+	${E} ${RM} ${RM_V} -f test_file_util.copy.c test_file_util.copy.o test_file_util
+	${E} ${RM} ${RM_V} -rf aa bb
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -790,8 +800,15 @@ depend: ${ALL_CSRC}
 fnamchk.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h ../soup/default_handle.h ../soup/limit_ioccc.h \
-    ../soup/location.h ../soup/version.h fnamchk.c fnamchk.h
+    ../jparse/version.h ../soup/../dbg/dbg.h \
+    ../soup/../dyn_array/dyn_array.h ../soup/default_handle.h \
+    ../soup/file_util.h ../soup/limit_ioccc.h ../soup/location.h \
+    ../soup/version.h fnamchk.c fnamchk.h
+test_file_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
+    ../soup/file_util.h ../soup/version.h test_file_util.c
 utf8_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
