@@ -1,20 +1,26 @@
 # Significant changes in the JSON parser repo
 
-## Release 2.2.48 2025-08-30
+## Release 2.2.49 2025-09-01
 
-Changed `util.h` to include '<limits.h>` for the `CHAR_BIT` define,
-add code to define `CHAR_BIT` as 8 if undefined, and changed
-the `BITS_IN_BYTE` macro to use `CHAR_BIT` instead.
+Increased the debug level of most debug messages for functions in
+`jparse/verge.c`.  In some cases a debug message was turned into a warning when
+an non-fatal error condition was detected.
 
-Increased the debug level of most debug messages for functions in `jparse/verge.c`.
-In some cases a debug message was turned into a warning when an non-fatal
-error condition was detected.
+Increased the debug level of non-`UTIL_TEST` code debug messages for functions
+in `jparse/util.c`.
 
-Increased the debug level of non-UTIL_TEST code debug messages for
-functions in `jparse/util.c`.
+The `test_jparse/Makefile` removes `test_jparse/util_test.o` for
+`make clean`, and removes `test_jparse/util_test.c` for `make clobber`.
 
 Updated `JPARSE_UTILS_VERSION` to `"2.0.15 2025-09-01"`.
+Updated `VERGE_VERSION` to `"2.0.4 2025-09-01"`.
 
+
+## Release 2.2.48 2025-08-30
+
+Changed `util.h` to include `<limits.h>` for the `CHAR_BIT` define,
+add code to define `CHAR_BIT` as 8 if undefined, and changed
+the `BITS_IN_BYTE` macro to use `CHAR_BIT` instead.
 
 ## Release 2.2.47 2025-07-23
 
