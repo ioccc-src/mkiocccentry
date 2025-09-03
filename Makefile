@@ -714,6 +714,7 @@ release: test_ioccc/prep.sh
 #
 slow_release: test_ioccc/prep.sh
 	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo "Starting directory is: $$(/bin/pwd)"
 	${Q} ${RM} -f ${TMP_BUILD_LOG}
 	${Q} ./test_ioccc/prep.sh -m${MAKE} -e -o; \
 	    EXIT_CODE="$$?"; \

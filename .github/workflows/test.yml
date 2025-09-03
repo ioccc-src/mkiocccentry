@@ -37,8 +37,12 @@ jobs:
       run: git clone https://github.com/lcn2/picky
     - name: install picky
       run: cd picky && sudo make install
-    - name: make
-      run: make
+    - name: make clobber all
+      run: make clobber all
+    - name: pwd
+      run: pwd
+    - name: ls -a
+      run: ls -a
     - name: make slow_release
       run: make slow_release
     - name: make clobber all test

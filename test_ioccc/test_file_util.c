@@ -49,6 +49,8 @@
 #include <getopt.h>
 #include <locale.h>
 #include <fnmatch.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -294,14 +296,20 @@ main(int argc, char **argv)
     /*
      * now try parsing jparse.json as a JSON file
      */
-    dirname = "../jparse";
+    if (is_dir("./jparse")) {
+	dirname = "./jparse";
+    } else if (is_dir("../jparse")) {
+	dirname = "../jparse";
+    } else {
+	dirname = ".";
+    }
     filename = "jparse.json";
     tree = open_json_dir_file(dirname, filename);
     if (tree == NULL) {
         err(10, __func__, "jparse.json is invalid JSON"); /*ooo*/
         not_reached();
     } else {
-        fdbg(stderr, DBG_MED, "jparse.json is valid JSON");
+        fdbg(stderr, DBG_MED, "%s/jparse.json is valid JSON", dirname);
         json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
         free(tree);
         tree = NULL;
