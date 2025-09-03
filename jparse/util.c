@@ -86,7 +86,7 @@ static bool is_exec(char const *path);
 static bool is_read(char const *path);
 
 
-/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/* NOTE: The following function is a static duplicate from from mkiocccentry toolkit */
 /*
  * exists - if a path exists
  *
@@ -129,7 +129,7 @@ exists(char const *path)
 }
 
 
-/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/* NOTE: The following function is a static duplicate from from mkiocccentry toolkit */
 /*
  * is_file - if a path is a file
  *
@@ -179,7 +179,7 @@ is_file(char const *path)
 }
 
 
-/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/* NOTE: The following function is a static duplicate from from mkiocccentry toolkit */
 /*
  * is_dir - if a path is a directory
  *
@@ -229,7 +229,7 @@ is_dir(char const *path)
 }
 
 
-/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/* NOTE: The following function is a static duplicate from from mkiocccentry toolkit */
 /*
  * is_exec - if a path is executable or directory is searchable
  *
@@ -293,7 +293,7 @@ is_exec(char const *path)
 }
 
 
-/* NOTE: The following function is a static duplicate from from mkicccentry toolkit */
+/* NOTE: The following function is a static duplicate from from mkiocccentry toolkit */
 /*
  * is_read - if a path is readable
  *
