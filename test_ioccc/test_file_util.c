@@ -2199,7 +2199,7 @@ main(int argc, char **argv)
     /*
      * path that doesn't exist (or shouldn't)
      */
-    append_path(&paths, "foobar", true, false, true, false);
+    append_path(&paths, "foobarbaz", true, false, true, false);
 
     /*
      * test find_paths()
@@ -3113,14 +3113,14 @@ main(int argc, char **argv)
     free_paths_array(&paths, false);
     paths = NULL; /* paranoia */
     /*
-     * now append "foobar" to the array
+     * now append "foobarbaz" to the array
      */
-    append_path(&paths, "foobar", true, false, true, false);
+    append_path(&paths, "foobarbaz", true, false, true, false);
 
     /*
-     * create a file called foobar
+     * create a file called foobarbaz
      */
-    relpath = "foobar";
+    relpath = "foobarbaz";
     touch(relpath, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (!exists(relpath)) {
         err(207, __func__, "file %s does not exist after touch()", relpath);
@@ -3128,7 +3128,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * check for "foobar" by case-sensitive
+     * check for "foobarbaz" by case-sensitive
      */
 
     /*
@@ -3177,9 +3177,9 @@ main(int argc, char **argv)
     paths_found = NULL; /* paranoia */
 
     /*
-     * check for "foobar" by case-insensitive
+     * check for "foobarbaz" by case-insensitive
      */
-    relpath = "foobar"; /* paranoia */
+    relpath = "foobarbaz"; /* paranoia */
     /*
      * reset fts
      */
@@ -3213,7 +3213,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * delete foobar
+     * delete foobarbaz
      */
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {
@@ -3257,10 +3257,10 @@ main(int argc, char **argv)
      *
      * NOTE: we also use relpath here.
      */
-    relpath = "Foobar";
+    relpath = "Foobarbaz";
 
     /*
-     * create a file called Foobar
+     * create a file called Foobarbaz
      */
     touch(relpath, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
@@ -3281,14 +3281,14 @@ main(int argc, char **argv)
     paths = NULL; /* paranoia */
 
     /*
-     * now append "foobar" to the array
+     * now append "foobarbarbaz" to the array
      */
-    append_path(&paths, "foobar", true, false, true, false);
+    append_path(&paths, "foobarbaz", true, false, true, false);
 
     /*
-     * check for "foobar" by case-sensitive
+     * check for "foobarbaz" by case-sensitive
      *
-     * NOTE: we created a file Foobar not foobar.
+     * NOTE: we created a file Foobarbaz not foobarbaz.
      */
 
     /*
@@ -3317,7 +3317,7 @@ main(int argc, char **argv)
         /*
          * this can fail on some file systems but not all
          */
-        fdbg(stderr, DBG_MED, "couldn't find any file called \"foobar\" as case-sensitive search");
+        fdbg(stderr, DBG_MED, "couldn't find any file called \"foobarbaz\" as case-sensitive search");
     }
 
     /*
@@ -3329,9 +3329,9 @@ main(int argc, char **argv)
     (void) read_fts(NULL, -1, &cwd, NULL);
 
     /*
-     * check for "foobar" by case-insensitive.
+     * check for "foobarbaz" by case-insensitive.
      *
-     * NOTE: we created Foobar, not foobar.
+     * NOTE: we created Foobarbaz, not foobarbaz.
      */
 
     /*
@@ -3406,7 +3406,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * delete Foobar
+     * delete Foobarbaz
      */
     errno = 0;      /* pre-clear errno for errp() */
     if (unlink(relpath) != 0) {

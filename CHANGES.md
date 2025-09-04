@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.6.2 2025-09-04
+
+Make adjustments to the new `test_file_util.c` so that it will function in cases
+where someone has a file called `foobar` in their directory (this would be me as
+I use it as part of testing mkiocccentry).
+
+A man page was started but not added yet because the exit codes in the test code
+need to be fixed first and that cannot happen now.
+
+Updated `FILE_UTIL_TEST_VERSION` to `"2.0.1 2025-09-04"`.
+
+
 ## Release 2.6.1 2025-09-02
 
 Moved nearly all of the tree and file utility functions
