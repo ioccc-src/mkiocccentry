@@ -155,3 +155,8 @@ f124cb6e2b4ce7b07edf6fa3b4c444e32746ec88](https://github.com/arcetri/sts/commit/
 That file was created from the above mentioned `dyn_alloc.c` file
 that was in turn created by [Landon Curt
 Noll](http://www.isthe.com/chongo/index.html) back in 2014.
+
+
+# Reporting Security Issues
+
+To report a security issue, please visit "[Reporting Security Issues](https://github.com/lcn2/dyn_array/security/policy)"

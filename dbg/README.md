@@ -148,3 +148,8 @@ man ./man/man3/warn_or_err.3
 An example program making use of some of the functions is `dbg_example.c`. In
 the man page `dbg.3` it shows you how to compile it and it tells you the
 expected output as well as why that output is expected.
+
+
+# Reporting Security Issues
+
+To report a security issue, please visit "[Reporting Security Issues](https://github.com/lcn2/dbg/security/policy)".
