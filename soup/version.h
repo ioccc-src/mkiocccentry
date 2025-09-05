@@ -84,7 +84,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.6.1 2025-09-02"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.6.2 2025-09-04"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -164,7 +164,7 @@
 /*
  * test_file_util - test common utility functions for file operations
  */
-#define FILE_UTIL_TEST_VERSION "2.0.0 2025-09-01" /* version format: major.minor YYYY-MM-DD */
+#define FILE_UTIL_TEST_VERSION "2.0.1 2025-09-04" /* version format: major.minor YYYY-MM-DD */
 
 /*
  * debug version
