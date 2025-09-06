@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.6.3 2025-09-06
+
+Fix exit codes in `test_file_util.c` and add `test_file_util.8`.
+
+
 ## Release 2.6.2 2025-09-04
 
 Make adjustments to the new `test_file_util.c` so that it will function in cases
