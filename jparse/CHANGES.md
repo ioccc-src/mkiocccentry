@@ -1,5 +1,17 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.3.2 2025-09-09
+
+Improved `jparse(1)` to allow for more than one arg of the specific type (string
+if `-s` is used, file otherwise). If any of the args is invalid JSON it will
+exit 1, else 0.
+
+Updated error location files as the `jparse(1)` error now specifies the filename
+of each invalid JSON file. This is important for the test script.
+
+Updated `JPARSE_TOOL_VERSION` to `"2.0.2 2025-09-09"`.
+
+
 ## Release 2.3.1 2025-09-08
 
 Updated `jparse/jsemtblgen.c` to use the new `dyn_array_qsort(3)` function
@@ -7,6 +19,7 @@ from [dyn_array repo](https://github.com/lcn2/dyn_array) "2.4.0 2024-09-08".
 
 Updated `JPARSE_REPO_VERSION` to "2.3.1 2025-09-08".
 Updated `JSEMTBLGEN_VERSION` to "2.0.3 2025-09-08".
+Updated
 
 
 ## Release 2.3.0 2025-09-01

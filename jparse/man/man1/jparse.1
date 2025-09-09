@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 1 "18 January 2025" "jparse" "jparse tools"
+.TH jparse 1 "09 September 2025" "jparse" "jparse tools"
 .SH NAME
 .B jparse
 \- a JSON parser written in C
@@ -23,16 +23,16 @@
 .RB [\| \-q \|]
 .RB [\| \-V \|]
 .RB [\| \-s \|]
-.I arg
+.I arg...
 .SH DESCRIPTION
 .B jparse
-parses a block of JSON text either from a file
+parses one or more blocks of JSON text either from one or more files
 .RB \|( \-
 means
 .BR stdin \|)
-or a string passed to the program via the
+or one or more string passed to the program (if the
 .B \-s
-option, reporting if it is valid or invalid JSON.
+option is used), reporting on those that are invalid (depending on the verbosity level it will also report valid JSON).
 Depending on the JSON verbosity level it will also show more information.
 This tool by itself is useful to validate JSON but the
 .BR jparse (3)
@@ -64,10 +64,10 @@ Parse argument as a string.
 .SH EXIT STATUS
 .TP
 0
-valid JSON
+(all) file(s)/string(s) is (are) valid JSON
 .TQ
 1
-invalid JSON
+at least one file or string is invalid JSON
 .TQ
 2
 .B \-h

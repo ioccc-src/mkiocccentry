@@ -55,12 +55,12 @@
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "2.3.1 2025-09-08"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "2.3.2 2025-09-09"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version
  */
-#define JPARSE_TOOL_VERSION "2.0.1 2025-03-15"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_TOOL_VERSION "2.0.2 2025-09-09"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official JSON parser version
