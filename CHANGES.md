@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.6.5 2025-09-09
+
+Synced [jparse repo](https://github.com/xexyl/jparse) with an enhancement to the
+`jparse(1)` tool. This updates the `JPARSE_TOOL_VERSION` to `"2.0.2
+2025-09-09"`.
+
+**REMINDER**: you do **NOT** have to install the external libraries from their
+respective repo in order to use or install this toolkit. Neither do you have to
+install this toolkit although you are strongly recommended to do so.
+
+
 ## Release 2.6.4 2025-09-08
 
 Update `dyn_array` to use the `DYN_ARRAY_VERSION` "2.4.0 2024-09-08".

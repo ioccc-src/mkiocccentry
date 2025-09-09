@@ -1,2 +1,3 @@
 syntax error node type JTYPE_OBJECT in file test_jparse/test_JSON/./bad_loc/braces-comma-eof.json at line 1 column 3: ,
+Warning: ./jparse: JSON parse tree is NULL for file: test_jparse/test_JSON/./bad_loc/braces-comma-eof.json
 ERROR[1]: ./jparse: invalid JSON

@@ -64,7 +64,7 @@
  * usage message
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg\n"
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg...\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -99,10 +99,11 @@ main(int argc, char **argv)
     char const *program = NULL;	    /* our name */
     extern char *optarg;	    /* option argument */
     extern int optind;		    /* argv index of the next arg */
+    char *input = NULL;		    /* argument to process */
     bool string_flag_used = false;  /* true ==> -S string was used */
     bool valid_json = false;	    /* true ==> JSON parse was valid */
+    int exit_code = 0;              /* exit code depends on if any JSON is invalid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
-    int arg_count = 0;		    /* number of args to process */
     int i;
 
     /*
@@ -163,48 +164,75 @@ main(int argc, char **argv)
 	    break;
 	}
     }
-    arg_count = argc - optind;
-    if (arg_count != REQUIRED_ARGS) {
+    if (argc - optind < REQUIRED_ARGS) {
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
 
     /*
-     * case: process -s arg
+     * case: process arguments on command line
      */
-    if (string_flag_used == true) {
+    if (argc - optind > 0) {
+	/*
+	 * process each argument in order
+	 */
+	for (i=optind; i < argc; ++i) {
+	    /*
+	     * obtain argument string
+	     */
+	    input = argv[i];
+            /*
+             * case: process -s arg
+             */
+            if (string_flag_used == true) {
 
-	/* parse arg as a block of json input */
-	dbg(DBG_HIGH, "Calling parse_json_str(\"%s\", %ju, &valid_json):",
-		      argv[argc-1], (uintmax_t)strlen(argv[argc-1]));
-	tree = parse_json_str(argv[argc-1], strlen(argv[argc-1]), &valid_json);
+                /* parse arg as a block of json input */
+                dbg(DBG_HIGH, "Calling parse_json_str(%s, %ju, &valid_json):",
+                              input, (uintmax_t)strlen(input));
 
-    /*
-     * case: process file arg
-     */
-    } else {
+                tree = parse_json_str(input, strlen(input), &valid_json);
+                if (tree == NULL || !valid_json) {
+                    warn(program, "JSON parse tree is NULL for string: \"%s\"", input);
+                    exit_code = 1;
+                }
+                /*
+                 * free the JSON parse tree
+                 */
+                else {
+                    json_tree_free(tree, JSON_INFINITE_DEPTH);
+                    free(tree);
+                    tree = NULL;
+                }
 
-	/* parse arg as a json filename */
-	dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", argv[argc-1]);
-	tree = parse_json_file(argv[argc-1], &valid_json);
+            /*
+             * case: process file arg
+             */
+            } else {
+
+                /* parse arg as a json filename */
+                dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", input);
+
+                tree = parse_json_file(input, &valid_json);
+                if (tree == NULL || !valid_json) {
+                    warn(program, "JSON parse tree is NULL for file: %s", input);
+                    exit_code = 1;
+                }
+                /*
+                 * free the JSON parse tree
+                 */
+                else {
+                    json_tree_free(tree, JSON_INFINITE_DEPTH);
+                    free(tree);
+                    tree = NULL;
+                }
+            }
+
+        }
     }
-
-    if (tree == NULL) {
-	warn(program, "JSON parse tree is NULL");
-    }
-    /*
-     * free the JSON parse tree
-     */
-    else {
-	json_tree_free(tree, JSON_INFINITE_DEPTH);
-	free(tree);
-	tree = NULL;
-    }
-
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
-    if (!valid_json) {
+    if (exit_code != 0) {
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
